@@ -45,7 +45,6 @@ const cleanWorkingTree = new Task<TaskArgs>(
           ref: 'HEAD',
           paths: ['packages/**/expo-module.config.json'],
         });
-
         // Remove local repositories.
         await Git.cleanAsync({
           recursive: true,
@@ -95,9 +94,9 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
     ],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
-    const count = parcels.length;
+    const packagesCount = parcels.length;
     logger.success(
-      `\n✅ Successfully published ${cyan.bold(count + '')} package${count > 1 ? 's' : ''}.\n`
+      `\n✅ Successfully published ${cyan.bold(packagesCount)} package${packagesCount > 1 ? 's' : ''}.\n`
     );
 
     if (options.tag !== 'latest') {
