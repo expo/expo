@@ -8,6 +8,7 @@ import {
   requestCalendarPermissionsAsync,
   requestRemindersPermissionsAsync,
   getSources,
+  listEvents,
 } from 'expo-calendar/next';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
@@ -461,26 +462,35 @@ export async function test(t) {
       });
     });
 
-    // t.describe('getEventAsync()', () => {
-    //   let calendarId, eventId;
+    t.describe('listEvents()', () => {
+      let calendar: ExpoCalendar;
+      let event: ExpoCalendarEvent;
 
-    //   t.beforeAll(async () => {
-    //     calendarId = await createTestCalendarAsync();
-    //     eventId = await createTestEventAsync(calendarId);
-    //   });
+      t.beforeAll(async () => {
+        calendar = await createTestCalendarAsync();
+        event = createTestEvent(calendar);
+      });
 
-    //   t.it('returns event with given id', async () => {
-    //     const event = await Calendar.getEventAsync(eventId);
+      t.it('returns a list of events', async () => {
+        const events = listEvents([calendar.id], new Date(2019, 3, 1), new Date(2019, 3, 29));
+        t.expect(Array.isArray(events)).toBe(true);
+        t.expect(events.length).toBe(1);
+        t.expect(events[0].id).toBe(event.id);
+        testEventShape(events[0]);
+      });
 
-    //     t.expect(event).toBeDefined();
-    //     t.expect(event.id).toBe(eventId);
-    //     testEventShape(event);
-    //   });
+      //   t.it('returns event with given id', async () => {
+      //     const event = await Calendar.getEventAsync(eventId);
 
-    //   t.afterAll(async () => {
-    //     await Calendar.deleteCalendarAsync(calendarId);
-    //   });
-    // });
+      //     t.expect(event).toBeDefined();
+      //     t.expect(event.id).toBe(eventId);
+      //     testEventShape(event);
+      //   });
+
+      t.afterAll(async () => {
+        calendar.delete();
+      });
+    });
 
     t.describe('Event.update()', () => {
       let calendar: ExpoCalendar;

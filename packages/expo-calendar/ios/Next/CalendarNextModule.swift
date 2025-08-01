@@ -79,6 +79,32 @@ public final class CalendarNextModule: Module {
             return ExpoCalendar(calendar: calendar)
         }
         
+        Function("listEvents") { (calendarIds: [String], startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) -> [ExpoCalendarEvent] in
+            try checkCalendarPermissions()
+            
+            guard let startDate = parse(date: startDateStr),
+                  let endDate = parse(date: endDateStr) else {
+                throw InvalidDateFormatException()
+            }
+            
+            var eventCalendars = [EKCalendar]()
+            if !calendarIds.isEmpty {
+                let deviceCalendars = eventStore.calendars(for: .event)
+                
+                for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
+                    eventCalendars.append(calendar)
+                }
+            }
+            
+            let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: eventCalendars)
+            
+            let calendarEvents = eventStore.events(matching: predicate).sorted {
+                $0.startDate.compare($1.startDate) == .orderedAscending
+            }
+            
+            return calendarEvents.map { ExpoCalendarEvent(event: $0) }
+        }
+        
         AsyncFunction("getCalendarPermissionsAsync") { (promise: Promise) in
             appContext?.permissions?.getPermissionUsingRequesterClass(
                 CalendarPermissionsRequester.self,

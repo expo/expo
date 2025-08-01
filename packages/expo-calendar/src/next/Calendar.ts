@@ -109,8 +109,24 @@ export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalenda
   return createdCalendar;
 }
 
+export function listEvents(
+  calendarIds: string[],
+  startDate: Date,
+  endDate: Date
+): ExpoCalendarEvent[] {
+  if (!InternalExpoCalendar.listEvents) {
+    throw new UnavailabilityError('Calendar', 'listEvents');
+  }
+  return InternalExpoCalendar.listEvents(
+    calendarIds,
+    stringifyIfDate(startDate),
+    stringifyIfDate(endDate)
+  );
+}
+
 export const requestCalendarPermissionsAsync = InternalExpoCalendar.requestCalendarPermissionsAsync;
 export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermissionsAsync;
-export const requestRemindersPermissionsAsync = InternalExpoCalendar.requestRemindersPermissionsAsync;
+export const requestRemindersPermissionsAsync =
+  InternalExpoCalendar.requestRemindersPermissionsAsync;
 export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
 export const getSources = InternalExpoCalendar.getSources;
