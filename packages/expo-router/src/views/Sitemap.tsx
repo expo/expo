@@ -144,7 +144,6 @@ function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) 
       <Link.Menu>
         <Link.MenuAction
           title="Copy URL"
-          unstable_keepPresented
           onPress={() => {
             // TODO: This doesn't seem to be called!
             alert('hey');
