@@ -2,7 +2,6 @@
 
 import React, {
   createContext,
-  createElement,
   isValidElement,
   use,
   useEffect,
@@ -23,7 +22,6 @@ import {
   NativeLinkPreviewAction,
   NativeLinkPreviewContent,
   NativeLinkPreviewTrigger,
-  type NativeLinkPreviewActionProps,
 } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
@@ -84,7 +82,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     [children]
   );
 
-  if (previewElement && !triggerElement) {
+  if ((previewElement || menuElement) && !triggerElement) {
     if (process.env.NODE_ENV !== 'production') {
       throw new Error(
         'When you use Link.Preview, you must use Link.Trigger to specify the trigger element.'
@@ -101,17 +99,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     [triggerElement, children]
   );
 
-  const actionsHandlers = React.useMemo(
-    () =>
-      menuElement
-        ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
-        : {},
-    [menuElement]
-  );
-  const preview = React.useMemo(
-    () => previewElement ?? <LinkPreview />,
-    [previewElement, rest.href]
-  );
+  const preview = React.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
 
   const isPreviewTapped = useRef(false);
 
@@ -122,9 +110,6 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   return (
     <NativeLinkPreview
       nextScreenId={nextScreenId}
-      onActionSelected={({ nativeEvent: { id } }) => {
-        actionsHandlers[id]?.();
-      }}
       onWillPreviewOpen={() => {
         isPreviewTapped.current = false;
         router.prefetch(rest.href);
@@ -174,11 +159,46 @@ interface LinkMenuActionProps {
    * Optional SF Symbol displayed alongside the menu item.
    */
   icon?: SFSymbol;
+  /**
+   * If true, the menu item will be disabled and not selectable.
+   *
+   * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled
+   */
+  disabled?: boolean;
+  /**
+   * If true, the menu item will be displayed as destructive.
+   *
+   * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive
+   */
+  destructive?: boolean;
+  /**
+   * If true, the menu will be kept presented after the action is selected.
+   *
+   * This is marked as unstable, because when action is selected it will recreate the menu,
+   * which will close all opened submenus and reset the scroll position.
+   *
+   * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented
+   */
+  unstable_keepPresented?: boolean;
+  /**
+   * If true, the menu item will be displayed as selected.
+   */
+  isOn?: boolean;
   onPress: () => void;
 }
 
-export function LinkMenuAction(_: LinkMenuActionProps) {
-  return null;
+export function LinkMenuAction(props: LinkMenuActionProps) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
+    return null;
+  }
+  const { unstable_keepPresented, onPress, ...rest } = props;
+  return (
+    <NativeLinkPreviewAction
+      {...rest}
+      onSelected={onPress}
+      keepPresented={unstable_keepPresented}
+    />
+  );
 }
 
 export interface LinkMenuProps {
@@ -190,6 +210,26 @@ export interface LinkMenuProps {
    * Optional SF Symbol displayed alongside the menu item.
    */
   icon?: string;
+  /**
+   * If true, the menu will be displayed as a palette.
+   * This means that the menu will be displayed as one row
+   *
+   * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette
+   */
+  displayAsPalette?: boolean;
+  /**
+   * If true, the menu will be displayed inline.
+   * This means that the menu will not be collapsed
+   *
+   * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline
+   */
+  displayInline?: boolean;
+  /**
+   * If true, the menu item will be displayed as destructive.
+   *
+   * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive
+   */
+  destructive?: boolean;
   children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
 }
 
@@ -197,20 +237,18 @@ export const LinkMenu: FC<LinkMenuProps> = (props) => {
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
-  return convertActionsToNativeElements(
-    convertChildrenArrayToActions([createElement(LinkMenu, props, props.children)])
+  const children = React.Children.toArray(props.children).filter(
+    (child) => isValidElement(child) && (child.type === LinkMenuAction || child.type === LinkMenu)
   );
-};
-
-function convertActionsToNativeElements(actions: ConvertChildrenArrayToActionsReturnType) {
-  return actions.map(({ children, onPress, ...props }) => (
+  return (
     <NativeLinkPreviewAction
       {...props}
-      key={props.id}
-      children={convertActionsToNativeElements(children)}
+      title={props.title ?? ''}
+      onSelected={() => {}}
+      children={children}
     />
-  ));
-}
+  );
+};
 
 interface LinkPreviewProps {
   /**
@@ -281,56 +319,4 @@ function getFirstChildOfType<PropsT>(
   return React.Children.toArray(children).find(
     (child): child is ReactElement<PropsT> => isValidElement(child) && child.type === type
   );
-}
-
-function convertActionsToActionsHandlers(
-  items: ConvertChildrenArrayToActionsReturnType | undefined
-) {
-  return flattenActions(items ?? []).reduce(
-    (acc, item) => ({
-      ...acc,
-      [item.id]: item.onPress,
-    }),
-    {} as Record<string, () => void>
-  );
-}
-
-function flattenActions(
-  actions: ConvertChildrenArrayToActionsReturnType
-): ConvertChildrenArrayToActionsReturnType {
-  return actions.reduce((acc, action) => {
-    if (action.children.length > 0) {
-      return [...acc, action, ...flattenActions(action.children)];
-    }
-    return [...acc, action];
-  }, [] as ConvertChildrenArrayToActionsReturnType);
-}
-
-type ConvertChildrenArrayToActionsReturnType = (Omit<NativeLinkPreviewActionProps, 'children'> & {
-  onPress: () => void;
-  children: ConvertChildrenArrayToActionsReturnType;
-})[];
-
-function convertChildrenArrayToActions(
-  children: ReturnType<typeof React.Children.toArray>,
-  parentId: string = ''
-): ConvertChildrenArrayToActionsReturnType {
-  return children
-    .filter(
-      (item): item is ReactElement<LinkMenuActionProps | LinkMenuProps> =>
-        isValidElement(item) && (item.type === LinkMenuAction || item.type === LinkMenu)
-    )
-    .map((child, index) => ({
-      id: `${parentId}${child.props.title}-${index}`,
-      title: child.props.title ?? '',
-      onPress: 'onPress' in child.props ? child.props.onPress : () => {},
-      icon: child.props.icon,
-      children:
-        'children' in child.props
-          ? convertChildrenArrayToActions(
-              React.Children.toArray(child.props.children),
-              `${parentId}${child.props.title}-${index}`
-            )
-          : [],
-    }));
 }

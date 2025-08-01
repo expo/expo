@@ -485,8 +485,16 @@ PODS:
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - hermes-engine (0.81.0-rc.3):
-    - hermes-engine/Pre-built (= 0.81.0-rc.3)
-  - hermes-engine/Pre-built (0.81.0-rc.3)
+    - hermes-engine/cdp (= 0.81.0-rc.3)
+    - hermes-engine/Hermes (= 0.81.0-rc.3)
+    - hermes-engine/inspector (= 0.81.0-rc.3)
+    - hermes-engine/inspector_chrome (= 0.81.0-rc.3)
+    - hermes-engine/Public (= 0.81.0-rc.3)
+  - hermes-engine/cdp (0.81.0-rc.3)
+  - hermes-engine/Hermes (0.81.0-rc.3)
+  - hermes-engine/inspector (0.81.0-rc.3)
+  - hermes-engine/inspector_chrome (0.81.0-rc.3)
+  - hermes-engine/Public (0.81.0-rc.3)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -504,6 +512,36 @@ PODS:
   - libwebp/sharpyuv (1.5.0)
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
+  - lottie-ios (4.5.0)
+  - lottie-react-native (7.2.5):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - lottie-ios (= 4.5.0)
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - MBProgressHUD (1.2.0)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
@@ -2403,7 +2441,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context (5.4.0):
+  - react-native-safe-area-context (5.5.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2421,8 +2459,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.4.0)
-    - react-native-safe-area-context/fabric (= 5.4.0)
+    - react-native-safe-area-context/common (= 5.5.2)
+    - react-native-safe-area-context/fabric (= 5.5.2)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2433,7 +2471,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.4.0):
+  - react-native-safe-area-context/common (5.5.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2461,7 +2499,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.4.0):
+  - react-native-safe-area-context/fabric (5.5.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3458,7 +3496,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNSVG (15.12.0):
+  - RNSVG (15.12.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3484,10 +3522,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.12.0)
+    - RNSVG/common (= 15.12.1)
     - SocketRocket
     - Yoga
-  - RNSVG/common (15.12.0):
+  - RNSVG/common (15.12.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3812,6 +3850,7 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - lottie-react-native (from `../../../node_modules/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - nanopb
   - RCT-Folly (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -3923,6 +3962,7 @@ SPEC REPOS:
     - libavif
     - libdav1d
     - libwebp
+    - lottie-ios
     - MBProgressHUD
     - nanopb
     - Nimble
@@ -4095,6 +4135,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-07-07-RNv0.81.0-e0fc67142ec0763c6b6153ca2bf96df815539782
+  lottie-react-native:
+    :path: "../../../node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -4272,11 +4314,11 @@ SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
-  EASClient: 01c089e5fa07184477aed2944d7650062cd3c37f
-  EXApplication: f5eb4ca614699d70809fc2681c9b367f991886c5
-  EXAV: 6ef85347ee2dba74841f79f8ce3f65a69268bfba
-  EXConstants: 0c911c420c4944c3c1d06f7a339b2dd4a7472361
-  EXImageLoader: 4d3d3284141f1a45006cc4d0844061c182daf7ee
+  EASClient: cca4fa0bf58b32a99476e9d9f80cbeebcb57df90
+  EXApplication: 2da4660569e086f4f18722758b52d7e7792631ab
+  EXAV: 0809cbb31eba2111d5413f2dbb547ba9727478ee
+  EXConstants: 72e8e04dc4d7d97c74a618d44753ea4a7437a2b6
+  EXImageLoader: ab4fcf9240cf3636a83c00e3fc5229d692899428
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: bf76658edfbfa3e3fb67f940ade98d7803490789
   EXNotifications: f0f1c97d04f06c51ea073d7b2396431e5611c1ea
@@ -4298,7 +4340,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 3a4e4dc5cca31c1c731731cf11717dc3f7fff211
   ExpoDocumentPicker: 0b9848ccbb414d27491a478a013ea9d434613d84
   ExpoDomWebView: 290738a4948cf54d58a70191f31aedce6113a9a6
-  ExpoFileSystem: 3ee0f53b719c928eb179fc67467f89ffce4472ed
+  ExpoFileSystem: 9cefee1730641f6d132cbd6cb6c43fe2dbba7dfe
   ExpoFont: 370a9897880ac279fbd4e478dede18ec4f723d1a
   ExpoGL: 8f7f43291e400621ef9aeb7af347816c2051ddc7
   ExpoHaptics: 581bbb680c566b8afef68fd50f1efb883972b150
@@ -4327,7 +4369,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 4390db7ff14bc5db4d41879d529d729230204f91
   ExpoSMS: 78241dca635906b6aefcfa9d3d2e499b7fa8d05f
   ExpoSpeech: f7b35627d6665edec6580144d8070316b261eea6
-  ExpoSQLite: c092c9454ad72ba09e29c494470a4fe41996f741
+  ExpoSQLite: e1fef6b50e3f1b7c3fc725b5b43a484f2dc9d9a9
   ExpoStoreReview: d8004651736a31ed37cb69e4799d0f18fd6e362b
   ExpoSymbols: c5fd6904f2adda427e4a5ac1a4cbad060dec6f53
   ExpoSystemUI: b9294916cc916a704d21c8bb745d6e27871fdbb7
@@ -4356,10 +4398,12 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: b58e9627004f47043897eeae830c3ef023678f3b
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: cc20804c5f764b4c785deafa291b6fa77bbf71fd
+  hermes-engine: b654194e2f50b4a2f0243af336aa10140f33c65a
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
+  lottie-ios: a881093fab623c467d3bce374367755c272bdd59
+  lottie-react-native: 89a3dc7200168d4f98f43780afe082a637be9dcb
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
@@ -4400,16 +4444,16 @@ SPEC CHECKSUMS:
   React-logger: 96286cc9e6c073194274e4f5330a75d519c89d7a
   React-Mapbuffer: 04e062c73315f3a40d4032178f9d396c059c9bb7
   React-microtasksnativemodule: 3509d6a7d32ed14b91300854123965025f749fea
-  react-native-keyboard-controller: ec2106f8f3f072c6e5d134259688ec1ed9c52e42
+  react-native-keyboard-controller: 2ea75136c309c43b5f1b9b02e332628e80c8d936
   react-native-maps: fece4020ca8007967fa5eb48c914a8f2c73e7d4c
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 5aa9fb30444ca4bbe382991b6783cc014ed5ca07
-  react-native-safe-area-context: 8f42f887d6b7aabe67548e6f1128e194d609107e
+  react-native-safe-area-context: 5d8c627bc6296d018625948364c1a02d50d11bd4
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
   react-native-skia: e4a1edd09e2e7bd95956683673ac18f911d63cfb
   react-native-slider: fe0add239ded49237c81fe25f3ad84adb3ce49c7
   react-native-view-shot: aac285cd08144be29c19ab659930172836f0067f
-  react-native-webview: e4f8de3b6ffb095d45e27da677b403f4b9c57df2
+  react-native-webview: 183e0d1f10b3c61c5ddd70f4ecd46488856a3573
   React-NativeModulesApple: 009989614b0619613138091469ae3bce6e4641ba
   React-oscompat: 414b30e47074beddcae34ee27e12a679a4977f24
   React-perflogger: 3b129928b67f9acfda95ede5a804b6b2401a3c00
@@ -4448,7 +4492,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: f47ece8192844e594954cd8477b15a0e1a9fd874
   RNReanimated: bc92d92315bde5372395f9f9b96e44bde14ea612
   RNScreens: c0f1e602f1c663c721a8faf7a10f48b9823e45f5
-  RNSVG: 99882257fbebbfd40adb30890002babf82077f3c
+  RNSVG: 8d87cff016edf1b6ca409ed39804101836d75e90
   RNWorklets: cdcb3e4f5e9aea5b946974d0f95e40d01d651033
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90

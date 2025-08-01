@@ -229,6 +229,7 @@ dependencies {
   releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
   implementation 'commons-io:commons-io:1.4'
+  implementation 'com.airbnb.android:lottie:6.5.2'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
   implementation 'com.vanniktech:android-image-cropper:4.6.0'
   implementation 'commons-codec:commons-codec:1.10'

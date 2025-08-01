@@ -3078,11 +3078,11 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: bf76658edfbfa3e3fb67f940ade98d7803490789
   EXNotifications: f0f1c97d04f06c51ea073d7b2396431e5611c1ea
-  expo-dev-launcher: efa2a704fcdd7d958378694f8f0e4d520ea8f8cc
-  expo-dev-menu: 2aae948cb2cd8184524a9de9bb9a3969cb13ad09
-  expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
+  expo-dev-launcher: 01965720c5f143534dd1367131a2a6aba8012993
+  expo-dev-menu: a22e83e35c8c902609ff7328142e9c95ed939e03
+  expo-dev-menu-interface: e4289a7d41317f5d727949a95e3d94553d3ba056
   ExpoClipboard: 77842a5542aa7ad5dcd9cc03d34442b1b2d857ea
-  ExpoFileSystem: 3ee0f53b719c928eb179fc67467f89ffce4472ed
+  ExpoFileSystem: 9cefee1730641f6d132cbd6cb6c43fe2dbba7dfe
   ExpoImage: 736d4bf4e14437d0e0c7dafdd3aa169c17d447a7
   ExpoMediaLibrary: ad61cd80ca07da02be3d676e3d9b04b311a82c2c
   ExpoModulesCore: 9faf069f091ef2dd979ba7b605ffdb07f0819d1a

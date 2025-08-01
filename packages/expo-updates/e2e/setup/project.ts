@@ -72,6 +72,7 @@ function getExpoDependencyChunks({
             'expo-media-library',
             'expo-network',
             'expo-secure-store',
+            'expo-sqlite',
             'expo-symbols',
             'expo-system-ui',
             'expo-ui',
@@ -308,6 +309,7 @@ async function preparePackageJson(
   const extraScripts = configureE2E
     ? {
         start: 'expo start --private-key-path ./keys/private-key.pem',
+        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':
           'adb install android/app/build/outputs/apk/debug/app-debug.apk',
@@ -385,7 +387,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.80.1-0',
+        'react-native': 'npm:react-native-tvos@0.81.0-0rc3',
         '@react-native-tvos/config-tv': '^0.1.3',
       },
       expo: {

@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Remove flipper hack support ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
+- Use template tarball from expo package. ([#37334](https://github.com/expo/expo/pull/37334) by [@jakex7](https://github.com/jakex7))
 
 ### 🎉 New features
 
