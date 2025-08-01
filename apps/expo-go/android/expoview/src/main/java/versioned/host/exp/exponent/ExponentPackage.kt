@@ -2,6 +2,7 @@
 package versioned.host.exp.exponent
 
 import android.content.Context
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -172,6 +173,7 @@ class ExponentPackage : ReactPackage {
       viewManagers,
       listOf(
         SvgPackage(),
+        LottiePackage(),
         MapsPackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),

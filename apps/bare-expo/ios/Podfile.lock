@@ -760,7 +760,7 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - lottie-ios (4.5.0)
-  - lottie-react-native (7.2.2):
+  - lottie-react-native (7.2.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -4471,7 +4471,7 @@ SPEC CHECKSUMS:
   ExpoSMS: 78241dca635906b6aefcfa9d3d2e499b7fa8d05f
   ExpoSpeech: f7b35627d6665edec6580144d8070316b261eea6
   ExpoSplashScreen: c39151354ff0fa6d0f5e7dde07a234abd5550e69
-  ExpoSQLite: c092c9454ad72ba09e29c494470a4fe41996f741
+  ExpoSQLite: e1fef6b50e3f1b7c3fc725b5b43a484f2dc9d9a9
   ExpoStoreReview: d8004651736a31ed37cb69e4799d0f18fd6e362b
   ExpoSymbols: c5fd6904f2adda427e4a5ac1a4cbad060dec6f53
   ExpoSystemUI: b9294916cc916a704d21c8bb745d6e27871fdbb7
@@ -4493,7 +4493,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
-  lottie-react-native: 949d15e521e63400c00353b1c977caaa85923026
+  lottie-react-native: 89a3dc7200168d4f98f43780afe082a637be9dcb
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
