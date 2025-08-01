@@ -1,6 +1,5 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import fs from 'fs';
-import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { extractNpmTarballAsync } from '../utils/npm';
