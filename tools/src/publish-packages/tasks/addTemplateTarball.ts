@@ -25,7 +25,7 @@ export const addTemplateTarball = new Task<TaskArgs>(
 
     return await runWithSpinner(
       'Copying template tarball to Expo package',
-      async (): Promise<any> => {
+      async () => {
         const templatePath = path.join(TEMPLATES_DIR, 'expo-template-bare-minimum');
         const templateTarball = await packToTarballAsync(templatePath);
 
