@@ -141,6 +141,19 @@ function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) 
         />
       </Link.Trigger>
       <Link.Preview />
+      <Link.Menu>
+        <Link.MenuAction
+          title="Copy URL"
+          unstable_keepPresented
+          onPress={() => {
+            // TODO: This doesn't seem to be called!
+            alert('hey');
+            const url = Link.resolveHref(node.href);
+            console.log('Copying URL:', url);
+          }}
+          icon="link"
+        />
+      </Link.Menu>
     </Link>
   );
 }
