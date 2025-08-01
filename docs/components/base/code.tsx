@@ -102,20 +102,22 @@ export function Code({ className, children, title }: CodeProps) {
         <CopyAction text={cleanCopyValue(value)} />
         <SettingsAction />
       </SnippetHeader>
-      <SnippetContent>
+      <SnippetContent className="p-0">
         <pre
           ref={contentRef}
           style={{
             maxHeight: collapseBound,
           }}
-          className={mergeClasses('relative w-fit whitespace-pre', commonClasses)}
+          className={mergeClasses('relative whitespace-pre', commonClasses)}
           {...attributes}>
-          <code
-            className="text-2xs text-default"
-            dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
-          />
+          <div className="w-fit p-4">
+            <code
+              className="text-2xs text-default"
+              dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
+            />
+          </div>
+          {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
         </pre>
-        {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
       </SnippetContent>
     </Snippet>
   ) : (
