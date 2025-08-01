@@ -296,3 +296,7 @@ export function findProjectFiles(projectRoot: string) {
     .filter(Boolean)
     .sort() as string[];
 }
+
+export function stripWhitespace(str: string): string {
+  return str.replace(/\s+/g, '').trim();
+}

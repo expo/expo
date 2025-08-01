@@ -57,7 +57,7 @@ export function logCmdError(error: any): never {
   }
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
-    process.exit(0);
+    process.exit(1);
   } else if (
     error instanceof CommandError ||
     error instanceof AssertionError ||

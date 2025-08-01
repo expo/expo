@@ -8,6 +8,7 @@ import {
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
+  stripWhitespace,
 } from './utils';
 import { executeBunAsync, executeExpoAsync } from '../utils/expo';
 
@@ -267,8 +268,29 @@ describe('expo-router integration', () => {
       '@react-navigation/native': '6.1.18',
     });
 
-    // Run `--fix` project dependencies with expo@52 and expo-router from source
-    await executeExpoAsync(projectRoot, ['install', '--fix']);
+    let error: unknown = undefined;
+    try {
+      // Run `--fix` project dependencies with expo@52 and expo-router from source
+      await executeExpoAsync(projectRoot, ['install', '--fix']);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeDefined();
+    expect((error as Error).message).toContain(
+      'Cannot automatically write to dynamic config at: app.config.js'
+    );
+    expect(stripWhitespace((error as Error).message)).toContain(
+      stripWhitespace(`
+        Add the following to your Expo config
+
+        {
+          "plugins": [
+            "expo-router"
+          ]
+        }
+      `)
+    );
 
     // Ensure `@react-navigation/native` was updated
     expect(pkg.read().dependencies).toMatchObject({
