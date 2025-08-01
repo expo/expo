@@ -11,7 +11,14 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
 jest.mock('../common.ts', () => ({
   ...jest.requireActual('../common.ts'),
   hasModule: jest.fn((moduleId) => {
-    if (['react-native-reanimated', 'expo-router', '@expo/vector-icons'].includes(moduleId)) {
+    if (
+      [
+        'react-native-worklets',
+        'react-native-reanimated',
+        'expo-router',
+        '@expo/vector-icons',
+      ].includes(moduleId)
+    ) {
       return true;
     }
     return false;
@@ -245,7 +252,7 @@ export * as default from './Animated';
   });
 
   it(`supports disabling reanimated`, () => {
-    expect(require.resolve('react-native-reanimated/plugin')).toBeDefined();
+    expect(require.resolve('react-native-worklets/plugin')).toBeDefined();
 
     const samplesPath = path.resolve(__dirname, 'samples/worklet.js');
 
@@ -263,7 +270,7 @@ export * as default from './Animated';
   });
 
   it(`supports reanimated worklets`, () => {
-    expect(require.resolve('react-native-reanimated/plugin')).toBeDefined();
+    expect(require.resolve('react-native-worklets/plugin')).toBeDefined();
 
     const samplesPath = path.resolve(__dirname, 'samples/worklet.js');
 
@@ -290,7 +297,7 @@ export * as default from './Animated';
         babel.transformFileSync(samplesPath, {
           ...options,
           // Test that duplicate plugins make no difference
-          plugins: [require.resolve('react-native-reanimated/plugin')],
+          plugins: [require.resolve('react-native-worklets/plugin')],
         })!.code
       )
     ).toBe(code);

@@ -41,7 +41,9 @@ struct DevMenuDeveloperTools: View {
         disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
       )
     }
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
     .cornerRadius(12)
     .padding(.horizontal)
     .padding(.vertical, 8)

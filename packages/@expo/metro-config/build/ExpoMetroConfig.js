@@ -289,7 +289,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             // hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {
-                    experimentalImportSupport: false,
+                    experimentalImportSupport: true,
                     inlineRequires: false,
                 },
             }),

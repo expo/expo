@@ -107,15 +107,18 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyToClipboard(_ content: String) {
+    #if !os(tvOS)
     UIPasteboard.general.string = content
     hostUrlCopiedMessage = "Copied!"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.hostUrlCopiedMessage = nil
     }
+    #endif
   }
 
   func copyAppInfo() {
+    #if !os(tvOS)
     guard let appInfo = appInfo else {
       return
     }
@@ -142,6 +145,7 @@ class DevMenuViewModel: ObservableObject {
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.clipboardMessage = nil
     }
+    #endif
   }
 
   func fireCallback(_ name: String) {

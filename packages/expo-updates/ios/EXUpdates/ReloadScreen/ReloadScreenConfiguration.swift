@@ -7,7 +7,9 @@ private let defaultSpinnerColor = UIColor.systemBlue
 private let defaultSpinnerSize = SpinnerSize.medium
 private let defaultImageResizeMode = ImageResizeMode.contain
 
-internal struct ReloadScreenOptions: Record {
+public struct ReloadScreenOptions: Record {
+  public init() {}
+
   @Field var backgroundColor: UIColor = .white
   @Field var image: ReloadScreenImageSource?
   @Field var imageResizeMode: ImageResizeMode = .contain
@@ -65,6 +67,7 @@ enum ImageResizeMode: String, Enumerable {
   case center
   case stretch
 
+#if os(iOS) || os(tvOS)
   var contentMode: UIView.ContentMode {
     switch self {
     case .contain:
@@ -77,6 +80,20 @@ enum ImageResizeMode: String, Enumerable {
       return .scaleToFill
     }
   }
+  #else
+  var contentMode: NSImageScaling {
+    switch self {
+    case .contain:
+      return .scaleProportionallyUpOrDown
+    case .cover:
+      return .scaleProportionallyDown
+    case .center:
+      return .scaleNone
+    case .stretch:
+      return .scaleAxesIndependently
+    }
+  }
+  #endif
 }
 
 enum SpinnerSize: String, Enumerable {

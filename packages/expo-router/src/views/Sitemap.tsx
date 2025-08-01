@@ -2,6 +2,7 @@
 'use client';
 
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import Constants from 'expo-constants';
 import React from 'react';
 import {
   Image,
@@ -72,6 +73,7 @@ export function Sitemap() {
             <SitemapItem node={child} />
           </View>
         ))}
+        <SystemInfo />
       </ScrollView>
     </View>
   );
@@ -215,6 +217,46 @@ function ArrowIcon({ rotation = 0 }: { rotation?: number }) {
   );
 }
 
+function SystemInfo() {
+  const getHermesVersion = () => {
+    if (global.HermesInternal) {
+      const runtimeProps = global.HermesInternal.getRuntimeProperties?.();
+      if (runtimeProps) {
+        return runtimeProps['OSS Release Version'] || 'Unknown';
+      }
+    }
+    return null;
+  };
+
+  const locationOrigin = window.location.origin;
+  const expoSdkVersion = Constants.expoConfig?.sdkVersion || 'Unknown';
+  const hermesVersion = getHermesVersion();
+
+  return (
+    <View testID="sitemap-system-info" style={styles.systemInfoContainer}>
+      <Text style={styles.systemInfoTitle}>System Information</Text>
+      {locationOrigin && (
+        <View style={styles.systemInfoItem}>
+          <Text style={styles.systemInfoLabel}>Location origin:</Text>
+          <Text style={styles.systemInfoValue}>{locationOrigin}</Text>
+        </View>
+      )}
+      <View style={styles.systemInfoItem}>
+        <Text style={styles.systemInfoLabel}>Expo SDK version:</Text>
+        <Text style={styles.systemInfoValue}>{expoSdkVersion}</Text>
+      </View>
+      {hermesVersion && (
+        <View style={styles.systemInfoItem}>
+          <Text style={styles.systemInfoLabel}>Hermes version:</Text>
+          <Text style={styles.systemInfoValue} numberOfLines={1} ellipsizeMode="tail">
+            {hermesVersion}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
@@ -295,5 +337,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  systemInfoContainer: {
+    borderWidth: 1,
+    borderColor: '#313538',
+    backgroundColor: '#151718',
+    borderRadius: 12,
+    padding: INDENT,
+    marginTop: 24,
+  },
+  systemInfoTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  systemInfoItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  systemInfoLabel: {
+    color: 'white',
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  systemInfoValue: {
+    color: 'white',
+    fontSize: 16,
+    flex: 1,
+    textAlign: 'right',
+    marginLeft: 12,
   },
 });

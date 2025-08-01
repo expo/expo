@@ -102,6 +102,14 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Maps content padding',
+      route: 'expo-maps/content-padding',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsContentPaddingScreen'));
+      },
+    },
+    {
       name: 'Street view',
       route: 'expo-maps/street-view',
       options: {},

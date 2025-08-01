@@ -34,7 +34,7 @@ const utils_1 = require("./utils");
  * }
  */
 function Modal(props) {
-    const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, closeOnNavigation, largestUndimmedDetentIndex, ...viewProps } = props;
+    const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, closeOnNavigation, ...viewProps } = props;
     const { openModal, updateModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
@@ -65,8 +65,7 @@ function Modal(props) {
                 component: children,
                 uniqueId: newId,
                 parentNavigationProp: navigation,
-                largestUndimmedDetentIndex,
-                detents: detents ?? 'fitToContents',
+                detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
             });
             setCurrentModalId(newId);
             return () => {

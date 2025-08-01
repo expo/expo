@@ -4,6 +4,7 @@ import path from 'path';
 
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
+import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
@@ -22,6 +23,19 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
     logger.info('\n📤 Updating workspace projects...');
 
     const workspaceInfo = await Workspace.getInfoAsync();
+
+    // Append project templates as they're not yarn workspaces.
+    const templates = await getAvailableProjectTemplatesAsync();
+    templates.forEach((template) => {
+      workspaceInfo[template.packageName] = {
+        location: template.path.replace(EXPO_DIR, ''),
+        workspaceDependencies: template.getDependencies().map((dep) => dep.name),
+        mismatchedWorkspaceDependencies: [],
+        workspacePeerDependencies: [],
+        workspaceOptionalDependencies: [],
+      };
+    });
+
     const dependenciesKeys = [
       'dependencies',
       'devDependencies',

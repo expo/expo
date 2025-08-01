@@ -3,7 +3,6 @@
 package expo.modules
 
 import android.content.Context
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactNativeHost
@@ -16,7 +15,6 @@ import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.runtime.BindingsInstaller
-import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
@@ -58,11 +56,7 @@ object ExpoReactHostFactory {
       get() = reactNativeHostWrapper.jsMainModuleName
 
     override val jsRuntimeFactory: JSRuntimeFactory
-      get() = if (reactNativeHostWrapper.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES) {
-        HermesInstance()
-      } else {
-        JSCInstance()
-      }
+      get() = HermesInstance()
 
     override val reactPackages: List<ReactPackage>
       get() = reactNativeHostWrapper.packages

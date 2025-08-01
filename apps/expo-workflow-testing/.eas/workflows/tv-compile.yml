@@ -69,6 +69,11 @@ on:
   schedule:
     - cron: '0 17 * * SUN' # 22:00 UTC every Sunday
 
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
+
 jobs:
   ios:
     runs_on: macos-large
@@ -98,7 +103,7 @@ jobs:
         id: prepare
         working_directory: ../../../updates-e2e
         run: |
-          npx pod-install
+          yarn ios:pod-install
       - name: Compile TV project
         id: build
         working_directory: ../../../updates-e2e

@@ -58,7 +58,8 @@ const href_1 = require("./link/href");
  * for more information.
  */
 function useNavigation(parent) {
-    let navigation = (0, native_1.useNavigation)();
+    const rnNavigation = (0, native_1.useNavigation)();
+    let navigation = rnNavigation;
     let state = (0, native_1.useStateForPath)();
     if (parent === undefined) {
         // If no parent is provided, return the current navigation object
@@ -110,9 +111,11 @@ function useNavigation(parent) {
     navigation = navigation.getParent(parent);
     if (process.env.NODE_ENV !== 'production') {
         if (!navigation) {
+            navigation = rnNavigation;
             const ids = [];
             while (navigation) {
-                ids.push(navigation.getId() || '/');
+                if (navigation.getId())
+                    ids.push(navigation.getId());
                 navigation = navigation.getParent();
             }
             throw new Error(`Could not find parent navigation with route "${parent}". Available routes are: '${ids.join("', '")}'`);
