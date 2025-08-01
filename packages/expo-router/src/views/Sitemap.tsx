@@ -101,11 +101,12 @@ function SitemapItem({ node, level = 0 }: SitemapItemProps) {
   }
   return <StandardSitemapItem node={node} level={level} info={info} />;
 }
+
 function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
   const [isCollapsed, setIsCollapsed] = React.useState(true);
 
   return (
-    <>
+    <View style={styles.itemInnerContainer}>
       <SitemapItemPressable
         style={{ opacity: 0.4 }}
         leftIcon={<PkgIcon />}
@@ -123,25 +124,23 @@ function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
             level={level + (node.isGenerated ? 0 : 1)}
           />
         ))}
-    </>
+    </View>
   );
 }
 
 function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) {
   return (
-    <Link
-      accessibilityLabel={node.contextKey}
-      href={node.href}
-      asChild
-      // Ensure we replace the history so you can't go back to this page.
-      replace>
-      <SitemapItemPressable
-        leftIcon={<FileIcon />}
-        rightIcon={<ForwardIcon />}
-        filename={node.filename}
-        level={level}
-        info={info}
-      />
+    <Link accessibilityLabel={node.contextKey} href={node.href} asChild>
+      <Link.Trigger>
+        <SitemapItemPressable
+          leftIcon={<FileIcon />}
+          rightIcon={<ForwardIcon />}
+          filename={node.filename}
+          level={level}
+          info={info}
+        />
+      </Link.Trigger>
+      <Link.Preview />
     </Link>
   );
 }
@@ -168,10 +167,11 @@ function SitemapItemPressable({
         <View
           testID="sitemap-item"
           style={[
+            styles.itemInnerContainer,
             styles.itemPressable,
             {
               paddingLeft: INDENT + level * INDENT,
-              backgroundColor: hovered ? '#202425' : 'transparent',
+              backgroundColor: hovered ? '#202425' : '#151718',
             },
             pressed && { backgroundColor: '#26292b' },
             style,
@@ -314,6 +314,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   scroll: {
+    gap: 12,
     paddingHorizontal: '5%',
     paddingVertical: 16,
     ...Platform.select({
@@ -337,8 +338,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#151718',
     borderRadius: 12,
     borderCurve: 'continuous',
-    marginBottom: 12,
-    overflow: 'hidden',
+  },
+  itemInnerContainer: {
+    backgroundColor: '#151718',
+    borderRadius: 12,
+    borderCurve: 'continuous',
+    gap: 12,
   },
   itemPressable: {
     paddingHorizontal: INDENT,
