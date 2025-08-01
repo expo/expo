@@ -101,45 +101,45 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("saveToLibraryAsync") Coroutine { localUri: String ->
       requireSystemPermissions()
-      createAssetWithAlbumId(context, localUri, false)
+      return@Coroutine createAssetWithAlbumId(context, localUri, false)
     }
 
     AsyncFunction("createAssetAsync") Coroutine { localUri: String, albumId: String? ->
       requireSystemPermissions()
-      createAssetWithAlbumId(context, localUri, true, albumId)
+      return@Coroutine createAssetWithAlbumId(context, localUri, true, albumId)
     }
 
     AsyncFunction("addAssetsToAlbumAsync") Coroutine { assetsId: List<String>, albumId: String, copyToAlbum: Boolean ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(if (copyToAlbum) emptyList() else assetsId)
-      addAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum)
+      return@Coroutine addAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum)
     }
 
     AsyncFunction("removeAssetsFromAlbumAsync") Coroutine { assetsId: List<String>, albumId: String ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(assetsId)
-      removeAssetsFromAlbum(context, assetsId.toTypedArray(), albumId)
+      return@Coroutine removeAssetsFromAlbum(context, assetsId.toTypedArray(), albumId)
     }
 
     AsyncFunction("deleteAssetsAsync") Coroutine { assetsId: List<String> ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(assetsId, needsDeletePermission = true)
-      deleteAssets(context, assetsId.toTypedArray())
+      return@Coroutine deleteAssets(context, assetsId.toTypedArray())
     }
 
     AsyncFunction("getAssetInfoAsync") Coroutine { assetId: String, _: Map<String, Any?>?/* unused on android atm */ ->
       requireSystemPermissions(false)
-      getAssetInfo(context, assetId)
+      return@Coroutine getAssetInfo(context, assetId)
     }
 
     AsyncFunction("getAlbumsAsync") Coroutine { _: Map<String, Any?>?/* unused on android atm */ ->
       requireSystemPermissions(false)
-      getAlbums(context)
+      return@Coroutine getAlbums(context)
     }
 
     AsyncFunction("getAlbumAsync") Coroutine { albumName: String ->
       requireSystemPermissions(false)
-      getAlbum(context, albumName)
+      return@Coroutine getAlbum(context, albumName)
     }
 
     AsyncFunction("createAlbumAsync") Coroutine { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri? ->
@@ -153,12 +153,12 @@ class MediaLibraryModule : Module() {
 
       requestMediaLibraryActionPermission(assetIdList)
 
-      if (assetId != null) {
+      return@Coroutine if (assetId != null) {
         createAlbum(context, albumName, assetId, copyAsset)
       } else if (initialAssetUri != null) {
         createAlbumWithInitialFileUri(context, albumName, initialAssetUri)
       } else {
-        null
+        throw AlbumException("Could not create the album")
       }
     }
 
@@ -166,12 +166,12 @@ class MediaLibraryModule : Module() {
       requireSystemPermissions()
       val assetIds = getAssetsInAlbums(context, *albumIds.toTypedArray())
       requestMediaLibraryActionPermission(assetIds)
-      deleteAlbums(context, albumIds)
+      return@Coroutine deleteAlbums(context, albumIds)
     }
 
     AsyncFunction("getAssetsAsync") Coroutine { assetOptions: AssetsOptions ->
       requireSystemPermissions(false)
-      getAssets(context, assetOptions)
+      return@Coroutine getAssets(context, assetOptions)
     }
 
     AsyncFunction("migrateAlbumIfNeededAsync") Coroutine { albumId: String ->
@@ -210,15 +210,16 @@ class MediaLibraryModule : Module() {
 
       val needsToCheckPermissions = assets.map { it.assetId }
       requestMediaLibraryActionPermission(needsToCheckPermissions)
-      migrateAlbum(context, assets, albumDir.name)
+      return@Coroutine migrateAlbum(context, assets, albumDir.name)
     }
 
     AsyncFunction("albumNeedsMigrationAsync") Coroutine { albumId: String ->
       requireSystemPermissions(false)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      return@Coroutine if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         checkIfAlbumShouldBeMigrated(context, albumId)
+      } else {
+        false
       }
-      false
     }
 
     OnStartObserving {
