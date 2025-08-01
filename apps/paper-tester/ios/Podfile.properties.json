@@ -1,4 +1,5 @@
 {
   "expo.jsEngine": "hermes",
-  "newArchEnabled": "false"
+  "newArchEnabled": "false",
+  "ios.buildFromSource": "false"
 }
