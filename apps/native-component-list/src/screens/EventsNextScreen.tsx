@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { ExportExpoCalendar, ExportExpoCalendarEvent } from 'expo-calendar/next';
+import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -10,13 +10,13 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
 const EventRow: React.FunctionComponent<{
-  event: ExportExpoCalendarEvent;
-  getEvent: (event: ExportExpoCalendarEvent) => void;
-  getAttendees: (event: ExportExpoCalendarEvent) => void;
-  updateEvent: (event: ExportExpoCalendarEvent) => void;
-  deleteEvent: (event: ExportExpoCalendarEvent) => void;
-  openEventInCalendar: (event: ExportExpoCalendarEvent) => void;
-  editEventInCalendar: (event: ExportExpoCalendarEvent) => void;
+  event: ExpoCalendarEvent;
+  getEvent: (event: ExpoCalendarEvent) => void;
+  getAttendees: (event: ExpoCalendarEvent) => void;
+  updateEvent: (event: ExpoCalendarEvent) => void;
+  deleteEvent: (event: ExpoCalendarEvent) => void;
+  openEventInCalendar: (event: ExpoCalendarEvent) => void;
+  editEventInCalendar: (event: ExpoCalendarEvent) => void;
 }> = ({
   event,
   getEvent,
@@ -39,12 +39,12 @@ const EventRow: React.FunctionComponent<{
 );
 
 interface State {
-  events: ExportExpoCalendarEvent[];
-  calendar: ExportExpoCalendar | null;
+  events: ExpoCalendarEvent[];
+  calendar: ExpoCalendar | null;
 }
 
 type Links = {
-  Events: { calendar: ExportExpoCalendar };
+  Events: { calendar: ExpoCalendar };
 };
 
 type Props = StackScreenProps<Links, 'Events'>;
@@ -84,7 +84,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     const { params } = this.props.route;
     if (params) {
       const { id } = params.calendar;
-      const calendar = new ExportExpoCalendar(id);
+      const calendar = new ExpoCalendar(id);
       if (calendar) {
         this._findEvents(calendar);
         this.setState({ calendar });
@@ -92,7 +92,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   }
 
-  _findEvents = async (calendar: ExportExpoCalendar) => {
+  _findEvents = async (calendar: ExpoCalendar) => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const nextYear = new Date();
@@ -118,7 +118,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _getEvent = async (event: ExportExpoCalendarEvent) => {
+  _getEvent = async (event: ExpoCalendarEvent) => {
     try {
       const newEvent = await Calendar.getEventAsync(event.id!, {
         futureEvents: false,
@@ -130,7 +130,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _getAttendees = async (event: ExportExpoCalendarEvent) => {
+  _getAttendees = async (event: ExpoCalendarEvent) => {
     try {
       const attendees = event.getAttendees();
       Alert.alert('Attendees found using getAttendees', JSON.stringify(attendees));
@@ -139,7 +139,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _updateEvent = async (event: ExportExpoCalendarEvent) => {
+  _updateEvent = async (event: ExpoCalendarEvent) => {
     const { calendar } = this.props.route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
@@ -159,7 +159,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _deleteEvent = async (event: ExportExpoCalendarEvent) => {
+  _deleteEvent = async (event: ExpoCalendarEvent) => {
     try {
       event.delete({
         futureEvents: false,
@@ -174,7 +174,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _openEventInCalendar = async (event: ExportExpoCalendarEvent) => {
+  _openEventInCalendar = async (event: ExpoCalendarEvent) => {
     const result = await event.openInCalendarAsync({
       startNewActivityTask: false,
       allowsEditing: true,
@@ -187,7 +187,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }, 200);
   };
 
-  _editEventInCalendar = async (event: ExportExpoCalendarEvent) => {
+  _editEventInCalendar = async (event: ExpoCalendarEvent) => {
     const result = await event.editInCalendarAsync(null);
     setTimeout(() => {
       Alert.alert('editEventInCalendarAsync result', JSON.stringify(result), undefined, {

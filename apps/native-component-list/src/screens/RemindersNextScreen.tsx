@@ -1,14 +1,14 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { ExportExpoCalendar, ExportExpoCalendarReminder } from 'expo-calendar/next';
+import { ExpoCalendar, ExpoCalendarReminder } from 'expo-calendar/next';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface RowProps {
-  reminder: ExportExpoCalendarReminder;
-  getReminder: (reminder: ExportExpoCalendarReminder) => void;
-  updateReminder: (reminder: ExportExpoCalendarReminder) => void;
-  deleteReminder: (reminder: ExportExpoCalendarReminder) => void;
+  reminder: ExpoCalendarReminder;
+  getReminder: (reminder: ExpoCalendarReminder) => void;
+  updateReminder: (reminder: ExpoCalendarReminder) => void;
+  deleteReminder: (reminder: ExpoCalendarReminder) => void;
 }
 
 const ReminderRow: React.FunctionComponent<RowProps> = ({
@@ -27,12 +27,12 @@ const ReminderRow: React.FunctionComponent<RowProps> = ({
 );
 
 interface State {
-  reminders: ExportExpoCalendarReminder[];
-  calendar: ExportExpoCalendar | null;
+  reminders: ExpoCalendarReminder[];
+  calendar: ExpoCalendar | null;
 }
 
 type Links = {
-  Reminders: { calendar: ExportExpoCalendar };
+  Reminders: { calendar: ExpoCalendar };
 };
 
 type Props = StackScreenProps<Links, 'Reminders'>;
@@ -50,12 +50,12 @@ export default class RemindersScreen extends React.Component<Props, State> {
   componentDidMount() {
     const { params } = this.props.route;
     if (params) {
-      const calendar = new ExportExpoCalendar(params.calendar.id!);
+      const calendar = new ExpoCalendar(params.calendar.id!);
       this._findReminders(calendar);
     }
   }
 
-  _findReminders = async (calendar: ExportExpoCalendar) => {
+  _findReminders = async (calendar: ExpoCalendar) => {
     try {
       const reminders = await calendar.listReminders(new Date(), new Date());
       this.setState({ reminders });
@@ -99,7 +99,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
     }
   };
 
-  _updateReminder = async (reminder: ExportExpoCalendarReminder) => {
+  _updateReminder = async (reminder: ExpoCalendarReminder) => {
     const { calendar } = this.props.route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
@@ -118,7 +118,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
     }
   };
 
-  _deleteReminder = async (reminder: ExportExpoCalendarReminder) => {
+  _deleteReminder = async (reminder: ExpoCalendarReminder) => {
     try {
       const { calendar } = this.props.route.params!;
       reminder.delete();

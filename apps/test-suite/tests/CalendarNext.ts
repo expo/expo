@@ -1,8 +1,8 @@
 import * as Calendar from 'expo-calendar';
 import {
   createCalendarNext,
-  ExportExpoCalendar,
-  ExportExpoCalendarEvent,
+  ExpoCalendar,
+  ExpoCalendarEvent,
   getCalendarsNext,
   getDefaultCalendarNext,
   requestCalendarPermissionsAsync,
@@ -61,7 +61,7 @@ function createEventData(customArgs = {}) {
   };
 }
 
-function createTestEvent(calendar: ExportExpoCalendar, customArgs = {}): ExportExpoCalendarEvent {
+function createTestEvent(calendar: ExpoCalendar, customArgs = {}): ExpoCalendarEvent {
   const eventData = createEventData(customArgs);
   return calendar.createEvent(eventData);
 }
@@ -308,7 +308,7 @@ export async function test(t) {
     });
 
     t.describe('createCalendarNext()', () => {
-      let calendar: ExportExpoCalendar;
+      let calendar: ExpoCalendar;
 
       t.it('creates a calendar', async () => {
         calendar = await createTestCalendarAsync();
@@ -324,7 +324,7 @@ export async function test(t) {
     });
 
     t.describe('getCalendarsAsync()', () => {
-      let calendar: ExportExpoCalendar;
+      let calendar: ExpoCalendar;
 
       t.beforeAll(async () => {
         calendar = await createTestCalendarAsync();
@@ -368,7 +368,7 @@ export async function test(t) {
     });
 
     t.describe('Calendar.update()', () => {
-      let calendar: ExportExpoCalendar;
+      let calendar: ExpoCalendar;
 
       t.beforeAll(async () => {
         calendar = await createTestCalendarAsync();
@@ -391,7 +391,7 @@ export async function test(t) {
     });
 
     t.describe('Calendar.createEvent()', () => {
-      let calendar: ExportExpoCalendar;
+      let calendar: ExpoCalendar;
 
       t.beforeAll(async () => {
         calendar = await createTestCalendarAsync();
@@ -439,8 +439,8 @@ export async function test(t) {
     });
 
     t.describe('Calendar.listEvents()', () => {
-      let calendar: ExportExpoCalendar;
-      let event: ExportExpoCalendarEvent;
+      let calendar: ExpoCalendar;
+      let event: ExpoCalendarEvent;
 
       t.beforeEach(async () => {
         calendar = await createTestCalendarAsync();
@@ -483,8 +483,8 @@ export async function test(t) {
     // });
 
     t.describe('Event.update()', () => {
-      let calendar: ExportExpoCalendar;
-      let event: ExportExpoCalendarEvent;
+      let calendar: ExpoCalendar;
+      let event: ExpoCalendarEvent;
 
       t.beforeAll(async () => {
         calendar = await createTestCalendarAsync();
@@ -508,8 +508,8 @@ export async function test(t) {
     });
 
     t.describe('Event.delete()', () => {
-      let calendar: ExportExpoCalendar;
-      let event: ExportExpoCalendarEvent;
+      let calendar: ExpoCalendar;
+      let event: ExpoCalendarEvent;
 
       t.beforeAll(async () => {
         calendar = await createTestCalendarAsync();
@@ -535,8 +535,8 @@ export async function test(t) {
     });
 
     t.describe('Event.getAttendees()', () => {
-      let calendar: ExportExpoCalendar;
-      let event: ExportExpoCalendarEvent;
+      let calendar: ExpoCalendar;
+      let event: ExpoCalendarEvent;
 
       t.beforeAll(async () => {
         calendar = await createTestCalendarAsync();

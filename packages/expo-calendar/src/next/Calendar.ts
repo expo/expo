@@ -10,24 +10,24 @@ import {
   stringifyDateValues,
   stringifyIfDate,
 } from '../Calendar';
-import ExpoCalendar from './ExpoCalendar';
+import InternalExpoCalendar from './ExpoCalendar';
 
-export class ExportExpoCalendarAttendee extends ExpoCalendar.ExpoCalendarAttendee {}
+export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
 
-export class ExportExpoCalendarEvent extends ExpoCalendar.ExpoCalendarEvent {}
+export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {}
 
-export class ExportExpoCalendarReminder extends ExpoCalendar.ExpoCalendarReminder {}
+export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {}
 
-export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
-  override createEvent(details: Partial<Event>): ExportExpoCalendarEvent {
+export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
+  override createEvent(details: Partial<Event>): ExpoCalendarEvent {
     return super.createEvent(stringifyDateValues(details));
   }
 
-  override createReminder(details: Partial<Reminder>): ExportExpoCalendarReminder {
+  override createReminder(details: Partial<Reminder>): ExpoCalendarReminder {
     return super.createReminder(stringifyDateValues(details));
   }
 
-  override listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[] {
+  override listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[] {
     if (!startDate) {
       throw new Error('listEvents must be called with a startDate (date) to search for events');
     }
@@ -41,7 +41,7 @@ export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
     startDate: Date,
     endDate: Date,
     status?: ReminderStatus | null
-  ): Promise<ExportExpoCalendarReminder[]> {
+  ): Promise<ExpoCalendarReminder[]> {
     if (!startDate) {
       throw new Error(
         'listReminders must be called with a startDate (date) to search for reminders'
@@ -74,7 +74,7 @@ export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
         details.hasOwnProperty('allowedAvailabilities')
       ) {
         console.warn(
-          'ExportExpoCalendar.update was called with one or more read-only properties, which will not be updated'
+          'ExpoCalendar.update was called with one or more read-only properties, which will not be updated'
         );
       }
     }
@@ -84,33 +84,33 @@ export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
   }
 }
 
-export function getDefaultCalendarNext(): ExportExpoCalendar {
-  if (!ExpoCalendar.getDefaultCalendarId) {
+export function getDefaultCalendarNext(): ExpoCalendar {
+  if (!InternalExpoCalendar.getDefaultCalendarId) {
     throw new UnavailabilityError('Calendar', 'getDefaultCalendarId');
   }
-  return new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
+  return new ExpoCalendar(InternalExpoCalendar.getDefaultCalendarId());
 }
 
-export function getCalendarsNext(type?: EntityTypes): ExportExpoCalendar[] {
-  if (!ExpoCalendar.getCalendarsIds) {
+export function getCalendarsNext(type?: EntityTypes): ExpoCalendar[] {
+  if (!InternalExpoCalendar.getCalendarsIds) {
     throw new UnavailabilityError('Calendar', 'getCalendarsIds');
   }
-  return ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
+  return InternalExpoCalendar.getCalendarsIds(type).map((id) => new ExpoCalendar(id));
 }
 
-export function createCalendarNext(details: Partial<Calendar> = {}): ExportExpoCalendar {
-  if (!ExpoCalendar.createCalendarNext) {
+export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalendar {
+  if (!InternalExpoCalendar.createCalendarNext) {
     throw new UnavailabilityError('Calendar', 'createCalendarNext');
   }
   const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color: color || undefined };
-  const createdCalendar = ExpoCalendar.createCalendarNext(newDetails);
-  Object.setPrototypeOf(createdCalendar, ExportExpoCalendar.prototype);
+  const createdCalendar = InternalExpoCalendar.createCalendarNext(newDetails);
+  Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
   return createdCalendar;
 }
 
-export const requestCalendarPermissionsAsync = ExpoCalendar.requestCalendarPermissionsAsync;
-export const getCalendarPermissionsAsync = ExpoCalendar.getCalendarPermissionsAsync;
-export const requestRemindersPermissionsAsync = ExpoCalendar.requestRemindersPermissionsAsync;
-export const getRemindersPermissionsAsync = ExpoCalendar.getRemindersPermissionsAsync;
-export const getSources = ExpoCalendar.getSources;
+export const requestCalendarPermissionsAsync = InternalExpoCalendar.requestCalendarPermissionsAsync;
+export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermissionsAsync;
+export const requestRemindersPermissionsAsync = InternalExpoCalendar.requestRemindersPermissionsAsync;
+export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
+export const getSources = InternalExpoCalendar.getSources;

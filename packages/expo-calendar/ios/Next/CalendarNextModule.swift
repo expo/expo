@@ -6,7 +6,6 @@ import Foundation
 public final class CalendarNextModule: Module {
     private var permittedEntities: EKEntityMask = .event
     private var eventStore: EKEventStore {
-        // Use sharedEventStore, there were problems when accessing two different stores.
         return CalendarModule.sharedEventStore
     }
     

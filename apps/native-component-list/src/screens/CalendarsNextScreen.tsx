@@ -1,6 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { createCalendarNext, ExportExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
+import { createCalendarNext, ExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -31,15 +31,15 @@ export const CalendarsNextScreens = [
 ];
 
 type StackNavigation = StackNavigationProp<{
-  RemindersNext: { calendar: ExportExpoCalendar };
-  EventsNext: { calendar: ExportExpoCalendar };
+  RemindersNext: { calendar: ExpoCalendar };
+  EventsNext: { calendar: ExpoCalendar };
 }>;
 
 const CalendarRow = (props: {
   navigation: StackNavigation;
-  calendar: ExportExpoCalendar;
-  updateCalendar: (calendar: ExportExpoCalendar) => void;
-  deleteCalendar: (calendar: ExportExpoCalendar) => void;
+  calendar: ExpoCalendar;
+  updateCalendar: (calendar: ExpoCalendar) => void;
+  deleteCalendar: (calendar: ExpoCalendar) => void;
 }) => {
   const { calendar } = props;
   const calendarTypeName =
@@ -70,7 +70,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
-  const [calendars, setCalendars] = useState<ExportExpoCalendar[]>([]);
+  const [calendars, setCalendars] = useState<ExpoCalendar[]>([]);
 
   const findCalendars = async () => {
     const calendarGranted = (await askForCalendarPermissions()).granted;
@@ -115,7 +115,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     }
   };
 
-  const updateCalendar = async (calendar: ExportExpoCalendar) => {
+  const updateCalendar = async (calendar: ExpoCalendar) => {
     const newCalendar = {
       title: 'cool updated calendar' + new Date().toISOString(),
     };
@@ -128,7 +128,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     }
   };
 
-  const deleteCalendar = async (calendar: ExportExpoCalendar) => {
+  const deleteCalendar = async (calendar: ExpoCalendar) => {
     Alert.alert(`Are you sure you want to delete ${calendar.title}?`, 'This cannot be undone.', [
       {
         text: 'Cancel',
