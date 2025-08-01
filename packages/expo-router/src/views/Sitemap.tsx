@@ -31,6 +31,7 @@ export function getNavOptions(): NativeStackNavigationOptions {
     headerTitleStyle: {
       color: 'white',
     },
+    headerShown: true,
     headerTintColor: 'white',
     headerLargeTitleStyle: {
       color: 'white',
