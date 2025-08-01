@@ -88,7 +88,7 @@ function LinkWithPreview({ children, ...rest }) {
     const triggerElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkTrigger), [children]);
     const menuElement = react_1.default.useMemo(() => getFirstChildOfType(children, exports.LinkMenu), [children]);
     const previewElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkPreview), [children]);
-    if (previewElement && !triggerElement) {
+    if ((previewElement || menuElement) && !triggerElement) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error('When you use Link.Preview, you must use Link.Trigger to specify the trigger element.');
         }
@@ -97,17 +97,12 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>, [triggerElement, children]);
-    const actionsHandlers = react_1.default.useMemo(() => menuElement
-        ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
-        : {}, [menuElement]);
-    const preview = react_1.default.useMemo(() => previewElement ?? <LinkPreview />, [previewElement, rest.href]);
+    const preview = react_1.default.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
     }
-    return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} onActionSelected={({ nativeEvent: { id } }) => {
-            actionsHandlers[id]?.();
-        }} onWillPreviewOpen={() => {
+    return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} onWillPreviewOpen={() => {
             isPreviewTapped.current = false;
             router.prefetch(rest.href);
             setIsPreviewOpen(true);
@@ -141,19 +136,21 @@ function LinkWithPreview({ children, ...rest }) {
       </InternalLinkPreviewContext>
     </native_1.NativeLinkPreview>);
 }
-function LinkMenuAction(_) {
-    return null;
+function LinkMenuAction(props) {
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext)) {
+        return null;
+    }
+    const { unstable_keepPresented, onPress, ...rest } = props;
+    return (<native_1.NativeLinkPreviewAction {...rest} onSelected={onPress} keepPresented={unstable_keepPresented}/>);
 }
 const LinkMenu = (props) => {
     if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext)) {
         return null;
     }
-    return convertActionsToNativeElements(convertChildrenArrayToActions([(0, react_1.createElement)(exports.LinkMenu, props, props.children)]));
+    const children = react_1.default.Children.toArray(props.children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === LinkMenuAction || child.type === exports.LinkMenu));
+    return (<native_1.NativeLinkPreviewAction {...props} title={props.title ?? ''} onSelected={() => { }} children={children}/>);
 };
 exports.LinkMenu = LinkMenu;
-function convertActionsToNativeElements(actions) {
-    return actions.map(({ children, onPress, ...props }) => (<native_1.NativeLinkPreviewAction {...props} key={props.id} children={convertActionsToNativeElements(children)}/>));
-}
 function LinkPreview({ children, width, height }) {
     const internalPreviewContext = (0, react_1.use)(InternalLinkPreviewContext);
     if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !internalPreviewContext) {
@@ -191,32 +188,5 @@ function LinkTrigger(props) {
 }
 function getFirstChildOfType(children, type) {
     return react_1.default.Children.toArray(children).find((child) => (0, react_1.isValidElement)(child) && child.type === type);
-}
-function convertActionsToActionsHandlers(items) {
-    return flattenActions(items ?? []).reduce((acc, item) => ({
-        ...acc,
-        [item.id]: item.onPress,
-    }), {});
-}
-function flattenActions(actions) {
-    return actions.reduce((acc, action) => {
-        if (action.children.length > 0) {
-            return [...acc, action, ...flattenActions(action.children)];
-        }
-        return [...acc, action];
-    }, []);
-}
-function convertChildrenArrayToActions(children, parentId = '') {
-    return children
-        .filter((item) => (0, react_1.isValidElement)(item) && (item.type === LinkMenuAction || item.type === exports.LinkMenu))
-        .map((child, index) => ({
-        id: `${parentId}${child.props.title}-${index}`,
-        title: child.props.title ?? '',
-        onPress: 'onPress' in child.props ? child.props.onPress : () => { },
-        icon: child.props.icon,
-        children: 'children' in child.props
-            ? convertChildrenArrayToActions(react_1.default.Children.toArray(child.props.children), `${parentId}${child.props.title}-${index}`)
-            : [],
-    }));
 }
 //# sourceMappingURL=LinkWithPreview.js.map

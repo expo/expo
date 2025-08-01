@@ -27,7 +27,9 @@ struct CustomItems: View {
             }
             .padding()
           }
+          #if !os(tvOS)
           .background(Color(.systemBackground))
+          #endif
 
           if index < callbacks.count - 1 {
             Divider()

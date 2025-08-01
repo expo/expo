@@ -10,6 +10,8 @@ class NativeLinkPreviewContentView: ExpoView {
   }
 
   func setInitialSize(bounds: CGRect) {
+#if RCT_NEW_ARCH_ENABLED
     self.setShadowNodeSize(Float(bounds.width), height: Float(bounds.height))
+#endif
   }
 }

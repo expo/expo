@@ -2,23 +2,34 @@
 
 #import <RNScreens/RNSScreenStack.h>
 
-@interface LinkPreviewNativeNavigation: NSObject
+@interface LinkPreviewNativeNavigationObjC : NSObject
 
 /*
-* Updates the preloaded view with the given screenId and UIResponder.
-* This function will go through the responder's view hierarchy to find the screen view with the given screenId and activity state 0.
-*/
-- (void)updatePreloadedView:(NSString *)screenId withUiResponder:(UIResponder *)responder;
+ * Pushes the previously preloaded view.
+ * This function will set the activity state of the preloaded screen view to 2
+ */
++ (void)pushPreloadedView:(UIView *)view ontoStackView:(UIView *)rawStackView;
 
 /*
-* Pushes the previously preloaded view.
-* This function will set the activity state of the preloaded screen view to 2
-*/
-- (void)pushPreloadedView;
+ * Helper function to check if the view is a RNSScreenStackView. Can be used in
+ * Swift
+ */
++ (BOOL)isRNSScreenStackView:(UIView *)view;
+/*
+ * Helper function to get all screen IDs from a RNSScreenStackView.
+ */
++ (nonnull NSArray<NSString *> *)getStackViewScreenIds:(UIView *)view;
+/*
+ * Helper function to get all screen views from a RNSScreenStackView.
+ */
++ (nonnull NSArray<UIView *> *)getScreenViews:(UIView *)view;
+/*
+ * Helper function to get the screen ID of a RNSScreenView.
+ */
++ (nonnull NSString *)getScreenId:(UIView *)view;
 
 @end
 
 @protocol LinkPreviewModalDismissible <RNSDismissibleModalProtocol>
 @required
 @end
-

@@ -7,13 +7,15 @@ struct DevServerInfoModal: View {
 
   var body: some View {
     Group {
-      if showingInfoDialog {
-        Color.black.opacity(0.4)
-          .ignoresSafeArea(.all)
-          .onTapGesture {
-            showingInfoDialog = false
-          }
-        content
+      if #available(iOS 15.0, tvOS 16.0, *) {
+        if showingInfoDialog {
+          Color.black.opacity(0.4)
+            .ignoresSafeArea(.all)
+            .onTapGesture {
+              showingInfoDialog = false
+            }
+          content
+        }
       }
     }
     .animation(.easeInOut(duration: 0.3), value: showingInfoDialog)
@@ -26,7 +28,9 @@ struct DevServerInfoModal: View {
       info
     }
     .padding(20)
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
     .clipShape(RoundedRectangle(cornerRadius: 16))
     .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
     .padding(.horizontal, 40)
@@ -48,6 +52,14 @@ struct DevServerInfoModal: View {
     }
   }
 
+  #if os(tvOS)
+  let systemGray6 = Color(.systemGray)
+  let systemGray4 = Color(.systemGray)
+  #else
+  let systemGray6 = Color(.systemGray6)
+  let systemGray4 = Color(.systemGray4)
+  #endif
+
   private var info: some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Start a local development server with:")
@@ -58,11 +70,11 @@ struct DevServerInfoModal: View {
         .font(.system(.callout, design: .monospaced))
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Color(.systemGray6))
+        .background(systemGray6)
         .clipShape(RoundedRectangle(cornerRadius: 6))
         .overlay(
           RoundedRectangle(cornerRadius: 6)
-            .stroke(Color(.systemGray4), lineWidth: 1)
+            .stroke(systemGray4, lineWidth: 1)
         )
 
       Text("Then, select the local server when it appears here.")

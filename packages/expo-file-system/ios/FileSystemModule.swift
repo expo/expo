@@ -1,287 +1,302 @@
-// Copyright 2023-present 650 Industries. All rights reserved.
+// Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import Photos
 
-private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
-private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
-
+@available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
-  private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(
-    sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
-  )
-  private lazy var taskHandlersManager = EXTaskHandlersManager()
-  private lazy var resourceManager = PHAssetResourceManager()
-
-  private lazy var backgroundSession = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
-  private lazy var foregroundSession = createUrlSession(type: .foreground, delegate: sessionTaskDispatcher)
-
-  private var documentDirectory: URL? {
+  var documentDirectory: URL? {
     return appContext?.config.documentDirectory
   }
 
-  private var cacheDirectory: URL? {
+  var cacheDirectory: URL? {
     return appContext?.config.cacheDirectory
   }
 
-  // swiftlint:disable:next cyclomatic_complexity
+  var totalDiskSpace: Int64? {
+    guard let path = documentDirectory?.path,
+      let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
+      return nil
+    }
+    return attributes[.systemFreeSize] as? Int64
+  }
+
+  var availableDiskSpace: Int64? {
+    guard let path = documentDirectory?.path,
+      let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
+      return nil
+    }
+    return attributes[.systemFreeSize] as? Int64
+  }
+
   public func definition() -> ModuleDefinition {
-    Name("ExponentFileSystem")
+    Name("FileSystem")
 
     Constants {
       return [
         "documentDirectory": documentDirectory?.absoluteString,
         "cacheDirectory": cacheDirectory?.absoluteString,
-        "bundleDirectory": Bundle.main.bundlePath
+        "bundleDirectory": Bundle.main.bundlePath,
+        "appleSharedContainers": getAppleSharedContainers()
       ]
     }
 
-    Events(EVENT_DOWNLOAD_PROGRESS, EVENT_UPLOAD_PROGRESS)
-
-    AsyncFunction("getInfoAsync") { (url: URL, options: InfoOptions, promise: Promise) in
-      let optionsDict = options.toDictionary(appContext: appContext)
-      switch url.scheme {
-      case "file":
-        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      case "assets-library", "ph":
-        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      default:
-        throw UnsupportedSchemeException(url.scheme)
-      }
+    Property("totalDiskSpace") {
+      return totalDiskSpace
     }
 
-    AsyncFunction("readAsStringAsync") { (url: URL, options: ReadingOptions) -> String in
-      try ensurePathPermission(appContext, path: url.path, flag: .read)
-
-      if options.encoding == .base64 {
-        return try readFileAsBase64(path: url.path, options: options)
-      }
-      do {
-        return try String(contentsOfFile: url.path, encoding: options.encoding.toStringEncoding() ?? .utf8)
-      } catch {
-        throw FileNotReadableException(url.path)
-      }
+    Property("availableDiskSpace") {
+      return availableDiskSpace
     }
 
-    AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
-      try ensurePathPermission(appContext, path: url.path, flag: .write)
+    // swiftlint:disable:next closure_body_length
+    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptions?, promise: Promise) in
+      try to.validatePermission(.write)
 
-      if options.encoding == .base64 {
-        try writeFileAsBase64(path: url.path, string: string)
-        return
-      }
-      do {
-        try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
-      } catch {
-        throw FileNotWritableException(url.path)
-          .causedBy(error)
-      }
-    }
+      var request = URLRequest(url: url)
 
-    AsyncFunction("deleteAsync") { (url: URL, options: DeletingOptions) in
-      guard url.isFileURL else {
-        throw InvalidFileUrlException(url)
-      }
-      try ensurePathPermission(appContext, path: url.appendingPathComponent("..").path, flag: .write)
-      try removeFile(path: url.path, idempotent: options.idempotent)
-    }
-
-    AsyncFunction("moveAsync") { (options: RelocatingOptions) in
-      let (fromUrl, toUrl) = try options.asTuple()
-
-      guard fromUrl.isFileURL else {
-        throw InvalidFileUrlException(fromUrl)
-      }
-      guard toUrl.isFileURL else {
-        throw InvalidFileUrlException(toUrl)
+      if let headers = options?.headers {
+        headers.forEach { key, value in
+          request.addValue(value, forHTTPHeaderField: key)
+        }
       }
 
-      try ensurePathPermission(appContext, path: fromUrl.appendingPathComponent("..").path, flag: .write)
-      try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
-      try removeFile(path: toUrl.path, idempotent: true)
-      try FileManager.default.moveItem(atPath: fromUrl.path, toPath: toUrl.path)
-    }
+      let downloadTask = URLSession.shared.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
+        guard errorOrNil == nil else {
+          return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
+        }
+        guard let httpResponse = responseOrNil as? HTTPURLResponse else {
+          return promise.reject(UnableToDownloadException("no response"))
+        }
+        guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
+          return promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
+        }
+        guard let fileURL = urlOrNil else {
+          return promise.reject(UnableToDownloadException("no file url"))
+        }
 
-    AsyncFunction("copyAsync") { (options: RelocatingOptions, promise: Promise) in
-      let (fromUrl, toUrl) = try options.asTuple()
-
-      if isPHAsset(path: fromUrl.absoluteString) {
-        copyPHAsset(fromUrl: fromUrl, toUrl: toUrl, with: resourceManager, promise: promise)
-        return
+        do {
+          let destination: URL
+          if let to = to as? FileSystemDirectory {
+            let filename = httpResponse.suggestedFilename ?? url.lastPathComponent
+            destination = to.url.appendingPathComponent(filename)
+          } else {
+            destination = to.url
+          }
+          if FileManager.default.fileExists(atPath: destination.path) {
+            throw DestinationAlreadyExistsException()
+          }
+          try FileManager.default.moveItem(at: fileURL, to: destination)
+          // TODO: Remove .url.absoluteString once returning shared objects works
+          promise.resolve(destination.absoluteString)
+        } catch {
+          promise.reject(error)
+        }
       }
-
-      try ensurePathPermission(appContext, path: fromUrl.path, flag: .read)
-      try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
-
-      if fromUrl.scheme == "file" {
-        EXFileSystemLocalFileHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      } else if ["ph", "assets-library"].contains(fromUrl.scheme) {
-        EXFileSystemAssetLibraryHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      } else {
-        throw InvalidFileUrlException(fromUrl)
-      }
-    }
-
-    AsyncFunction("makeDirectoryAsync") { (url: URL, options: MakeDirectoryOptions) in
-      guard url.isFileURL else {
-        throw InvalidFileUrlException(url)
-      }
-
-      try ensurePathPermission(appContext, path: url.path, flag: .write)
-      try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
-    }
-
-    AsyncFunction("readDirectoryAsync") { (url: URL) -> [String] in
-      guard url.isFileURL else {
-        throw InvalidFileUrlException(url)
-      }
-      try ensurePathPermission(appContext, path: url.path, flag: .read)
-
-      return try FileManager.default.contentsOfDirectory(atPath: url.path)
-    }
-
-    AsyncFunction("downloadAsync") { (sourceUrl: URL, localUrl: URL, options: DownloadOptions, promise: Promise) in
-      try ensureFileDirectoryExists(localUrl)
-      try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
-
-      if sourceUrl.isFileURL {
-        try ensurePathPermission(appContext, path: sourceUrl.path, flag: .read)
-        EXFileSystemLocalFileHandler.copy(from: sourceUrl, to: localUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-        return
-      }
-      let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let request = createUrlRequest(url: sourceUrl, headers: options.headers)
-      let downloadTask = session.downloadTask(with: request)
-      let taskDelegate = EXSessionDownloadTaskDelegate(
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter,
-        localUrl: localUrl,
-        shouldCalculateMd5: options.md5
-      )
-
-      sessionTaskDispatcher.register(taskDelegate, for: downloadTask)
       downloadTask.resume()
     }
 
-    AsyncFunction("uploadAsync") { (targetUrl: URL, localUrl: URL, options: UploadOptions, promise: Promise) in
-      guard localUrl.isFileURL else {
-        throw InvalidFileUrlException(localUrl)
-      }
-      guard FileManager.default.fileExists(atPath: localUrl.path) else {
-        throw FileNotExistsException(localUrl.path)
-      }
-      let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let task = try createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
-      let taskDelegate = EXSessionUploadTaskDelegate(resolve: promise.resolver, reject: promise.legacyRejecter)
+    Function("info") { (url: URL) in
+      let output = PathInfo()
+      output.exists = false
+      output.isDirectory = nil
 
-      sessionTaskDispatcher.register(taskDelegate, for: task)
-      task.resume()
+      guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
+        return output
+      }
+
+      if permissionsManager.getPathPermissions(url.path).contains(.read) {
+        var isDirectory: ObjCBool = false
+        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+          output.exists = true
+          output.isDirectory = isDirectory.boolValue
+          return output
+        }
+      }
+      return output
     }
 
-    AsyncFunction("uploadTaskStartAsync") { (targetUrl: URL, localUrl: URL, uuid: String, options: UploadOptions, promise: Promise) in
-      let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let task = try createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
-      let onSend: EXUploadDelegateOnSendCallback = { [weak self] _, _, totalBytesSent, totalBytesExpectedToSend in
-        self?.sendEvent(EVENT_UPLOAD_PROGRESS, [
-          "uuid": uuid,
-          "data": [
-            "totalBytesSent": totalBytesSent,
-            "totalBytesExpectedToSend": totalBytesExpectedToSend
-          ]
-        ])
+    // swiftlint:disable:next closure_body_length
+    Class(FileSystemFile.self) {
+      Constructor { (url: URL) in
+        return FileSystemFile(url: url.standardizedFileURL)
       }
-      let taskDelegate = EXSessionCancelableUploadTaskDelegate(
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter,
-        onSendCallback: onSend,
-        resumableManager: taskHandlersManager,
-        uuid: uuid
-      )
 
-      sessionTaskDispatcher.register(taskDelegate, for: task)
-      taskHandlersManager.register(task, uuid: uuid)
-      task.resume()
+      // we can't throw in a constructor, so this is a workaround
+      Function("validatePath") { file in
+        try file.validatePath()
+      }
+
+      // maybe asString, readAsString, readAsText, readText, ect.
+      AsyncFunction("text") { file in
+        return try file.text()
+      }
+
+      Function("textSync") { file in
+        return try file.text()
+      }
+
+      AsyncFunction("base64") { file in
+        return try file.base64()
+      }
+
+      Function("base64Sync") { file in
+        return try file.base64()
+      }
+
+      AsyncFunction("bytes") { file in
+        return try file.bytes()
+      }
+
+      Function("bytesSync") { file in
+        return try file.bytes()
+      }
+
+      Function("open") { file in
+        return try FileSystemFileHandle(file: file)
+      }
+
+      Function("info") { (file: FileSystemFile, options: InfoOptions?) in
+        return try file.info(options: options ?? InfoOptions())
+      }
+
+      Function("write") { (file, content: Either<String, TypedArray>) in
+        if let content: String = content.get() {
+          try file.write(content)
+        }
+        if let content: TypedArray = content.get() {
+          try file.write(content)
+        }
+      }
+
+      Property("size") { file in
+        try? file.size
+      }
+
+      Property("md5") { file in
+        try? file.md5
+      }
+
+      Property("modificationTime") { file in
+        try? file.modificationTime
+      }
+
+      Property("creationTime") { file in
+        try? file.creationTime
+      }
+
+      Property("type") { file in
+        file.type
+      }
+
+      Function("delete") { file in
+        try file.delete()
+      }
+
+      Property("exists") { file in
+        return file.exists
+      }
+
+      Function("create") { (file, options: CreateOptions?) in
+        try file.create(options ?? CreateOptions())
+      }
+
+      Function("copy") { (file, to: FileSystemPath) in
+        try file.copy(to: to)
+      }
+
+      Function("move") { (file, to: FileSystemPath) in
+        try file.move(to: to)
+      }
+
+      Property("uri") { file in
+        return file.url.absoluteString
+      }
     }
 
-    // swiftlint:disable:next line_length closure_body_length
-    AsyncFunction("downloadResumableStartAsync") { (sourceUrl: URL, localUrl: URL, uuid: String, options: DownloadOptions, resumeDataString: String?, promise: Promise) in
-      try ensureFileDirectoryExists(localUrl)
-      try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
-
-      let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let onWrite: EXDownloadDelegateOnWriteCallback = { [weak self] _, _, totalBytesWritten, totalBytesExpectedToWrite in
-        self?.sendEvent(EVENT_DOWNLOAD_PROGRESS, [
-          "uuid": uuid,
-          "data": [
-            "totalBytesWritten": totalBytesWritten,
-            "totalBytesExpectedToWrite": totalBytesExpectedToWrite
-          ]
-        ])
-      }
-      let task: URLSessionDownloadTask
-
-      if let resumeDataString, let resumeData = Data(base64Encoded: resumeDataString) {
-        task = session.downloadTask(withResumeData: resumeData)
-      } else {
-        let request = createUrlRequest(url: sourceUrl, headers: options.headers)
-        task = session.downloadTask(with: request)
+    Class(FileSystemFileHandle.self) {
+      Function("readBytes") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
       }
 
-      let taskDelegate = EXSessionResumableDownloadTaskDelegate(
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter,
-        localUrl: localUrl,
-        shouldCalculateMd5: options.md5,
-        onWriteCallback: onWrite,
-        resumableManager: taskHandlersManager,
-        uuid: uuid
-      )
+      Function("writeBytes") { (fileHandle, bytes: Data) in
+        try fileHandle.write(bytes)
+      }
 
-      sessionTaskDispatcher.register(taskDelegate, for: task)
-      taskHandlersManager.register(task, uuid: uuid)
-      task.resume()
+      Function("close") { fileHandle in
+        try fileHandle.close()
+      }
+
+      Property("offset") { fileHandle in
+        fileHandle.offset
+      }.set { (fileHandle, volume: UInt64) in
+        fileHandle.offset = volume
+      }
+
+      Property("size") { fileHandle in
+        fileHandle.size
+      }
     }
 
-    AsyncFunction("downloadResumablePauseAsync") { (id: String) -> [String: String?] in
-      guard let task = taskHandlersManager.downloadTask(forId: id) else {
-        throw DownloadTaskNotFoundException(id)
+    // swiftlint:disable:next closure_body_length
+    Class(FileSystemDirectory.self) {
+      Constructor { (url: URL) in
+        return FileSystemDirectory(url: url.standardizedFileURL)
       }
-      let resumeData = await task.cancelByProducingResumeData()
 
-      return [
-        "resumeData": resumeData?.base64EncodedString()
-      ]
-    }
-
-    AsyncFunction("networkTaskCancelAsync") { (id: String) in
-      taskHandlersManager.task(forId: id)?.cancel()
-    }
-
-    AsyncFunction("getFreeDiskStorageAsync") { () -> Int64 in
-    // Uses required reason API based on the following reason: E174.1 85F4.1
-#if !os(tvOS)
-      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityForImportantUsageKey])
-      guard let availableCapacity = resourceValues?.volumeAvailableCapacityForImportantUsage else {
-        throw CannotDetermineDiskCapacity()
+      Function("info") { directory in
+        try directory.info()
       }
-      return availableCapacity
-#else
-      let resourceValues = try getResourceValues(from: cacheDirectory, forKeys: [.volumeAvailableCapacityKey])
-      guard let availableCapacity = resourceValues?.volumeAvailableCapacity else {
-        throw CannotDetermineDiskCapacity()
-      }
-      return Int64(availableCapacity)
-#endif
-    }
 
-    AsyncFunction("getTotalDiskCapacityAsync") { () -> Int in
-        // Uses required reason API based on the following reason: E174.1 85F4.1
-      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeTotalCapacityKey])
-
-      guard let totalCapacity = resourceValues?.volumeTotalCapacity else {
-        throw CannotDetermineDiskCapacity()
+      // we can't throw in a constructor, so this is a workaround
+      Function("validatePath") { directory in
+        try directory.validatePath()
       }
-      return totalCapacity
+
+      Function("delete") { directory in
+        try directory.delete()
+      }
+
+      Property("exists") { directory in
+        return directory.exists
+      }
+
+      Function("create") { (directory, options: CreateOptions?) in
+        try directory.create(options ?? CreateOptions())
+      }
+
+      Function("copy") { (directory, to: FileSystemPath) in
+        try directory.copy(to: to)
+      }
+
+      Function("move") { (directory, to: FileSystemPath) in
+        try directory.move(to: to)
+      }
+
+      // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+      Function("listAsRecords") { directory in
+        try directory.listAsRecords()
+      }
+
+      Property("uri") { directory in
+        return directory.url.absoluteString
+      }
+
+      Property("size") { directory in
+        return try? directory.size
+      }
     }
+  }
+
+  private func getAppleSharedContainers() -> [String: String] {
+    guard let appContext else {
+      return [:]
+    }
+    var result: [String: String] = [:]
+    for appGroup in appContext.appCodeSignEntitlements.appGroups ?? [] {
+      if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+        result[appGroup] = directory.standardizedFileURL.path
+      }
+    }
+    return result
   }
 }

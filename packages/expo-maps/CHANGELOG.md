@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add `contentPadding` property to the `GoogleMaps.View` component on Android. ([#38382](https://github.com/expo/expo/pull/38382) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add anchor and zIndex support to GoogleMapsView markers. ([#38357](https://github.com/expo/expo/pull/38357) by [@shollington-rbi](https://github.com/shollington-rbi))
+
 ### 🐛 Bug fixes
 
 - Fix onMapClick and onMapLongClick nesting. ([#37059](https://github.com/expo/expo/pull/37059) by [@jakex7](https://github.com/jakex7))
