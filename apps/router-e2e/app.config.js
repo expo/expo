@@ -55,7 +55,6 @@ module.exports = {
         },
       },
     ],
-
     [
       'expo-router',
       {
