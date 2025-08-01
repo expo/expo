@@ -1,5 +1,10 @@
 import * as Calendar from 'expo-calendar';
-import { createCalendarNext, ExportExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
+import {
+  createCalendarNext,
+  ExportExpoCalendar,
+  ExportExpoCalendarEvent,
+  getCalendarsNext,
+} from 'expo-calendar/next';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
@@ -9,7 +14,7 @@ import * as TestUtils from '../TestUtils';
 export const name = 'Calendar@next';
 
 async function createTestCalendarAsync(patch = {}) {
-    return createCalendarNext({
+  return createCalendarNext({
     title: 'Expo test-suite calendar',
     color: '#4B968A',
     entityType: Calendar.EntityTypes.EVENT,
@@ -52,9 +57,9 @@ function createEventData(customArgs = {}) {
   };
 }
 
-async function createTestEventAsync(calendarId, customArgs) {
+function createTestEvent(calendar: ExportExpoCalendar, customArgs = {}): ExportExpoCalendarEvent {
   const eventData = createEventData(customArgs);
-  return await Calendar.createEventAsync(calendarId, eventData);
+  return calendar.createEvent(eventData);
 }
 
 async function createTestAttendeeAsync(eventId) {
@@ -349,15 +354,15 @@ export async function test(t) {
       });
     });
 
-    // t.describe('deleteCalendarAsync()', () => {
-    //   t.it('deletes a calendar', async () => {
-    //     const calendarId = await createTestCalendarAsync();
-    //     await Calendar.deleteCalendarAsync(calendarId);
+    t.describe('deleteCalendarAsync()', () => {
+      t.it('deletes a calendar', async () => {
+        const calendar = await createTestCalendarAsync();
+        calendar.delete();
 
-    //     const calendars = await Calendar.getCalendarsAsync();
-    //     t.expect(calendars.findIndex((calendar) => calendar.id === calendarId)).toBe(-1);
-    //   });
-    // });
+        const calendars = getCalendarsNext();
+        t.expect(calendars.findIndex((c) => c.id === calendar.id)).toBe(-1);
+      });
+    });
 
     // t.describe('updateCalendarAsync()', () => {
     //   let calendarId;
@@ -382,49 +387,55 @@ export async function test(t) {
     //   });
     // });
 
-    // t.describe('createEventAsync()', () => {
-    //   let calendarId;
+    t.describe('Calendar.createEvent()', () => {
+      let calendar: ExportExpoCalendar;
 
-    //   t.beforeAll(async () => {
-    //     calendarId = await createTestCalendarAsync();
-    //   });
+      t.beforeAll(async () => {
+        calendar = await createTestCalendarAsync();
+      });
 
-    //   t.it('creates an event in the specific calendar', async () => {
-    //     const eventId = await createTestEventAsync(calendarId);
+      t.it('creates an event in the specific calendar', async () => {
+        const event = await createTestEvent(calendar);
 
-    //     t.expect(eventId).toBeDefined();
-    //     t.expect(typeof eventId).toBe('string');
-    //   });
+        t.expect(event).toBeDefined();
+        t.expect(typeof event.id).toBe('string');
+      });
 
-    //   t.it('creates an event with the recurrence rule', async () => {
-    //     const eventId = await createTestEventAsync(calendarId, {
-    //       recurrenceRule: {
-    //         endDate: new Date(2019, 3, 5).getTime(),
-    //         frequency: 'daily',
-    //         interval: 1,
-    //       },
-    //     });
+      t.it('creates an event with the recurrence rule', async () => {
+        const recurrenceRule = {
+          endDate: new Date(2019, 3, 5).getTime(),
+          frequency: 'daily',
+          interval: 1,
+        };
+        const event = await createTestEvent(calendar, {
+          recurrenceRule,
+        });
 
-    //     t.expect(eventId).toBeDefined();
-    //     t.expect(typeof eventId).toBe('string');
-    //   });
+        console.log('re', event.recurrenceRule, recurrenceRule);
 
-    //   if (Platform.OS === 'ios') {
-    //     t.it('rejects when time zone is invalid', async () => {
-    //       let error;
-    //       try {
-    //         await createTestEventAsync(calendarId, { timeZone: '' });
-    //       } catch (e) {
-    //         error = e;
-    //       }
-    //       t.expect(error).toBeDefined();
-    //     });
-    //   }
+        t.expect(event).toBeDefined();
+        t.expect(typeof event.id).toBe('string');
+        t.expect(event.recurrenceRule).not.toBeNull();
+        t.expect(event.recurrenceRule.frequency).toEqual(recurrenceRule.frequency);
+        t.expect(event.recurrenceRule.interval).toEqual(recurrenceRule.interval);
+      });
 
-    //   t.afterAll(async () => {
-    //     await Calendar.deleteCalendarAsync(calendarId);
-    //   });
-    // });
+      if (Platform.OS === 'ios') {
+        t.it('rejects when time zone is invalid', async () => {
+          let error;
+          try {
+            await createTestEvent(calendar, { timeZone: '' });
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error).toBeDefined();
+        });
+      }
+
+      t.afterAll(async () => {
+        calendar.delete();
+      });
+    });
 
     // t.describe('getEventsAsync()', () => {
     //   let calendarId, eventId;

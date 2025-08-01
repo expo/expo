@@ -165,13 +165,16 @@ public final class CalendarNextModule: Module {
             }
 
             Function("createEvent") {
-                (calendar: CustomExpoCalendar, eventRecord: Event, options: RecurringEventOptions?)
+                (expoCalendar: CustomExpoCalendar, eventRecord: Event, options: RecurringEventOptions?)
                     -> CustomExpoCalendarEvent in
                 try checkCalendarPermissions()
+                
+                guard let calendar = expoCalendar.calendar else {
+                    throw CalendarNoLongerExistsException()
+                }
 
-                let expoCalendarEvent = try CustomExpoCalendarEvent(eventRecord: eventRecord)
+                let expoCalendarEvent = try CustomExpoCalendarEvent(calendar: calendar, eventRecord: eventRecord)
 
-                // TODO: Maybe not needed?
                 try expoCalendarEvent.initialize(eventRecord: eventRecord)
 
                 let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent

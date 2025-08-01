@@ -24,8 +24,14 @@ internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
             throw CalendarIdNotFoundException(calendarId)
         }
         
+        try self.init(calendar: calendar, eventRecord: eventRecord)
+    }
+
+    convenience init(calendar: EKCalendar, eventRecord: Event) throws {
+        let sharedEventStore = CalendarModule.sharedEventStore
+        
         if calendar.allowedEntityTypes.isDisjoint(with: [.event]) {
-            throw InvalidCalendarTypeException((calendarId, "event"))
+            throw InvalidCalendarTypeException((calendar.calendarIdentifier, "event"))
         }
         
         let calendarEvent = EKEvent(eventStore: sharedEventStore)
