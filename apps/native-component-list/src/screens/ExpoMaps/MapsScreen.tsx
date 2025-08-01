@@ -125,6 +125,14 @@ export const MapsScreens = Platform.select({
         return optionalRequire(() => require('./google/MapsMapStyleOptionsScreen'));
       },
     },
+    {
+      name: 'Maps map ID',
+      route: 'expo-maps/map-id',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsMapIdScreen'));
+      },
+    },
   ],
   ios: [
     {
