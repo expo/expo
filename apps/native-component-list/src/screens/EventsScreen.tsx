@@ -228,6 +228,9 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   render() {
+    if (!this.props.route.params?.calendar) {
+      return <Text>Access this screen from the "Calendars" screen.</Text>;
+    }
     const events = this.state.events.length ? (
       <View>
         {this.state.events.map((event) => (
