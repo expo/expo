@@ -100,7 +100,7 @@ export declare class CustomExpoCalendarEvent {
 
   update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
 
-  delete(recurringEventOptions?: RecurringEventOptions): void;
+  delete(recurringEventOptions: RecurringEventOptions): void; // TODO: Support skipping this param instead of passing null, change needed in the core
 }
 
 export declare class CustomExpoCalendarReminder {

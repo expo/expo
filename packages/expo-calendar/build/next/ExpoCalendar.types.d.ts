@@ -52,7 +52,7 @@ export declare class CustomExpoCalendarEvent {
     editInCalendarAsync(params: CalendarDialogParamsNext | null): Promise<DialogEventResult>;
     getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
     update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
-    delete(recurringEventOptions?: RecurringEventOptions): void;
+    delete(recurringEventOptions: RecurringEventOptions): void;
 }
 export declare class CustomExpoCalendarReminder {
     id?: string;

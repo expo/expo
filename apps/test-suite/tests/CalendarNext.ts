@@ -507,31 +507,32 @@ export async function test(t) {
     //   });
     // });
 
-    // t.describe('deleteEventAsync()', () => {
-    //   let calendarId, eventId;
+    t.describe('Event.delete()', () => {
+      let calendar: ExportExpoCalendar;
+      let event: ExportExpoCalendarEvent;
 
-    //   t.beforeAll(async () => {
-    //     calendarId = await createTestCalendarAsync();
-    //     eventId = await createTestEventAsync(calendarId);
-    //   });
+      t.beforeAll(async () => {
+        calendar = await createTestCalendarAsync();
+        event = await createTestEvent(calendar);
+      });
 
-    //   t.it('deletes an event', async () => {
-    //     await Calendar.deleteEventAsync(eventId);
-    //     let error;
+      t.it('deletes an event', async () => {
+        event.delete({});
+        let error;
 
-    //     try {
-    //       await Calendar.getEventAsync(eventId);
-    //     } catch (e) {
-    //       error = e;
-    //     }
-    //     t.expect(error).toBeDefined();
-    //     t.expect(error instanceof Error).toBe(true);
-    //   });
+        try {
+          await Calendar.getEventAsync(event.id);
+        } catch (e) {
+          error = e;
+        }
+        t.expect(error).toBeDefined();
+        t.expect(error instanceof Error).toBe(true);
+      });
 
-    //   t.afterAll(async () => {
-    //     await Calendar.deleteCalendarAsync(calendarId);
-    //   });
-    // });
+      t.afterAll(async () => {
+        calendar.delete();
+      });
+    });
 
     // if (Platform.OS === 'android') {
     //   t.describe('createAttendeeAsync()', () => {
