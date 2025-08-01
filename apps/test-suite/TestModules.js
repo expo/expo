@@ -78,6 +78,10 @@ export function getTestModules() {
     modules.push(require('./tests/FileSystem'));
   }
 
+  if (Platform.OS === 'ios') {
+    modules.push(require('./tests/CalendarNext'));
+  }
+
   if (Platform.OS === 'android') {
     modules.push(require('./tests/Hermes'));
   }
