@@ -1,14 +1,14 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import { stringifyDateValues, stringifyIfDate, } from '../Calendar';
-import ExpoCalendar from './ExpoCalendar';
-export class ExportExpoCalendarAttendee extends ExpoCalendar.ExpoCalendarAttendee {
+import InternalExpoCalendar from './ExpoCalendar';
+export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
-export class ExportExpoCalendarEvent extends ExpoCalendar.ExpoCalendarEvent {
+export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 }
-export class ExportExpoCalendarReminder extends ExpoCalendar.ExpoCalendarReminder {
+export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
 }
-export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
+export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details) {
         return super.createEvent(stringifyDateValues(details));
     }
@@ -45,7 +45,7 @@ export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
                 details.hasOwnProperty('entityType') ||
                 details.hasOwnProperty('allowsModifications') ||
                 details.hasOwnProperty('allowedAvailabilities')) {
-                console.warn('ExportExpoCalendar.update was called with one or more read-only properties, which will not be updated');
+                console.warn('ExpoCalendar.update was called with one or more read-only properties, which will not be updated');
             }
         }
         const newDetails = { ...details, color };
@@ -53,30 +53,36 @@ export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
     }
 }
 export function getDefaultCalendarNext() {
-    if (!ExpoCalendar.getDefaultCalendarId) {
+    if (!InternalExpoCalendar.getDefaultCalendarId) {
         throw new UnavailabilityError('Calendar', 'getDefaultCalendarId');
     }
-    return new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
+    return new ExpoCalendar(InternalExpoCalendar.getDefaultCalendarId());
 }
 export function getCalendarsNext(type) {
-    if (!ExpoCalendar.getCalendarsIds) {
+    if (!InternalExpoCalendar.getCalendarsIds) {
         throw new UnavailabilityError('Calendar', 'getCalendarsIds');
     }
-    return ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
+    return InternalExpoCalendar.getCalendarsIds(type).map((id) => new ExpoCalendar(id));
 }
 export function createCalendarNext(details = {}) {
-    if (!ExpoCalendar.createCalendarNext) {
+    if (!InternalExpoCalendar.createCalendarNext) {
         throw new UnavailabilityError('Calendar', 'createCalendarNext');
     }
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, id: undefined, color: color || undefined };
-    const createdCalendar = ExpoCalendar.createCalendarNext(newDetails);
-    Object.setPrototypeOf(createdCalendar, ExportExpoCalendar.prototype);
+    const createdCalendar = InternalExpoCalendar.createCalendarNext(newDetails);
+    Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
     return createdCalendar;
 }
-export const requestCalendarPermissionsAsync = ExpoCalendar.requestCalendarPermissionsAsync;
-export const getCalendarPermissionsAsync = ExpoCalendar.getCalendarPermissionsAsync;
-export const requestRemindersPermissionsAsync = ExpoCalendar.requestRemindersPermissionsAsync;
-export const getRemindersPermissionsAsync = ExpoCalendar.getRemindersPermissionsAsync;
-export const getSources = ExpoCalendar.getSources;
+export function listEvents(calendarIds, startDate, endDate) {
+    if (!InternalExpoCalendar.listEvents) {
+        throw new UnavailabilityError('Calendar', 'listEvents');
+    }
+    return InternalExpoCalendar.listEvents(calendarIds, stringifyIfDate(startDate), stringifyIfDate(endDate));
+}
+export const requestCalendarPermissionsAsync = InternalExpoCalendar.requestCalendarPermissionsAsync;
+export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermissionsAsync;
+export const requestRemindersPermissionsAsync = InternalExpoCalendar.requestRemindersPermissionsAsync;
+export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
+export const getSources = InternalExpoCalendar.getSources;
 //# sourceMappingURL=Calendar.js.map
