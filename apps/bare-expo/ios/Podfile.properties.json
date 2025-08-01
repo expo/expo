@@ -1,5 +1,6 @@
 {
   "expo.jsEngine": "hermes",
   "newArchEnabled": "true",
-  "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true"
+  "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+  "ios.buildFromSource": "false"
 }
