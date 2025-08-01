@@ -1,6 +1,10 @@
 import './install';
 
-import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
+import type {
+  ExpoRoutesManifestV1,
+  MiddlewareInfo,
+  RouteInfo,
+} from 'expo-router/build/routes-manifest';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -17,6 +21,7 @@ function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
 
   const parsed: ExpoRoutesManifestV1<RegExp> = {
     ...routesManifest,
+    middleware: routesManifest.middleware,
     notFoundRoutes: routesManifest.notFoundRoutes.map((value: any) => {
       return { ...value, namedRegex: new RegExp(value.namedRegex) };
     }),
@@ -66,18 +71,15 @@ export function createRequestHandler(
     },
     getApiRoute = async (route) => {
       const filePath = path.join(distFolder, route.file);
-
       debug(`Handling API route: ${route.page}: ${filePath}`);
 
-      // TODO: What's the standard behavior for malformed projects?
-      if (!fs.existsSync(filePath)) {
-        return null;
-      }
+      return loadServerModule(filePath);
+    },
+    getMiddleware = async (middleware) => {
+      const filePath = path.join(distFolder, middleware.file);
+      debug(`Loading middleware: ${middleware.file}: ${filePath}`);
 
-      if (/\.c?js$/.test(filePath)) {
-        return require(filePath);
-      }
-      return import(filePath);
+      return loadServerModule(filePath);
     },
     logApiRouteExecutionError = (error: Error) => {
       console.error(error);
@@ -98,6 +100,7 @@ export function createRequestHandler(
     getHtml?: (request: Request, route: RouteInfo<RegExp>) => Promise<string | Response | null>;
     getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
     getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
+    getMiddleware?: (route: MiddlewareInfo) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;
     handleApiRouteError?: (error: Error) => Promise<Response>;
   } = {}
@@ -125,6 +128,25 @@ export function createRequestHandler(
     let sanitizedPathname = url.pathname;
 
     debug('Request', sanitizedPathname);
+
+    // Execute middleware first, before any route matching
+    if (routesManifest.middleware) {
+      try {
+        const middlewareModule = await getMiddleware(routesManifest.middleware);
+        if (middlewareModule?.default) {
+          const middlewareResponse = await middlewareModule.default(request);
+          if (middlewareResponse instanceof Response) {
+            debug('Middleware returned response, short-circuiting');
+            return middlewareResponse;
+          }
+          // If middleware returns undefined/void, continue to route matching
+        }
+      } catch (error) {
+        debug('Middleware execution error:', error);
+
+        return handleApiRouteError(error as Error);
+      }
+    }
 
     if (routesManifest.redirects) {
       for (const route of routesManifest.redirects) {
@@ -313,4 +335,16 @@ function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) 
   }
 
   return location;
+}
+
+function loadServerModule(filePath: string) {
+  // TODO: What's the standard behavior for malformed projects?
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  if (/\.c?js$/.test(filePath)) {
+    return require(filePath);
+  }
+  return import(filePath);
 }

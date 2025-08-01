@@ -16,6 +16,7 @@ function getProcessedManifest(path) {
     const routesManifest = JSON.parse(node_fs_1.default.readFileSync(path, 'utf-8'));
     const parsed = {
         ...routesManifest,
+        middleware: routesManifest.middleware,
         notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
             return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
@@ -56,14 +57,11 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
 }, getApiRoute = async (route) => {
     const filePath = node_path_1.default.join(distFolder, route.file);
     debug(`Handling API route: ${route.page}: ${filePath}`);
-    // TODO: What's the standard behavior for malformed projects?
-    if (!node_fs_1.default.existsSync(filePath)) {
-        return null;
-    }
-    if (/\.c?js$/.test(filePath)) {
-        return require(filePath);
-    }
-    return import(filePath);
+    return loadServerModule(filePath);
+}, getMiddleware = async (middleware) => {
+    const filePath = node_path_1.default.join(distFolder, middleware.file);
+    debug(`Loading middleware: ${middleware.file}: ${filePath}`);
+    return loadServerModule(filePath);
 }, logApiRouteExecutionError = (error) => {
     console.error(error);
 }, handleApiRouteError = async (error) => {
@@ -99,6 +97,24 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         const url = new URL(request.url, 'http://expo.dev');
         let sanitizedPathname = url.pathname;
         debug('Request', sanitizedPathname);
+        // Execute middleware first, before any route matching
+        if (routesManifest.middleware) {
+            try {
+                const middlewareModule = await getMiddleware(routesManifest.middleware);
+                if (middlewareModule?.default) {
+                    const middlewareResponse = await middlewareModule.default(request);
+                    if (middlewareResponse instanceof Response) {
+                        debug('Middleware returned response, short-circuiting');
+                        return middlewareResponse;
+                    }
+                    // If middleware returns undefined/void, continue to route matching
+                }
+            }
+            catch (error) {
+                debug('Middleware execution error:', error);
+                return handleApiRouteError(error);
+            }
+        }
         if (routesManifest.redirects) {
             for (const route of routesManifest.redirects) {
                 if (!route.namedRegex.test(sanitizedPathname)) {
@@ -255,5 +271,15 @@ function getRedirectRewriteLocation(request, route) {
                 }).toString();
     }
     return location;
+}
+function loadServerModule(filePath) {
+    // TODO: What's the standard behavior for malformed projects?
+    if (!node_fs_1.default.existsSync(filePath)) {
+        return null;
+    }
+    if (/\.c?js$/.test(filePath)) {
+        return require(filePath);
+    }
+    return import(filePath);
 }
 //# sourceMappingURL=index.js.map

@@ -242,6 +242,10 @@ export async function getPageHtml(output: string, route: string) {
   return htmlParser.parse(await getPage(output, route));
 }
 
+export function getHtml(html: string) {
+  return htmlParser.parse(html);
+}
+
 export function getRouterE2ERoot(): string {
   return path.join(__dirname, '../../../../../apps/router-e2e');
 }

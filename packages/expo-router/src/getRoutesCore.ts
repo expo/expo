@@ -1,4 +1,4 @@
-import type { DynamicConvention, RouteNode } from './Route';
+import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -79,6 +79,7 @@ const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
  *      - If multiple routes have the same name, the most specific route is used
  */
 export function getRoutes(contextModule: RequireContext, options: Options): RouteNode | null {
+  const middleware = getMiddleware(contextModule, options);
   const directoryTree = getDirectoryTree(contextModule, options);
 
   // If there are no routes
@@ -88,11 +89,70 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
 
   const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
 
+  if (middleware) {
+    rootNode.middleware = middleware;
+  }
+
   if (!options.ignoreEntryPoints) {
     crawlAndAppendInitialRoutesAndEntryFiles(rootNode, options);
   }
 
   return rootNode;
+}
+
+/**
+ * Given a RequireContext, return the middleware node if one is found. If more than one middleware file is found, an error is thrown.
+ */
+function getMiddleware(contextModule: RequireContext, options: Options): MiddlewareNode | null {
+  const contextKeys = contextModule.keys();
+
+  // First check for middleware files and validate they're only at root level
+  const allMiddlewareFiles = contextKeys.filter((key) => key.includes('+middleware'));
+  const nonRootMiddleware = allMiddlewareFiles.filter((file) => !file.startsWith('./+middleware'));
+  if (nonRootMiddleware.length > 0) {
+    throw new Error(
+      `The middleware file can only be placed at the root level. Remove the following files: ${nonRootMiddleware.join(', ')}`
+    );
+  }
+
+  // Next, check for duplicate root-level +middleware files with different extensions (e.g. `./+middleware.tsx`, `./+middleware.js`)
+  const rootMiddlewareFiles = contextKeys.filter((key) => /^\.\/\+middleware\.[tj]sx?$/.test(key));
+
+  if (rootMiddlewareFiles.length === 0) {
+    return null;
+  }
+
+  // In development, throw an error if there are multiple root-level middleware files
+  if (rootMiddlewareFiles.length > 1) {
+    if (process.env.NODE_ENV !== 'production') {
+      throw new Error(
+        `Only one middleware file is allowed. Keep one of the conflicting files: ${rootMiddlewareFiles.map((p) => `"${p}"`).join(' or ')}`
+      );
+    }
+  }
+
+  const middlewareFilePath = rootMiddlewareFiles[0];
+
+  const middleware: MiddlewareNode = {
+    loadRoute() {
+      if (options.ignoreRequireErrors) {
+        try {
+          return contextModule(middlewareFilePath);
+        } catch {
+          return {};
+        }
+      } else {
+        return contextModule(middlewareFilePath);
+      }
+    },
+    contextKey: middlewareFilePath,
+  };
+
+  if (options.internal_stripLoadRoute) {
+    delete (middleware as any).loadRoute;
+  }
+
+  return middleware;
 }
 
 /**
@@ -109,6 +169,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   if (!options.preserveApiRoutes) {
     ignoreList.push(/\+api$/, /\+api\.[tj]sx?$/);
   }
+
+  // Always ignore middleware files in regular route processing
+  ignoreList.push(/\+middleware$/, /\+middleware\.[tj]sx?$/);
 
   const rootDirectory: DirectoryNode = {
     files: new Map(),
