@@ -22,7 +22,7 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk54-0.80.1",
+          "key": "sdk54-0.81.0-rc.3",
           "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "latest",
@@ -70,7 +70,7 @@
         "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
-      },
+      }
     },
     "release-client": {
       "extends": "versioned-client",
