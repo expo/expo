@@ -1,7 +1,7 @@
 import type { JSXElementConstructor, ReactNode } from 'react';
 import React from 'react';
 
-import type { NativeTabOptions } from './NativeTabsView';
+import type { NativeTabOptions } from './types';
 
 export function filterAllowedChildrenElements<Components extends JSXElementConstructor<any>[]>(
   children: ReactNode | ReactNode[],

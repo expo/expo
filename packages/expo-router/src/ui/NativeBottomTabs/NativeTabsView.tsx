@@ -1,100 +1,13 @@
-import {
-  DefaultRouterOptions,
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
 import React from 'react';
-import { type ColorValue, type TextStyle } from 'react-native';
-import {
-  BottomTabs,
-  BottomTabsScreen,
-  enableFreeze,
-  featureFlags,
-  type BottomTabsProps,
-  type BottomTabsScreenProps,
-  type TabBarItemLabelVisibilityMode,
-} from 'react-native-screens';
+import { BottomTabs, BottomTabsScreen, enableFreeze, featureFlags } from 'react-native-screens';
 
+import type { NativeTabsViewProps } from './types';
 import { shouldTabBeVisible } from './utils';
 import { getPathFromState } from '../../link/linking';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 featureFlags.experiment.controlledBottomTabs = false;
-
-export type NativeTabOptions = Omit<
-  BottomTabsScreenProps,
-  | 'children'
-  | 'placeholder'
-  | 'onWillAppear'
-  | 'onDidAppear'
-  | 'onWillDisappear'
-  | 'onDidDisappear'
-  | 'isFocused'
-  | 'tabKey'
-> &
-  DefaultRouterOptions & { hidden?: boolean };
-
-export interface NativeTabsViewProps {
-  style?: {
-    fontFamily?: TextStyle['fontFamily'];
-    fontSize?: TextStyle['fontSize'];
-    fontWeight?: TextStyle['fontWeight'];
-    fontStyle?: TextStyle['fontStyle'];
-    color?: TextStyle['color'];
-    iconColor?: ColorValue;
-    backgroundColor?: ColorValue;
-    blurEffect?: BottomTabsScreenProps['tabBarBlurEffect'];
-    tintColor?: ColorValue;
-    badgeBackgroundColor?: ColorValue;
-    /**
-     * @platform android
-     */
-    rippleColor?: ColorValue;
-    /**
-     * @platform android
-     */
-    labelVisibilityMode?: TabBarItemLabelVisibilityMode;
-    '&:active'?: {
-      /**
-       * @platform android
-       */
-      color?: ColorValue;
-      /**
-       * @platform android
-       */
-      fontSize?: TextStyle['fontSize'];
-      /**
-       * @platform android
-       */
-      iconColor?: ColorValue;
-      /**
-       * @platform android
-       */
-      indicatorColor?: ColorValue;
-    };
-  };
-  /**
-   *
-   * @platform iOS 26
-   */
-  minimizeBehavior?: BottomTabsProps['tabBarMinimizeBehavior'];
-  /**
-   * @platform android
-   */
-  disableIndicator?: boolean;
-  builder: ReturnType<
-    typeof useNavigationBuilder<
-      TabNavigationState<ParamListBase>,
-      TabRouterOptions,
-      Record<string, (...args: any) => void>,
-      NativeTabOptions,
-      Record<string, any>
-    >
-  >;
-}
 
 enableFreeze(false);
 

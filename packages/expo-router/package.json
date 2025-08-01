@@ -113,6 +113,7 @@
     "@react-navigation/native-stack": "^7.3.10",
     "client-only": "^0.0.1",
     "invariant": "^2.2.4",
+    "radix-ui": "^1.4.2",
     "react-fast-compare": "^3.2.2",
     "react-native-is-edge-to-edge": "^1.1.6",
     "schema-utils": "^4.0.1",
