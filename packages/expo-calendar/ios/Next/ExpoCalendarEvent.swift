@@ -56,7 +56,6 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     }
     
     func delete(options: RecurringEventOptions) throws {
-        // try checkCalendarPermissions()
         guard let id = self.event?.calendarItemIdentifier else {
             throw ItemNoLongerExistsException()
         }

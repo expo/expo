@@ -238,10 +238,12 @@ public final class CalendarNextModule: Module {
             
             Function("update") {
                 (calendar: ExpoCalendar, calendarRecord: CalendarRecord) throws in
+                try checkCalendarPermissions()
                 try calendar.update(calendarRecord: calendarRecord)
             }
             
             Function("delete") { (calendar: ExpoCalendar) in
+                try checkCalendarPermissions()
                 try calendar.delete()
             }
         }
@@ -401,6 +403,7 @@ public final class CalendarNextModule: Module {
             
             Function("delete") {
                 (customEvent: ExpoCalendarEvent, options: RecurringEventOptions) in
+                try checkCalendarPermissions()
                 try customEvent.delete(options: options)
             }
         }
