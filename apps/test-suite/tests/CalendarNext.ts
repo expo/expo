@@ -354,7 +354,7 @@ export async function test(t) {
       });
     });
 
-    t.describe('deleteCalendarAsync()', () => {
+    t.describe('Calendar.delete()', () => {
       t.it('deletes a calendar', async () => {
         const calendar = await createTestCalendarAsync();
         calendar.delete();
@@ -437,31 +437,28 @@ export async function test(t) {
       });
     });
 
-    // t.describe('getEventsAsync()', () => {
-    //   let calendarId, eventId;
+    t.describe('Calendar.listEvents()', () => {
+      let calendar: ExportExpoCalendar;
+      let event: ExportExpoCalendarEvent;
 
-    //   t.beforeEach(async () => {
-    //     calendarId = await createTestCalendarAsync();
-    //     eventId = await createTestEventAsync(calendarId);
-    //   });
+      t.beforeEach(async () => {
+        calendar = await createTestCalendarAsync();
+        event = await createTestEvent(calendar);
+      });
 
-    //   t.it('resolves to an array with an event of the correct shape', async () => {
-    //     const events = await Calendar.getEventsAsync(
-    //       [calendarId],
-    //       +new Date(2019, 3, 1),
-    //       +new Date(2019, 3, 29)
-    //     );
+      t.it('resolves to an array with an event of the correct shape', async () => {
+        const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
 
-    //     t.expect(Array.isArray(events)).toBe(true);
-    //     t.expect(events.length).toBe(1);
-    //     t.expect(events[0].id).toBe(eventId);
-    //     testEventShape(events[0]);
-    //   });
+        t.expect(Array.isArray(events)).toBe(true);
+        t.expect(events.length).toBe(1);
+        t.expect(events[0].id).toBe(event.id);
+        testEventShape(events[0]);
+      });
 
-    //   t.afterEach(async () => {
-    //     await Calendar.deleteCalendarAsync(calendarId);
-    //   });
-    // });
+      t.afterEach(async () => {
+        calendar.delete();
+      });
+    });
 
     // t.describe('getEventAsync()', () => {
     //   let calendarId, eventId;
