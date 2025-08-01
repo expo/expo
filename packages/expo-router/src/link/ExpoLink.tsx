@@ -31,6 +31,6 @@ export function ExpoLink(props: LinkProps) {
 
 function isLinkWithPreview(props: LinkProps): boolean {
   return Children.toArray(props.children).some(
-    (child) => isValidElement(child) && child.type === LinkPreview
+    (child) => isValidElement(child) && (child.type === LinkPreview || child.type === LinkMenu)
   );
 }
