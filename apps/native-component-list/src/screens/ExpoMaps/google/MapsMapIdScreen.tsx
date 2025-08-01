@@ -7,7 +7,7 @@ export default function MapsMapIdScreen() {
       <GoogleMaps.View
         style={{ width: 'auto', height: '100%' }}
         mapOptions={{
-          mapId: 'b176a543d17e3d539ddd199c',
+          mapId: '108722dede205ddb1971ca68e87d',
         }}
         cameraPosition={{
           coordinates: {
