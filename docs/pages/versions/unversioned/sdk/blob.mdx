@@ -17,7 +17,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 ## Usage
 
-### Basic Blob creation
+### Basic blob creation
 
 ```typescript
 import { Blob } from 'expo-blob';
@@ -53,7 +53,7 @@ console.log(blob.size); // 13 (bytes)
 console.log(blob.type); // "text/plain"
 ```
 
-### Reading Blob content
+### Reading blob content
 
 ```typescript
 const blob = new Blob(['Hello, World!'], { type: 'text/plain' });
@@ -71,7 +71,7 @@ const arrayBuffer = await blob.arrayBuffer();
 console.log(arrayBuffer); // ArrayBuffer(13)
 ```
 
-### Slicing Blobs
+### Slicing blobs
 
 ```typescript
 const blob = new Blob(['Hello, World!'], { type: 'text/plain' });
