@@ -4,6 +4,7 @@ import {
   ExportExpoCalendar,
   ExportExpoCalendarEvent,
   getCalendarsNext,
+  getDefaultCalendarNext,
 } from 'expo-calendar/next';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
@@ -481,31 +482,30 @@ export async function test(t) {
     //   });
     // });
 
-    // t.describe('updateEventAsync()', () => {
-    //   let calendarId, eventId;
+    t.describe('Event.update()', () => {
+      let calendar: ExportExpoCalendar;
+      let event: ExportExpoCalendarEvent;
 
-    //   t.beforeAll(async () => {
-    //     calendarId = await createTestCalendarAsync();
-    //     eventId = await createTestEventAsync(calendarId);
-    //   });
+      t.beforeAll(async () => {
+        calendar = await createTestCalendarAsync();
+        event = await createTestEvent(calendar);
+      });
 
-    //   t.it('updates an event', async () => {
-    //     await Calendar.updateEventAsync(eventId, {
-    //       availability: Calendar.Availability.FREE,
-    //     });
-    //     const updatedEvent = await Calendar.getEventAsync(eventId);
+      t.it('updates an event', async () => {
+        event.update({
+          availability: Calendar.Availability.FREE,
+        });
 
-    //     t.expect(updatedEvent).toBeDefined();
-    //     t.expect(updatedEvent.id).toBe(eventId);
-    //     t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
-    //       updatedEvent.availability
-    //     );
-    //   });
+        t.expect(event).toBeDefined();
+        t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
+          event.availability
+        );
+      });
 
-    //   t.afterAll(async () => {
-    //     await Calendar.deleteCalendarAsync(calendarId);
-    //   });
-    // });
+      t.afterAll(async () => {
+        calendar.delete();
+      });
+    });
 
     t.describe('Event.delete()', () => {
       let calendar: ExportExpoCalendar;
@@ -534,100 +534,103 @@ export async function test(t) {
       });
     });
 
-    // if (Platform.OS === 'android') {
-    //   t.describe('createAttendeeAsync()', () => {
-    //     let calendarId, eventId;
+    t.describe('Event.getAttendees()', () => {
+      let calendar: ExportExpoCalendar;
+      let event: ExportExpoCalendarEvent;
 
-    //     t.beforeAll(async () => {
-    //       calendarId = await createTestCalendarAsync();
-    //       eventId = await createTestEventAsync(calendarId);
-    //     });
+      t.beforeAll(async () => {
+        calendar = await createTestCalendarAsync();
+        event = await createTestEvent(calendar);
+      });
 
-    //     t.it('creates an attendee', async () => {
-    //       const attendeeId = await createTestAttendeeAsync(eventId);
-    //       const attendees = await Calendar.getAttendeesForEventAsync(eventId);
+      t.it('lists attendees', () => {
+        const attendees = event.getAttendees();
+        t.expect(Array.isArray(attendees)).toBe(true);
+        t.expect(attendees.length).toBe(0);
+      });
 
-    //       t.expect(Array.isArray(attendees)).toBe(true);
+      t.afterAll(async () => {
+        calendar.delete();
+      });
+    });
 
-    //       const newAttendee = attendees.find((attendee) => attendee.id === attendeeId);
+    if (Platform.OS === 'android') {
+      //   t.describe('createAttendeeAsync()', () => {
+      //     let calendarId, eventId;
+      //     t.beforeAll(async () => {
+      //       calendarId = await createTestCalendarAsync();
+      //       eventId = await createTestEventAsync(calendarId);
+      //     });
+      //     t.it('creates an attendee', async () => {
+      //       const attendeeId = await createTestAttendeeAsync(eventId);
+      //       const attendees = await Calendar.getAttendeesForEventAsync(eventId);
+      //       t.expect(Array.isArray(attendees)).toBe(true);
+      //       const newAttendee = attendees.find((attendee) => attendee.id === attendeeId);
+      //       t.expect(newAttendee).toBeDefined();
+      //       testAttendeeShape(newAttendee);
+      //     });
+      //     t.afterAll(async () => {
+      //       await Calendar.deleteCalendarAsync(calendarId);
+      //     });
+      //   });
+      //   t.describe('updateAttendeeAsync()', () => {
+      //     let calendarId, eventId, attendeeId;
+      //     t.beforeAll(async () => {
+      //       calendarId = await createTestCalendarAsync();
+      //       eventId = await createTestEventAsync(calendarId);
+      //       attendeeId = await createTestAttendeeAsync(eventId);
+      //     });
+      //     t.it('updates attendee record', async () => {
+      //       const updatedAttendeeId = await Calendar.updateAttendeeAsync(attendeeId, {
+      //         role: Calendar.AttendeeRole.PERFORMER,
+      //       });
+      //       const updatedAttendee = await getAttendeeByIdAsync(eventId, attendeeId);
+      //       t.expect(updatedAttendeeId).toBe(attendeeId);
+      //       t.expect(updatedAttendee).toBeDefined();
+      //       t.expect(updatedAttendee.role).toBe(Calendar.AttendeeRole.PERFORMER);
+      //     });
+      //     t.afterAll(async () => {
+      //       await Calendar.deleteCalendarAsync(calendarId);
+      //     });
+      //   });
+      //   t.describe('deleteAttendeeAsync()', () => {
+      //     let calendarId, eventId;
+      //     t.beforeAll(async () => {
+      //       calendarId = await createTestCalendarAsync();
+      //       eventId = await createTestEventAsync(calendarId);
+      //     });
+      //     t.it('deletes an attendee', async () => {
+      //       const attendeeId = await createTestAttendeeAsync(eventId);
+      //       await Calendar.deleteAttendeeAsync(attendeeId);
+      //       const attendee = await getAttendeeByIdAsync(eventId, attendeeId);
+      //       t.expect(attendee).toBeUndefined();
+      //     });
+      //     t.afterAll(async () => {
+      //       await Calendar.deleteCalendarAsync(calendarId);
+      //     });
+      //   });
+    } else {
+      expectMethodsToReject(['createAttendeeAsync', 'updateAttendeeAsync', 'deleteAttendeeAsync']);
+    }
 
-    //       t.expect(newAttendee).toBeDefined();
-    //       testAttendeeShape(newAttendee);
-    //     });
+    if (Platform.OS === 'ios') {
+      t.describe('getDefaultCalendarNext()', () => {
+        t.it('get default calendar', async () => {
+          const calendar = getDefaultCalendarNext();
 
-    //     t.afterAll(async () => {
-    //       await Calendar.deleteCalendarAsync(calendarId);
-    //     });
-    //   });
+          testCalendarShape(calendar);
+        });
+      });
 
-    //   t.describe('updateAttendeeAsync()', () => {
-    //     let calendarId, eventId, attendeeId;
+      //   t.describe('getSourcesAsync()', () => {
+      //     t.it('returns an array of sources', async () => {
+      //       const sources = await Calendar.getSourcesAsync();
 
-    //     t.beforeAll(async () => {
-    //       calendarId = await createTestCalendarAsync();
-    //       eventId = await createTestEventAsync(calendarId);
-    //       attendeeId = await createTestAttendeeAsync(eventId);
-    //     });
-
-    //     t.it('updates attendee record', async () => {
-    //       const updatedAttendeeId = await Calendar.updateAttendeeAsync(attendeeId, {
-    //         role: Calendar.AttendeeRole.PERFORMER,
-    //       });
-    //       const updatedAttendee = await getAttendeeByIdAsync(eventId, attendeeId);
-
-    //       t.expect(updatedAttendeeId).toBe(attendeeId);
-    //       t.expect(updatedAttendee).toBeDefined();
-    //       t.expect(updatedAttendee.role).toBe(Calendar.AttendeeRole.PERFORMER);
-    //     });
-
-    //     t.afterAll(async () => {
-    //       await Calendar.deleteCalendarAsync(calendarId);
-    //     });
-    //   });
-
-    //   t.describe('deleteAttendeeAsync()', () => {
-    //     let calendarId, eventId;
-
-    //     t.beforeAll(async () => {
-    //       calendarId = await createTestCalendarAsync();
-    //       eventId = await createTestEventAsync(calendarId);
-    //     });
-
-    //     t.it('deletes an attendee', async () => {
-    //       const attendeeId = await createTestAttendeeAsync(eventId);
-    //       await Calendar.deleteAttendeeAsync(attendeeId);
-
-    //       const attendee = await getAttendeeByIdAsync(eventId, attendeeId);
-
-    //       t.expect(attendee).toBeUndefined();
-    //     });
-
-    //     t.afterAll(async () => {
-    //       await Calendar.deleteCalendarAsync(calendarId);
-    //     });
-    //   });
-    // } else {
-    //   expectMethodsToReject(['createAttendeeAsync', 'updateAttendeeAsync', 'deleteAttendeeAsync']);
-    // }
-
-    // if (Platform.OS === 'ios') {
-    //   t.describe('getDefaultCalendarAsync()', () => {
-    //     t.it('get default calendar', async () => {
-    //       const calendar = await Calendar.getDefaultCalendarAsync();
-
-    //       testCalendarShape(calendar);
-    //     });
-    //   });
-
-    //   t.describe('getSourcesAsync()', () => {
-    //     t.it('returns an array of sources', async () => {
-    //       const sources = await Calendar.getSourcesAsync();
-
-    //       t.expect(Array.isArray(sources)).toBe(true);
-    //     });
-    //   });
-    // } else {
-    //   expectMethodsToReject(['getSourcesAsync']);
-    // }
+      //       t.expect(Array.isArray(sources)).toBe(true);
+      //     });
+      //   });
+    } else {
+      expectMethodsToReject(['getSourcesAsync']);
+    }
   });
 }

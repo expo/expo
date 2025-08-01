@@ -356,8 +356,9 @@ public final class CalendarNextModule: Module {
             }
 
             Function("update") {
-                (customEvent: CustomExpoCalendarEvent, event: Event, options: RecurringEventOptions)
+                (customEvent: CustomExpoCalendarEvent, event: Event, options: RecurringEventOptions?)
                     throws in
+                try checkCalendarPermissions()
                 try customEvent.update(eventRecord: event, options: options)
             }
 

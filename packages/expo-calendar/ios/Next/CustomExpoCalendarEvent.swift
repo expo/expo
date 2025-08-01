@@ -43,16 +43,14 @@ internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
         self.init(event: calendarEvent)
     }
     
-    func update(eventRecord: Event, options: RecurringEventOptions) throws {
-        // try checkCalendarPermissions()
-        
+    func update(eventRecord: Event, options: RecurringEventOptions?) throws {
         guard let calendarEvent = self.event else {
             throw EventNotFoundException("EKevent not found")
         }
         
         try self.initialize(eventRecord: eventRecord)
         
-        let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
+        let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent
         
         try eventStore.save(calendarEvent, span: span, commit: true)
     }
