@@ -2,6 +2,7 @@
 package versioned.host.exp.exponent
 
 import android.content.Context
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -137,7 +138,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(EdgeToEdgeModule(reactContext))
         nativeModules.add(KeyboardControllerModule(reactContext))
         nativeModules.addAll(SvgPackage().getReactModuleInfoProvider().getReactModuleInfos().map { SvgPackage().getModule(it.value.name, reactContext)!! })
-        nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
+        nativeModules.addAll(MapsPackage().getReactModuleInfoProvider().getReactModuleInfos().map { MapsPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().map { stripePackage.getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
@@ -172,6 +173,7 @@ class ExponentPackage : ReactPackage {
       viewManagers,
       listOf(
         SvgPackage(),
+        LottiePackage(),
         MapsPackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),

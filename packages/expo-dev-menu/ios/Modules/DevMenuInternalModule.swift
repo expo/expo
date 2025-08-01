@@ -1,7 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if !os(tvOS)
 import SafariServices
+#endif
 import React
 
 public class DevMenuInternalModule: Module {
@@ -68,8 +70,12 @@ public class DevMenuInternalModule: Module {
     }
 
     AsyncFunction("copyToClipboardAsync") { (content: String) in
+      #if os(tvOS)
+      throw Exception(name: "ERR_DEVMENU_ACTION_FAILED", description: "copy to clipboard is not available in tvOS")
+      #else
       let clipboard = UIPasteboard.general
       clipboard.string = content as String
+      #endif
     }
   }
 }

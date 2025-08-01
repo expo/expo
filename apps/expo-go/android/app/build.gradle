@@ -35,7 +35,7 @@ react {
   codegenDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native-codegen")
 
   // Expo Go does not require JS bundling from build, we set all variants as debuggableVariants
-  debuggableVariants = ["debug", "release"]
+  debuggableVariants = ["mobileDebug", "mobileRelease", "questDebug", "questRelease"]
 
   cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
   bundleCommand = "export:embed"
@@ -62,6 +62,12 @@ android {
         'appAuthRedirectScheme': 'host.exp.exponent',
         'appLabel': '@string/versioned_app_name'
     ]
+  }
+
+  flavorDimensions += "device"
+  productFlavors {
+    quest { dimension "device" }
+    mobile { dimension "device" }
   }
 
   signingConfigs {
@@ -223,6 +229,7 @@ dependencies {
   releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
   implementation 'commons-io:commons-io:1.4'
+  implementation 'com.airbnb.android:lottie:6.5.2'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
   implementation 'com.vanniktech:android-image-cropper:4.6.0'
   implementation 'commons-codec:commons-codec:1.10'

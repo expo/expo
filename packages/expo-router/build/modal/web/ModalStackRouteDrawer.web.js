@@ -121,7 +121,6 @@ function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, the
     else {
         // All corners for desktop modal
         if (options.sheetCornerRadius) {
-            modalStyleVars.borderRadius = radiusCss;
             modalStyleVars['--expo-router-modal-border-radius'] = radiusCss;
         }
     }

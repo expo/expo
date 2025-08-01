@@ -160,8 +160,12 @@ public class AudioModule: Module {
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        player.ref.rate = playerRate
         player.currentRate = playerRate
+
+        if player.isPlaying {
+          player.ref.rate = playerRate
+        }
+
         if player.shouldCorrectPitch {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality

@@ -10,7 +10,14 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
 jest.mock('../common.ts', () => ({
   ...jest.requireActual('../common.ts'),
   hasModule: jest.fn((moduleId) => {
-    if (['react-native-reanimated', 'expo-router', '@expo/vector-icons'].includes(moduleId)) {
+    if (
+      [
+        'react-native-worklets',
+        'react-native-reanimated',
+        'expo-router',
+        '@expo/vector-icons',
+      ].includes(moduleId)
+    ) {
       return true;
     }
     return false;
@@ -291,7 +298,7 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return 'var re=/(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;console.log(re.exec("1999-02-29").groups.year);';
       }
-      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _setPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/setPrototypeOf"));function _wrapRegExp(){_wrapRegExp=function(e,r){return new BabelRegExp(e,void 0,r);};var e=RegExp.prototype,r=new WeakMap();function BabelRegExp(e,t,p){var o=RegExp(e,t);return r.set(o,p||r.get(e)),(0,_setPrototypeOf2.default)(o,BabelRegExp.prototype);}function buildGroups(e,t){var p=r.get(t);return Object.keys(p).reduce(function(r,t){var o=p[t];if("number"==typeof o)r[t]=e[o];else{for(var i=0;void 0===e[o[i]]&&i+1<o.length;)i++;r[t]=e[o[i]];}return r;},Object.create(null));}return(0,_inherits2.default)(BabelRegExp,RegExp),BabelRegExp.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=buildGroups(t,this);var p=t.indices;p&&(p.groups=buildGroups(p,this));}return t;},BabelRegExp.prototype[Symbol.replace]=function(t,p){if("string"==typeof p){var o=r.get(this);return e[Symbol.replace].call(this,t,p.replace(/\\$<([^>]+)>/g,function(e,r){var t=o[r];return"$"+(Array.isArray(t)?t.join("$"):t);}));}if("function"==typeof p){var i=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return"object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(buildGroups(e,i)),p.apply(this,e);});}return e[Symbol.replace].call(this,t,p);},_wrapRegExp.apply(this,arguments);}var re=_wrapRegExp(/(\\d{4})\\x2D(\\d{2})\\x2D(\\d{2})/,{year:1,month:2,day:3});console.log(re.exec("1999-02-29").groups.year);';
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _setPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/setPrototypeOf"));function _wrapRegExp(){_wrapRegExp=function(e,r){return new BabelRegExp(e,void 0,r);};var e=RegExp.prototype,r=new WeakMap();function BabelRegExp(e,t,p){var o=RegExp(e,t);return r.set(o,p||r.get(e)),(0,_setPrototypeOf2.default)(o,BabelRegExp.prototype);}function buildGroups(e,t){var p=r.get(t);return Object.keys(p).reduce(function(r,t){var o=p[t];if("number"==typeof o)r[t]=e[o];else{for(var i=0;void 0===e[o[i]]&&i+1<o.length;)i++;r[t]=e[o[i]];}return r;},Object.create(null));}return(0,_inherits2.default)(BabelRegExp,RegExp),BabelRegExp.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=buildGroups(t,this);var p=t.indices;p&&(p.groups=buildGroups(p,this));}return t;},BabelRegExp.prototype[Symbol.replace]=function(t,p){if("string"==typeof p){var o=r.get(this);return e[Symbol.replace].call(this,t,p.replace(/\\$<([^>]+)>/g,function(e,r){var t=o[r];return"$"+(Array.isArray(t)?t.join("$"):t);}));}if("function"==typeof p){var i=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return"object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(buildGroups(e,i)),p.apply(this,e);});}return e[Symbol.replace].call(this,t,p);},_wrapRegExp.apply(this,arguments);}var re=_wrapRegExp(/(\\d{4})-(\\d{2})-(\\d{2})/,{year:1,month:2,day:3});console.log(re.exec("1999-02-29").groups.year);';
     },
   },
 

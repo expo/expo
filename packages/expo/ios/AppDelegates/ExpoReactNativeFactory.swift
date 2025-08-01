@@ -1,8 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import React_RCTAppDelegate
+import React
 
-public class ExpoReactNativeFactory: RCTReactNativeFactory {
+@MainActor public class ExpoReactNativeFactory: RCTReactNativeFactory {
   private let reactDelegate = ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers)
 
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {

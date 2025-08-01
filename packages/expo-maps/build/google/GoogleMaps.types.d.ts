@@ -5,6 +5,19 @@ import { CameraPosition, Coordinates } from '../shared.types';
 /**
  * @platform android
  */
+export type GoogleMapsAnchor = {
+    /**
+     * The normalized horizontal anchor point from 0.0 (left edge) to 1.0 (right edge).
+     */
+    x: number;
+    /**
+     * The normalized vertical anchor point from 0.0 (top edge) to 1.0 (bottom edge).
+     */
+    y: number;
+};
+/**
+ * @platform android
+ */
 export type GoogleMapsMarker = {
     /**
      * The unique identifier for the marker. This can be used to identify the clicked marker in the `onMarkerClick` event.
@@ -19,7 +32,7 @@ export type GoogleMapsMarker = {
      */
     title?: string;
     /**
-     * The snippet of the marker, Displayed in the callout when the marker is clicked.
+     * The snippet of the marker, displayed in the callout when the marker is clicked.
      */
     snippet?: string;
     /**
@@ -34,6 +47,16 @@ export type GoogleMapsMarker = {
      * The custom icon to display for the marker.
      */
     icon?: SharedRefType<'image'>;
+    /**
+     * The anchor used to position the anchor relative to its coordinates.
+     * @default bottom-center of the icon
+     */
+    anchor?: GoogleMapsAnchor;
+    /**
+     * The z-index to use for the marker.
+     * @default 0
+     */
+    zIndex?: number;
 };
 /**
  * @platform android
@@ -113,6 +136,27 @@ export type GoogleMapsPolygon = {
      * The color of the polygon.
      */
     lineColor?: ProcessedColorValue | string;
+};
+/**
+ * @platform android
+ */
+export type GoogleMapsContentPadding = {
+    /**
+     * In LTR contexts, `start` will be applied along the left edge. In RTL contexts, `start` will correspond to the right edge.
+     */
+    start?: number;
+    /**
+     * In LTR contexts, `end` will be applied along the right edge. In RTL contexts, `end` will correspond to the left edge.
+     */
+    end?: number;
+    /**
+     * The padding on the top side of the map.
+     */
+    top?: number;
+    /**
+     * The padding on the bottom side of the map.
+     */
+    bottom?: number;
 };
 /**
  * @platform android
@@ -290,6 +334,11 @@ export type GoogleMapsViewProps = {
      * User location, overrides default behavior.
      */
     userLocation?: GoogleMapsUserLocation;
+    /**
+     * The padding values used to signal that portions of the map around the edges may be obscured.
+     * The map will move the Google logo, etc. to avoid overlapping the padding.
+     */
+    contentPadding?: GoogleMapsContentPadding;
     /**
      * Lambda invoked when the map is loaded.
      */
