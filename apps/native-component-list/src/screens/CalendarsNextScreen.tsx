@@ -115,7 +115,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     }
   };
 
-  const updateCalendar = async (calendar: any) => {
+  const updateCalendar = async (calendar: ExportExpoCalendar) => {
     const newCalendar = {
       title: 'cool updated calendar' + new Date().toISOString(),
     };
@@ -128,7 +128,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     }
   };
 
-  const deleteCalendar = async (calendar: any) => {
+  const deleteCalendar = async (calendar: ExportExpoCalendar) => {
     Alert.alert(`Are you sure you want to delete ${calendar.title}?`, 'This cannot be undone.', [
       {
         text: 'Cancel',
