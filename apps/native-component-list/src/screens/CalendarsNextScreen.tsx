@@ -13,18 +13,26 @@ import { optionalRequire } from '../navigation/routeBuilder';
 
 export const CalendarsNextScreens = [
   {
-    name: 'Events@next',
+    name: 'EventsNext',
     route: 'events-next',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./EventsScreen'));
+      return optionalRequire(() => require('./EventsNextScreen'));
+    },
+  },
+  {
+    name: 'RemindersNext',
+    route: 'reminders-next',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RemindersNextScreen'));
     },
   },
 ];
 
 type StackNavigation = StackNavigationProp<{
-  RemindersNext: { calendar: any };
-  EventsNext: { calendar: any };
+  RemindersNext: { calendar: ExportExpoCalendar };
+  EventsNext: { calendar: ExportExpoCalendar };
 }>;
 
 const CalendarRow = (props: {
@@ -166,7 +174,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
 }
 
 CalendarRow.navigationOptions = {
-  title: 'Calendars',
+  title: 'Calendars@next',
 };
 
 CalendarsNextScreen.navigationOptions = {
