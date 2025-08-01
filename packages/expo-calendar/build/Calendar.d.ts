@@ -1,4 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
+import { ProcessedColorValue } from 'react-native';
 export { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
 /**
  * @platform ios
@@ -57,7 +58,7 @@ export type Calendar = {
     /**
      * Color used to display this calendar's events.
      */
-    color: string;
+    color: string | ProcessedColorValue;
     /**
      * Whether the calendar is used in the Calendar or Reminders OS app.
      * @platform ios

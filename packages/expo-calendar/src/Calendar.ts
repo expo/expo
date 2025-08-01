@@ -1,5 +1,5 @@
 import { PermissionResponse, createPermissionHook, UnavailabilityError } from 'expo-modules-core';
-import { Platform, processColor } from 'react-native';
+import { Platform, processColor, ProcessedColorValue } from 'react-native';
 
 import ExpoCalendar from './ExpoCalendar';
 
@@ -71,7 +71,7 @@ export type Calendar = {
   /**
    * Color used to display this calendar's events.
    */
-  color: string;
+  color: string | ProcessedColorValue; // TODO: Remove the ProcessedColorValue from the exported type
   /**
    * Whether the calendar is used in the Calendar or Reminders OS app.
    * @platform ios

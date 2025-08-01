@@ -102,8 +102,8 @@ export function createCalendarNext(details: Partial<Calendar> = {}): ExportExpoC
   if (!ExpoCalendar.createCalendarNext) {
     throw new UnavailabilityError('Calendar', 'createCalendarNext');
   }
-  const color = details.color ? processColor(details.color)?.toString() : undefined;
-  const newDetails = { ...details, id: undefined, color };
+  const color = details.color ? processColor(details.color) : undefined;
+  const newDetails = { ...details, id: undefined, color: color || undefined };
   const createdCalendar = ExpoCalendar.createCalendarNext(newDetails);
   Object.setPrototypeOf(createdCalendar, ExportExpoCalendar.prototype);
   return createdCalendar;
