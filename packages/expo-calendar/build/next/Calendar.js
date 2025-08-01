@@ -34,7 +34,7 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
         return super.listReminders(stringifyIfDate(startDate), stringifyIfDate(endDate), status || null);
     }
     update(details) {
-        const color = details.color ? processColor(details.color) : undefined;
+        const color = details.color ? processColor(details.color)?.toString() : undefined;
         if (Platform.OS === 'android') {
             // TODO: Implement
             throw new Error('Not implemented yet');
@@ -68,7 +68,7 @@ export function createCalendarNext(details = {}) {
     if (!ExpoCalendar.createCalendarNext) {
         throw new UnavailabilityError('Calendar', 'createCalendarNext');
     }
-    const color = details.color ? processColor(details.color) : undefined;
+    const color = details.color ? processColor(details.color)?.toString() : undefined;
     const newDetails = { ...details, id: undefined, color };
     const createdCalendar = ExpoCalendar.createCalendarNext(newDetails);
     Object.setPrototypeOf(createdCalendar, ExportExpoCalendar.prototype);

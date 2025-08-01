@@ -34,7 +34,6 @@ export declare class CustomExpoCalendar {
   sourceId?: string;
   source: Source;
   type?: CalendarType;
-  // TODO: Add color support
   color: string;
   entityType?: EntityTypes;
   allowsModifications: boolean;
