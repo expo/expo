@@ -44,14 +44,14 @@ export default function Layout() {
           <AndroidIcon name="ic_lock_open" />
           <Title>Face Gallery</Title>
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="four">
+        <NativeTabs.Trigger name="explore">
           <Icon src={require('../../../assets/explore_gray.png')} />
           <Icon src={require('../../../assets/explore_orange.png')} useAsSelected />
           <IOSIcon name="safari.fill" />
           <IOSIcon name="safari.fill" useAsSelected />
           <AndroidIcon name="ic_search" />
           <Badge>9+</Badge>
-          <Title>Discover</Title>
+          <Title>Explore</Title>
         </NativeTabs.Trigger>
       </NativeTabs>
     </ThemeProvider>

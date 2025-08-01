@@ -39,8 +39,17 @@ export function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps) {
 // #endregion
 
 // #region Preview View
+export interface TabPath {
+  oldTabKey: string;
+  newTabKey: string;
+}
 export interface NativeLinkPreviewProps extends ViewProps {
   nextScreenId: string | undefined;
+  tabPath:
+    | {
+        path: TabPath[];
+      }
+    | undefined;
   onActionSelected?: (event: { nativeEvent: { id: string } }) => void;
   onWillPreviewOpen?: () => void;
   onDidPreviewOpen?: () => void;

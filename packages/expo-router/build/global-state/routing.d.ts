@@ -53,7 +53,7 @@ export declare function linkTo(originalHref: Href, options?: LinkToOptions): voi
  * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
  */
 export declare function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>): Record<string, any>;
-export declare function findDivergentState(_actionState: ResultState, _navigationState: NavigationState): {
+export declare function findDivergentState(_actionState: ResultState, _navigationState: NavigationState, type: string): {
     actionState: PartialState<Readonly<{
         key: string;
         index: number;
@@ -73,5 +73,6 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
         stale: false;
     }>;
     actionStateRoute: PartialRoute<any> | undefined;
+    navigationRoutes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
 };
 //# sourceMappingURL=routing.d.ts.map
