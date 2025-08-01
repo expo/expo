@@ -295,6 +295,13 @@ export enum GoogleMapsMapType {
   TERRAIN = 'TERRAIN',
 }
 
+export type GoogleMapsMapStyleOptions = {
+  /**
+   * The JSON string of the map style options.
+   */
+  json: string;
+};
+
 /**
  * @platform android
  */
@@ -338,6 +345,11 @@ export type GoogleMapsProperties = {
    * The minimum zoom level for the map.
    */
   minZoomPreference?: number;
+
+  /**
+   * The map style options.
+   */
+  mapStyleOptions?: GoogleMapsMapStyleOptions;
 };
 
 /**
