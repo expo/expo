@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoCalendar.d.ts","sourceRoot":"","sources":["../src/ExpoCalendar.ts"],"names":[],"mappings":";AACA,wBAAmD"}
+{"version":3,"file":"ExpoCalendar.d.ts","sourceRoot":"","sources":["../src/ExpoCalendar.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,YAAY,EAAuB,MAAM,mBAAmB,CAAC;AAEtE,OAAO,KAAK,EAAE,kBAAkB,EAAE,uBAAuB,EAAE,MAAM,sBAAsB,CAAC;AAGxF,OAAO,OAAO,sBAAuB,SAAQ,YAAY;IACvD,kBAAkB,EAAE,OAAO,kBAAkB,CAAC;IAC9C,uBAAuB,EAAE,OAAO,uBAAuB,CAAC;CACzD;;AAED,wBAEgE"}

@@ -9,6 +9,28 @@ export {
   PermissionHookOptions,
   PermissionExpiration,
 } from 'expo-modules-core';
+export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
+  constructor(id: string) {
+    super(id);
+  }
+}
+
+export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
+  constructor(id: string) {
+    super(id);
+  }
+
+  override listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[] {
+    if (!startDate) {
+      throw new Error('listEvents must be called with a startDate (date) to search for events');
+    }
+    if (!endDate) {
+      throw new Error('listEvents must be called with an endDate (date) to search for events');
+    }
+    const result = this.listEventsAsIds(stringifyIfDate(startDate), stringifyIfDate(endDate));
+    return result.map((id) => new ExportExpoCalendarEvent(id));
+  }
+}
 
 // @needsAudit
 /**

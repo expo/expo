@@ -2,6 +2,26 @@ import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 export { PermissionStatus, } from 'expo-modules-core';
+export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
+    constructor(id) {
+        super(id);
+    }
+}
+export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
+    constructor(id) {
+        super(id);
+    }
+    listEvents(startDate, endDate) {
+        if (!startDate) {
+            throw new Error('listEvents must be called with a startDate (date) to search for events');
+        }
+        if (!endDate) {
+            throw new Error('listEvents must be called with an endDate (date) to search for events');
+        }
+        const result = this.listEventsAsIds(stringifyIfDate(startDate), stringifyIfDate(endDate));
+        return result.map((id) => new ExportExpoCalendarEvent(id));
+    }
+}
 // @docsMissing
 /**
  * @platform ios

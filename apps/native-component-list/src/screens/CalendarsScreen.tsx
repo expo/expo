@@ -9,6 +9,7 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 import { optionalRequire } from '../navigation/routeBuilder';
+import { ConstantItem } from '../../../expo-go/src/components/ConstantItem';
 
 export const CalendarsScreens = [
   {
@@ -60,6 +61,19 @@ const CalendarRow = (props: {
 export default function CalendarsScreen({ navigation }: { navigation: StackNavigation }) {
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
+
+
+  const getDefaultCalendar = async () => {
+    const allCalendars = await Calendar.getCalendarsAsync();
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    
+    const customCalendar = new Calendar.ExportExpoCalendar(allCalendars[0].id);
+    console.log('!!!customCalendar', customCalendar);
+    
+    const events = customCalendar.listEvents(oneWeekAgo, oneWeekFromNow);
+    console.log('!!!events', events.map((event) => event.title));
+  }
 
   const [calendars, setCalendars] = useState<Calendar.Calendar[]>([]);
 
@@ -140,26 +154,27 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
     ]);
   };
 
-  if (calendars.length) {
-    return (
-      <ScrollView style={styles.container}>
-        <Button onPress={addCalendar} title="Add New Calendar" />
-        {calendars.map((calendar) => (
-          <CalendarRow
-            calendar={calendar}
-            key={calendar.id}
-            navigation={navigation}
-            updateCalendar={updateCalendar}
-            deleteCalendar={deleteCalendar}
-          />
-        ))}
-      </ScrollView>
-    );
-  }
+//   if (calendars.length) {
+//     return (
+//       <ScrollView style={styles.container}>
+//         <Button onPress={addCalendar} title="Add New Calendar" />
+//         {calendars.map((calendar) => (
+//           <CalendarRow
+//             calendar={calendar}
+//             key={calendar.id}
+//             navigation={navigation}
+//             updateCalendar={updateCalendar}
+//             deleteCalendar={deleteCalendar}
+//           />
+//         ))}
+//       </ScrollView>
+//     );
+//   }
 
   return (
     <View style={styles.container}>
       <Button onPress={findCalendars} title="Find my Calendars" />
+      <Button onPress={getDefaultCalendar} title="Get Default Calendar" />
     </View>
   );
 }
