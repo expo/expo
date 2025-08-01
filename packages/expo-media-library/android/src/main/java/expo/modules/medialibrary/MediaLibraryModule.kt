@@ -109,22 +109,22 @@ class MediaLibraryModule : Module() {
       return@Coroutine createAssetWithAlbumId(context, localUri, true, albumId)
     }
 
-    AsyncFunction("addAssetsToAlbumAsync") Coroutine { assetsId: List<String>, albumId: String, copyToAlbum: Boolean ->
+    AsyncFunction("addAssetsToAlbumAsync") Coroutine { assetsId: Array<String>, albumId: String, copyToAlbum: Boolean ->
       requireSystemPermissions()
-      requestMediaLibraryActionPermission(if (copyToAlbum) emptyList() else assetsId)
-      return@Coroutine addAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum)
+      requestMediaLibraryActionPermission(if (copyToAlbum) emptyArray() else assetsId)
+      return@Coroutine addAssetsToAlbum(context, assetsId, albumId, copyToAlbum)
     }
 
-    AsyncFunction("removeAssetsFromAlbumAsync") Coroutine { assetsId: List<String>, albumId: String ->
+    AsyncFunction("removeAssetsFromAlbumAsync") Coroutine { assetsId: Array<String>, albumId: String ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(assetsId)
-      return@Coroutine removeAssetsFromAlbum(context, assetsId.toTypedArray(), albumId)
+      return@Coroutine removeAssetsFromAlbum(context, assetsId, albumId)
     }
 
-    AsyncFunction("deleteAssetsAsync") Coroutine { assetsId: List<String> ->
+    AsyncFunction("deleteAssetsAsync") Coroutine { assetsId: Array<String> ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(assetsId, needsDeletePermission = true)
-      return@Coroutine deleteAssets(context, assetsId.toTypedArray())
+      return@Coroutine deleteAssets(context, assetsId)
     }
 
     AsyncFunction("getAssetInfoAsync") Coroutine { assetId: String, _: Map<String, Any?>?/* unused on android atm */ ->
@@ -145,13 +145,13 @@ class MediaLibraryModule : Module() {
     AsyncFunction("createAlbumAsync") Coroutine { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri? ->
       requireSystemPermissions()
 
-      val assetIdList = if (!copyAsset && assetId != null) {
-        listOf(assetId)
+      val assetIdArray = if (!copyAsset && assetId != null) {
+        arrayOf(assetId)
       } else {
-        emptyList()
+        emptyArray()
       }
 
-      requestMediaLibraryActionPermission(assetIdList)
+      requestMediaLibraryActionPermission(assetIdArray)
 
       return@Coroutine if (assetId != null) {
         createAlbum(context, albumName, assetId, copyAsset)
@@ -162,9 +162,9 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("deleteAlbumsAsync") Coroutine { albumIds: List<String> ->
+    AsyncFunction("deleteAlbumsAsync") Coroutine { albumIds: Array<String> ->
       requireSystemPermissions()
-      val assetIds = getAssetsInAlbums(context, *albumIds.toTypedArray())
+      val assetIds = getAssetsInAlbums(context, *albumIds).toTypedArray()
       requestMediaLibraryActionPermission(assetIds)
       return@Coroutine deleteAlbums(context, albumIds)
     }
@@ -208,8 +208,8 @@ class MediaLibraryModule : Module() {
         return@Coroutine
       }
 
-      val needsToCheckPermissions = assets.map { it.assetId }
-      requestMediaLibraryActionPermission(needsToCheckPermissions)
+      val idsOfAssets = assets.map { it.assetId }.toTypedArray()
+      requestMediaLibraryActionPermission(idsOfAssets)
       return@Coroutine migrateAlbum(context, assets, albumDir.name)
     }
 
@@ -391,7 +391,7 @@ class MediaLibraryModule : Module() {
   }
 
   private suspend fun requestMediaLibraryActionPermission(
-    assetIds: List<String>,
+    assetIds: Array<String>,
     needsDeletePermission: Boolean = false
   ) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {

@@ -5,12 +5,11 @@ import android.provider.MediaStore
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
 
-fun deleteAlbums(context: Context, albumIds: List<String>): Boolean {
-  val mAlbumIds = albumIds.toTypedArray()
-  val selectionImages = "${MediaStore.Images.Media.BUCKET_ID} IN (${queryPlaceholdersFor(mAlbumIds)})"
-  val selectionVideos = "${MediaStore.Video.Media.BUCKET_ID} IN (${queryPlaceholdersFor(mAlbumIds)})"
+fun deleteAlbums(context: Context, albumIds: Array<String>): Boolean {
+  val selectionImages = "${MediaStore.Images.Media.BUCKET_ID} IN (${queryPlaceholdersFor(albumIds)})"
+  val selectionVideos = "${MediaStore.Video.Media.BUCKET_ID} IN (${queryPlaceholdersFor(albumIds)})"
 
-  MediaLibraryUtils.deleteAssets(context, selectionImages, mAlbumIds)
-  MediaLibraryUtils.deleteAssets(context, selectionVideos, mAlbumIds)
+  MediaLibraryUtils.deleteAssets(context, selectionImages, albumIds)
+  MediaLibraryUtils.deleteAssets(context, selectionVideos, albumIds)
   return true
 }
