@@ -130,17 +130,14 @@ function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
 
 function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) {
   return (
-    <Link accessibilityLabel={node.contextKey} href={node.href} asChild>
-      <Link.Trigger>
-        <SitemapItemPressable
-          leftIcon={<FileIcon />}
-          rightIcon={<ForwardIcon />}
-          filename={node.filename}
-          level={level}
-          info={info}
-        />
-      </Link.Trigger>
-      <Link.Preview />
+    <Link accessibilityLabel={node.contextKey} href={node.href} asChild replace>
+      <SitemapItemPressable
+        leftIcon={<FileIcon />}
+        rightIcon={<ForwardIcon />}
+        filename={node.filename}
+        level={level}
+        info={info}
+      />
     </Link>
   );
 }

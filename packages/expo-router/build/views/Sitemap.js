@@ -72,26 +72,25 @@ function SitemapItem({ node, level = 0 }) {
 }
 function LayoutSitemapItem({ node, level, info }) {
     const [isCollapsed, setIsCollapsed] = react_1.default.useState(true);
-    return (<>
+    return (<react_native_1.View style={styles.itemInnerContainer}>
       <SitemapItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} rightIcon={<ArrowIcon rotation={isCollapsed ? 0 : 180}/>} filename={node.filename} level={level} info={info} onPress={() => setIsCollapsed((prev) => !prev)}/>
       {!isCollapsed &&
             node.children.map((child) => (<SitemapItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
-    </>);
+    </react_native_1.View>);
 }
 function StandardSitemapItem({ node, info, level }) {
-    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} asChild 
-    // Ensure we replace the history so you can't go back to this page.
-    replace>
+    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} asChild replace>
       <SitemapItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
     </Link_1.Link>);
 }
 function SitemapItemPressable({ style, leftIcon, rightIcon, filename, level, info, ...pressableProps }) {
     return (<Pressable_1.Pressable {...pressableProps}>
       {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
+                styles.itemInnerContainer,
                 styles.itemPressable,
                 {
                     paddingLeft: INDENT + level * INDENT,
-                    backgroundColor: hovered ? '#202425' : 'transparent',
+                    backgroundColor: hovered ? '#202425' : '#151718',
                 },
                 pressed && { backgroundColor: '#26292b' },
                 style,
@@ -204,6 +203,7 @@ const styles = react_native_1.StyleSheet.create({
         fontWeight: 'bold',
     },
     scroll: {
+        gap: 12,
         paddingHorizontal: '5%',
         paddingVertical: 16,
         ...react_native_1.Platform.select({
@@ -227,8 +227,12 @@ const styles = react_native_1.StyleSheet.create({
         backgroundColor: '#151718',
         borderRadius: 12,
         borderCurve: 'continuous',
-        marginBottom: 12,
-        overflow: 'hidden',
+    },
+    itemInnerContainer: {
+        backgroundColor: '#151718',
+        borderRadius: 12,
+        borderCurve: 'continuous',
+        gap: 12,
     },
     itemPressable: {
         paddingHorizontal: INDENT,
