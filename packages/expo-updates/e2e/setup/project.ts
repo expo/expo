@@ -72,6 +72,7 @@ function getExpoDependencyChunks({
             'expo-media-library',
             'expo-network',
             'expo-secure-store',
+            'expo-sqlite',
             'expo-symbols',
             'expo-system-ui',
             'expo-ui',
