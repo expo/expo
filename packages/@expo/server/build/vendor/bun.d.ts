@@ -5,4 +5,4 @@ export type RequestHandler = (req: Request) => Promise<Response>;
  */
 export declare function createRequestHandler({ build }: {
     build: string;
-}, setup?: Parameters<typeof createExpoHandler>[1]): RequestHandler;
+}, setup?: Partial<Parameters<typeof createExpoHandler>[0]>): RequestHandler;

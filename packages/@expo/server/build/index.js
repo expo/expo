@@ -2,121 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRequestHandler = createRequestHandler;
 require("./install");
-const isDevelopment = process?.env?.NODE_ENV === 'development';
-const debug = 
-// TODO: Use WinterCG compatible check
-process?.env?.NODE_ENV === 'development'
+const debug = process?.env?.NODE_ENV === 'development'
     ? require('debug')('expo:server')
     : () => { };
-const HTML_CACHE_CONTROL = 's-maxage=3600';
-const _importCache = new Map();
-async function importCached(target) {
-    let result = _importCache.get(target);
-    if (!result) {
-        try {
-            result = { type: 'success', value: await import(target) };
+function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, logApiRouteExecutionError, handleApiRouteError, }) {
+    return async function handler(request) {
+        const manifest = await getRoutesManifest();
+        if (!manifest) {
+            // NOTE(@EvanBacon): Development error when Expo Router is not setup.
+            // NOTE(@kitten): If the manifest is not found, we treat this as
+            // an SSG deployment and do nothing
+            return new Response('Not found', {
+                status: 404,
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+            });
         }
-        catch (error) {
-            result = { type: 'error', value: error };
-        }
-        _importCache.set(target, result);
-    }
-    if (result.type === 'success') {
-        return result.value;
-    }
-    else {
-        throw result.value;
-    }
-}
-async function importWithIndexFallback(target, filetype = '') {
-    const INDEX_PATH = '/index';
-    try {
-        return await importCached(target + filetype);
-    }
-    catch (error) {
-        if (target.endsWith(INDEX_PATH) && target.length > INDEX_PATH.length) {
-            return await importWithIndexFallback(target.slice(0, -INDEX_PATH.length), filetype);
-        }
-        throw error;
-    }
-}
-async function getRoutesManifest(dist = '.') {
-    try {
-        // TODO: What path should we support here? should we include pathe or use URL to join the paths?
-        const routesMod = await import(`${dist}/_expo/routes.json`);
-        // TODO: JSON Schema for validation
-        const routesManifest = JSON.parse(routesMod.default);
-        return {
-            ...routesManifest,
-            notFoundRoutes: routesManifest.notFoundRoutes.map((value) => ({
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            })),
-            apiRoutes: routesManifest.apiRoutes.map((value) => ({
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            })),
-            htmlRoutes: routesManifest.htmlRoutes.map((value) => ({
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            })),
-            redirects: routesManifest.redirects?.map((value) => ({
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            })),
-            rewrites: routesManifest.rewrites?.map((value) => ({
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            })),
-        };
-    }
-    catch (error) {
-        debug('Error loading routes manifest:', error);
-        return null;
-    }
-}
-// TODO: Reuse this for dev as well
-function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest = getRoutesManifest, getHtml = async (_request, route) => {
-    const html = (await importWithIndexFallback(`${distFolder}/${route.page}`, '.html')).default;
-    return typeof html === 'string' ? html : null;
-}, getApiRoute = async (route) => {
-    const filePath = `${distFolder}/${route.file}`;
-    debug(`Handling API route: ${route.page}: ${filePath}`);
-    // TODO: Should catch errors here?
-    // TODO: Production worker uses `import` only
-    if (/\.c?js$/.test(filePath)) {
-        return require(filePath);
-    }
-    return import(filePath);
-}, logApiRouteExecutionError = (error) => {
-    console.error(error);
-}, handleApiRouteError = async (error) => {
-    if ('statusCode' in error && typeof error.statusCode === 'number') {
-        return new Response(error.message, {
-            status: error.statusCode,
-            headers: { 'Content-Type': 'text/plain' },
-        });
-    }
-    return new Response('Internal server error', {
-        status: 500,
-        headers: { 'Content-Type': 'text/plain' },
-    });
-}, } = {}) {
-    let routesManifest;
-    const getRoutesManifestCached = async () => {
-        let manifest = null;
-        if (getInternalRoutesManifest) {
-            // Development
-            manifest = await getInternalRoutesManifest(distFolder);
-        }
-        else if (!routesManifest) {
-            // Production
-            manifest = await getRoutesManifest(distFolder);
-        }
-        if (manifest) {
-            routesManifest = manifest;
-        }
-        return routesManifest;
+        return requestHandler(request, manifest);
     };
     async function requestHandler(incomingRequest, manifest) {
         let request = incomingRequest;
@@ -241,22 +144,6 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         });
         return response;
     }
-    return async function handler(request) {
-        const manifest = await getRoutesManifestCached();
-        if (!manifest) {
-            // NOTE(@EvanBacon): Development error when Expo Router is not setup.
-            // NOTE(@kitten): If the manifest is not found, we treat this as
-            // an SSG deployment and do nothing
-            return new Response('Not found', {
-                status: 404,
-                headers: {
-                    'Content-Type': 'text/plain',
-                    ...(isDevelopment ? {} : { 'Cache-Control': HTML_CACHE_CONTROL }),
-                },
-            });
-        }
-        return requestHandler(request, manifest);
-    };
 }
 function updateRequestWithConfig(request, config) {
     const params = {};
