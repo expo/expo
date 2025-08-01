@@ -65,7 +65,7 @@ function Modal(props) {
                 component: children,
                 uniqueId: newId,
                 parentNavigationProp: navigation,
-                detents: detents ?? 'fitToContents',
+                detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
             });
             setCurrentModalId(newId);
             return () => {

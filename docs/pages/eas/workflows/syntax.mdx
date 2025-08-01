@@ -31,7 +31,7 @@ For example:
   ]}
 />
 
-## Configuration Reference
+## Configuration reference
 
 Below is a reference for the syntax of the workflow configuration file.
 
@@ -226,13 +226,28 @@ Sets the [EAS environment variable](/eas/environment-variables/) environment for
 - `preview`
 - `development`
 
-The `environment` key is available on all jobs except for the pre-packaged `build`, `submit`, and `get-build` jobs.
+The `environment` key is available on all jobs.
 
 ```yaml
 jobs:
   my_job:
     # @info #
     environment: production | preview | development
+    # @end #
+```
+
+### `jobs.<job_id>.env`
+
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `require-approval`, `doc`, `get-build` and `slack` jobs).
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    env:
+      APP_VARIANT: staging
+      RETRY_COUNT: 3
+      PREV_JOB_OUTPUT: ${{ needs.previous_job.outputs.some_output }}
     # @end #
 ```
 
@@ -546,10 +561,6 @@ jobs:
     # @info #
     type: fingerprint
     # @end #
-    params:
-      environment: production | preview | development # optional, defaults to production
-      env: # optional
-        APP_VARIANT: staging # just an example
 ```
 
 This job outputs the following properties:

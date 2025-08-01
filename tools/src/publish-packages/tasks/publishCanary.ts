@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import path from 'path';
 import semver from 'semver';
 
 import { checkEnvironmentTask } from './checkEnvironmentTask';
@@ -12,33 +11,23 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
-import { PACKAGES_DIR } from '../../Constants';
 import Git from '../../Git';
 import logger from '../../Logger';
-import { addTagAsync, getPackageViewAsync, publishPackageAsync } from '../../Npm';
-import {
-  getAvailableProjectTemplatesAsync,
-  updateTemplateVersionsAsync,
-} from '../../ProjectTemplates';
 import { sdkVersionAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { addTemplateTarball } from './addTemplateTarball';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
-const { cyan, green } = chalk;
+const { cyan } = chalk;
 
 /**
  * An array of packages whose version is constrained to the SDK version.
  */
 const SDK_CONSTRAINED_PACKAGES = ['expo', 'jest-expo', '@expo/config-types'];
-
-/**
- * Path to `bundledNativeModules.json` file.
- */
-const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
-
+const TEMPLATE_PREFIX = 'expo-template-';
 /**
  * Prepare packages to be published as canaries.
  */
@@ -53,9 +42,11 @@ export const prepareCanaries = new Task<TaskArgs>(
 
     for (const parcel of parcels) {
       const { pkg, state, pkgView } = parcel;
-      const baseVersion = SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName)
-        ? nextSdkVersion
-        : (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
+      const baseVersion =
+        SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName) ||
+        pkg.packageName.startsWith(TEMPLATE_PREFIX)
+          ? nextSdkVersion
+          : (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
 
       // Strip any pre-release tag from the baseVersion
       // For example, convert "5.0.0-rc.0" or "5.0.0-preview.0" to "5.0.0"
@@ -70,56 +61,6 @@ export const prepareCanaries = new Task<TaskArgs>(
 
     // Override the tag option – canary releases should always use `canary` tag
     options.tag = 'canary';
-  }
-);
-
-const publishCanaryProjectTemplates = new Task<TaskArgs>(
-  {
-    name: 'publishCanaryProjectTemplates',
-    dependsOn: [prepareCanaries],
-  },
-  async (parcels: Parcel[], options: CommandOptions) => {
-    await runWithSpinner(
-      'Updating and publishing project templates',
-      async (step) => {
-        const templates = await getAvailableProjectTemplatesAsync();
-        const bundledNativeModules = require(BUNDLED_NATIVE_MODULES_PATH);
-        const expoVersion = await sdkVersionAsync();
-        const dependenciesToUpdate = {
-          ...bundledNativeModules,
-          expo: options.canary ? expoVersion : `~${expoVersion}`,
-        };
-
-        for (const template of templates) {
-          step.start(`Updating and publishing ${green(template.name)}`);
-
-          const templateView = await getPackageViewAsync(template.name);
-
-          // Canary project template uses the same version as the `expo` package that it depends on.
-          const canaryVersion = findNextAvailableCanaryVersion(
-            expoVersion,
-            templateView?.versions ?? []
-          );
-
-          // Update versions of the dependencies based on `bundledNativeModules.json`.
-          await updateTemplateVersionsAsync(template.path, canaryVersion, dependenciesToUpdate);
-
-          // Publish the project template with a `canary` tag.
-          await publishPackageAsync(template.path, {
-            tagName: 'canary',
-            dryRun: options.dry,
-          });
-
-          if (!options.dry) {
-            // Add additional `sdk-X` tag for canary templates.
-            // Prebuild command uses this tag to download the proper version of bare-minimum template.
-            const sdkTag = getSdkTagForVersion(canaryVersion);
-            await addTagAsync(template.name, canaryVersion, sdkTag);
-          }
-        }
-      },
-      'Updated and published project templates'
-    );
   }
 );
 
@@ -178,9 +119,9 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateWorkspaceProjects,
       updateAndroidProjects,
       publishAndroidArtifacts,
+      addTemplateTarball,
       packPackageToTarball,
       publishPackages,
-      publishCanaryProjectTemplates,
       cleanWorkingTree,
     ],
   },
@@ -252,12 +193,4 @@ async function getNextSdkVersion(): Promise<string> {
     throw new Error('Unable to obtain the next major SDK version');
   }
   return nextMajorVersion;
-}
-
-/**
- * Returns the SDK tag to use for the given package version.
- */
-function getSdkTagForVersion(version: string): string {
-  const major = semver.major(version);
-  return `sdk-${major}`;
 }

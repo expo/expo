@@ -266,20 +266,7 @@ Calculates a fingerprint of your project.
 jobs:
   fingerprint:
     type: fingerprint
-    params:
-      environment: production | preview | development # optional, defaults to production
-      env: # optional
-        APP_VARIANT: staging # just an example
 ```
-
-#### Parameters
-
-You can pass the following parameters into the `params` list:
-
-| Parameter   | Type   | Description                                                                                                   |
-| ----------- | ------ | ------------------------------------------------------------------------------------------------------------- |
-| environment | string | Optional. The environment to use. Can be `production`, `preview`, or `development`. Defaults to `production`. |
-| env         | object | Optional. Environment variables to use during fingerprint calculation.                                        |
 
 #### Outputs
 
@@ -305,8 +292,7 @@ jobs:
   fingerprint:
     name: Calculate Fingerprint
     type: fingerprint
-    params:
-      environment: production
+    environment: production
 ```
 
 </Collapsible>
@@ -322,11 +308,10 @@ jobs:
   fingerprint:
     name: Calculate Fingerprint
     type: fingerprint
-    params:
-      environment: production
-      env:
-        APP_VARIANT: staging
-        API_URL: https://api.staging.example.com
+    environment: production
+    env:
+      APP_VARIANT: staging
+      API_URL: https://api.staging.example.com
 ```
 
 </Collapsible>

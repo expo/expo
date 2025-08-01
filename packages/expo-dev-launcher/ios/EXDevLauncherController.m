@@ -719,8 +719,10 @@
 }
 
 -(void)copyToClipboard:(NSString *)content {
+#if !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ?: @"");
+#endif
 }
 
 - (void)setDevMenuAppBridge

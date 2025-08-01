@@ -40,6 +40,8 @@ import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.unit.dp
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
@@ -50,7 +52,8 @@ data class GoogleMapsViewProps(
   val circles: MutableState<List<CircleRecord>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
-  val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
+  val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM),
+  val contentPadding: MutableState<MapContentPaddingRecord> = mutableStateOf(MapContentPaddingRecord()),
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -89,6 +92,9 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       cameraPositionState = cameraState,
       uiSettings = props.uiSettings.value.toMapUiSettings(),
       properties = props.properties.value.toMapProperties(),
+      contentPadding = props.contentPadding.value.let {
+        PaddingValues(start = it.start.dp, end = it.end.dp, top = it.top.dp, bottom = it.bottom.dp)
+      },
       onMapLoaded = {
         onMapLoaded(Unit)
         wasLoaded.value = true
@@ -167,6 +173,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
           title = marker.title,
           snippet = marker.snippet,
           draggable = marker.draggable,
+          anchor = marker.anchor.toOffset(),
+          zIndex = marker.zIndex,
           icon = icon,
           onClick = {
             onMarkerClick(

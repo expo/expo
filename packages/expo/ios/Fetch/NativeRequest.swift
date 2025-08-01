@@ -5,7 +5,7 @@ import ExpoModulesCore
 /**
  A SharedObject for request.
  */
-internal final class NativeRequest: SharedObject {
+internal final class NativeRequest: SharedObject, @unchecked Sendable {
   internal let response: NativeResponse
   internal let task: ExpoURLSessionTask
 

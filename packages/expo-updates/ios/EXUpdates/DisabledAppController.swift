@@ -10,7 +10,7 @@ import ExpoModulesCore
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface {
-  public var reloadScreenManager: ReloadScreenManager?
+  public var reloadScreenManager: Reloadable?
 
   public let isActiveController = false
   private var isStarted: Bool = false

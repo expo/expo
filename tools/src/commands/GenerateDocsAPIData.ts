@@ -50,7 +50,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
   'expo-file-system': ['index.ts'],
-  'expo-file-system-next': ['next/index.ts', 'expo-file-system'],
+  'expo-file-system-legacy': ['legacy/index.ts', 'expo-file-system'],
   'expo-font': ['index.ts'],
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],

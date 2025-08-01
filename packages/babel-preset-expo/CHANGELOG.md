@@ -13,8 +13,10 @@
 
 ### 💡 Others
 
+- Upgrade react-compiler to `19.1.0-rc.2`. ([#38309](https://github.com/expo/expo/pull/38309) by [@EvanBacon](https://github.com/EvanBacon))
 - Add fork of `@babel/transform-export-namespace-from` to preserve location of the transformed import/export statements ([#38042](https://github.com/expo/expo/pull/38042) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Remove Babel value-imports instead only relying on types and the `@babel/core` instance passed to the preset and plugins ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
+- Updated test snapshot. ([#38430](https://github.com/expo/expo/pull/38430) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

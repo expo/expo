@@ -75,7 +75,7 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
 
 ## Web setup
 
-> **warning** Web support is still experimental and may be unstable. [Create an issue on GitHub](https://github.com/expo/expo/issues) if you encounter any issues.
+> **important** Web support is experimental and may be unstable. [Create an issue on GitHub](https://github.com/expo/expo/issues) if you encounter any issues.
 
 To use `expo-sqlite` on web, you need to configure Metro bundler to support **wasm** files and add HTTP headers to allow [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) usage.
 
@@ -133,7 +133,7 @@ for await (const row of db.getEachAsync('SELECT * FROM test')) {
 
 ### Prepared statements
 
-Prepared statements allow you to compile your SQL query once and execute it multiple times with different parameters. You can get a prepared statement by calling [`prepareAsync()`](#prepareasyncsource) or [`prepareSync()`](#preparesyncsource) method on a database instance. The prepared statement can fulfill CRUD operations by calling [`executeAsync()`](#executeasyncparams) or [`executeSync()`](#executesyncparams) method.
+Prepared statements allow you to compile your SQL query once and execute it multiple times with different parameters. They automatically escape input parameters to defend against SQL injection attacks, and are recommended for queries that include user input. You can get a prepared statement by calling [`prepareAsync()`](#prepareasyncsource) or [`prepareSync()`](#preparesyncsource) method on a database instance. The prepared statement can fulfill CRUD operations by calling [`executeAsync()`](#executeasyncparams) or [`executeSync()`](#executesyncparams) method.
 
 > **Note:** Remember to call [`finalizeAsync()`](#finalizeasync) or [`finalizeSync()`](#finalizesync) method to release the prepared statement after you finish using the statement. `try-finally` block is recommended to ensure the prepared statement is finalized.
 
@@ -480,6 +480,10 @@ If you're currently using `@react-native-async-storage/async-storage` in your pr
 - import AsyncStorage from '@react-native-async-storage/async-storage';
 + import AsyncStorage from 'expo-sqlite/kv-store';
 ```
+
+## Security
+
+SQL injections are a class of vulnerabilities where attackers trick your app into executing user input as SQL code. You must escape all user input passed to SQLite to defend against SQL injections. [Prepared statements](#prepared-statements) are an effective defense against this problem. They explicitly separate a SQL query's logic from its input parameters, and SQLite automatically escapes inputs when executing prepared statements.
 
 ## Third-party library integrations
 

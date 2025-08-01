@@ -10,8 +10,6 @@
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/Swift.h>
 
-#import <React/React-Core-umbrella.h>
-
 #import <string.h>
 
 using namespace expo;
