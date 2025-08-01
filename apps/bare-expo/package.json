@@ -70,7 +70,7 @@
     "react-native-pager-view": "6.8.1",
     "react-native-worklets": "0.4.0",
     "react-native-reanimated": "4.0.1",
-    "react-native-safe-area-context": "5.4.0",
+    "react-native-safe-area-context": "5.5.2",
     "react-native-screens": "4.12.0",
     "react-native-svg": "15.12.1",
     "react-native-view-shot": "4.0.3",
