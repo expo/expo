@@ -7,6 +7,7 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
+import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import path from 'path';
@@ -192,12 +193,13 @@ export async function exportFromServerAsync(
     exp,
   });
 
-  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({
-      includeSourceMaps,
-    }),
-    devServer.getStaticRenderFunctionAsync(),
-  ]);
+  const [resources, { manifest, serverManifest, renderAsync, executeLoaderAsync }] =
+    await Promise.all([
+      devServer.getStaticResourcesAsync({
+        includeSourceMaps,
+      }),
+      devServer.getStaticRenderFunctionAsync(),
+    ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
@@ -208,7 +210,26 @@ export async function exportFromServerAsync(
     manifest,
     exportServer,
     async renderAsync({ pathname, route }) {
-      const template = await renderAsync(pathname);
+      const normalizedPathname =
+        pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+      let loaderData: any;
+      if (exp?.extra?.router?.unstable_useServerDataLoaders) {
+        loaderData = await executeLoaderAsync(normalizedPathname);
+
+        if (loaderData != null) {
+          const loaderPath = getLoaderModulePath(normalizedPathname);
+          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          const moduleContent = `export default ${JSON.stringify(loaderData)}`;
+          files.set(fileSystemPath, {
+            contents: moduleContent,
+            targetDomain: 'client',
+            loaderId: normalizedPathname,
+          });
+        }
+      }
+
+      const template = await renderAsync(normalizedPathname, { loaderData });
       let html = await serializeHtmlWithAssets({
         isExporting,
         resources: resources.artifacts,

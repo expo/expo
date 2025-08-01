@@ -11,6 +11,7 @@ import {
   usePathname,
   useSegments,
   useRootNavigationState,
+  useLoaderData,
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -692,5 +693,69 @@ describe(useRootNavigationState, () => {
       stale: false,
       type: 'stack',
     });
+  });
+});
+
+describe(useLoaderData, () => {
+  const mockLoader = async () => ({ data: 'test' });
+  const originalWindow = global.window;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    global.window = {
+      location: { origin: 'http://localhost:8081' },
+      __EXPO_ROUTER_LOADER_DATA__: {},
+    } as any;
+  });
+
+  afterEach(() => {
+    global.window = originalWindow;
+  });
+
+  afterAll(() => {
+    global.window = originalWindow;
+  });
+
+  it('throws an error when the feature is disabled', () => {
+    global.window = {} as any;
+
+    expect(() => {
+      renderHookOnce(() => useLoaderData(mockLoader), ['test'], { initialUrl: '/test' });
+    }).toThrow('Server data loaders are not enabled');
+  });
+
+  it('retrieves data from window.__EXPO_ROUTER_LOADER_DATA__', () => {
+    global.window = {
+      ...originalWindow,
+      __EXPO_ROUTER_LOADER_DATA__: {
+        '/': { window: 'data' },
+      },
+    } as any;
+
+    const { result } = renderHook(() => useLoaderData(mockLoader), ['index'], {
+      initialUrl: '/',
+    });
+
+    expect(result.current).toEqual({ window: 'data' });
+  });
+
+  it(`uses the loader function's return types`, () => {
+    const asyncLoader = async () => {
+      return { user: { id: 1, name: 'async user' }, timestamp: Date.now() };
+    };
+
+    global.window = {
+      ...global.window,
+      __EXPO_ROUTER_LOADER_DATA__: {
+        '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+      },
+    } as any;
+
+    type AsyncResult = Awaited<ReturnType<typeof asyncLoader>>;
+    const result = renderHookOnce(() => useLoaderData<AsyncResult>(asyncLoader), ['index'], {
+      initialUrl: '/',
+    });
+
+    expectType<{ user: { id: number; name: string }; timestamp: number }>(result);
   });
 });

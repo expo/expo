@@ -1,7 +1,30 @@
 import { useRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
 export { useRouteInfo };
+declare global {
+    interface Window {
+        __EXPO_ROUTER_LOADER_DATA__?: Record<string, any>;
+    }
+}
+/**
+ * Returns the data loaded by the route's loader function. This hook only works
+ * when `web.output: "server" | "static"` is configured in your app config.
+ *
+ * @example
+ * ```tsx app/index.tsx
+ * // Route file
+ * export async function loader({ params }) {
+ *   return { user: await fetchUser(params.id) };
+ * }
+ *
+ * export default function UserRoute() {
+ *   const data = useLoaderData(loader);
+ *   return <Text>{data.user.name}</Text>;
+ * }
+ * ```
+ */
+export declare function useLoaderData<T = any>(loader: LoaderFunction<T>): T;
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.

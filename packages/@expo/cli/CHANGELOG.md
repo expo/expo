@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [web] Add server data loader support in static export mode ([#38524](https://github.com/expo/expo/pull/38524) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

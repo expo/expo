@@ -8,9 +8,94 @@ import { INTERNAL_SLOT_NAME } from './constants';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { LoaderContext } from './loaders/context';
+import { fetchLoaderModule } from './loaders/utils';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
 
 export { useRouteInfo };
+
+// TODO(@hassankhan): Move to client globals
+declare global {
+  interface Window {
+    __EXPO_ROUTER_LOADER_DATA__?: Record<string, any>;
+  }
+}
+
+const loaderDataCache = new Map<string, any>();
+const loaderPromiseCache = new Map<string, Promise<any>>();
+
+/**
+ * Returns the data loaded by the route's loader function. This hook only works
+ * when `web.output: "server" | "static"` is configured in your app config.
+ *
+ * @example
+ * ```tsx app/index.tsx
+ * // Route file
+ * export async function loader({ params }) {
+ *   return { user: await fetchUser(params.id) };
+ * }
+ *
+ * export default function UserRoute() {
+ *   const data = useLoaderData(loader);
+ *   return <Text>{data.user.name}</Text>;
+ * }
+ * ```
+ */
+export function useLoaderData<T = any>(loader: LoaderFunction<T>): T {
+  const pathname = usePathname();
+  const segments = useSegments();
+  const loaderDataContext = React.use(LoaderContext);
+
+  // This is used by the server at build time
+  if (loaderDataContext && pathname in loaderDataContext) {
+    return loaderDataContext[pathname];
+  }
+
+  if (typeof window !== 'undefined') {
+    if (!window.__EXPO_ROUTER_LOADER_DATA__) {
+      throw new Error(
+        'Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your expo-router plugin config.'
+      );
+    }
+
+    // This is used when first loading a page in the browser as the preloaded data should be
+    // available as a `<script>` tag in the HTML
+    const preloadedData = window.__EXPO_ROUTER_LOADER_DATA__[pathname];
+    if (preloadedData !== undefined) {
+      return preloadedData;
+    }
+
+    // If client-side navigation has already triggered a load for this route, we can re-use the data
+    if (loaderDataCache.has(pathname)) {
+      return loaderDataCache.get(pathname);
+    }
+
+    // Check if a fetch is already in-progress for this route. This is to prevent duplicate network
+    // requests when multiple requests for the same route data are received, but before the first
+    // fetch has completed
+    if (!loaderPromiseCache.has(pathname)) {
+      const promise = fetchLoaderModule(pathname, segments)
+        .then((data) => {
+          loaderDataCache.set(pathname, data);
+          loaderPromiseCache.delete(pathname);
+          return data;
+        })
+        .catch((error) => {
+          loaderPromiseCache.delete(pathname);
+          console.error(`Failed to load loader data for route: ${pathname}:`, error);
+          throw new Error(`Failed to load loader data for route: ${pathname}`, { cause: error });
+        });
+
+      loaderPromiseCache.set(pathname, promise);
+    }
+
+    return React.use(loaderPromiseCache.get(pathname)!);
+  }
+
+  throw new Error(
+    'Server data loaders do not work on the client. They only work with `web.output` set to `static` or `server` in your app config'
+  );
+}
 
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)

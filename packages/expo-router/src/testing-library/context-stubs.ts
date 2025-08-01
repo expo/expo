@@ -1,13 +1,14 @@
 import path from 'path';
 
 import requireContext from './require-context-ponyfill';
-import { NativeIntent } from '../types';
+import { LoaderFunction, NativeIntent } from '../types';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;
 export type NativeIntentStub = NativeIntent;
 export type FileStub =
   | (Record<string, unknown> & {
       default: ReactComponent;
+      loader?: LoaderFunction;
       unstable_settings?: Record<string, any>;
     })
   | ReactComponent;
