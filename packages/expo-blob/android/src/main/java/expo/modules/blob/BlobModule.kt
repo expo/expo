@@ -11,7 +11,7 @@ class BlobModule : Module() {
 
     Class(Blob::class) {
       Constructor { blobParts: List<BlobPart>?, options: BlobOptionsBag? ->
-        makeBlob(blobParts, options ?: BlobOptionsBag())
+        makeBlob(blobParts, options)
       }
 
       Property("size") { blob: Blob ->

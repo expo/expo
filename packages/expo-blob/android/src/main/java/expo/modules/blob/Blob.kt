@@ -142,8 +142,10 @@ internal fun List<BlobPart>.internal(nativeNewlines: Boolean): List<InternalBlob
   }
 }
 
-internal fun makeBlob(blobParts: List<BlobPart>?, options: BlobOptionsBag = BlobOptionsBag()): Blob {
-  return Blob((blobParts ?: listOf()).internal(options.endings == EndingType.NATIVE), options.type)
+internal fun makeBlob(blobParts: List<BlobPart>?, options: BlobOptionsBag?): Blob {
+  val safeBlobParts = blobParts ?: listOf()
+  val safeOptions = options ?: BlobOptionsBag()
+  return Blob(safeBlobParts.internal(safeOptions.endings == EndingType.NATIVE), safeOptions.type)
 }
 
 internal sealed class InternalBlobPart {
