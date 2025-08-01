@@ -37,7 +37,7 @@ The iOS library is inspired by the Android library, so they both have similar AP
 
 The following steps assume that the new module is created inside a new Expo project. However, you can create a new module inside an existing project by following the alternative instructions.
 
-### Start with a new project
+### Start with a new module project
 
 Create a new empty Expo module that can be published on npm and utilized in any Expo app by running the following command:
 
@@ -47,9 +47,9 @@ Create a new empty Expo module that can be published on npm and utilized in any 
 
 Now, open the newly created `expo-radial-chart` directory to start editing the native code.
 
-### Start with an existing project
+### Start with an existing Expo project
 
-Alternatively, you can use the new module as a view inside the existing project. Run the following command in your project's directory:
+Alternatively, you can use the new module as a view inside the existing Expo project directory. Run the following command in your project's directory:
 
 <Terminal cmd={['$ npx create-expo-module --local expo-radial-chart']} />
 
@@ -61,11 +61,13 @@ Now, open the newly created `modules/expo-radial-chart` directory to start editi
 
 ## Run the example project
 
-To verify that everything is functioning correctly, let's run the example project. In a terminal window, start the TypeScript compiler to watch for changes and rebuild the module JavaScript:
+To verify that everything is functioning correctly, let's run the example project.
+
+In step 1, if you started with a new module project, open a terminal window, start the TypeScript compiler to watch for changes, and rebuild the module JavaScript:
 
 <Terminal
   cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
+    '# Ensure you are inside expo-radial-chart directory before running the command below',
     '$ npm run build',
   ]}
 />
@@ -74,13 +76,17 @@ In another terminal window, compile and run the example app:
 
 <Terminal
   cmd={[
-    '$ cd example',
-    '# Run the example app on Android',
+    '$ cd example-expo-app',
+    '',
+    '# Run the example-expo-app on Android',
     '$ npx expo run:android',
+    '',
     '# Run the example app on iOS',
     '$ npx expo run:ios',
   ]}
 />
+
+In step 1, if you started with an existing Expo project, run the `npx expo run:android|ios` commands from your Expo project's root directory.
 
 </Step>
 
@@ -88,7 +94,7 @@ In another terminal window, compile and run the example app:
 
 ## Add native dependencies
 
-Add the native dependencies to the module by editing the **android/build.gradle** and **ios/ExpoRadialChart.podspec** files:
+Add the native dependencies to the module by editing the **expo-radial-chart/android/build.gradle** and **expo-radial-chart/ios/ExpoRadialChart.podspec** files:
 
 ```diff android/build.gradle
 dependencies {
@@ -421,7 +427,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **info** **Tip**: If you created the module inside an existing app, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
+> **info** **Tip**: If you created the module inside an existing app, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '@/modules/expo-radial-chart';`
 
 </Step>
 
