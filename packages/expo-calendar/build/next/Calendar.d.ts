@@ -20,4 +20,5 @@ export declare const requestCalendarPermissionsAsync: () => Promise<import("expo
 export declare const getCalendarPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
 export declare const requestRemindersPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
 export declare const getRemindersPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getSources: () => import("../Calendar").Source[];
 //# sourceMappingURL=Calendar.d.ts.map

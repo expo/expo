@@ -6,7 +6,7 @@ import {
   CustomExpoCalendarEvent,
   CustomExpoCalendarReminder,
 } from './ExpoCalendar.types';
-import { Calendar, EntityTypes } from '../Calendar';
+import { Calendar, EntityTypes, Source } from '../Calendar';
 
 declare class ExpoCalendarNextModule extends NativeModule {
   CustomExpoCalendar: typeof CustomExpoCalendar;
@@ -20,6 +20,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
   getCalendarPermissionsAsync(): Promise<PermissionResponse>;
   requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
   getRemindersPermissionsAsync(): Promise<PermissionResponse>;
+  getSources(): Source[];
 }
 
 // TODO: Support Expo Go

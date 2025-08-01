@@ -111,6 +111,12 @@ public final class CalendarNextModule: Module {
                 reject: promise.legacyRejecter)
         }
         
+        Function("getSources") {
+            return eventStore.sources.map { source in
+                serialize(ekSource: source)
+            }
+        }
+        
         Class(CustomExpoCalendar.self) {
             Constructor { (id: String) in
                 CustomExpoCalendar(id: id)

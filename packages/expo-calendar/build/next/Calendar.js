@@ -78,4 +78,5 @@ export const requestCalendarPermissionsAsync = ExpoCalendar.requestCalendarPermi
 export const getCalendarPermissionsAsync = ExpoCalendar.getCalendarPermissionsAsync;
 export const requestRemindersPermissionsAsync = ExpoCalendar.requestRemindersPermissionsAsync;
 export const getRemindersPermissionsAsync = ExpoCalendar.getRemindersPermissionsAsync;
+export const getSources = ExpoCalendar.getSources;
 //# sourceMappingURL=Calendar.js.map
