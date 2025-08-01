@@ -108,3 +108,8 @@ export function createCalendarNext(details: Partial<Calendar> = {}): ExportExpoC
   Object.setPrototypeOf(createdCalendar, ExportExpoCalendar.prototype);
   return createdCalendar;
 }
+
+export const requestCalendarPermissionsAsync = ExpoCalendar.requestCalendarPermissionsAsync;
+export const getCalendarPermissionsAsync = ExpoCalendar.getCalendarPermissionsAsync;
+export const requestRemindersPermissionsAsync = ExpoCalendar.requestRemindersPermissionsAsync;
+export const getRemindersPermissionsAsync = ExpoCalendar.getRemindersPermissionsAsync;

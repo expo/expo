@@ -1,4 +1,4 @@
-import { NativeModule } from 'expo-modules-core';
+import { NativeModule, PermissionResponse } from 'expo-modules-core';
 import { CustomExpoCalendar, CustomExpoCalendarAttendee, CustomExpoCalendarEvent, CustomExpoCalendarReminder } from './ExpoCalendar.types';
 import { Calendar, EntityTypes } from '../Calendar';
 declare class ExpoCalendarNextModule extends NativeModule {
@@ -9,6 +9,10 @@ declare class ExpoCalendarNextModule extends NativeModule {
     getDefaultCalendarId(): string;
     getCalendarsIds(type?: EntityTypes): string[];
     createCalendarNext(details: Partial<Calendar>): CustomExpoCalendar;
+    requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
+    getCalendarPermissionsAsync(): Promise<PermissionResponse>;
+    requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
+    getRemindersPermissionsAsync(): Promise<PermissionResponse>;
 }
 declare const _default: ExpoCalendarNextModule;
 export default _default;

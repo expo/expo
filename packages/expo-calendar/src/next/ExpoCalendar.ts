@@ -1,4 +1,4 @@
-import { NativeModule, requireNativeModule } from 'expo-modules-core';
+import { NativeModule, PermissionResponse, requireNativeModule } from 'expo-modules-core';
 
 import {
   CustomExpoCalendar,
@@ -16,6 +16,10 @@ declare class ExpoCalendarNextModule extends NativeModule {
   getDefaultCalendarId(): string;
   getCalendarsIds(type?: EntityTypes): string[];
   createCalendarNext(details: Partial<Calendar>): CustomExpoCalendar;
+  requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
+  getCalendarPermissionsAsync(): Promise<PermissionResponse>;
+  requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
+  getRemindersPermissionsAsync(): Promise<PermissionResponse>;
 }
 
 // TODO: Support Expo Go

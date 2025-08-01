@@ -16,4 +16,8 @@ export declare class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar 
 export declare function getDefaultCalendarNext(): ExportExpoCalendar;
 export declare function getCalendarsNext(type?: EntityTypes): ExportExpoCalendar[];
 export declare function createCalendarNext(details?: Partial<Calendar>): ExportExpoCalendar;
+export declare const requestCalendarPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getCalendarPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const requestRemindersPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getRemindersPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
 //# sourceMappingURL=Calendar.d.ts.map

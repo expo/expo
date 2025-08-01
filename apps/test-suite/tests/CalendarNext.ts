@@ -5,6 +5,10 @@ import {
   ExportExpoCalendarEvent,
   getCalendarsNext,
   getDefaultCalendarNext,
+  requestCalendarPermissionsAsync,
+  getCalendarPermissionsAsync,
+  requestRemindersPermissionsAsync,
+  getRemindersPermissionsAsync,
 } from 'expo-calendar/next';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
@@ -221,25 +225,25 @@ export async function test(t) {
   }
 
   describeWithPermissions('Calendar', () => {
-    // t.describe('requestCalendarPermissionsAsync()', () => {
-    //   t.it('requests for Calendar permissions', async () => {
-    //     const results = await Calendar.requestCalendarPermissionsAsync();
+    t.describe('requestCalendarPermissionsAsync()', () => {
+      t.it('requests for Calendar permissions', async () => {
+        const results = await requestCalendarPermissionsAsync();
 
-    //     t.expect(results.granted).toBe(true);
-    //     t.expect(results.status).toBe('granted');
-    //   });
-    // });
+        t.expect(results.granted).toBe(true);
+        t.expect(results.status).toBe('granted');
+      });
+    });
 
-    // if (Platform.OS === 'ios') {
-    //   t.describe('requestReminderPermissionsAsync()', () => {
-    //     t.it('requests for Reminder permissions', async () => {
-    //       const results = await Calendar.requestRemindersPermissionsAsync();
+    if (Platform.OS === 'ios') {
+      t.describe('requestReminderPermissionsAsync()', () => {
+        t.it('requests for Reminder permissions', async () => {
+          const results = await requestRemindersPermissionsAsync();
 
-    //       t.expect(results.granted).toBe(true);
-    //       t.expect(results.status).toBe('granted');
-    //     });
-    //   });
-    // }
+          t.expect(results.granted).toBe(true);
+          t.expect(results.status).toBe('granted');
+        });
+      });
+    }
 
     t.describe('calendar UI', () => {
       let originalTimeout;
@@ -255,28 +259,28 @@ export async function test(t) {
         t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
       });
 
-      //   t.it('creates an event via UI', async () => {
-      //     const eventData = createEventData();
-      //     await alertAndWaitForResponse('Please confirm the event creation dialog.');
-      //     const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
-      //     if (Platform.OS === 'ios') {
-      //       t.expect(result.action).toBe('saved');
-      //       t.expect(typeof result.id).toBe('string');
-      //       const storedEvent = await Calendar.getEventAsync(result.id);
+      t.it('creates an event via UI', async () => {
+        const eventData = createEventData();
+        await alertAndWaitForResponse('Please confirm the event creation dialog.');
+        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+        if (Platform.OS === 'ios') {
+          t.expect(result.action).toBe('saved');
+          t.expect(typeof result.id).toBe('string');
+          const storedEvent = await Calendar.getEventAsync(result.id);
 
-      //       t.expect(storedEvent).toEqual(
-      //         t.jasmine.objectContaining({
-      //           title: eventData.title,
-      //           allDay: eventData.allDay,
-      //           location: eventData.location,
-      //           notes: eventData.notes,
-      //         })
-      //       );
-      //     } else {
-      //       t.expect(result.action).toBe('done');
-      //       t.expect(result.id).toBe(null);
-      //     }
-      //   });
+          t.expect(storedEvent).toEqual(
+            t.jasmine.objectContaining({
+              title: eventData.title,
+              allDay: eventData.allDay,
+              location: eventData.location,
+              notes: eventData.notes,
+            })
+          );
+        } else {
+          // t.expect(result.action).toBe('done');
+          // t.expect(result.id).toBe(null);
+        }
+      });
 
       t.it('can preview an event', async () => {
         const calendar = await createTestCalendarAsync();
