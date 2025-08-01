@@ -42,7 +42,7 @@ export const ModalsRenderer = ({
           }}
           contentStyle={[
             {
-              flex: 1,
+              flex: config.presentationStyle !== 'formSheet' ? 1 : undefined,
               backgroundColor: config.transparent ? 'transparent' : 'white',
             },
             config.viewProps?.style,

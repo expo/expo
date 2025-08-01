@@ -224,7 +224,7 @@ export async function reloadAsync(options?: {
     const resolvedOptions = resolveReloadScreenOptions(options.reloadScreenOptions);
     return await ExpoUpdates.reload(resolvedOptions);
   }
-  await ExpoUpdates.reload();
+  await ExpoUpdates.reload(null);
 }
 
 /**

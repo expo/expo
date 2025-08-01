@@ -43,7 +43,8 @@
     "requiresExtraSetup.json",
     "tsconfig.base.json",
     "types",
-    "virtual"
+    "virtual",
+    "template.tgz"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -76,6 +77,7 @@
     "@expo/cli": "0.24.13",
     "@expo/config": "~11.0.10",
     "@expo/config-plugins": "~10.0.2",
+    "@expo/devtools": "0.0.1",
     "@expo/fingerprint": "0.13.0",
     "@expo/metro": "~0.1.0",
     "@expo/metro-config": "0.20.14",
@@ -99,9 +101,8 @@
     "expo-module-scripts": "^4.1.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.80.1",
-    "web-streams-polyfill": "^3.3.2",
-    "ws": "^8.18.0"
+    "react-native": "0.81.0-rc.3",
+    "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {
     "@expo/dom-webview": "*",

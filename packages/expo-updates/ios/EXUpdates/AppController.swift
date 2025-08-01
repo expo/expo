@@ -146,7 +146,7 @@ public protocol AppControllerInterface {
 public protocol InternalAppControllerInterface: AppControllerInterface {
   var updatesDirectory: URL? { get }
 
-  var reloadScreenManager: ReloadScreenManager? { get }
+  var reloadScreenManager: Reloadable? { get }
 
   var eventManager: UpdatesEventManager { get }
   func onEventListenerStartObserving()

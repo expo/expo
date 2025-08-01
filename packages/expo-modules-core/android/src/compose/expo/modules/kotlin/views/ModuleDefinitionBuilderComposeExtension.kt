@@ -24,7 +24,7 @@ open class ModuleDefinitionBuilderWithCompose(
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
     P::class.memberProperties.forEach { prop ->
       val kType = prop.returnType.arguments.first().type
-      if (kType != null) {
+      if (kType != null && viewDefinitionBuilder.props[prop.name] == null) {
         viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType), prop)
       }
     }

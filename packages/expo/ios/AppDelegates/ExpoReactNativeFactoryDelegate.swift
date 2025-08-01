@@ -1,4 +1,4 @@
-import React_RCTAppDelegate
+import React
 
 open class ExpoReactNativeFactoryDelegate: RCTDefaultReactNativeFactoryDelegate {
   open override func customize(_ rootView: UIView) {

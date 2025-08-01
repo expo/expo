@@ -2,6 +2,7 @@ package expo.modules.devlauncher.compose.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
@@ -14,7 +15,7 @@ import expo.modules.devmenu.compose.theme.Theme
 fun ScreenHeaderContainer(
   backgroundColor: Color = Theme.colors.background.default,
   modifier: Modifier = Modifier,
-  content: @Composable () -> Unit
+  content: @Composable RowScope.() -> Unit
 ) {
   Row(
     verticalAlignment = Alignment.Companion.CenterVertically,
