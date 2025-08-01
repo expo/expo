@@ -1,5 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
+import { createCalendarNext, ExportExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -10,10 +11,10 @@ import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 import { optionalRequire } from '../navigation/routeBuilder';
 
-export const CalendarsScreens = [
+export const CalendarsNextScreens = [
   {
-    name: 'Events',
-    route: 'events',
+    name: 'Events@next',
+    route: 'events-next',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./EventsScreen'));
@@ -22,19 +23,19 @@ export const CalendarsScreens = [
 ];
 
 type StackNavigation = StackNavigationProp<{
-  Reminders: { calendar: any };
-  Events: { calendar: any };
+  RemindersNext: { calendar: any };
+  EventsNext: { calendar: any };
 }>;
 
 const CalendarRow = (props: {
   navigation: StackNavigation;
-  calendar: Calendar.Calendar;
-  updateCalendar: (calendarId: string) => void;
-  deleteCalendar: (calendar: any) => void;
+  calendar: ExportExpoCalendar;
+  updateCalendar: (calendar: ExportExpoCalendar) => void;
+  deleteCalendar: (calendar: ExportExpoCalendar) => void;
 }) => {
   const { calendar } = props;
   const calendarTypeName =
-    calendar.entityType === Calendar.EntityTypes.REMINDER ? 'Reminders' : 'Events';
+    calendar.entityType === Calendar.EntityTypes.REMINDER ? 'RemindersNext' : 'EventsNext';
   return (
     <View style={styles.calendarRow}>
       <HeadingText>{calendar.title}</HeadingText>
@@ -44,7 +45,7 @@ const CalendarRow = (props: {
         title={`View ${calendarTypeName}`}
       />
       <ListButton
-        onPress={() => props.updateCalendar(calendar.id)}
+        onPress={() => props.updateCalendar(calendar)}
         title="Update Calendar"
         disabled={!calendar.allowsModifications}
       />
@@ -57,20 +58,20 @@ const CalendarRow = (props: {
   );
 };
 
-export default function CalendarsScreen({ navigation }: { navigation: StackNavigation }) {
+export default function CalendarsNextScreen({ navigation }: { navigation: StackNavigation }) {
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
-  const [calendars, setCalendars] = useState<Calendar.Calendar[]>([]);
+  const [calendars, setCalendars] = useState<ExportExpoCalendar[]>([]);
 
   const findCalendars = async () => {
     const calendarGranted = (await askForCalendarPermissions()).granted;
     const reminderGranted =
       Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
     if (calendarGranted && reminderGranted) {
-      const eventCalendars = (await Calendar.getCalendarsAsync('event')) as unknown as any[];
+      const eventCalendars = getCalendarsNext(Calendar.EntityTypes.EVENT) as unknown as any[];
       const reminderCalendars = (
-        Platform.OS === 'ios' ? await Calendar.getCalendarsAsync('reminder') : []
+        Platform.OS === 'ios' ? getCalendarsNext(Calendar.EntityTypes.REMINDER) : []
       ) as any[];
       setCalendars([...eventCalendars, ...reminderCalendars]);
     }
@@ -98,20 +99,20 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       accessLevel: Calendar.CalendarAccessLevel.OWNER,
     };
     try {
-      await Calendar.createCalendarAsync(newCalendar);
-      Alert.alert('Calendar saved successfully');
+      const calendar = createCalendarNext(newCalendar);
+      Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
     } catch (e) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
 
-  const updateCalendar = async (calendarId: string) => {
+  const updateCalendar = async (calendar: any) => {
     const newCalendar = {
-      title: 'cool updated calendar',
+      title: 'cool updated calendar' + new Date().toISOString(),
     };
     try {
-      await Calendar.updateCalendarAsync(calendarId, newCalendar);
+      calendar.update(newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
     } catch (e) {
@@ -129,7 +130,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
         text: 'OK',
         async onPress() {
           try {
-            await Calendar.deleteCalendarAsync(calendar.id);
+            calendar.delete();
             Alert.alert('Calendar deleted successfully');
             findCalendars();
           } catch (e) {
@@ -168,8 +169,8 @@ CalendarRow.navigationOptions = {
   title: 'Calendars',
 };
 
-CalendarsScreen.navigationOptions = {
-  title: 'Calendars',
+CalendarsNextScreen.navigationOptions = {
+  title: 'Calendars@next',
 };
 
 const styles = StyleSheet.create({

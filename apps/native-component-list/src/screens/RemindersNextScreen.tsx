@@ -1,13 +1,14 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
+import { ExportExpoCalendar, ExportExpoCalendarReminder } from 'expo-calendar/next';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface RowProps {
-  reminder: Calendar.Reminder;
-  getReminder: (reminder: Calendar.Reminder) => void;
-  updateReminder: (reminder: Calendar.Reminder) => void;
-  deleteReminder: (remidnerId: string) => void;
+  reminder: ExportExpoCalendarReminder;
+  getReminder: (reminder: ExportExpoCalendarReminder) => void;
+  updateReminder: (reminder: ExportExpoCalendarReminder) => void;
+  deleteReminder: (reminder: ExportExpoCalendarReminder) => void;
 }
 
 const ReminderRow: React.FunctionComponent<RowProps> = ({
@@ -21,16 +22,17 @@ const ReminderRow: React.FunctionComponent<RowProps> = ({
     <Text style={styles.reminderData}>{JSON.stringify(reminder)}</Text>
     <Button onPress={() => getReminder(reminder)} title="Get Reminder Using ID" />
     <Button onPress={() => updateReminder(reminder)} title="Update Reminder" />
-    <Button onPress={() => deleteReminder(reminder.id!)} title="Delete Reminder" />
+    <Button onPress={() => deleteReminder(reminder)} title="Delete Reminder" />
   </View>
 );
 
 interface State {
-  reminders: Calendar.Reminder[];
+  reminders: ExportExpoCalendarReminder[];
+  calendar: ExportExpoCalendar | null;
 }
 
 type Links = {
-  Reminders: { calendar: Calendar.Calendar };
+  Reminders: { calendar: ExportExpoCalendar };
 };
 
 type Props = StackScreenProps<Links, 'Reminders'>;
@@ -41,19 +43,26 @@ export default class RemindersScreen extends React.Component<Props, State> {
   };
 
   readonly state: State = {
+    calendar: null,
     reminders: [],
   };
 
   componentDidMount() {
     const { params } = this.props.route;
     if (params) {
-      this._findReminders(params.calendar.id!);
+      const calendar = new ExportExpoCalendar(params.calendar.id!);
+      this._findReminders(calendar);
     }
   }
 
-  _findReminders = async (id: string) => {
-    const reminders = await Calendar.getRemindersAsync([id], null, new Date(), new Date());
-    this.setState({ reminders });
+  _findReminders = async (calendar: ExportExpoCalendar) => {
+    try {
+      const reminders = await calendar.listReminders(new Date(), new Date());
+      this.setState({ reminders });
+    } catch (error) {
+      console.error('Error fetching reminders:', error);
+      this.setState({ reminders: [] });
+    }
   };
 
   _addReminder = async () => {
@@ -72,9 +81,10 @@ export default class RemindersScreen extends React.Component<Props, State> {
       notes: 'where do these notes show up',
     };
     try {
-      await Calendar.createReminderAsync(calendar.id!, newReminder);
+      const createdReminder = calendar.createReminder(newReminder);
+      console.log('newReminder', createdReminder);
       Alert.alert('Reminder saved successfully');
-      this._findReminders(calendar.id!);
+      this._findReminders(calendar);
     } catch (e) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
@@ -89,7 +99,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
     }
   };
 
-  _updateReminder = async (reminder: Calendar.Reminder) => {
+  _updateReminder = async (reminder: ExportExpoCalendarReminder) => {
     const { calendar } = this.props.route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
@@ -97,29 +107,32 @@ export default class RemindersScreen extends React.Component<Props, State> {
     }
     const newReminder = {
       title: 'updated reminder',
-      startDate: new Date(),
+    //   startDate: new Date(),
     };
     try {
-      await Calendar.updateReminderAsync(reminder.id!, newReminder);
+      reminder.update(newReminder);
       Alert.alert('Reminder saved successfully');
-      this._findReminders(calendar.id!);
+      this._findReminders(calendar);
     } catch (e) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
   };
 
-  _deleteReminder = async (reminderId: string) => {
+  _deleteReminder = async (reminder: ExportExpoCalendarReminder) => {
     try {
       const { calendar } = this.props.route.params!;
-      await Calendar.deleteReminderAsync(reminderId);
+      reminder.delete();
       Alert.alert('Reminder deleted successfully');
-      this._findReminders(calendar.id!);
+      this._findReminders(calendar);
     } catch (e) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
   };
 
   render() {
+    if (!this.props.route.params?.calendar) {
+      return <Text>Access this screen from the "Calendars" screen.</Text>;
+    }
     if (this.state.reminders.length) {
       return (
         <ScrollView style={styles.container}>
