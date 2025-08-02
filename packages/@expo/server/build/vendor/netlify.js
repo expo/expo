@@ -7,8 +7,15 @@ exports.convertRequest = convertRequest;
 exports.isBinaryType = isBinaryType;
 const abort_controller_1 = require("abort-controller");
 const index_1 = require("../index");
+const node_1 = require("../runtime/node");
 function createRequestHandler({ build }) {
-    const handleRequest = (0, index_1.createRequestHandler)(build);
+    const handleRequest = (0, index_1.createRequestHandler)({
+        getRoutesManifest: (0, node_1.getRoutesManifest)(build),
+        getHtml: (0, node_1.getHtml)(build),
+        getApiRoute: (0, node_1.getApiRoute)(build),
+        logApiRouteExecutionError: (0, node_1.logApiRouteExecutionError)(),
+        handleApiRouteError: (0, node_1.handleApiRouteError)(),
+    });
     return async (event) => {
         const response = await handleRequest(convertRequest(event));
         return respond(response);

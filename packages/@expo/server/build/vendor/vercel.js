@@ -7,12 +7,19 @@ exports.respond = respond;
 const node_stream_1 = require("node:stream");
 const promises_1 = require("node:stream/promises");
 const index_1 = require("../index");
+const node_1 = require("../runtime/node");
 /**
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Remix.
  */
 function createRequestHandler({ build }) {
-    const handleRequest = (0, index_1.createRequestHandler)(build);
+    const handleRequest = (0, index_1.createRequestHandler)({
+        getRoutesManifest: (0, node_1.getRoutesManifest)(build),
+        getHtml: (0, node_1.getHtml)(build),
+        getApiRoute: (0, node_1.getApiRoute)(build),
+        logApiRouteExecutionError: (0, node_1.logApiRouteExecutionError)(),
+        handleApiRouteError: (0, node_1.handleApiRouteError)(),
+    });
     return async (req, res) => {
         return respond(res, await handleRequest(convertRequest(req, res)));
     };

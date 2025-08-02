@@ -1,162 +1,82 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRoutesManifest = getRoutesManifest;
 exports.createRequestHandler = createRequestHandler;
+exports.getRedirectRewriteLocation = getRedirectRewriteLocation;
 require("./install");
-const node_fs_1 = __importDefault(require("node:fs"));
-const node_path_1 = __importDefault(require("node:path"));
-const debug = process.env.NODE_ENV === 'development'
+const debug = process?.env?.NODE_ENV === 'development'
     ? require('debug')('expo:server')
     : () => { };
-function getProcessedManifest(path) {
-    // TODO: JSON Schema for validation
-    const routesManifest = JSON.parse(node_fs_1.default.readFileSync(path, 'utf-8'));
-    const parsed = {
-        ...routesManifest,
-        notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        apiRoutes: routesManifest.apiRoutes.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        htmlRoutes: routesManifest.htmlRoutes.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        redirects: routesManifest.redirects?.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        rewrites: routesManifest.rewrites?.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-    };
-    return parsed;
-}
-function getRoutesManifest(distFolder) {
-    return getProcessedManifest(node_path_1.default.join(distFolder, '_expo/routes.json'));
-}
-// TODO: Reuse this for dev as well
-function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
-    // Serve a static file by exact route name
-    const filePath = node_path_1.default.join(distFolder, route.page + '.html');
-    if (node_fs_1.default.existsSync(filePath)) {
-        return node_fs_1.default.readFileSync(filePath, 'utf-8');
-    }
-    // Serve a static file by route name with hoisted index
-    // See: https://github.com/expo/expo/pull/27935
-    const hoistedFilePath = route.page.match(/\/index$/)
-        ? node_path_1.default.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
-        : null;
-    if (hoistedFilePath && node_fs_1.default.existsSync(hoistedFilePath)) {
-        return node_fs_1.default.readFileSync(hoistedFilePath, 'utf-8');
-    }
-    return null;
-}, getApiRoute = async (route) => {
-    const filePath = node_path_1.default.join(distFolder, route.file);
-    debug(`Handling API route: ${route.page}: ${filePath}`);
-    // TODO: What's the standard behavior for malformed projects?
-    if (!node_fs_1.default.existsSync(filePath)) {
-        return null;
-    }
-    if (/\.c?js$/.test(filePath)) {
-        return require(filePath);
-    }
-    return import(filePath);
-}, logApiRouteExecutionError = (error) => {
-    console.error(error);
-}, handleApiRouteError = async (error) => {
-    if ('statusCode' in error && typeof error.statusCode === 'number') {
-        return new Response(error.message, {
-            status: error.statusCode,
-            headers: { 'Content-Type': 'text/plain' },
-        });
-    }
-    return new Response('Internal server error', {
-        status: 500,
-        headers: { 'Content-Type': 'text/plain' },
-    });
-}, } = {}) {
-    let routesManifest;
+function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, logApiRouteExecutionError, handleApiRouteError, }) {
     return async function handler(request) {
-        if (getInternalRoutesManifest) {
-            const manifest = await getInternalRoutesManifest(distFolder);
-            if (manifest) {
-                routesManifest = manifest;
-            }
-            else {
-                // Development error when Expo Router is not setup.
-                return new Response('No routes manifest found', {
-                    status: 404,
-                    headers: { 'Content-Type': 'text/plain' },
-                });
-            }
+        const manifest = await getRoutesManifest();
+        if (!manifest) {
+            // NOTE(@EvanBacon): Development error when Expo Router is not setup.
+            // NOTE(@kitten): If the manifest is not found, we treat this as
+            // an SSG deployment and do nothing
+            return new Response('Not found', {
+                status: 404,
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+            });
         }
-        else if (!routesManifest) {
-            routesManifest = getRoutesManifest(distFolder);
-        }
-        const url = new URL(request.url, 'http://expo.dev');
+        return requestHandler(request, manifest);
+    };
+    async function requestHandler(incomingRequest, manifest) {
+        let request = incomingRequest;
+        const url = new URL(request.url);
         let sanitizedPathname = url.pathname;
         debug('Request', sanitizedPathname);
-        if (routesManifest.redirects) {
-            for (const route of routesManifest.redirects) {
+        if (manifest.redirects) {
+            for (const route of manifest.redirects) {
                 if (!route.namedRegex.test(sanitizedPathname)) {
                     continue;
                 }
                 if (route.methods && !route.methods.includes(request.method)) {
                     continue;
                 }
-                const Location = getRedirectRewriteLocation(request, route);
-                if (Location) {
-                    debug('Redirecting', Location);
-                    // Get the params
-                    return new Response(null, { status: route.permanent ? 308 : 307, headers: { Location } });
-                }
+                return respondRedirect(url, request, route);
             }
         }
-        if (routesManifest.rewrites) {
-            for (const route of routesManifest.rewrites) {
+        if (manifest.rewrites) {
+            for (const route of manifest.rewrites) {
                 if (!route.namedRegex.test(sanitizedPathname)) {
                     continue;
                 }
                 if (route.methods && !route.methods.includes(request.method)) {
                     continue;
                 }
-                const url = getRedirectRewriteLocation(request, route);
-                request = new Request(new URL(url, new URL(request.url).origin), request);
-                sanitizedPathname = new URL(request.url, 'http://expo.dev').pathname;
+                const location = getRedirectRewriteLocation(request, route);
+                const rewriteUrl = new URL(location, url.origin);
+                request = new Request(rewriteUrl, request);
+                sanitizedPathname = rewriteUrl.pathname;
             }
         }
+        // First, test static routes
         if (request.method === 'GET' || request.method === 'HEAD') {
-            // First test static routes
-            for (const route of routesManifest.htmlRoutes) {
+            for (const route of manifest.htmlRoutes) {
                 if (!route.namedRegex.test(sanitizedPathname)) {
                     continue;
                 }
-                // // Mutate to add the expoUrl object.
-                updateRequestWithConfig(request, route);
-                // serve a static file
-                const contents = await getHtml(request, route);
-                // TODO: What's the standard behavior for malformed projects?
-                if (!contents) {
-                    return new Response('Not found', {
-                        status: 404,
-                        headers: { 'Content-Type': 'text/plain' },
-                    });
-                }
-                else if (contents instanceof Response) {
-                    return contents;
-                }
-                return new Response(contents, { status: 200, headers: { 'Content-Type': 'text/html' } });
+                const html = await getHtml(request, route);
+                return respondHTML(html);
             }
         }
         // Next, test API routes
-        for (const route of routesManifest.apiRoutes) {
+        for (const route of manifest.apiRoutes) {
             if (!route.namedRegex.test(sanitizedPathname)) {
                 continue;
             }
-            const func = await getApiRoute(route);
+            let func;
+            try {
+                func = await getApiRoute(route);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    logApiRouteExecutionError(error);
+                }
+                return handleApiRouteError(error);
+            }
             if (func instanceof Response) {
                 return func;
             }
@@ -167,8 +87,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                     headers: { 'Content-Type': 'text/plain' },
                 });
             }
-            // Mutate to add the expoUrl object.
-            const params = updateRequestWithConfig(request, route);
+            const params = parseParams(request, route);
             try {
                 // TODO: Handle undefined
                 return (await routeHandler(request, params));
@@ -181,12 +100,10 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             }
         }
         // Finally, test 404 routes
-        for (const route of routesManifest.notFoundRoutes) {
+        for (const route of manifest.notFoundRoutes) {
             if (!route.namedRegex.test(sanitizedPathname)) {
                 continue;
             }
-            // // Mutate to add the expoUrl object.
-            updateRequestWithConfig(request, route);
             // serve a static file
             const contents = await getHtml(request, route);
             // TODO: What's the standard behavior for malformed projects?
@@ -207,29 +124,51 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             headers: { 'Content-Type': 'text/plain' },
         });
         return response;
-    };
-}
-function updateRequestWithConfig(request, config) {
-    const params = {};
-    const url = new URL(request.url);
-    const match = config.namedRegex.exec(url.pathname);
-    if (match?.groups) {
-        for (const [key, value] of Object.entries(match.groups)) {
-            const namedKey = config.routeKeys[key];
-            params[namedKey] = value;
-        }
     }
-    return params;
 }
-/** Match `[page]` -> `page` or `[...group]` -> `...group` */
-const dynamicNameRe = /^\[([^[\]]+?)\]$/;
+function respondHTML(html) {
+    if (typeof html === 'string') {
+        return new Response(html, {
+            status: 200,
+            headers: {
+                'Content-Type': 'text/html',
+            },
+        });
+    }
+    if (isResponse(html)) {
+        // TODO: Might change, this is only used for development error responses
+        return html;
+    }
+    // TODO: What's the standard behavior for malformed projects?
+    // NOTE(@krystofwoldrich): Worker throws -> throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
+    return new Response('Not found', {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain' },
+    });
+}
+function respondRedirect(url, request, route) {
+    // NOTE(@krystofwoldrich): @expo/server would not redirect when location was empty,
+    // it would keep searching for match and eventually return 404.
+    // Worker redirects to origin.
+    const location = getRedirectRewriteLocation(request, route);
+    const target = new URL(location, url.origin).toString();
+    let status;
+    if (request.method === 'GET' || request.method === 'HEAD') {
+        status = route.permanent ? 301 : 302;
+    }
+    else {
+        status = route.permanent ? 308 : 307;
+    }
+    debug('Redirecting', status, target);
+    return Response.redirect(target, status);
+}
 function getRedirectRewriteLocation(request, route) {
-    const params = updateRequestWithConfig(request, route);
+    const params = parseParams(request, route);
     const urlSearchParams = new URL(request.url).searchParams;
     let location = route.page
         .split('/')
         .map((segment) => {
-        let paramName = segment.match(dynamicNameRe)?.[1];
+        let paramName = matchDynamicName(segment);
         if (!paramName) {
             return segment;
         }
@@ -237,12 +176,14 @@ function getRedirectRewriteLocation(request, route) {
             paramName = paramName.slice(3);
             const value = params[paramName];
             delete params[paramName];
-            return value;
+            return value ?? segment;
         }
         else {
             const value = params[paramName];
             delete params[paramName];
-            return value?.split('/')[0];
+            // If we are redirecting from a catch-all route, we need to remove the extra segments
+            // e.g. `/files/[...path]` -> `/dirs/[name]`, `/files/home/name.txt` -> `/dirs/home`
+            return value?.split('/')[0] ?? segment;
         }
     })
         .join('/');
@@ -255,5 +196,24 @@ function getRedirectRewriteLocation(request, route) {
                 }).toString();
     }
     return location;
+}
+function parseParams(request, route) {
+    const params = {};
+    const { pathname } = new URL(request.url);
+    const match = route.namedRegex.exec(pathname);
+    if (match?.groups) {
+        for (const [key, value] of Object.entries(match.groups)) {
+            const namedKey = route.routeKeys[key];
+            params[namedKey] = value;
+        }
+    }
+    return params;
+}
+/** Match `[page]` -> `page` or `[...group]` -> `...group` */
+function matchDynamicName(name) {
+    return name.match(/^\[([^[\]]+?)\]$/)?.[1];
+}
+function isResponse(input) {
+    return !!input && typeof input === 'object' && input instanceof Response;
 }
 //# sourceMappingURL=index.js.map
