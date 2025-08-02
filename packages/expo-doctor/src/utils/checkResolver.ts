@@ -18,6 +18,7 @@ import { MetroConfigCheck } from '../checks/MetroConfigCheck';
 import { NativeToolingVersionCheck } from '../checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from '../checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from '../checks/PackageManagerVersionCheck';
+import { PeerDependencyChecks } from '../checks/PeerDependencyChecks';
 import { ProjectSetupCheck } from '../checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
@@ -45,6 +46,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new IllegalPackageCheck(),
     new GlobalPackageInstalledLocallyCheck(),
     new DirectPackageInstallCheck(),
+    new PeerDependencyChecks(),
 
     // Version Checks
     new SupportPackageVersionCheck(),
