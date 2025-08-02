@@ -320,6 +320,74 @@ describe('server', () => {
     expect(bundle.split('\n').length).toBeLessThan(700);
   });
 
+  it('runs `npx expo export --no-bytecode --unstable-hosted-native`', async () => {
+    // `npx expo export`
+    await executeExpoAsync(
+      projectRoot,
+      [
+        'export',
+        '--source-maps',
+        '--no-bytecode',
+        '--dump-assetmap',
+        '--unstable-hosted-native',
+        '--platform',
+        'ios',
+      ],
+      {
+        env: {
+          NODE_ENV: 'production',
+          TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+        },
+      }
+    );
+
+    const outputDir = path.join(projectRoot, 'dist');
+    const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
+
+    expect(metadata).toEqual({
+      bundler: 'metro',
+      fileMetadata: {
+        ios: {
+          assets: [
+            {
+              ext: 'png',
+              path: expect.pathMatching(ASSETS_MD5_PATH),
+            },
+            {
+              ext: 'png',
+              path: expect.pathMatching(ASSETS_MD5_PATH),
+            },
+            {
+              ext: 'ttf',
+              path: expect.pathMatching(ASSETS_MD5_PATH),
+            },
+          ],
+          bundle: expect.pathMatching(
+            new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js$`)
+          ),
+        },
+      },
+      version: 0,
+    });
+
+    const assetmap = await JsonFile.readAsync(path.resolve(outputDir, 'assetmap.json'));
+    expect(assetmap).toEqual({});
+
+    // If this changes then everything else probably changed as well.
+    expect(findProjectFiles(outputDir)).toEqual([
+      expect.pathMatching(new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js$`)),
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js\\.map$`)
+      ),
+      'assetmap.json',
+      expect.pathMatching(new RegExp(`assets/assets/font\\.${MD5_REGEX.source}\\.ttf$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}\\.png$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}@2x\\.png$`)),
+      'favicon.ico',
+      'metadata.json',
+    ]);
+  });
+
   // Regression test for: https://github.com/expo/expo/issues/35471
   it('runs `npx expo export --platform=web --dev`', async () => {
     await executeExpoAsync(
