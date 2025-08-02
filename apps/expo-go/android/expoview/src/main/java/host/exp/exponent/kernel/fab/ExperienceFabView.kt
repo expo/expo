@@ -14,7 +14,17 @@ class ExperienceFabView(
     addView(
       ComposeView(context).apply {
         setContent {
-          ComposeMovableFloatingActionButton(context)
+          FabTheme {
+            ComposeMovableFloatingActionButton(
+              context = context,
+              onRefreshPress = {
+                context.devMenuManager.reloadApp()
+              },
+              onOpenMenuPress = {
+                context.toggleDevMenu()
+              }
+            )
+          }
         }
       }
     )

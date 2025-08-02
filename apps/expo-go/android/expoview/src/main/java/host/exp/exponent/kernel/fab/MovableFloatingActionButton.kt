@@ -9,30 +9,23 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.drag
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -45,10 +38,10 @@ import androidx.compose.runtime.setValue
 import com.facebook.react.devsupport.DevInternalSettings
 import expo.modules.devmenu.fab.ExpoVelocityTracker.PointF
 import host.exp.exponent.experience.ExperienceActivity
-import host.exp.expoview.R
+import host.exp.exponent.kernel.fab.FloatingActionButtonContent
 import java.lang.ref.WeakReference
 
-private val FabSize = 56.dp
+private val FabDefaultSize = DpSize(48.dp, 92.dp)
 private val Margin = 16.dp
 private const val ClickDragTolerance = 40f
 
@@ -63,8 +56,10 @@ private typealias AnimatableOffset = Animatable<Offset, AnimationVector2D>
 fun ComposeMovableFloatingActionButton(
   context: ExperienceActivity,
   modifier: Modifier = Modifier,
-  fabSize: Dp = FabSize,
-  margin: Dp = Margin
+  fabSize: DpSize = FabDefaultSize,
+  margin: Dp = Margin,
+  onRefreshPress: () -> Unit = {},
+  onOpenMenuPress: () -> Unit = {}
 ) {
   var visible by remember { mutableStateOf(false) }
 
@@ -83,29 +78,20 @@ fun ComposeMovableFloatingActionButton(
   }
 
   BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val totalFabSize = fabSize + margin * 2
-    val totalFabSizePx = with(LocalDensity.current) { totalFabSize.toPx() }
+    val totalFabSize = DpSize(fabSize.width + margin * 2, fabSize.height + margin * 2)
+    val totalFabSizePx = with(LocalDensity.current) {
+      Offset(totalFabSize.width.toPx(), totalFabSize.height.toPx())
+    }
     val bounds = Offset(
-      x = constraints.maxWidth - totalFabSizePx,
-      y = constraints.maxHeight - totalFabSizePx
+      x = constraints.maxWidth - totalFabSizePx.x,
+      y = constraints.maxHeight - totalFabSizePx.y
     )
 
     val previousBounds = rememberPrevious(bounds)
-
-    // Use our velocity tracker. I couldn't get satisfying results with androidx.compose.ui.input.pointer.util.VelocityTracker
-    val velocityTracker = ExpoVelocityTracker()
-
-    /*
-     * Reasoning for the default FAB position: I assume that we want the users to have to change the FAB position as seldom as possible.
-     * Most of the time apps users (developers testing the app) will read app content that is displayed at around 1/3 of the height of the screen
-     * therefore we probably don't want to have the FAB there because it will be in the way. We also can't it have at the very bottom, because it will often
-     * collide with the bottom tabs. For the very top of the screen - we will collide with screen headers. 75% of the height of the screen seems like a
-     * reasonable default spot. We keep it on the right to make it easier to press for right-handed people.
-     */
+    val velocityTracker = remember { ExpoVelocityTracker() }
     val defaultOffset = bounds.copy(y = bounds.y * 0.75f)
-    val animatedOffset = remember {
-      Animatable(defaultOffset, Offset.VectorConverter)
-    }
+    val animatedOffset = remember { Animatable(defaultOffset, Offset.VectorConverter) }
+    val pillInteractionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(bounds.x, bounds.y) {
       previousBounds?.let {
@@ -117,7 +103,7 @@ fun ComposeMovableFloatingActionButton(
           currentPosition = Offset(newX, newY),
           velocity = PointF(0f, 0f),
           bounds = bounds,
-          totalFabSizePx = totalFabSizePx
+          totalFabWidth = totalFabSizePx.x
         )
 
         animatedOffset.snapTo(newTarget)
@@ -134,22 +120,17 @@ fun ComposeMovableFloatingActionButton(
           .offset { animatedOffset.value.toIntOffset() }
           .size(totalFabSize)
           .padding(margin)
-          .shadow(8.dp, CircleShape)
-          .clip(CircleShape)
-          .clickable {}
-          .background(Color.White)
           .pointerInput(bounds.x, bounds.y) {
             coroutineScope {
               while (true) {
                 awaitPointerEventScope {
-                  // React to the first touch down event
-                  val pointerId = awaitFirstDown().id
+                  val firstDown = awaitFirstDown(requireUnconsumed = false)
+                  val pointerId = firstDown.id
 
                   launch {
                     animatedOffset.stop()
                   }
 
-                  // React to drag
                   var dragDistance = 0f
                   var dragOffset = animatedOffset.value
 
@@ -160,36 +141,30 @@ fun ComposeMovableFloatingActionButton(
                     velocityTracker.registerPosition(dragOffset.x, dragOffset.y)
                     change.consume()
 
-                    // Only start moving after sufficient drag
                     if (dragDistance > ClickDragTolerance) {
                       launch {
                         animatedOffset.animateTo(dragOffset)
                       }
                     }
                   }
-
-                  // React to touch release
                   if (dragDistance < ClickDragTolerance) {
-                    context.toggleDevMenu()
                     velocityTracker.clear()
+                    launch {
+                      pillInteractionSource.emitRelease(firstDown.position)
+                    }
                   } else {
-                    handleRelease(
-                      animatedOffset,
-                      velocityTracker,
-                      totalFabSizePx,
-                      bounds
-                    )
+                    handleRelease(animatedOffset, velocityTracker, totalFabSizePx, bounds)
                   }
                 }
               }
             }
-          },
-        contentAlignment = Alignment.Center
+          }
       ) {
-        Image(
-          // TODO: @behenate Get a proper icon for the dev menu.
-          painter = painterResource(id = R.drawable.big_logo_dark),
-          contentDescription = "Pull up the dev menu"
+        FloatingActionButtonContent(
+          interactionSource = pillInteractionSource,
+          onRefreshPress = onRefreshPress,
+          onEllipsisPress = onOpenMenuPress,
+          modifier = Modifier.fillMaxSize()
         )
       }
     }
@@ -202,18 +177,18 @@ fun ComposeMovableFloatingActionButton(
 private fun CoroutineScope.handleRelease(
   animatedOffset: AnimatableOffset,
   velocityTracker: ExpoVelocityTracker,
-  totalFabSizePx: Float,
+  totalFabSizePx: Offset,
   bounds: Offset
 ) {
   val velocity = velocityTracker.calculateVelocity()
-  val newOffset = calculateTargetPosition(animatedOffset.value, velocity, bounds, totalFabSizePx)
+  val newOffset = calculateTargetPosition(animatedOffset.value, velocity, bounds, totalFabSizePx.x)
 
   velocityTracker.clear()
   launch {
     animatedOffset.animateTo(
       targetValue = newOffset,
       animationSpec = spring(
-        dampingRatio = Spring.DampingRatioLowBouncy, // Spring.DampingRatioLowBouncy > 0.65f > Spring.DampingRatioMediumBouncy
+        dampingRatio = Spring.DampingRatioLowBouncy,
         stiffness = Spring.StiffnessLow
       ),
       initialVelocity = Offset(velocity.x, velocity.y)

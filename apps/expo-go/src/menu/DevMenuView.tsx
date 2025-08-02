@@ -2,6 +2,7 @@ import { HomeFilledIcon, iconSize, RefreshIcon } from '@expo/styleguide-native';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
+import { Image } from 'expo-image';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UpgradeWarning } from 'src/screens/HomeScreen/UpgradeWarning';
@@ -30,6 +31,17 @@ const DEV_MENU_ORDER = [
   'dev-reload',
 ];
 
+function ThemedCustomIcon({ source }: { source: string }) {
+  const theme = useExpoTheme();
+  return (
+    <Image
+      source={source}
+      style={{ width: iconSize.regular, height: iconSize.regular }}
+      tintColor={theme.icon.default}
+    />
+  );
+}
+
 function ThemedMaterialIcon({
   name,
 }: {
@@ -46,7 +58,7 @@ const MENU_ITEMS_ICON_MAPPINGS: {
   'dev-remote-debug': <ThemedMaterialIcon name="remote-desktop" />,
   'dev-perf-monitor': <ThemedMaterialIcon name="speedometer" />,
   'dev-inspector': <ThemedMaterialIcon name="border-style" />,
-  'dev-fab': <ThemedMaterialIcon name="chart-bubble" />,
+  'dev-fab': <ThemedCustomIcon source="../assets/dev_menu_fab_icon.png" />,
 };
 
 export function DevMenuView({ uuid, task }: Props) {
