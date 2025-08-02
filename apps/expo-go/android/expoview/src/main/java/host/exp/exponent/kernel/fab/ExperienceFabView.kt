@@ -8,13 +8,23 @@ import host.exp.exponent.experience.ExperienceActivity
 
 @SuppressLint("ViewConstructor")
 class ExperienceFabView(
-  context: ExperienceActivity,
-): LinearLayout(context) {
+  context: ExperienceActivity
+) : LinearLayout(context) {
   init {
     addView(
       ComposeView(context).apply {
         setContent {
-          ComposeMovableFloatingActionButton(context)
+          FabTheme {
+            ComposeMovableFloatingActionButton(
+              context = context,
+              onRefreshPress = {
+                context.devMenuManager.reloadApp()
+              },
+              onOpenMenuPress = {
+                context.toggleDevMenu()
+              }
+            )
+          }
         }
       }
     )

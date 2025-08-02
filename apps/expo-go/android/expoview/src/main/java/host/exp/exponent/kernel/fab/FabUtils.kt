@@ -1,5 +1,7 @@
 package expo.modules.devmenu.fab
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -16,13 +18,13 @@ internal fun calculateTargetPosition(
   currentPosition: Offset,
   velocity: PointF,
   bounds: Offset,
-  totalFabSizePx: Float
+  totalFabWidth: Float
 ): Offset {
   // Simulate the bubble keeping the movement momentum
   // I've found that these values feel good (assume that the bubble keeps the momentum for ~100ms)
   val momentumOffsetX = velocity.x / 10f
   val momentumOffsetY = velocity.y / 10f
-  val offsetXWithMomentumEstimate = currentPosition.x + totalFabSizePx / 2 + momentumOffsetX
+  val offsetXWithMomentumEstimate = currentPosition.x + totalFabWidth / 2 + momentumOffsetX
   val targetX = if (offsetXWithMomentumEstimate < bounds.x / 2) {
     0f
   } else {
@@ -57,4 +59,9 @@ internal fun <T> rememberPrevious(current: T): T? {
   }
 
   return previousRef.value
+}
+
+internal suspend fun MutableInteractionSource.emitRelease(pressPosition: Offset) {
+  val pressInteraction = PressInteraction.Press(pressPosition)
+  this.emit(PressInteraction.Release(pressInteraction))
 }
