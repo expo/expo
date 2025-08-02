@@ -125,7 +125,7 @@ public final class ScreenCaptureModule: Module {
     textField.backgroundColor = UIColor.clear
     textField.frame = UIScreen.main.bounds
 
-    self.originalParent = keyWindow.layer.superlayer
+    originalParent = keyWindow.layer.superlayer
 
     keyWindow.layer.superlayer?.addSublayer(textField.layer)
 
@@ -140,15 +140,15 @@ public final class ScreenCaptureModule: Module {
   private func allowScreenshots() {
     guard let textField = protectionTextField,
       let window = keyWindow,
-      let originalParent = originalParent else {
+      let originalParentLayer = originalParent else {
       return
     }
 
     window.layer.removeFromSuperlayer()
-    originalParent.addSublayer(window.layer)
+    originalParentLayer.addSublayer(window.layer)
     textField.layer.removeFromSuperlayer()
-    self.protectionTextField = nil
-    self.originalParent = nil
+    protectionTextField = nil
+    originalParent = nil
   }
 
   private func enableAppSwitcherProtection() {
