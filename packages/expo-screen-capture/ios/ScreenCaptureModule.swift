@@ -127,7 +127,6 @@ public final class ScreenCaptureModule: Module {
 
     self.originalParent = keyWindow.layer.superlayer
 
-    keyWindow.makeKeyAndVisible()
     keyWindow.layer.superlayer?.addSublayer(textField.layer)
 
     if let firstTextFieldSublayer = textField.layer.sublayers?.first {
@@ -148,7 +147,6 @@ public final class ScreenCaptureModule: Module {
     window.layer.removeFromSuperlayer()
     originalParent.addSublayer(window.layer)
     textField.layer.removeFromSuperlayer()
-    window.makeKeyAndVisible()
     self.protectionTextField = nil
     self.originalParent = nil
   }
