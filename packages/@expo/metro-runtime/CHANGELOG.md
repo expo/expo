@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- noop unused code on native to suppress react-native import warnings.
+
 ## 5.0.4 — 2025-04-28
 
 ### 💡 Others
