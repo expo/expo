@@ -19,6 +19,7 @@ function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, the
     // Resolve snap points logic.
     const allowed = options.sheetAllowedDetents;
     const isArrayDetents = Array.isArray(allowed);
+    const initialDetentIndex = (0, utils_1.getInitialDetentIndex)(options);
     const useCustomSnapPoints = isArrayDetents && !(allowed.length === 1 && allowed[0] === 1);
     let snapPoints = useCustomSnapPoints
         ? allowed
@@ -26,18 +27,18 @@ function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, the
     if (!isSheet) {
         snapPoints = [1];
     }
-    const [snap, setSnap] = react_1.default.useState(useCustomSnapPoints && isArrayDetents ? allowed[0] : 1);
+    const [snap, setSnap] = react_1.default.useState(useCustomSnapPoints && isArrayDetents ? allowed[initialDetentIndex] : 1);
     // Update the snap value when custom snap points change.
     react_1.default.useEffect(() => {
         if (isSheet) {
-            const next = useCustomSnapPoints && isArrayDetents ? allowed[0] : 1;
+            const next = useCustomSnapPoints && isArrayDetents ? allowed[initialDetentIndex] : 1;
             setSnap(next);
         }
         else {
             // Desktop modal always fixed snap at 1
             setSnap(1);
         }
-    }, [isSheet, useCustomSnapPoints, isArrayDetents, allowed]);
+    }, [isSheet, useCustomSnapPoints, isArrayDetents, allowed, initialDetentIndex]);
     // Map react-native-screens ios sheet undimmed logic to Vaul's fadeFromIndex
     const fadeFromIndex = isSheet
         ? options.sheetLargestUndimmedDetentIndex === 'last'

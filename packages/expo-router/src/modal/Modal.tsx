@@ -8,7 +8,7 @@ import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
 import { useNavigation } from '../useNavigation';
-import { areDetentsValid } from './utils';
+import { areDetentsValid, isInitialDetentIndexValid } from './utils';
 
 export interface ModalProps extends ViewProps {
   /**
@@ -75,6 +75,13 @@ export interface ModalProps extends ViewProps {
    * However, it will still close when navigating back or replacing the current screen.
    */
   closeOnNavigation?: boolean;
+  /**
+   * See {@link ScreenProps["initialDetentIndex"]}.
+   *
+   * The initial detent index when sheet is presented.
+   * Works only when `presentation` is set to `formSheet`.
+   */
+  initialDetentIndex?: ModalConfig['initialDetentIndex'];
 }
 
 /**
@@ -113,16 +120,26 @@ export function Modal(props: ModalProps) {
     transparent,
     detents,
     closeOnNavigation,
+    initialDetentIndex,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
-    if (!areDetentsValid(detents)) {
-      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+    if (__DEV__ && visible) {
+      if (!areDetentsValid(detents)) {
+        throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+      }
+
+      if (!isInitialDetentIndexValid(detents, initialDetentIndex)) {
+        throw new Error(
+          `Initial detent index of ${initialDetentIndex} is out of bounds of provided detents array.`
+        );
+      }
     }
-  }, [detents]);
+  }, [visible, detents, initialDetentIndex]);
+
   useEffect(() => {
     if (
       __DEV__ &&
@@ -149,6 +166,7 @@ export function Modal(props: ModalProps) {
         uniqueId: newId,
         parentNavigationProp: navigation,
         detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
+        initialDetentIndex,
       });
       setCurrentModalId(newId);
       return () => {
