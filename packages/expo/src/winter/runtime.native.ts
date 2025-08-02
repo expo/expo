@@ -1,27 +1,8 @@
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
 
-// @ts-ignore: PolyfillFunctions does not have types exported
-import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
-
 import { installFormDataPatch } from './FormData';
-// Add a well-known shared symbol that doesn't show up in iteration or inspection
-// this can be used to detect if the global object abides by the Expo team's documented
-// built-in requirements.
-const BUILTIN_SYMBOL = Symbol.for('expo.builtin');
-
-function addBuiltinSymbol(obj: object) {
-  Object.defineProperty(obj, BUILTIN_SYMBOL, {
-    value: true,
-    enumerable: false,
-    configurable: false,
-  });
-  return obj;
-}
-
-function install(name: string, getValue: () => any) {
-  installGlobal(name, () => addBuiltinSymbol(getValue()));
-}
+import { installGlobal as install } from './installGlobal';
 
 // https://encoding.spec.whatwg.org/#textdecoder
 install('TextDecoder', () => require('./TextDecoder').TextDecoder);
