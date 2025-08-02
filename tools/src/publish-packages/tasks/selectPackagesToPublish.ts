@@ -1,7 +1,9 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import * as semver from 'semver';
 
 import {
+  createParcelAsync,
   createParcelsForDependenciesOf,
   createParcelsForGraphNodes,
   loadRequestedParcels,
@@ -17,7 +19,7 @@ import {
   resolveReleaseTypeAndVersion,
   validateVersion,
 } from '../helpers';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, ReleaseType, TaskArgs } from '../types';
 
 const { green, cyan } = chalk;
 
@@ -82,6 +84,34 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
       logger.success('🤷‍♂️ There is nothing to be published.');
       return Task.STOP;
     }
+
+    // Enforce publishing expo-template-bare-minimum if expo is selected.
+    const expoParcel = [...parcelsToPublish].find((parcel) => parcel.pkg.packageName === 'expo');
+    const isBareTemplateSelected =
+      [...parcelsToPublish].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      ) !== undefined;
+    if (expoParcel && !isBareTemplateSelected) {
+      const bareTemplateNode = [...dependentNodes].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      )!;
+      const templateParcel = await createParcelAsync(bareTemplateNode);
+
+      // Template don't not have changelog so we need to match Expo's release type.
+      templateParcel.minReleaseType =
+        semver.patch(expoParcel.state.releaseVersion || '') === 0
+          ? ReleaseType.MAJOR
+          : ReleaseType.PATCH;
+      const { releaseVersion } = await resolveReleaseTypeAndVersion(templateParcel, options);
+
+      parcelsToPublish.add(templateParcel);
+      logger.log(
+        `📦 ${green('expo-template-bare-minimum')} is required to be published with ${green(
+          'expo'
+        )} package, will be published as ${cyan.bold(releaseVersion)}.`
+      );
+    }
+
     return [[...parcelsToPublish], options];
   }
 );

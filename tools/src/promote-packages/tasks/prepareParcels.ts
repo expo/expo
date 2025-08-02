@@ -18,7 +18,7 @@ export const prepareParcels = new Task<TaskArgs>(
     const { exclude, packageNames } = options;
     const allPackages = await getListOfPackagesAsync();
     const filteredPackages = allPackages.filter((pkg) => {
-      const isPrivate = pkg.packageJson.private;
+      const isPrivate = pkg.packageJson.private === true;
       const isIncluded = packageNames.length === 0 || packageNames.includes(pkg.packageName);
       const isExcluded = exclude.includes(pkg.packageName);
 

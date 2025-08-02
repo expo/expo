@@ -9,8 +9,21 @@ const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && global.RN$Bridg
 export interface NativeLinkPreviewActionProps {
   title: string;
   icon?: string;
-  id: string;
   children?: React.ReactNode;
+  disabled?: boolean;
+  destructive?: boolean;
+  // This may lead to race conditions, when two menu actions are on at the same time.
+  // The logic should be enforced in the JS code, rather than in the native code.
+  // singleSelection?: boolean;
+  displayAsPalette?: boolean;
+  displayInline?: boolean;
+  isOn?: boolean;
+  // There are issues with menu state updates when keep presented is set to true.
+  // When updating the context menu state, it will either not update or it will recreate the menu. The latter is a problem,
+  // because it will close all opened submenus and reset the scroll position.
+  // TODO: (@ubax) find a way to fix this.
+  keepPresented?: boolean;
+  onSelected: () => void;
 }
 const LinkPreviewNativeActionView: React.ComponentType<NativeLinkPreviewActionProps> | null =
   areNativeViewsAvailable
@@ -41,7 +54,6 @@ export function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps) {
 // #region Preview View
 export interface NativeLinkPreviewProps extends ViewProps {
   nextScreenId: string | undefined;
-  onActionSelected?: (event: { nativeEvent: { id: string } }) => void;
   onWillPreviewOpen?: () => void;
   onDidPreviewOpen?: () => void;
   onPreviewWillClose?: () => void;

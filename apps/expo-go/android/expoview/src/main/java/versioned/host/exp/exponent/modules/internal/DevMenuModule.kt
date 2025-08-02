@@ -1,9 +1,11 @@
 package versioned.host.exp.exponent.modules.internal
-
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -11,6 +13,8 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.reactnativekeyboardcontroller.extensions.removeSelf
+import expo.modules.devmenu.fab.ComposeMovableFloatingActionButton
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
@@ -22,6 +26,7 @@ import host.exp.expoview.Exponent
 import host.exp.expoview.R
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.lang.ref.WeakReference
 import java.util.UUID
 import javax.inject.Inject
 
@@ -78,6 +83,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val debuggerMap = Bundle()
     val hmrMap = Bundle()
     val perfMap = Bundle()
+    val fabMap = Bundle()
 
     if (devSettings != null && devSupportManager.devSupportEnabled) {
       inspectorMap.putString("label", getString(if (devSettings.isElementInspectorEnabled) R.string.devmenu_hide_element_inspector else R.string.devmenu_show_element_inspector))
@@ -93,6 +99,17 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
     }
+
+    if (devSettings != null && devSupportManager.devSupportEnabled) {
+      val label = if (devSettings.isFloatingActionButtonEnabled) {
+        getString(R.string.devmenu_hide_fab)
+      } else {
+        getString(R.string.devmenu_show_fab)
+      }
+      fabMap.putString("label", label)
+      fabMap.putBoolean("isEnabled", true)
+    }
+    items.putBundle("dev-fab", fabMap)
 
     if (devSettings != null && devSupportManager.devSupportEnabled && devSettings is DevInternalSettings) {
       hmrMap.putString("label", getString(if (devSettings.isHotModuleReplacementEnabled) R.string.devmenu_disable_fast_refresh else R.string.devmenu_enable_fast_refresh))
@@ -146,6 +163,9 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
             requestOverlaysPermission()
           }
           devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
+        }
+        "dev-fab" -> {
+          devSupportManager.setFloatingActionButtonEnabled(!devSettings.isFloatingActionButtonEnabled)
         }
       }
     }
