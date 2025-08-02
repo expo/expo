@@ -1,5 +1,6 @@
 package expo.modules.notifications.notifications.model;
 
+import android.os.Bundle;
 import android.os.Parcel;
 
 /**
@@ -11,10 +12,6 @@ public class TextInputNotificationResponse extends NotificationResponse {
   public TextInputNotificationResponse(NotificationAction action, Notification notification, String userText) {
     super(action, notification);
     mUserText = userText;
-  }
-
-  public String getUserText() {
-    return mUserText;
   }
 
   public static final Creator<TextInputNotificationResponse> CREATOR = new Creator<TextInputNotificationResponse>() {
@@ -38,5 +35,12 @@ public class TextInputNotificationResponse extends NotificationResponse {
   public void writeToParcel(Parcel dest, int flags) {
     super.writeToParcel(dest, flags);
     dest.writeString(mUserText);
+  }
+
+  @Override
+  public Bundle toBundle() {
+    Bundle base = super.toBundle();
+    base.putString("userText", mUserText);
+    return base;
   }
 }
