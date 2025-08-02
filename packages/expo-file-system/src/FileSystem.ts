@@ -118,6 +118,11 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
+File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
+  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
+  return new File(file);
+};
+
 /**
  * Represents a directory on the filesystem.
  *
@@ -172,3 +177,8 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return new Directory(super.createDirectory(name).uri);
   }
 }
+// TODO: Drop this JS wrapper once we align on extending native prototype with JS functions or drop all JS code
+Directory.pickDirectoryAsync = async function (initialUri?: string) {
+  const directory = (await ExpoFileSystem.pickDirectoryAsync(initialUri)).uri;
+  return new Directory(directory);
+};
