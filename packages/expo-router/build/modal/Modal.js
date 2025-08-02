@@ -6,6 +6,7 @@ const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const ModalContext_1 = require("./ModalContext");
+const Portal_1 = require("./Portal");
 const useNavigation_1 = require("../useNavigation");
 const utils_1 = require("./utils");
 /**
@@ -58,13 +59,12 @@ function Modal(props) {
         if (visible) {
             const newId = (0, non_secure_1.nanoid)();
             openModal({
+                component: children,
                 animationType,
                 presentationStyle,
                 transparent,
                 viewProps,
-                component: children,
                 uniqueId: newId,
-                parentNavigationProp: navigation,
                 detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
             });
             setCurrentModalId(newId);
@@ -111,6 +111,34 @@ function Modal(props) {
         }
         return () => { };
     }, [currentModalId, addEventListener, onClose, onShow]);
+    if (currentModalId &&
+        visible &&
+        process.env.EXPO_OS &&
+        ['ios', 'android'].includes(process.env.EXPO_OS)) {
+        return (<Portal_1.ModalPortalContent hostId={currentModalId}>
+        <ModalContent {...viewProps}>{children}</ModalContent>
+      </Portal_1.ModalPortalContent>);
+    }
     return null;
+}
+function ModalContent(props) {
+    const { children, style, ...viewProps } = props;
+    const { setHeight, contentOffset } = (0, react_1.use)(Portal_1.PortalContentHeightContext);
+    // Adding marginTop here to account for the content offset.
+    // The content offset is the space above the modal.
+    // We are using it, to simulate correct positioning of the modal content for React Native.
+    // If this was not done, touch events would not be correctly handled on Android.
+    return (<react_native_1.View {...viewProps} style={{
+            top: contentOffset,
+            width: '100%',
+            position: 'absolute',
+        }} onLayout={(e) => {
+            const { height } = e.nativeEvent.layout;
+            if (height) {
+                setHeight(height);
+            }
+        }}>
+      {children}
+    </react_native_1.View>);
 }
 //# sourceMappingURL=Modal.js.map

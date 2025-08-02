@@ -3,19 +3,13 @@
 import { useTheme } from '@react-navigation/native';
 import { View } from 'react-native';
 
-import { ModalComponent } from './ModalComponent';
 import type { ModalConfig, ModalsRendererProps } from './types';
 import { getStackAnimationType, getStackPresentationType } from './utils';
 import { ModalStackRouteDrawer } from './web/ModalStackRouteDrawer.web';
 import { TransparentModalStackRouteDrawer } from './web/TransparentModalStackRouteDrawer.web';
 import { isTransparentModalPresentation } from './web/utils';
 
-export const ModalsRenderer = ({
-  children,
-  modalConfigs,
-  onDismissed,
-  onShow,
-}: ModalsRendererProps) => {
+export const ModalsRenderer = ({ children, modalConfigs, onDismissed }: ModalsRendererProps) => {
   return (
     <div style={{ flex: 1, display: 'flex' }}>
       {children}
@@ -60,7 +54,7 @@ function Modal({ config, onDismissed }: ModalProps) {
       renderScreen={() => (
         <View style={{ flex: 1 }}>
           <View {...config.viewProps} style={[{ flex: 1 }, config.viewProps?.style]}>
-            <ModalComponent modalConfig={config} />
+            {config.component}
           </View>
         </View>
       )}

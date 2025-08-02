@@ -32,35 +32,18 @@ export function getStackAnimationType(config: ModalConfig): StackAnimationTypes 
 }
 
 export function getStackPresentationType(config: ModalConfig) {
-  if (process.env.EXPO_OS === 'android') {
-    if (config.transparent) {
-      return 'transparentModal';
-    }
-    switch (config.presentationStyle) {
-      case 'fullScreen':
-        return 'fullScreenModal';
-      case 'overFullScreen':
-        return 'transparentModal';
-      case 'pageSheet':
-        return 'pageSheet';
-      case 'formSheet':
-        return 'formSheet';
-      default:
-        return 'fullScreenModal';
-    }
-  }
   switch (config.presentationStyle) {
-    case 'overFullScreen':
-      return 'transparentModal';
     case 'pageSheet':
+      if (process.env.EXPO_OS === 'android') {
+        // Using transparentModal in order to prevent the bottom screen from being unmounted.
+        // Otherwise, the portal content would be unmounted as well.
+        return 'transparentModal';
+      }
       return 'pageSheet';
     case 'formSheet':
       return 'formSheet';
     case 'fullScreen':
     default:
-      if (config.transparent) {
-        return 'transparentModal';
-      }
-      return 'fullScreenModal';
+      return 'transparentModal';
   }
 }

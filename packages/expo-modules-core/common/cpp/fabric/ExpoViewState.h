@@ -15,7 +15,7 @@ namespace expo {
 class ExpoViewState final {
 public:
   ExpoViewState() {}
-  
+
   ExpoViewState(float width, float height) {
     if (width >= 0) {
       _width = width;
@@ -29,10 +29,27 @@ public:
     }
   };
 
+    ExpoViewState(float width, float height, bool isRootKind) {
+        if (width >= 0) {
+            _width = width;
+        } else {
+            _width = std::numeric_limits<float>::quiet_NaN();
+        }
+        if (height >= 0) {
+            _height = height;
+        } else {
+            _height = std::numeric_limits<float>::quiet_NaN();
+        }
+        if (isRootKind) {
+            _isRootKind = isRootKind;
+        }
+    };
+
 #ifdef ANDROID
   ExpoViewState(ExpoViewState const &previousState, folly::dynamic data)
   : _width((float)data["width"].getDouble()),
-    _height((float)data["height"].getDouble()){};
+    _height((float)data["height"].getDouble()),
+    _isRootKind(data["isRootKind"].getBool()){};
   folly::dynamic getDynamic() const {
     return {};
   };
@@ -41,9 +58,10 @@ public:
     return facebook::react::MapBufferBuilder::EMPTY();
   };
 #endif
-  
+
   float _width = std::numeric_limits<float>::quiet_NaN();
   float _height = std::numeric_limits<float>::quiet_NaN();
+  bool _isRootKind = false;
 
 };
 

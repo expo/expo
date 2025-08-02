@@ -20,6 +20,8 @@
     "export:web-workers": "E2E_ROUTER_ASYNC=true E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo export -p web",
     "start:link-preview": "E2E_ROUTER_SRC=link-preview expo start",
     "start:modal": "E2E_ROUTER_SRC=modal expo start",
+    "ios:modal": "E2E_ROUTER_SRC=modal expo run:ios",
+    "android:modal": "E2E_ROUTER_SRC=modal expo run:android",
     "ios:link-preview": "E2E_ROUTER_SRC=link-preview expo run:ios",
     "start:universal-linking": "EXPO_USE_STATIC=server EXPO_TUNNEL_SUBDOMAIN=expo-e2e-universal-linking E2E_ROUTER_SRC=universal-linking expo start --tunnel",
     "open:universal-linking": "xcrun simctl terminate booted com.expo.routere2e && npx uri-scheme open https://expo-e2e-universal-linking.ngrok.io/post/123 --ios",

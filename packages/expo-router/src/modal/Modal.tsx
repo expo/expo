@@ -2,11 +2,12 @@
 
 import { type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
-import { useEffect, useState } from 'react';
-import { StyleSheet, ViewProps } from 'react-native';
+import { use, useEffect, useState } from 'react';
+import { View, StyleSheet, type ViewProps } from 'react-native';
 import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
+import { ModalPortalContent, PortalContentHeightContext } from './Portal';
 import { useNavigation } from '../useNavigation';
 import { areDetentsValid } from './utils';
 
@@ -141,13 +142,12 @@ export function Modal(props: ModalProps) {
     if (visible) {
       const newId = nanoid();
       openModal({
+        component: children,
         animationType,
         presentationStyle,
         transparent,
         viewProps,
-        component: children,
         uniqueId: newId,
-        parentNavigationProp: navigation,
         detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
       });
       setCurrentModalId(newId);
@@ -197,5 +197,46 @@ export function Modal(props: ModalProps) {
     }
     return () => {};
   }, [currentModalId, addEventListener, onClose, onShow]);
+
+  if (
+    currentModalId &&
+    visible &&
+    process.env.EXPO_OS &&
+    ['ios', 'android'].includes(process.env.EXPO_OS)
+  ) {
+    return (
+      <ModalPortalContent hostId={currentModalId}>
+        <ModalContent {...viewProps}>{children}</ModalContent>
+      </ModalPortalContent>
+    );
+  }
   return null;
+}
+
+function ModalContent(props: ViewProps) {
+  const { children, style, ...viewProps } = props;
+  const { setHeight, contentOffset } = use(PortalContentHeightContext);
+
+  // Adding marginTop here to account for the content offset.
+  // The content offset is the space above the modal.
+  // We are using it, to simulate correct positioning of the modal content for React Native.
+  // If this was not done, touch events would not be correctly handled on Android.
+
+  return (
+    <View
+      {...viewProps}
+      style={{
+        top: contentOffset,
+        width: '100%',
+        position: 'absolute',
+      }}
+      onLayout={(e) => {
+        const { height } = e.nativeEvent.layout;
+        if (height) {
+          setHeight(height);
+        }
+      }}>
+      {children}
+    </View>
+  );
 }

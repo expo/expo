@@ -4,12 +4,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModalsRenderer = void 0;
 const native_1 = require("@react-navigation/native");
 const react_native_1 = require("react-native");
-const ModalComponent_1 = require("./ModalComponent");
 const utils_1 = require("./utils");
 const ModalStackRouteDrawer_web_1 = require("./web/ModalStackRouteDrawer.web");
 const TransparentModalStackRouteDrawer_web_1 = require("./web/TransparentModalStackRouteDrawer.web");
 const utils_2 = require("./web/utils");
-const ModalsRenderer = ({ children, modalConfigs, onDismissed, onShow, }) => {
+const ModalsRenderer = ({ children, modalConfigs, onDismissed }) => {
     return (<div style={{ flex: 1, display: 'flex' }}>
       {children}
       {modalConfigs.map((config) => (<Modal key={config.uniqueId} config={config} onDismissed={() => onDismissed?.(config.uniqueId)}/>))}
@@ -30,7 +29,7 @@ function Modal({ config, onDismissed }) {
             sheetAllowedDetents: config.detents,
         }} renderScreen={() => (<react_native_1.View style={{ flex: 1 }}>
           <react_native_1.View {...config.viewProps} style={[{ flex: 1 }, config.viewProps?.style]}>
-            <ModalComponent_1.ModalComponent modalConfig={config}/>
+            {config.component}
           </react_native_1.View>
         </react_native_1.View>)}/>);
 }
