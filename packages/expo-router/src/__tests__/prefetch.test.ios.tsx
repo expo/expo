@@ -43,7 +43,7 @@ it('prefetch a sibling route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -59,7 +59,7 @@ it('prefetch a sibling route', () => {
               params: {},
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -112,7 +112,7 @@ it('will prefetch the correct route within a group', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -128,7 +128,7 @@ it('will prefetch the correct route within a group', () => {
               params: {},
             },
           ],
-          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index', '_sitemap', '+not-found'],
+          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index'],
           routes: [
             {
               key: expect.any(String),
@@ -181,7 +181,7 @@ it('will prefetch the correct route within nested groups', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -197,14 +197,7 @@ it('will prefetch the correct route within nested groups', () => {
               params: {},
             },
           ],
-          routeNames: [
-            '(b)/test',
-            '(a)/index',
-            '(b)/index',
-            '(a)/(c)/test',
-            '_sitemap',
-            '+not-found',
-          ],
+          routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test'],
           routes: [
             {
               key: expect.any(String),
@@ -255,7 +248,7 @@ it('works with relative Href', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -271,7 +264,7 @@ it('works with relative Href', () => {
               params: {},
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -322,7 +315,7 @@ it('works with params', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -340,7 +333,7 @@ it('works with params', () => {
               },
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -406,7 +399,7 @@ it('ignores the current route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -416,7 +409,7 @@ it('ignores the current route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -520,7 +513,7 @@ it('can prefetch a deeply nested route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -530,7 +523,7 @@ it('can prefetch a deeply nested route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -650,7 +643,7 @@ it('can prefetch a parent route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -660,7 +653,7 @@ it('can prefetch a parent route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),

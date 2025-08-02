@@ -282,7 +282,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -294,7 +294,7 @@ describe('singular', () => {
             index: 3,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -345,7 +345,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -357,7 +357,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -413,7 +413,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -425,7 +425,7 @@ test('can dynamically route using singular function', () => {
           index: 4,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -487,7 +487,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -499,7 +499,7 @@ test('can dynamically route using singular function', () => {
           index: 3,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -559,7 +559,7 @@ describe('prefetch', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -575,7 +575,7 @@ describe('prefetch', () => {
                 params: {},
               },
             ],
-            routeNames: ['index', 'test', '_sitemap', '+not-found'],
+            routeNames: ['index', 'test'],
             routes: [
               {
                 key: expect.any(String),

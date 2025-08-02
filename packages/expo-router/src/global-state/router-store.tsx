@@ -149,6 +149,7 @@ export function useStore(
 
   const routeNode = getRoutes(context, {
     ...config,
+    skipGenerated: true,
     ignoreEntryPoints: true,
     platform: Platform.OS,
     preserveRedirectAndRewrites: true,
@@ -171,6 +172,9 @@ export function useStore(
       metaOnly: linkingConfigOptions.metaOnly,
       serverUrl,
       redirects,
+      skipGenerated: config?.skipGenerated ?? false,
+      sitemap: config?.sitemap ?? true,
+      notFound: config?.notFound ?? true,
     });
     rootComponent = getQualifiedRouteComponent(routeNode);
 

@@ -885,7 +885,9 @@ it('can replace across groups', async () => {
   expect(screen).toHaveSegments(['+not-found']);
 
   // Go to one
-  act(() => router.push('/one/screen'));
+  // Using replace here, so we don't create a history entry
+  // Otherwise canGoBack would be true
+  act(() => router.replace('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 

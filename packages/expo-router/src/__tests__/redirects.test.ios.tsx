@@ -234,7 +234,7 @@ it('can push to a redirect', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -244,7 +244,7 @@ it('can push to a redirect', () => {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'bar', 'foo', '_sitemap', '+not-found'],
+          routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
               key: expect.any(String),
@@ -402,7 +402,7 @@ it('not existing nested route redirects correctly', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -412,7 +412,7 @@ it('not existing nested route redirects correctly', () => {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'explore', '_sitemap', 'test/1234', '[id]', '+not-found'],
+          routeNames: ['index', 'explore', 'test/1234', '[id]'],
           routes: [
             {
               key: expect.any(String),

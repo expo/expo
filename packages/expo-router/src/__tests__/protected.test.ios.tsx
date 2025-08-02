@@ -68,7 +68,7 @@ it('should protect routes during the initial load', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -78,7 +78,7 @@ it('should protect routes during the initial load', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['a', 'index', 'b', 'c', '_sitemap', '+not-found'],
+          routeNames: ['a', 'index', 'b', 'c'],
           routes: [
             {
               key: expect.any(String),
@@ -166,7 +166,7 @@ it('should default to anchor during initial load', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -176,7 +176,7 @@ it('should default to anchor during initial load', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['a', 'b', 'index', '_sitemap', '+not-found'],
+          routeNames: ['a', 'b', 'index'],
           routes: [
             {
               key: expect.any(String),
@@ -276,7 +276,7 @@ it('works with tabs', () => {
     },
   });
 
-  expect(screen.queryByLabelText('protected, tab, 2 of 4')).toBeNull();
+  expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeNull();
 
   fireEvent.press(screen.getByTestId('index'));
 
@@ -285,5 +285,5 @@ it('works with tabs', () => {
   fireEvent(screen.getByTestId('index'), 'longPress');
 
   expect(screen).toHavePathname('/protected');
-  expect(screen.queryByLabelText('protected, tab, 2 of 4')).toBeVisible();
+  expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });

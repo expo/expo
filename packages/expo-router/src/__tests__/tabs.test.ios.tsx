@@ -16,7 +16,7 @@ it('should not render generated screens', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
 
-  const tabList = screen.getByLabelText('index, tab, 1 of 3').parent;
+  const tabList = screen.getByLabelText('index, tab, 1 of 1').parent;
 
   expect(tabList?.children).toHaveLength(1);
 });
@@ -34,7 +34,7 @@ it('screens can be hidden', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
 
-  const tabList = screen.getByLabelText('index, tab, 2 of 4').parent;
+  const tabList = screen.getByLabelText('index, tab, 2 of 2').parent;
 
   expect(tabList?.children).toHaveLength(1);
 });
@@ -258,19 +258,19 @@ it('can use replace navigation', () => {
   );
 
   // The Tabs
-  expect(screen.getByLabelText('one, tab, 1 of 4')).toBeVisible();
-  expect(screen.getByLabelText('two, tab, 2 of 4')).toBeVisible();
+  expect(screen.getByLabelText('one, tab, 1 of 2')).toBeVisible();
+  expect(screen.getByLabelText('two, tab, 2 of 2')).toBeVisible();
 
   expect(screen.getByTestId('one')).toBeVisible();
 
   act(() => router.replace('/two'));
   expect(screen.getByTestId('two')).toBeVisible();
-  expect(screen.getByLabelText('two, tab, 2 of 4')).toBeVisible();
+  expect(screen.getByLabelText('two, tab, 2 of 2')).toBeVisible();
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -286,7 +286,7 @@ it('can use replace navigation', () => {
           index: 1,
           key: expect.any(String),
           preloadedRouteKeys: [],
-          routeNames: ['one', 'two', '_sitemap', '+not-found'],
+          routeNames: ['one', 'two'],
           routes: [
             {
               key: expect.any(String),
@@ -299,16 +299,6 @@ it('can use replace navigation', () => {
               name: 'two',
               params: {},
               path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: '_sitemap',
-              params: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: '+not-found',
-              params: undefined,
             },
           ],
           stale: false,

@@ -31,7 +31,7 @@ it.skip('toHaveRouterState', () => {
   expect(screen).toHaveRouterState({
     index: 1,
     key: expect.any(String),
-    routeNames: ['_sitemap', 'directory/page', '[slug]', '[...catchAll]', '+not-found'],
+    routeNames: ['directory/page', '[slug]', '[...catchAll]'],
     routes: [
       {
         key: expect.any(String),
