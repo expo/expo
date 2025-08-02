@@ -19,6 +19,7 @@
     "expo-asset": "~11.1.5",
     "expo-av": "~15.1.4",
     "expo-background-fetch": "~13.1.5",
+    "expo-blob": "~0.1.0",
     "expo-brightness": "~13.1.4",
     "expo-calendar": "~14.1.4",
     "expo-camera": "~16.1.6",
