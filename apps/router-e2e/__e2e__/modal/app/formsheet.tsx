@@ -20,9 +20,13 @@ function FormsheetBaseDemo() {
   return (
     <>
       <Button title="Base Formsheet Modal" onPress={() => setIsOpen(true)} />
-      <Modal visible={isOpen} onClose={() => setIsOpen(false)} presentationStyle="formSheet">
+      <Modal visible={isOpen}
+        onClose={() => setIsOpen(false)}
+        presentationStyle="formSheet"
+        cornerRadius={30}>
         <View style={{ padding: 20 }}>
           <Text>This is a Base Formsheet Modal</Text>
+          <Text>With Corner Radius of 30</Text>
           <Button title="Close" onPress={() => setIsOpen(false)} />
           <Link href="/random">Go to Different Screen</Link>
           <TextInput
