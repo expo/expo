@@ -78,7 +78,7 @@ function defineLazyObjectProperty<T>(
  * @see https://github.com/facebook/react-native/issues/934
  */
 export function installGlobal<T extends object>(name: string, getValue: () => T): void {
-  const object = global;
+  const object = typeof global !== 'undefined' ? global : globalThis;
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
   if (__DEV__ && descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.slice(1)}`;
