@@ -103,10 +103,6 @@ function registerReactNativeConfigCommand() {
       'The platform that the resulting modules must support. Available options: "android", "ios"',
       'ios'
     )
-    .option(
-      '--transitive-linking-dependencies <transitiveLinkingDependencies...>',
-      'The transitive dependencies to include in autolinking. Internally used by fingerprint and only supported react-native-edge-to-edge.'
-    )
     .addOption(
       new commander.Option(
         '--project-root <projectRoot>',
@@ -122,7 +118,7 @@ function registerReactNativeConfigCommand() {
       const projectRoot = path.dirname(
         await getProjectPackageJsonPathAsync(providedOptions.projectRoot)
       );
-      const linkingOptions = await mergeLinkingOptionsAsync<SearchOptions>(
+      const options = await mergeLinkingOptionsAsync<RNConfigCommandOptions>(
         searchPaths.length > 0
           ? {
               ...providedOptions,
@@ -134,14 +130,6 @@ function registerReactNativeConfigCommand() {
               projectRoot,
             }
       );
-      const transitiveLinkingDependencies = providedOptions.transitiveLinkingDependencies ?? [];
-      const options: RNConfigCommandOptions = {
-        platform: linkingOptions.platform,
-        projectRoot,
-        searchPaths: linkingOptions.searchPaths,
-        transitiveLinkingDependencies,
-        sourceDir: providedOptions.sourceDir,
-      };
       const results = await createReactNativeConfigAsync(options);
       if (providedOptions.json) {
         console.log(JSON.stringify(results));

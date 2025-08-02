@@ -10,7 +10,10 @@ exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
 const find_up_1 = __importDefault(require("find-up"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const utils_1 = require("./utils");
+async function loadPackageJSONAsync(packageJsonPath) {
+    const packageJsonText = await fs_1.default.promises.readFile(packageJsonPath, 'utf8');
+    return JSON.parse(packageJsonText);
+}
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
  */
@@ -39,13 +42,15 @@ function getProjectPackageJsonPathSync(projectRoot) {
  */
 async function mergeLinkingOptionsAsync(providedOptions) {
     const packageJsonPath = await getProjectPackageJsonPathAsync(providedOptions.projectRoot);
-    const packageJson = await (0, utils_1.loadPackageJSONAsync)(packageJsonPath);
+    const packageJson = await loadPackageJSONAsync(packageJsonPath);
     const baseOptions = packageJson.expo?.autolinking;
     const platformOptions = getPlatformOptions(providedOptions.platform, baseOptions);
     const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);
     // Makes provided paths absolute or falls back to default paths if none was provided.
-    finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, providedOptions.projectRoot);
+    finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths || [], providedOptions.projectRoot);
     finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(finalOptions.nativeModulesDir, providedOptions.projectRoot);
+    // We shouldn't assume that `projectRoot` (which typically is CWD) is already at the project root
+    finalOptions.projectRoot = path_1.default.dirname(packageJsonPath);
     return finalOptions;
 }
 /**
@@ -53,26 +58,7 @@ async function mergeLinkingOptionsAsync(providedOptions) {
  * going up through the path components. This makes workspaces work out-of-the-box without any configs.
  */
 async function resolveSearchPathsAsync(searchPaths, cwd) {
-    return searchPaths && searchPaths.length > 0
-        ? searchPaths.map((searchPath) => path_1.default.resolve(cwd, searchPath))
-        : await findDefaultPathsAsync(cwd);
-}
-/**
- * Looks up for workspace's `node_modules` paths.
- */
-async function findDefaultPathsAsync(cwd) {
-    const paths = [];
-    let dir = cwd;
-    let pkgJsonPath;
-    while ((pkgJsonPath = await (0, find_up_1.default)('package.json', { cwd: dir }))) {
-        dir = path_1.default.dirname(path_1.default.dirname(pkgJsonPath));
-        paths.push(path_1.default.join(pkgJsonPath, '..', 'node_modules'));
-        // This stops the infinite loop when the package.json is placed at the root dir.
-        if (path_1.default.dirname(dir) === dir) {
-            break;
-        }
-    }
-    return paths;
+    return searchPaths?.map((searchPath) => path_1.default.resolve(cwd, searchPath)) || [];
 }
 /**
  * Finds the real path to custom native modules directory.

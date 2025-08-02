@@ -3,7 +3,11 @@ import fs from 'fs';
 import path from 'path';
 
 import type { PlatformAutolinkingOptions, SearchOptions, SupportedPlatform } from '../types';
-import { loadPackageJSONAsync } from './utils';
+
+async function loadPackageJSONAsync(packageJsonPath: string) {
+  const packageJsonText = await fs.promises.readFile(packageJsonPath, 'utf8');
+  return JSON.parse(packageJsonText);
+}
 
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
@@ -50,7 +54,7 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
 
   // Makes provided paths absolute or falls back to default paths if none was provided.
   finalOptions.searchPaths = await resolveSearchPathsAsync(
-    finalOptions.searchPaths,
+    finalOptions.searchPaths || [],
     providedOptions.projectRoot
   );
 
@@ -58,6 +62,9 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
     finalOptions.nativeModulesDir,
     providedOptions.projectRoot
   );
+
+  // We shouldn't assume that `projectRoot` (which typically is CWD) is already at the project root
+  finalOptions.projectRoot = path.dirname(packageJsonPath);
 
   return finalOptions;
 }
@@ -70,29 +77,7 @@ export async function resolveSearchPathsAsync(
   searchPaths: string[] | null,
   cwd: string
 ): Promise<string[]> {
-  return searchPaths && searchPaths.length > 0
-    ? searchPaths.map((searchPath) => path.resolve(cwd, searchPath))
-    : await findDefaultPathsAsync(cwd);
-}
-
-/**
- * Looks up for workspace's `node_modules` paths.
- */
-async function findDefaultPathsAsync(cwd: string): Promise<string[]> {
-  const paths = [];
-  let dir = cwd;
-  let pkgJsonPath: string | undefined;
-
-  while ((pkgJsonPath = await findUp('package.json', { cwd: dir }))) {
-    dir = path.dirname(path.dirname(pkgJsonPath));
-    paths.push(path.join(pkgJsonPath, '..', 'node_modules'));
-
-    // This stops the infinite loop when the package.json is placed at the root dir.
-    if (path.dirname(dir) === dir) {
-      break;
-    }
-  }
-  return paths;
+  return searchPaths?.map((searchPath) => path.resolve(cwd, searchPath)) || [];
 }
 
 /**

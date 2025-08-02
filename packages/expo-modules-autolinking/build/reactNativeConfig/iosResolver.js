@@ -4,27 +4,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveDependencyConfigImplIosAsync = resolveDependencyConfigImplIosAsync;
-const promises_1 = __importDefault(require("fs/promises"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
-async function resolveDependencyConfigImplIosAsync(packageRoot, reactNativeConfig) {
+async function resolveDependencyConfigImplIosAsync(resolution, reactNativeConfig) {
     if (reactNativeConfig === null) {
         // Skip autolinking for this package.
         return null;
     }
-    const podspecs = await (0, glob_1.glob)('*.podspec', { cwd: packageRoot });
+    const podspecs = await (0, glob_1.glob)('*.podspec', { cwd: resolution.path });
     if (!podspecs?.length) {
         return null;
     }
-    const mainPackagePodspec = path_1.default.basename(packageRoot) + '.podspec';
+    const mainPackagePodspec = path_1.default.basename(resolution.path) + '.podspec';
     const podspecFile = podspecs.includes(mainPackagePodspec)
         ? mainPackagePodspec
         : podspecs.sort((a, b) => a.localeCompare(b))[0];
-    const podspecPath = path_1.default.join(packageRoot, podspecFile);
-    const packageJson = JSON.parse(await promises_1.default.readFile(path_1.default.join(packageRoot, 'package.json'), 'utf8'));
+    const podspecPath = path_1.default.join(resolution.path, podspecFile);
     return {
         podspecPath,
-        version: packageJson.version,
+        version: resolution.version,
         configurations: reactNativeConfig?.configurations || [],
         scriptPhases: reactNativeConfig?.scriptPhases || [],
     };
