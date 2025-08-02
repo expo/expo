@@ -2,6 +2,8 @@ package expo.modules.interfaces.imageloader;
 
 import android.graphics.Bitmap;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import androidx.annotation.NonNull;
@@ -33,4 +35,13 @@ public interface ImageLoaderInterface {
    * Loads full-sized image with no caching.
    */
   void loadImageForManipulationFromURL(@NonNull String url, ResultListener resultListener);
+
+  /**
+   * Loads full-sized image with no caching and custom headers.
+   */
+  void loadImageForManipulationFromURLWithHeaders(
+    @NonNull String url,
+    @NonNull Map<String, String> headers,
+    @NonNull ResultListener resultListener
+  );
 }

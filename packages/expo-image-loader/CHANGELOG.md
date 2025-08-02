@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android][expo-image-manipulator] Add Custom Headers to Image Loader ([#36242](https://github.com/expo/expo/pull/36242) by [@HADeveloper](https://github.com/HADeveloper))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
