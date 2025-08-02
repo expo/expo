@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Suppress `the native view manager isn't exported` warning on Android.
+
 ### 💡 Others
 
 ## 0.4.5 - 2025-06-04
