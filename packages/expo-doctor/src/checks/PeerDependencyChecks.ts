@@ -1,7 +1,9 @@
+import { getVersionedNativeModulesAsync } from '@expo/cli/src/start/doctor/dependencies/bundledNativeModules';
 import fs from 'fs';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { Log } from '../utils/log';
 
 interface PackageJson {
   name: string;
@@ -15,7 +17,7 @@ export class PeerDependencyChecks implements DoctorCheck {
 
   sdkVersionRange = '*';
 
-  async runAsync({ pkg, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync({ pkg, projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
     const advice: string[] = [];
 
@@ -32,6 +34,19 @@ export class PeerDependencyChecks implements DoctorCheck {
       };
     }
 
+    let bundledNativeModules: Record<string, string> = {};
+    try {
+      bundledNativeModules = await getVersionedNativeModulesAsync(projectRoot, exp.sdkVersion!);
+    } catch (error) {
+      Log.error('Warning: Could not fetch bundled native modules');
+      // If we can't get bundled native modules, return early to avoid false positives
+      return {
+        isSuccessful: true,
+        issues: [],
+        advice: [],
+      };
+    }
+
     const peerDependencyIssues = (
       await Promise.all(
         Object.keys(allDependencies).map((packageName) =>
@@ -40,7 +55,11 @@ export class PeerDependencyChecks implements DoctorCheck {
       )
     ).flat();
 
-    const groupedByMissingPeerDependency = peerDependencyIssues.reduce(
+    const filteredPeerDependencyIssues = peerDependencyIssues.filter((issue) =>
+      bundledNativeModules.hasOwnProperty(issue.missingPeerDependency)
+    );
+
+    const groupedByMissingPeerDependency = filteredPeerDependencyIssues.reduce(
       (acc, issue) => {
         if (acc[issue.missingPeerDependency]) {
           acc[issue.missingPeerDependency].push(issue.requiredBy);
@@ -111,7 +130,7 @@ export class PeerDependencyChecks implements DoctorCheck {
         })
       );
     } catch (error) {
-      console.warn(`Warning: Could not read package.json for ${packageName}:`, error);
+      Log.error(`Warning: Could not read package.json for ${packageName}`);
     }
 
     return issues;
