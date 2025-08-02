@@ -114,6 +114,10 @@ const getModuleDescriptionWithResolver = (
     : null;
 };
 
+export interface FallbackModuleResolver extends ExpoCustomMetroResolver {
+  withDependenciesFilter(dependencies: string[]): ExpoCustomMetroResolver | undefined;
+}
+
 /** Creates a fallback module resolver that resolves dependencis of modules named in `originModuleNames` via their path.
  * @remarks
  * The fallback resolver targets modules dependended on by modules named in `originModuleNames` and resolves
@@ -137,7 +141,7 @@ export function createFallbackModuleResolver({
   projectRoot: string;
   originModuleNames: string[];
   getStrictResolver: StrictResolverFactory;
-}): ExpoCustomMetroResolver {
+}): FallbackModuleResolver {
   const _moduleDescriptionsCache: Record<string, ModuleDescription | null> = {};
 
   const getModuleDescription = (
@@ -164,7 +168,11 @@ export function createFallbackModuleResolver({
 
   const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
 
-  return function requestFallbackModule(immutableContext, moduleName, platform) {
+  const requestFallbackModule: FallbackModuleResolver = function requestFallbackModule(
+    immutableContext,
+    moduleName,
+    platform
+  ) {
     // Early return if `moduleName` cannot be a module specifier
     // This doesn't have to be accurate as this resolver is a fallback for failed resolutions and
     // we're only doing this to avoid unnecessary resolution work
@@ -190,5 +198,21 @@ export function createFallbackModuleResolver({
     }
 
     return null;
+  } as FallbackModuleResolver;
+
+  requestFallbackModule.withDependenciesFilter = function withDependenciesFilter(
+    dependencies: string[]
+  ) {
+    if (!dependencies.length) {
+      return undefined;
+    }
+    const moduleNameRe = dependenciesToRegex(dependencies);
+    return function requestFallbackModuleWithDependenciesFilter(context, moduleName, platform) {
+      return moduleNameRe.test(moduleName)
+        ? requestFallbackModule(context, moduleName, platform)
+        : null;
+    };
   };
+
+  return requestFallbackModule;
 }
