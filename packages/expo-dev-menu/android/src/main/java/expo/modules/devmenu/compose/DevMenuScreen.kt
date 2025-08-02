@@ -103,9 +103,9 @@ fun DevMenuContent(
         )
         Divider()
         MenuSwitch(
-          "Show Dev Menu button",
-          // TODO: @behenate Find a correct icon for this action
-          icon = painterResource(R.drawable.home_icon),
+          "Show developer action button",
+          // TODO: @behenate
+          icon = painterResource(R.drawable.dev_menu_fab_icon),
           toggled = DevMenuPreferencesHandle.showFab,
           onToggled = { newValue -> onAction(DevMenuAction.ToggleFab) }
         )
