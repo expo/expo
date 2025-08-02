@@ -118,6 +118,10 @@ class AudioModule : Module() {
       return
     }
 
+    if (interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
+      return
+    }
+
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val requestType = interruptionMode?.let {
         if (it == InterruptionMode.DO_NOT_MIX) {

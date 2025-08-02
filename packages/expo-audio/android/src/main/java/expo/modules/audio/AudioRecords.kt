@@ -79,5 +79,6 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
 
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
-  DUCK_OTHERS("duckOthers")
+  DUCK_OTHERS("duckOthers"),
+  MIX_WITH_OTHERS("mixWithOthers")
 }
