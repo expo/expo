@@ -688,12 +688,14 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   if (launchOptions[UIApplicationLaunchOptionsLocationKey]) {
     return EXTaskLaunchReasonLocation;
   }
+#if !TARGET_OS_TV
   if (launchOptions[UIApplicationLaunchOptionsNewsstandDownloadsKey]) {
     return EXTaskLaunchReasonNewsstandDownloads;
   }
   if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     return EXTaskLaunchReasonRemoteNotification;
   }
+#endif
   return EXTaskLaunchReasonUnrecognized;
 }
 
