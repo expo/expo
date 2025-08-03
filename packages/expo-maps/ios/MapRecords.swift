@@ -149,7 +149,7 @@ struct MapProperties: Record {
   @Field var polylineTapThreshold: Double = 20
   @Field var elevation: MapStyleElevation = MapStyleElevation.automatic
   @Field var emphasis: MapStyleEmphasis = MapStyleEmphasis.automatic
-  @Field var pointsOfInterest: MapPointOfInterestCategories = MapPointOfInterestCategories();
+  @Field var pointsOfInterest: MapPointOfInterestCategories = MapPointOfInterestCategories()
 }
 
 enum MapContourStyle: String, Enumerable {
@@ -212,7 +212,7 @@ enum MapType: String, Enumerable {
     let emphasis = properties.emphasis.toMapStyleEmphasis()
     let pointsOfInterest = properties.pointsOfInterest.toMapPointOfInterestCategories()
     let showsTraffic = properties.isTrafficEnabled
-    
+
     switch mapType {
     case .hybrid:
       return .hybrid(
@@ -238,13 +238,14 @@ enum MapType: String, Enumerable {
 struct MapPointOfInterestCategories: Record {
   @Field var including: [String]?
   @Field var excluding: [String]?
-  
+
   @available(iOS 17.0, *)
   func toMapPointOfInterestCategories() -> PointOfInterestCategories {
     if let including = including {
       let poiCategories = including.compactMap { MapPointOfInterestCategory(rawValue: $0)?.toMapPointOfInterestCategory() }
       return .including(poiCategories)
-    } else if let excluding = excluding {
+    }
+    if let excluding = excluding {
       let poiCategories = excluding.compactMap { MapPointOfInterestCategory(rawValue: $0)?.toMapPointOfInterestCategory() }
       return .excluding(poiCategories)
     }
@@ -349,9 +350,10 @@ enum MapPointOfInterestCategory: String, Enumerable {
   case kayaking = "KAYAKING"
   case surfing = "SURFING"
   case swimming = "SWIMMING"
-  
- @available(iOS 18.0, *)
- private static let ios18CategoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] = [
+
+  @available(iOS 18.0, *)
+  private static let ios18CategoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] = 
+  [
     .musicVenue: .musicVenue,
     .planetarium: .planetarium,
     .castle: .castle,
@@ -387,7 +389,8 @@ enum MapPointOfInterestCategory: String, Enumerable {
     .conventionCenter: .conventionCenter
   ]
 
-  private static let categoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] = [
+  private static let categoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] =
+  [
     .museum: .museum,
     .theater: .theater,
     .library: .library,
