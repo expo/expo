@@ -1,97 +1,195 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+import React, { useState, useEffect, Suspense, useRef, useMemo } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, useGLTF, Html } from "@react-three/drei";
+import * as THREE from "three";
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+const planSemanal = [
+  "HIIT Total Quema Grasa",
+  "Tonificación Intensa (Piernas, Glúteos, Brazos, Abdomen, Cuello)",
+  "HIIT Cardio Explosivo",
+  "Core + Facial + Postura",
+  "HIIT con Fuerza",
+  "Sudor Extremo Full Body",
+  "Descanso Activo (Caminata ligera o estiramientos)"
+];
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+// Generar calendario 60 días con rutina semanal cíclica
+const generateCalendar = () => {
+  const days = [];
+  for (let i = 0; i < 60; i++) {
+    days.push({
+      day: i + 1,
+      routine: planSemanal[i % 7]
+    });
+  }
+  return days;
+};
+const calendar = generateCalendar();
 
-<Terminal cmd={['$ npx expo start']} />
+// Ejercicios ejemplo con modelos GLTF y animación
+const ejercicios = {
+  "Burpees": { duration: 40, modelPath: "/models/burpee.glb", animationName: "Burpee" },
+  "Sentadillas con salto": { duration: 40, modelPath: "/models/jumpsquat.glb", animationName: "JumpSquat" },
+  "Flexiones": { duration: 40, modelPath: "/models/pushup.glb", animationName: "PushUp" },
+  "Russian Twists": { duration: 40, modelPath: "/models/torso_twist.glb", animationName: "TorsoTwist" },
+  "Planchas": { duration: 40, modelPath: "/models/plank.glb", animationName: "Plank" },
+  "Jumping Lunges": { duration: 40, modelPath: "/models/jumping_lunge.glb", animationName: "JumpingLunge" },
+  "Mountain Climbers": { duration: 40, modelPath: "/models/mountain_climber.glb", animationName: "MountainClimber" },
+  "Descanso": { duration: 20, modelPath: null, animationName: null }
+};
 
-</Step>
+// Rutina diaria con ejercicios diferentes (ejemplo simplificado)
+const rutinaDia = {
+  1: ["Burpees", "Descanso", "Sentadillas con salto", "Descanso", "Mountain Climbers", "Descanso", "Flexiones"],
+  2: ["Russian Twists", "Descanso", "Jumping Lunges", "Descanso", "Planchas", "Descanso", "Burpees"],
+  3: ["Sentadillas con salto", "Descanso", "Flexiones", "Descanso", "Mountain Climbers", "Descanso", "Russian Twists"],
+  // ... Completar para 60 días
+};
 
-<Step label="2">
-## Open the app on your device
+// Componente para cargar y animar modelo 3D
+function AnimatedModel({ modelPath, animationName }) {
+  const group = useRef();
+  const { scene, animations } = useGLTF(modelPath || "");
+  const mixer = useMemo(() => new THREE.AnimationMixer(scene), [scene]);
 
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
+  useEffect(() => {
+    if (!animations || animations.length === 0 || !animationName) return;
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
+    const clip = animations.find((clip) => clip.name === animationName) || animations[0];
+    const action = mixer.clipAction(clip);
+    action.reset().play();
 
-<Collapsible summary="Having problems?">
+    return () => {
+      action.stop();
+      mixer.uncacheClip(clip);
+    };
+  }, [animations, animationName, mixer]);
 
-Make sure you are on the same Wi-Fi network on your computer and your device.
+  useFrame((_, delta) => mixer.update(delta));
 
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
+  if (!modelPath) return <Html><p>Descanso, prepárate para el siguiente ejercicio.</p></Html>;
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+  return <primitive ref={group} object={scene} position={[0, -1, 0]} />;
+}
 
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
+// Componente principal
+export default function RutinaApp() {
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(
+    ejercicios[rutinaDia[selectedDay]?.[0]]?.duration || 20
+  );
+  const [isRunning, setIsRunning] = useState(false);
 
-</Collapsible>
+  const ejerciciosDia = rutinaDia[selectedDay] || ["Descanso"];
 
-</Step>
+  useEffect(() => {
+    if (!isRunning) return;
 
-<Step label="3">
+    const timer = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t === 1) {
+          // Pasar al siguiente ejercicio
+          const nextIndex = (currentExerciseIndex + 1) % ejerciciosDia.length;
+          setCurrentExerciseIndex(nextIndex);
+          return ejercicios[ejerciciosDia[nextIndex]]?.duration || 20;
+        }
+        return t - 1;
+      });
+    }, 1000);
 
-## Make your first change
+    return () => clearInterval(timer);
+  }, [isRunning, currentExerciseIndex, ejerciciosDia]);
 
-Open the **app/(tabs)/index.tsx** file in your code editor and make a change.
+  useEffect(() => {
+    // Reiniciar tiempo al cambiar de día o ejercicio
+    setCurrentExerciseIndex(0);
+    setTimeLeft(ejercicios[ejerciciosDia[0]]?.duration || 20);
+    setIsRunning(false);
+  }, [selectedDay]);
 
-<DiffBlock
-  raw={`diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/app/(tabs)/index.tsx
-+++ b/app/(tabs)/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
--       <ThemedText type="title">Welcome!</ThemedText>
-+       <ThemedText type="title">Hello World!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-  `}
-/>
+  const currentExercise = ejercicios[ejerciciosDia[currentExerciseIndex]] || ejercicios["Descanso"];
 
-<Collapsible summary="Changes not showing up on your device?">
+  return (
+    <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col items-center">
+      <h1 className="text-3xl font-bold mb-6">Rutina Fitness 60 días</h1>
 
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
+      {/* Calendario */}
+      <div className="grid grid-cols-10 gap-1 max-w-xl mb-6">
+        {calendar.map(({ day }) => (
+          <button
+            key={day}
+            onClick={() => setSelectedDay(day)}
+            className={`rounded px-2 py-1 text-sm ${
+              selectedDay === day ? "bg-green-600" : "bg-zinc-700 hover:bg-zinc-600"
+            }`}
+          >
+            Día {day}
+          </button>
+        ))}
+      </div>
 
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
-- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
+      {/* Rutina del día */}
+      <div className="mb-6 max-w-xl text-center">
+        <h2 className="text-xl mb-2">Día {selectedDay} - {planSemanal[(selectedDay - 1) % 7]}</h2>
+        <p className="text-green-400 font-semibold">
+          {ejerciciosDia.join(" → ")}
+        </p>
+      </div>
 
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
+      {/* Ejercicio actual */}
+      <div className="max-w-xl w-full bg-zinc-800 rounded-xl p-4 shadow-lg text-center">
+        <h3 className="text-2xl font-semibold mb-2">{currentExerciseIndex + 1} / {ejerciciosDia.length}</h3>
+        <h2 className="text-3xl font-bold mb-2">{ejerciciosDia[currentExerciseIndex]}</h2>
+        <p className="text-5xl mb-4">{timeLeft}s</p>
 
-</Collapsible>
+        {/* Modelo 3D */}
+        {currentExercise.modelPath ? (
+          <div style={{ height: 400 }}>
+            <Canvas>
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[0, 5, 5]} intensity={1} />
+              <Suspense fallback={<Html>Loading 3D model...</Html>}>
+                <AnimatedModel
+                  modelPath={currentExercise.modelPath}
+                  animationName={currentExercise.animationName}
+                />
+              </Suspense>
+              <OrbitControls enableZoom={false} />
+            </Canvas>
+          </div>
+        ) : (
+          <p className="italic text-zinc-400 py-20">Descanso. Prepárate para el siguiente ejercicio.</p>
+        )}
 
-</Step>
-
----
-
-## File structure
-
-Below, you can get familiar with the default project's file structure:
-
-<ProjectStructure />
-
-## Features
-
-The default project template has the following features:
-
-<TemplateFeatures />
+        <div className="mt-6 space-x-4">
+          <button
+            onClick={() => setIsRunning(true)}
+            className="bg-green-600 px-6 py-2 rounded hover:bg-green-700"
+          >
+            Iniciar
+          </button>
+          <button
+            onClick={() => {
+              setIsRunning(false);
+              setTimeLeft(currentExercise.duration);
+            }}
+            className="bg-red-600 px-6 py-2 rounded hover:bg-red-700"
+          >
+            Pausar
+          </button>
+          <button
+            onClick={() => {
+              setIsRunning(false);
+              setCurrentExerciseIndex(0);
+              setTimeLeft(ejercicios[ejerciciosDia[0]]?.duration || 20);
+            }}
+            className="bg-yellow-600 px-6 py-2 rounded hover:bg-yellow-700"
+          >
+            Reiniciar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
