@@ -210,9 +210,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         ])
       }
       .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(properties.mapType.toMapStyle(
-        showsTraffic: properties.isTrafficEnabled
-      ))
+      .mapStyle(properties.mapType.toMapStyle(properties))
       .lookAroundViewer(
         isPresented: $state.lookAroundPresented,
         initialScene: state.lookAroundScene,
