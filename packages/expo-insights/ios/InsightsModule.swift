@@ -7,6 +7,20 @@ import EASClient
 private var wasAppLaunchEventDispatched = false
 
 public final class InsightsModule: Module {
+  #if os(iOS)
+  private let platform = "iOS"
+  #elseif os(tvOS)
+  private let platform = "tvOS"
+  #elseif os(macOS)
+  private let platform = "macOS"
+  #elseif os(visionOS)
+  private let platform = "visionOS"
+  #elseif os(macCatalyst)
+  private let platform = "macCatalyst"
+  #else
+  private let platform = "Unknown Apple platform"
+  #endif
+
   public func definition() -> ModuleDefinition {
     Name("ExpoInsights")
 
@@ -121,7 +135,7 @@ public final class InsightsModule: Module {
       "eas_client_id": EASClientID.uuid().uuidString,
       "project_id": projectId,
       "app_version": info?["CFBundleShortVersionString"] as? String,
-      "platform": "iOS",
+      "platform": platform,
       "os_version": UIDevice.current.systemVersion
     ]
   }
