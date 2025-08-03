@@ -1,8 +1,6 @@
 import { AppleMaps } from 'expo-maps';
 import {
   AppleMapPointOfInterestCategory,
-  AppleMapsMapStyleElevation,
-  AppleMapsMapType,
   AppleMapsPointOfInterestCategories,
 } from 'expo-maps/build/apple/AppleMaps.types';
 import React, { useState } from 'react';
