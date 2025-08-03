@@ -352,7 +352,7 @@ enum MapPointOfInterestCategory: String, Enumerable {
   case swimming = "SWIMMING"
 
   @available(iOS 18.0, *)
-  private static let ios18CategoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] = 
+  private static let ios18CategoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] =
   [
     .musicVenue: .musicVenue,
     .planetarium: .planetarium,
