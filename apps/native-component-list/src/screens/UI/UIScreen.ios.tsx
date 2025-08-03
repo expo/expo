@@ -115,6 +115,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Chart component',
+    route: 'ui/chart',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ChartScreen'));
+    },
+  },
+  {
     name: 'SwiftUI primitives',
     route: 'ui/swiftui-primitives',
     options: {},

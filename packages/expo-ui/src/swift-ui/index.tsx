@@ -1,5 +1,6 @@
 export * from './BottomSheet';
 export * from './Button';
+export * from './Chart';
 export * from './ColorPicker';
 export * from './ContextMenu';
 export * from './DatePicker';
