@@ -15,6 +15,8 @@ import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
 
+> **Warning** On Apple TV, the underlying database file is in the caches directory and not the application documents directory, per [Apple platform guidelines](https://github.com/react-native-tvos/react-native-tvos/issues/68#issuecomment-628327676).
+
 ## Installation
 
 <APIInstallSection />
