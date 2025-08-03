@@ -300,7 +300,6 @@ export default function ChartScreen() {
           variant="segmented"
         />
       </View>
-
       <Text style={styles.optionLabel}>Legend</Text>
       <Text style={styles.optionDescription}>Useful for bar and pie charts</Text>
       <View style={styles.pickerContainer}>
