@@ -176,11 +176,11 @@ enum MapStyleElevation: String, Enumerable {
   func toMapStyleElevation() -> MapStyle.Elevation {
     switch self {
     case .flat:
-      return MapStyle.Elevation.flat
+      return .flat
     case .realistic:
-      return MapStyle.Elevation.realistic
+      return .realistic
     default:
-      return MapStyle.Elevation.automatic
+      return .automatic
     }
   }
 }
@@ -193,9 +193,9 @@ enum MapStyleEmphasis: String, Enumerable {
   func toMapStyleEmphasis() -> MapStyle.StandardEmphasis {
     switch self {
     case .muted:
-      return MapStyle.StandardEmphasis.muted
+      return .muted
     default:
-      return MapStyle.StandardEmphasis.automatic
+      return .automatic
     }
   }
 }
@@ -236,17 +236,18 @@ enum MapType: String, Enumerable {
 }
 
 struct MapPointOfInterestCategories: Record {
-  @Field var including: [String]?
-  @Field var excluding: [String]?
+  @Field var including: [MapPointOfInterestCategory]?
+  @Field var excluding: [MapPointOfInterestCategory]?
 
   @available(iOS 17.0, *)
   func toMapPointOfInterestCategories() -> PointOfInterestCategories {
     if let including = including {
-      let poiCategories = including.compactMap { MapPointOfInterestCategory(rawValue: $0)?.toMapPointOfInterestCategory() }
+      let poiCategories = including.compactMap { $0.toMapPointOfInterestCategory() }
       return .including(poiCategories)
     }
+
     if let excluding = excluding {
-      let poiCategories = excluding.compactMap { MapPointOfInterestCategory(rawValue: $0)?.toMapPointOfInterestCategory() }
+      let poiCategories = excluding.compactMap { $0.toMapPointOfInterestCategory() }
       return .excluding(poiCategories)
     }
 
