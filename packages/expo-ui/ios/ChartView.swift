@@ -142,12 +142,8 @@ internal struct ChartView: ExpoSwiftUI.View {
           }
         }
       }
-      .if(props.showGrid) { chart in
-        chart.chartXAxis { AxisMarks() }.chartYAxis { AxisMarks() }
-      }
-      .if(!props.showGrid) { chart in
-        chart.chartXAxis(.hidden).chartYAxis(.hidden)
-      }
+      .chartXAxis(props.showGrid ? .visible : .hidden)
+      .chartYAxis(props.showGrid ? .visible : .hidden)
       .if(props.animate) { chart in
         chart.animation(.easeInOut, value: props.data.count)
       }
