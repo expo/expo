@@ -36,11 +36,7 @@ type SourceFileImportRef = {
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
   '@expo/html-elements', // package: react, react-native, react-native-web
-  'expo-av', // package: expo-asset
-  'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated
-  'expo-sqlite', // package: expo-asset
-  'expo-store-review', // package: expo-constants
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
 ];
 
@@ -54,6 +50,11 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'expo-asset': {
     '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
+  },
+
+  'expo-font': {
+    '@expo/config-plugins/build/android/codeMod': 'ignore-dev', // TODO: Remove
+    '@expo/config-plugins/build/utils/generateCode': 'ignore-dev', // TODO: Remove
   },
 
   '@expo/cli': {
@@ -78,6 +79,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
   },
 
+  'expo-store-review': {
+    'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
+  },
+
   'babel-preset-expo': {
     '@babel/core': 'types-only',
     '@expo/metro-config/build/babel-transformer': 'types-only',
@@ -90,6 +95,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 // NOTE: These are globally ignored dependencies, and this list shouldn't ever get longer
 const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
   'expo-modules-core': 'ignore-dev',
+  'expo-asset': 'ignore-dev',
 
   // This is force-resolved in the CLI and therefore, for Expo modules, is generally safe
   // See: https://github.com/expo/expo/blob/d63143c/packages/%40expo/cli/src/start/server/metro/withMetroMultiPlatform.ts#L603-L622
