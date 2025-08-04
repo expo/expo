@@ -22,8 +22,13 @@ public final class SQLiteModule: Module {
     Name("ExpoSQLite")
 
     Constants {
+      #if os(tvOS)
+      let defaultDatabaseDirectory =
+        appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
+      #else
       let defaultDatabaseDirectory =
         appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+      #endif
       return [
         "defaultDatabaseDirectory": defaultDatabaseDirectory
       ]

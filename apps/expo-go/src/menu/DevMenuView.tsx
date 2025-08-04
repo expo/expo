@@ -46,6 +46,7 @@ const MENU_ITEMS_ICON_MAPPINGS: {
   'dev-remote-debug': <ThemedMaterialIcon name="remote-desktop" />,
   'dev-perf-monitor': <ThemedMaterialIcon name="speedometer" />,
   'dev-inspector': <ThemedMaterialIcon name="border-style" />,
+  'dev-fab': <ThemedMaterialIcon name="chart-bubble" />,
 };
 
 export function DevMenuView({ uuid, task }: Props) {

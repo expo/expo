@@ -6,6 +6,7 @@ import semver from 'semver';
 import { type ResolvedTemplateOption } from './resolveOptions';
 import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
+import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
 import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError } from '../utils/errors';
 import {
@@ -27,11 +28,13 @@ type RepoInfo = {
 
 export async function cloneTemplateAsync({
   templateDirectory,
+  projectRoot,
   template,
   exp,
   ora,
 }: {
   templateDirectory: string;
+  projectRoot: string;
   template?: ResolvedTemplateOption;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
   ora: Ora;
@@ -55,16 +58,21 @@ export async function cloneTemplateAsync({
       throw new Error(`Unknown template type: ${type}`);
     }
   } else {
-    const templatePackageName = await getTemplateNpmPackageName(exp.sdkVersion);
-    return await downloadAndExtractNpmModuleAsync(templatePackageName, {
-      cwd: templateDirectory,
-      name: exp.name,
-    });
+    try {
+      return await resolveLocalTemplateAsync({ templateDirectory, projectRoot, exp });
+    } catch (error: any) {
+      const templatePackageName = getTemplateNpmPackageNameFromSdkVersion(exp.sdkVersion);
+      debug('Fallback to SDK template:', templatePackageName);
+      return await downloadAndExtractNpmModuleAsync(templatePackageName, {
+        cwd: templateDirectory,
+        name: exp.name,
+      });
+    }
   }
 }
 
 /** Given an `sdkVersion` like `44.0.0` return a fully qualified NPM package name like: `expo-template-bare-minimum@sdk-44` */
-function getTemplateNpmPackageName(sdkVersion?: string): string {
+function getTemplateNpmPackageNameFromSdkVersion(sdkVersion?: string): string {
   // When undefined or UNVERSIONED, we use the latest version.
   if (!sdkVersion || sdkVersion === 'UNVERSIONED') {
     Log.log('Using an unspecified Expo SDK version. The latest template will be used.');

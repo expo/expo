@@ -78,7 +78,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source, interval) {
         super();
         this.src = source;
-        this.interval = interval;
+        this.interval = Math.max(interval, 1);
         this.media = this._createMediaElement();
     }
     id = nextId();
@@ -87,8 +87,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     shouldCorrectPitch = false;
     src = null;
     media;
-    // @ts-expect-error: TODO(@kitten): Is this unintentionally unused?
-    interval = 100;
+    interval = 500;
     isPlaying = false;
     loaded = false;
     get playing() {
@@ -142,8 +141,17 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.isPlaying = false;
     }
     replace(source) {
+        const wasPlaying = this.isPlaying;
+        // we need to remove the current media element and create a new one
+        this.remove();
         this.src = source;
+        this.isPlaying = false;
+        this.loaded = false;
         this.media = this._createMediaElement();
+        // Resume playback if it was playing before
+        if (wasPlaying) {
+            this.play();
+        }
     }
     async seekTo(seconds, toleranceMillisBefore, toleranceMillisAfter) {
         this.media.currentTime = seconds;
@@ -166,11 +174,47 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     _createMediaElement() {
         const newSource = getSourceUri(this.src);
         const media = new Audio(newSource);
+        media.crossOrigin = 'anonymous';
+        let lastEmitTime = 0;
+        const intervalSec = this.interval / 1000;
+        // Throttled status updates based on interval
         media.ontimeupdate = () => {
+            const now = media.currentTime;
+            // Handle backwards time (loop/seek)
+            if (now < lastEmitTime) {
+                lastEmitTime = now;
+            }
+            if (now - lastEmitTime >= intervalSec) {
+                lastEmitTime = now;
+                this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+            }
+        };
+        media.onplay = () => {
+            this.isPlaying = true;
+            lastEmitTime = media.currentTime;
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                playing: this.isPlaying,
+            });
+        };
+        media.onpause = () => {
+            this.isPlaying = false;
+            lastEmitTime = media.currentTime;
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                playing: this.isPlaying,
+            });
+        };
+        media.onseeked = () => {
+            lastEmitTime = media.currentTime;
             this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+        };
+        media.onended = () => {
+            lastEmitTime = 0;
         };
         media.onloadeddata = () => {
             this.loaded = true;
+            lastEmitTime = media.currentTime;
             this.emit(PLAYBACK_STATUS_UPDATE, {
                 ...getStatusFromMedia(media, this.id),
                 isLoaded: this.loaded,
