@@ -2,9 +2,8 @@ import { HomeFilledIcon, iconSize, RefreshIcon } from '@expo/styleguide-native';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
-import { Image } from 'expo-image';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
-import { Text } from 'react-native';
+import { Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UpgradeWarning } from 'src/screens/HomeScreen/UpgradeWarning';
 

@@ -51,7 +51,6 @@ import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
-import expo.modules.image.ExpoImageModule
 
 import org.json.JSONException
 
@@ -187,7 +186,6 @@ open class HomeActivity : BaseExperienceActivity() {
         ConstantsModule::class.java,
         DeviceModule::class.java,
         EASClientModule::class.java,
-        ExpoImageModule::class.java,
         FileSystemModule::class.java,
         FileSystemLegacyModule::class.java,
         FontLoaderModule::class.java,
