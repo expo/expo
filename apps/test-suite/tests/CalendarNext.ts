@@ -68,12 +68,18 @@ function createEventData(customArgs = {}) {
   };
 }
 
-function createTestEvent(calendar: ExpoCalendar, customArgs = {}): ExpoCalendarEvent {
+function createTestEvent(
+  calendar: ExpoCalendar,
+  customArgs: Partial<ExpoCalendarEvent> = {}
+): ExpoCalendarEvent {
   const eventData = createEventData(customArgs);
   return calendar.createEvent(eventData);
 }
 
-function createTestReminder(calendar: ExpoCalendar, customArgs = {}): ExpoCalendarReminder {
+function createTestReminder(
+  calendar: ExpoCalendar,
+  customArgs: Partial<ExpoCalendarReminder> = {}
+): ExpoCalendarReminder {
   const reminderData = createEventData(customArgs);
   return calendar.createReminder(reminderData);
 }
@@ -478,7 +484,6 @@ export async function test(t) {
           t.expect(typeof event.id).toBe('string');
           t.expect(event.title).toBe(eventData.title);
           t.expect(event.startDate).toBe(eventData.startDate.toISOString());
-          // On iOS the endDate is set to 1 second before the requested endDate
           t.expect(event.endDate).toBe(eventData.endDate.toISOString());
           t.expect(event.timeZone).toBe(eventData.timeZone);
           t.expect(event.allDay).toBe(eventData.allDay);
@@ -489,8 +494,8 @@ export async function test(t) {
 
         t.it('creates an event with the recurrence rule', async () => {
           const recurrenceRule = {
-            endDate: new Date(2019, 3, 5).getTime(),
-            frequency: 'daily',
+            endDate: new Date(2021, 3, 5).toISOString(),
+            frequency: Calendar.Frequency.DAILY,
             interval: 1,
           };
           const event = await createTestEvent(calendar, {
@@ -502,6 +507,7 @@ export async function test(t) {
           t.expect(event.recurrenceRule).not.toBeNull();
           t.expect(event.recurrenceRule.frequency).toEqual(recurrenceRule.frequency);
           t.expect(event.recurrenceRule.interval).toEqual(recurrenceRule.interval);
+          t.expect(event.recurrenceRule.endDate).toEqual(recurrenceRule.endDate);
         });
 
         if (Platform.OS === 'ios') {
@@ -647,7 +653,7 @@ export async function test(t) {
         t.it('returns a list of recurring events', async () => {
           await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: 'daily',
+              frequency: Calendar.Frequency.DAILY,
             },
           });
 
@@ -660,7 +666,7 @@ export async function test(t) {
         t.it('returns an instance of a recurring event', async () => {
           const recurringEvent = await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: 'daily',
+              frequency: Calendar.Frequency.DAILY,
             },
           });
 
@@ -680,7 +686,7 @@ export async function test(t) {
         t.it('removes a recurring event', async () => {
           const recurringEvent = await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: 'daily',
+              frequency: Calendar.Frequency.DAILY,
             },
           });
 
@@ -704,7 +710,7 @@ export async function test(t) {
         t.it('removes an instance of a recurring event', async () => {
           const recurringEvent = await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: 'daily',
+              frequency: Calendar.Frequency.DAILY,
             },
           });
 
@@ -741,7 +747,7 @@ export async function test(t) {
       t.describe('Event.update()', () => {
         let calendar: ExpoCalendar;
 
-        t.beforeAll(async () => {
+        t.beforeEach(async () => {
           calendar = await createTestCalendarAsync();
         });
 
@@ -756,14 +762,18 @@ export async function test(t) {
 
         t.it('updates an event', async () => {
           const event = await createTestEvent(calendar);
-          event.update({
-            availability: Calendar.Availability.FREE,
-          });
+          const updatedData = {
+            location: 'New location ' + new Date().toISOString(),
+            url: 'https://swmansion.com',
+            notes: 'New notes ' + new Date().toISOString(),
+          };
+
+          event.update(updatedData);
 
           t.expect(event).toBeDefined();
-          t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
-            event.availability
-          );
+          t.expect(event.location).toBe(updatedData.location);
+          t.expect(event.url).toBe(updatedData.url);
+          t.expect(event.notes).toBe(updatedData.notes);
         });
 
         t.it('updates an event with a date string', async () => {
@@ -805,7 +815,59 @@ export async function test(t) {
           t.expect(fetchedEvents[0].startDate).toBe(newStartDate.toISOString());
         });
 
-        t.afterAll(async () => {
+        t.it('handles detached events', async () => {
+          const event = await createTestEvent(calendar, {
+            recurrenceRule: {
+              frequency: Calendar.Frequency.DAILY,
+            },
+          });
+
+          const occurrence = event.getOccurrence({
+            instanceStartDate: new Date(2020, 3, 5, 9),
+          });
+
+          t.expect(occurrence.isDetached).toBe(false);
+
+          const title = 'Detached event ' + new Date().toISOString();
+
+          occurrence.update({
+            title,
+          });
+
+          t.expect(occurrence.title).toBe(title);
+          t.expect(occurrence.recurrenceRule).toBeNull();
+          t.expect(occurrence.isDetached).toBe(true);
+          t.expect(occurrence.startDate).toBe(new Date(2020, 3, 5, 9).toISOString());
+          t.expect(occurrence.endDate).toBe(new Date(2020, 3, 5, 10).toISOString());
+        });
+
+        t.it('updates recurrence rule', async () => {
+          const event = await createTestEvent(calendar);
+
+          const newRecurrenceRule = {
+            frequency: Calendar.Frequency.WEEKLY,
+            interval: 1,
+            endDate: new Date(2021, 6, 5).toISOString(),
+            occurrence: 0,
+          };
+
+          event.update({
+            recurrenceRule: newRecurrenceRule,
+          });
+
+          t.expect(event.recurrenceRule).toEqual(newRecurrenceRule);
+        });
+
+        t.it('updates the all day property', async () => {
+          const event = await createTestEvent(calendar);
+          t.expect(event.allDay).toBe(false);
+          event.update({
+            allDay: true,
+          });
+          t.expect(event.allDay).toBe(true);
+        });
+
+        t.afterEach(async () => {
           calendar.delete();
         });
       });
@@ -867,7 +929,7 @@ export async function test(t) {
         t.it('lists attendees for a recurring event', async () => {
           const recurringEvent = await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: 'daily',
+              frequency: Calendar.Frequency.DAILY,
             },
           });
           const attendees = recurringEvent.getAttendees({
@@ -896,13 +958,21 @@ export async function test(t) {
 
           t.it('updates a reminder', async () => {
             const reminder = await createTestReminder(reminderCalendar);
-            const title = 'New title ' + new Date().toISOString();
-            reminder.update({
-              title,
-              dueDate: new Date(2025, 1, 1),
-            });
-            t.expect(reminder.title).toBe(title);
-            t.expect(reminder.dueDate).toBe(new Date(2025, 1, 1).toISOString());
+            const updatedData: Partial<ExpoCalendarReminder> = {
+              title: 'New title ' + new Date().toISOString(),
+              location: 'New location ' + new Date().toISOString(),
+              url: 'https://swmansion.com',
+              notes: 'New notes ' + new Date().toISOString(),
+              dueDate: new Date(2025, 1, 1).toISOString(),
+            };
+            reminder.update(updatedData);
+
+            t.expect(reminder.title).toBe(updatedData.title);
+            t.expect(reminder.creationDate).toBeDefined();
+            t.expect(reminder.lastModifiedDate).toBeDefined();
+            t.expect(reminder.url).toBe(updatedData.url);
+            t.expect(reminder.notes).toBe(updatedData.notes);
+            t.expect(reminder.dueDate).toBe(updatedData.dueDate);
 
             // Clean up the reminder
             reminder.delete();
@@ -931,6 +1001,47 @@ export async function test(t) {
 
             // Clean up the reminder
             reminder.delete();
+          });
+
+          t.it('marks a reminder as completed', async () => {
+            const reminder = await createTestReminder(reminderCalendar);
+            t.expect(reminder.completed).toBe(false);
+            reminder.update({
+              completed: true,
+            });
+            t.expect(reminder.completed).toBe(true);
+            t.expect(reminder.completionDate).toBeDefined();
+          });
+
+          t.it('supports alarms', async () => {
+            const reminder = await createTestReminder(reminderCalendar, {
+              alarms: [
+                {
+                  relativeOffset: -60,
+                },
+              ],
+            });
+            t.expect(reminder.alarms).toEqual([
+              {
+                relativeOffset: -60,
+              },
+            ]);
+          });
+
+          t.it('supports alarms with absolute dates', async () => {
+            const reminder = await createTestReminder(reminderCalendar, {
+              alarms: [
+                {
+                  absoluteDate: new Date(2025, 0, 1, 12, 0, 0).toISOString(),
+                },
+              ],
+            });
+            t.expect(reminder.alarms).toEqual([
+              {
+                absoluteDate: new Date(2025, 0, 1, 12, 0, 0).toISOString(),
+                relativeOffset: 0,
+              },
+            ]);
           });
 
           t.afterAll(async () => {
