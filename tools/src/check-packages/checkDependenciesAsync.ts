@@ -37,8 +37,6 @@ type SourceFileImportRef = {
 const IGNORED_PACKAGES = [
   '@expo/html-elements', // package: react, react-native, react-native-web
   'expo-gl', // package: react-dom, react-native-reanimated
-  'expo-sqlite', // package: expo-asset
-  'expo-store-review', // package: expo-constants
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
 ];
 
@@ -78,6 +76,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   },
 
   '@expo/metro-runtime': {
+    'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
+  },
+
+  'expo-store-review': {
     'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
   },
 
