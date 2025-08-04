@@ -79,8 +79,10 @@
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
+    "react": "*",
+    "react-native": "*",
     "react-native-reanimated": "*",
-    "react-native-safe-area-context": "*",
+    "react-native-safe-area-context": ">= 4.0.0",
     "react-native-screens": "*"
   },
   "peerDependenciesMeta": {
@@ -103,12 +105,6 @@
     "immer": "^10.1.1",
     "react-server-dom-webpack": "~19.0.0",
     "tsd": "^0.28.1"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*",
-    "react-native-safe-area-context": ">= 4.0.0",
-    "expo": "*"
   },
   "dependencies": {
     "@expo/metro-runtime": "5.0.4",
