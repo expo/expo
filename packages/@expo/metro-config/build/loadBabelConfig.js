@@ -37,7 +37,7 @@ exports.loadBabelConfig = (function () {
         }
         // Use the default preset for react-native if no babel config file is found
         if (!babelRC.extends) {
-            babelRC.presets = [require('babel-preset-expo')];
+            babelRC.presets = [require('expo/internal/babel-preset')];
         }
         return babelRC;
     };
