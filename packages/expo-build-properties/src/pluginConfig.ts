@@ -363,12 +363,17 @@ export interface PluginConfigTypeIos {
    * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
    * This feature is available from React Native 0.80 and later.
    * From React Native 0.81, this setting will also use a precompiled React Native Core (`React.xcframework`).
-   * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` and `ENV['RCT_USE_PREBUILT_RNCORE'] = '1'` in the Podfile
-   * to use precompiled binaries.
    *
-   * @default true
+   * @default false
    * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
    * @experimental
+   */
+  buildReactNativeFromSource?: boolean;
+
+  /**
+   * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+   * This feature is available from React Native 0.80 and later.
+   * @deprecated Use `buildReactNativeFromSource` instead.
    */
   buildFromSource?: boolean;
 }
@@ -718,6 +723,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           },
           nullable: true,
         },
+        buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
       },
       nullable: true,
