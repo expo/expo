@@ -93,9 +93,11 @@ const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
 export async function checkDependenciesAsync(pkg: Package, type: PackageCheckType = 'package') {
   if (isNCCBuilt(pkg)) {
     return;
-  } else if (IGNORED_PACKAGES.includes(pkg.packageName)) {
-    return;
   }
+
+  // We still run checks on ignored packages, since we want to ensure disallowed
+  // packages are never used
+  const isIgnoredPackage = IGNORED_PACKAGES.includes(pkg.packageName);
 
   const sources = (await getSourceFilesAsync(pkg, type))
     .filter((file) => file.type === 'source')
@@ -109,16 +111,23 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
   let invalidImports: {
     file: SourceFile;
     importRef: SourceFileImportRef;
-    kind: DependencyKind.Dev | undefined;
+    kind: DependencyKind | undefined;
   }[] = [];
 
   for (const source of sources) {
-    source.importRefs.forEach((importRef) => {
+    for (const importRef of source.importRefs) {
+      if (importRef.type !== 'external' || pkg.packageName === importRef.packageName) {
+        continue;
+      } else if (isDisallowedImport(importRef, pkg.packageName)) {
+        invalidImports.push({ file: source.file, importRef, kind: undefined });
+      } else if (isIgnoredPackage) {
+        continue;
+      }
       const kind = getValidExternalImportKind(importRef);
       if (!kind || kind === DependencyKind.Dev) {
         invalidImports.push({ file: source.file, importRef, kind });
       }
-    });
+    }
   }
 
   const config = SPECIAL_DEPENDENCIES[pkg.packageName];
@@ -159,7 +168,9 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
 
     invalidImports.forEach(({ file, importRef }) => {
       Logger.verbose(
-        `     > ${path.relative(pkg.path, file.path)} - ${importRef.importValue}${importRef.isTypeOnly ? ' (types only)' : ''}`
+        `     > ${path.relative(pkg.path, file.path)} - ${importRef.importValue}` +
+          `${importRef.isTypeOnly ? ' (types only)' : ''}` +
+          `${isDisallowedImport(importRef, pkg.packageName) ? ' (disallowed)' : ''}`
       );
     });
 
@@ -172,6 +183,17 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
 function isNCCBuilt(pkg: Package): boolean {
   const { build: buildScript } = pkg.packageJson.scripts;
   return !!pkg.packageJson.bin && !!buildScript?.includes('ncc');
+}
+
+function isDisallowedImport(ref: SourceFileImportRef, sourceName: string): boolean {
+  if (sourceName === 'expo-updates') {
+    // TODO: We're currently allowing disallowed `metro` imports in `expo-updates`
+    // since the same file that contains them also contains more invalid imports
+    // that should all be fixed in one go
+    return false;
+  }
+  const packageName = getPackageName(ref.packageName);
+  return packageName === 'metro' || packageName.startsWith('metro-');
 }
 
 /**
@@ -189,10 +211,7 @@ function createExternalImportValidator(pkg: Package) {
     DependencyKind.Peer,
   ]);
   dependencies.forEach((dependency) => dependencyMap.set(dependency.name, dependency));
-  return (ref: SourceFileImportRef) =>
-    ref.type !== 'external' ||
-    pkg.packageName === ref.packageName ||
-    dependencyMap.get(ref.packageName)?.kind;
+  return (ref: SourceFileImportRef) => dependencyMap.get(ref.packageName)?.kind;
 }
 
 /** Get a list of all source files to validate for dependency chains */
