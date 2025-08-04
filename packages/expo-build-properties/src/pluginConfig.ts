@@ -173,9 +173,15 @@ export interface PluginConfigTypeAndroid {
    */
   enableBundleCompression?: boolean;
 
+  /*
+   * Enable building React Native from source. Turning this on will significantly increase the build times.
+   * @default false
+   */
+  buildReactNativeFromSource?: boolean;
+
   /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
-   *
+   * @deprecated Use `buildReactNativeFromSource` instead.
    * @default false
    */
   buildFromSource?: boolean;
@@ -685,6 +691,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
+        buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
         exclusiveMavenMirror: { type: 'string', nullable: true },
       },
