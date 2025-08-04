@@ -158,12 +158,12 @@ export type ChartProps = {
  * `<Chart>` component without a host view.
  * You should use this with a `Host` component in ancestor.
  */
-export declare function ChartPrimitive({ type, showGrid, animate, showLegend, data, ...props }: ChartProps): import("react").JSX.Element;
+export declare function ChartPrimitive({ data, ...props }: ChartProps): import("react").JSX.Element;
 /**
  * Renders a native Chart component using Swift Charts.
  * @platform ios
  */
-export declare function Chart(props: ChartProps & {
+export declare function Chart({ style, data, ...props }: ChartProps & {
     style?: StyleProp<ViewStyle>;
 }): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

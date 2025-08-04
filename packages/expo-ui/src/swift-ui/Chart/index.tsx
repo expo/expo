@@ -175,34 +175,18 @@ const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('Expo
  * `<Chart>` component without a host view.
  * You should use this with a `Host` component in ancestor.
  */
-export function ChartPrimitive({
-  type = 'line',
-  showGrid = true,
-  animate = true,
-  showLegend = false,
-  data,
-  ...props
-}: ChartProps) {
-  return (
-    <ChartNativeView
-      type={type}
-      showGrid={showGrid}
-      animate={animate}
-      showLegend={showLegend}
-      data={data}
-      {...props}
-    />
-  );
+export function ChartPrimitive({ data, ...props }: ChartProps) {
+  return <ChartNativeView data={data} {...props} />;
 }
 
 /**
  * Renders a native Chart component using Swift Charts.
  * @platform ios
  */
-export function Chart(props: ChartProps & { style?: StyleProp<ViewStyle> }) {
+export function Chart({ style, data, ...props }: ChartProps & { style?: StyleProp<ViewStyle> }) {
   return (
-    <Host style={props.style}>
-      <ChartPrimitive {...props} />
+    <Host style={style}>
+      <ChartPrimitive data={data} {...props} />
     </Host>
   );
 }
