@@ -16,14 +16,16 @@ import InternalExpoCalendar from './ExpoCalendar';
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
 
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+  override getAttendees(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarAttendee[] {
+    return super.getAttendees(stringifyDateValues(recurringEventOptions));
+  }
+
   override update(details: Partial<Event>): void {
     super.update(stringifyDateValues(details));
   }
 
-  override  getAttendees(
-    recurringEventOptions: RecurringEventOptions = {}
-  ): ExpoCalendarAttendee[] {
-    return super.getAttendees(stringifyDateValues(recurringEventOptions));
+  override delete(options: RecurringEventOptions = {}): void {
+    super.delete(stringifyDateValues(options));
   }
 }
 

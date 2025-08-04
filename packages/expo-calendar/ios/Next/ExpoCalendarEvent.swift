@@ -63,7 +63,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
         let instanceStartDate = parse(date: options.instanceStartDate)
         
-        guard let calendarEvent = getEvent(with: id, startDate: instanceStartDate) else {
+        guard let calendarEvent = getEvent(startDate: instanceStartDate) else {
             return
         }
         

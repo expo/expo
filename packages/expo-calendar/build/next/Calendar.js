@@ -5,11 +5,14 @@ import InternalExpoCalendar from './ExpoCalendar';
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+    getAttendees(recurringEventOptions = {}) {
+        return super.getAttendees(stringifyDateValues(recurringEventOptions));
+    }
     update(details) {
         super.update(stringifyDateValues(details));
     }
-    getAttendees(recurringEventOptions = {}) {
-        return super.getAttendees(stringifyDateValues(recurringEventOptions));
+    delete(options = {}) {
+        super.delete(stringifyDateValues(options));
     }
 }
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
