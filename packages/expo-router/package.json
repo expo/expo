@@ -84,13 +84,17 @@
     "react-native": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 4.0.0",
-    "react-native-screens": "*"
+    "react-native-screens": "*",
+    "react-native-web": "*"
   },
   "peerDependenciesMeta": {
     "react-dom": {
       "optional": true
     },
     "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-web": {
       "optional": true
     },
     "@react-navigation/drawer": {
