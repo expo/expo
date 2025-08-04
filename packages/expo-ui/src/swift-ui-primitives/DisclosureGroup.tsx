@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { createViewModifierEventListener } from './modifiers/utils';
 import { type CommonViewModifierProps } from './types';
 import { type ViewEvent } from '../types';
 
@@ -25,11 +26,17 @@ const DisclosureGroupNativeView: React.ComponentType<NativeDisclosureGroupProps>
   requireNativeView('ExpoUI', 'DisclosureGroupView');
 
 export function DisclosureGroup(props: DisclosureGroupProps) {
-  const { onStateChange, ...rest } = props;
+  const { onStateChange, modifiers, ...rest } = props;
 
   function handleStateChange(event: { nativeEvent: { isExpanded: boolean } }) {
     onStateChange?.(event.nativeEvent.isExpanded);
   }
 
-  return <DisclosureGroupNativeView {...rest} onStateChange={handleStateChange} />;
+  const transformedProps = {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...rest,
+  };
+
+  return <DisclosureGroupNativeView {...transformedProps} onStateChange={handleStateChange} />;
 }

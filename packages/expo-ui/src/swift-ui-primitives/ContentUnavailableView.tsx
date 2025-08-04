@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { Platform } from 'react-native';
 
+import { createViewModifierEventListener } from './modifiers/utils';
 import { CommonViewModifierProps } from './types';
 
 export interface ContentUnavailableViewProps extends CommonViewModifierProps {
@@ -28,9 +29,20 @@ const ContentUnavailableViewNativeView: React.ComponentType<ContentUnavailableVi
  * @platform ios 17.0+
  *
  */
+function transformContentUnavailableViewProps(
+  props: ContentUnavailableViewProps
+): ContentUnavailableViewProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
 export function ContentUnavailableView(props: ContentUnavailableViewProps) {
   if (!ContentUnavailableViewNativeView) {
     return null;
   }
-  return <ContentUnavailableViewNativeView {...props} />;
+  return <ContentUnavailableViewNativeView {...transformContentUnavailableViewProps(props)} />;
 }

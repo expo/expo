@@ -9,6 +9,7 @@ internal final class FormViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPro
   @Field var padding: PaddingOptions?
   @Field var scrollEnabled: Bool = true
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
 }
 
 internal struct FormView: ExpoSwiftUI.View {

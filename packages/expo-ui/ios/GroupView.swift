@@ -9,6 +9,7 @@ internal final class GroupViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPr
   @Field var padding: PaddingOptions?
   @Field var useTapGesture: Bool?
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
   var onTap = EventDispatcher()
 }
 
