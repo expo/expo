@@ -35,7 +35,6 @@ type SourceFileImportRef = {
 
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
-  '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
   '@expo/html-elements', // package: react, react-native, react-native-web
   '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
   '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
@@ -58,6 +57,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'expo-asset': {
     '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
+  },
+
+  '@expo/cli': {
+    'eslint': 'ignore-dev', // TODO: Switch to resolve-from / project root require
   },
 
   '@expo/image-utils': {
