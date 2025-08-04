@@ -57,6 +57,7 @@
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {
+    "expo": "*",
     "react-native": "*"
   },
   "devDependencies": {
