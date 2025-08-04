@@ -107,6 +107,14 @@
       "./taskfile-swc.js"
     ]
   },
+  "peerDependencies": {
+    "expo-router": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-router": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@expo/multipart-body-parser": "^1.0.0",
     "@expo/ngrok": "4.1.3",
