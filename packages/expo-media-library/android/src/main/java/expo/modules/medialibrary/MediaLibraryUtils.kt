@@ -181,9 +181,9 @@ object MediaLibraryUtils {
   fun getMimeType(contentResolver: ContentResolver, uri: Uri): String? =
     contentResolver.getType(uri) ?: getMimeTypeFromFileUrl(uri.toString())
 
-  fun getAssetsUris(context: Context, assetsId: List<String?>?): List<Uri> {
+  fun getAssetsUris(context: Context, assetsId: Array<String>): List<Uri> {
     val result = mutableListOf<Uri>()
-    val selection = MediaStore.MediaColumns._ID + " IN (" + TextUtils.join(",", assetsId!!) + " )"
+    val selection = MediaStore.MediaColumns._ID + " IN (" + TextUtils.join(",", assetsId) + " )"
     val selectionArgs: Array<String>? = null
     val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.MIME_TYPE)
     context.contentResolver.query(

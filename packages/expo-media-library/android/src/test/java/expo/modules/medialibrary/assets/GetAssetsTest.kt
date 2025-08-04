@@ -67,7 +67,7 @@ internal class GetAssetsTest {
     )
 
     // act
-    val response = GetAssets(context, defaultAssets).execute()
+    val response = getAssets(context, defaultAssets)
 
     // assert
     assertEquals(2, response.getInt("totalCount"))
@@ -80,7 +80,7 @@ internal class GetAssetsTest {
 
     // act && assert
     try {
-      GetAssets(context, defaultAssets).execute()
+      getAssets(context, defaultAssets)
       fail()
     } catch (e: Exception) {
       assert(e is AssetQueryException)
@@ -94,7 +94,7 @@ internal class GetAssetsTest {
 
     // act && assert
     try {
-      GetAssets(context, defaultAssets).execute()
+      getAssets(context, defaultAssets)
       fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)
@@ -108,7 +108,7 @@ internal class GetAssetsTest {
 
     // act && assert
     try {
-      GetAssets(context, defaultAssets).execute()
+      getAssets(context, defaultAssets)
       fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)

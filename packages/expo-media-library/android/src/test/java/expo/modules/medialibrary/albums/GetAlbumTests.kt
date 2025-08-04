@@ -58,7 +58,7 @@ internal class GetAlbumTests {
     val albumName = "TestAlbum"
 
     // act
-    GetAlbum(context, albumName).execute()
+    getAlbum(context, albumName)
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)

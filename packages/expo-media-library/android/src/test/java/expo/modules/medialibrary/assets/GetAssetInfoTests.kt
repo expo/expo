@@ -76,7 +76,7 @@ internal class GetAssetInfoTests {
     val assetId = "testAssetId"
 
     // act
-    GetAssetInfo(context, assetId).execute()
+    getAssetInfo(context, assetId)
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)
