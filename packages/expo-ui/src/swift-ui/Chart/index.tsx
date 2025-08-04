@@ -146,7 +146,6 @@ export type ChartProps = {
    * - If dataPoint has individual colors, legend won't appear - use data without colors to see legend
    */
   showLegend?: boolean;
-
   /**
    * Line chart specific styling options.
    */
