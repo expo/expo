@@ -330,7 +330,7 @@ export function getDefaultConfig(
         }
 
         // Native behavior.
-        return require('react-native/get-js-polyfills')();
+        return require(path.join(reactNativePath, 'rn-get-polyfills'))();
       },
     },
     server: {
