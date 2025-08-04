@@ -72,10 +72,10 @@ export async function prebuildAsync(
     if (finalPlatforms.length > 0) {
       options.platforms = finalPlatforms;
     } else {
+      const requestedPlatforms = options.platforms.join(', ');
       Log.warn(
-        chalk`⚠️ No platforms to prebuild, skipping. ${options.platforms.join(', ')} not present in app config.`
+        chalk`⚠️  Requested prebuild for "${requestedPlatforms}", but only "${platforms.join(', ')}" is present in app config ("expo.platforms" entry). Continuing with "${requestedPlatforms}".`
       );
-      return null;
     }
   }
   if (options.clean) {
