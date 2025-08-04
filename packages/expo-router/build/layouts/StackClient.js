@@ -3,15 +3,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackRouter = exports.stackRouterOverride = void 0;
 const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
 const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
+const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const ModalStack_web_1 = require("../modal/web/ModalStack.web");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
-const NativeStackNavigator = (0, native_stack_1.createNativeStackNavigator)().Navigator;
+const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
 function isStackAction(action) {
     return (action.type === 'PUSH' ||
@@ -333,13 +333,13 @@ function filterSingular(state, getId) {
 }
 const Stack = Object.assign((props) => {
     const isWeb = process.env.EXPO_OS === 'web';
-    const { isPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptions = (0, react_1.useMemo)(() => {
-        if (isPreviewOpen) {
+        if (isStackAnimationDisabled) {
             return disableAnimationInScreenOptions(props.screenOptions);
         }
         return props.screenOptions;
-    }, [props.screenOptions, isPreviewOpen]);
+    }, [props.screenOptions, isStackAnimationDisabled]);
     if (isWeb) {
         return (<ModalStack_web_1.RouterModal {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
     }

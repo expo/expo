@@ -52,7 +52,7 @@ const Slot_1 = require("../ui/Slot");
 const InternalLinkPreviewContext = (0, react_1.createContext)(undefined);
 function LinkWithPreview({ children, ...rest }) {
     const router = (0, hooks_1.useRouter)();
-    const { setIsPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const { setOpenPreviewKey } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
     const hrefWithoutQuery = String(rest.href).split('?')[0];
     const prevHrefWithoutQuery = (0, react_1.useRef)(hrefWithoutQuery);
@@ -66,7 +66,7 @@ function LinkWithPreview({ children, ...rest }) {
             prevHrefWithoutQuery.current = hrefWithoutQuery;
         }
     }, [hrefWithoutQuery]);
-    const [nextScreenId, updateNextScreenId] = (0, useNextScreenId_1.useNextScreenId)();
+    const [nextScreenId, prefetch] = (0, useNextScreenId_1.useNextScreenId)();
     (0, react_1.useEffect)(() => {
         if ((0, url_1.shouldLinkExternally)(String(rest.href))) {
             if (process.env.NODE_ENV !== 'production') {
@@ -104,24 +104,14 @@ function LinkWithPreview({ children, ...rest }) {
     }
     return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} onWillPreviewOpen={() => {
             isPreviewTapped.current = false;
-            router.prefetch(rest.href);
-            setIsPreviewOpen(true);
+            prefetch(rest.href);
             setIsCurrenPreviewOpen(true);
-        }} onDidPreviewOpen={() => {
-            updateNextScreenId(rest.href);
         }} onPreviewWillClose={() => {
+            setIsCurrenPreviewOpen(false);
             // When preview was not tapped, then we need to enable the screen stack animation
-            // Otherwise a quick user could tap another link before onDidPreviewClose is called
+            // Otherwise this will happen in StackNavigator, when new screen is opened
             if (!isPreviewTapped.current) {
-                setIsCurrenPreviewOpen(false);
-                setIsPreviewOpen(false);
-            }
-        }} onPreviewDidClose={() => {
-            // If preview was tapped we need to enable the screen stack animation
-            // For other cases we did it in onPreviewWillClose
-            if (isPreviewTapped.current) {
-                setIsCurrenPreviewOpen(false);
-                setIsPreviewOpen(false);
+                setOpenPreviewKey(undefined);
             }
         }} onPreviewTapped={() => {
             isPreviewTapped.current = true;

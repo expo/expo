@@ -303,7 +303,7 @@ function findDivergentState(_actionState, _navigationState) {
     let actionStateRoute;
     while (actionState && navigationState) {
         actionStateRoute = actionState.routes[actionState.routes.length - 1];
-        const stateRoute = navigationState.routes[navigationState.index];
+        const stateRoute = navigationState.routes[navigationState.index ?? 0];
         const childState = actionStateRoute.state;
         const nextNavigationState = stateRoute.state;
         const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
