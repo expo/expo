@@ -51,7 +51,6 @@ import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
-
 import org.json.JSONException
 
 open class HomeActivity : BaseExperienceActivity() {
