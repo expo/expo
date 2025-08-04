@@ -18,23 +18,27 @@ import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.EXIF_TAGS
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.UnableToLoadException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.lang.UnsupportedOperationException
+import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 
 /**
  * Queries content resolver for a single asset.
  * Resolves [promise] with a single-element array of [Bundle]
  */
-fun queryAssetInfo(
+suspend fun queryAssetInfo(
   context: Context,
   selection: String?,
   selectionArgs: Array<String>?,
   resolveWithFullInfo: Boolean
-): ArrayList<Bundle>? {
+): ArrayList<Bundle>? = withContext(Dispatchers.IO) {
   val contentResolver = context.contentResolver
   try {
     contentResolver.query(
@@ -44,6 +48,7 @@ fun queryAssetInfo(
       selectionArgs,
       null
     ).use { assetCursor ->
+      coroutineContext.ensureActive()
       if (assetCursor == null) {
         throw AssetQueryException()
       } else {
@@ -54,9 +59,9 @@ fun queryAssetInfo(
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
           // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
-          return array
+          return@withContext array
         } else {
-          return null
+          return@withContext null
         }
       }
     }

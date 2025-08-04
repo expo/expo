@@ -8,8 +8,11 @@ import android.provider.MediaStore.Images.Media
 import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.UnableToLoadException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 
-fun getAlbums(context: Context): List<Bundle> {
+suspend fun getAlbums(context: Context): List<Bundle> = withContext(Dispatchers.IO) {
   val projection = arrayOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME)
   val selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
 
@@ -25,6 +28,7 @@ fun getAlbums(context: Context): List<Bundle> {
         Media.BUCKET_DISPLAY_NAME
       )
       .use { assetCursor ->
+        coroutineContext.ensureActive()
         if (assetCursor == null) {
           throw AlbumException("Could not get albums. Query returns null")
         }
@@ -32,6 +36,9 @@ fun getAlbums(context: Context): List<Bundle> {
         val bucketDisplayNameIndex = assetCursor.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
 
         while (assetCursor.moveToNext()) {
+          // When getting albums, coroutine should immediately close after detecting that
+          // scope is inactive – it is a GET operation, thus requires no atomicity of operations.
+          coroutineContext.ensureActive()
           val id = assetCursor.getString(bucketIdIndex)
 
           if (assetCursor.getType(bucketDisplayNameIndex) == FIELD_TYPE_NULL) {
@@ -47,7 +54,7 @@ fun getAlbums(context: Context): List<Bundle> {
 
           album.count++
         }
-        return albums.values.map { it.toBundle() }
+        return@withContext albums.values.map { it.toBundle() }
       }
   } catch (e: SecurityException) {
     throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission ${e.message}", e)

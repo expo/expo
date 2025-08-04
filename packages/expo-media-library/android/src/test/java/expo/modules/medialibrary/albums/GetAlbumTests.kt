@@ -10,13 +10,13 @@ import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.throwableContentResolver
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -39,14 +39,14 @@ internal class GetAlbumTests {
   }
 
   @Test
-  fun `GetAlbum should call queryAlbum`() {
+  fun `getAlbum should call queryAlbum`() = runTest {
     // arrange
     val context = mockContext.get()
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(::queryAlbum)
-    every {
+    coEvery {
       queryAlbum(
         context,
         capture(selectionSlot),
@@ -67,7 +67,7 @@ internal class GetAlbumTests {
   }
 
   @Test
-  fun `queryAlbum should resolve album by name`() {
+  fun `queryAlbum should resolve album by name`() = runTest {
     // arrange
     val context = mockContext with mockContentResolverForAlbum(
       arrayOf(
@@ -87,7 +87,7 @@ internal class GetAlbumTests {
   }
 
   @Test
-  fun `queryAlbum should resolve null if album is not found`() {
+  fun `queryAlbum should resolve null if album is not found`() = runTest {
     // arrange
     val context = mockContext with mockContentResolverForAlbum(emptyArray())
     val selectionArgs = arrayOf(MockData.mockAlbum.name)
@@ -100,18 +100,21 @@ internal class GetAlbumTests {
   }
 
   @Test
-  fun `queryAlbum should reject on null cursor`() {
+  fun `queryAlbum should reject on null cursor`() = runTest {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
     // act && assert
-    assertThrows(AlbumException::class.java) {
+    try {
       queryAlbum(context, "", emptyArray())
+      fail()
+    } catch (e: Exception) {
+      assert(e is AlbumException)
     }
   }
 
   @Test
-  fun `queryAlbum should reject on SecurityException`() {
+  fun `queryAlbum should reject on SecurityException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
@@ -125,7 +128,7 @@ internal class GetAlbumTests {
   }
 
   @Test
-  fun `queryAlbum should reject on IllegalArgumentException`() {
+  fun `queryAlbum should reject on IllegalArgumentException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 

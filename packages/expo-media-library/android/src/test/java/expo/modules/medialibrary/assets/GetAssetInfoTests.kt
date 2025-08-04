@@ -11,6 +11,7 @@ import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -18,9 +19,9 @@ import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.slot
 import junit.framework.ComparisonFailure
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -56,14 +57,14 @@ internal class GetAssetInfoTests {
   }
 
   @Test
-  fun `GetAssetInfo should call queryAssetInfo`() {
+  fun `getAssetInfo should call queryAssetInfo`() = runTest {
     // arrange
     val context = mockContext.get()
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(::queryAssetInfo)
-    every {
+    coEvery {
       queryAssetInfo(
         context,
         capture(selectionSlot),
@@ -85,7 +86,7 @@ internal class GetAssetInfoTests {
   }
 
   @Test
-  fun `queryAssetInfo should resolve asset`() {
+  fun `queryAssetInfo should resolve asset`() = runTest {
     // arrange
     val context = mockContext with mockContentResolverForResult(
       arrayOf(
@@ -111,18 +112,21 @@ internal class GetAssetInfoTests {
   }
 
   @Test
-  fun `queryAssetInfo should reject on null cursor`() {
+  fun `queryAssetInfo should reject on null cursor`() = runTest {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
     // act && assert
-    assertThrows(AssetQueryException::class.java) {
+    try {
       queryAssetInfo(context, "", emptyArray(), false)
+      fail()
+    } catch (e: Exception) {
+      assert(e is AssetQueryException)
     }
   }
 
   @Test
-  fun `queryAssetInfo should reject on SecurityException`() {
+  fun `queryAssetInfo should reject on SecurityException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
@@ -136,7 +140,7 @@ internal class GetAssetInfoTests {
   }
 
   @Test
-  fun `queryAssetInfo should reject on IOException`() {
+  fun `queryAssetInfo should reject on IOException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(IOException())
 

@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -11,10 +12,15 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 object MediaLibraryUtils {
   class AssetFile(pathname: String, val assetId: String, val mimeType: String) : File(pathname)
@@ -74,7 +80,11 @@ object MediaLibraryUtils {
     }
   }
 
-  fun deleteAssets(context: Context, selection: String?, selectionArgs: Array<out String?>?): Boolean {
+  suspend fun deleteAssets(
+    context: Context,
+    selection: String?,
+    selectionArgs: Array<out String?>?
+  ): Boolean = withContext(Dispatchers.IO) {
     val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA)
     try {
       context.contentResolver.query(
@@ -86,33 +96,37 @@ object MediaLibraryUtils {
       ).use { filesToDelete ->
         if (filesToDelete == null) {
           throw AssetFileException("Could not delete assets. Cursor is null.")
-        }
-        while (filesToDelete.moveToNext()) {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
-            val id = filesToDelete.getLong(columnId)
-            val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
-            val rowsDeleted = context.contentResolver.delete(assetUri, null)
-            if (rowsDeleted == 0) {
-              throw AssetFileException("Could not delete file.")
-            }
-          } else {
-            val dataColumnIndex = filesToDelete.getColumnIndex(MediaStore.MediaColumns.DATA)
-            val filePath = filesToDelete.getString(dataColumnIndex)
-            val file = File(filePath)
-            if (file.delete()) {
-              context.contentResolver.delete(
-                EXTERNAL_CONTENT_URI,
-                "${MediaStore.MediaColumns.DATA}=?",
-                arrayOf(filePath)
-              )
+        } else {
+          while (filesToDelete.moveToNext()) {
+            // Interrupting file deletion when scope is closed is desired, as
+            // user might want to stop this process in the meantime
+            coroutineContext.ensureActive()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+              val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
+              val id = filesToDelete.getLong(columnId)
+              val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
+              val rowsDeleted = context.contentResolver.delete(assetUri, null)
+              if (rowsDeleted == 0) {
+                throw AssetFileException("Could not delete file.")
+              }
             } else {
-              throw AssetFileException("Could not delete file.")
+              val dataColumnIndex = filesToDelete.getColumnIndex(MediaStore.MediaColumns.DATA)
+              val filePath = filesToDelete.getString(dataColumnIndex)
+              val file = File(filePath)
+              if (file.delete()) {
+                context.contentResolver.delete(
+                  EXTERNAL_CONTENT_URI,
+                  "${MediaStore.MediaColumns.DATA}=?",
+                  arrayOf(filePath)
+                )
+              } else {
+                throw AssetFileException("Could not delete file.")
+              }
             }
           }
         }
-        return true
       }
+      return@withContext true
     } catch (e: SecurityException) {
       throw UnableToDeleteException("Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e)
     } catch (e: Exception) {
@@ -251,4 +265,11 @@ object MediaLibraryUtils {
    */
   fun hasManifestPermission(context: Context, permission: String): Boolean =
     getManifestPermissions(context).contains(permission)
+
+  suspend fun scanFile(context: Context, paths: Array<String>, mimeTypes: Array<String>?) =
+    suspendCoroutine { complete ->
+      MediaScannerConnection.scanFile(context, paths, mimeTypes) { path: String, uri: Uri? ->
+        complete.resume(Pair(path, uri))
+      }
+    }
 }
