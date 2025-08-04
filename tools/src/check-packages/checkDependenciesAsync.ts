@@ -75,6 +75,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
   },
 
+  'jest-expo': {
+    'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
+  },
+
   '@expo/metro-runtime': {
     'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
   },
