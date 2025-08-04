@@ -312,6 +312,14 @@ function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: Source
   ) {
     // Collect `require` statement
     imports.push(createTypescriptImportRef(node.arguments[0].getText()));
+  } else if (
+    ts.isCallExpression(node) &&
+    node.expression.getText() === 'require.resolve' &&
+    node.arguments.length === 1 && // Filter out `require.resolve('', { paths: ... })`
+    ts.isStringLiteral(node.arguments[0]) // Filter `require(requireFrom(...))
+  ) {
+    // Collect `require.resolve` statement
+    imports.push(createTypescriptImportRef(node.arguments[0].getText()));
   } else {
     ts.forEachChild(node, (child) => {
       collectTypescriptImports(child, imports);
