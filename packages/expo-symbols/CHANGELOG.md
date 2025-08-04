@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Suppress `the native view manager isn't exported` warning on Android.
+- Suppress `the native view manager isn't exported` warning on Android. ([#38504](https://github.com/expo/expo/pull/38504) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
