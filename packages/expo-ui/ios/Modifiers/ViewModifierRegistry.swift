@@ -433,6 +433,7 @@ internal class ViewModifierRegistry {
 
 // MARK: - Built-in Modifier Registration
 
+// swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
     register("background") { params, _ in
@@ -594,7 +595,7 @@ extension ViewModifierRegistry {
       return ClipShapeModifier(shape: shape, cornerRadius: CGFloat(cornerRadius))
     }
 
-    register("onTapGesture") { params, eventDispatcher in
+    register("onTapGesture") { _, eventDispatcher in
       return OnTapGestureModifier(eventDispatcher: eventDispatcher)
     }
 
@@ -710,7 +711,7 @@ internal extension Color {
       .sRGB,
       red: Double(r) / 255,
       green: Double(g) / 255,
-      blue:  Double(b) / 255,
+      blue: Double(b) / 255,
       opacity: Double(a) / 255
     )
   }
