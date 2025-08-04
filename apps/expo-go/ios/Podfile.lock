@@ -3553,7 +3553,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.4.0):
+  - RNWorklets (0.4.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3579,10 +3579,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets (= 0.4.0)
+    - RNWorklets/worklets (= 0.4.1)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets (0.4.0):
+  - RNWorklets/worklets (0.4.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3608,10 +3608,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets/apple (= 0.4.0)
+    - RNWorklets/worklets/apple (= 0.4.1)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets/apple (0.4.0):
+  - RNWorklets/worklets/apple (0.4.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4493,7 +4493,7 @@ SPEC CHECKSUMS:
   RNReanimated: bc92d92315bde5372395f9f9b96e44bde14ea612
   RNScreens: c0f1e602f1c663c721a8faf7a10f48b9823e45f5
   RNSVG: 8d87cff016edf1b6ca409ed39804101836d75e90
-  RNWorklets: cdcb3e4f5e9aea5b946974d0f95e40d01d651033
+  RNWorklets: f0b4bfd581c55f18a8bea9beae9cef26650c8cda
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
