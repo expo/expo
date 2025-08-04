@@ -59,6 +59,8 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   '@expo/cli': {
     eslint: 'ignore-dev', // TODO: Switch to resolve-from / project root require
+    'expo-constants/package.json': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
+    'metro-runtime/package.json': 'ignore-dev', // NOTE: Only used in developmnt in the expo/expo monorepo
   },
 
   'expo-router': {
