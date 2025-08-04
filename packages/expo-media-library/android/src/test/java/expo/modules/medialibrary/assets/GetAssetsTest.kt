@@ -16,6 +16,7 @@ import io.mockk.runs
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -80,6 +81,7 @@ internal class GetAssetsTest {
     // act && assert
     try {
       GetAssets(context, defaultAssets).execute()
+      fail()
     } catch (e: Exception) {
       assert(e is AssetQueryException)
     }
@@ -93,6 +95,7 @@ internal class GetAssetsTest {
     // act && assert
     try {
       GetAssets(context, defaultAssets).execute()
+      fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)
     }
@@ -106,6 +109,7 @@ internal class GetAssetsTest {
     // act && assert
     try {
       GetAssets(context, defaultAssets).execute()
+      fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)
     }
