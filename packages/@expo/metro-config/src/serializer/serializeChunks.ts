@@ -174,8 +174,11 @@ export async function graphToSerialAssetsAsync(
   const isExporting = true;
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
   const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+  const platform = getPlatformOption(graph, options) ?? 'web';
+  const isHosted =
+    platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
   const publicPath = isExporting
-    ? graph.transformOptions.platform === 'web'
+    ? isHosted
       ? `/assets?export_path=${assetPublicUrl}`
       : assetPublicUrl
     : '/assets/?unstable_path=.';
@@ -185,9 +188,10 @@ export async function graphToSerialAssetsAsync(
   const metroAssets = (await getMetroAssets(graph.dependencies, {
     processModuleFilter: options.processModuleFilter,
     assetPlugins: config.transformer?.assetPlugins ?? [],
-    platform: getPlatformOption(graph, options) ?? 'web',
+    platform,
     projectRoot: options.projectRoot, // this._getServerRootDir(),
     publicPath,
+    isHosted,
   })) as AssetData[];
 
   return {

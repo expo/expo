@@ -4,7 +4,6 @@ import android.content.Context
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.DevLauncherController
