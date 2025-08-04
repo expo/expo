@@ -36,6 +36,15 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*",
+    "react-dom": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "react-dom": "19.1.0"
   }
 }
