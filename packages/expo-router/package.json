@@ -83,6 +83,7 @@
     "react": "*",
     "react-dom": "*",
     "react-native": "*",
+    "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 4.0.0",
     "react-native-screens": "*",
@@ -90,6 +91,9 @@
   },
   "peerDependenciesMeta": {
     "react-dom": {
+      "optional": true
+    },
+    "react-native-gesture-handler": {
       "optional": true
     },
     "react-native-reanimated": {
