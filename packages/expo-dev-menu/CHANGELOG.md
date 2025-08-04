@@ -18,6 +18,7 @@
 ### 💡 Others
 
 - Fixed release build error on Android. ([#37579](https://github.com/expo/expo/pull/37579) by [@kudo](https://github.com/kudo))
+- [Android] Implement new design for the floating action button. ([#38497](https://github.com/expo/expo/pull/38497) by [@behenate](https://github.com/behenate))
 
 ### ⚠️ Notices
 
