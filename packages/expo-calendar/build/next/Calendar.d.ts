@@ -3,6 +3,7 @@ import InternalExpoCalendar from './ExpoCalendar';
 export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+    getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
     update(details: Partial<Event>): void;
     delete(options?: RecurringEventOptions): void;

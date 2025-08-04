@@ -251,6 +251,8 @@ export declare class ExpoCalendarEvent {
     params: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
+  getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
+
   getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
 
   update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;

@@ -401,6 +401,11 @@ public final class CalendarNextModule: Module {
                 
                 try presentEventEditViewController(event: event, promise: promise)
             }.runOnQueue(.main)
+
+            Function("getOccurrence") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
+                try checkCalendarPermissions()
+                return try customEvent.getOccurrence(options: options)
+            }
             
             Function("getAttendees") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) in
                 try checkCalendarPermissions()

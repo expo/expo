@@ -121,6 +121,14 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         event.availability = getAvailability(availability: eventRecord.availability)
     }
 
+    func getOccurrence(options: RecurringEventOptions?) throws -> ExpoCalendarEvent {
+        let instanceStartDate = parse(date: options?.instanceStartDate)
+        guard let event = getEvent(startDate: instanceStartDate) else {
+            throw EventNotFoundException("Event not found")
+        }
+        return ExpoCalendarEvent(event: event)
+    }
+
     func getAttendees(options: RecurringEventOptions?) -> [ExpoCalendarAttendee] {
         let instanceStartDate = parse(date: options?.instanceStartDate)
         

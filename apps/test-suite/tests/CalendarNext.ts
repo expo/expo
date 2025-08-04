@@ -53,7 +53,7 @@ async function pickCalendarSourceIdAsync() {
 const eventData = {
   title: 'App.js Conference',
   startDate: new Date(2019, 3, 4, 9), // 4th April 2019, 9:00, months are counted from 0
-  endDate: new Date(2019, 3, 5, 12), // 5th April 2019, 12:00
+  endDate: new Date(2019, 3, 4, 12), // 4th April 2019, 12:00
   timeZone: 'Europe/Warsaw',
   allDay: true,
   location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
@@ -612,18 +612,6 @@ export async function test(t) {
           t.expect(events[0].startDate).toBe(startDate.toISOString());
         });
 
-        t.it('returns a list of events with a recurrence rule', async () => {
-          await createTestEvent(calendar, {
-            recurrenceRule: {
-              frequency: 'daily',
-            },
-          });
-
-          const events = calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
-          t.expect(Array.isArray(events)).toBe(true);
-          t.expect(events.length).toBe(4);
-        });
-
         t.it('returns a list of recurring events', async () => {
           await createTestEvent(calendar, {
             recurrenceRule: {
@@ -635,6 +623,24 @@ export async function test(t) {
           const events = calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
           t.expect(Array.isArray(events)).toBe(true);
           t.expect(events.length).toBe(4);
+        });
+
+        t.it('returns an instance of a recurring event', async () => {
+          const recurringEvent = await createTestEvent(calendar, {
+            recurrenceRule: {
+              frequency: 'daily',
+            },
+          });
+
+          const occurrence = recurringEvent.getOccurrence({
+            instanceStartDate: new Date(2019, 3, 5),
+          });
+
+          t.expect(occurrence).toBeDefined();
+          t.expect(occurrence.id).toBe(recurringEvent.id);
+          t.expect(occurrence.title).toBe(recurringEvent.title);
+          t.expect(occurrence.startDate).toBe(new Date(2019, 3, 5, 9).toISOString());
+          t.expect(occurrence.endDate).toBe(new Date(2019, 3, 5, 12).toISOString());
         });
 
         t.it('removes a recurring event', async () => {

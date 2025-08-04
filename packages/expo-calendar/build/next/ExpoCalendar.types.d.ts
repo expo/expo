@@ -204,6 +204,7 @@ export declare class ExpoCalendarEvent {
     instanceId?: string;
     openInCalendarAsync(params: CalendarDialogOpenParamsNext | null): void;
     editInCalendarAsync(params: CalendarDialogParamsNext | null): Promise<DialogEventResult>;
+    getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
     update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
     delete(recurringEventOptions: RecurringEventOptions): void;
