@@ -35,13 +35,10 @@ type SourceFileImportRef = {
 
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
-  '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
   '@expo/html-elements', // package: react, react-native, react-native-web
-  '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
   'expo-av', // package: expo-asset
   'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated
-  'expo-router', // package: @react-navigation/core, @react-navigation/routers, debug, escape-string-regexp, expect, expo-font, fast-deep-equal, nanoid, react, react-dom, react-native, react-native-web
   'expo-sqlite', // package: expo-asset
   'expo-store-review', // package: expo-constants
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
@@ -59,6 +56,15 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
   },
 
+  '@expo/cli': {
+    eslint: 'ignore-dev', // TODO: Switch to resolve-from / project root require
+  },
+
+  'expo-router': {
+    'expect/build/matchers': 'ignore-dev', // TODO: Unsure how to replace safely. Dep/Peer won't work. Globals and `@jest/globals` unclear
+    'expo-font': 'ignore-dev', // TODO: Remove
+  },
+
   '@expo/image-utils': {
     sharp: 'ignore-dev', // TODO: Mark as optional peer dep, if that's the intention
     'sharp-cli': 'ignore-dev',
@@ -66,6 +72,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   '@expo/metro-config': {
     'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
+  },
+
+  '@expo/metro-runtime': {
+    'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
   },
 
   'babel-preset-expo': {
