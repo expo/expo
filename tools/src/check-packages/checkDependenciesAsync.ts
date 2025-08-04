@@ -42,7 +42,6 @@ const IGNORED_PACKAGES = [
   'expo-av', // package: expo-asset
   'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated
-  'expo-router', // package: @react-navigation/core, @react-navigation/routers, debug, escape-string-regexp, expect, expo-font, fast-deep-equal, nanoid, react, react-dom, react-native, react-native-web
   'expo-sqlite', // package: expo-asset
   'expo-store-review', // package: expo-constants
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
@@ -58,6 +57,11 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'expo-asset': {
     '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
+  },
+
+  'expo-router': {
+    'expect/build/matchers': 'ignore-dev', // TODO: Unsure how to replace safely. Dep/Peer won't work. Globals and `@jest/globals` unclear
+    'expo-font': 'ignore-dev', // TODO: Remove
   },
 
   '@expo/image-utils': {
