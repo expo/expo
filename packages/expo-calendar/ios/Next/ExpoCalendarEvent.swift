@@ -48,7 +48,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
             throw EventNotFoundException("EKevent not found")
         }
         
-        try self.initialize(eventRecord: eventRecord)
+       try self.initialize(event: calendarEvent, eventRecord: eventRecord)
         
         let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent
         
@@ -75,7 +75,10 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         guard let event = self.event else {
             throw EventNotFoundException("EKevent not found")
         }
-        
+        try initialize(event: event, eventRecord: eventRecord)
+    }
+    
+    public func initialize(event: EKEvent, eventRecord: Event) throws {
         if let timeZone = eventRecord.timeZone {
             if let tz = TimeZone(identifier: timeZone) {
                 event.timeZone = tz
@@ -99,6 +102,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         if let startDate = eventRecord.startDate {
             event.startDate = parse(date: startDate)
         }
+        
         if let endDate = eventRecord.endDate {
             event.endDate = parse(date: endDate)
         }

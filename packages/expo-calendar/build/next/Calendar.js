@@ -5,12 +5,27 @@ import InternalExpoCalendar from './ExpoCalendar';
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+    update(details) {
+        super.update(stringifyDateValues(details));
+    }
 }
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
 }
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details) {
-        return super.createEvent(stringifyDateValues(details));
+        const newEvent = super.createEvent(stringifyDateValues(details));
+        if (Platform.OS === 'ios') {
+            if (details.hasOwnProperty('creationDate') ||
+                details.hasOwnProperty('lastModifiedDate') ||
+                details.hasOwnProperty('originalStartDate') ||
+                details.hasOwnProperty('isDetached') ||
+                details.hasOwnProperty('status') ||
+                details.hasOwnProperty('organizer')) {
+                console.warn('updateEventAsync was called with one or more read-only properties, which will not be updated');
+            }
+        }
+        Object.setPrototypeOf(newEvent, ExpoCalendarEvent.prototype);
+        return newEvent;
     }
     createReminder(details) {
         return super.createReminder(stringifyDateValues(details));
@@ -22,7 +37,10 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         if (!endDate) {
             throw new Error('listEvents must be called with an endDate (date) to search for events');
         }
-        return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+        return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate)).map((event) => {
+            Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
+            return event;
+        });
     }
     async listReminders(startDate, endDate, status) {
         if (!startDate) {

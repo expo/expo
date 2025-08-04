@@ -145,8 +145,13 @@ export default class EventsScreen extends React.Component<Props, State> {
       Alert.alert('This calendar does not allow modifications');
       return;
     }
+
+    const startDate = new Date();
+    const endDate = new Date(startDate.getTime() + 1000 * 60 * 60 * 24);
     const newEvent = {
       title: 'update test ' + new Date().toISOString(),
+      startDate,
+      endDate,
     };
     try {
       event.update(newEvent, {

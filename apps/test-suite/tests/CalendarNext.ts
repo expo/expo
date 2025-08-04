@@ -18,7 +18,7 @@ import * as TestUtils from '../TestUtils';
 
 export const name = 'Calendar@next';
 
-async function createTestCalendarAsync(patch = {}) {
+async function createTestCalendarAsync(patch: Partial<ExpoCalendar> = {}) {
   return createCalendarNext({
     title: 'Expo test-suite calendar',
     color: '#4B968A',
@@ -28,11 +28,12 @@ async function createTestCalendarAsync(patch = {}) {
     source: {
       isLocalAccount: true,
       name: 'expo',
+      type: 'local',
     },
     ownerAccount: 'expo',
     accessLevel: Calendar.CalendarAccessLevel.OWNER,
     ...patch,
-  });
+  } satisfies Partial<ExpoCalendar>);
 }
 
 async function getCalendarByIdAsync(calendarId) {
@@ -48,16 +49,20 @@ async function pickCalendarSourceIdAsync() {
   }
 }
 
+const eventData = {
+  title: 'App.js Conference',
+  startDate: new Date(2019, 3, 4), // 4th April 2019, months are counted from 0
+  endDate: new Date(2019, 3, 5), // 5th April 2019
+  timeZone: 'Europe/Warsaw',
+  allDay: true,
+  location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
+  notes: 'The very first Expo & React Native conference in Europe',
+  availability: Calendar.Availability.BUSY,
+} satisfies Partial<ExpoCalendarEvent>;
+
 function createEventData(customArgs = {}) {
   return {
-    title: 'App.js Conference',
-    startDate: new Date(2019, 3, 4), // 4th April 2019, months are counted from 0
-    endDate: new Date(2019, 3, 5), // 5th April 2019
-    timeZone: 'Europe/Warsaw',
-    allDay: true,
-    location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
-    notes: 'The very first Expo & React Native conference in Europe',
-    availability: Calendar.Availability.BUSY,
+    ...eventData,
     ...customArgs,
   };
 }
@@ -65,6 +70,10 @@ function createEventData(customArgs = {}) {
 function createTestEvent(calendar: ExpoCalendar, customArgs = {}): ExpoCalendarEvent {
   const eventData = createEventData(customArgs);
   return calendar.createEvent(eventData);
+}
+
+function moveEndDate(date: Date) {
+  return new Date(date.getTime() - 1000);
 }
 
 // async function createTestAttendeeAsync(eventId) {
@@ -403,6 +412,15 @@ export async function test(t) {
 
         t.expect(event).toBeDefined();
         t.expect(typeof event.id).toBe('string');
+        t.expect(event.title).toBe(eventData.title);
+        t.expect(event.startDate).toBe(eventData.startDate.toISOString());
+        // On iOS the endDate is set to 1 second before the requested endDate
+        t.expect(event.endDate).toBe(moveEndDate(eventData.endDate).toISOString());
+        // t.expect(event.timeZone).toBe(eventData.timeZone);
+        t.expect(event.allDay).toBe(eventData.allDay);
+        t.expect(event.location).toBe(eventData.location);
+        t.expect(event.notes).toBe(eventData.notes);
+        // t.expect(event.availability).toBe(eventData.availability);
       });
 
       t.it('creates an event with the recurrence rule', async () => {
@@ -494,14 +512,22 @@ export async function test(t) {
 
     t.describe('Event.update()', () => {
       let calendar: ExpoCalendar;
-      let event: ExpoCalendarEvent;
 
       t.beforeAll(async () => {
         calendar = await createTestCalendarAsync();
-        event = await createTestEvent(calendar);
+      });
+
+      t.it('updates the event title', async () => {
+        const event = await createTestEvent(calendar);
+        const newTitle = 'New title + ' + new Date().toISOString();
+        event.update({
+          title: newTitle,
+        });
+        t.expect(event.title).toBe(newTitle);
       });
 
       t.it('updates an event', async () => {
+        const event = await createTestEvent(calendar);
         event.update({
           availability: Calendar.Availability.FREE,
         });
@@ -510,6 +536,45 @@ export async function test(t) {
         t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
           event.availability
         );
+      });
+
+      t.it('updates an event with a date string', async () => {
+        const event = await createTestEvent(calendar);
+        const startDate = new Date(2022, 2, 3);
+        const endDate = new Date(2022, 5, 6);
+
+        event.update({
+          startDate,
+          endDate,
+        });
+
+        t.expect(event).toBeDefined();
+        t.expect(event.startDate).toBe(startDate.toISOString());
+      });
+
+      t.it('updates an event and verifies it appears in the correct date range', async () => {
+        const event = await createTestEvent(calendar);
+        const newTitle = 'I am an updated event + ' + new Date().toISOString();
+        const newStartDate = new Date(2023, 2, 3);
+        const newEndDate = new Date(2023, 2, 4);
+
+        const initialFetchedEvents = calendar.listEvents(
+          new Date(2023, 2, 2),
+          new Date(2023, 2, 5)
+        );
+        t.expect(initialFetchedEvents.length).toBe(0);
+
+        event.update({
+          title: newTitle,
+          startDate: newStartDate,
+          endDate: newEndDate,
+        });
+
+        const fetchedEvents = calendar.listEvents(new Date(2023, 2, 2), new Date(2023, 2, 5));
+        t.expect(fetchedEvents.length).toBe(1);
+        t.expect(fetchedEvents[0].id).toBe(event.id);
+        t.expect(fetchedEvents[0].title).toBe(newTitle);
+        t.expect(fetchedEvents[0].startDate).toBe(newStartDate.toISOString());
       });
 
       t.afterAll(async () => {

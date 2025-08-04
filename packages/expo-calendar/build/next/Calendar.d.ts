@@ -3,6 +3,7 @@ import InternalExpoCalendar from './ExpoCalendar';
 export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+    update(details: Partial<Event>): void;
 }
 export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
 }
