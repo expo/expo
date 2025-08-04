@@ -36,8 +36,6 @@ type SourceFileImportRef = {
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
   '@expo/html-elements', // package: react, react-native, react-native-web
-  'expo-av', // package: expo-asset
-  'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated
   'expo-sqlite', // package: expo-asset
   'expo-store-review', // package: expo-constants
@@ -95,6 +93,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 // NOTE: These are globally ignored dependencies, and this list shouldn't ever get longer
 const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
   'expo-modules-core': 'ignore-dev',
+  'expo-asset': 'ignore-dev',
 
   // This is force-resolved in the CLI and therefore, for Expo modules, is generally safe
   // See: https://github.com/expo/expo/blob/d63143c/packages/%40expo/cli/src/start/server/metro/withMetroMultiPlatform.ts#L603-L622
