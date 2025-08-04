@@ -78,6 +78,7 @@ function defineLazyObjectProperty<T>(
  * @see https://github.com/facebook/react-native/issues/934
  */
 export function installGlobal<T extends object>(name: string, getValue: () => T): void {
+  // @ts-ignore: globalThis is not defined in all environments
   const object = typeof global !== 'undefined' ? global : globalThis;
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
   if (__DEV__ && descriptor) {
