@@ -73,6 +73,12 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     'react-native-reanimated/plugin': 'ignore-dev', // Checked via hasModule before requiring
     'expo/config': 'ignore-dev', // WARN: May need a reverse peer dependency
   },
+
+  '@expo/server': {
+    // Types used in adapters
+    express: 'types-only',
+    '@netlify/functions': 'types-only',
+  },
 };
 
 // NOTE: These are globally ignored dependencies, and this list shouldn't ever get longer
