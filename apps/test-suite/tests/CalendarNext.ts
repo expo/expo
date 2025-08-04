@@ -78,6 +78,11 @@ function createTestReminder(calendar: ExpoCalendar, customArgs = {}): ExpoCalend
   return calendar.createReminder(reminderData);
 }
 
+function getReminderCalendar() {
+  const calendars = getCalendarsNext();
+  return calendars.find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
+}
+
 function moveEndDate(date: Date) {
   return new Date(date.getTime() - 1000);
 }
@@ -240,549 +245,655 @@ export async function test(t) {
   }
 
   describeWithPermissions('Calendar@next', () => {
-    t.describe('requestCalendarPermissionsAsync()', () => {
-      t.it('requests for Calendar permissions', async () => {
-        const results = await requestCalendarPermissionsAsync();
-
-        t.expect(results.granted).toBe(true);
-        t.expect(results.status).toBe('granted');
-      });
-    });
-
-    if (Platform.OS === 'ios') {
-      t.describe('requestReminderPermissionsAsync()', () => {
-        t.it('requests for Reminder permissions', async () => {
-          const results = await requestRemindersPermissionsAsync();
+    t.describe('Global functions', () => {
+      t.describe('requestCalendarPermissionsAsync()', () => {
+        t.it('requests for Calendar permissions', async () => {
+          const results = await requestCalendarPermissionsAsync();
 
           t.expect(results.granted).toBe(true);
           t.expect(results.status).toBe('granted');
         });
       });
-    }
-
-    t.describe('calendar UI', () => {
-      let originalTimeout;
-      const dontStartNewTask = {
-        startNewActivityTask: false,
-      };
-
-      t.beforeAll(async () => {
-        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
-      });
-      t.afterAll(() => {
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-      });
-
-      t.it('creates an event via UI', async () => {
-        const eventData = createEventData();
-        await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
-        if (Platform.OS === 'ios') {
-          t.expect(result.action).toBe('saved');
-          t.expect(typeof result.id).toBe('string');
-          const storedEvent = await Calendar.getEventAsync(result.id);
-
-          t.expect(storedEvent).toEqual(
-            t.jasmine.objectContaining({
-              title: eventData.title,
-              allDay: eventData.allDay,
-              location: eventData.location,
-              notes: eventData.notes,
-            })
-          );
-        } else {
-          // t.expect(result.action).toBe('done');
-          // t.expect(result.id).toBe(null);
-        }
-      });
-
-      t.it('can preview an event', async () => {
-        const calendar = await createTestCalendarAsync();
-        const event = createTestEvent(calendar);
-        await alertAndWaitForResponse(
-          'Please verify event details are shown and close the dialog.'
-        );
-        const result = await event.openInCalendarAsync({
-          ...dontStartNewTask,
-          allowsEditing: true,
-          allowsCalendarPreview: true,
-        });
-        t.expect(result).toEqual({ action: 'done' });
-        calendar.delete();
-      });
-
-      t.it('can edit an event', async () => {
-        const calendar = await createTestCalendarAsync();
-        const event = createTestEvent(calendar);
-        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
-        const result = await event.editInCalendarAsync(dontStartNewTask);
-        t.expect(typeof result.action).toBe('string'); // done or canceled
-        t.expect(result.id).toBe(null);
-        calendar.delete();
-      });
-    });
-
-    t.describe('createCalendarNext()', () => {
-      let calendar: ExpoCalendar;
-
-      t.it('creates a calendar', async () => {
-        calendar = await createTestCalendarAsync();
-
-        t.expect(calendar).toBeDefined();
-        t.expect(typeof calendar.id).toBe('string');
-        testCalendarShape(calendar);
-      });
-
-      t.afterAll(async () => {
-        calendar.delete();
-      });
-    });
-
-    t.describe('getCalendarsAsync()', () => {
-      let calendar: ExpoCalendar;
-
-      t.beforeAll(async () => {
-        calendar = await createTestCalendarAsync();
-      });
-
-      t.it('returns an array of calendars with correct shape', async () => {
-        const calendars = getCalendarsNext();
-
-        t.expect(Array.isArray(calendars)).toBeTruthy();
-
-        for (const calendar of calendars) {
-          testCalendarShape(calendar);
-        }
-      });
 
       if (Platform.OS === 'ios') {
-        t.it('returns an array of calendars for reminders', async () => {
-          const calendars = getCalendarsNext(Calendar.EntityTypes.REMINDER);
+        t.describe('requestReminderPermissionsAsync()', () => {
+          t.it('requests for Reminder permissions', async () => {
+            const results = await requestRemindersPermissionsAsync();
+
+            t.expect(results.granted).toBe(true);
+            t.expect(results.status).toBe('granted');
+          });
+        });
+      }
+
+      t.describe('createCalendarNext()', () => {
+        let calendar: ExpoCalendar;
+
+        t.it('creates a calendar', async () => {
+          calendar = await createTestCalendarAsync();
+
+          t.expect(calendar).toBeDefined();
+          t.expect(typeof calendar.id).toBe('string');
+          testCalendarShape(calendar);
+        });
+
+        t.afterAll(async () => {
+          calendar.delete();
+        });
+      });
+
+      t.describe('getCalendarsAsync()', () => {
+        let calendar: ExpoCalendar;
+
+        t.beforeAll(async () => {
+          calendar = await createTestCalendarAsync();
+        });
+
+        t.it('returns an array of calendars with correct shape', async () => {
+          const calendars = getCalendarsNext();
 
           t.expect(Array.isArray(calendars)).toBeTruthy();
 
           for (const calendar of calendars) {
-            t.expect(calendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+            testCalendarShape(calendar);
           }
         });
-      }
 
-      t.afterAll(async () => {
-        calendar.delete();
-      });
-    });
+        if (Platform.OS === 'ios') {
+          t.it('returns an array of calendars for reminders', async () => {
+            const calendars = getCalendarsNext(Calendar.EntityTypes.REMINDER);
 
-    t.describe('Calendar.delete()', () => {
-      t.it('deletes a calendar', async () => {
-        const calendar = await createTestCalendarAsync();
-        calendar.delete();
+            t.expect(Array.isArray(calendars)).toBeTruthy();
 
-        const calendars = getCalendarsNext();
-        t.expect(calendars.findIndex((c) => c.id === calendar.id)).toBe(-1);
-      });
-    });
+            for (const calendar of calendars) {
+              t.expect(calendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+            }
+          });
+        }
 
-    t.describe('Calendar.update()', () => {
-      let calendar: ExpoCalendar;
-
-      t.beforeAll(async () => {
-        calendar = await createTestCalendarAsync();
-      });
-
-      t.it('updates a calendar', async () => {
-        const newTitle = 'New test-suite calendar title';
-        calendar.update({
-          title: newTitle,
+        t.afterAll(async () => {
+          calendar.delete();
         });
-        const updatedCalendar = await getCalendarByIdAsync(calendar.id);
-
-        t.expect(updatedCalendar.id).toBe(calendar.id);
-        t.expect(updatedCalendar.title).toBe(newTitle);
-      });
-
-      t.afterAll(async () => {
-        calendar.delete();
-      });
-    });
-
-    t.describe('Calendar.createEvent()', () => {
-      let calendar: ExpoCalendar;
-
-      t.beforeAll(async () => {
-        calendar = await createTestCalendarAsync();
-      });
-
-      t.it('creates an event in the specific calendar', async () => {
-        const event = await createTestEvent(calendar);
-
-        t.expect(event).toBeDefined();
-        t.expect(typeof event.id).toBe('string');
-        t.expect(event.title).toBe(eventData.title);
-        t.expect(event.startDate).toBe(eventData.startDate.toISOString());
-        // On iOS the endDate is set to 1 second before the requested endDate
-        t.expect(event.endDate).toBe(moveEndDate(eventData.endDate).toISOString());
-        // t.expect(event.timeZone).toBe(eventData.timeZone);
-        t.expect(event.allDay).toBe(eventData.allDay);
-        t.expect(event.location).toBe(eventData.location);
-        t.expect(event.notes).toBe(eventData.notes);
-        // t.expect(event.availability).toBe(eventData.availability);
-      });
-
-      t.it('creates an event with the recurrence rule', async () => {
-        const recurrenceRule = {
-          endDate: new Date(2019, 3, 5).getTime(),
-          frequency: 'daily',
-          interval: 1,
-        };
-        const event = await createTestEvent(calendar, {
-          recurrenceRule,
-        });
-
-        t.expect(event).toBeDefined();
-        t.expect(typeof event.id).toBe('string');
-        t.expect(event.recurrenceRule).not.toBeNull();
-        t.expect(event.recurrenceRule.frequency).toEqual(recurrenceRule.frequency);
-        t.expect(event.recurrenceRule.interval).toEqual(recurrenceRule.interval);
       });
 
       if (Platform.OS === 'ios') {
-        t.it('rejects when time zone is invalid', async () => {
-          let error;
-          try {
-            await createTestEvent(calendar, { timeZone: '' });
-          } catch (e) {
-            error = e;
-          }
-          t.expect(error).toBeDefined();
+        t.describe('getDefaultCalendarNext()', () => {
+          t.it('get default calendar', async () => {
+            const calendar = getDefaultCalendarNext();
+
+            testCalendarShape(calendar);
+          });
+        });
+
+        t.describe('getSourcesAsync()', () => {
+          t.it('returns an array of sources', async () => {
+            const sources = getSources();
+
+            t.expect(Array.isArray(sources)).toBe(true);
+          });
         });
       }
-
-      t.afterAll(async () => {
-        calendar.delete();
-      });
     });
 
-    if (Platform.OS === 'ios') {
-      t.describe('Calendar.createReminder()', () => {
-        let eventCalendar: ExpoCalendar;
-        let reminderCalendar: ExpoCalendar;
+    // t.describe('Calendar UI Integration', () => {
+    //   let originalTimeout;
+    //   const dontStartNewTask = {
+    //     startNewActivityTask: false,
+    //   };
+
+    //   t.beforeAll(async () => {
+    //     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+    //   });
+    //   t.afterAll(() => {
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    //   });
+
+    //   t.it('creates an event via UI', async () => {
+    //     const eventData = createEventData();
+    //     await alertAndWaitForResponse('Please confirm the event creation dialog.');
+    //     const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+    //     if (Platform.OS === 'ios') {
+    //       t.expect(result.action).toBe('saved');
+    //       t.expect(typeof result.id).toBe('string');
+    //       const storedEvent = await Calendar.getEventAsync(result.id);
+
+    //       t.expect(storedEvent).toEqual(
+    //         t.jasmine.objectContaining({
+    //           title: eventData.title,
+    //           allDay: eventData.allDay,
+    //           location: eventData.location,
+    //           notes: eventData.notes,
+    //         })
+    //       );
+    //     } else {
+    //       // t.expect(result.action).toBe('done');
+    //       // t.expect(result.id).toBe(null);
+    //     }
+    //   });
+
+    //   t.it('can preview an event', async () => {
+    //     const calendar = await createTestCalendarAsync();
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse(
+    //       'Please verify event details are shown and close the dialog.'
+    //     );
+    //     const result = await event.openInCalendarAsync({
+    //       ...dontStartNewTask,
+    //       allowsEditing: true,
+    //       allowsCalendarPreview: true,
+    //     });
+    //     t.expect(result).toEqual({ action: 'done' });
+    //     calendar.delete();
+    //   });
+
+    //   t.it('can edit an event', async () => {
+    //     const calendar = await createTestCalendarAsync();
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+    //     const result = await event.editInCalendarAsync(dontStartNewTask);
+    //     t.expect(typeof result.action).toBe('string'); // done or canceled
+    //     t.expect(result.id).toBe(null);
+    //     calendar.delete();
+    //   });
+    // });
+
+    t.describe('Calendar', () => {
+      t.describe('Calendar.update()', () => {
+        let calendar: ExpoCalendar;
 
         t.beforeAll(async () => {
-          eventCalendar = await createTestCalendarAsync();
-          const calendars = getCalendarsNext();
-          reminderCalendar = calendars.find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
+          calendar = await createTestCalendarAsync();
         });
 
-        t.it('fails to create a reminder in the event calendar', async () => {
-          let error;
-          try {
-            await createTestReminder(eventCalendar);
-          } catch (e) {
-            error = e;
-          }
-          t.expect(error).toBeDefined();
-        });
+        t.it('updates a calendar', async () => {
+          const newTitle = 'New test-suite calendar title';
+          calendar.update({
+            title: newTitle,
+          });
+          const updatedCalendar = await getCalendarByIdAsync(calendar.id);
 
-        t.it('reminder calendar exists', async () => {
-          t.expect(reminderCalendar).toBeDefined();
-          t.expect(reminderCalendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
-        });
-
-        t.it('creates and deletes a reminder in the reminder calendar', async () => {
-          const reminder = await createTestReminder(reminderCalendar);
-          t.expect(reminder).toBeDefined();
-          t.expect(typeof reminder.id).toBe('string');
-          t.expect(reminder.calendarId).toBe(reminderCalendar.id);
-          t.expect(reminder.title).toBe(eventData.title);
-          t.expect(reminder.startDate).toBe(eventData.startDate.toISOString());
-          // t.expect(reminder.location).toBe(eventData.location);
-          t.expect(reminder.notes).toBe(eventData.notes);
-
-          // Clean up the reminder
-          reminder.delete();
-        });
-
-        t.it('deletes a reminder', async () => {
-          const reminder = await createTestReminder(reminderCalendar);
-          reminder.delete();
-
-          t.expect(reminder.title).toBeNull();
-          t.expect(reminder.location).toBeNull();
-          t.expect(reminder.notes).toBeNull();
-          t.expect(reminder.alarms).toBeNull();
-          t.expect(reminder.recurrenceRule).toBeNull();
-          t.expect(reminder.startDate).toBeNull();
-          t.expect(reminder.dueDate).toBeNull();
+          t.expect(updatedCalendar.id).toBe(calendar.id);
+          t.expect(updatedCalendar.title).toBe(newTitle);
         });
 
         t.afterAll(async () => {
-          eventCalendar.delete();
+          calendar.delete();
         });
       });
-    }
 
-    t.describe('Calendar.listEvents()', () => {
-      let calendar: ExpoCalendar;
-      let event: ExpoCalendarEvent;
+      t.describe('Calendar.delete()', () => {
+        t.it('deletes a calendar', async () => {
+          const calendar = await createTestCalendarAsync();
+          calendar.delete();
 
-      t.beforeEach(async () => {
-        calendar = await createTestCalendarAsync();
-        event = await createTestEvent(calendar);
-      });
-
-      t.it('resolves to an array with an event of the correct shape', async () => {
-        const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
-
-        t.expect(Array.isArray(events)).toBe(true);
-        t.expect(events.length).toBe(1);
-        t.expect(events[0].id).toBe(event.id);
-        testEventShape(events[0]);
-      });
-
-      t.afterEach(async () => {
-        calendar.delete();
-      });
-    });
-
-    t.describe('listEvents()', () => {
-      let calendar: ExpoCalendar;
-      let event: ExpoCalendarEvent;
-
-      t.beforeAll(async () => {
-        calendar = await createTestCalendarAsync();
-        event = createTestEvent(calendar);
-      });
-
-      t.it('returns a list of events', async () => {
-        const events = listEvents([calendar.id], new Date(2019, 3, 1), new Date(2019, 3, 29));
-        t.expect(Array.isArray(events)).toBe(true);
-        t.expect(events.length).toBe(1);
-        t.expect(events[0].id).toBe(event.id);
-        testEventShape(events[0]);
-      });
-
-      //   t.it('returns event with given id', async () => {
-      //     const event = await Calendar.getEventAsync(eventId);
-
-      //     t.expect(event).toBeDefined();
-      //     t.expect(event.id).toBe(eventId);
-      //     testEventShape(event);
-      //   });
-
-      t.afterAll(async () => {
-        calendar.delete();
-      });
-    });
-
-    t.describe('Event.update()', () => {
-      let calendar: ExpoCalendar;
-
-      t.beforeAll(async () => {
-        calendar = await createTestCalendarAsync();
-      });
-
-      t.it('updates the event title', async () => {
-        const event = await createTestEvent(calendar);
-        const newTitle = 'New title + ' + new Date().toISOString();
-        event.update({
-          title: newTitle,
+          const calendars = getCalendarsNext();
+          t.expect(calendars.findIndex((c) => c.id === calendar.id)).toBe(-1);
         });
-        t.expect(event.title).toBe(newTitle);
       });
 
-      t.it('updates an event', async () => {
-        const event = await createTestEvent(calendar);
-        event.update({
-          availability: Calendar.Availability.FREE,
+      t.describe('Calendar.createEvent()', () => {
+        let calendar: ExpoCalendar;
+
+        t.beforeAll(async () => {
+          calendar = await createTestCalendarAsync();
         });
 
-        t.expect(event).toBeDefined();
-        t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
-          event.availability
-        );
-      });
+        t.it('creates an event in the specific calendar', async () => {
+          const event = await createTestEvent(calendar);
 
-      t.it('updates an event with a date string', async () => {
-        const event = await createTestEvent(calendar);
-        const startDate = new Date(2022, 2, 3);
-        const endDate = new Date(2022, 5, 6);
-
-        event.update({
-          startDate,
-          endDate,
+          t.expect(event).toBeDefined();
+          t.expect(typeof event.id).toBe('string');
+          t.expect(event.title).toBe(eventData.title);
+          t.expect(event.startDate).toBe(eventData.startDate.toISOString());
+          // On iOS the endDate is set to 1 second before the requested endDate
+          t.expect(event.endDate).toBe(moveEndDate(eventData.endDate).toISOString());
+          // t.expect(event.timeZone).toBe(eventData.timeZone);
+          t.expect(event.allDay).toBe(eventData.allDay);
+          t.expect(event.location).toBe(eventData.location);
+          t.expect(event.notes).toBe(eventData.notes);
+          // t.expect(event.availability).toBe(eventData.availability);
         });
 
-        t.expect(event).toBeDefined();
-        t.expect(event.startDate).toBe(startDate.toISOString());
-      });
+        t.it('creates an event with the recurrence rule', async () => {
+          const recurrenceRule = {
+            endDate: new Date(2019, 3, 5).getTime(),
+            frequency: 'daily',
+            interval: 1,
+          };
+          const event = await createTestEvent(calendar, {
+            recurrenceRule,
+          });
 
-      t.it('updates an event and verifies it appears in the correct date range', async () => {
-        const event = await createTestEvent(calendar);
-        const newTitle = 'I am an updated event + ' + new Date().toISOString();
-        const newStartDate = new Date(2023, 2, 3);
-        const newEndDate = new Date(2023, 2, 4);
-
-        const initialFetchedEvents = calendar.listEvents(
-          new Date(2023, 2, 2),
-          new Date(2023, 2, 5)
-        );
-        t.expect(initialFetchedEvents.length).toBe(0);
-
-        event.update({
-          title: newTitle,
-          startDate: newStartDate,
-          endDate: newEndDate,
+          t.expect(event).toBeDefined();
+          t.expect(typeof event.id).toBe('string');
+          t.expect(event.recurrenceRule).not.toBeNull();
+          t.expect(event.recurrenceRule.frequency).toEqual(recurrenceRule.frequency);
+          t.expect(event.recurrenceRule.interval).toEqual(recurrenceRule.interval);
         });
 
-        const fetchedEvents = calendar.listEvents(new Date(2023, 2, 2), new Date(2023, 2, 5));
-        t.expect(fetchedEvents.length).toBe(1);
-        t.expect(fetchedEvents[0].id).toBe(event.id);
-        t.expect(fetchedEvents[0].title).toBe(newTitle);
-        t.expect(fetchedEvents[0].startDate).toBe(newStartDate.toISOString());
-      });
-
-      t.afterAll(async () => {
-        calendar.delete();
-      });
-    });
-
-    t.describe('Event.delete()', () => {
-      let calendar: ExpoCalendar;
-      let event: ExpoCalendarEvent;
-
-      t.beforeAll(async () => {
-        calendar = await createTestCalendarAsync();
-        event = await createTestEvent(calendar);
-      });
-
-      t.it('deletes an event', async () => {
-        event.delete({});
-        let error;
-
-        try {
-          await Calendar.getEventAsync(event.id);
-        } catch (e) {
-          error = e;
+        if (Platform.OS === 'ios') {
+          t.it('rejects when time zone is invalid', async () => {
+            let error;
+            try {
+              await createTestEvent(calendar, { timeZone: '' });
+            } catch (e) {
+              error = e;
+            }
+            t.expect(error).toBeDefined();
+          });
         }
-        t.expect(error).toBeDefined();
-        t.expect(error instanceof Error).toBe(true);
-      });
 
-      t.it('deletes an event and verifies it is deleted', async () => {
-        const event = await createTestEvent(calendar);
-        event.delete({});
-        t.expect(event.title).toBeNull();
-        t.expect(event.location).toBeNull();
-        t.expect(event.notes).toBeNull();
-        t.expect(event.alarms).toBeNull();
-        t.expect(event.recurrenceRule).toBeNull();
-        t.expect(event.startDate).toBeNull();
-        t.expect(event.endDate).toBeNull();
-      });
-
-      t.afterAll(async () => {
-        calendar.delete();
-      });
-    });
-
-    t.describe('Event.getAttendees()', () => {
-      let calendar: ExpoCalendar;
-      let event: ExpoCalendarEvent;
-
-      t.beforeAll(async () => {
-        calendar = await createTestCalendarAsync();
-        event = await createTestEvent(calendar);
-      });
-
-      t.it('lists attendees', () => {
-        const attendees = event.getAttendees();
-        t.expect(Array.isArray(attendees)).toBe(true);
-        t.expect(attendees.length).toBe(0);
-      });
-
-      t.afterAll(async () => {
-        calendar.delete();
-      });
-    });
-
-    if (Platform.OS === 'android') {
-      //   t.describe('createAttendeeAsync()', () => {
-      //     let calendarId, eventId;
-      //     t.beforeAll(async () => {
-      //       calendarId = await createTestCalendarAsync();
-      //       eventId = await createTestEventAsync(calendarId);
-      //     });
-      //     t.it('creates an attendee', async () => {
-      //       const attendeeId = await createTestAttendeeAsync(eventId);
-      //       const attendees = await Calendar.getAttendeesForEventAsync(eventId);
-      //       t.expect(Array.isArray(attendees)).toBe(true);
-      //       const newAttendee = attendees.find((attendee) => attendee.id === attendeeId);
-      //       t.expect(newAttendee).toBeDefined();
-      //       testAttendeeShape(newAttendee);
-      //     });
-      //     t.afterAll(async () => {
-      //       await Calendar.deleteCalendarAsync(calendarId);
-      //     });
-      //   });
-      //   t.describe('updateAttendeeAsync()', () => {
-      //     let calendarId, eventId, attendeeId;
-      //     t.beforeAll(async () => {
-      //       calendarId = await createTestCalendarAsync();
-      //       eventId = await createTestEventAsync(calendarId);
-      //       attendeeId = await createTestAttendeeAsync(eventId);
-      //     });
-      //     t.it('updates attendee record', async () => {
-      //       const updatedAttendeeId = await Calendar.updateAttendeeAsync(attendeeId, {
-      //         role: Calendar.AttendeeRole.PERFORMER,
-      //       });
-      //       const updatedAttendee = await getAttendeeByIdAsync(eventId, attendeeId);
-      //       t.expect(updatedAttendeeId).toBe(attendeeId);
-      //       t.expect(updatedAttendee).toBeDefined();
-      //       t.expect(updatedAttendee.role).toBe(Calendar.AttendeeRole.PERFORMER);
-      //     });
-      //     t.afterAll(async () => {
-      //       await Calendar.deleteCalendarAsync(calendarId);
-      //     });
-      //   });
-      //   t.describe('deleteAttendeeAsync()', () => {
-      //     let calendarId, eventId;
-      //     t.beforeAll(async () => {
-      //       calendarId = await createTestCalendarAsync();
-      //       eventId = await createTestEventAsync(calendarId);
-      //     });
-      //     t.it('deletes an attendee', async () => {
-      //       const attendeeId = await createTestAttendeeAsync(eventId);
-      //       await Calendar.deleteAttendeeAsync(attendeeId);
-      //       const attendee = await getAttendeeByIdAsync(eventId, attendeeId);
-      //       t.expect(attendee).toBeUndefined();
-      //     });
-      //     t.afterAll(async () => {
-      //       await Calendar.deleteCalendarAsync(calendarId);
-      //     });
-      //   });
-    } else {
-      expectMethodsToReject(['createAttendeeAsync', 'updateAttendeeAsync', 'deleteAttendeeAsync']);
-    }
-
-    if (Platform.OS === 'ios') {
-      t.describe('getDefaultCalendarNext()', () => {
-        t.it('get default calendar', async () => {
-          const calendar = getDefaultCalendarNext();
-
-          testCalendarShape(calendar);
+        t.afterAll(async () => {
+          calendar.delete();
         });
       });
 
-      t.describe('getSourcesAsync()', () => {
-        t.it('returns an array of sources', async () => {
-          const sources = getSources();
+      if (Platform.OS === 'ios') {
+        t.describe('Calendar.createReminder()', () => {
+          let reminderCalendar: ExpoCalendar;
+          let reminder: ExpoCalendarReminder;
 
-          t.expect(Array.isArray(sources)).toBe(true);
+          t.beforeAll(async () => {
+            reminderCalendar = getReminderCalendar();
+          });
+
+          t.it('fails to create a reminder in the event calendar', async () => {
+            const eventCalendar = await createTestCalendarAsync();
+
+            let error;
+            try {
+              await createTestReminder(eventCalendar);
+            } catch (e) {
+              error = e;
+            }
+            t.expect(error).toBeDefined();
+
+            eventCalendar.delete();
+          });
+
+          t.it('reminder calendar exists', async () => {
+            t.expect(reminderCalendar).toBeDefined();
+            t.expect(reminderCalendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+          });
+
+          t.it('creates and deletes a reminder in the reminder calendar', async () => {
+            reminder = await createTestReminder(reminderCalendar);
+            t.expect(reminder).toBeDefined();
+            t.expect(typeof reminder.id).toBe('string');
+            t.expect(reminder.calendarId).toBe(reminderCalendar.id);
+            t.expect(reminder.title).toBe(eventData.title);
+            t.expect(reminder.startDate).toBe(eventData.startDate.toISOString());
+            // t.expect(reminder.location).toBe(eventData.location);
+            t.expect(reminder.notes).toBe(eventData.notes);
+          });
+
+          t.it('creates a reminder with dueDate', async () => {
+            reminder = await createTestReminder(reminderCalendar, {
+              dueDate: new Date(2025, 1, 1),
+            });
+            t.expect(reminder.dueDate).toBe(new Date(2025, 1, 1).toISOString());
+          });
+
+          t.it('lists created reminders', async () => {
+            const reminder = await createTestReminder(reminderCalendar, {
+              dueDate: new Date(2025, 0, 2),
+            });
+
+            const reminders = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3)
+            );
+
+            const found = reminders.find((r) => r.id === reminder.id);
+            t.expect(found).toBeDefined();
+          });
+
+          t.afterAll(async () => {
+            reminder?.delete();
+          });
+        });
+
+        t.describe('Calendar.listReminders()', () => {
+          t.it('Calendar.listReminders()', async () => {
+            const reminderCalendar = getReminderCalendar();
+            const reminder = await createTestReminder(reminderCalendar);
+            const reminders = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3)
+            );
+
+            const found = reminders.find((r) => r.id === reminder.id);
+            t.expect(found).toBeDefined();
+
+            reminder.delete();
+          });
+        });
+      }
+
+      t.describe('Calendar.listEvents()', () => {
+        let calendar: ExpoCalendar;
+        let event: ExpoCalendarEvent;
+
+        t.beforeAll(async () => {
+          calendar = await createTestCalendarAsync();
+          event = createTestEvent(calendar);
+        });
+
+        t.it('resolves to an array with an event of the correct shape', async () => {
+          const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
+
+          t.expect(Array.isArray(events)).toBe(true);
+          t.expect(events.length).toBe(1);
+          t.expect(events[0].id).toBe(event.id);
+          testEventShape(events[0]);
+        });
+
+        t.it('returns a list of events', async () => {
+          const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
+          t.expect(Array.isArray(events)).toBe(true);
+          t.expect(events.length).toBe(1);
+          t.expect(events[0].id).toBe(event.id);
+          testEventShape(events[0]);
+        });
+
+        t.it('modifies a listed event', async () => {
+          const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
+          const newTitle = 'New title + ' + new Date().toISOString();
+          const startDate = new Date(2019, 3, 2);
+          const endDate = new Date(2019, 3, 3);
+          events[0].update({
+            title: newTitle,
+            startDate,
+            endDate,
+          });
+          t.expect(events[0].title).toBe(newTitle);
+          t.expect(events[0].startDate).toBe(startDate.toISOString());
+        });
+
+        //   t.it('returns event with given id', async () => {
+        //     const event = await Calendar.getEventAsync(eventId);
+
+        //     t.expect(event).toBeDefined();
+        //     t.expect(event.id).toBe(eventId);
+        //     testEventShape(event);
+        //   });
+
+        t.afterAll(async () => {
+          calendar.delete();
         });
       });
-    } else {
-      expectMethodsToReject(['getSourcesAsync']);
-    }
+    });
+
+    t.describe('Event', () => {
+      t.describe('Event.update()', () => {
+        let calendar: ExpoCalendar;
+
+        t.beforeAll(async () => {
+          calendar = await createTestCalendarAsync();
+        });
+
+        t.it('updates the event title', async () => {
+          const event = await createTestEvent(calendar);
+          const newTitle = 'New title + ' + new Date().toISOString();
+          event.update({
+            title: newTitle,
+          });
+          t.expect(event.title).toBe(newTitle);
+        });
+
+        t.it('updates an event', async () => {
+          const event = await createTestEvent(calendar);
+          event.update({
+            availability: Calendar.Availability.FREE,
+          });
+
+          t.expect(event).toBeDefined();
+          t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
+            event.availability
+          );
+        });
+
+        t.it('updates an event with a date string', async () => {
+          const event = await createTestEvent(calendar);
+          const startDate = new Date(2022, 2, 3);
+          const endDate = new Date(2022, 5, 6);
+
+          event.update({
+            startDate,
+            endDate,
+          });
+
+          t.expect(event).toBeDefined();
+          t.expect(event.startDate).toBe(startDate.toISOString());
+        });
+
+        t.it('updates an event and verifies it appears in the correct date range', async () => {
+          const event = await createTestEvent(calendar);
+          const newTitle = 'I am an updated event + ' + new Date().toISOString();
+          const newStartDate = new Date(2023, 2, 3);
+          const newEndDate = new Date(2023, 2, 4);
+
+          const initialFetchedEvents = calendar.listEvents(
+            new Date(2023, 2, 2),
+            new Date(2023, 2, 5)
+          );
+          t.expect(initialFetchedEvents.length).toBe(0);
+
+          event.update({
+            title: newTitle,
+            startDate: newStartDate,
+            endDate: newEndDate,
+          });
+
+          const fetchedEvents = calendar.listEvents(new Date(2023, 2, 2), new Date(2023, 2, 5));
+          t.expect(fetchedEvents.length).toBe(1);
+          t.expect(fetchedEvents[0].id).toBe(event.id);
+          t.expect(fetchedEvents[0].title).toBe(newTitle);
+          t.expect(fetchedEvents[0].startDate).toBe(newStartDate.toISOString());
+        });
+
+        t.afterAll(async () => {
+          calendar.delete();
+        });
+      });
+
+      t.describe('Event.delete()', () => {
+        let calendar: ExpoCalendar;
+        let event: ExpoCalendarEvent;
+
+        t.beforeAll(async () => {
+          calendar = await createTestCalendarAsync();
+          event = await createTestEvent(calendar);
+        });
+
+        t.it('deletes an event', async () => {
+          event.delete({});
+          let error;
+
+          try {
+            await Calendar.getEventAsync(event.id);
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error).toBeDefined();
+          t.expect(error instanceof Error).toBe(true);
+        });
+
+        t.it('deletes an event and verifies it is deleted', async () => {
+          const event = await createTestEvent(calendar);
+          event.delete({});
+          t.expect(event.title).toBeNull();
+          t.expect(event.location).toBeNull();
+          t.expect(event.notes).toBeNull();
+          t.expect(event.alarms).toBeNull();
+          t.expect(event.recurrenceRule).toBeNull();
+          t.expect(event.startDate).toBeNull();
+          t.expect(event.endDate).toBeNull();
+        });
+
+        t.afterAll(async () => {
+          calendar.delete();
+        });
+      });
+
+      t.describe('Event.getAttendees()', () => {
+        let calendar: ExpoCalendar;
+        let event: ExpoCalendarEvent;
+
+        t.beforeAll(async () => {
+          calendar = await createTestCalendarAsync();
+          event = await createTestEvent(calendar);
+        });
+
+        t.it('lists attendees', () => {
+          const attendees = event.getAttendees();
+          t.expect(Array.isArray(attendees)).toBe(true);
+          t.expect(attendees.length).toBe(0);
+        });
+
+        t.afterAll(async () => {
+          calendar.delete();
+        });
+      });
+    });
+
+    t.describe('Reminder', () => {
+      if (Platform.OS === 'ios') {
+        t.describe('Reminder.update()', () => {
+          let eventCalendar: ExpoCalendar;
+          let reminderCalendar: ExpoCalendar;
+
+          t.beforeAll(async () => {
+            eventCalendar = await createTestCalendarAsync();
+            reminderCalendar = getReminderCalendar();
+          });
+
+          t.it('updates a reminder', async () => {
+            const reminder = await createTestReminder(reminderCalendar);
+            const title = 'New title ' + new Date().toISOString();
+            reminder.update({
+              title,
+              dueDate: new Date(2025, 1, 1),
+            });
+            t.expect(reminder.title).toBe(title);
+            t.expect(reminder.dueDate).toBe(new Date(2025, 1, 1).toISOString());
+
+            // Clean up the reminder
+            reminder.delete();
+          });
+
+          t.it('updates the listed reminder', async () => {
+            const reminder = await createTestReminder(reminderCalendar, {
+              dueDate: new Date(2025, 0, 2),
+            });
+            const reminders = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3)
+            );
+
+            const found = reminders.find((r) => r.id === reminder.id);
+            t.expect(found).toBeDefined();
+
+            const newTitle = 'New title ' + new Date().toISOString();
+            found.update({
+              title: newTitle,
+              dueDate: new Date(2025, 0, 5),
+            });
+
+            t.expect(found.title).toBe(newTitle);
+            t.expect(found.dueDate).toBe(new Date(2025, 0, 5).toISOString());
+
+            // Clean up the reminder
+            reminder.delete();
+          });
+
+          t.afterAll(async () => {
+            eventCalendar.delete();
+          });
+        });
+
+        t.describe('Reminder.delete()', () => {
+          t.it('deletes a reminder', async () => {
+            const reminderCalendar = getReminderCalendar();
+            const reminder = await createTestReminder(reminderCalendar);
+            reminder.delete();
+
+            t.expect(reminder.title).toBeNull();
+            t.expect(reminder.location).toBeNull();
+            t.expect(reminder.notes).toBeNull();
+            t.expect(reminder.alarms).toBeNull();
+            t.expect(reminder.recurrenceRule).toBeNull();
+            t.expect(reminder.startDate).toBeNull();
+            t.expect(reminder.dueDate).toBeNull();
+          });
+        });
+      }
+    });
+
+    t.describe('Attendee', () => {
+      if (Platform.OS === 'android') {
+        //   t.describe('createAttendeeAsync()', () => {
+        //     let calendarId, eventId;
+        //     t.beforeAll(async () => {
+        //       calendarId = await createTestCalendarAsync();
+        //       eventId = await createTestEventAsync(calendarId);
+        //     });
+        //     t.it('creates an attendee', async () => {
+        //       const attendeeId = await createTestAttendeeAsync(eventId);
+        //       const attendees = await Calendar.getAttendeesForEventAsync(eventId);
+        //       t.expect(Array.isArray(attendees)).toBe(true);
+        //       const newAttendee = attendees.find((attendee) => attendee.id === attendeeId);
+        //       t.expect(newAttendee).toBeDefined();
+        //       testAttendeeShape(newAttendee);
+        //     });
+        //     t.afterAll(async () => {
+        //       await Calendar.deleteCalendarAsync(calendarId);
+        //     });
+        //   });
+        //   t.describe('updateAttendeeAsync()', () => {
+        //     let calendarId, eventId, attendeeId;
+        //     t.beforeAll(async () => {
+        //       calendarId = await createTestCalendarAsync();
+        //       eventId = await createTestEventAsync(calendarId);
+        //       attendeeId = await createTestAttendeeAsync(eventId);
+        //     });
+        //     t.it('updates attendee record', async () => {
+        //       const updatedAttendeeId = await Calendar.updateAttendeeAsync(attendeeId, {
+        //         role: Calendar.AttendeeRole.PERFORMER,
+        //       });
+        //       const updatedAttendee = await getAttendeeByIdAsync(eventId, attendeeId);
+        //       t.expect(updatedAttendeeId).toBe(attendeeId);
+        //       t.expect(updatedAttendee).toBeDefined();
+        //       t.expect(updatedAttendee.role).toBe(Calendar.AttendeeRole.PERFORMER);
+        //     });
+        //     t.afterAll(async () => {
+        //       await Calendar.deleteCalendarAsync(calendarId);
+        //     });
+        //   });
+        //   t.describe('deleteAttendeeAsync()', () => {
+        //     let calendarId, eventId;
+        //     t.beforeAll(async () => {
+        //       calendarId = await createTestCalendarAsync();
+        //       eventId = await createTestEventAsync(calendarId);
+        //     });
+        //     t.it('deletes an attendee', async () => {
+        //       const attendeeId = await createTestAttendeeAsync(eventId);
+        //       await Calendar.deleteAttendeeAsync(attendeeId);
+        //       const attendee = await getAttendeeByIdAsync(eventId, attendeeId);
+        //       t.expect(attendee).toBeUndefined();
+        //     });
+        //     t.afterAll(async () => {
+        //       await Calendar.deleteCalendarAsync(calendarId);
+        //     });
+        //   });
+      } else {
+        expectMethodsToReject([
+          'createAttendeeAsync',
+          'updateAttendeeAsync',
+          'deleteAttendeeAsync',
+        ]);
+      }
+    });
   });
 }

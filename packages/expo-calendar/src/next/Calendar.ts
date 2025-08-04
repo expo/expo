@@ -48,7 +48,9 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
   }
 
   override createReminder(details: Partial<Reminder>): ExpoCalendarReminder {
-    return super.createReminder(stringifyDateValues(details));
+    const newReminder = super.createReminder(stringifyDateValues(details));
+    Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
+    return newReminder;
   }
 
   override listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[] {
@@ -79,11 +81,15 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         'listReminders must be called with an endDate (date) to search for reminders'
       );
     }
-    return super.listReminders(
+    const reminders = await super.listReminders(
       stringifyIfDate(startDate),
       stringifyIfDate(endDate),
       status || null
     );
+    return reminders.map((reminder) => {
+      Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+      return reminder;
+    });
   }
 
   override update(details: Partial<Calendar>): void {

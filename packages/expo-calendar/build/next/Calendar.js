@@ -31,7 +31,9 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         return newEvent;
     }
     createReminder(details) {
-        return super.createReminder(stringifyDateValues(details));
+        const newReminder = super.createReminder(stringifyDateValues(details));
+        Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
+        return newReminder;
     }
     listEvents(startDate, endDate) {
         if (!startDate) {
@@ -52,7 +54,11 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         if (!endDate) {
             throw new Error('listReminders must be called with an endDate (date) to search for reminders');
         }
-        return super.listReminders(stringifyIfDate(startDate), stringifyIfDate(endDate), status || null);
+        const reminders = await super.listReminders(stringifyIfDate(startDate), stringifyIfDate(endDate), status || null);
+        return reminders.map((reminder) => {
+            Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+            return reminder;
+        });
     }
     update(details) {
         const color = details.color ? processColor(details.color)?.toString() : undefined;

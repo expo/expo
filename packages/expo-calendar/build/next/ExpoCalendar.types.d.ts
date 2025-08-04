@@ -224,7 +224,12 @@ export declare class ExpoCalendarReminder {
     dueDate?: string | Date;
     completed?: boolean;
     completionDate?: string | Date;
-    update(details: Omit<Partial<Reminder>, 'id' | 'calendarId' | 'startDate' | 'dueDate' | 'completionDate'>): void;
+    update(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): void;
+    /**
+     * Creates an attendee.
+     * @platform android
+     */
+    createAttendee(attendee: Omit<Attendee, 'id'>): ExpoCalendarAttendee;
     delete(): void;
 }
 export declare class ExpoCalendarAttendee {
@@ -236,7 +241,15 @@ export declare class ExpoCalendarAttendee {
     type: AttendeeType;
     url?: string;
     email?: string;
+    /**
+     * Updates the attendee.
+     * @platform android
+     */
     update(details: Partial<Attendee>): void;
+    /**
+     * Deletes the attendee.
+     * @platform android
+     */
     delete(): void;
 }
 export {};
