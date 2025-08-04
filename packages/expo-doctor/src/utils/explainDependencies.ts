@@ -2,52 +2,13 @@
 // adapted to return warnings instead of displaying, with some modest renaming to match,
 // but otherwise logic is unchanged.
 
-import spawnAsync, { SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
 import semver from 'semver';
 
+import { explainAsync } from './explainAsync';
 import { RootNodePackage, VersionSpec } from './explainDependencies.types';
-import { Log } from './log';
 
 type TargetPackage = { name: string; version?: VersionSpec };
-
-function isSpawnResult(result: any): result is SpawnResult {
-  return 'stderr' in result && 'stdout' in result && 'status' in result;
-}
-
-/** Spawn `npm explain [name] --json` and return the parsed JSON. Returns `null` if the requested package is not installed. */
-async function explainAsync(
-  packageName: string,
-  projectRoot: string,
-  parameters: string[] = []
-): Promise<RootNodePackage[] | null> {
-  const args = ['explain', packageName, ...parameters, '--json'];
-
-  try {
-    const { stdout } = await spawnAsync('npm', args, {
-      stdio: 'pipe',
-      cwd: projectRoot,
-    });
-
-    return JSON.parse(stdout);
-  } catch (error: any) {
-    if (isSpawnResult(error)) {
-      if (error.stderr.match(/No dependencies found matching/)) {
-        return null;
-      } else if (error.stdout.match(/Usage: npm <command>/)) {
-        throw new Error(
-          `Dependency tree validation for ${chalk.underline(
-            packageName
-          )} failed. This validation is only available on Node 16+ / npm 8.`
-        );
-      }
-    }
-    if (error.stderr) {
-      Log.debug(error.stderr);
-    }
-    throw new Error(`Failed to find dependency tree for ${packageName}: ` + error.message);
-  }
-}
 
 function organizeExplanations(
   pkg: TargetPackage,
@@ -124,6 +85,7 @@ function formatPkg(pkg: TargetPackage, versionColor: string) {
 
 /**
  * @param pkg
+ * @param projectRoot
  * @returns string if there's a warning, null if otherwise
  */
 export async function getDeepDependenciesWarningAsync(
