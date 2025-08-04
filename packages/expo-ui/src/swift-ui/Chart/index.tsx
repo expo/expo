@@ -5,7 +5,7 @@ import { Host } from '../Host';
 
 /**
  * The type of chart to display.
- * - `line` charts show continuous lines with optional style (solid, dashed, dotted), width, point symbols, and color.
+ * - `line` charts show continuous lines with optional dash array, width, point symbols, and color.
  * - `point` charts show discrete colored points with optional point style (circle, square, diamond) and size.
  * - `bar` charts show vertical bars using system colors or individual ChartDataPoint colors, with optional corner radius and width styling.
  * - `area` charts show filled areas under lines with color.
@@ -13,12 +13,6 @@ import { Host } from '../Host';
  * @platform ios
  */
 export type ChartType = 'line' | 'point' | 'bar' | 'area' | 'pie';
-
-/**
- * Line style options for line charts.
- * @platform ios
- */
-export type LineStyle = 'solid' | 'dashed' | 'dotted';
 
 /**
  * Point symbol style options.
@@ -50,9 +44,10 @@ export type ChartDataPoint = {
  */
 export type LineChartStyle = {
   /**
-   * Line style.
+   * Dash pattern array. Empty array or undefined for solid lines.
+   * @example [5, 5] for dashed line, [2, 2] for dotted line
    */
-  style?: LineStyle;
+  dashArray?: number[];
   /**
    * Line stroke width.
    */

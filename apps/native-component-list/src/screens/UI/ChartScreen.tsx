@@ -4,7 +4,6 @@ import {
   ChartType,
   LineChartStyle,
   PointChartStyle,
-  LineStyle,
   PointStyle,
   ChartDataPoint,
 } from '@expo/ui/swift-ui';
@@ -14,8 +13,11 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 
-const lineStyles: LineStyle[] = ['solid', 'dashed', 'dotted'];
+const lineDashArrays: (number[] | undefined)[] = [undefined, [5, 5], [2, 2]];
 const pointStyles: PointStyle[] = ['circle', 'square', 'diamond'];
+
+const lineStyleOptions = ['Solid', 'Dashed', 'Dotted'];
+const pointStyleOptions = ['Circle', 'Square', 'Diamond'];
 
 const salesData: ChartDataPoint[] = [
   { x: 'Jan', y: 15 },
@@ -108,7 +110,7 @@ export default function ChartScreen() {
 
   const getLineStyle = (): LineChartStyle => {
     return {
-      style: lineStyles[lineStyleIndex],
+      dashArray: lineDashArrays[lineStyleIndex],
       width: 3,
       pointStyle: pointStyles[pointStyleIndex],
       pointSize: 8,
@@ -201,7 +203,7 @@ export default function ChartScreen() {
           <Text style={styles.optionLabel}>Line Style</Text>
           <View style={styles.pickerContainer}>
             <Picker
-              options={lineStyles}
+              options={lineStyleOptions}
               selectedIndex={lineStyleIndex}
               onOptionSelected={({ nativeEvent: { index } }) => {
                 setLineStyleIndex(index);
@@ -212,7 +214,7 @@ export default function ChartScreen() {
           <Text style={styles.optionLabel}>Point Style</Text>
           <View style={styles.pickerContainer}>
             <Picker
-              options={pointStyles}
+              options={pointStyleOptions}
               selectedIndex={pointStyleIndex}
               onOptionSelected={({ nativeEvent: { index } }) => {
                 setPointStyleIndex(index);

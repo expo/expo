@@ -18,12 +18,6 @@ struct ChartDataPoint: Record {
   @Field var color: Color?
 }
 
-enum LineStyle: String, Enumerable {
-  case solid
-  case dashed
-  case dotted
-}
-
 enum PointStyle: String, Enumerable {
   case circle
   case square
@@ -31,7 +25,7 @@ enum PointStyle: String, Enumerable {
 }
 
 struct LineChartStyle: Record {
-  @Field var style: LineStyle = .solid
+  @Field var dashArray: [Double]?
   @Field var width: Double = 2.0
   @Field var pointStyle: PointStyle = .circle
   @Field var pointSize: Double = 6.0
@@ -102,7 +96,7 @@ struct ChartView: ExpoSwiftUI.View {
       .foregroundStyle(props.lineStyle?.color ?? .blue)
       .symbol(getSymbol(props.lineStyle?.pointStyle ?? .circle))
       .symbolSize(CGFloat(props.lineStyle?.pointSize ?? 6.0))
-      .lineStyle(getLineStyle(props.lineStyle?.style ?? .solid))
+      .lineStyle(getLineStyle(props.lineStyle?.dashArray ?? []))
       .lineStyle(.init(lineWidth: CGFloat(props.lineStyle?.width ?? 2.0)))
   }
 
@@ -169,14 +163,7 @@ struct ChartView: ExpoSwiftUI.View {
     }
   }
 
-  private func getLineStyle(_ style: LineStyle) -> StrokeStyle {
-    switch style {
-    case .solid:
-      return StrokeStyle()
-    case .dashed:
-      return StrokeStyle(dash: [5, 5])
-    case .dotted:
-      return StrokeStyle(dash: [2, 2])
-    }
+  private func getLineStyle(_ dashArray: [Double]) -> StrokeStyle {
+    StrokeStyle(dash: dashArray.map { CGFloat($0) })
   }
 }
