@@ -6,6 +6,7 @@ export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendar
     update(details: Partial<Event>): void;
 }
 export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
+    update(details: Partial<Reminder>): void;
 }
 export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details: Partial<Event>): ExpoCalendarEvent;

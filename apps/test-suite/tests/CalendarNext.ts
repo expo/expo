@@ -9,6 +9,7 @@ import {
   requestRemindersPermissionsAsync,
   getSources,
   listEvents,
+  ExpoCalendarReminder,
 } from 'expo-calendar/next';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
@@ -70,6 +71,11 @@ function createEventData(customArgs = {}) {
 function createTestEvent(calendar: ExpoCalendar, customArgs = {}): ExpoCalendarEvent {
   const eventData = createEventData(customArgs);
   return calendar.createEvent(eventData);
+}
+
+function createTestReminder(calendar: ExpoCalendar, customArgs = {}): ExpoCalendarReminder {
+  const reminderData = createEventData(customArgs);
+  return calendar.createReminder(reminderData);
 }
 
 function moveEndDate(date: Date) {
@@ -233,7 +239,7 @@ export async function test(t) {
     }
   }
 
-  describeWithPermissions('Calendar', () => {
+  describeWithPermissions('Calendar@next', () => {
     t.describe('requestCalendarPermissionsAsync()', () => {
       t.it('requests for Calendar permissions', async () => {
         const results = await requestCalendarPermissionsAsync();
@@ -456,6 +462,65 @@ export async function test(t) {
         calendar.delete();
       });
     });
+
+    if (Platform.OS === 'ios') {
+      t.describe('Calendar.createReminder()', () => {
+        let eventCalendar: ExpoCalendar;
+        let reminderCalendar: ExpoCalendar;
+
+        t.beforeAll(async () => {
+          eventCalendar = await createTestCalendarAsync();
+          const calendars = getCalendarsNext();
+          reminderCalendar = calendars.find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
+        });
+
+        t.it('fails to create a reminder in the event calendar', async () => {
+          let error;
+          try {
+            await createTestReminder(eventCalendar);
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error).toBeDefined();
+        });
+
+        t.it('reminder calendar exists', async () => {
+          t.expect(reminderCalendar).toBeDefined();
+          t.expect(reminderCalendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+        });
+
+        t.it('creates and deletes a reminder in the reminder calendar', async () => {
+          const reminder = await createTestReminder(reminderCalendar);
+          t.expect(reminder).toBeDefined();
+          t.expect(typeof reminder.id).toBe('string');
+          t.expect(reminder.calendarId).toBe(reminderCalendar.id);
+          t.expect(reminder.title).toBe(eventData.title);
+          t.expect(reminder.startDate).toBe(eventData.startDate.toISOString());
+          // t.expect(reminder.location).toBe(eventData.location);
+          t.expect(reminder.notes).toBe(eventData.notes);
+
+          // Clean up the reminder
+          reminder.delete();
+        });
+
+        t.it('deletes a reminder', async () => {
+          const reminder = await createTestReminder(reminderCalendar);
+          reminder.delete();
+
+          t.expect(reminder.title).toBeNull();
+          t.expect(reminder.location).toBeNull();
+          t.expect(reminder.notes).toBeNull();
+          t.expect(reminder.alarms).toBeNull();
+          t.expect(reminder.recurrenceRule).toBeNull();
+          t.expect(reminder.startDate).toBeNull();
+          t.expect(reminder.dueDate).toBeNull();
+        });
+
+        t.afterAll(async () => {
+          eventCalendar.delete();
+        });
+      });
+    }
 
     t.describe('Calendar.listEvents()', () => {
       let calendar: ExpoCalendar;

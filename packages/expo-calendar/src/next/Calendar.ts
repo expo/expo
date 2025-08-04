@@ -20,7 +20,11 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   }
 }
 
-export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {}
+export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
+  override update(details: Partial<Reminder>): void {
+    super.update(stringifyDateValues(details));
+  }
+}
 
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
   override createEvent(details: Partial<Event>): ExpoCalendarEvent {

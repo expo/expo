@@ -10,6 +10,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     }
 }
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
+    update(details) {
+        super.update(stringifyDateValues(details));
+    }
 }
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details) {

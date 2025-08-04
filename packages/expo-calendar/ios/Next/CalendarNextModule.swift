@@ -148,36 +148,36 @@ public final class CalendarNextModule: Module {
             }
             
             Property("id") { (calendar: ExpoCalendar) in
-                calendar.calendar?.calendarIdentifier ?? ""
+                calendar.calendar?.calendarIdentifier
             }
             
             Property("title") { (calendar: ExpoCalendar) in
-                calendar.calendar?.title ?? ""
+                calendar.calendar?.title
             }
             
-            Property("source") { (expoCalendar: ExpoCalendar) in
+            Property("source") { (expoCalendar: ExpoCalendar) -> [String: Any?] in
                 guard let calendar = expoCalendar.calendar else { return [:] }
                 return serialize(ekSource: calendar.source)
             }
             
-            Property("sourceId") { (expoCalendar: ExpoCalendar) in
-                guard let calendar = expoCalendar.calendar else { return "" }
+            Property("sourceId") { (expoCalendar: ExpoCalendar) -> String? in
+                guard let calendar = expoCalendar.calendar else { return nil }
                 return calendar.source.sourceIdentifier
             }
             
-            Property("type") { (expoCalendar: ExpoCalendar) -> String in
-                guard let calendar = expoCalendar.calendar else { return "" }
+            Property("type") { (expoCalendar: ExpoCalendar) -> String? in
+                guard let calendar = expoCalendar.calendar else { return nil }
                 return calendarTypeToString(type: calendar.type, source: calendar.source.sourceType)
             }
             
-            Property("color") { (expoCalendar: ExpoCalendar) -> String in
-                guard let cgColor = expoCalendar.calendar?.cgColor else { return "" }
+            Property("color") { (expoCalendar: ExpoCalendar) -> String? in
+                guard let cgColor = expoCalendar.calendar?.cgColor else { return nil }
                 return EXUtilities.hexString(with: cgColor)
             }
             
-            Property("entityType") { (expoCalendar: ExpoCalendar) -> String in
-                guard let calendar = expoCalendar.calendar else { return "" }
-                return entity(type: calendar.allowedEntityTypes) ?? ""
+            Property("entityType") { (expoCalendar: ExpoCalendar) -> String? in
+                guard let calendar = expoCalendar.calendar else { return nil }
+                return entity(type: calendar.allowedEntityTypes)
             }
             
             Property("allowsModifications") { (expoCalendar: ExpoCalendar) -> Bool in
@@ -275,19 +275,19 @@ public final class CalendarNextModule: Module {
         
         Class(ExpoCalendarEvent.self) {
             Property("id") { (event: ExpoCalendarEvent) in
-                event.event?.calendarItemIdentifier ?? ""
+                event.event?.calendarItemIdentifier
             }
             
             Property("calendarId") { (event: ExpoCalendarEvent) in
-                event.event?.calendar.calendarIdentifier ?? ""
+                event.event?.calendar.calendarIdentifier
             }
             
             Property("title") { (event: ExpoCalendarEvent) in
-                event.event?.title ?? ""
+                event.event?.title
             }
             
             Property("location") { (event: ExpoCalendarEvent) in
-                event.event?.location ?? ""
+                event.event?.location
             }
             
             Property("creationDate") { (event: ExpoCalendarEvent) in
@@ -299,15 +299,15 @@ public final class CalendarNextModule: Module {
             }
             
             Property("timeZone") { (event: ExpoCalendarEvent) in
-                event.event?.timeZone?.localizedName(for: .shortStandard, locale: .current) ?? ""
+                event.event?.timeZone?.localizedName(for: .shortStandard, locale: .current)
             }
             
             Property("url") { (event: ExpoCalendarEvent) in
-                event.event?.url?.absoluteString.removingPercentEncoding ?? ""
+                event.event?.url?.absoluteString.removingPercentEncoding
             }
             
             Property("notes") { (event: ExpoCalendarEvent) in
-                event.event?.notes ?? ""
+                event.event?.notes
             }
             
             Property("alarms") { (customEvent: ExpoCalendarEvent) -> [[String: Any?]]? in
@@ -342,8 +342,8 @@ public final class CalendarNextModule: Module {
                 event.event?.isAllDay ?? false
             }
             
-            Property("availability") { (event: ExpoCalendarEvent) in
-                guard let availability = event.event?.availability else { return "" }
+            Property("availability") { (event: ExpoCalendarEvent) -> String? in
+                guard let availability = event.event?.availability else { return nil }
                 return eventAvailabilityToString(availability)
             }
             
@@ -435,19 +435,19 @@ public final class CalendarNextModule: Module {
         
         Class(ExpoCalendarReminder.self) {
             Property("id") { (reminder: ExpoCalendarReminder) in
-                reminder.reminder?.calendarItemIdentifier ?? ""
+                reminder.reminder?.calendarItemIdentifier
             }
             
             Property("calendarId") { (reminder: ExpoCalendarReminder) in
-                reminder.reminder?.calendar.calendarIdentifier ?? ""
+                reminder.reminder?.calendar.calendarIdentifier
             }
             
             Property("title") { (reminder: ExpoCalendarReminder) in
-                reminder.reminder?.title ?? ""
+                reminder.reminder?.title
             }
             
             Property("location") { (reminder: ExpoCalendarReminder) in
-                reminder.reminder?.location ?? ""
+                reminder.reminder?.location
             }
             
             Property("creationDate") { (reminder: ExpoCalendarReminder) in
@@ -460,15 +460,15 @@ public final class CalendarNextModule: Module {
             
             Property("timeZone") { (reminder: ExpoCalendarReminder) in
                 reminder.reminder?.timeZone?.localizedName(for: .shortStandard, locale: .current)
-                ?? ""
+               
             }
             
             Property("url") { (reminder: ExpoCalendarReminder) in
-                reminder.reminder?.url?.absoluteString.removingPercentEncoding ?? ""
+                reminder.reminder?.url?.absoluteString.removingPercentEncoding
             }
             
             Property("notes") { (reminder: ExpoCalendarReminder) in
-                reminder.reminder?.notes ?? ""
+                reminder.reminder?.notes
             }
             
             Property("alarms") { (reminder: ExpoCalendarReminder) -> [[String: Any?]]? in
@@ -530,7 +530,7 @@ public final class CalendarNextModule: Module {
         
         Class(ExpoCalendarAttendee.self) {
             Property("name") { (attendee: ExpoCalendarAttendee) in
-                attendee.attendee.name ?? ""
+                attendee.attendee.name
             }
             
             Property("isCurrentUser") { (attendee: ExpoCalendarAttendee) in
