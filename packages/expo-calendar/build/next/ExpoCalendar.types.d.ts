@@ -241,16 +241,6 @@ export declare class ExpoCalendarAttendee {
     type: AttendeeType;
     url?: string;
     email?: string;
-    /**
-     * Updates the attendee.
-     * @platform android
-     */
-    update(details: Partial<Attendee>): void;
-    /**
-     * Deletes the attendee.
-     * @platform android
-     */
-    delete(): void;
 }
 export {};
 //# sourceMappingURL=ExpoCalendar.types.d.ts.map

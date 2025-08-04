@@ -404,19 +404,7 @@ public final class CalendarNextModule: Module {
             
             Function("getAttendees") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) in
                 try checkCalendarPermissions()
-                
-                let instanceStartDate = parse(date: options?.instanceStartDate)
-                
-                let item = customEvent.getEvent(startDate: instanceStartDate)
-                
-                guard let item, let attendees = item.attendees else {
-                    return []
-                }
-                
-                print("Names: \(attendees.map(\.name))")
-                
-                // TODO: It is returning nulls for some reason?
-                return attendees.map { ExpoCalendarAttendee(attendee: $0) }
+                return customEvent.getAttendees(options: options)
             }
             
             Function("update") {

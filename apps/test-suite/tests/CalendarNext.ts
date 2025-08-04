@@ -752,6 +752,19 @@ export async function test(t) {
           t.expect(attendees.length).toBe(0);
         });
 
+        t.it('lists attendees for a recurring event', async () => {
+          const recurringEvent = await createTestEvent(calendar, {
+            recurrenceRule: {
+              frequency: 'daily',
+            },
+          });
+          const attendees = recurringEvent.getAttendees({
+            instanceStartDate: new Date(2024, 0, 1),
+          });
+          t.expect(Array.isArray(attendees)).toBe(true);
+          t.expect(attendees.length).toBe(0);
+        });
+
         t.afterAll(async () => {
           calendar.delete();
         });

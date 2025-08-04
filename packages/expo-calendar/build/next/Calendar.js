@@ -8,6 +8,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     update(details) {
         super.update(stringifyDateValues(details));
     }
+    getAttendees(recurringEventOptions = {}) {
+        return super.getAttendees(stringifyDateValues(recurringEventOptions));
+    }
 }
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     update(details) {

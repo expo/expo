@@ -5,6 +5,7 @@ import {
   Calendar,
   EntityTypes,
   Event,
+  RecurringEventOptions,
   Reminder,
   ReminderStatus,
   stringifyDateValues,
@@ -17,6 +18,12 @@ export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAtten
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   override update(details: Partial<Event>): void {
     super.update(stringifyDateValues(details));
+  }
+
+  override  getAttendees(
+    recurringEventOptions: RecurringEventOptions = {}
+  ): ExpoCalendarAttendee[] {
+    return super.getAttendees(stringifyDateValues(recurringEventOptions));
   }
 }
 

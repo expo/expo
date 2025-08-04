@@ -1,9 +1,10 @@
-import { Calendar, EntityTypes, Event, Reminder, ReminderStatus } from '../Calendar';
+import { Calendar, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
 export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     update(details: Partial<Event>): void;
+    getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
 }
 export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     update(details: Partial<Reminder>): void;
