@@ -126,6 +126,7 @@
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "shallowequal": "^1.1.0",
+    "use-latest-callback": "^0.2.4",
     "vaul": "^1.1.2"
   }
 }
