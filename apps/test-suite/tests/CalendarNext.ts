@@ -669,6 +669,18 @@ export async function test(t) {
         t.expect(error instanceof Error).toBe(true);
       });
 
+      t.it('deletes an event and verifies it is deleted', async () => {
+        const event = await createTestEvent(calendar);
+        event.delete({});
+        t.expect(event.title).toBeNull();
+        t.expect(event.location).toBeNull();
+        t.expect(event.notes).toBeNull();
+        t.expect(event.alarms).toBeNull();
+        t.expect(event.recurrenceRule).toBeNull();
+        t.expect(event.startDate).toBeNull();
+        t.expect(event.endDate).toBeNull();
+      });
+
       t.afterAll(async () => {
         calendar.delete();
       });
