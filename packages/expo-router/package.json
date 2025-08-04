@@ -107,6 +107,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
+    "react-native-safe-area-context": ">= 4.0.0",
     "expo": "*"
   },
   "dependencies": {
