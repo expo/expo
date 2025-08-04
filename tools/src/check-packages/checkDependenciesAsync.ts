@@ -37,7 +37,6 @@ type SourceFileImportRef = {
 const IGNORED_PACKAGES = [
   '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
   '@expo/html-elements', // package: react, react-native, react-native-web
-  '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
   '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
   'expo-av', // package: expo-asset
   'expo-font', // package: expo-asset
