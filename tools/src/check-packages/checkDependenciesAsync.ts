@@ -64,6 +64,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     'sharp-cli': 'ignore-dev',
   },
 
+  '@expo/metro-config': {
+    'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
+  },
+
   'babel-preset-expo': {
     '@babel/core': 'types-only',
     '@expo/metro-config/build/babel-transformer': 'types-only',
