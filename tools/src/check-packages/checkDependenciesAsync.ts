@@ -38,7 +38,6 @@ const IGNORED_PACKAGES = [
   '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
   '@expo/html-elements', // package: react, react-native, react-native-web
   '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
-  '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
   'expo-av', // package: expo-asset
   'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated
@@ -67,6 +66,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   '@expo/image-utils': {
     sharp: 'ignore-dev', // TODO: Mark as optional peer dep, if that's the intention
     'sharp-cli': 'ignore-dev',
+  },
+
+  '@expo/metro-runtime': {
+    'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
   },
 
   'babel-preset-expo': {
