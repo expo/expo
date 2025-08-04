@@ -316,6 +316,38 @@ export async function test(t) {
         });
       });
 
+      t.describe('listEvents()', () => {
+        t.it('returns an array of events', async () => {
+          const calendar1 = await createTestCalendarAsync();
+          const calendar2 = await createTestCalendarAsync();
+          const events = listEvents(
+            [calendar1.id, calendar2.id],
+            new Date(2019, 3, 1),
+            new Date(2019, 3, 29)
+          );
+          t.expect(Array.isArray(events)).toBe(true);
+          t.expect(events.length).toBe(0);
+
+          const event1 = await createTestEvent(calendar1);
+          const event2 = await createTestEvent(calendar2);
+          const updatedEvents = listEvents(
+            [calendar1.id, calendar2.id],
+            new Date(2019, 3, 1),
+            new Date(2019, 3, 29)
+          );
+          t.expect(updatedEvents.length).toBe(2);
+          t.expect(updatedEvents.map((e) => e.id)).toEqual([event1.id, event2.id]);
+
+          const singleCalendarEvents = listEvents(
+            [calendar1.id],
+            new Date(2019, 3, 1),
+            new Date(2019, 3, 29)
+          );
+          t.expect(singleCalendarEvents.length).toBe(1);
+          t.expect(singleCalendarEvents[0].id).toBe(event1.id);
+        });
+      });
+
       if (Platform.OS === 'ios') {
         t.describe('getDefaultCalendarNext()', () => {
           t.it('get default calendar', async () => {
@@ -445,7 +477,7 @@ export async function test(t) {
           t.expect(event).toBeDefined();
           t.expect(typeof event.id).toBe('string');
           t.expect(event.title).toBe(eventData.title);
-            t.expect(event.startDate).toBe(eventData.startDate.toISOString());
+          t.expect(event.startDate).toBe(eventData.startDate.toISOString());
           // On iOS the endDate is set to 1 second before the requested endDate
           t.expect(event.endDate).toBe(eventData.endDate.toISOString());
           t.expect(event.timeZone).toBe(eventData.timeZone);

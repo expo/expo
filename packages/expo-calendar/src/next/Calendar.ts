@@ -175,4 +175,5 @@ export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermi
 export const requestRemindersPermissionsAsync =
   InternalExpoCalendar.requestRemindersPermissionsAsync;
 export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
+
 export const getSources = InternalExpoCalendar.getSources;
