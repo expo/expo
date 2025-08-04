@@ -5,7 +5,7 @@ import android.provider.MediaStore
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
 
-fun deleteAlbums(context: Context, albumIds: Array<String>): Boolean {
+suspend fun deleteAlbums(context: Context, albumIds: Array<String>): Boolean {
   val selectionImages = "${MediaStore.Images.Media.BUCKET_ID} IN (${queryPlaceholdersFor(albumIds)})"
   val selectionVideos = "${MediaStore.Video.Media.BUCKET_ID} IN (${queryPlaceholdersFor(albumIds)})"
 
