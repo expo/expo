@@ -87,7 +87,8 @@
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 4.0.0",
     "react-native-screens": "*",
-    "react-native-web": "*"
+    "react-native-web": "*",
+    "react-server-dom-webpack": ">= 19.0.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
@@ -100,6 +101,9 @@
       "optional": true
     },
     "react-native-web": {
+      "optional": true
+    },
+    "react-server-dom-webpack": {
       "optional": true
     },
     "@react-navigation/drawer": {
