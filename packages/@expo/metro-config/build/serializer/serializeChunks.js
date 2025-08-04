@@ -420,6 +420,7 @@ class Chunk {
             });
             // TODO: Generate hbc for each chunk
             const hermesBundleOutput = await (0, exportHermes_1.buildHermesBundleAsync)({
+                projectRoot: this.options.projectRoot,
                 filename: this.name,
                 code: adjustedSource,
                 map: assets[1] ? assets[1].source : null,

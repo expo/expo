@@ -572,6 +572,7 @@ export class Chunk {
 
       // TODO: Generate hbc for each chunk
       const hermesBundleOutput = await buildHermesBundleAsync({
+        projectRoot: this.options.projectRoot,
         filename: this.name,
         code: adjustedSource,
         map: assets[1] ? assets[1].source : null,

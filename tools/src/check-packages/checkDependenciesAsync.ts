@@ -59,6 +59,8 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   '@expo/cli': {
     eslint: 'ignore-dev', // TODO: Switch to resolve-from / project root require
+    'expo-constants/package.json': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
+    'metro-runtime/package.json': 'ignore-dev', // NOTE: Only used in developmnt in the expo/expo monorepo
   },
 
   'expo-router': {
@@ -72,6 +74,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   },
 
   '@expo/metro-config': {
+    'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
+  },
+
+  'jest-expo': {
     'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
   },
 
@@ -311,6 +317,14 @@ function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: Source
     node.arguments.every((arg) => ts.isStringLiteral(arg)) // Filter `require(requireFrom(...))
   ) {
     // Collect `require` statement
+    imports.push(createTypescriptImportRef(node.arguments[0].getText()));
+  } else if (
+    ts.isCallExpression(node) &&
+    node.expression.getText() === 'require.resolve' &&
+    node.arguments.length === 1 && // Filter out `require.resolve('', { paths: ... })`
+    ts.isStringLiteral(node.arguments[0]) // Filter `require(requireFrom(...))
+  ) {
+    // Collect `require.resolve` statement
     imports.push(createTypescriptImportRef(node.arguments[0].getText()));
   } else {
     ts.forEachChild(node, (child) => {
