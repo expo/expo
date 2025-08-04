@@ -56,6 +56,11 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
   },
 
+  'expo-font': {
+    '@expo/config-plugins/build/android/codeMod': 'ignore-dev', // TODO: Remove
+    '@expo/config-plugins/build/utils/generateCode': 'ignore-dev', // TODO: Remove
+  },
+
   '@expo/cli': {
     eslint: 'ignore-dev', // TODO: Switch to resolve-from / project root require
   },
