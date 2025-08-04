@@ -85,7 +85,7 @@ export class PeerDependencyChecks implements DoctorCheck {
         `Install missing required peer ${isPlural ? 'dependencies' : 'dependency'} with "npx expo install ${Object.keys(groupedByMissingPeerDependency).join(' ')}"`
       );
       advice.push(
-        `Your app may crash outside of Expo Go without ${isPlural ? 'these dependencies' : 'this dependency'}.`
+        `Your app may crash outside of Expo Go without ${isPlural ? 'these dependencies' : 'this dependency'}. Native module peer dependencies must be installed directly.`
       );
     }
 

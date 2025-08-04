@@ -97,7 +97,7 @@ describe('PeerDependencyChecks', () => {
       'Install missing required peer dependency with "npx expo install react-native-safe-area-context"'
     );
     expect(result.advice[1]).toContain(
-      'Your app may crash outside of Expo Go without this dependency.'
+      'Your app may crash outside of Expo Go without this dependency. Native module peer dependencies must be installed directly.'
     );
   });
 
@@ -142,7 +142,7 @@ describe('PeerDependencyChecks', () => {
       'Install missing required peer dependencies with "npx expo install react-native-safe-area-context react-native-screens"'
     );
     expect(result.advice[1]).toContain(
-      'Your app may crash outside of Expo Go without these dependencies.'
+      'Your app may crash outside of Expo Go without these dependencies. Native module peer dependencies must be installed directly.'
     );
   });
 
@@ -191,7 +191,7 @@ describe('PeerDependencyChecks', () => {
       'Install missing required peer dependency with "npx expo install react-native-safe-area-context"'
     );
     expect(result.advice[1]).toContain(
-      'Your app may crash outside of Expo Go without this dependency.'
+      'Your app may crash outside of Expo Go without this dependency. Native module peer dependencies must be installed directly.'
     );
   });
 
