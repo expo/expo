@@ -18,7 +18,7 @@ public enum JavaScriptValueKind: String {
 /**
  A protocol that JavaScript values, objects and functions can conform to.
  */
-protocol AnyJavaScriptValue: AnyArgument {
+public protocol AnyJavaScriptValue: AnyArgument {
   /**
    Tries to convert a raw JavaScript value to the conforming type.
    */
@@ -118,7 +118,7 @@ extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {
 
   // MARK: - AnyJavaScriptValue
 
-  internal static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
+  public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
     // It's already a `JavaScriptValue` so it should always pass through.
     if let value = value as? Self {
       return value
