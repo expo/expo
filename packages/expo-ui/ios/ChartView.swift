@@ -4,7 +4,7 @@ import SwiftUI
 import ExpoModulesCore
 import Charts
 
-internal enum ChartType: String, Enumerable {
+enum ChartType: String, Enumerable {
   case line
   case point
   case bar
@@ -12,25 +12,25 @@ internal enum ChartType: String, Enumerable {
   case pie
 }
 
-internal struct ChartDataPoint: Record {
+struct ChartDataPoint: Record {
   @Field var x: String
   @Field var y: Double
   @Field var color: Color?
 }
 
-internal enum LineStyle: String, Enumerable {
+enum LineStyle: String, Enumerable {
   case solid
   case dashed
   case dotted
 }
 
-internal enum PointStyle: String, Enumerable {
+enum PointStyle: String, Enumerable {
   case circle
   case square
   case diamond
 }
 
-internal struct LineChartStyle: Record {
+struct LineChartStyle: Record {
   @Field var style: LineStyle = .solid
   @Field var width: Double = 2.0
   @Field var pointStyle: PointStyle = .circle
@@ -38,21 +38,21 @@ internal struct LineChartStyle: Record {
   @Field var color: Color?
 }
 
-internal struct AreaChartStyle: Record {
+struct AreaChartStyle: Record {
   @Field var color: Color?
 }
 
-internal struct BarChartStyle: Record {
+struct BarChartStyle: Record {
   @Field var cornerRadius: Double = 0.0
   @Field var width: Double?
 }
 
-internal struct PieChartStyle: Record {
+struct PieChartStyle: Record {
   @Field var innerRadius: Double = 0.3
   @Field var angularInset: Double = 2.0
 }
 
-internal struct PointChartStyle: Record {
+struct PointChartStyle: Record {
   @Field var pointStyle: PointStyle = .circle
   @Field var pointSize: Double = 6.0
 }
@@ -74,7 +74,7 @@ final class ChartProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var pieStyle: PieChartStyle?
 }
 
-internal struct ChartView: ExpoSwiftUI.View {
+struct ChartView: ExpoSwiftUI.View {
   @ObservedObject var props: ChartProps
 
   @available(iOS 16.0, *)
