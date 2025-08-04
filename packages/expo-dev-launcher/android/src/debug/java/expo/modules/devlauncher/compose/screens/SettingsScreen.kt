@@ -99,9 +99,9 @@ fun SettingsScreen(
         )
         Divider()
         MenuButton(
-          "Floating Action Button",
+          "Developer Action Button",
           // TODO: @behenate Find a proper icon for this option
-          leftIcon = painterResource(R.drawable.show_menu_at_launch_icon),
+          leftIcon = painterResource(R.drawable.dev_menu_fab_icon),
           onClick = {
             onAction(SettingsAction.ToggleShowFabAtLaunch(!state.showFabAtLaunch))
           },
