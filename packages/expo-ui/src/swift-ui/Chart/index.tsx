@@ -5,9 +5,11 @@ import { Host } from '../Host';
 
 /**
  * The type of chart to display.
- * - `line` charts show continuous lines (ignores individual point colors)
- * - `point` charts show discrete colored points (uses individual point colors)
- * - `pie` charts require iOS 17.0+
+ * - `line` charts show continuous lines with optional style (solid, dashed, dotted), width, point symbols, and color.
+ * - `point` charts show discrete colored points with optional point style (circle, square, diamond) and size.
+ * - `bar` charts show vertical bars using system colors or individual ChartDataPoint colors, with optional corner radius and width styling.
+ * - `area` charts show filled areas under lines with color.
+ * - `pie` charts show pie slices with optional inner radius and angular inset. Pie charts require iOS 17.0+.
  * @platform ios
  */
 export type ChartType = 'line' | 'point' | 'bar' | 'area' | 'pie';
