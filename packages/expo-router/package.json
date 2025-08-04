@@ -76,6 +76,7 @@
   ],
   "peerDependencies": {
     "@react-navigation/drawer": "^7.3.9",
+    "@testing-library/jest-native": ">= 5.0.0",
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
