@@ -60,7 +60,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   },
 
   '@expo/cli': {
-    'eslint': 'ignore-dev', // TODO: Switch to resolve-from / project root require
+    eslint: 'ignore-dev', // TODO: Switch to resolve-from / project root require
   },
 
   '@expo/image-utils': {
