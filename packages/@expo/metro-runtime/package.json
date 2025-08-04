@@ -45,7 +45,9 @@
     }
   },
   "dependencies": {
-    "stacktrace-parser": "^0.1.10"
+    "anser": "^1.4.9",
+    "stacktrace-parser": "^0.1.10",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "react-dom": "19.1.0"
