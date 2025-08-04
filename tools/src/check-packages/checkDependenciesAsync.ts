@@ -36,7 +36,6 @@ type SourceFileImportRef = {
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
   '@expo/html-elements', // package: react, react-native, react-native-web
-  '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
   'expo-av', // package: expo-asset
   'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated
@@ -69,6 +68,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   '@expo/image-utils': {
     sharp: 'ignore-dev', // TODO: Mark as optional peer dep, if that's the intention
     'sharp-cli': 'ignore-dev',
+  },
+
+  '@expo/metro-config': {
+    'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
   },
 
   '@expo/metro-runtime': {
