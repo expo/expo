@@ -29,6 +29,7 @@ import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermiss
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.medialibrary.MediaLibraryModule.Action
@@ -219,13 +220,9 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("getAssetsAsync") { assetOptions: AssetsOptions, promise: Promise ->
-      throwUnlessPermissionsGranted(isWrite = false) {
-        withModuleScope(promise) {
-          GetAssets(context, assetOptions, promise)
-            .execute()
-        }
-      }
+    AsyncFunction("getAssetsAsync") Coroutine { assetOptions: AssetsOptions ->
+      throwUnlessPermissionsGrantedCoroutines(isWrite = false)
+      GetAssets(context, assetOptions).execute()
     }
 
     AsyncFunction("migrateAlbumIfNeededAsync") { albumId: String, promise: Promise ->
@@ -439,6 +436,16 @@ class MediaLibraryModule : Module() {
       throw PermissionsException(missingPermissionsMessage)
     }
     block()
+  }
+
+  private fun throwUnlessPermissionsGrantedCoroutines(isWrite: Boolean = true) {
+    val missingPermissionsCondition =
+      if (isWrite) isMissingWritePermission else isMissingPermissions
+    if (missingPermissionsCondition) {
+      val missingPermissionsMessage =
+        if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
+      throw PermissionsException(missingPermissionsMessage)
+    }
   }
 
   private fun interface Action {
