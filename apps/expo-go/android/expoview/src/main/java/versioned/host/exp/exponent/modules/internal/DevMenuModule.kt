@@ -1,11 +1,8 @@
 package versioned.host.exp.exponent.modules.internal
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -13,8 +10,6 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.reactnativekeyboardcontroller.extensions.removeSelf
-import expo.modules.devmenu.fab.ComposeMovableFloatingActionButton
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
@@ -26,7 +21,6 @@ import host.exp.expoview.Exponent
 import host.exp.expoview.R
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.lang.ref.WeakReference
 import java.util.UUID
 import javax.inject.Inject
 

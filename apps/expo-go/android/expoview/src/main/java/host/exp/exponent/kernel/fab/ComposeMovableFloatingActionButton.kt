@@ -42,7 +42,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import com.facebook.react.devsupport.DevInternalSettings
 import expo.modules.devmenu.fab.ExpoVelocityTracker.PointF
 import host.exp.exponent.experience.ExperienceActivity
@@ -65,7 +64,7 @@ fun ComposeMovableFloatingActionButton(
   context: ExperienceActivity,
   modifier: Modifier = Modifier,
   fabSize: Dp = FabSize,
-  margin: Dp = Margin,
+  margin: Dp = Margin
 ) {
   var visible by remember { mutableStateOf(false) }
 
