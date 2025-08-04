@@ -53,9 +53,9 @@ async function pickCalendarSourceIdAsync() {
 const eventData = {
   title: 'App.js Conference',
   startDate: new Date(2019, 3, 4, 9), // 4th April 2019, 9:00, months are counted from 0
-  endDate: new Date(2019, 3, 4, 12), // 4th April 2019, 12:00
-  timeZone: 'Europe/Warsaw',
-  allDay: true,
+  endDate: new Date(2019, 3, 4, 10), // 4th April 2019, 12:00
+  timeZone: 'CET',
+  allDay: false,
   location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
   notes: 'The very first Expo & React Native conference in Europe',
   availability: Calendar.Availability.BUSY,
@@ -445,10 +445,10 @@ export async function test(t) {
           t.expect(event).toBeDefined();
           t.expect(typeof event.id).toBe('string');
           t.expect(event.title).toBe(eventData.title);
-          //   t.expect(event.startDate).toBe(eventData.startDate.toISOString());
+            t.expect(event.startDate).toBe(eventData.startDate.toISOString());
           // On iOS the endDate is set to 1 second before the requested endDate
-          //   t.expect(event.endDate).toBe(moveEndDate(eventData.endDate).toISOString());
-          // t.expect(event.timeZone).toBe(eventData.timeZone);
+          t.expect(event.endDate).toBe(eventData.endDate.toISOString());
+          t.expect(event.timeZone).toBe(eventData.timeZone);
           t.expect(event.allDay).toBe(eventData.allDay);
           t.expect(event.location).toBe(eventData.location);
           t.expect(event.notes).toBe(eventData.notes);
@@ -632,15 +632,17 @@ export async function test(t) {
             },
           });
 
+          const instanceStartDate = new Date(2020, 5, 6, 9);
+
           const occurrence = recurringEvent.getOccurrence({
-            instanceStartDate: new Date(2019, 3, 5),
+            instanceStartDate,
           });
 
           t.expect(occurrence).toBeDefined();
           t.expect(occurrence.id).toBe(recurringEvent.id);
           t.expect(occurrence.title).toBe(recurringEvent.title);
-          t.expect(occurrence.startDate).toBe(new Date(2019, 3, 5, 9).toISOString());
-          t.expect(occurrence.endDate).toBe(new Date(2019, 3, 5, 12).toISOString());
+          t.expect(occurrence.startDate).toBe(new Date(2020, 5, 6, 9).toISOString());
+          t.expect(occurrence.endDate).toBe(new Date(2020, 5, 6, 10).toISOString());
         });
 
         t.it('removes a recurring event', async () => {
@@ -682,13 +684,19 @@ export async function test(t) {
           t.expect(eventsBeforeDelete.length).toBe(4);
 
           recurringEvent.delete({
-            instanceStartDate: new Date(2019, 3, 5),
+            instanceStartDate: new Date(2019, 3, 5, 9),
           });
 
           const eventsAfterDelete = calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
 
           t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
           t.expect(eventsAfterDelete.length).toBe(3);
+          t.expect(eventsAfterDelete.map((e) => e.startDate)).toEqual([
+            new Date(2019, 3, 4, 9).toISOString(),
+            // 5th April is deleted
+            new Date(2019, 3, 6, 9).toISOString(),
+            new Date(2019, 3, 7, 9).toISOString(),
+          ]);
         });
 
         t.afterEach(async () => {

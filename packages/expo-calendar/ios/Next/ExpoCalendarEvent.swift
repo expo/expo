@@ -150,16 +150,12 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         return getEvent(firstEvent: firstEvent, startDate: startDate)
     }
 
-    internal func getEvent(firstEvent: EKEvent, startDate: Date?) -> EKEvent? {
-        guard let id = firstEvent.eventIdentifier else {
-            return nil
-        }
-        
+    internal func getEvent(firstEvent: EKEvent, startDate: Date?) -> EKEvent? {        
         guard let startDate else {
             return firstEvent
         }
         
-        guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
+        if let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame {
             return firstEvent
         }
         
@@ -169,9 +165,6 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         )
         
         for event in events {
-            if event.calendarItemIdentifier != id {
-                break
-            }
             if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
                 return event
             }
