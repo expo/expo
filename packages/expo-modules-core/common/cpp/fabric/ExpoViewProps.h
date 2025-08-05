@@ -23,6 +23,11 @@ public:
    A map with props stored as `folly::dynamic` objects.
    */
   std::unordered_map<std::string, folly::dynamic> propsMap;
+
+  /**
+    Custom prop, that allows the view to change its kind to RootNodeKind.
+  */
+  bool __isRootNodeKind = false;
 };
 
 } // namespace expo

@@ -1405,6 +1405,9 @@ module.exports = {
         ExpoRouterNativeLinkPreview: {
           propNames: ['nextScreenId', 'actions', 'preferredContentSize'],
         },
+        ExpoRouterModalPortal: {
+          propNames: ['hostId'],
+        },
         ExponentGLView: { propNames: ['enableExperimentalWorkletSupport', 'msaaSamples'] },
         ExpoVideo: {
           propNames: [

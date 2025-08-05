@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
-import { act, fireEvent, renderRouter, screen } from '../../testing-library';
+import { act, fireEvent, renderRouter, screen, waitFor } from '../../testing-library';
 import { Modal } from '../Modal';
 
 const ComponentWithModal = (props?: { onModalClose?: () => void }) => {
@@ -35,6 +35,66 @@ jest.mock('react-native-screens', () => {
   };
 });
 
+// TODO(@ubax): Improve this mock
+jest.mock('../native', () => {
+  const actual: typeof import('../native') = jest.requireActual('../native');
+  const React: typeof import('react') = require('react');
+  const { View }: typeof import('react-native') = require('react-native');
+  // The registries are used to simulate the native behavior
+  const hostsRegistry = new Map<string, React.ReactNode>();
+  const hostsTriggers = new Map<string, () => void>();
+  return {
+    ...actual,
+    NativeModalPortalHost: jest.fn((props) => {
+      React.useEffect(() => {
+        // Using setTimeout to simulate native registration, which will happen asynchronously
+        // and after component is mounted
+        setTimeout(() => {
+          props.onRegistered?.({ nativeEvent: { hostId: props.hostId } });
+          props.onLayout?.({ nativeEvent: { layout: { width: 200, height: 200 } } });
+        }, 0);
+        return () => {
+          props.onUnregistered?.({ nativeEvent: { hostId: props.hostId } });
+        };
+      }, [props.hostId]);
+      // Trigger is needed to cause re-render of the host when content is added
+      // On native no re-render is needed, because the native view is updated
+      const [_, setI] = React.useState(0);
+      const trigger = React.useCallback(() => {
+        setI((prev) => prev + 1);
+      }, []);
+      React.useEffect(() => {
+        hostsTriggers.set(props.hostId, trigger);
+        return () => {
+          hostsTriggers.delete(props.hostId);
+        };
+      }, [props.hostId]);
+
+      return (
+        <View
+          testID="NativeModalPortalHost"
+          {...props}
+          children={hostsRegistry.get(props.hostId)}
+        />
+      );
+    }),
+    NativeModalPortalContentWrapper: jest.fn((props) => {
+      React.useEffect(() => {
+        hostsRegistry.set(props.hostId, props.children);
+        hostsTriggers.get(props.hostId)?.();
+        return () => {
+          hostsRegistry.delete(props.hostId);
+        };
+      }, [props.hostId, props.children]);
+      // The children are rendered in the host, so we don't need to render anything here
+      return null;
+    }),
+    NativeModalPortalContent: jest.fn((props) => {
+      return <View testID="NativeModalPortalContent" {...props} />;
+    }),
+  };
+});
+
 describe('Content visibility', () => {
   it('modal content is not visible when visible is false', async () => {
     renderRouter({
@@ -50,9 +110,10 @@ describe('Content visibility', () => {
       index: ComponentWithModal,
     });
 
-    act(() => fireEvent.press(screen.getByTestId('open-modal')));
-
-    expect(screen.getByTestId('modal-content')).toBeVisible();
+    await act(() => fireEvent.press(screen.getByTestId('open-modal')));
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-content')).toBeVisible();
+    });
   });
 
   it('modal content is not visible when modal is closed', async () => {
@@ -61,7 +122,9 @@ describe('Content visibility', () => {
     });
 
     act(() => fireEvent.press(screen.getByTestId('open-modal')));
-    expect(screen.getByTestId('modal-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-content')).toBeVisible();
+    });
 
     act(() => fireEvent.press(screen.getByTestId('close-modal')));
     expect(screen.queryByTestId('modal-content')).toBeFalsy();
@@ -88,6 +151,9 @@ describe('Content visibility', () => {
     };
     renderRouter({
       index: ComponentWithState,
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-content')).toBeVisible();
     });
     expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 0');
     act(() => fireEvent.press(screen.getByTestId('increase-index')));
@@ -119,6 +185,9 @@ describe('Content visibility', () => {
     renderRouter({
       index: ComponentWithState,
     });
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-content')).toBeVisible();
+    });
     expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 0');
     act(() => fireEvent.press(screen.getByTestId('increase-index')));
     expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 1');
@@ -129,17 +198,35 @@ describe('Content visibility', () => {
 });
 
 describe('ScreenStackItem props', () => {
-  const showModal = () => {
+  const showModal = async () => {
     const ScreenStackItem = require('react-native-screens').ScreenStackItem;
 
     act(() => fireEvent.press(screen.getByTestId('open-modal')));
-
-    expect(screen.getByTestId('modal-content')).toBeVisible();
-    expect(ScreenStackItem).toHaveBeenCalledTimes(3);
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-content')).toBeVisible();
+    });
+    expect(ScreenStackItem).toHaveBeenCalledTimes(5);
     // The first two calls are for the root stack. They should be the same.
     expect(ScreenStackItem.mock.calls[0][0]).toEqual({
       ...ScreenStackItem.mock.calls[1][0],
       children: expect.anything(),
+    });
+    // The third and fourth calls are for not mounted modal. They should be the same.
+    expect(ScreenStackItem.mock.calls[2][0]).toEqual({
+      ...ScreenStackItem.mock.calls[3][0],
+      children: expect.anything(),
+      // Functions can be different if lambda is used, so we check only the properties
+      onDismissed: expect.any(Function),
+      onAppear: expect.any(Function),
+    });
+    // The fifth call is for mounted modal. This time everything should be the same except the activityState
+    expect(ScreenStackItem.mock.calls[4][0]).toEqual({
+      ...ScreenStackItem.mock.calls[3][0],
+      activityState: 2,
+      children: expect.anything(),
+      // Functions can be different if lambda is used, so we check only the properties
+      onDismissed: expect.any(Function),
+      onAppear: expect.any(Function),
     });
   };
 
@@ -162,13 +249,13 @@ describe('ScreenStackItem props', () => {
       index: CustomComponentWithModal,
     });
     const ScreenStackItem = require('react-native-screens').ScreenStackItem;
-    showModal();
+    await showModal();
 
-    expect(ScreenStackItem.mock.calls[2][0]).toEqual(
+    expect(ScreenStackItem.mock.calls[4][0]).toEqual(
       expect.objectContaining({
         screenId: expect.stringContaining(''),
         activityState: 2,
-        stackPresentation: 'fullScreenModal',
+        stackPresentation: 'transparentModal',
         stackAnimation: 'slide_from_bottom',
         nativeBackButtonDismissalEnabled: true,
         headerConfig: {
@@ -179,8 +266,8 @@ describe('ScreenStackItem props', () => {
     );
   });
   it.each([
-    { presentationStyle: undefined, expectedType: 'fullScreenModal' },
-    { presentationStyle: 'fullScreen', expectedType: 'fullScreenModal' },
+    { presentationStyle: undefined, expectedType: 'transparentModal' },
+    { presentationStyle: 'fullScreen', expectedType: 'transparentModal' },
     { presentationStyle: 'overFullScreen', expectedType: 'transparentModal' },
     { presentationStyle: 'pageSheet', expectedType: 'pageSheet' },
     { presentationStyle: 'formSheet', expectedType: 'formSheet' },
@@ -208,9 +295,9 @@ describe('ScreenStackItem props', () => {
       });
 
       const ScreenStackItem = require('react-native-screens').ScreenStackItem;
-      showModal();
+      await showModal();
 
-      expect(ScreenStackItem.mock.calls[2][0]).toEqual(
+      expect(ScreenStackItem.mock.calls[4][0]).toEqual(
         expect.objectContaining({
           stackPresentation: expectedType,
         })
@@ -248,9 +335,9 @@ describe('ScreenStackItem props', () => {
       });
 
       const ScreenStackItem = require('react-native-screens').ScreenStackItem;
-      showModal();
+      await showModal();
 
-      expect(ScreenStackItem.mock.calls[2][0]).toEqual(
+      expect(ScreenStackItem.mock.calls[4][0]).toEqual(
         expect.objectContaining({
           stackPresentation: expectedType,
         })
@@ -284,9 +371,9 @@ describe('ScreenStackItem props', () => {
     });
 
     const ScreenStackItem = require('react-native-screens').ScreenStackItem;
-    showModal();
+    await showModal();
 
-    expect(ScreenStackItem.mock.calls[2][0]).toEqual(
+    expect(ScreenStackItem.mock.calls[4][0]).toEqual(
       expect.objectContaining({
         sheetAllowedDetents: detents,
       })
@@ -353,9 +440,9 @@ describe('onClose', () => {
     });
 
     act(() => fireEvent.press(screen.getByTestId('open-modal')));
-    expect(screen.getByTestId('modal-content')).toBeVisible();
-
-    act(() => fireEvent.press(screen.getByTestId('close-modal')));
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('close-modal')));
 
     expect(screen.queryByTestId('modal-content')).toBeFalsy();
@@ -369,7 +456,9 @@ describe('onClose', () => {
     });
 
     act(() => fireEvent.press(screen.getByTestId('open-modal')));
-    expect(screen.getByTestId('modal-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-content')).toBeVisible();
+    });
 
     act(() => fireEvent.press(screen.getByTestId('unmount-modal')));
     expect(screen.queryByTestId('modal-content')).toBeFalsy();
@@ -428,11 +517,17 @@ describe('multiple modals', () => {
     });
 
     act(() => fireEvent.press(screen.getByTestId('open-modal-b')));
-    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-a')));
-    expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-c')));
-    expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    });
 
     act(() => fireEvent.press(screen.getByTestId('close-modal-c')));
     expect(onClose).toHaveBeenCalledTimes(1);
@@ -451,13 +546,21 @@ describe('multiple modals', () => {
     });
 
     act(() => fireEvent.press(screen.getByTestId('open-modal-b')));
-    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-a')));
-    expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-c')));
-    expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-d')));
-    expect(screen.getByTestId('modal-d-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-d-content')).toBeVisible();
+    });
 
     act(() => fireEvent.press(screen.getByTestId('close-modal-a')));
     expect(screen.queryByTestId('modal-a-content')).toBeFalsy();
@@ -479,13 +582,21 @@ describe('multiple modals', () => {
     });
 
     act(() => fireEvent.press(screen.getByTestId('open-modal-b')));
-    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-a')));
-    expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-c')));
-    expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    });
     act(() => fireEvent.press(screen.getByTestId('open-modal-d')));
-    expect(screen.getByTestId('modal-d-content')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByTestId('modal-d-content')).toBeVisible();
+    });
 
     act(() => fireEvent.press(screen.getByTestId('close-modal-b')));
     expect(screen.queryByTestId('modal-a-content')).toBeFalsy();
