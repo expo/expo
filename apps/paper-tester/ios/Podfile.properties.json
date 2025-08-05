@@ -1,5 +1,5 @@
 {
   "expo.jsEngine": "hermes",
   "newArchEnabled": "false",
-  "ios.buildFromSource": "true"
+  "ios.buildReactNativeFromSource": "true"
 }

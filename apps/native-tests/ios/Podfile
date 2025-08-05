@@ -4,8 +4,8 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
-ENV['RCT_USE_RN_DEP'] = '1' if podfile_properties['ios.buildFromSource'] != 'true'
-ENV['RCT_USE_PREBUILT_RNCORE'] = '1' if podfile_properties['ios.buildFromSource'] != 'true'
+ENV['RCT_USE_RN_DEP'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+ENV['RCT_USE_PREBUILT_RNCORE'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
 
 prepare_react_native_project!
 
