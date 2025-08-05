@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Fork `react-native/Libraries/Core/Devtools/getDevServer` to suppress warning.
 - noop unused code on native to suppress react-native import warnings. ([#38495](https://github.com/expo/expo/pull/38495) by [@EvanBacon](https://github.com/EvanBacon))
 - Update dependencies to align with transitive dependencies ([#38532](https://github.com/expo/expo/pull/38532) by [@kitten](https://github.com/kitten))
 
