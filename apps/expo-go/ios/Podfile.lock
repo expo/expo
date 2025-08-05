@@ -4319,6 +4319,7 @@ SPEC CHECKSUMS:
   EXAV: 0809cbb31eba2111d5413f2dbb547ba9727478ee
   EXConstants: 72e8e04dc4d7d97c74a618d44753ea4a7437a2b6
   EXImageLoader: d2b81b29509ee86ad8bdf0d2cc9ff5d86051d68b
+  EXImageLoader: d2b81b29509ee86ad8bdf0d2cc9ff5d86051d68b
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: bf76658edfbfa3e3fb67f940ade98d7803490789
   EXNotifications: f0f1c97d04f06c51ea073d7b2396431e5611c1ea
@@ -4398,7 +4399,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: b58e9627004f47043897eeae830c3ef023678f3b
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 549a9a58d85ddd2854f1f85283b661da58ab70e0
+  hermes-engine: 261d5b1bb5c97bf83c1232a4bdbb5124eea14cb9
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
