@@ -5,7 +5,7 @@ import {
   drawableFileTypes,
   createMetroServerAndBundleRequestAsync,
   exportEmbedAssetsAsync,
-} from 'expo/internal/cli-exports';
+} from 'expo/internal/unstable-expo-updates-cli-exports';
 import type { EmbeddedManifest } from 'expo-manifests';
 import fs from 'fs';
 import path from 'path';
