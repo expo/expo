@@ -48,15 +48,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     typescript: 'ignore-dev', // TODO: Should probably be a peer dep
   },
 
-  'expo-asset': {
-    '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
-  },
-
-  'expo-font': {
-    '@expo/config-plugins/build/android/codeMod': 'ignore-dev', // TODO: Remove
-    '@expo/config-plugins/build/utils/generateCode': 'ignore-dev', // TODO: Remove
-  },
-
   '@expo/cli': {
     eslint: 'ignore-dev', // TODO: Switch to resolve-from / project root require
     'expo-constants/package.json': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
