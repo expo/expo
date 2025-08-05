@@ -8,10 +8,9 @@ import {
   RecurringEventOptions,
   Reminder,
   ReminderStatus,
-  stringifyDateValues,
-  stringifyIfDate,
 } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
+import { stringifyDateValues, stringifyIfDate } from '../utils';
 
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
 

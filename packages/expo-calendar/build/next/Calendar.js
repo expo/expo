@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
-import { stringifyDateValues, stringifyIfDate, } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
+import { stringifyDateValues, stringifyIfDate } from '../utils';
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
