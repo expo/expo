@@ -92,18 +92,21 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
           return
         }
 
-        // We can only run an update marked as embedded if it's actually the update embedded in the
-        // current binary. We might have an older update from a previous binary still listed in the
-        // database with Embedded status so we need to filter that out here.
-        let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+        let embeddedManifest = EmbeddedAppLoader.requireEmbeddedManifest(withConfig: config, database: database)
         var filteredLaunchableUpdates: [Update] = []
-
         for update in launchableUpdates {
-          if update.status == UpdateStatus.StatusEmbedded {
-            if embeddedManifest != nil && update.updateId != embeddedManifest!.updateId {
-              continue
-            }
+          // We can only run an update marked as embedded if it's actually the update embedded in the
+          // current binary. We might have an older update from a previous binary still listed in the
+          // database with Embedded status so we need to filter that out here.
+          if update.status == UpdateStatus.StatusEmbedded && update.updateId != embeddedManifest.updateId {
+            continue
           }
+
+          // If embedded update is disabled, we should exclude embedded update from launchable updates
+          if !config.hasEmbeddedUpdate && embeddedManifest.updateId == update.updateId {
+            continue
+          }
+
           filteredLaunchableUpdates.append(update)
         }
 

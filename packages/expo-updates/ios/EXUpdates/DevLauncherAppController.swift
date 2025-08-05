@@ -100,9 +100,12 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     self.updatesDirectory = updatesDirectory
     self.database = updatesDatabase
     self.directoryDatabaseException = directoryDatabaseException
-    self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1",
-      config: self.config
+    self.defaultSelectionPolicy = SelectionPolicy(
+      launcherSelectionPolicy: LauncherSelectionPolicyDevelopmentClient(
+        runtimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1",
+        config: self.config),
+      loaderSelectionPolicy: LoaderSelectionPolicyDevelopmentClient(config: self.config),
+      reaperSelectionPolicy: ReaperSelectionPolicyDevelopmentClient()
     )
 
     super.init()

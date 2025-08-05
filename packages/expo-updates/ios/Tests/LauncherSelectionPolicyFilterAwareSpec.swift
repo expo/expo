@@ -69,11 +69,9 @@ internal class LauncherSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: configWithOverride,
           database: database
         )
-        updateWithOverrideUrl.url = overrideUrl
-        updateWithOverrideUrl.requestHeaders = overrideHeaders
 
         updateWithDifferentUrl = ExpoUpdatesUpdate.update(
           withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
@@ -85,10 +83,12 @@ internal class LauncherSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: try! UpdatesConfig.config(
+            fromConfig: config,
+            configOverride: UpdatesConfigOverride(updateUrl: URL(string: "https://different.example.com"), requestHeaders: [:])
+          ),
           database: database
         )
-        updateWithDifferentUrl.url = URL(string: "https://different.example.com")
 
         updateWithOverrideHeaders = ExpoUpdatesUpdate.update(
           withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
@@ -100,10 +100,12 @@ internal class LauncherSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: try! UpdatesConfig.config(
+            fromConfig: config,
+            configOverride: UpdatesConfigOverride(updateUrl: nil, requestHeaders: overrideHeaders)
+          ),
           database: database
         )
-        updateWithOverrideHeaders.requestHeaders = overrideHeaders
 
         updateWithDifferentHeaders = ExpoUpdatesUpdate.update(
           withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
@@ -115,10 +117,12 @@ internal class LauncherSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: try! UpdatesConfig.config(
+            fromConfig: config,
+            configOverride: UpdatesConfigOverride(updateUrl: nil, requestHeaders: ["Authorization": "Bearer different_token"])
+          ),
           database: database
         )
-        updateWithDifferentHeaders.requestHeaders = ["Authorization": "Bearer different_token"]
       }
 
       it("should only return update matching override URL and headers") {
@@ -165,13 +169,6 @@ internal class LauncherSelectionPolicyFilterAwareSpec: ExpoSpec {
         let updates: [Update] = [updateWithDifferentHeaders]
         let result = launcherPolicy.launchableUpdate(fromUpdates: updates, filters: manifestFilters)
         expect(result).to(beNil())
-      }
-
-      it("should work normally without override config") {
-        let launcherPolicy = LauncherSelectionPolicyFilterAware(runtimeVersion: runtimeVersion, config: config)
-        let updates: [Update] = [updateWithOverrideUrl, updateWithDifferentUrl]
-        let result = launcherPolicy.launchableUpdate(fromUpdates: updates, filters: manifestFilters)
-        expect(result) == updateWithDifferentUrl
       }
     }
   }

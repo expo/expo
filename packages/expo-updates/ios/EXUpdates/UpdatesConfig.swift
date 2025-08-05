@@ -90,7 +90,9 @@ public final class UpdatesConfig: NSObject {
 
   public let scopeKey: String
   public let updateUrl: URL
+  public let originalEmbeddedUpdateUrl: URL
   public let requestHeaders: [String: String]
+  public let originalEmbeddedRequestHeaders: [String: String]
   public let launchWaitMs: Int
   public let checkOnLaunch: CheckAutomaticallyConfig
   public let codeSigningConfiguration: CodeSigningConfiguration?
@@ -107,7 +109,9 @@ public final class UpdatesConfig: NSObject {
     cachedConfigDictionary: [String: Any],
     scopeKey: String,
     updateUrl: URL,
+    originalEmbeddedUpdateUrl: URL,
     requestHeaders: [String: String],
+    originalEmbeddedRequestHeaders: [String: String],
     launchWaitMs: Int,
     checkOnLaunch: CheckAutomaticallyConfig,
     codeSigningConfiguration: CodeSigningConfiguration?,
@@ -120,7 +124,9 @@ public final class UpdatesConfig: NSObject {
     self.cachedConfigDictionary = cachedConfigDictionary
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
+    self.originalEmbeddedUpdateUrl = originalEmbeddedUpdateUrl
     self.requestHeaders = requestHeaders
+    self.originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders
     self.launchWaitMs = launchWaitMs
     self.checkOnLaunch = checkOnLaunch
     self.codeSigningConfiguration = codeSigningConfiguration
@@ -217,9 +223,13 @@ public final class UpdatesConfig: NSObject {
     guard let updateUrl = getUpdateUrl(fromDictionary: config, configOverride: configOverride) else {
       throw UpdatesConfigError.ExpoUpdatesConfigMissingURLError
     }
+    guard let originalEmbeddedUpdateUrl = getOriginalEmbeddedUpdateUrl(fromDictionary: config) else {
+      throw UpdatesConfigError.ExpoUpdatesConfigMissingURLError
+    }
     let scopeKey = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
     let requestHeaders = getRequestHeaders(fromDictionary: config, configOverride: configOverride)
+    let originalEmbeddedRequestHeaders = getOriginalEmbeddedRequestHeaders(fromDictionary: config)
     let launchWaitMs = config.optionalValue(forKey: EXUpdatesConfigLaunchWaitMsKey).let { (it: Any) in
       // The only way I can figure out how to detect numbers is to do a is NSNumber (is any Numeric didn't work).
       // This might be able to change when we switch out the plist decoder above
@@ -277,7 +287,9 @@ public final class UpdatesConfig: NSObject {
       cachedConfigDictionary: config,
       scopeKey: scopeKey,
       updateUrl: updateUrl,
+      originalEmbeddedUpdateUrl: originalEmbeddedUpdateUrl,
       requestHeaders: requestHeaders,
+      originalEmbeddedRequestHeaders: originalEmbeddedRequestHeaders,
       launchWaitMs: launchWaitMs,
       checkOnLaunch: checkOnLaunch,
       codeSigningConfiguration: codeSigningConfiguration,
@@ -367,6 +379,10 @@ public final class UpdatesConfig: NSObject {
       let updateUrl = configOverride?.updateUrl {
       return updateUrl
     }
+    return getOriginalEmbeddedUpdateUrl(fromDictionary: config)
+  }
+
+  private static func getOriginalEmbeddedUpdateUrl(fromDictionary config: [String: Any]) -> URL? {
     return config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)
     }
@@ -380,6 +396,10 @@ public final class UpdatesConfig: NSObject {
       let requestHeaders = configOverride?.requestHeaders {
       return requestHeaders
     }
+    return getOriginalEmbeddedRequestHeaders(fromDictionary: config)
+  }
+
+  private static func getOriginalEmbeddedRequestHeaders(fromDictionary config: [String: Any]) -> [String: String] {
     return config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
   }
 }

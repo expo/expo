@@ -22,7 +22,9 @@ class AppLauncherWithDatabaseMock : AppLauncherWithDatabase {
       keep: true,
       status: .StatusReady,
       isDevelopmentMode: false,
-      assetsFromManifest: []
+      assetsFromManifest: [],
+      url: URL(string: "https://example.com"),
+      requestHeaders: [:]
     )
   }()
 

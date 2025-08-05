@@ -647,13 +647,13 @@ public final class UpdatesDatabase: NSObject {
       keep: keep.intValue != 0,
       status: UpdateStatus.init(rawValue: status.intValue)!,
       isDevelopmentMode: false,
-      assetsFromManifest: nil
+      assetsFromManifest: nil,
+      url: url,
+      requestHeaders: requestHeaders
     )
     update.lastAccessed = UpdatesDatabaseUtils.date(fromUnixTimeMilliseconds: row.requiredValue(forKey: "last_accessed"))
     update.successfulLaunchCount = successfulLaunchCount.intValue
     update.failedLaunchCount = failedLaunchCount.intValue
-    update.url = url
-    update.requestHeaders = requestHeaders
     return update
   }
 

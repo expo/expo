@@ -78,7 +78,7 @@ public final class ExpoUpdatesUpdate: Update {
       status = UpdateStatus.StatusPending
     }
 
-    let update = Update(
+    return Update(
       manifest: manifest,
       config: config,
       database: database,
@@ -89,10 +89,9 @@ public final class ExpoUpdatesUpdate: Update {
       keep: true,
       status: status,
       isDevelopmentMode: isDevelopmentMode,
-      assetsFromManifest: processedAssets
+      assetsFromManifest: processedAssets,
+      url: config.updateUrl,
+      requestHeaders: config.requestHeaders
     )
-    update.url = config.updateUrl
-    update.requestHeaders = config.requestHeaders
-    return update
   }
 }

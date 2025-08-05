@@ -127,7 +127,9 @@ class FileDownloaderSpec : ExpoSpec {
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://exp.host/@test/test"),
+          requestHeaders: [:]
         )
         launchedUpdate.failedLaunchCount = 1
 
@@ -143,7 +145,9 @@ class FileDownloaderSpec : ExpoSpec {
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://exp.host/@test/test"),
+          requestHeaders: [:]
         )
         embeddedUpdate.failedLaunchCount = 1
 

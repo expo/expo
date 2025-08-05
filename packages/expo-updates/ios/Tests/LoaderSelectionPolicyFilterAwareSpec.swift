@@ -85,11 +85,9 @@ internal class LoaderSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: configWithOverride,
           database: database
         )
-        updateWithOverrideUrl.url = overrideUrl
-        updateWithOverrideUrl.requestHeaders = overrideHeaders
 
         updateWithDifferentUrl = ExpoUpdatesUpdate.update(
           withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
@@ -101,10 +99,12 @@ internal class LoaderSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: try! UpdatesConfig.config(
+            fromConfig: config,
+            configOverride: UpdatesConfigOverride(updateUrl: URL(string: "https://different.example.com"), requestHeaders: [:])
+          ),
           database: database
         )
-        updateWithDifferentUrl.url = URL(string: "https://different.example.com")
 
         updateWithOverrideHeaders = ExpoUpdatesUpdate.update(
           withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
@@ -116,10 +116,12 @@ internal class LoaderSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: try! UpdatesConfig.config(
+            fromConfig: config,
+            configOverride: UpdatesConfigOverride(updateUrl: nil, requestHeaders: overrideHeaders)
+          ),
           database: database
         )
-        updateWithOverrideHeaders.requestHeaders = overrideHeaders
 
         updateWithDifferentHeaders = ExpoUpdatesUpdate.update(
           withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
@@ -131,10 +133,12 @@ internal class LoaderSelectionPolicyFilterAwareSpec: ExpoSpec {
             "metadata": ["branchName": "default"]
           ]),
           extensions: [:],
-          config: config,
+          config: try! UpdatesConfig.config(
+            fromConfig: config,
+            configOverride: UpdatesConfigOverride(updateUrl: nil, requestHeaders: ["Authorization": "Bearer different_token"])
+          ),
           database: database
         )
-        updateWithDifferentHeaders.requestHeaders = ["Authorization": "Bearer different_token"]
       }
 
       it("should load new update when it matches override URL and headers") {

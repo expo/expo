@@ -66,7 +66,9 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
           keep: true,
           status: .StatusEmbedded,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://example.com"),
+          requestHeaders: [:]
         )
         let update2 = Update(
           manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -79,7 +81,9 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
           keep: true,
           status: .StatusEmbedded,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://example.com"),
+          requestHeaders: [:]
         )
         
         db.databaseQueue.sync {
@@ -125,7 +129,9 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
           keep: true,
           status: .StatusEmbedded,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://example.com"),
+          requestHeaders: [:]
         )
         let update2 = Update(
           manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -138,7 +144,9 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
           keep: true,
           status: .StatusEmbedded,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://example.com"),
+          requestHeaders: [:]
         )
         
         db.databaseQueue.sync {

@@ -1,20 +1,16 @@
-//  Copyright © 2019 650 Industries. All rights reserved.
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
 
 /**
- * A LoaderSelectionPolicy which decides whether or not to load an update or directive, taking filters into
- * account. Returns true (should load the update) if we don't have an existing newer update that
- * matches the given manifest filters.
- *
- * Uses `commitTime` to determine ordering of updates.
+ * A policy like `LoaderSelectionPolicyFilterAware` for dev-client that allows nullable `UpdatesConfig`
  */
-@objc(EXUpdatesLoaderSelectionPolicyFilterAware)
+@objc(EXUpdatesLoaderSelectionPolicyDevelopmentClient)
 @objcMembers
-public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPolicy {
-  private let config: UpdatesConfig
+public final class LoaderSelectionPolicyDevelopmentClient: NSObject, LoaderSelectionPolicy {
+  private let config: UpdatesConfig?
 
-  public required init(config: UpdatesConfig) {
+  public required init(config: UpdatesConfig?) {
     self.config = config
   }
 
@@ -35,22 +31,22 @@ public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPo
     }
 
     // if new update doesn't match the configured URL, don't load it
-    if (newUpdate.url != nil && newUpdate.url != config.updateUrl) {
+    if (newUpdate.url != nil && newUpdate.url != config?.updateUrl) {
       return false
     }
 
     // if new update doesn't match the configured request headers, don't load it
-    if (newUpdate.requestHeaders != nil && newUpdate.requestHeaders != config.requestHeaders) {
+    if (newUpdate.requestHeaders != nil && newUpdate.requestHeaders != config?.requestHeaders) {
       return false
     }
 
     // if the launched update no longer matches the configured URL, we should load the new update
-    if (launchedUpdate.url != nil && launchedUpdate.url != config.updateUrl) {
+    if (launchedUpdate.url != nil && launchedUpdate.url != config?.updateUrl) {
       return true
     }
 
     // if the launched update no longer matches the configured request headers, we should load the new update
-    if (launchedUpdate.requestHeaders != nil && launchedUpdate.requestHeaders != config.requestHeaders) {
+    if (launchedUpdate.requestHeaders != nil && launchedUpdate.requestHeaders != config?.requestHeaders) {
       return true
     }
 
