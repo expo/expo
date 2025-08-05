@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Use `Networking` module and streaming to suppress warning for async bundles on native.
 - Fork `react-native/Libraries/Utilities/PolyfillFunctions` to suppress warning. ([#38495](https://github.com/expo/expo/pull/38495) by [@EvanBacon](https://github.com/EvanBacon))
 - Change how FormData is parsed in expo/fetch. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))
 - Simplify expo-modules-core usage. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
