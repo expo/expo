@@ -105,7 +105,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
   }
 
   override update(details: Partial<Calendar>): void {
-    const color = details.color ? processColor(details.color)?.toString() : undefined;
+    const color = details.color ? processColor(details.color) : undefined;
 
     if (Platform.OS === 'android') {
       // TODO: Implement
@@ -124,7 +124,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
       }
     }
 
-    const newDetails = { ...details, color };
+    const newDetails = { ...details, color: color || undefined };
     super.update(newDetails);
   }
 }

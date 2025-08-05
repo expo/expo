@@ -70,7 +70,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         });
     }
     update(details) {
-        const color = details.color ? processColor(details.color)?.toString() : undefined;
+        const color = details.color ? processColor(details.color) : undefined;
         if (Platform.OS === 'android') {
             // TODO: Implement
             throw new Error('Not implemented yet');
@@ -84,7 +84,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
                 console.warn('ExpoCalendar.update was called with one or more read-only properties, which will not be updated');
             }
         }
-        const newDetails = { ...details, color };
+        const newDetails = { ...details, color: color || undefined };
         super.update(newDetails);
     }
 }

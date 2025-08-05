@@ -514,11 +514,13 @@ public class CalendarModule: Module {
       guard let calendar = eventStore.calendar(withIdentifier: id) else {
         throw CalendarIdNotFoundException(id)
       }
-
-      if calendar.isImmutable == true {
-        throw CalendarNotSavedException(record.title)
+      guard let title = record.title else {
+        throw MissingParameterException("title")
       }
-      calendar.title = record.title
+      if calendar.isImmutable == true {
+        throw CalendarNotSavedException(title)
+      }
+      calendar.title = title
       calendar.cgColor = EXUtilities.uiColor(record.color)?.cgColor
       return calendar
     }
@@ -530,6 +532,10 @@ public class CalendarModule: Module {
     } else {
       throw EntityNotSupportedException(record.entityType?.rawValue)
     }
+      
+    guard let title = record.title else {
+      throw MissingParameterException("title")
+    }
 
     if let sourceId = record.sourceId {
       calendar.source = eventStore.source(withIdentifier: sourceId)
@@ -539,7 +545,7 @@ public class CalendarModule: Module {
       eventStore.defaultCalendarForNewReminders()?.source
     }
 
-    calendar.title = record.title
+    calendar.title = title
     calendar.cgColor = EXUtilities.uiColor(record.color)?.cgColor
 
     return calendar

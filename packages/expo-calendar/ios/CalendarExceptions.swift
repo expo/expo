@@ -42,9 +42,13 @@ final internal class InvalidCalendarTypeException: GenericException<(String, Str
   }
 }
 
-final internal class MissingParameterException: Exception {
+final internal class MissingParameterException: GenericException<String?> {
   override var reason: String {
-    "`Calendar.getRemindersAsync` needs at least one calendar ID"
+    if let param = param, !param.isEmpty {
+      return "Missing parameter: \(param)"
+    } else {
+      return "Missing parameter"
+    }
   }
 }
 

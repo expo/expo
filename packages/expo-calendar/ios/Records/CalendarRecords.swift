@@ -9,7 +9,7 @@ struct CalendarRecord: Record {
   @Field
   var id: String?
   @Field
-  var title: String
+  var title: String?
   @Field
   var sourceId: String?
   @Field
@@ -17,7 +17,7 @@ struct CalendarRecord: Record {
   @Field
   var type: String?
   @Field
-  var color: Int
+  var color: Int?
   @Field
   var entityType: CalendarEntity?
   @Field

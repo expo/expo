@@ -19,20 +19,24 @@ import * as TestUtils from '../TestUtils';
 
 export const name = 'Calendar@next';
 
+const defaultCalendarData = {
+  title: 'Expo test-suite calendar ' + new Date().toISOString(),
+  color: '#4B968A',
+  entityType: Calendar.EntityTypes.EVENT,
+  //   name: 'expo-test-suite-calendar', TODO: Android only
+  source: {
+    isLocalAccount: true,
+    name: 'expo',
+    type: 'local',
+  },
+  ownerAccount: 'expo',
+  accessLevel: Calendar.CalendarAccessLevel.OWNER,
+} satisfies Partial<ExpoCalendar>;
+
 async function createTestCalendarAsync(patch: Partial<ExpoCalendar> = {}) {
   return createCalendarNext({
-    title: 'Expo test-suite calendar',
-    color: '#4B968A',
-    entityType: Calendar.EntityTypes.EVENT,
-    name: 'expo-test-suite-calendar',
+    ...defaultCalendarData,
     sourceId: await pickCalendarSourceIdAsync(),
-    source: {
-      isLocalAccount: true,
-      name: 'expo',
-      type: 'local',
-    },
-    ownerAccount: 'expo',
-    accessLevel: Calendar.CalendarAccessLevel.OWNER,
     ...patch,
   } satisfies Partial<ExpoCalendar>);
 }
@@ -50,7 +54,7 @@ async function pickCalendarSourceIdAsync() {
   }
 }
 
-const eventData = {
+const defaultEventData = {
   title: 'App.js Conference',
   startDate: new Date(2019, 3, 4, 9), // 4th April 2019, 9:00, months are counted from 0
   endDate: new Date(2019, 3, 4, 10), // 4th April 2019, 12:00
@@ -63,7 +67,7 @@ const eventData = {
 
 function createEventData(customArgs = {}) {
   return {
-    ...eventData,
+    ...defaultEventData,
     ...customArgs,
   };
 }
@@ -88,25 +92,6 @@ function getReminderCalendar() {
   const calendars = getCalendarsNext();
   return calendars.find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
 }
-
-function moveEndDate(date: Date) {
-  return new Date(date.getTime() - 1000);
-}
-
-// async function createTestAttendeeAsync(eventId) {
-//   return await Calendar.createAttendeeAsync(eventId, {
-//     name: 'Guest',
-//     email: 'guest@expo.dev',
-//     role: Calendar.AttendeeRole.ATTENDEE,
-//     status: Calendar.AttendeeStatus.ACCEPTED,
-//     type: Calendar.AttendeeType.PERSON,
-//   });
-// }
-
-// async function getAttendeeByIdAsync(eventId, attendeeId) {
-//   const attendees = await Calendar.getAttendeesForEventAsync(eventId);
-//   return attendees.find((attendee) => attendee.id === attendeeId);
-// }
 
 export async function test(t) {
   const shouldSkipTestsRequiringPermissions =
@@ -233,23 +218,6 @@ export async function test(t) {
     }
   }
 
-  function expectMethodsToReject(methods) {
-    for (const methodName of methods) {
-      t.describe(`${methodName}()`, () => {
-        t.it('rejects with UnavailabilityError on unsupported platform', async () => {
-          let error;
-          try {
-            await Calendar[methodName]();
-          } catch (e) {
-            error = e;
-          }
-          t.expect(error instanceof UnavailabilityError).toBe(true);
-          t.expect(error.message).toBe(new UnavailabilityError('Calendar', methodName).message);
-        });
-      });
-    }
-  }
-
   describeWithPermissions('Calendar@next', () => {
     t.describe('Global functions', () => {
       t.describe('requestCalendarPermissionsAsync()', () => {
@@ -280,7 +248,19 @@ export async function test(t) {
 
           t.expect(calendar).toBeDefined();
           t.expect(typeof calendar.id).toBe('string');
+          t.expect(calendar.title).toBe(defaultCalendarData.title);
+          t.expect(calendar.color).toBe(defaultCalendarData.color);
           testCalendarShape(calendar);
+        });
+
+        t.it('cannot create a calendar without a title', async () => {
+          let error;
+          try {
+            await createTestCalendarAsync({ title: undefined });
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error).toBeDefined();
         });
 
         t.afterAll(async () => {
@@ -440,7 +420,7 @@ export async function test(t) {
       t.describe('Calendar.update()', () => {
         let calendar: ExpoCalendar;
 
-        t.beforeAll(async () => {
+        t.beforeEach(async () => {
           calendar = await createTestCalendarAsync();
         });
 
@@ -455,7 +435,27 @@ export async function test(t) {
           t.expect(updatedCalendar.title).toBe(newTitle);
         });
 
-        t.afterAll(async () => {
+        t.it('keeps other properties unchanged when updating title', async () => {
+          const newTitle = 'New test-suite calendar title' + new Date().toISOString();
+          calendar.update({
+            title: newTitle,
+          });
+          t.expect(calendar.title).toBe(newTitle);
+          t.expect(calendar.color).toBe(defaultCalendarData.color);
+          t.expect(calendar.entityType).toBe(defaultCalendarData.entityType);
+        });
+
+        t.it('keeps other properties unchanged when updating color', async () => {
+          const color = '#001A72';
+          calendar.update({
+            color,
+          });
+          t.expect(calendar.color).toBe(color);
+          t.expect(calendar.title).toBe(defaultCalendarData.title);
+          t.expect(calendar.entityType).toBe(defaultCalendarData.entityType);
+        });
+
+        t.afterEach(async () => {
           calendar.delete();
         });
       });
@@ -493,13 +493,13 @@ export async function test(t) {
 
           t.expect(event).toBeDefined();
           t.expect(typeof event.id).toBe('string');
-          t.expect(event.title).toBe(eventData.title);
-          t.expect(event.startDate).toBe(eventData.startDate.toISOString());
-          t.expect(event.endDate).toBe(eventData.endDate.toISOString());
-          t.expect(event.timeZone).toBe(eventData.timeZone);
-          t.expect(event.allDay).toBe(eventData.allDay);
-          t.expect(event.location).toBe(eventData.location);
-          t.expect(event.notes).toBe(eventData.notes);
+          t.expect(event.title).toBe(defaultEventData.title);
+          t.expect(event.startDate).toBe(defaultEventData.startDate.toISOString());
+          t.expect(event.endDate).toBe(defaultEventData.endDate.toISOString());
+          t.expect(event.timeZone).toBe(defaultEventData.timeZone);
+          t.expect(event.allDay).toBe(defaultEventData.allDay);
+          t.expect(event.location).toBe(defaultEventData.location);
+          t.expect(event.notes).toBe(defaultEventData.notes);
           // t.expect(event.availability).toBe(eventData.availability);
         });
 
@@ -571,10 +571,10 @@ export async function test(t) {
             t.expect(reminder).toBeDefined();
             t.expect(typeof reminder.id).toBe('string');
             t.expect(reminder.calendarId).toBe(reminderCalendar.id);
-            t.expect(reminder.title).toBe(eventData.title);
-            t.expect(reminder.startDate).toBe(eventData.startDate.toISOString());
+            t.expect(reminder.title).toBe(defaultEventData.title);
+            t.expect(reminder.startDate).toBe(defaultEventData.startDate.toISOString());
             // t.expect(reminder.location).toBe(eventData.location);
-            t.expect(reminder.notes).toBe(eventData.notes);
+            t.expect(reminder.notes).toBe(defaultEventData.notes);
           });
 
           t.it('creates a reminder with dueDate', async () => {
@@ -1102,68 +1102,7 @@ export async function test(t) {
     });
 
     t.describe('Attendee', () => {
-      if (Platform.OS === 'android') {
-        //   t.describe('createAttendeeAsync()', () => {
-        //     let calendarId, eventId;
-        //     t.beforeAll(async () => {
-        //       calendarId = await createTestCalendarAsync();
-        //       eventId = await createTestEventAsync(calendarId);
-        //     });
-        //     t.it('creates an attendee', async () => {
-        //       const attendeeId = await createTestAttendeeAsync(eventId);
-        //       const attendees = await Calendar.getAttendeesForEventAsync(eventId);
-        //       t.expect(Array.isArray(attendees)).toBe(true);
-        //       const newAttendee = attendees.find((attendee) => attendee.id === attendeeId);
-        //       t.expect(newAttendee).toBeDefined();
-        //       testAttendeeShape(newAttendee);
-        //     });
-        //     t.afterAll(async () => {
-        //       await Calendar.deleteCalendarAsync(calendarId);
-        //     });
-        //   });
-        //   t.describe('updateAttendeeAsync()', () => {
-        //     let calendarId, eventId, attendeeId;
-        //     t.beforeAll(async () => {
-        //       calendarId = await createTestCalendarAsync();
-        //       eventId = await createTestEventAsync(calendarId);
-        //       attendeeId = await createTestAttendeeAsync(eventId);
-        //     });
-        //     t.it('updates attendee record', async () => {
-        //       const updatedAttendeeId = await Calendar.updateAttendeeAsync(attendeeId, {
-        //         role: Calendar.AttendeeRole.PERFORMER,
-        //       });
-        //       const updatedAttendee = await getAttendeeByIdAsync(eventId, attendeeId);
-        //       t.expect(updatedAttendeeId).toBe(attendeeId);
-        //       t.expect(updatedAttendee).toBeDefined();
-        //       t.expect(updatedAttendee.role).toBe(Calendar.AttendeeRole.PERFORMER);
-        //     });
-        //     t.afterAll(async () => {
-        //       await Calendar.deleteCalendarAsync(calendarId);
-        //     });
-        //   });
-        //   t.describe('deleteAttendeeAsync()', () => {
-        //     let calendarId, eventId;
-        //     t.beforeAll(async () => {
-        //       calendarId = await createTestCalendarAsync();
-        //       eventId = await createTestEventAsync(calendarId);
-        //     });
-        //     t.it('deletes an attendee', async () => {
-        //       const attendeeId = await createTestAttendeeAsync(eventId);
-        //       await Calendar.deleteAttendeeAsync(attendeeId);
-        //       const attendee = await getAttendeeByIdAsync(eventId, attendeeId);
-        //       t.expect(attendee).toBeUndefined();
-        //     });
-        //     t.afterAll(async () => {
-        //       await Calendar.deleteCalendarAsync(calendarId);
-        //     });
-        //   });
-      } else {
-        expectMethodsToReject([
-          'createAttendeeAsync',
-          'updateAttendeeAsync',
-          'deleteAttendeeAsync',
-        ]);
-      }
+      // TODO: Add tests for attendees on Android
     });
   });
 }

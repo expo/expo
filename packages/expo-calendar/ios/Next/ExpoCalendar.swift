@@ -35,7 +35,6 @@ internal final class ExpoCalendar: SharedObject {
             promise.reject(CalendarNoLongerExistsException())
             return
         }
-        //   try checkRemindersPermissions()
         let reminderCalendars: [EKCalendar] = [calendar]
         
         do {
@@ -59,11 +58,16 @@ internal final class ExpoCalendar: SharedObject {
         }
         
         if calendar.isImmutable == true {
-            throw CalendarNotSavedException(calendarRecord.title)
+            throw CalendarNotSavedException(calendarRecord.title ?? "")
         }
         
-        calendar.title = calendarRecord.title
-        calendar.cgColor = EXUtilities.uiColor(calendarRecord.color)?.cgColor
+        if let title = calendarRecord.title {
+            calendar.title = title
+        }
+
+        if let color = calendarRecord.color {
+            calendar.cgColor = EXUtilities.uiColor(color)?.cgColor
+        }
         
         try eventStore.saveCalendar(calendar, commit: true)
     }

@@ -62,6 +62,10 @@ public final class CalendarNextModule: Module {
             case .none:
                 throw EntityNotSupportedException(details.entityType?.rawValue)
             }
+
+            guard let title = details.title else {
+                throw MissingParameterException("title")
+            }
             
             if let sourceId = details.sourceId {
                 calendar.source = eventStore.source(withIdentifier: sourceId)
@@ -72,7 +76,7 @@ public final class CalendarNextModule: Module {
                 : eventStore.defaultCalendarForNewReminders()?.source
             }
             
-            calendar.title = details.title
+            calendar.title = title
             calendar.cgColor = EXUtilities.uiColor(details.color)?.cgColor
             
             try eventStore.saveCalendar(calendar, commit: true)
