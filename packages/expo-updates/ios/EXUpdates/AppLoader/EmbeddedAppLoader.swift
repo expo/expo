@@ -44,7 +44,6 @@ public final class EmbeddedAppLoader: AppLoader {
    Gets the embedded update even if `UpdatesConfig.hasEmbeddedUpdate` is false
    */
   public static func requireEmbeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate {
-
     if let embeddedManifestInternal = embeddedManifestInternal {
       return embeddedManifestInternal
     }
