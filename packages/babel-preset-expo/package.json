@@ -68,6 +68,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
     "@types/babel__core": "^7.20.5",
     "@expo/metro": "~0.1.0",
     "expo-module-scripts": "^4.1.7",
