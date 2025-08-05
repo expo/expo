@@ -440,4 +440,4 @@ export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
  *
  * @platform android
  */
-export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
+export type InterruptionModeAndroid = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
