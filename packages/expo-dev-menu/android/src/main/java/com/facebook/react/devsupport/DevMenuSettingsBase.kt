@@ -55,6 +55,7 @@ abstract class DevMenuSettingsBase(
       mPreferences.edit(commit = true) { putBoolean("remote_js_debug", remoteJSDebugEnabled) }
     }
 
+  @Suppress("NOTHING_TO_OVERRIDE")
   override var isStartSamplingProfilerOnInit: Boolean =
     mPreferences.getBoolean("start_sampling_profiler_on_init", false)
 

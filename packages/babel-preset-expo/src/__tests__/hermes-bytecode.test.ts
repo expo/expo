@@ -10,7 +10,14 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
 jest.mock('../common.ts', () => ({
   ...jest.requireActual('../common.ts'),
   hasModule: jest.fn((moduleId) => {
-    if (['react-native-reanimated', 'expo-router', '@expo/vector-icons'].includes(moduleId)) {
+    if (
+      [
+        'react-native-worklets',
+        'react-native-reanimated',
+        'expo-router',
+        '@expo/vector-icons',
+      ].includes(moduleId)
+    ) {
       return true;
     }
     return false;

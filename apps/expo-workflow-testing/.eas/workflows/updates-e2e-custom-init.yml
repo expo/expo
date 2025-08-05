@@ -49,7 +49,7 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           yarn generate-test-update-bundles ios
-          npx pod-install
+          yarn ios:pod-install
       - name: Build E2E test app (debug)
         id: builddebug
         working_directory: ../../../updates-e2e

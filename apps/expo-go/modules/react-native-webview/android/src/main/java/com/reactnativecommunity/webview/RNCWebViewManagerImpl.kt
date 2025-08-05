@@ -715,4 +715,11 @@ class RNCWebViewManagerImpl(private val newArch: Boolean = false) {
     fun setWebviewDebuggingEnabled(viewWrapper: RNCWebViewWrapper, enabled: Boolean) {
         RNCWebView.setWebContentsDebuggingEnabled(enabled)
     }
+
+    fun setPaymentRequestEnabled(viewWrapper: RNCWebViewWrapper, enabled: Boolean) {
+        val view = viewWrapper.webView
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.PAYMENT_REQUEST)) {
+            WebSettingsCompat.setPaymentRequestEnabled(view.settings, enabled)
+        }
+    }
 }

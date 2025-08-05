@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -85,7 +86,7 @@ fun BranchesScreen(
   onProfileClick: () -> Unit = {},
   onAction: (BranchesAction) -> Unit = { _ -> }
 ) {
-  Column {
+  Column(modifier = Modifier.fillMaxSize()) {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
       AppHeader(
         onProfileClick = onProfileClick
@@ -134,7 +135,7 @@ fun BranchesScreen(
                   DayNighIcon(
                     painter = painterResource(R.drawable.chevron_right_icon),
                     contentDescription = "Chevron Right Icon",
-                    modifier = Modifier.size(Theme.sizing.icon.medium)
+                    modifier = Modifier.size(Theme.sizing.icon.extraSmall)
                   )
                 }
 

@@ -46,7 +46,9 @@ struct DevServersView: View {
 
         enterUrl
       }
+      #if !os(tvOS)
       .background(Color(.systemBackground))
+      #endif
       .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .onAppear {
@@ -81,10 +83,12 @@ struct DevServersView: View {
           .disableAutocorrection(true)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
+        #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
               .stroke(Color(.systemGray4), lineWidth: 1)
           )
+        #endif
           .clipShape(RoundedRectangle(cornerRadius: 5))
 
         connectButton

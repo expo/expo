@@ -11,9 +11,34 @@ interface LinkMenuActionProps {
      * Optional SF Symbol displayed alongside the menu item.
      */
     icon?: SFSymbol;
+    /**
+     * If true, the menu item will be disabled and not selectable.
+     *
+     * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled
+     */
+    disabled?: boolean;
+    /**
+     * If true, the menu item will be displayed as destructive.
+     *
+     * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive
+     */
+    destructive?: boolean;
+    /**
+     * If true, the menu will be kept presented after the action is selected.
+     *
+     * This is marked as unstable, because when action is selected it will recreate the menu,
+     * which will close all opened submenus and reset the scroll position.
+     *
+     * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented
+     */
+    unstable_keepPresented?: boolean;
+    /**
+     * If true, the menu item will be displayed as selected.
+     */
+    isOn?: boolean;
     onPress: () => void;
 }
-export declare function LinkMenuAction(_: LinkMenuActionProps): null;
+export declare function LinkMenuAction(props: LinkMenuActionProps): React.JSX.Element | null;
 export interface LinkMenuProps {
     /**
      * The title of the menu item
@@ -23,6 +48,26 @@ export interface LinkMenuProps {
      * Optional SF Symbol displayed alongside the menu item.
      */
     icon?: string;
+    /**
+     * If true, the menu will be displayed as a palette.
+     * This means that the menu will be displayed as one row
+     *
+     * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette
+     */
+    displayAsPalette?: boolean;
+    /**
+     * If true, the menu will be displayed inline.
+     * This means that the menu will not be collapsed
+     *
+     * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline
+     */
+    displayInline?: boolean;
+    /**
+     * If true, the menu item will be displayed as destructive.
+     *
+     * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive
+     */
+    destructive?: boolean;
     children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
 }
 export declare const LinkMenu: FC<LinkMenuProps>;

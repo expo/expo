@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// swiftlint:disable force_unwrapping
 import Foundation
 
 @objc
@@ -30,3 +31,4 @@ public class EXDevLauncherPendingDeepLinkRegistry: NSObject {
     return result
   }
 }
+// swiftlint:enable force_unwrapping

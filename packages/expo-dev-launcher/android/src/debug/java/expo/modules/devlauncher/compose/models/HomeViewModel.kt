@@ -1,7 +1,6 @@
 package expo.modules.devlauncher.compose.models
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
@@ -26,13 +25,15 @@ sealed interface HomeAction {
   object ResetRecentlyOpenedApps : HomeAction
   class NavigateToCrashReport(val crashReport: DevLauncherErrorInstance) : HomeAction
   object ScanQRCode : HomeAction
+  object ClearLoadingError : HomeAction
 }
 
 data class HomeState(
   val runningPackagers: Set<PackagerInfo> = emptySet(),
   val isFetchingPackagers: Boolean = false,
   val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList(),
-  val crashReport: DevLauncherErrorInstance? = null
+  val crashReport: DevLauncherErrorInstance? = null,
+  val loadingError: String? = null
 )
 
 class HomeViewModel() : ViewModel() {
@@ -75,7 +76,9 @@ class HomeViewModel() : ViewModel() {
           try {
             devLauncherController.loadApp(action.url.toUri(), mainActivity = null)
           } catch (e: Exception) {
-            Log.e("DevLauncher", "Failed to open app: ${action.url}", e)
+            _state.value = _state.value.copy(
+              loadingError = e.message ?: "Unknown error"
+            )
           }
         }
 
@@ -85,6 +88,8 @@ class HomeViewModel() : ViewModel() {
         devLauncherController.clearRecentlyOpenedApps()
         _state.value = _state.value.copy(recentlyOpenedApps = emptyList())
       }
+
+      is HomeAction.ClearLoadingError -> _state.value = _state.value.copy(loadingError = null)
 
       is HomeAction.NavigateToCrashReport -> IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
 

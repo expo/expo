@@ -9,6 +9,7 @@
 - Add `TextDecoderStream` and `TextEncoderStream` APIs to the native runtime. ([#37507](https://github.com/expo/expo/pull/37507) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable async requires by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `redirect` option support to `expo/fetch` ([#38078](https://github.com/expo/expo/pull/38078) by [@andipro123](https://github.com/andipro123))
+- Add template tarball. ([#37333](https://github.com/expo/expo/pull/37333) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -22,6 +23,7 @@
 - [fetch] refactor reference equality ([#38231](https://github.com/expo/expo/pull/38231) by [@vonovak](https://github.com/vonovak))
 - [Android] Remove react-native 0.74 support files ([#38216](https://github.com/expo/expo/pull/38216) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
+- Moved **src/devtools** code to the `@expo/devtools` package. ([#38438](https://github.com/expo/expo/pull/38438) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

@@ -147,9 +147,10 @@ export interface PluginConfigTypeAndroid {
      * @default false
      */
     enableBundleCompression?: boolean;
+    buildReactNativeFromSource?: boolean;
     /**
      * Enable building React Native from source. Turning this on will significantly increase the build times.
-     *
+     * @deprecated Use `buildReactNativeFromSource` instead.
      * @default false
      */
     buildFromSource?: boolean;
@@ -311,13 +312,19 @@ export interface PluginConfigTypeIos {
      */
     privacyManifestAggregationEnabled?: boolean;
     /**
-     * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-     * This feature is available from React Native 0.80.
-     * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies.
+     * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * This feature is available from React Native 0.80 and later when using the new architecture.
+     * From React Native 0.81, this setting will also use a precompiled React Native Core (`React.xcframework`).
      *
-     * @default true
-     * @see React Native documentation on [prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt) for more information.
+     * @default false
+     * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
      * @experimental
+     */
+    buildReactNativeFromSource?: boolean;
+    /**
+     * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * This feature is available from React Native 0.80 and later.
+     * @deprecated Use `buildReactNativeFromSource` instead.
      */
     buildFromSource?: boolean;
 }

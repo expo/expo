@@ -5,13 +5,15 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import process from 'process';
+import resolveFrom from 'resolve-from';
 
 const debug = require('debug')('expo:metro:hermes') as typeof console.log;
 
-function importHermesCommandFromProject(): string {
+function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();
 
-  const reactNativeRoot = path.dirname(require.resolve('react-native/package.json'));
+  const reactNativeRoot = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+
   const hermescPaths = [
     // Override hermesc dir by environment variables
     process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
@@ -54,6 +56,7 @@ interface HermesBundleOutput {
 }
 
 type BuildHermesOptions = {
+  projectRoot: string;
   filename: string;
   code: string;
   map: string | null;
@@ -75,6 +78,7 @@ export async function buildHermesBundleAsync(
 }
 
 async function directlyBuildHermesBundleAsync({
+  projectRoot,
   code,
   map,
   minify = false,
@@ -92,7 +96,7 @@ async function directlyBuildHermesBundleAsync({
     }
 
     const tempHbcFile = path.join(tempDir, 'index.hbc');
-    const hermesCommand = importHermesCommandFromProject();
+    const hermesCommand = importHermesCommandFromProject(projectRoot);
     const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile];
     if (minify) {
       args.push('-O');
