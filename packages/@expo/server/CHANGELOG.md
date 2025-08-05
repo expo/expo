@@ -6,12 +6,14 @@
 
 ### 🎉 New features
 
+- Add Bun adapter to expo server runtime. ([#38240](https://github.com/expo/expo/pull/38240) by [@daavidaviid](https://github.com/daavidaviid))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- Add Bun adapter to expo server runtime. ([#38240](https://github.com/expo/expo/pull/38240) by [@daavidaviid](https://github.com/daavidaviid))
 - Bump Express types to `@types/express@5`. ([#37635](https://github.com/expo/expo/pull/37635) by [@byCedric](https://github.com/byCedric))
+- Sync development and self host server behavior with EAS Hosting ([#38465](https://github.com/expo/expo/pull/38465) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 0.6.3 - 2025-06-18
 
