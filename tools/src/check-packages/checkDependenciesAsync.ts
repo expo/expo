@@ -37,7 +37,6 @@ type SourceFileImportRef = {
 const IGNORED_PACKAGES = [
   '@expo/html-elements', // package: react, react-native, react-native-web
   'expo-gl', // package: react-dom, react-native-reanimated
-  'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
 ];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
@@ -142,7 +141,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
     for (const importRef of source.importRefs) {
       if (importRef.type !== 'external' || pkg.packageName === importRef.packageName) {
         continue;
-      } else if (isDisallowedImport(importRef, pkg.packageName)) {
+      } else if (isDisallowedImport(importRef)) {
         invalidImports.push({ file: source.file, importRef, kind: undefined });
       } else if (isIgnoredPackage) {
         continue;
@@ -194,7 +193,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       Logger.verbose(
         `     > ${path.relative(pkg.path, file.path)} - ${importRef.importValue}` +
           `${importRef.isTypeOnly ? ' (types only)' : ''}` +
-          `${isDisallowedImport(importRef, pkg.packageName) ? ' (disallowed)' : ''}`
+          `${isDisallowedImport(importRef) ? ' (disallowed)' : ''}`
       );
     });
 
@@ -209,13 +208,7 @@ function isNCCBuilt(pkg: Package): boolean {
   return !!pkg.packageJson.bin && !!buildScript?.includes('ncc');
 }
 
-function isDisallowedImport(ref: SourceFileImportRef, sourceName: string): boolean {
-  if (sourceName === 'expo-updates') {
-    // TODO: We're currently allowing disallowed `metro` imports in `expo-updates`
-    // since the same file that contains them also contains more invalid imports
-    // that should all be fixed in one go
-    return false;
-  }
+function isDisallowedImport(ref: SourceFileImportRef): boolean {
   const packageName = getPackageName(ref.packageName);
   return packageName === 'metro' || packageName.startsWith('metro-');
 }
