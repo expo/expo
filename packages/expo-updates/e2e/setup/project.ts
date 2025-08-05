@@ -317,6 +317,7 @@ async function preparePackageJson(
   const extraScripts = configureE2E
     ? {
         start: 'expo start --private-key-path ./keys/private-key.pem',
+        'ios:pod-install-old-arch': 'npx pod-install',
         'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':
