@@ -46,9 +46,8 @@ final internal class MissingParameterException: GenericException<String?> {
   override var reason: String {
     if let param = param, !param.isEmpty {
       return "Missing parameter: \(param)"
-    } else {
-      return "Missing parameter"
     }
+  return "Missing parameter"
   }
 }
 

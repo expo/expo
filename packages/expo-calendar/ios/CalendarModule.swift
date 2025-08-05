@@ -536,7 +536,7 @@ public class CalendarModule: Module {
     } else {
       throw EntityNotSupportedException(record.entityType?.rawValue)
     }
-      
+
     guard let title = record.title else {
       throw MissingParameterException("title")
     }

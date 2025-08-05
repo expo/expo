@@ -26,7 +26,7 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
         self.reminder = nil
     }
 
-    public func initialize(reminderRecord: Reminder, calendar: EKCalendar? = nil) throws {
+    func initialize(reminderRecord: Reminder, calendar: EKCalendar? = nil) throws {
         guard let reminder else {
             throw ItemNoLongerExistsException()
         }
