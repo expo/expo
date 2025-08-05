@@ -7,3 +7,4 @@ export declare function createRequestHandler(distFolder: string, { getRoutesMani
     logApiRouteExecutionError?: (error: Error) => void;
     handleApiRouteError?: (error: Error) => Promise<Response>;
 }): (request: Request) => Promise<Response>;
+export declare function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>): string;
