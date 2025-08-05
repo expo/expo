@@ -23,8 +23,8 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     return super.getAttendees(stringifyDateValues(recurringEventOptions));
   }
 
-  override update(details: Partial<Event>): void {
-    super.update(stringifyDateValues(details));
+  override update(details: Partial<Event>, options: RecurringEventOptions = {}): void {
+    super.update(stringifyDateValues(details), stringifyDateValues(options));
   }
 
   override delete(options: RecurringEventOptions = {}): void {

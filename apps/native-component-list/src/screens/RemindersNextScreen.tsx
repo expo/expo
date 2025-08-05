@@ -7,7 +7,6 @@ import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native'
 interface RowProps {
   reminder: ExpoCalendarReminder;
   getReminder: (reminder: ExpoCalendarReminder) => void;
-  getAttendees: (reminder: ExpoCalendarReminder) => void;
   updateReminder: (reminder: ExpoCalendarReminder) => void;
   deleteReminder: (reminder: ExpoCalendarReminder) => void;
 }
@@ -15,7 +14,6 @@ interface RowProps {
 const ReminderRow: React.FunctionComponent<RowProps> = ({
   reminder,
   getReminder,
-  getAttendees,
   updateReminder,
   deleteReminder,
 }) => (
@@ -23,7 +21,6 @@ const ReminderRow: React.FunctionComponent<RowProps> = ({
     <Text style={styles.reminderName}>{reminder.title}</Text>
     <Text style={styles.reminderData}>{JSON.stringify(reminder)}</Text>
     <Button onPress={() => getReminder(reminder)} title="Get Reminder Using ID" />
-    <Button onPress={() => getAttendees(reminder)} title="Get Attendees for Reminder" />
     <Button onPress={() => updateReminder(reminder)} title="Update Reminder" />
     <Button onPress={() => deleteReminder(reminder)} title="Delete Reminder" />
   </View>
@@ -145,7 +142,6 @@ export default class RemindersScreen extends React.Component<Props, State> {
               reminder={reminder}
               key={reminder.id}
               getReminder={this._getReminder}
-              getAttendees={this._getAttendees}
               updateReminder={this._updateReminder}
               deleteReminder={this._deleteReminder}
             />
