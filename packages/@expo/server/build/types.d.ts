@@ -5,3 +5,7 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     generated?: boolean;
 };
 export type ExpoRouterServerManifestV1FunctionRoute = ExpoRouterServerManifestV1Route<RegExp>;
+export type InternalResponse = Response & {
+    webSocket: WebSocket | null;
+    cf: any | undefined;
+};

@@ -2,7 +2,7 @@ import './install';
 
 import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 
-import { ExpoRouterServerManifestV1FunctionRoute } from './types';
+import { ExpoRouterServerManifestV1FunctionRoute, InternalResponse } from './types';
 
 const isDevelopment = process?.env?.NODE_ENV === 'development';
 
@@ -200,33 +200,9 @@ export function createRequestHandler(
         continue;
       }
 
-      let func: any;
       try {
-        func = await getApiRoute(route);
-      } catch (error) {
-        if (error instanceof Error) {
-          logApiRouteExecutionError(error);
-        }
-        return handleApiRouteError(error as Error);
-      }
-
-      if (func instanceof Response) {
-        return func;
-      }
-
-      const routeHandler = func?.[request.method];
-      if (!routeHandler) {
-        return new Response('Method not allowed', {
-          status: 405,
-          headers: { 'Content-Type': 'text/plain' },
-        });
-      }
-
-      const params = parseParams(request, route);
-
-      try {
-        // TODO: Handle undefined
-        return (await routeHandler(request, params)) as Response;
+        const mod = await getApiRoute(route);
+        return await respondAPI(mod, request, route);
       } catch (error) {
         if (error instanceof Error) {
           logApiRouteExecutionError(error);
@@ -282,6 +258,47 @@ export function createRequestHandler(
 
     return requestHandler(request, manifest);
   };
+}
+
+async function respondAPI(mod: any, request: Request, route: RouteInfo<RegExp>): Promise<Response> {
+  if (!mod || typeof mod !== 'object') {
+    // NOTE(@krystofwoldrich): expo/server would return 405
+    throw new Error(`API route module ${route.page} could not be loaded`);
+  }
+
+  if (mod instanceof Response) {
+    // TODO: Check where is this used?
+    return mod;
+  }
+
+  const handler = mod[request.method];
+  if (!handler || typeof handler !== 'function') {
+    return new Response('Method not allowed', {
+      status: 405,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
+  }
+
+  const params = parseParams(request, route);
+  const response: InternalResponse = await handler(request, params);
+  if (!isResponse(response)) {
+    throw new Error(
+      `API route ${request.method} handler ${route.page} resolved to a non-Response result`
+    );
+  }
+
+  const headers = new Headers(response.headers);
+  return new Response(response.body, {
+    headers,
+    status: response.status,
+    statusText: response.statusText,
+
+    // Cloudflare Response type properties
+    cf: response.cf,
+    webSocket: response.webSocket,
+  } as ResponseInit);
 }
 
 function respondHTML(html: string | Response | null): Response {

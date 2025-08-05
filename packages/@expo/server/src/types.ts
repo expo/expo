@@ -6,3 +6,9 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
 };
 
 export type ExpoRouterServerManifestV1FunctionRoute = ExpoRouterServerManifestV1Route<RegExp>;
+
+export type InternalResponse = Response & {
+  // Cloudflare Response type properties
+  webSocket: WebSocket | null;
+  cf: any | undefined;
+};
