@@ -35,7 +35,6 @@ type SourceFileImportRef = {
 
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
-  '@expo/html-elements', // package: react, react-native, react-native-web
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
 ];
 
