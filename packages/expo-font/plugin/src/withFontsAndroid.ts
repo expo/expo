@@ -38,7 +38,7 @@ export function groupByFamily(array: FontObject[]): GroupedFontObject {
   }, {});
 }
 
-const addXmlFonts: ConfigPlugin<FontObject[]> = (config, xmlFontObjects) => {
+function addXmlFonts(config: ExpoConfig, xmlFontObjects: FontObject[]) {
   const fontsByFamily = groupByFamily(xmlFontObjects);
 
   const fontPaths = Object.values(fontsByFamily)
@@ -65,7 +65,7 @@ const addXmlFonts: ConfigPlugin<FontObject[]> = (config, xmlFontObjects) => {
       return config;
     },
   ]);
-};
+}
 
 const resourceNameConflictAvoidancePrefix = 'xml_';
 

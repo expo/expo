@@ -30,7 +30,7 @@ function groupByFamily(array) {
         return result;
     }, {});
 }
-const addXmlFonts = (config, xmlFontObjects) => {
+function addXmlFonts(config, xmlFontObjects) {
     const fontsByFamily = groupByFamily(xmlFontObjects);
     const fontPaths = Object.values(fontsByFamily)
         .map((font) => font.map((it) => it.path))
@@ -50,7 +50,7 @@ const addXmlFonts = (config, xmlFontObjects) => {
             return config;
         },
     ]);
-};
+}
 const resourceNameConflictAvoidancePrefix = 'xml_';
 function getXmlSpecs(fontsDir, xmlFontObjects) {
     return Object.entries(xmlFontObjects).map(([fontFamily, fontDefinitions]) => {
