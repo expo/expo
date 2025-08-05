@@ -500,7 +500,6 @@ export async function test(t) {
           t.expect(event.allDay).toBe(defaultEventData.allDay);
           t.expect(event.location).toBe(defaultEventData.location);
           t.expect(event.notes).toBe(defaultEventData.notes);
-          // t.expect(event.availability).toBe(eventData.availability);
         });
 
         t.it('creates an event with the recurrence rule', async () => {
@@ -772,6 +771,36 @@ export async function test(t) {
           t.expect(fetchedEvents[0].startDate).toBe(newStartDate.toISOString());
         });
 
+        t.it('keeps other properties unchanged when updating title', async () => {
+          const event = await createTestEvent(calendar);
+          const updatedData: Partial<ExpoCalendarEvent> = {
+            title: 'New title ' + new Date().toISOString(),
+          };
+          event.update(updatedData);
+          t.expect(event.title).toBe(updatedData.title);
+          t.expect(event.location).toBe(defaultEventData.location);
+          t.expect(event.notes).toBe(defaultEventData.notes);
+          t.expect(event.startDate).toBe(defaultEventData.startDate.toISOString());
+          t.expect(event.endDate).toBe(defaultEventData.endDate.toISOString());
+          t.expect(event.creationDate).toBeDefined();
+          t.expect(event.lastModifiedDate).toBeDefined();
+        });
+
+        t.it('keeps other properties unchanged when updating location', async () => {
+          const event = await createTestEvent(calendar);
+          const updatedData: Partial<ExpoCalendarEvent> = {
+            location: 'New location ' + new Date().toISOString(),
+          };
+          event.update(updatedData);
+          t.expect(event.location).toBe(updatedData.location);
+          t.expect(event.title).toBe(defaultEventData.title);
+          t.expect(event.notes).toBe(defaultEventData.notes);
+          t.expect(event.startDate).toBe(defaultEventData.startDate.toISOString());
+          t.expect(event.endDate).toBe(defaultEventData.endDate.toISOString());
+          t.expect(event.creationDate).toBeDefined();
+          t.expect(event.lastModifiedDate).toBeDefined();
+        });
+
         t.it('handles detached events', async () => {
           const event = await createTestEvent(calendar, {
             recurrenceRule: {
@@ -822,6 +851,19 @@ export async function test(t) {
             allDay: true,
           });
           t.expect(event.allDay).toBe(true);
+        });
+
+        t.it('updates timeZone', async () => {
+          const event = await createTestEvent(calendar);
+          t.expect(event.timeZone).toBe(defaultEventData.timeZone);
+          event.update({
+            timeZone: 'GMT-5',
+          });
+          t.expect(event.timeZone).toBe('GMT-5');
+          event.update({
+            timeZone: 'GMT+1',
+          });
+          t.expect(event.timeZone).toBe('GMT+1');
         });
 
         t.afterEach(async () => {
@@ -980,6 +1022,7 @@ export async function test(t) {
 
           t.it('updates a reminder', async () => {
             const reminder = await createTestReminder(reminderCalendar);
+
             const updatedData: Partial<ExpoCalendarReminder> = {
               title: 'New title ' + new Date().toISOString(),
               location: 'New location ' + new Date().toISOString(),
@@ -1028,11 +1071,17 @@ export async function test(t) {
           t.it('marks a reminder as completed', async () => {
             const reminder = await createTestReminder(reminderCalendar);
             t.expect(reminder.completed).toBe(false);
+
             reminder.update({
               completed: true,
             });
             t.expect(reminder.completed).toBe(true);
             t.expect(reminder.completionDate).toBeDefined();
+
+            reminder.update({
+              completed: false,
+            });
+            t.expect(reminder.completed).toBe(false);
           });
 
           t.it('supports alarms', async () => {

@@ -114,11 +114,25 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
             event.calendar = calendar
         }
         
-        event.title = eventRecord.title
-        event.location = eventRecord.location
-        event.notes = eventRecord.notes
-        event.isAllDay = eventRecord.allDay
-        event.availability = getAvailability(availability: eventRecord.availability)
+        if let title = eventRecord.title {
+            event.title = title
+        }
+
+        if let location = eventRecord.location {
+            event.location = location
+        }
+
+        if let notes = eventRecord.notes {
+            event.notes = notes
+        }
+
+        if let allDay = eventRecord.allDay {
+            event.isAllDay = allDay
+        }
+
+        if let availability = eventRecord.availability {
+            event.availability = getAvailability(availability: availability)
+        }
     }
 
     func getAttendees(options: RecurringEventOptions?) throws -> [ExpoCalendarAttendee]? {

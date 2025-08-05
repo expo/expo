@@ -410,8 +410,12 @@ public class CalendarModule: Module {
     calendarEvent.title = event.title
     calendarEvent.location = event.location
     calendarEvent.notes = event.notes
-    calendarEvent.isAllDay = event.allDay
-    calendarEvent.availability = getAvailability(availability: event.availability)
+    if let allDay = event.allDay {
+      calendarEvent.isAllDay = allDay
+    }
+    if let availability = event.availability {
+      calendarEvent.availability = getAvailability(availability: availability)
+    }
   }
 
   private func initializePermittedEntities() {

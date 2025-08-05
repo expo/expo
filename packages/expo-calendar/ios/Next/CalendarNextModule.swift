@@ -239,6 +239,10 @@ public final class CalendarNextModule: Module {
                     throw CalendarNoLongerExistsException()
                 }
                 
+                if eventRecord.title == nil {
+                    throw MissingParameterException("title")
+                }
+                
                 let expoCalendarEvent = try ExpoCalendarEvent(calendar: calendar, eventRecord: eventRecord)
                 
                 try expoCalendarEvent.initialize(eventRecord: eventRecord)
