@@ -1,3 +1,4 @@
+// TODO: Export from `@expo/server` after removing side effects
 /** Internal errors class to indicate that the server has failed
  * @remarks
  * This should be thrown for unexpected errors, so they show up as crashes.
@@ -8,8 +9,8 @@ export class ExpoError extends Error {
     super(message);
     this.name = 'ExpoError';
   }
-}
 
-export function isExpoError(error: unknown): error is ExpoError {
-  return !!error && error instanceof ExpoError;
+  public static isExpoError(error: unknown): error is ExpoError {
+    return !!error && error instanceof ExpoError;
+  }
 }

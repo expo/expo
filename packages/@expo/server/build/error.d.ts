@@ -5,5 +5,5 @@
  */
 export declare class ExpoError extends Error {
     constructor(message: string);
+    static isExpoError(error: unknown): error is ExpoError;
 }
-export declare function isExpoError(error: unknown): error is ExpoError;

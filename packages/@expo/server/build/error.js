@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoError = void 0;
-exports.isExpoError = isExpoError;
+// TODO: Export from `@expo/server` after removing side effects
 /** Internal errors class to indicate that the server has failed
  * @remarks
  * This should be thrown for unexpected errors, so they show up as crashes.
@@ -12,9 +12,9 @@ class ExpoError extends Error {
         super(message);
         this.name = 'ExpoError';
     }
+    static isExpoError(error) {
+        return !!error && error instanceof ExpoError;
+    }
 }
 exports.ExpoError = ExpoError;
-function isExpoError(error) {
-    return !!error && error instanceof ExpoError;
-}
 //# sourceMappingURL=error.js.map

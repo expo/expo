@@ -110,10 +110,11 @@ export function createRouteHandlerMiddleware(
         }
       },
       async handleRouteError(error) {
-        const { isExpoError } =
+        const { ExpoError } =
+          // TODO: Import from `@expo/server` after side effects are removed.
           require('@expo/server/build/error') as typeof import('@expo/server/build/error');
 
-        if (isExpoError(error)) {
+        if (ExpoError.isExpoError(error)) {
           // TODO(@krystofwoldrich): Can we show code snippet of the handler?
           // NOTE(@krystofwoldrich): Removing stack since to avoid confusion. The error is not in the server code.
           delete error.stack;
