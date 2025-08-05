@@ -43,7 +43,11 @@ export function validateAssets(assets: string[], platform: 'android' | 'ios') {
     }
 
     if (!accepted) {
-      WarningAggregator.addWarningForPlatform(platform, 'expo-asset', `\`${ext}\` is not a supported asset type`);
+      WarningAggregator.addWarningForPlatform(
+        platform,
+        'expo-asset',
+        `\`${ext}\` is not a supported asset type`
+      );
       return;
     }
 
