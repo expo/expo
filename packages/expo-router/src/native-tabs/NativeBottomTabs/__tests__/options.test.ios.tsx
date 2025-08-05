@@ -1,8 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
-import { screen, renderRouter } from '../../../testing-library';
+import { screen, renderRouter, act, fireEvent } from '../../../testing-library';
 import { Badge, Icon, Label } from '../../common/elements';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabOptions } from '../NativeTabsView';
@@ -524,5 +524,228 @@ describe('Tab options', () => {
         },
       } as NativeTabOptions);
     });
+  });
+});
+
+describe('Dynamic options', () => {
+  it('updates options dynamically', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger name="index" options={{ title: 'Updated Title' }} />
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(Object.keys(BottomTabsScreen.mock.calls[0][0])).toEqual([
+      'title',
+      'hidden',
+      'specialEffects',
+      'iconResourceName',
+      'icon',
+      'selectedIcon',
+      'tabKey',
+      'isFocused',
+      'children',
+    ]);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      children: expect.objectContaining({}),
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      children: expect.objectContaining({}),
+    } as NativeTabOptions);
+  });
+
+  it('can use components as children', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger name="index">
+            <Label>Updated Title</Label>
+            <Badge>5</Badge>
+            <Icon sf="homepod.2.fill" />
+          </NativeTabs.Trigger>
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(Object.keys(BottomTabsScreen.mock.calls[0][0])).toEqual([
+      'title',
+      'hidden',
+      'specialEffects',
+      'iconResourceName',
+      'icon',
+      'selectedIcon',
+      'tabKey',
+      'isFocused',
+      'children',
+    ]);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      badgeValue: '5',
+      icon: {
+        sfSymbolName: 'homepod.2.fill',
+      },
+    } as NativeTabOptions);
+  });
+
+  it('can override component children from _layout with options', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+            <Badge>3</Badge>
+            <Icon sf="0.circle" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger
+            name="index"
+            options={{
+              title: 'Updated Title',
+              badgeValue: '5',
+              icon: { sf: 'homepod.2.fill' },
+            }}
+          />
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      badgeValue: '3',
+      icon: { sfSymbolName: '0.circle' },
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      badgeValue: '5',
+      icon: {
+        sfSymbolName: 'homepod.2.fill',
+      },
+    } as NativeTabOptions);
+  });
+
+  it('can override component children from _layout with dynamic children', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+            <Badge>3</Badge>
+            <Icon sf="0.circle" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger name="index">
+            <Label>Updated Title</Label>
+            <Badge>5</Badge>
+            <Icon sf="homepod.2.fill" />
+          </NativeTabs.Trigger>
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      badgeValue: '3',
+      icon: { sfSymbolName: '0.circle' },
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      badgeValue: '5',
+      icon: {
+        sfSymbolName: 'homepod.2.fill',
+      },
+    } as NativeTabOptions);
+  });
+
+  it('can dynamically update options with state update', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: function Index() {
+        const [value, setValue] = React.useState(0);
+        const label = `Updated Title ${value}`;
+        return (
+          <View testID="index">
+            <NativeTabs.Trigger name="index">
+              <Label>{label}</Label>
+            </NativeTabs.Trigger>
+            <Button title="Update" testID="update-button" onPress={() => setValue((v) => v + 1)} />
+          </View>
+        );
+      },
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0].title).toBe('Initial Title');
+    expect(BottomTabsScreen.mock.calls[1][0].title).toBe('Updated Title 0');
+    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(3);
+    expect(BottomTabsScreen.mock.calls[2][0].title).toBe('Updated Title 1');
+    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(4);
+    expect(BottomTabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
   });
 });
