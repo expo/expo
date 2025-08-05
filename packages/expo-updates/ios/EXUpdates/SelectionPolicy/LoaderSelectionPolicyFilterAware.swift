@@ -35,22 +35,22 @@ public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPo
     }
 
     // if new update doesn't match the configured URL, don't load it
-    if (newUpdate.url != nil && newUpdate.url != config.updateUrl) {
+    if newUpdate.url != nil && newUpdate.url != config.updateUrl {
       return false
     }
 
     // if new update doesn't match the configured request headers, don't load it
-    if (newUpdate.requestHeaders != nil && newUpdate.requestHeaders != config.requestHeaders) {
+    if newUpdate.requestHeaders != nil && newUpdate.requestHeaders != config.requestHeaders {
       return false
     }
 
     // if the launched update no longer matches the configured URL, we should load the new update
-    if (launchedUpdate.url != nil && launchedUpdate.url != config.updateUrl) {
+    if launchedUpdate.url != nil && launchedUpdate.url != config.updateUrl {
       return true
     }
 
     // if the launched update no longer matches the configured request headers, we should load the new update
-    if (launchedUpdate.requestHeaders != nil && launchedUpdate.requestHeaders != config.requestHeaders) {
+    if launchedUpdate.requestHeaders != nil && launchedUpdate.requestHeaders != config.requestHeaders {
       return true
     }
 
