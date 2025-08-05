@@ -63,7 +63,7 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
   RCTReconnectingWebSocket *newSocket = createSocketForURL(url);
   newSocket.delegate = (id<RCTReconnectingWebSocketDelegate>)self;
   [newSocket start];
-  
+
   [self setValue:newSocket forKey:@"_socket"];
 
   static dispatch_once_t onceToken;
