@@ -1,4 +1,5 @@
 // WARN: Internal re-export, don't rely on this to be a public API or use it outside of `expo/expo`'s monorepo
+// NOTE for Expo Maintainers: Do not add to this file. We want to remove this
 
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import type { BundleOptions } from '@expo/metro/metro/shared/types.flow';
