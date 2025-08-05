@@ -306,6 +306,7 @@ function respondRedirect(url: URL, request: Request, route: Route): Response {
 }
 
 export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL {
+  const originalQueryParams = url.searchParams.entries();
   const params = parseParams(request, route);
   const target = route.page
     .split('/')
@@ -329,10 +330,21 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
     })
     .join('/');
   const targetUrl = new URL(target, url.origin);
+
   // NOTE: React Navigation doesn't differentiate between a path parameter
   // and a search parameter. We have to preserve leftover search parameters
   // to ensure we don't lose any intentional parameters with special meaning
   for (const key in params) targetUrl.searchParams.append(key, params[key]);
+
+  // NOTE(@krystofwoldrich): Query matching is not supported at the moment.
+  // Copy original query parameters to the target URL
+  for (const [key, value] of originalQueryParams) {
+    // NOTE(@krystofwoldrich): Params created from route overwrite existing (might be unexpected to the user)
+    if (!targetUrl.searchParams.has(key)) {
+      targetUrl.searchParams.append(key, value);
+    }
+  }
+
   return targetUrl;
 }
 
@@ -354,7 +366,7 @@ function parseParams(request: Request, route: Route): Record<string, string> {
  */
 function matchDynamicName(name: string): string | undefined {
   // Don't match `...` or `[` or `]` inside the brackets
-  return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
+  return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1]; // eslint-disable-line no-useless-escape
 }
 
 /** Match `[...page]` -> `page`

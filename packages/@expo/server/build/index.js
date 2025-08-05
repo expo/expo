@@ -251,6 +251,7 @@ function respondRedirect(url, request, route) {
     return Response.redirect(target, status);
 }
 function getRedirectRewriteLocation(url, request, route) {
+    const originalQueryParams = url.searchParams.entries();
     const params = parseParams(request, route);
     const target = route.page
         .split('/')
@@ -279,6 +280,14 @@ function getRedirectRewriteLocation(url, request, route) {
     // to ensure we don't lose any intentional parameters with special meaning
     for (const key in params)
         targetUrl.searchParams.append(key, params[key]);
+    // NOTE(@krystofwoldrich): Query matching is not supported at the moment.
+    // Copy original query parameters to the target URL
+    for (const [key, value] of originalQueryParams) {
+        // NOTE(@krystofwoldrich): Params created from route overwrite existing (might be unexpected to the user)
+        if (!targetUrl.searchParams.has(key)) {
+            targetUrl.searchParams.append(key, value);
+        }
+    }
     return targetUrl;
 }
 function parseParams(request, route) {
@@ -298,7 +307,7 @@ function parseParams(request, route) {
  */
 function matchDynamicName(name) {
     // Don't match `...` or `[` or `]` inside the brackets
-    return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
+    return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1]; // eslint-disable-line no-useless-escape
 }
 /** Match `[...page]` -> `page`
  * @privateRemarks Ported from `expo-router/src/matchers.tsx`
