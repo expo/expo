@@ -468,6 +468,17 @@ export async function test(t) {
           const calendars = getCalendarsNext();
           t.expect(calendars.findIndex((c) => c.id === calendar.id)).toBe(-1);
         });
+
+        t.it('throws an error when deleting a non-existent calendar', async () => {
+          const calendar = await createTestCalendarAsync();
+          calendar.delete();
+          t.expect(calendar.title).toBeNull();
+          try {
+            calendar.delete();
+          } catch (e) {
+            t.expect(e).toBeDefined();
+          }
+        });
       });
 
       t.describe('Calendar.createEvent()', () => {
@@ -906,6 +917,17 @@ export async function test(t) {
           ]);
         });
 
+        t.it('throws an error when deleting a non-existent event', async () => {
+          const event = await createTestEvent(calendar);
+          event.delete({});
+          t.expect(event.title).toBeNull();
+          try {
+            event.delete({});
+          } catch (e) {
+            t.expect(e).toBeDefined();
+          }
+        });
+
         t.afterAll(async () => {
           calendar.delete();
         });
@@ -1062,6 +1084,18 @@ export async function test(t) {
             t.expect(reminder.recurrenceRule).toBeNull();
             t.expect(reminder.startDate).toBeNull();
             t.expect(reminder.dueDate).toBeNull();
+          });
+
+          t.it('throws an error when deleting a non-existent reminder', async () => {
+            const reminderCalendar = getReminderCalendar();
+            const reminder = await createTestReminder(reminderCalendar);
+            reminder.delete();
+            t.expect(reminder.title).toBeNull();
+            try {
+              reminder.delete();
+            } catch (e) {
+              t.expect(e).toBeDefined();
+            }
           });
         });
       }
