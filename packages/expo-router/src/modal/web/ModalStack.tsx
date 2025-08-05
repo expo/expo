@@ -16,8 +16,8 @@ import {
 } from '@react-navigation/native-stack';
 import React, { useCallback } from 'react';
 
-import { ModalStackRouteDrawer } from './ModalStackRouteDrawer.web';
-import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer.web';
+import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
+import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
 import { ModalStackNavigatorProps, ModalStackViewProps } from './types';
 import {
   convertStackStateToNonModalState,
