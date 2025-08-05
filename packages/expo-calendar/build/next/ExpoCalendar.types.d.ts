@@ -3,14 +3,45 @@ type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationO
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 export declare class ExpoCalendar {
     constructor(id: string);
+    /**
+     * Internal ID that represents this calendar on the device.
+     */
     id: string;
+    /**
+     * Visible name of the calendar.
+     */
     title: string;
+    /**
+     * ID of the source to be used for the calendar. Likely the same as the source for any other
+     * locally stored calendars.
+     * @platform ios
+     */
     sourceId?: string;
+    /**
+     * Object representing the source to be used for the calendar.
+     */
     source: Source;
+    /**
+     * Type of calendar this object represents.
+     * @platform ios
+     */
     type?: CalendarType;
+    /**
+     * Color used to display this calendar's events.
+     */
     color: string;
+    /**
+     * Whether the calendar is used in the Calendar or Reminders OS app.
+     * @platform ios
+     */
     entityType?: EntityTypes;
+    /**
+     * Boolean value that determines whether this calendar can be modified.
+     */
     allowsModifications: boolean;
+    /**
+     * Availability types that this calendar supports.
+     */
     allowedAvailabilities: Availability[];
     /**
      * Boolean value indicating whether this is the device's primary calendar.
@@ -59,16 +90,42 @@ export declare class ExpoCalendar {
      */
     accessLevel?: CalendarAccessLevel;
     /**
-     * Lists the event ids of the calendar.
+     * Returns a calendar event list for the given date range.
      */
     listEvents(startDate: Date | string, endDate: Date | string): ExpoCalendarEvent[];
     /**
-     * Lists the reminders of the calendar.
+     * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
+     * returns all reminders that overlap at all with the [startDate, endDate] interval - i.e. all reminders
+     * that end after the `startDate` or begin before the `endDate`.
+     * @param startDate Beginning of time period to search for reminders in. Required if `status` is defined.
+     * @param endDate End of time period to search for reminders in. Required if `status` is defined.
+     * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`.
+     * @return An array of [`Reminder`](#reminder) objects matching the search criteria.
+     * @platform ios
      */
     listReminders(startDate: Date | string, endDate: Date | string, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
+    /**
+     * Creates a new event in the calendar.
+     * @param eventData A map of details for the event to be created.
+     * @return An instance of the created event.
+     */
     createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): ExpoCalendarEvent;
-    createReminder(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): ExpoCalendarReminder;
+    /**
+     * Creates a new reminder in the calendar.
+     * @param reminderData A map of details for the reminder to be created.
+     * @return An instance of the created reminder.
+     * @platform ios
+     */
+    createReminder(reminderData: Omit<Partial<Reminder>, 'id' | 'calendarId'>): ExpoCalendarReminder;
+    /**
+     * Updates the provided details of an existing calendar stored on the device. To remove a property,
+     * explicitly set it to `null` in `details`.
+     * @param details A map of properties to be updated.
+     */
     update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
+    /**
+     * Deletes the calendar.
+     */
     delete(): void;
 }
 export declare class ExpoCalendarEvent {
@@ -202,11 +259,41 @@ export declare class ExpoCalendarEvent {
      * @platform android
      */
     instanceId?: string;
+    /**
+     * Launches the calendar UI provided by the OS to preview an event.
+     * @return A promise which resolves with information about the dialog result.
+     * @header systemProvidedUI
+     */
     openInCalendarAsync(params: CalendarDialogOpenParamsNext | null): void;
+    /**
+     * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+     * @return A promise which resolves with information about the dialog result.
+     * @header systemProvidedUI
+     */
     editInCalendarAsync(params: CalendarDialogParamsNext | null): Promise<DialogEventResult>;
+    /**
+     * Returns an event instance for a given event (or instance of a recurring event).
+     * @param recurringEventOptions A map of options for recurring events.
+     * @return An event instance.
+     */
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
+    /**
+     * Gets all attendees for a given event (or instance of a recurring event).
+     * @param recurringEventOptions A map of options for recurring events.
+     * @return An array of [`Attendee`](#attendee) associated with the specified event.
+     */
     getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
+    /**
+     * Updates the provided details of an existing calendar stored on the device. To remove a property,
+     * explicitly set it to `null` in `details`.
+     * @param details A map of properties to be updated.
+     * @param recurringEventOptions A map of options for recurring events.
+     */
     update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
+    /**
+     * Deletes the event.
+     * @param recurringEventOptions A map of options for recurring events.
+     */
     delete(recurringEventOptions: RecurringEventOptions): void;
 }
 export declare class ExpoCalendarReminder {
@@ -231,6 +318,9 @@ export declare class ExpoCalendarReminder {
      * @platform android
      */
     createAttendee(attendee: Omit<Attendee, 'id'>): ExpoCalendarAttendee;
+    /**
+     * Deletes the reminder.
+     */
     delete(): void;
 }
 export declare class ExpoCalendarAttendee {
