@@ -222,15 +222,7 @@ async function respondAPI(mod, request, route) {
     if (!isResponse(response)) {
         throw new error_1.ExpoError(`API route ${request.method} handler ${route.page} resolved to a non-Response result`);
     }
-    const headers = new Headers(response.headers);
-    return new Response(response.body, {
-        headers,
-        status: response.status,
-        statusText: response.statusText,
-        // Cloudflare Response type properties
-        cf: response.cf,
-        webSocket: response.webSocket,
-    });
+    return response;
 }
 function respondHTML(html, route) {
     if (typeof html === 'string') {

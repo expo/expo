@@ -4,9 +4,3 @@ import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-m
 export type RawManifest = ExpoRoutesManifestV1;
 export type Manifest = ExpoRoutesManifestV1<RegExp>;
 export type Route = RouteInfo<RegExp>;
-
-export type InternalResponse = Response & {
-  // Cloudflare Response type properties
-  webSocket: WebSocket | null;
-  cf: any | undefined;
-};

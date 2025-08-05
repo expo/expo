@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { ExpoError } from './error';
-import { InternalResponse, Manifest, RawManifest, Route } from './types';
+import { Manifest, RawManifest, Route } from './types';
 
 const debug =
   process.env.NODE_ENV === 'development'
@@ -266,23 +266,14 @@ async function respondAPI(mod: any, request: Request, route: Route): Promise<Res
   }
 
   const params = parseParams(request, route);
-  const response: InternalResponse = await handler(request, params);
+  const response = await handler(request, params);
   if (!isResponse(response)) {
     throw new ExpoError(
       `API route ${request.method} handler ${route.page} resolved to a non-Response result`
     );
   }
 
-  const headers = new Headers(response.headers);
-  return new Response(response.body, {
-    headers,
-    status: response.status,
-    statusText: response.statusText,
-
-    // Cloudflare Response type properties
-    cf: response.cf,
-    webSocket: response.webSocket,
-  } as ResponseInit);
+  return response;
 }
 
 function respondHTML(html: string | Response | null, route: Route): Response {
