@@ -321,8 +321,7 @@ function respondHTML(html: string | Response | null): Response {
 
 function respondRedirect(url: URL, request: Request, route: RouteInfo<RegExp>): Response {
   // NOTE(@krystofwoldrich): @expo/server would not redirect when location was empty,
-  // it would keep searching for match and eventually return 404.
-  // Worker redirects to origin.
+  // it would keep searching for match and eventually return 404. Worker redirects to origin.
   const location = getRedirectRewriteLocation(request, route);
   const target = new URL(location, url.origin).toString();
 

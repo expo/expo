@@ -4,9 +4,9 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { executeExpoAsync } from '../../utils/expo';
+import { createExpoStart, executeExpoAsync } from '../../utils/expo';
 import { processFindPrefixedValue } from '../../utils/process';
-import { createBackgroundServer } from '../../utils/server';
+import { type BackgroundServer, createBackgroundServer } from '../../utils/server';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -15,37 +15,63 @@ describe('server-output', () => {
   const projectRoot = getRouterE2ERoot();
   const outputDir = path.join(projectRoot, 'dist-server');
 
-  beforeAll(async () => {
-    console.time('export-server');
-    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', 'dist-server'], {
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'server',
-        E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
+  describe.each([
+    {
+      name: 'express server',
+      prepareDist: async () => {
+        console.time('export-server');
+        await executeExpoAsync(
+          projectRoot,
+          ['export', '-p', 'web', '--output-dir', 'dist-server'],
+          {
+            env: {
+              NODE_ENV: 'production',
+              EXPO_USE_STATIC: 'server',
+              E2E_ROUTER_SRC: 'server',
+              E2E_ROUTER_ASYNC: 'development',
+              EXPO_USE_FAST_RESOLVER: 'true',
+            },
+          }
+        );
+        console.timeEnd('export-server');
       },
-    });
-    console.timeEnd('export-server');
-  });
-
-  describe('requests', () => {
-    const server = createBackgroundServer({
-      command: ['node', path.join(projectRoot, '__e2e__/server/express.js')],
-      host: (chunk) =>
-        processFindPrefixedValue(chunk, 'Express server listening') && 'http://localhost',
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        TEST_SECRET_KEY: 'test-secret-key',
-      },
-    });
+      createServer: () =>
+        createBackgroundServer({
+          command: ['node', path.join(projectRoot, '__e2e__/server/express.js')],
+          host: (chunk: any) => processFindPrefixedValue(chunk, 'Express server listening'),
+          cwd: projectRoot,
+          env: {
+            NODE_ENV: 'production',
+            TEST_SECRET_KEY: 'test-secret-key',
+          },
+        }),
+    },
+    {
+      name: 'dev server',
+      createServer: () =>
+        createExpoStart({
+          cwd: projectRoot,
+          env: {
+            NODE_ENV: 'development',
+            EXPO_USE_STATIC: 'server',
+            E2E_ROUTER_SRC: 'server',
+            E2E_ROUTER_ASYNC: 'development',
+            EXPO_USE_FAST_RESOLVER: 'true',
+            TEST_SECRET_KEY: 'test-secret-key',
+          },
+        }),
+    },
+  ])('$name requests', ({ createServer, prepareDist }) => {
+    let server: BackgroundServer;
 
     beforeAll(async () => {
+      await prepareDist?.();
+      server = createServer();
       await server.startAsync();
     });
     afterAll(async () => {
       await server.stopAsync();
+      await fs.rm(outputDir, { recursive: true, force: true });
     });
 
     ['POST', 'GET', 'PUT', 'DELETE'].map(async (method) => {
@@ -62,10 +88,14 @@ describe('server-output', () => {
       expect(res.status).toEqual(200);
       expect(await res.text()).toMatch(/Post: <!-- -->abc/);
 
-      // This route is not pre-rendered and should show the default value for the dynamic parameter.
-      const res2 = await server.fetchAsync('/blog-ssg/123');
-      expect(res2.status).toEqual(200);
-      expect(await res2.text()).toMatch(/Post: <!-- -->\[post\]/);
+      if (prepareDist) {
+        // Behaves like a dynamic route in development, but is pre-rendered in production.
+
+        // This route is not pre-rendered and should show the default value for the dynamic parameter.
+        const res2 = await server.fetchAsync('/blog-ssg/123');
+        expect(res2.status).toEqual(200);
+        expect(await res2.text()).toMatch(/Post: <!-- -->\[post\]/);
+      }
     });
 
     it(`can serve up custom not-found`, async () => {
@@ -101,9 +131,14 @@ describe('server-output', () => {
         /<div data-testid="alpha-beta-text">/
       );
     });
-    it(`can serve up dynamic html routes`, async () => {
-      expect(await server.fetchAsync('/blog/123').then((res) => res.text())).toMatch(/\[post\]/);
-    });
+
+    if (prepareDist) {
+      // Behaves like a dynamic route in development, but is pre-rendered in production.
+      it(`can serve up built time generated dynamic html routes`, async () => {
+        expect(await server.fetchAsync('/blog/123').then((res) => res.text())).toMatch(/\[post\]/);
+      });
+    }
+
     it(`can hit the 404 route`, async () => {
       expect(await server.fetchAsync('/clearly-missing').then((res) => res.text())).toMatch(
         /<div id="root">/
@@ -111,11 +146,6 @@ describe('server-output', () => {
     });
 
     it(`can serve up static html in array group`, async () => {
-      const files = findProjectFiles(outputDir);
-      expect(files).not.toContain('server/multi-group.html');
-      expect(files).not.toContain('server/(a,b)/multi-group.html');
-      expect(files).toContain('server/(a)/multi-group.html');
-      expect(files).toContain('server/(b)/multi-group.html');
       expect(await server.fetchAsync('/multi-group').then((res) => res.text())).toMatch(
         /<div data-testid="multi-group">/
       );
@@ -137,25 +167,9 @@ describe('server-output', () => {
     });
 
     it(`can serve up API route in array group`, async () => {
-      const files = findProjectFiles(outputDir);
-      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
-      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
-      expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
-      expect(files).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
-
       expect(await server.fetchAsync('/multi-group-api').then((res) => res.json())).toEqual({
         value: 'multi-group-api-get',
       });
-
-      // Load the sourcemap and check that the paths are relative
-      const map = JSON.parse(
-        await fs.readFile(
-          path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
-          { encoding: 'utf8' }
-        )
-      );
-
-      expect(map.sources).toContain('__e2e__/server/app/(a,b)/multi-group-api+api.ts');
     });
 
     it(`can serve up API route in specific array group`, async () => {
@@ -251,50 +265,78 @@ describe('server-output', () => {
         'a/b/c'
       );
     });
-  });
 
-  it('has expected files', async () => {
-    // Request HTML
-    const files = findProjectFiles(outputDir);
+    if (prepareDist) {
+      it(`has expected static html from array group`, async () => {
+        const files = findProjectFiles(outputDir);
+        expect(files).not.toContain('server/multi-group.html');
+        expect(files).not.toContain('server/(a,b)/multi-group.html');
+        expect(files).toContain('server/(a)/multi-group.html');
+        expect(files).toContain('server/(b)/multi-group.html');
+      });
 
-    // The wrapper should not be included as a route.
-    expect(files).not.toContain('server/+html.html');
-    expect(files).not.toContain('server/_layout.html');
+      it(`has expected API route from array group`, async () => {
+        const files = findProjectFiles(outputDir);
+        expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+        expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
+        expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
+        expect(files).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
 
-    // Has routes.json
-    expect(files).toContain('server/_expo/routes.json');
+        // Load the sourcemap and check that the paths are relative
+        const map = JSON.parse(
+          await fs.readFile(
+            path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
+            { encoding: 'utf8' }
+          )
+        );
 
-    // Has functions
-    expect(files).toContain('server/_expo/functions/methods+api.js');
-    expect(files).toContain('server/_expo/functions/methods+api.js.map');
-    expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
-    expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js.map');
-    expect(files).toContain('server/_expo/functions/api/externals+api.js');
-    expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
+        expect(map.sources).toContain('__e2e__/server/app/(a,b)/multi-group-api+api.ts');
+      });
 
-    // TODO: We shouldn't export this
-    expect(files).toContain('server/_expo/functions/api/empty+api.js');
-    expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
+      it('has expected files', async () => {
+        // Request HTML
+        const files = findProjectFiles(outputDir);
 
-    // Has single variation of group file
-    expect(files).toContain('server/(alpha)/index.html');
-    expect(files).toContain('server/(alpha)/beta.html');
-    expect(files).not.toContain('server/beta.html');
+        // The wrapper should not be included as a route.
+        expect(files).not.toContain('server/+html.html');
+        expect(files).not.toContain('server/_layout.html');
 
-    // Injected by framework
-    expect(files).toContain('server/_sitemap.html');
-    expect(files).toContain('server/+not-found.html');
+        // Has routes.json
+        expect(files).toContain('server/_expo/routes.json');
 
-    // Normal routes
-    expect(files).toContain('server/index.html');
-    expect(files).toContain('server/blog/[post].html');
-  });
+        // Has functions
+        expect(files).toContain('server/_expo/functions/methods+api.js');
+        expect(files).toContain('server/_expo/functions/methods+api.js.map');
+        expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
+        expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js.map');
+        expect(files).toContain('server/_expo/functions/api/externals+api.js');
+        expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
 
-  // Ensure the `/server/_expo/routes.json` contains the right file paths and named regexes.
-  // This test is created to avoid and detect regressions on Windows
-  it('has expected routes manifest entries', async () => {
-    expect(
-      await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'))
-    ).toMatchSnapshot();
+        // TODO: We shouldn't export this
+        expect(files).toContain('server/_expo/functions/api/empty+api.js');
+        expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
+
+        // Has single variation of group file
+        expect(files).toContain('server/(alpha)/index.html');
+        expect(files).toContain('server/(alpha)/beta.html');
+        expect(files).not.toContain('server/beta.html');
+
+        // Injected by framework
+        expect(files).toContain('server/_sitemap.html');
+        expect(files).toContain('server/+not-found.html');
+
+        // Normal routes
+        expect(files).toContain('server/index.html');
+        expect(files).toContain('server/blog/[post].html');
+      });
+
+      // Ensure the `/server/_expo/routes.json` contains the right file paths and named regexes.
+      // This test is created to avoid and detect regressions on Windows
+      it('has expected routes manifest entries', async () => {
+        expect(
+          await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'))
+        ).toMatchSnapshot();
+      });
+    }
   });
 });
