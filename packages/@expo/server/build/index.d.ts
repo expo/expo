@@ -8,4 +8,4 @@ export declare function createRequestHandler(distFolder: string, { getRoutesMani
     logApiRouteExecutionError?: (error: Error) => void;
     handleRouteError?: (error: Error) => Promise<Response>;
 }): (request: Request) => Promise<Response>;
-export declare function getRedirectRewriteLocation(request: Request, route: Route): string;
+export declare function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL;

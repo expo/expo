@@ -111,15 +111,12 @@ export function createRequestHandler(
 
   async function requestHandler(incomingRequest: Request, manifest: Manifest) {
     let request = incomingRequest;
-    const url = new URL(request.url);
-
-    let sanitizedPathname = url.pathname;
-
-    debug('Request', sanitizedPathname);
+    let url = new URL(request.url);
+    debug('Request', url.pathname);
 
     if (manifest.redirects) {
       for (const route of manifest.redirects) {
-        if (!route.namedRegex.test(sanitizedPathname)) {
+        if (!route.namedRegex.test(url.pathname)) {
           continue;
         }
 
@@ -133,7 +130,7 @@ export function createRequestHandler(
 
     if (manifest.rewrites) {
       for (const route of manifest.rewrites) {
-        if (!route.namedRegex.test(sanitizedPathname)) {
+        if (!route.namedRegex.test(url.pathname)) {
           continue;
         }
 
@@ -142,17 +139,15 @@ export function createRequestHandler(
         }
 
         // Replace URL and Request with rewrite target
-        const location = getRedirectRewriteLocation(request, route);
-        const rewriteUrl = new URL(location, url.origin);
-        request = new Request(rewriteUrl, request);
-        sanitizedPathname = rewriteUrl.pathname;
+        url = getRedirectRewriteLocation(url, request, route);
+        request = new Request(url, request);
       }
     }
 
     // First, test static routes
     if (request.method === 'GET' || request.method === 'HEAD') {
       for (const route of manifest.htmlRoutes) {
-        if (!route.namedRegex.test(sanitizedPathname)) {
+        if (!route.namedRegex.test(url.pathname)) {
           continue;
         }
 
@@ -168,7 +163,7 @@ export function createRequestHandler(
 
     // Next, test API routes
     for (const route of manifest.apiRoutes) {
-      if (!route.namedRegex.test(sanitizedPathname)) {
+      if (!route.namedRegex.test(url.pathname)) {
         continue;
       }
 
@@ -184,7 +179,7 @@ export function createRequestHandler(
     // Finally, test 404 routes
     if (request.method === 'GET' || request.method === 'HEAD') {
       for (const route of manifest.notFoundRoutes) {
-        if (!route.namedRegex.test(sanitizedPathname)) {
+        if (!route.namedRegex.test(url.pathname)) {
           continue;
         }
 
@@ -297,8 +292,7 @@ function respondHTML(html: string | Response | null, route: Route): Response {
 function respondRedirect(url: URL, request: Request, route: Route): Response {
   // NOTE(@krystofwoldrich): @expo/server would not redirect when location was empty,
   // it would keep searching for match and eventually return 404. Worker redirects to origin.
-  const location = getRedirectRewriteLocation(request, route);
-  const target = new URL(location, url.origin).toString();
+  const target = getRedirectRewriteLocation(url, request, route);
 
   let status: number;
   if (request.method === 'GET' || request.method === 'HEAD') {
@@ -311,42 +305,35 @@ function respondRedirect(url: URL, request: Request, route: Route): Response {
   return Response.redirect(target, status);
 }
 
-export function getRedirectRewriteLocation(request: Request, route: Route) {
+export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL {
   const params = parseParams(request, route);
-
-  const urlSearchParams = new URL(request.url).searchParams;
-
-  let location = route.page
+  const target = route.page
     .split('/')
     .map((segment) => {
-      let paramName = matchDynamicName(segment);
-      if (!paramName) {
-        return segment;
-      } else if (paramName.startsWith('...')) {
-        paramName = paramName.slice(3);
-        const value = params[paramName];
-        delete params[paramName];
+      let match: string | undefined;
+      if ((match = matchDynamicName(segment))) {
+        const value = params[match];
+        delete params[match];
+        return typeof value === 'string'
+          ? value.split(
+              '/'
+            )[0] /* If we are redirecting from a catch-all route, we need to remove the extra segments */
+          : (value ?? segment);
+      } else if ((match = matchDeepDynamicRouteName(segment))) {
+        const value = params[match];
+        delete params[match];
         return value ?? segment;
       } else {
-        const value = params[paramName];
-        delete params[paramName];
-        // If we are redirecting from a catch-all route, we need to remove the extra segments
-        // e.g. `/files/[...path]` -> `/dirs/[name]`, `/files/home/name.txt` -> `/dirs/home`
-        return value?.split('/')[0] ?? segment;
+        return segment;
       }
     })
     .join('/');
-
-  if (Object.keys(params).length > 0 || urlSearchParams.size > 0) {
-    location +=
-      '?' +
-      new URLSearchParams({
-        ...params,
-        ...Object.fromEntries(urlSearchParams.entries()),
-      }).toString();
-  }
-
-  return location;
+  const targetUrl = new URL(target, url.origin);
+  // NOTE: React Navigation doesn't differentiate between a path parameter
+  // and a search parameter. We have to preserve leftover search parameters
+  // to ensure we don't lose any intentional parameters with special meaning
+  for (const key in params) targetUrl.searchParams.append(key, params[key]);
+  return targetUrl;
 }
 
 function parseParams(request: Request, route: Route): Record<string, string> {
@@ -362,9 +349,19 @@ function parseParams(request: Request, route: Route): Record<string, string> {
   return params;
 }
 
-/** Match `[page]` -> `page` or `[...group]` -> `...group` */
+/** Match `[page]` -> `page`
+ * @privateRemarks Ported from `expo-router/src/matchers.tsx`
+ */
 function matchDynamicName(name: string): string | undefined {
-  return name.match(/^\[([^[\]]+?)\]$/)?.[1];
+  // Don't match `...` or `[` or `]` inside the brackets
+  return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
+}
+
+/** Match `[...page]` -> `page`
+ * @privateRemarks Ported from `expo-router/src/matchers.tsx`
+ */
+function matchDeepDynamicRouteName(name: string): string | undefined {
+  return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
 }
 
 function isResponse(input: unknown): input is Response {

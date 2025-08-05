@@ -2,23 +2,25 @@ import { RouteInfo } from 'expo-router/src/routes-manifest';
 
 import { getRedirectRewriteLocation } from '../index';
 
+const url = new URL('https://example.com');
+
 describe('static routes', () => {
   it('should handle static route with no parameters', () => {
     const request = createMockRequest('https://example.com/about');
     const route = createMockRoute('/about', /^\/about(?:\/)?$/);
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/about');
+    expect(result.toString().toString()).toBe('https://example.com/about');
   });
 
   it('should handle nested static route', () => {
     const request = createMockRequest('https://example.com/users/profile');
     const route = createMockRoute('/users/profile', /^\/users\/profile(?:\/)?$/);
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/profile');
+    expect(result.toString()).toBe('https://example.com/users/profile');
   });
 });
 
@@ -29,9 +31,9 @@ describe('dynamic routes', () => {
       user_id: 'id',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/123');
+    expect(result.toString()).toBe('https://example.com/users/123');
   });
 
   it('should handle multiple dynamic parameters', () => {
@@ -42,9 +44,9 @@ describe('dynamic routes', () => {
       { user_id: 'userId', post_id: 'postId' }
     );
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/123/posts/456');
+    expect(result.toString()).toBe('https://example.com/users/123/posts/456');
   });
 
   it('should handle catch all to dynamic parameter rewrite (take first segment)', () => {
@@ -53,9 +55,9 @@ describe('dynamic routes', () => {
       file_path: 'name',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/dirs/folder'); // Only first segment
+    expect(result.toString()).toBe('https://example.com/dirs/folder'); // Only first segment
   });
 
   it('should fallback to segment name when parameter is missing', () => {
@@ -64,9 +66,9 @@ describe('dynamic routes', () => {
       user_id: 'id',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/[id]'); // Fallback to segment
+    expect(result.toString()).toBe('https://example.com/users/[id]'); // Fallback to segment
   });
 
   it('should fallback to segment name when parameter is missing (multiple)', () => {
@@ -77,9 +79,9 @@ describe('dynamic routes', () => {
       {}
     );
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/[id]/profile'); // Fallback to segment
+    expect(result.toString()).toBe('https://example.com/users/[id]/profile'); // Fallback to segment
   });
 });
 
@@ -90,18 +92,18 @@ describe('catch-all routes', () => {
       catch_all: 'slug',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/docs/api/users/create'); // Full path preserved
+    expect(result.toString()).toBe('https://example.com/docs/api/users/create'); // Full path preserved
   });
 
   it('should handle catch-all with missing parameter', () => {
     const request = createMockRequest('https://example.com/docs/');
     const route = createMockRoute('/docs/[...slug]', /^\/docs\/(?<catch_all>.+?)(?:\/)?$/, {});
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/docs/[...slug]'); // Fallback to segment
+    expect(result.toString()).toBe('https://example.com/docs/[...slug]'); // Fallback to segment
   });
 
   it('should handle nested catch-all', () => {
@@ -112,9 +114,9 @@ describe('catch-all routes', () => {
       { version: 'version', rest_path: 'rest' }
     );
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/api/v1/users/123/posts');
+    expect(result.toString()).toBe('https://example.com/api/v1/users/123/posts');
   });
 });
 
@@ -127,9 +129,9 @@ describe('mixed routes', () => {
       { user_id: 'id', file_path: 'path' }
     );
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/123/files/docs/readme.md');
+    expect(result.toString()).toBe('https://example.com/users/123/files/docs/readme.md');
   });
 });
 
@@ -140,9 +142,9 @@ describe('query parameters', () => {
       user_id: 'id',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/123?tab=profile&sort=name');
+    expect(result.toString()).toBe('https://example.com/users/123?tab=profile&sort=name');
   });
 
   it('should add leftover route parameters as query params', () => {
@@ -153,9 +155,9 @@ describe('query parameters', () => {
       { user_id: 'userId' } // This param won't be used in the route
     );
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/profile?userId=123');
+    expect(result.toString()).toBe('https://example.com/profile?userId=123');
   });
 
   it('should combine leftover params with existing search params', () => {
@@ -164,9 +166,9 @@ describe('query parameters', () => {
       user_id: 'userId',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/dashboard?userId=123&tab=profile');
+    expect(result.toString()).toBe('https://example.com/dashboard?userId=123&tab=profile');
   });
 
   it('should handle multiple leftover parameters', () => {
@@ -180,9 +182,9 @@ describe('query parameters', () => {
       }
     );
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/home?userId=123&postId=456');
+    expect(result.toString()).toBe('https://example.com/home?userId=123&postId=456');
   });
 
   it('should handle no leftover params and no search params', () => {
@@ -191,9 +193,9 @@ describe('query parameters', () => {
       user_id: 'id',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/users/123');
+    expect(result.toString()).toBe('https://example.com/users/123');
   });
 });
 
@@ -202,9 +204,9 @@ describe('edge cases', () => {
     const request = createMockRequest('https://example.com/');
     const route = createMockRoute('/', /^\/$/);
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/');
+    expect(result.toString()).toBe('https://example.com/');
   });
 
   it('should handle complex path with special characters', () => {
@@ -213,9 +215,9 @@ describe('edge cases', () => {
       file_name: 'name',
     });
 
-    const result = getRedirectRewriteLocation(request, route);
+    const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result).toBe('/files/my%20file.txt');
+    expect(result.toString()).toBe('https://example.com/files/my%20file.txt');
   });
 });
 
