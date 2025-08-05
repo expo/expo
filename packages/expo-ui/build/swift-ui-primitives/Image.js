@@ -1,7 +1,10 @@
 import { requireNativeView } from 'expo';
+import { createViewModifierEventListener } from './modifiers/utils';
 function transformNativeProps(props) {
-    const { onPress, ...restProps } = props;
+    const { onPress, modifiers, ...restProps } = props;
     return {
+        modifiers,
+        ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
         ...restProps,
         ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),
     };

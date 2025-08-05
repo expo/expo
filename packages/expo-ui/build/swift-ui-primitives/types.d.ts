@@ -65,21 +65,64 @@ export interface PaddingProps {
  */
 export interface CommonViewModifierProps {
     /**
-     * Whether the view should take its natural size.
-     * When true, the view will ignore frame constraints and use its intrinsic size.
+     * @deprecated Use `fixedSize()` modifier instead. This prop will be removed in a future version.
+     * @example
+     * ```tsx
+     * // Old way (deprecated)
+     * <Text fixedSize={true}>Hello</Text>
+     *
+     * // New way (recommended)
+     * <Text modifiers={[fixedSize(true)]}>Hello</Text>
+     * ```
      */
     fixedSize?: boolean;
     /**
-     * Frame properties for the view container.
+     * @deprecated Use `frame()` modifier instead. This prop will be removed in a future version.
+     * @example
+     * ```tsx
+     * // Old way (deprecated)
+     * <Text frame={{ width: 100, height: 50 }}>Hello</Text>
+     *
+     * // New way (recommended)
+     * <Text modifiers={[frame({ width: 100, height: 50 })]}>Hello</Text>
+     * ```
      */
     frame?: FrameProps;
     /**
-     * Padding properties for the view.
+     * @deprecated Use `padding()` modifier instead. This prop will be removed in a future version.
+     * @example
+     * ```tsx
+     * // Old way (deprecated)
+     * <Text padding={{ all: 16 }}>Hello</Text>
+     *
+     * // New way (recommended)
+     * <Text modifiers={[padding({ all: 16 })]}>Hello</Text>
+     * ```
      */
     padding?: PaddingProps;
     /**
      * Used to locate this view in end-to-end tests.
      */
     testID?: string;
+    /**
+     * Array of view modifiers to apply to this view.
+     * Modifiers are applied in the order they appear in the array.
+     *
+     * @example
+     * ```tsx
+     * import { background, cornerRadius, shadow, frame, padding, fixedSize } from 'expo-ui/swift-ui-primitives/modifiers';
+     *
+     * <Text modifiers={[
+     *   background('#FF0000'),
+     *   cornerRadius(10),
+     *   padding({ all: 16 }),
+     *   frame({ width: 200 }),
+     *   shadow({ radius: 5, x: 0, y: 2 })
+     * ]}>
+     *   Hello World
+     * </Text>
+     * ```
+     */
+    modifiers?: import('./modifiers').ViewModifier[];
 }
 //# sourceMappingURL=types.d.ts.map

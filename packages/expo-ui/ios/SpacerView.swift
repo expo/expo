@@ -9,6 +9,7 @@ internal final class SpacerViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierP
   @Field var padding: PaddingOptions?
   @Field var minLength: Double?
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
 }
 
 internal struct SpacerView: ExpoSwiftUI.View {

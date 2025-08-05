@@ -12,6 +12,7 @@ internal final class ImageViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPr
   @Field var color: Color?
   @Field var useTapGesture: Bool?
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
   var onTap = EventDispatcher()
 }
 

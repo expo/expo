@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
-import { ViewEvent } from '../types';
+import { type ViewEvent } from '../types';
+import { createViewModifierEventListener } from './modifiers/utils';
 import { type CommonViewModifierProps } from './types';
 
 export interface ImageProps extends CommonViewModifierProps {
@@ -32,8 +33,10 @@ type TapEvent = ViewEvent<'onTap', object> & {
 type NativeImageProps = Omit<ImageProps, 'onPress'> | TapEvent;
 
 function transformNativeProps(props: ImageProps): NativeImageProps {
-  const { onPress, ...restProps } = props;
+  const { onPress, modifiers, ...restProps } = props;
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),
   };

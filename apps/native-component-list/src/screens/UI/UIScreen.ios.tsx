@@ -122,6 +122,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./SwiftUIPrimitivesScreen'));
     },
   },
+  {
+    name: 'Modifiers',
+    route: 'ui/modifiers',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ModifiersScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

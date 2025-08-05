@@ -11,6 +11,7 @@ internal final class ContentUnavailableViewProps: ExpoSwiftUI.ViewProps, CommonV
   @Field var systemImage: String = ""
   @Field var description: String = ""
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
 }
 
 struct ContentUnavailableView: ExpoSwiftUI.View {

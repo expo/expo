@@ -10,6 +10,7 @@ internal final class DisclosureGroupViewProps: ExpoSwiftUI.ViewProps, CommonView
   @Field var label: String
   @Field var isExpanded: Bool = true
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
   var onStateChange = EventDispatcher()
 }
 
