@@ -242,7 +242,7 @@ async function respondNotFoundHTML(
     return html;
   }
 
-  throw new Error(`HTML route file ${route.page}.html could not be loaded`);
+  throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
 }
 
 async function respondAPI(mod: any, request: Request, route: Route): Promise<Response> {

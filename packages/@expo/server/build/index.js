@@ -198,7 +198,7 @@ async function respondNotFoundHTML(html, route) {
         // Only used for development errors
         return html;
     }
-    throw new Error(`HTML route file ${route.page}.html could not be loaded`);
+    throw new error_1.ExpoError(`HTML route file ${route.page}.html could not be loaded`);
 }
 async function respondAPI(mod, request, route) {
     if (!mod || typeof mod !== 'object') {
