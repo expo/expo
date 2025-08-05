@@ -19,6 +19,7 @@ var _exportNames = {
   withMod: true,
   withBaseMod: true,
   withAppDelegate: true,
+  withBridgingHeader: true,
   withInfoPlist: true,
   withEntitlementsPlist: true,
   withExpoPlist: true,
@@ -108,6 +109,12 @@ Object.defineProperty(exports, "withBaseMod", {
   enumerable: true,
   get: function () {
     return _withMod().withBaseMod;
+  }
+});
+Object.defineProperty(exports, "withBridgingHeader", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withBridgingHeader;
   }
 });
 Object.defineProperty(exports, "withDangerousMod", {

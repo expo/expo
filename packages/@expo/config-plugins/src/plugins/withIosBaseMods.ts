@@ -85,6 +85,19 @@ const defaultProviders = {
       await writeFile(filePath, contents);
     },
   }),
+  // Append a rule to supply BridgingHeader data to mods on `mods.ios.bridgingHeader`
+  bridgingHeader: provider<Paths.BridgingHeaderProjectFile>({
+    getFilePath({ modRequest: { projectRoot } }) {
+      // TODO: Get application BridgingHeader file from pbxproj.
+      return Paths.getBridgingHeaderFilePath(projectRoot);
+    },
+    async read(filePath) {
+      return Paths.getFileInfo(filePath);
+    },
+    async write(filePath: string, { modResults: { contents } }) {
+      await writeFile(filePath, contents);
+    },
+  }),
   // Append a rule to supply Expo.plist data to mods on `mods.ios.expoPlist`
   expoPlist: provider<JSONObject>({
     isIntrospective: true,
