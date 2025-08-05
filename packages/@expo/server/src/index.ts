@@ -4,6 +4,7 @@ import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-m
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { ExpoError } from './error';
 import { ExpoRouterServerManifestV1FunctionRoute, InternalResponse } from './types';
 
 const debug =
@@ -79,20 +80,9 @@ export function createRequestHandler(
       }
       return import(filePath);
     },
-    logApiRouteExecutionError = (error: Error) => {
-      console.error(error);
-    },
-    handleApiRouteError = async (error: Error) => {
-      if ('statusCode' in error && typeof error.statusCode === 'number') {
-        return new Response(error.message, {
-          status: error.statusCode,
-          headers: { 'Content-Type': 'text/plain' },
-        });
-      }
-      return new Response('Internal server error', {
-        status: 500,
-        headers: { 'Content-Type': 'text/plain' },
-      });
+    handleRouteError = async (error: Error) => {
+      // In production the server should handle unexpected errors
+      throw error;
     },
   }: {
     // TODO: Remove Response return type, currently used for development error responses directly from Metro
@@ -100,7 +90,7 @@ export function createRequestHandler(
     getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
     getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;
-    handleApiRouteError?: (error: Error) => Promise<Response>;
+    handleRouteError?: (error: Error) => Promise<Response>;
   } = {}
 ) {
   let routesManifest: ExpoRoutesManifestV1<RegExp> | undefined;
@@ -108,7 +98,7 @@ export function createRequestHandler(
   const getRoutesManifestCached = async () => {
     let manifest: ExpoRoutesManifestV1<RegExp> | null = null;
     if (getInternalRoutesManifest) {
-      // NOTE(@krystofwoldrich): Primarily used for development by Metro
+      // Only used for development by the dev server
       manifest = await getInternalRoutesManifest(distFolder);
     } else if (!routesManifest) {
       // Production
@@ -154,6 +144,7 @@ export function createRequestHandler(
           continue;
         }
 
+        // Replace URL and Request with rewrite target
         const location = getRedirectRewriteLocation(request, route);
         const rewriteUrl = new URL(location, url.origin);
         request = new Request(rewriteUrl, request);
@@ -168,8 +159,13 @@ export function createRequestHandler(
           continue;
         }
 
-        const html = await getHtml(request, route);
-        return respondHTML(html);
+        try {
+          const html = await getHtml(request, route);
+          return respondHTML(html, route);
+        } catch (error) {
+          // Shows RedBox in development
+          return handleRouteError(error as Error);
+        }
       }
     }
 
@@ -183,10 +179,8 @@ export function createRequestHandler(
         const mod = await getApiRoute(route);
         return await respondAPI(mod, request, route);
       } catch (error) {
-        if (error instanceof Error) {
-          logApiRouteExecutionError(error);
-        }
-        return handleApiRouteError(error as Error);
+        // Shows RedBox in development
+        return handleRouteError(error as Error);
       }
     }
 
@@ -201,7 +195,7 @@ export function createRequestHandler(
           const contents = await getHtml(request, route);
           return respondNotFoundHTML(contents, route);
         } catch {
-          // TODO: Add test for this, expo/server could throw an error if getHtml throws
+          // NOTE(@krystofwoldrich): Should we show a dismissible RedBox in development?
           // Handle missing/corrupted not found route files
           continue;
         }
@@ -209,11 +203,10 @@ export function createRequestHandler(
     }
 
     // 404
-    const response = new Response('Not found', {
+    return new Response('Not found', {
       status: 404,
       headers: { 'Content-Type': 'text/plain' },
     });
-    return response;
   }
 
   return async function handler(request: Request): Promise<Response> {
@@ -248,7 +241,7 @@ async function respondNotFoundHTML(
   }
 
   if (isResponse(html)) {
-    // TODO: Check where is this used?
+    // Only used for development errors
     return html;
   }
 
@@ -257,12 +250,11 @@ async function respondNotFoundHTML(
 
 async function respondAPI(mod: any, request: Request, route: RouteInfo<RegExp>): Promise<Response> {
   if (!mod || typeof mod !== 'object') {
-    // NOTE(@krystofwoldrich): expo/server would return 405
-    throw new Error(`API route module ${route.page} could not be loaded`);
+    throw new ExpoError(`API route module ${route.page} could not be loaded`);
   }
 
   if (isResponse(mod)) {
-    // TODO: Check where is this used?
+    // Only used for development API route bundling errors
     return mod;
   }
 
@@ -279,7 +271,7 @@ async function respondAPI(mod: any, request: Request, route: RouteInfo<RegExp>):
   const params = parseParams(request, route);
   const response: InternalResponse = await handler(request, params);
   if (!isResponse(response)) {
-    throw new Error(
+    throw new ExpoError(
       `API route ${request.method} handler ${route.page} resolved to a non-Response result`
     );
   }
@@ -296,7 +288,7 @@ async function respondAPI(mod: any, request: Request, route: RouteInfo<RegExp>):
   } as ResponseInit);
 }
 
-function respondHTML(html: string | Response | null): Response {
+function respondHTML(html: string | Response | null, route: RouteInfo<RegExp>): Response {
   if (typeof html === 'string') {
     return new Response(html, {
       status: 200,
@@ -307,16 +299,11 @@ function respondHTML(html: string | Response | null): Response {
   }
 
   if (isResponse(html)) {
-    // TODO: Might change, this is only used for development error responses
+    // Only used for development error responses
     return html;
   }
 
-  // TODO: What's the standard behavior for malformed projects?
-  // NOTE(@krystofwoldrich): Worker throws -> throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
-  return new Response('Not found', {
-    status: 404,
-    headers: { 'Content-Type': 'text/plain' },
-  });
+  throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
 }
 
 function respondRedirect(url: URL, request: Request, route: RouteInfo<RegExp>): Response {

@@ -109,10 +109,16 @@ export function createRouteHandlerMiddleware(
           }
         }
       },
-      logApiRouteExecutionError(error) {
-        logMetroError(projectRoot, { error });
-      },
-      async handleApiRouteError(error) {
+      async handleRouteError(error) {
+        const { isExpoError } =
+          require('@expo/server/build/error') as typeof import('@expo/server/build/error');
+
+        if (isExpoError(error)) {
+          // TODO(@krystofwoldrich): Can we show code snippet of the handler?
+          // NOTE(@krystofwoldrich): Removing stack since to avoid confusion. The error is not in the server code.
+          delete error.stack;
+        }
+
         const htmlServerError = await getErrorOverlayHtmlAsync({
           error,
           projectRoot,
