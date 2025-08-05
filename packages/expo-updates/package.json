@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
+    "@expo/metro": "~0.1.0",
     "@expo/plist": "^0.3.4",
     "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
@@ -54,7 +55,6 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "@expo/metro": "~0.1.0",
     "@types/jest": "^29.2.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.14.0",
