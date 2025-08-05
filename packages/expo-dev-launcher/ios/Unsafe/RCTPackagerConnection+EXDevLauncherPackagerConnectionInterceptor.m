@@ -35,7 +35,6 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
 
 @implementation RCTPackagerConnection (EXDevLauncherPackagerConnectionInterceptor)
 
-
 /**
  * Sets the WebSocket URL.
  */
@@ -55,7 +54,7 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
   if (oldSocket == nil) {
     return; // already stopped
   }
-  
+
   [self setValue:@NO forKey:@"_socketConnected"];
 
   oldSocket.delegate = nil;
@@ -66,7 +65,7 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
   [newSocket start];
   
   [self setValue:newSocket forKey:@"_socket"];
-  
+
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [[NSNotificationCenter defaultCenter] addObserverForName:@"RCTTriggerReloadCommandNotification"
