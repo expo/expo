@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add missing peer dependencies on `react` and `react-native` and optional peer dependency on `react-native-web`
+
 ## 0.12.5 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
