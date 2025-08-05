@@ -146,5 +146,5 @@ struct DialogEditResponse: Record {
   @Field
   var action: ResponseAction = .canceled
   @Field
-  var id: String?
+  var id: String? = nil
 }

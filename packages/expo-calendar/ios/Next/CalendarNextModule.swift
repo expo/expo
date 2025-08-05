@@ -528,14 +528,14 @@ public final class CalendarNextModule: Module {
         dateFormatter.string(from: reminder.reminder?.completionDate ?? Date())
       }
 
-      Function("update") { (reminder: ExpoCalendarReminder, reminderRecord: Reminder) in
+      Function("update") { (expoReminder: ExpoCalendarReminder, reminderRecord: Reminder) in
         try checkRemindersPermissions()
 
-        guard let reminder = reminder.reminder else {
+        guard let reminder = expoReminder.reminder else {
           throw ItemNoLongerExistsException()
         }
 
-        try reminder.initialize(reminderRecord: reminderRecord)
+        try expoReminder.initialize(reminderRecord: reminderRecord)
         try eventStore.save(reminder, commit: true)
       }
 
