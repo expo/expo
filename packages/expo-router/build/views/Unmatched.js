@@ -35,9 +35,11 @@ function Unmatched() {
     const isPreloaded = (0, stack_1.isRoutePreloadedInStack)(navigation.getState(), route);
     /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
     (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
-        navigation.setOptions({
-            title: 'Not Found',
-        });
+        if (!isPreloaded || (isPreloaded && isFocused)) {
+            navigation.setOptions({
+                title: 'Not Found',
+            });
+        }
     }, [isFocused, isPreloaded, navigation]);
     return (<react_native_1.View style={styles.container}>
       <NotFoundAsset />
