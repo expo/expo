@@ -40,7 +40,6 @@ function getProcessedManifest(path) {
 function getRoutesManifest(distFolder) {
     return getProcessedManifest(node_path_1.default.join(distFolder, '_expo/routes.json'));
 }
-// TODO: Reuse this for dev as well
 function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
     // Serve a static file by exact route name
     const filePath = node_path_1.default.join(distFolder, route.page + '.html');
@@ -85,7 +84,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     const getRoutesManifestCached = async () => {
         let manifest = null;
         if (getInternalRoutesManifest) {
-            // Development
+            // NOTE(@krystofwoldrich): Primarily used for development by Metro
             manifest = await getInternalRoutesManifest(distFolder);
         }
         else if (!routesManifest) {

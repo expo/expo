@@ -42,7 +42,6 @@ export function getRoutesManifest(distFolder: string) {
   return getProcessedManifest(path.join(distFolder, '_expo/routes.json'));
 }
 
-// TODO: Reuse this for dev as well
 export function createRequestHandler(
   distFolder: string,
   {
@@ -109,7 +108,7 @@ export function createRequestHandler(
   const getRoutesManifestCached = async () => {
     let manifest: ExpoRoutesManifestV1<RegExp> | null = null;
     if (getInternalRoutesManifest) {
-      // Development
+      // NOTE(@krystofwoldrich): Primarily used for development by Metro
       manifest = await getInternalRoutesManifest(distFolder);
     } else if (!routesManifest) {
       // Production
