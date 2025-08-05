@@ -20,20 +20,6 @@ export default function AudioPlayer({ source, style, downloadFirst = false }: Au
   const player = useAudioPlayer(source, { downloadFirst });
   const status = useAudioPlayerStatus(player);
 
-  /*
-  // Debug logging to understand status updates
-  React.useEffect(() => {
-    console.log('AudioPlayer status updated:', {
-      isLoaded: status.isLoaded,
-      playing: status.playing,
-      currentTime: status.currentTime,
-      duration: status.duration,
-      playbackState: status.playbackState,
-      timeControlStatus: status.timeControlStatus,
-    });
-  }, [status]);
-  */
-
   const setVolume = (volume: number) => {
     player.volume = volume;
   };
