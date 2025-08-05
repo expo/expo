@@ -955,7 +955,7 @@ export async function test(t) {
             },
           });
           const attendees = recurringEvent.getAttendees({
-            instanceStartDate: new Date(2024, 0, 1),
+            instanceStartDate: new Date(2024, 0, 1, 9),
           });
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);

@@ -5,7 +5,6 @@ import Foundation
 internal final class ExpoCalendarReminder: ExpoCalendarItem {
     var reminder: EKReminder?
 
-    // Override the abstract property from ExpoCalendarItem
     override var calendarItem: EKCalendarItem? {
         return reminder
     }
@@ -36,9 +35,13 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
             reminder.calendar = calendar
         }
 
-        reminder.title = reminderRecord.title
-        reminder.location = reminderRecord.location
-        reminder.notes = reminderRecord.notes
+        if let title = reminderRecord.title {
+            reminder.title = title
+        }
+
+        if let location = reminderRecord.location {
+            reminder.location = location
+        }
 
         let startDate = parse(date: reminderRecord.startDate)
         let dueDate = parse(date: reminderRecord.dueDate)
@@ -85,8 +88,5 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
         if let isCompleted = reminderRecord.completed {
             reminder.isCompleted = isCompleted
         }
-
-        reminder.title = reminderRecord.title
-        reminder.location = reminderRecord.location
     }
 }

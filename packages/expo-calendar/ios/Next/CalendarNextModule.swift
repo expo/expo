@@ -365,7 +365,7 @@ public final class CalendarNextModule: Module {
                 try checkCalendarPermissions()
                 
                 let startDate = parse(date: options?.instanceStartDate)
-                guard let calendarEvent = expoEvent.getEvent(startDate: startDate) else {
+                guard let calendarEvent = expoEvent.getOccurrence(startDate: startDate) else {
                     throw ItemNoLongerExistsException()
                 }
                 
@@ -404,12 +404,15 @@ public final class CalendarNextModule: Module {
 
             Function("getOccurrence") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
                 try checkCalendarPermissions()
-                return try customEvent.getOccurrence(options: options)
+                guard let ekEvent = try customEvent.getOccurrence(options: options) else {
+                    throw EventNotFoundException(options?.instanceStartDate ?? "")
+                }
+                return ExpoCalendarEvent(event: ekEvent)
             }
             
-            Function("getAttendees") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) in
+            Function("getAttendees") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
                 try checkCalendarPermissions()
-                return customEvent.getAttendees(options: options)
+                return try customEvent.getAttendees(options: options)
             }
             
             Function("update") {

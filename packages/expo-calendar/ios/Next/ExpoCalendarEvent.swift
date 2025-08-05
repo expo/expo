@@ -63,7 +63,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
         let instanceStartDate = parse(date: options.instanceStartDate)
         
-        guard let calendarEvent = getEvent(startDate: instanceStartDate) else {
+        guard let calendarEvent = getOccurrence(startDate: instanceStartDate) else {
             return
         }
         
@@ -121,36 +121,33 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         event.availability = getAvailability(availability: eventRecord.availability)
     }
 
-    func getOccurrence(options: RecurringEventOptions?) throws -> ExpoCalendarEvent {
-        let instanceStartDate = parse(date: options?.instanceStartDate)
-        guard let event = getEvent(startDate: instanceStartDate) else {
-            throw EventNotFoundException("Event not found")
-        }
-        return ExpoCalendarEvent(event: event)
-    }
+    func getAttendees(options: RecurringEventOptions?) throws -> [ExpoCalendarAttendee]? {
+        let occurence = try getOccurrence(options: options)
 
-    func getAttendees(options: RecurringEventOptions?) -> [ExpoCalendarAttendee] {
-        let instanceStartDate = parse(date: options?.instanceStartDate)
-        
-        guard let event = getEvent(startDate: instanceStartDate),
-              let attendees = event.attendees else {
+        guard let occurence, let attendees = occurence.attendees else {
             return []
         }
-        
+
         return attendees.map { ExpoCalendarAttendee(attendee: $0) }
     }
+
+    func getOccurrence(options: RecurringEventOptions?) throws -> EKEvent? {
+        let instanceStartDate = parse(date: options?.instanceStartDate)
+        guard let event = getOccurrence(startDate: instanceStartDate) else {
+            throw EventNotFoundException(options?.instanceStartDate ?? "")
+        }
+        return event
+    }
     
-    // TODO: Copied from CalendarModule
-    // @deprecated, use implementation without `id` param
-    private func getEvent(with id: String, startDate: Date?) -> EKEvent? {
+    private func getOccurrence(with id: String, startDate: Date?) -> EKEvent? {
         guard let firstEvent = eventStore.calendarItem(withIdentifier: id) as? EKEvent else {
             return nil
         }
         
-        return getEvent(firstEvent: firstEvent, startDate: startDate)
+        return getOccurrence(firstEvent: firstEvent, startDate: startDate)
     }
 
-    internal func getEvent(firstEvent: EKEvent, startDate: Date?) -> EKEvent? {        
+    internal func getOccurrence(firstEvent: EKEvent, startDate: Date?) -> EKEvent? {        
         guard let startDate else {
             return firstEvent
         }
@@ -172,12 +169,11 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
         return nil
     }
     
-    // Custom getEvent to get exact instance, it is replacing the above old implementation
-    internal func getEvent(startDate: Date?) -> EKEvent? {
+    internal func getOccurrence(startDate: Date?) -> EKEvent? {
         guard let firstEvent = self.event else {
             return nil
         }
         
-        return getEvent(firstEvent: firstEvent, startDate: startDate)
+        return getOccurrence(firstEvent: firstEvent, startDate: startDate)
     }
 }

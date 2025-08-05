@@ -1,7 +1,7 @@
 import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
-import { stringifyIfDate } from './utils';
+import { stringifyDateValues, stringifyIfDate } from './utils';
 export { PermissionStatus, } from 'expo-modules-core';
 // @docsMissing
 /**
