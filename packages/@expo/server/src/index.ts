@@ -1,100 +1,80 @@
 import './install';
 
 import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { ExpoRouterServerManifestV1FunctionRoute, InternalResponse } from './types';
 
-const isDevelopment = process?.env?.NODE_ENV === 'development';
-
 const debug =
-  // TODO: Use WinterCG compatible check
-  process?.env?.NODE_ENV === 'development'
+  // TODO: This check won't work for WinterTC runtimes
+  process.env.NODE_ENV === 'development'
     ? (require('debug')('expo:server') as typeof console.log)
     : () => {};
 
-const HTML_CACHE_CONTROL = 's-maxage=3600';
+function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
+  // TODO: JSON Schema for validation
+  const routesManifest = JSON.parse(fs.readFileSync(path, 'utf-8')) as ExpoRoutesManifestV1;
 
-const _importCache = new Map();
-async function importCached(target: string): Promise<any> {
-  let result = _importCache.get(target);
-  if (!result) {
-    try {
-      result = { type: 'success', value: await import(target) };
-    } catch (error) {
-      result = { type: 'error', value: error };
-    }
-    _importCache.set(target, result);
-  }
+  const parsed: ExpoRoutesManifestV1<RegExp> = {
+    ...routesManifest,
+    notFoundRoutes: routesManifest.notFoundRoutes.map((value: any) => {
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
+    }),
+    apiRoutes: routesManifest.apiRoutes.map((value: any) => {
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
+    }),
+    htmlRoutes: routesManifest.htmlRoutes.map((value: any) => {
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
+    }),
+    redirects: routesManifest.redirects?.map((value: any) => {
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
+    }),
+    rewrites: routesManifest.rewrites?.map((value: any) => {
+      return { ...value, namedRegex: new RegExp(value.namedRegex) };
+    }),
+  };
 
-  if (result.type === 'success') {
-    return result.value;
-  } else {
-    throw result.value;
-  }
+  return parsed;
 }
 
-async function importWithIndexFallback(target: string, filetype = '') {
-  const INDEX_PATH = '/index';
-  try {
-    return await importCached(target + filetype);
-  } catch (error) {
-    if (target.endsWith(INDEX_PATH) && target.length > INDEX_PATH.length) {
-      return await importWithIndexFallback(target.slice(0, -INDEX_PATH.length), filetype);
-    }
-    throw error;
-  }
-}
-
-async function getRoutesManifest(dist = '.'): Promise<ExpoRoutesManifestV1<RegExp> | null> {
-  try {
-    // TODO: What path should we support here? should we include pathe or use URL to join the paths?
-    const routesMod = await import(`${dist}/_expo/routes.json`);
-    // TODO: JSON Schema for validation
-    const routesManifest: ExpoRoutesManifestV1 = JSON.parse(routesMod.default);
-    return {
-      ...routesManifest,
-      notFoundRoutes: routesManifest.notFoundRoutes.map((value) => ({
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      })),
-      apiRoutes: routesManifest.apiRoutes.map((value) => ({
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      })),
-      htmlRoutes: routesManifest.htmlRoutes.map((value) => ({
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      })),
-      redirects: routesManifest.redirects?.map((value) => ({
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      })),
-      rewrites: routesManifest.rewrites?.map((value) => ({
-        ...value,
-        namedRegex: new RegExp(value.namedRegex),
-      })),
-    };
-  } catch (error) {
-    debug('Error loading routes manifest:', error);
-    return null;
-  }
+export function getRoutesManifest(distFolder: string) {
+  return getProcessedManifest(path.join(distFolder, '_expo/routes.json'));
 }
 
 // TODO: Reuse this for dev as well
 export function createRequestHandler(
   distFolder: string,
   {
-    getRoutesManifest: getInternalRoutesManifest = getRoutesManifest,
+    getRoutesManifest: getInternalRoutesManifest,
     getHtml = async (_request, route) => {
-      const html = (await importWithIndexFallback(`${distFolder}/${route.page}`, '.html')).default;
-      return typeof html === 'string' ? html : null;
+      // Serve a static file by exact route name
+      const filePath = path.join(distFolder, route.page + '.html');
+      if (fs.existsSync(filePath)) {
+        return fs.readFileSync(filePath, 'utf-8');
+      }
+
+      // Serve a static file by route name with hoisted index
+      // See: https://github.com/expo/expo/pull/27935
+      const hoistedFilePath = route.page.match(/\/index$/)
+        ? path.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
+        : null;
+      if (hoistedFilePath && fs.existsSync(hoistedFilePath)) {
+        return fs.readFileSync(hoistedFilePath, 'utf-8');
+      }
+
+      return null;
     },
     getApiRoute = async (route) => {
-      const filePath = `${distFolder}/${route.file}`;
+      const filePath = path.join(distFolder, route.file);
+
       debug(`Handling API route: ${route.page}: ${filePath}`);
 
-      // TODO: Should catch errors here?
-      // TODO: Production worker uses `import` only
+      // TODO: What's the standard behavior for malformed projects?
+      if (!fs.existsSync(filePath)) {
+        return null;
+      }
+
       if (/\.c?js$/.test(filePath)) {
         return require(filePath);
       }
@@ -247,7 +227,6 @@ export function createRequestHandler(
         status: 404,
         headers: {
           'Content-Type': 'text/plain',
-          ...(isDevelopment ? {} : { 'Cache-Control': HTML_CACHE_CONTROL }),
         },
       });
     }
