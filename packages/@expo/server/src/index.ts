@@ -212,25 +212,21 @@ export function createRequestHandler(
     }
 
     // Finally, test 404 routes
-    for (const route of manifest.notFoundRoutes) {
-      if (!route.namedRegex.test(sanitizedPathname)) {
-        continue;
+    if (request.method === 'GET' || request.method === 'HEAD') {
+      for (const route of manifest.notFoundRoutes) {
+        if (!route.namedRegex.test(sanitizedPathname)) {
+          continue;
+        }
+
+        try {
+          const contents = await getHtml(request, route);
+          return respondNotFoundHTML(contents, route);
+        } catch {
+          // TODO: Add test for this, expo/server could throw an error if getHtml throws
+          // Handle missing/corrupted not found route files
+          continue;
+        }
       }
-
-      // serve a static file
-      const contents = await getHtml(request, route);
-
-      // TODO: What's the standard behavior for malformed projects?
-      if (!contents) {
-        return new Response('Not found', {
-          status: 404,
-          headers: { 'Content-Type': 'text/plain' },
-        });
-      } else if (contents instanceof Response) {
-        return contents;
-      }
-
-      return new Response(contents, { status: 404, headers: { 'Content-Type': 'text/html' } });
     }
 
     // 404
@@ -260,13 +256,34 @@ export function createRequestHandler(
   };
 }
 
+async function respondNotFoundHTML(
+  html: string | Response | null,
+  route: RouteInfo<RegExp>
+): Promise<Response> {
+  if (typeof html === 'string') {
+    return new Response(html, {
+      status: 404,
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    });
+  }
+
+  if (isResponse(html)) {
+    // TODO: Check where is this used?
+    return html;
+  }
+
+  throw new Error(`HTML route file ${route.page}.html could not be loaded`);
+}
+
 async function respondAPI(mod: any, request: Request, route: RouteInfo<RegExp>): Promise<Response> {
   if (!mod || typeof mod !== 'object') {
     // NOTE(@krystofwoldrich): expo/server would return 405
     throw new Error(`API route module ${route.page} could not be loaded`);
   }
 
-  if (mod instanceof Response) {
+  if (isResponse(mod)) {
     // TODO: Check where is this used?
     return mod;
   }
