@@ -94,11 +94,13 @@ class BuildDataTest {
     return UpdatesConfiguration(
       scopeKey = updateUrl,
       updateUrl = Uri.parse(updateUrl),
+      originalEmbeddedUpdateUrl = Uri.parse(updateUrl),
       runtimeVersionRaw = "1.0.0",
       launchWaitMs = 0,
       checkOnLaunch = CheckAutomaticallyConfiguration.ALWAYS,
       hasEmbeddedUpdate = hasEmbeddedUpdate,
       requestHeaders = requestHeaders,
+      originalEmbeddedRequestHeaders = requestHeaders,
       codeSigningCertificate = null,
       codeSigningMetadata = emptyMap(),
       codeSigningIncludeManifestResponseCertificateChain = false,

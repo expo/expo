@@ -93,12 +93,8 @@ class LauncherSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null, configWithOverride
     )
-      .also {
-        it.updateEntity.url = overrideUrl
-        it.updateEntity.requestHeaders = overrideHeaders
-      }
 
     updateWithDifferentUrl = ExpoUpdatesUpdate.fromExpoUpdatesManifest(
       ExpoUpdatesManifest(
@@ -115,11 +111,16 @@ class LauncherSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null,
+      UpdatesConfiguration.create(
+        context,
+        config,
+        UpdatesConfigurationOverride(
+          updateUrl = Uri.parse("https://different.example.com"),
+          requestHeaders = mapOf()
+        )
+      )
     )
-      .also {
-        it.updateEntity.url = Uri.parse("https://different.example.com")
-      }
 
     updateWithOverrideHeaders = ExpoUpdatesUpdate.fromExpoUpdatesManifest(
       ExpoUpdatesManifest(
@@ -136,11 +137,16 @@ class LauncherSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null,
+      UpdatesConfiguration.create(
+        context,
+        config,
+        UpdatesConfigurationOverride(
+          updateUrl = url,
+          requestHeaders = overrideHeaders
+        )
+      )
     )
-      .also {
-        it.updateEntity.requestHeaders = overrideHeaders
-      }
 
     updateWithDifferentHeaders = ExpoUpdatesUpdate.fromExpoUpdatesManifest(
       ExpoUpdatesManifest(
@@ -157,11 +163,16 @@ class LauncherSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null,
+      UpdatesConfiguration.create(
+        context,
+        config,
+        UpdatesConfigurationOverride(
+          updateUrl = url,
+          requestHeaders = mapOf("Authorization" to "Bearer different_token")
+        )
+      )
     )
-      .also {
-        it.updateEntity.requestHeaders = mapOf("Authorization" to "Bearer different_token")
-      }
   }
 
   @Test
@@ -196,12 +207,15 @@ class LauncherSelectionPolicyFilterAwareTest {
         )
       ),
       null,
-      config
+      UpdatesConfiguration.create(
+        context,
+        config,
+        UpdatesConfigurationOverride(
+          updateUrl = overrideUrl,
+          requestHeaders = overrideHeaders
+        )
+      )
     )
-      .also {
-        it.updateEntity.url = overrideUrl
-        it.updateEntity.requestHeaders = overrideHeaders
-      }
 
     val launcherPolicy = LauncherSelectionPolicyFilterAware(runtimeVersion, configWithOverride)
     val updates = listOf(
@@ -230,16 +244,5 @@ class LauncherSelectionPolicyFilterAwareTest {
     val updates = listOf(updateWithDifferentHeaders).map { it.updateEntity }
     val result = launcherPolicy.selectUpdateToLaunch(updates, manifestFilters)
     Truth.assertThat(result).isNull()
-  }
-
-  @Test
-  fun `should work normally without override config`() {
-    val launcherPolicy = LauncherSelectionPolicyFilterAware(runtimeVersion, config)
-    val updates = listOf(
-      updateWithOverrideUrl,
-      updateWithDifferentUrl
-    ).map { it.updateEntity }
-    val result = launcherPolicy.selectUpdateToLaunch(updates, manifestFilters)
-    Truth.assertThat(result).isEqualTo(updateWithDifferentUrl.updateEntity)
   }
 }

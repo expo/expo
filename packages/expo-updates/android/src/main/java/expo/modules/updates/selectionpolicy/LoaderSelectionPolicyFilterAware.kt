@@ -34,17 +34,26 @@ class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration)
       return true
     }
 
+    // if new update doesn't match the configured URL, don't load it
     if (newUpdate.url != null && newUpdate.url != config.updateUrl) {
       return false
     }
+
+    // if new update doesn't match the configured request headers, don't load it
     if (newUpdate.requestHeaders != null && newUpdate.requestHeaders != config.requestHeaders) {
       return false
     }
-    if (config.hasUpdatesOverride) {
-      // For overridden update, check only id, not commitTime.
-      // This excludes embedded update that might have a newer commitTime than the remote update.
-      return newUpdate.id != launchedUpdate.id
+
+    // if the launched update no longer matches the configured URL, we should load the new update
+    if (launchedUpdate.url != null && launchedUpdate.url != config.updateUrl) {
+      return true
     }
+
+    // if the launched update no longer matches the configured request headers, we should load the new update
+    if (launchedUpdate.requestHeaders != null && launchedUpdate.requestHeaders != config.requestHeaders) {
+      return true
+    }
+
     return newUpdate.commitTime.after(launchedUpdate.commitTime)
   }
 

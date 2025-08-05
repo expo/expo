@@ -112,12 +112,8 @@ class LoaderSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null, configWithOverride
     )
-      .also {
-        it.updateEntity.url = overrideUrl
-        it.updateEntity.requestHeaders = overrideHeaders
-      }
 
     updateWithDifferentUrl = ExpoUpdatesUpdate.fromExpoUpdatesManifest(
       ExpoUpdatesManifest(
@@ -134,11 +130,16 @@ class LoaderSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null,
+      UpdatesConfiguration.create(
+        context,
+        config,
+        UpdatesConfigurationOverride(
+          updateUrl = Uri.parse("https://different.example.com"),
+          requestHeaders = mapOf()
+        )
+      )
     )
-      .also {
-        it.updateEntity.url = Uri.parse("https://different.example.com")
-      }
 
     updateWithOverrideHeaders = ExpoUpdatesUpdate.fromExpoUpdatesManifest(
       ExpoUpdatesManifest(
@@ -155,11 +156,16 @@ class LoaderSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null,
+      UpdatesConfiguration.create(
+        context,
+        config,
+        UpdatesConfigurationOverride(
+          updateUrl = url,
+          requestHeaders = overrideHeaders
+        )
+      )
     )
-      .also {
-        it.updateEntity.requestHeaders = overrideHeaders
-      }
 
     updateWithDifferentHeaders = ExpoUpdatesUpdate.fromExpoUpdatesManifest(
       ExpoUpdatesManifest(
@@ -176,11 +182,16 @@ class LoaderSelectionPolicyFilterAwareTest {
           """.trimIndent()
         )
       ),
-      null, config
+      null,
+      UpdatesConfiguration.create(
+        context,
+        config,
+        UpdatesConfigurationOverride(
+          updateUrl = url,
+          requestHeaders = mapOf("Authorization" to "Bearer different_token")
+        )
+      )
     )
-      .also {
-        it.updateEntity.requestHeaders = mapOf("Authorization" to "Bearer different_token")
-      }
   }
 
   @Test

@@ -150,7 +150,6 @@ class DatabaseLauncher(
     val embeddedUpdate = EmbeddedManifestUtils.requireEmbeddedUpdate(context, configuration)
     val filteredLaunchableUpdates = mutableListOf<UpdateEntity>()
     for (update in launchableUpdates) {
-
       // We can only run an update marked as embedded if it's actually the update embedded in the
       // current binary. We might have an older update from a previous binary still listed as
       // "EMBEDDED" in the database so we need to do this check.

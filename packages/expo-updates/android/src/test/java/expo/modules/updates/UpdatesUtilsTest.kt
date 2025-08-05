@@ -38,11 +38,13 @@ class UpdatesUtilsTest : TestCase() {
     val baseConfig = UpdatesConfiguration(
       scopeKey = "wat",
       updateUrl = mockk(),
+      originalEmbeddedUpdateUrl = mockk(),
       runtimeVersionRaw = "1.0",
       launchWaitMs = 0,
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       hasEmbeddedUpdate = true,
       requestHeaders = mapOf(),
+      originalEmbeddedRequestHeaders = mapOf(),
       codeSigningCertificate = null,
       codeSigningMetadata = null,
       codeSigningIncludeManifestResponseCertificateChain = true,

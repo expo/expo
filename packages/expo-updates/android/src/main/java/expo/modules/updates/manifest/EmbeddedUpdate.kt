@@ -1,5 +1,6 @@
 package expo.modules.updates.manifest
 
+import android.net.Uri
 import android.util.Log
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.UpdatesConfiguration
@@ -24,10 +25,12 @@ class EmbeddedUpdate private constructor(
   private val scopeKey: String,
   private val commitTime: Date,
   private val runtimeVersion: String,
-  private val assets: JSONArray?
+  private val assets: JSONArray?,
+  private val url: Uri,
+  private val requestHeaders: Map<String, String>
 ) : Update {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(id, commitTime, runtimeVersion, scopeKey, this@EmbeddedUpdate.manifest.getRawJson(), null, null).apply {
+    UpdateEntity(id, commitTime, runtimeVersion, scopeKey, this@EmbeddedUpdate.manifest.getRawJson(), url, requestHeaders).apply {
       status = UpdateStatus.EMBEDDED
     }
   }
@@ -88,7 +91,9 @@ class EmbeddedUpdate private constructor(
       configuration.scopeKey,
       commitTime = Date(manifest.getCommitTimeLong()),
       runtimeVersion = configuration.getRuntimeVersion(),
-      assets = manifest.getAssets()
+      assets = manifest.getAssets(),
+      url = configuration.originalEmbeddedUpdateUrl,
+      requestHeaders = configuration.originalEmbeddedRequestHeaders
     )
   }
 }

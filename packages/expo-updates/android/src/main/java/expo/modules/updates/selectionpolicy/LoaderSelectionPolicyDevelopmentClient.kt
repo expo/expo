@@ -30,12 +30,26 @@ class LoaderSelectionPolicyDevelopmentClient(private val config: UpdatesConfigur
       return true
     }
 
+    // if new update doesn't match the configured URL, don't load it
     if (newUpdate.url != null && newUpdate.url != config?.updateUrl) {
       return false
     }
+
+    // if new update doesn't match the configured request headers, don't load it
     if (newUpdate.requestHeaders != null && newUpdate.requestHeaders != config?.requestHeaders) {
       return false
     }
+
+    // if the launched update no longer matches the configured URL, we should load the new update
+    if (launchedUpdate.url != null && launchedUpdate.url != config?.updateUrl) {
+      return true
+    }
+
+    // if the launched update no longer matches the configured request headers, we should load the new update
+    if (launchedUpdate.requestHeaders != null && launchedUpdate.requestHeaders != config?.requestHeaders) {
+      return true
+    }
+
     return newUpdate.commitTime.after(launchedUpdate.commitTime)
   }
 
