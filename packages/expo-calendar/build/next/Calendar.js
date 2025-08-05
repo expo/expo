@@ -11,8 +11,8 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getAttendees(recurringEventOptions = {}) {
         return super.getAttendees(stringifyDateValues(recurringEventOptions));
     }
-    update(details) {
-        super.update(stringifyDateValues(details));
+    update(details, options = {}) {
+        super.update(stringifyDateValues(details), stringifyDateValues(options));
     }
     delete(options = {}) {
         super.delete(stringifyDateValues(options));

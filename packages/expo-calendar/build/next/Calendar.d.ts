@@ -5,7 +5,7 @@ export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalen
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
-    update(details: Partial<Event>): void;
+    update(details: Partial<Event>, options?: RecurringEventOptions): void;
     delete(options?: RecurringEventOptions): void;
 }
 export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
