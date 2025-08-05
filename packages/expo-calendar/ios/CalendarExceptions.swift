@@ -136,7 +136,7 @@ final internal class ItemNoLongerExistsException: Exception {
 }
 
 final internal class NotImplementedYetException: Exception {
-    override var reason: String {
-        "Not implemented yet."
-    }
+  override var reason: String {
+    "Not implemented yet."
+  }
 }

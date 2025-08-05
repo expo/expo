@@ -3,9 +3,9 @@ import ExpoModulesCore
 import EventKit
 
 internal final class ExpoCalendarAttendee: SharedObject {
-    var attendee: EKParticipant
+  var attendee: EKParticipant
 
-    init(attendee: EKParticipant) {
-        self.attendee = attendee
-    }
+  init(attendee: EKParticipant) {
+    self.attendee = attendee
+  }
 }
