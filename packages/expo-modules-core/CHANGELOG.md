@@ -35,6 +35,7 @@
 - [iOS] Support throwing errors in shared object constructor. ([#37618](https://github.com/expo/expo/pull/37618) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove boilerplate from function factories. ([#37884](https://github.com/expo/expo/pull/37884) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Remove react-native 0.74 support files ([#38216](https://github.com/expo/expo/pull/38216) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add missing peer dependencies for `react` and `react-native` ([#38528](https://github.com/expo/expo/pull/38528) by [@kitten](https://github.com/kitten))
 
 ## 2.5.0 - 2025-07-17
 

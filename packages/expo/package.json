@@ -20,6 +20,7 @@
     "android",
     "bin",
     "build",
+    "internal",
     "ios",
     "scripts",
     "src",
@@ -92,6 +93,7 @@
     "expo-modules-core": "2.3.13",
     "pretty-format": "^29.7.0",
     "react-native-edge-to-edge": "1.6.0",
+    "react-refresh": "^0.14.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
@@ -107,9 +109,7 @@
   "peerDependencies": {
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
-    "metro-runtime": "*",
     "react": "*",
-    "react-refresh": "*",
     "react-native": "*",
     "react-native-webview": "*"
   },

@@ -17,10 +17,15 @@
 - Add fork of `@babel/transform-export-namespace-from` to preserve location of the transformed import/export statements ([#38042](https://github.com/expo/expo/pull/38042) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Remove Babel value-imports instead only relying on types and the `@babel/core` instance passed to the preset and plugins ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
 - Updated test snapshot. ([#38430](https://github.com/expo/expo/pull/38430) by [@kudo](https://github.com/kudo))
+- Replace `react-refresh` dependency with peer dependency fulfilled by `expo` ([#38562](https://github.com/expo/expo/pull/38562) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 📚 3rd party library updates
+
+- Bumped `react-native-web` and `babel-plugin-react-native-web` to 0.21.0. ([#38425](https://github.com/expo/expo/pull/38425) by [@kudo](https://github.com/kudo))
 
 ## 13.2.3 - 2025-07-03
 

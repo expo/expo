@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Improve error handling in plugin resolver ([#38338](https://github.com/expo/expo/pull/38338) by [@hirbod](https://github.com/hirbod))
+
 ### 💡 Others
 
 - Export `CodeMod` from `android` directory for use in package config-plugins. ([#37885](https://github.com/expo/expo/pull/37885) by [@aleqsio](https://github.com/aleqsio))

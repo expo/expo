@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- Add experimental `--unstable-hosted-native` flag to expo export. ([#38265](https://github.com/expo/expo/pull/38265) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable async require by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 - Support JSON output for install check. ([#37318](https://github.com/expo/expo/pull/37318) by [@betomoedano](https://github.com/betomoedano))
 - Add `EXPO_USE_STICKY_RESOLVER` to enable experimental sticky resolution to native modules ([#37201](https://github.com/expo/expo/pull/37201) by [@kitten](https://github.com/kitten))
@@ -28,6 +29,7 @@
 - Enable inverse dependency stack trace (`EXPO_METRO_UNSTABLE_ERRORS`) for Metro bundling errors by default ([#38296](https://github.com/expo/expo/pull/38296) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Fix duplicate code frames printed in transformation error ([#38288](https://github.com/expo/expo/pull/38288) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Fix processing circular dependencies for inverse dependency resolver stack trace ([#38414](https://github.com/expo/expo/pull/38414) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Run prebuild only for the platforms specified in app config (if listed). ([#31752](https://github.com/expo/expo/pull/31752) by [@prathameshmm02](https://github.com/prathameshmm02))
 
 ### 💡 Others
 
@@ -42,6 +44,9 @@
 - Fix e2e start-test for local runs ([#38066](https://github.com/expo/expo/pull/38066) by [@Ubax](https://github.com/Ubax))
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 - Treat Meta Quest devices as Android devices in `resolvePlatformFromUserAgentHeader` ([#37749](https://github.com/expo/expo/pull/37749) by [@behenate](https://github.com/behenate))
+- Add missing `expo-router` optional peer dependency and `@expo/server` dependency ([#38533](https://github.com/expo/expo/pull/38533) by [@kitten](https://github.com/kitten))
+- Update `@react-native/js-polyfills` to instead be loaded from `react-native/rn-get-polyfills` ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
+- Add missing (reverse) peer dependency on `expo` ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

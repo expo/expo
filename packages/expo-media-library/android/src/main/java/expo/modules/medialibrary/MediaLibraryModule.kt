@@ -8,10 +8,8 @@ import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
@@ -21,44 +19,42 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.util.Log
 import androidx.annotation.RequiresApi
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.permissions.Permissions.askForPermissionsWithPermissionsManager
 import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermissionsManager
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.medialibrary.MediaLibraryModule.Action
-import expo.modules.medialibrary.albums.AddAssetsToAlbum
-import expo.modules.medialibrary.albums.CreateAlbum
-import expo.modules.medialibrary.albums.CreateAlbumWithInitialFileUri
-import expo.modules.medialibrary.albums.DeleteAlbums
-import expo.modules.medialibrary.albums.GetAlbum
-import expo.modules.medialibrary.albums.GetAlbums
-import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
+import expo.modules.medialibrary.albums.addAssetsToAlbum
+import expo.modules.medialibrary.albums.createAlbum
+import expo.modules.medialibrary.albums.createAlbumWithInitialFileUri
+import expo.modules.medialibrary.albums.deleteAlbums
+import expo.modules.medialibrary.albums.getAlbum
+import expo.modules.medialibrary.albums.getAlbums
 import expo.modules.medialibrary.albums.getAssetsInAlbums
-import expo.modules.medialibrary.albums.migration.CheckIfAlbumShouldBeMigrated
-import expo.modules.medialibrary.albums.migration.MigrateAlbum
-import expo.modules.medialibrary.assets.CreateAssetWithAlbumId
-import expo.modules.medialibrary.assets.DeleteAssets
-import expo.modules.medialibrary.assets.GetAssetInfo
-import expo.modules.medialibrary.assets.GetAssets
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import expo.modules.medialibrary.albums.migration.checkIfAlbumShouldBeMigrated
+import expo.modules.medialibrary.albums.migration.migrateAlbum
+import expo.modules.medialibrary.albums.removeAssetsFromAlbum
+import expo.modules.medialibrary.assets.createAssetWithAlbumId
+import expo.modules.medialibrary.assets.deleteAssets
+import expo.modules.medialibrary.assets.getAssetInfo
+import expo.modules.medialibrary.assets.getAssets
+import expo.modules.medialibrary.contracts.DeleteContract
+import expo.modules.medialibrary.contracts.DeleteContractInput
+import expo.modules.medialibrary.contracts.WriteContract
+import expo.modules.medialibrary.contracts.WriteContractInput
 import java.lang.ref.WeakReference
 
 class MediaLibraryModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
   private var imagesObserver: MediaStoreContentObserver? = null
   private var videosObserver: MediaStoreContentObserver? = null
-  private var awaitingAction: Action? = null
+  private lateinit var deleteLauncher: AppContextActivityResultLauncher<DeleteContractInput, Boolean>
+  private lateinit var writeLauncher: AppContextActivityResultLauncher<WriteContractInput, Boolean>
   private val isExpoGo by lazy {
     context.resources.getString(R.string.is_expo_go).toBoolean()
   }
@@ -103,134 +99,84 @@ class MediaLibraryModule : Module() {
       )
     }
 
-    AsyncFunction("saveToLibraryAsync") { localUri: String, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        withModuleScope(promise) {
-          CreateAssetWithAlbumId(context, localUri, promise, false)
-            .execute()
-        }
+    AsyncFunction("saveToLibraryAsync") Coroutine { localUri: String ->
+      requireSystemPermissions()
+      return@Coroutine createAssetWithAlbumId(context, localUri, false)
+    }
+
+    AsyncFunction("createAssetAsync") Coroutine { localUri: String, albumId: String? ->
+      requireSystemPermissions()
+      return@Coroutine createAssetWithAlbumId(context, localUri, true, albumId)
+    }
+
+    AsyncFunction("addAssetsToAlbumAsync") Coroutine { assetsId: Array<String>, albumId: String, copyToAlbum: Boolean ->
+      requireSystemPermissions()
+      requestMediaLibraryActionPermission(if (copyToAlbum) emptyArray() else assetsId)
+      return@Coroutine addAssetsToAlbum(context, assetsId, albumId, copyToAlbum)
+    }
+
+    AsyncFunction("removeAssetsFromAlbumAsync") Coroutine { assetsId: Array<String>, albumId: String ->
+      requireSystemPermissions()
+      requestMediaLibraryActionPermission(assetsId)
+      return@Coroutine removeAssetsFromAlbum(context, assetsId, albumId)
+    }
+
+    AsyncFunction("deleteAssetsAsync") Coroutine { assetsId: Array<String> ->
+      requireSystemPermissions()
+      requestMediaLibraryActionPermission(assetsId, needsDeletePermission = true)
+      return@Coroutine deleteAssets(context, assetsId)
+    }
+
+    AsyncFunction("getAssetInfoAsync") Coroutine { assetId: String, _: Map<String, Any?>?/* unused on android atm */ ->
+      requireSystemPermissions(false)
+      return@Coroutine getAssetInfo(context, assetId)
+    }
+
+    AsyncFunction("getAlbumsAsync") Coroutine { _: Map<String, Any?>?/* unused on android atm */ ->
+      requireSystemPermissions(false)
+      return@Coroutine getAlbums(context)
+    }
+
+    AsyncFunction("getAlbumAsync") Coroutine { albumName: String ->
+      requireSystemPermissions(false)
+      return@Coroutine getAlbum(context, albumName)
+    }
+
+    AsyncFunction("createAlbumAsync") Coroutine { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri? ->
+      requireSystemPermissions()
+
+      val assetIdArray = if (!copyAsset && assetId != null) {
+        arrayOf(assetId)
+      } else {
+        emptyArray()
+      }
+
+      requestMediaLibraryActionPermission(assetIdArray)
+
+      return@Coroutine if (assetId != null) {
+        createAlbum(context, albumName, assetId, copyAsset)
+      } else if (initialAssetUri != null) {
+        createAlbumWithInitialFileUri(context, albumName, initialAssetUri)
+      } else {
+        throw AlbumException("Could not create the album")
       }
     }
 
-    AsyncFunction("createAssetAsync") { localUri: String, albumId: String?, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        withModuleScope(promise) {
-          CreateAssetWithAlbumId(context, localUri, promise, true, albumId)
-            .execute()
-        }
-      }
+    AsyncFunction("deleteAlbumsAsync") Coroutine { albumIds: Array<String> ->
+      requireSystemPermissions()
+      val assetIds = getAssetsInAlbums(context, *albumIds).toTypedArray()
+      requestMediaLibraryActionPermission(assetIds)
+      return@Coroutine deleteAlbums(context, albumIds)
     }
 
-    AsyncFunction("addAssetsToAlbumAsync") { assetsId: List<String>, albumId: String, copyToAlbum: Boolean, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission(promise) {
-          withModuleScope(promise) {
-            AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum, promise)
-              .execute()
-          }
-        }
-        runActionWithPermissions(if (copyToAlbum) emptyList() else assetsId, action)
-      }
+    AsyncFunction("getAssetsAsync") Coroutine { assetOptions: AssetsOptions ->
+      requireSystemPermissions(false)
+      return@Coroutine getAssets(context, assetOptions)
     }
 
-    AsyncFunction("removeAssetsFromAlbumAsync") { assetsId: List<String>, albumId: String, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission(promise) {
-          withModuleScope(promise) {
-            RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId, promise)
-              .execute()
-          }
-        }
-        runActionWithPermissions(assetsId, action)
-      }
-    }
-
-    AsyncFunction("deleteAssetsAsync") { assetsId: List<String>, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission(promise) {
-          withModuleScope(promise) {
-            DeleteAssets(context, assetsId.toTypedArray(), promise)
-              .execute()
-          }
-        }
-        runActionWithPermissions(assetsId, action, useDeletePermission = true)
-      }
-    }
-
-    AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
-      throwUnlessPermissionsGranted(isWrite = false) {
-        withModuleScope(promise) {
-          GetAssetInfo(context, assetId, promise).execute()
-        }
-      }
-    }
-
-    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
-      throwUnlessPermissionsGranted(isWrite = false) {
-        withModuleScope(promise) {
-          GetAlbums(context, promise).execute()
-        }
-      }
-    }
-
-    AsyncFunction("getAlbumAsync") { albumName: String, promise: Promise ->
-      throwUnlessPermissionsGranted(isWrite = false) {
-        withModuleScope(promise) {
-          GetAlbum(context, albumName, promise)
-            .execute()
-        }
-      }
-    }
-
-    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri?, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission(promise) {
-          withModuleScope(promise) {
-            assetId?.let {
-              CreateAlbum(context, albumName, assetId, copyAsset, promise)
-                .execute()
-            }
-
-            initialAssetUri?.let {
-              CreateAlbumWithInitialFileUri(context, albumName, it, promise)
-                .execute()
-            }
-          }
-        }
-        val assetIdList = if (!copyAsset && assetId != null) {
-          listOf(assetId)
-        } else {
-          emptyList()
-        }
-        runActionWithPermissions(assetIdList, action)
-      }
-    }
-
-    AsyncFunction("deleteAlbumsAsync") { albumIds: List<String>, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission(promise) {
-          withModuleScope(promise) {
-            DeleteAlbums(context, albumIds, promise)
-              .execute()
-          }
-        }
-        val assetIds = getAssetsInAlbums(context, *albumIds.toTypedArray())
-        runActionWithPermissions(assetIds, action)
-      }
-    }
-
-    AsyncFunction("getAssetsAsync") { assetOptions: AssetsOptions, promise: Promise ->
-      throwUnlessPermissionsGranted(isWrite = false) {
-        withModuleScope(promise) {
-          GetAssets(context, assetOptions, promise)
-            .execute()
-        }
-      }
-    }
-
-    AsyncFunction("migrateAlbumIfNeededAsync") { albumId: String, promise: Promise ->
+    AsyncFunction("migrateAlbumIfNeededAsync") Coroutine { albumId: String ->
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-        return@AsyncFunction
+        return@Coroutine
       }
 
       val assetsIds = getAssetsInAlbums(context, albumId)
@@ -238,7 +184,7 @@ class MediaLibraryModule : Module() {
         .toTypedArray()
       // The album is empty, nothing to migrate
       if (assetsIds.isEmpty()) {
-        return@AsyncFunction
+        return@Coroutine
       }
 
       val assets = MediaLibraryUtils.getAssetsById(
@@ -259,33 +205,20 @@ class MediaLibraryModule : Module() {
 
       val albumDir = assets[0].parentFile ?: throw AlbumPathException()
       if (albumDir.canWrite()) {
-        return@AsyncFunction
+        return@Coroutine
       }
 
-      val action = actionIfUserGrantedPermission(promise) {
-        moduleCoroutineScope.launch {
-          MigrateAlbum(context, assets, albumDir.name, promise)
-            .execute()
-        }
-      }
-
-      val needsToCheckPermissions = assets.map { it.assetId }
-      runActionWithPermissions(needsToCheckPermissions, action)
+      val idsOfAssets = assets.map { it.assetId }.toTypedArray()
+      requestMediaLibraryActionPermission(idsOfAssets)
+      return@Coroutine migrateAlbum(context, assets, albumDir.name)
     }
 
-    AsyncFunction("albumNeedsMigrationAsync") { albumId: String, promise: Promise ->
-      throwUnlessPermissionsGranted(isWrite = false) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-          moduleCoroutineScope.launch {
-            try {
-              CheckIfAlbumShouldBeMigrated(context, albumId, promise)
-                .execute()
-            } catch (e: CodedException) {
-              promise.reject(e)
-            }
-          }
-        }
-        promise.resolve(false)
+    AsyncFunction("albumNeedsMigrationAsync") Coroutine { albumId: String ->
+      requireSystemPermissions(false)
+      return@Coroutine if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        checkIfAlbumShouldBeMigrated(context, albumId)
+      } else {
+        false
       }
     }
 
@@ -333,32 +266,13 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    OnActivityResult { _, payload ->
-      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE || payload.requestCode == DELETE_REQUEST_CODE }?.let {
-        it.runWithPermissions(payload.resultCode == Activity.RESULT_OK)
-        awaitingAction = null
-      }
-    }
-
-    OnDestroy {
-      try {
-        moduleCoroutineScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
-        Log.e(TAG, "The scope does not have a job in it")
-      }
+    RegisterActivityContracts {
+      deleteLauncher =
+        registerForActivityResult(DeleteContract(this@MediaLibraryModule))
+      writeLauncher =
+        registerForActivityResult(WriteContract(this@MediaLibraryModule))
     }
   }
-
-  private inline fun withModuleScope(promise: Promise, crossinline block: () -> Unit) =
-    moduleCoroutineScope.launch {
-      try {
-        block()
-      } catch (e: CodedException) {
-        promise.reject(e)
-      } catch (e: ModuleDestroyedException) {
-        promise.reject(TAG, "MediaLibrary module destroyed", e)
-      }
-    }
 
   private val isMissingPermissions: Boolean
     get() = hasReadPermissions()
@@ -430,19 +344,14 @@ class MediaLibraryModule : Module() {
     return granularPermissions
   }
 
-  private inline fun throwUnlessPermissionsGranted(isWrite: Boolean = true, block: () -> Unit) {
+  private fun requireSystemPermissions(isWritePermissionRequired: Boolean = true) {
     val missingPermissionsCondition =
-      if (isWrite) isMissingWritePermission else isMissingPermissions
+      if (isWritePermissionRequired) isMissingWritePermission else isMissingPermissions
     if (missingPermissionsCondition) {
       val missingPermissionsMessage =
-        if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
+        if (isWritePermissionRequired) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
       throw PermissionsException(missingPermissionsMessage)
     }
-    block()
-  }
-
-  private fun interface Action {
-    fun runWithPermissions(permissionsWereGranted: Boolean)
   }
 
   private fun hasReadPermissions(): Boolean {
@@ -481,54 +390,41 @@ class MediaLibraryModule : Module() {
       ?.not() ?: false
   }
 
-  private fun runActionWithPermissions(assetsId: List<String>, action: Action, useDeletePermission: Boolean = false) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(context, assetsId)
-        .filter { uri ->
-          context.checkUriPermission(
-            uri,
-            Binder.getCallingPid(),
-            Binder.getCallingUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-          ) != PackageManager.PERMISSION_GRANTED
-        }
-
-      if (pathsWithoutPermissions.isNotEmpty()) {
-        val request = if (useDeletePermission) {
-          MediaStore.createDeleteRequest(context.contentResolver, pathsWithoutPermissions)
-        } else {
-          MediaStore.createWriteRequest(context.contentResolver, pathsWithoutPermissions)
-        }
-
-        try {
-          awaitingAction = action
-          appContext.throwingActivity.startIntentSenderForResult(
-            request.intentSender,
-            if (useDeletePermission) DELETE_REQUEST_CODE else WRITE_REQUEST_CODE,
-            null,
-            0,
-            0,
-            0
-          )
-        } catch (e: SendIntentException) {
-          awaitingAction = null
-          throw e
-        }
-        // the action will be called when permissions are granted
-        return
-      }
+  private suspend fun requestMediaLibraryActionPermission(
+    assetIds: Array<String>,
+    needsDeletePermission: Boolean = false
+  ) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      return
     }
-    action.runWithPermissions(true)
+
+    val uris = MediaLibraryUtils.getAssetsUris(context, assetIds)
+    val urisWithoutPermission = uris.filterNot { uri ->
+      hasWritePermissionForUri(uri)
+    }
+
+    if (urisWithoutPermission.isEmpty()) {
+      return
+    }
+
+    val granted = if (needsDeletePermission) {
+      deleteLauncher.launch(DeleteContractInput(uris = urisWithoutPermission))
+    } else {
+      writeLauncher.launch(WriteContractInput(uris = urisWithoutPermission))
+    }
+
+    if (!granted) {
+      throw PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
+    }
   }
 
-  private fun actionIfUserGrantedPermission(
-    promise: Promise,
-    block: () -> Unit
-  ) = Action { permissionsWereGranted ->
-    if (!permissionsWereGranted) {
-      promise.reject(PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE))
-    } else {
-      block()
-    }
+  private fun hasWritePermissionForUri(uri: Uri): Boolean {
+    return context.checkUriPermission(
+      uri,
+      Binder.getCallingPid(),
+      Binder.getCallingUid(),
+      Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+    ) == PackageManager.PERMISSION_GRANTED
   }
 
   private inner class MediaStoreContentObserver(handler: Handler, private val mMediaType: Int) :
@@ -559,11 +455,5 @@ class MediaLibraryModule : Module() {
         null,
         null
       ).use { countCursor -> countCursor?.count ?: 0 }
-  }
-
-  companion object {
-    private const val WRITE_REQUEST_CODE = 7463
-    private const val DELETE_REQUEST_CODE = 7464
-    internal val TAG = MediaLibraryModule::class.java.simpleName
   }
 }
