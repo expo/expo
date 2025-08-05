@@ -1,0 +1,233 @@
+import { RouteInfo } from 'expo-router/src/routes-manifest';
+
+import { getRedirectRewriteLocation } from '../index';
+
+describe('static routes', () => {
+  it('should handle static route with no parameters', () => {
+    const request = createMockRequest('https://example.com/about');
+    const route = createMockRoute('/about', /^\/about(?:\/)?$/);
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/about');
+  });
+
+  it('should handle nested static route', () => {
+    const request = createMockRequest('https://example.com/users/profile');
+    const route = createMockRoute('/users/profile', /^\/users\/profile(?:\/)?$/);
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/profile');
+  });
+});
+
+describe('dynamic routes', () => {
+  it('should handle single dynamic parameter', () => {
+    const request = createMockRequest('https://example.com/users/123');
+    const route = createMockRoute('/users/[id]', /^\/users\/(?<user_id>[^/]+?)(?:\/)?$/, {
+      user_id: 'id',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/123');
+  });
+
+  it('should handle multiple dynamic parameters', () => {
+    const request = createMockRequest('https://example.com/users/123/posts/456');
+    const route = createMockRoute(
+      '/users/[userId]/posts/[postId]',
+      /^\/users\/(?<user_id>[^/]+?)\/posts\/(?<post_id>[^/]+?)(?:\/)?$/,
+      { user_id: 'userId', post_id: 'postId' }
+    );
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/123/posts/456');
+  });
+
+  it('should handle catch all to dynamic parameter rewrite (take first segment)', () => {
+    const request = createMockRequest('https://example.com/files/folder/subfolder/file.txt');
+    const route = createMockRoute('/dirs/[name]', /^\/files\/(?<file_path>.+?)(?:\/)?$/, {
+      file_path: 'name',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/dirs/folder'); // Only first segment
+  });
+
+  it('should fallback to segment name when parameter is missing', () => {
+    const request = createMockRequest('https://example.com/users/');
+    const route = createMockRoute('/users/[id]', /^\/users\/(?<user_id>[^/]+?)(?:\/)?$/, {
+      user_id: 'id',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/[id]'); // Fallback to segment
+  });
+
+  it('should fallback to segment name when parameter is missing (multiple)', () => {
+    const request = createMockRequest('https://example.com/users/');
+    const route = createMockRoute(
+      '/users/[id]/profile',
+      /^\/users\/(?<user_id>[^/]+?)\/profile(?:\/)?$/,
+      {}
+    );
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/[id]/profile'); // Fallback to segment
+  });
+});
+
+describe('catch-all routes', () => {
+  it('should handle catch-all parameter', () => {
+    const request = createMockRequest('https://example.com/docs/api/users/create');
+    const route = createMockRoute('/docs/[...slug]', /^\/docs\/(?<catch_all>.+?)(?:\/)?$/, {
+      catch_all: 'slug',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/docs/api/users/create'); // Full path preserved
+  });
+
+  it('should handle catch-all with missing parameter', () => {
+    const request = createMockRequest('https://example.com/docs/');
+    const route = createMockRoute('/docs/[...slug]', /^\/docs\/(?<catch_all>.+?)(?:\/)?$/, {});
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/docs/[...slug]'); // Fallback to segment
+  });
+
+  it('should handle nested catch-all', () => {
+    const request = createMockRequest('https://example.com/api/v1/users/123/posts');
+    const route = createMockRoute(
+      '/api/[version]/[...rest]',
+      /^\/api\/(?<version>[^/]+?)\/(?<rest_path>.+?)(?:\/)?$/,
+      { version: 'version', rest_path: 'rest' }
+    );
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/api/v1/users/123/posts');
+  });
+});
+
+describe('mixed routes', () => {
+  it('should handle mix of static, dynamic, and catch-all segments', () => {
+    const request = createMockRequest('https://example.com/users/123/files/docs/readme.md');
+    const route = createMockRoute(
+      '/users/[id]/files/[...path]',
+      /^\/users\/(?<user_id>[^/]+?)\/files\/(?<file_path>.+?)(?:\/)?$/,
+      { user_id: 'id', file_path: 'path' }
+    );
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/123/files/docs/readme.md');
+  });
+});
+
+describe('query parameters', () => {
+  it('should preserve existing URL search parameters', () => {
+    const request = createMockRequest('https://example.com/users/123?tab=profile&sort=name');
+    const route = createMockRoute('/users/[id]', /^\/users\/(?<user_id>[^/]+?)(?:\/)?$/, {
+      user_id: 'id',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/123?tab=profile&sort=name');
+  });
+
+  it('should add leftover route parameters as query params', () => {
+    const request = createMockRequest('https://example.com/users/123');
+    const route = createMockRoute(
+      '/profile',
+      /^\/users\/(?<user_id>[^/]+?)(?:\/)?$/,
+      { user_id: 'userId' } // This param won't be used in the route
+    );
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/profile?userId=123');
+  });
+
+  it('should combine leftover params with existing search params', () => {
+    const request = createMockRequest('https://example.com/users/123?tab=profile');
+    const route = createMockRoute('/dashboard', /^\/users\/(?<user_id>[^/]+?)(?:\/)?$/, {
+      user_id: 'userId',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/dashboard?userId=123&tab=profile');
+  });
+
+  it('should handle multiple leftover parameters', () => {
+    const request = createMockRequest('https://example.com/users/123/posts/456');
+    const route = createMockRoute(
+      '/home',
+      /^\/users\/(?<user_id>[^/]+?)\/posts\/(?<post_id>[^/]+?)(?:\/)?$/,
+      {
+        user_id: 'userId',
+        post_id: 'postId',
+      }
+    );
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/home?userId=123&postId=456');
+  });
+
+  it('should handle no leftover params and no search params', () => {
+    const request = createMockRequest('https://example.com/users/123');
+    const route = createMockRoute('/users/[id]', /^\/users\/(?<user_id>[^/]+?)(?:\/)?$/, {
+      user_id: 'id',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/users/123');
+  });
+});
+
+describe('edge cases', () => {
+  it('should handle root path', () => {
+    const request = createMockRequest('https://example.com/');
+    const route = createMockRoute('/', /^\/$/);
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/');
+  });
+
+  it('should handle complex path with special characters', () => {
+    const request = createMockRequest('https://example.com/files/my%20file.txt');
+    const route = createMockRoute('/files/[name]', /^\/files\/(?<file_name>[^/]+?)(?:\/)?$/, {
+      file_name: 'name',
+    });
+
+    const result = getRedirectRewriteLocation(request, route);
+
+    expect(result).toBe('/files/my%20file.txt');
+  });
+});
+
+const createMockRequest = (url: string, method = 'GET') => new Request(url, { method });
+
+const createMockRoute = (
+  page: string,
+  namedRegex: RegExp,
+  routeKeys: Record<string, string> = {}
+) =>
+  ({
+    page,
+    namedRegex,
+    routeKeys,
+  }) as RouteInfo<RegExp>;
