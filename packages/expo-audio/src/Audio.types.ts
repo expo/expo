@@ -22,6 +22,52 @@ export type AudioSource =
     };
 
 /**
+ * Options for configuring audio player behavior.
+ */
+export type AudioPlayerOptions = {
+  /**
+   * How often (in milliseconds) to emit playback status updates.
+   * @default 500
+   *
+   * @platform ios
+   * @platform android
+   * @platform web
+   */
+  updateInterval?: number;
+  /**
+   * If set to `true`, the system will attempt to download the resource to the device before loading.
+   * This value defaults to `false`.
+   *
+   * Works with:
+   * - Local assets from `require('path/to/file')`
+   * - Remote HTTP/HTTPS URLs
+   * - Asset objects
+   *
+   * When enabled, this ensures the audio file is fully downloaded before playback begins.
+   * This can improve playback performance and reduce buffering, especially for users
+   * managing multiple audio players simultaneously.
+   *
+   * On Android and iOS, this will download the audio file to the device's tmp directory before playback begins.
+   * The system will purge the file at its discretion.
+   *
+   * On web, this will download the audio file to the user's device memory and make it available for the user to play.
+   * The system will usually purge the file from memory after a reload or on memory pressure.
+   * On web, CORS restrictions apply to the blob url, so you need to make sure the server returns the `Access-Control-Allow-Origin` header.
+   *
+   * @platform ios
+   * @platform web
+   * @platform android
+   */
+  downloadFirst?: boolean;
+};
+
+/**
+ * @deprecated Use `AudioPlayerOptions` instead.
+ * Options for audio loading behavior.
+ */
+export type AudioLoadOptions = AudioPlayerOptions;
+
+/**
  * Represents an available audio input device for recording.
  *
  * This type describes audio input sources like built-in microphones, external microphones,
