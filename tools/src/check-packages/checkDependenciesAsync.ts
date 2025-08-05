@@ -33,7 +33,7 @@ type SourceFileImportRef = {
   isTypeOnly?: boolean;
 };
 
-const IGNORED_PACKAGES = [];
+const IGNORED_PACKAGES: string[] = [];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
   'expo-dev-menu': {
