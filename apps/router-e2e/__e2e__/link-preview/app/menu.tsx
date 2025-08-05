@@ -1,5 +1,5 @@
 import { Link, usePathname } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, ScrollView } from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
@@ -13,14 +13,21 @@ const Menus = () => {
 
   const timeOptions = useMemo(
     () =>
-      Array.from({ length: time }, (_, i) => ({
+      // Add new option every 5 seconds
+      Array.from({ length: Math.floor(time / 5) + 2 }, (_, i) => ({
         label: `Option ${i + 1}`,
         value: i + 1,
       })),
     [time]
   );
 
-  console.log(palette);
+  useEffect(() => {
+    console.log('Palette:', palette);
+  }, [palette]);
+
+  useEffect(() => {
+    console.log('Submenu:', submenu);
+  }, [submenu]);
 
   return (
     <ScrollView style={{ backgroundColor: '#fff' }} contentInsetAdjustmentBehavior="automatic">
