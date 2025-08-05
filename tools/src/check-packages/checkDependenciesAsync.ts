@@ -35,7 +35,6 @@ type SourceFileImportRef = {
 
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
-  'expo-gl', // package: react-dom, react-native-reanimated
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
 ];
 
@@ -45,15 +44,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   },
   'expo-modules-test-core': {
     typescript: 'ignore-dev', // TODO: Should probably be a peer dep
-  },
-
-  'expo-asset': {
-    '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
-  },
-
-  'expo-font': {
-    '@expo/config-plugins/build/android/codeMod': 'ignore-dev', // TODO: Remove
-    '@expo/config-plugins/build/utils/generateCode': 'ignore-dev', // TODO: Remove
   },
 
   '@expo/cli': {

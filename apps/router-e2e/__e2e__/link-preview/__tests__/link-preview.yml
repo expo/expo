@@ -3,14 +3,14 @@ appId: host.exp.Exponent
 name: Link preview
 ---
 - stopApp: host.exp.Exponent
-- longPressOn: 'Link.Preview: /(tabs)/home/one'
+- longPressOn: 'Link.Preview: /one'
 - assertVisible:
-    text: 'Current Path: /(tabs)/home/one'
+    text: 'Current Path: /one'
 - assertVisible:
     text: 'Is preview: Yes'
 - tapOn:
     point: '50%,10%'
-- longPressOn: 'Link.Preview: /(tabs)/home/one'
+- longPressOn: 'Link.Preview: /one'
 - tapOn:
     point: '50%, 50%'
 - assertVisible:
