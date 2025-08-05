@@ -1,11 +1,9 @@
-export type ExpoRouterServerManifestV1Route<TRegex = string> = {
-  page: string;
-  routeKeys: Record<string, string>;
-  namedRegex: TRegex;
-  generated?: boolean;
-};
+// NOTE(@krystofwoldrich): These types should be moved into the server package
+import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 
-export type ExpoRouterServerManifestV1FunctionRoute = ExpoRouterServerManifestV1Route<RegExp>;
+export type RawManifest = ExpoRoutesManifestV1;
+export type Manifest = ExpoRoutesManifestV1<RegExp>;
+export type Route = RouteInfo<RegExp>;
 
 export type InternalResponse = Response & {
   // Cloudflare Response type properties

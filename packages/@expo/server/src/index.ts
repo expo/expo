@@ -1,23 +1,21 @@
 import './install';
 
-import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { ExpoError } from './error';
-import { ExpoRouterServerManifestV1FunctionRoute, InternalResponse } from './types';
+import { InternalResponse, Manifest, RawManifest, Route } from './types';
 
 const debug =
-  // TODO: This check won't work for WinterTC runtimes
   process.env.NODE_ENV === 'development'
     ? (require('debug')('expo:server') as typeof console.log)
     : () => {};
 
-function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
+function getProcessedManifest(path: string): Manifest {
   // TODO: JSON Schema for validation
-  const routesManifest = JSON.parse(fs.readFileSync(path, 'utf-8')) as ExpoRoutesManifestV1;
+  const routesManifest = JSON.parse(fs.readFileSync(path, 'utf-8')) as RawManifest;
 
-  const parsed: ExpoRoutesManifestV1<RegExp> = {
+  const parsed: Manifest = {
     ...routesManifest,
     notFoundRoutes: routesManifest.notFoundRoutes.map((value: any) => {
       return { ...value, namedRegex: new RegExp(value.namedRegex) };
@@ -85,18 +83,17 @@ export function createRequestHandler(
       throw error;
     },
   }: {
-    // TODO: Remove Response return type, currently used for development error responses directly from Metro
-    getHtml?: (request: Request, route: RouteInfo<RegExp>) => Promise<string | Response | null>;
-    getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
-    getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
+    getHtml?: (request: Request, route: Route) => Promise<string | Response | null>;
+    getRoutesManifest?: (distFolder: string) => Promise<Manifest | null>;
+    getApiRoute?: (route: Route) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;
     handleRouteError?: (error: Error) => Promise<Response>;
   } = {}
 ) {
-  let routesManifest: ExpoRoutesManifestV1<RegExp> | undefined;
+  let routesManifest: Manifest | undefined;
 
   const getRoutesManifestCached = async () => {
-    let manifest: ExpoRoutesManifestV1<RegExp> | null = null;
+    let manifest: Manifest | null = null;
     if (getInternalRoutesManifest) {
       // Only used for development by the dev server
       manifest = await getInternalRoutesManifest(distFolder);
@@ -112,7 +109,7 @@ export function createRequestHandler(
     return routesManifest;
   };
 
-  async function requestHandler(incomingRequest: Request, manifest: ExpoRoutesManifestV1<RegExp>) {
+  async function requestHandler(incomingRequest: Request, manifest: Manifest) {
     let request = incomingRequest;
     const url = new URL(request.url);
 
@@ -229,7 +226,7 @@ export function createRequestHandler(
 
 async function respondNotFoundHTML(
   html: string | Response | null,
-  route: RouteInfo<RegExp>
+  route: Route
 ): Promise<Response> {
   if (typeof html === 'string') {
     return new Response(html, {
@@ -248,7 +245,7 @@ async function respondNotFoundHTML(
   throw new Error(`HTML route file ${route.page}.html could not be loaded`);
 }
 
-async function respondAPI(mod: any, request: Request, route: RouteInfo<RegExp>): Promise<Response> {
+async function respondAPI(mod: any, request: Request, route: Route): Promise<Response> {
   if (!mod || typeof mod !== 'object') {
     throw new ExpoError(`API route module ${route.page} could not be loaded`);
   }
@@ -288,7 +285,7 @@ async function respondAPI(mod: any, request: Request, route: RouteInfo<RegExp>):
   } as ResponseInit);
 }
 
-function respondHTML(html: string | Response | null, route: RouteInfo<RegExp>): Response {
+function respondHTML(html: string | Response | null, route: Route): Response {
   if (typeof html === 'string') {
     return new Response(html, {
       status: 200,
@@ -306,7 +303,7 @@ function respondHTML(html: string | Response | null, route: RouteInfo<RegExp>): 
   throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
 }
 
-function respondRedirect(url: URL, request: Request, route: RouteInfo<RegExp>): Response {
+function respondRedirect(url: URL, request: Request, route: Route): Response {
   // NOTE(@krystofwoldrich): @expo/server would not redirect when location was empty,
   // it would keep searching for match and eventually return 404. Worker redirects to origin.
   const location = getRedirectRewriteLocation(request, route);
@@ -323,7 +320,7 @@ function respondRedirect(url: URL, request: Request, route: RouteInfo<RegExp>): 
   return Response.redirect(target, status);
 }
 
-export function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) {
+export function getRedirectRewriteLocation(request: Request, route: Route) {
   const params = parseParams(request, route);
 
   const urlSearchParams = new URL(request.url).searchParams;
@@ -361,10 +358,7 @@ export function getRedirectRewriteLocation(request: Request, route: RouteInfo<Re
   return location;
 }
 
-function parseParams(
-  request: Request,
-  route: ExpoRouterServerManifestV1FunctionRoute
-): Record<string, string> {
+function parseParams(request: Request, route: Route): Record<string, string> {
   const params: Record<string, string> = {};
   const { pathname } = new URL(request.url);
   const match = route.namedRegex.exec(pathname);

@@ -10,9 +10,7 @@ require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const error_1 = require("./error");
-const debug = 
-// TODO: This check won't work for WinterTC runtimes
-process.env.NODE_ENV === 'development'
+const debug = process.env.NODE_ENV === 'development'
     ? require('debug')('expo:server')
     : () => { };
 function getProcessedManifest(path) {
