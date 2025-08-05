@@ -1,6 +1,5 @@
-import { RouteInfo } from 'expo-router/src/routes-manifest';
-
-import { getRedirectRewriteLocation } from '../index';
+import { Route } from '../types';
+import { getRedirectRewriteLocation } from '../utils';
 
 describe('static routes', () => {
   it('should handle static route with no parameters', () => {
@@ -248,4 +247,4 @@ const createMockRoute = (
     page,
     namedRegex,
     routeKeys,
-  }) as RouteInfo<RegExp>;
+  }) as Route;

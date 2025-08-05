@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRoutesManifest = getRoutesManifest;
 exports.createRequestHandler = createRequestHandler;
-exports.getRedirectRewriteLocation = getRedirectRewriteLocation;
 require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const error_1 = require("./error");
+const utils_1 = require("./utils");
 const debug = process.env.NODE_ENV === 'development'
     ? require('debug')('expo:server')
     : () => { };
@@ -109,7 +109,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                     continue;
                 }
                 // Replace URL and Request with rewrite target
-                url = getRedirectRewriteLocation(url, request, route);
+                url = (0, utils_1.getRedirectRewriteLocation)(url, request, route);
                 request = new Request(url, request);
             }
         }
@@ -191,7 +191,7 @@ async function respondNotFoundHTML(html, route) {
             },
         });
     }
-    if (isResponse(html)) {
+    if ((0, utils_1.isResponse)(html)) {
         // Only used for development errors
         return html;
     }
@@ -201,7 +201,7 @@ async function respondAPI(mod, request, route) {
     if (!mod || typeof mod !== 'object') {
         throw new error_1.ExpoError(`API route module ${route.page} could not be loaded`);
     }
-    if (isResponse(mod)) {
+    if ((0, utils_1.isResponse)(mod)) {
         // Only used for development API route bundling errors
         return mod;
     }
@@ -214,9 +214,9 @@ async function respondAPI(mod, request, route) {
             },
         });
     }
-    const params = parseParams(request, route);
+    const params = (0, utils_1.parseParams)(request, route);
     const response = await handler(request, params);
-    if (!isResponse(response)) {
+    if (!(0, utils_1.isResponse)(response)) {
         throw new error_1.ExpoError(`API route ${request.method} handler ${route.page} resolved to a non-Response result`);
     }
     return response;
@@ -230,7 +230,7 @@ function respondHTML(html, route) {
             },
         });
     }
-    if (isResponse(html)) {
+    if ((0, utils_1.isResponse)(html)) {
         // Only used for development error responses
         return html;
     }
@@ -239,7 +239,7 @@ function respondHTML(html, route) {
 function respondRedirect(url, request, route) {
     // NOTE(@krystofwoldrich): @expo/server would not redirect when location was empty,
     // it would keep searching for match and eventually return 404. Worker redirects to origin.
-    const target = getRedirectRewriteLocation(url, request, route);
+    const target = (0, utils_1.getRedirectRewriteLocation)(url, request, route);
     let status;
     if (request.method === 'GET' || request.method === 'HEAD') {
         status = route.permanent ? 301 : 302;
@@ -249,73 +249,5 @@ function respondRedirect(url, request, route) {
     }
     debug('Redirecting', status, target);
     return Response.redirect(target, status);
-}
-function getRedirectRewriteLocation(url, request, route) {
-    const originalQueryParams = url.searchParams.entries();
-    const params = parseParams(request, route);
-    const target = route.page
-        .split('/')
-        .map((segment) => {
-        let match;
-        if ((match = matchDynamicName(segment))) {
-            const value = params[match];
-            delete params[match];
-            return typeof value === 'string'
-                ? value.split('/')[0] /* If we are redirecting from a catch-all route, we need to remove the extra segments */
-                : (value ?? segment);
-        }
-        else if ((match = matchDeepDynamicRouteName(segment))) {
-            const value = params[match];
-            delete params[match];
-            return value ?? segment;
-        }
-        else {
-            return segment;
-        }
-    })
-        .join('/');
-    const targetUrl = new URL(target, url.origin);
-    // NOTE: React Navigation doesn't differentiate between a path parameter
-    // and a search parameter. We have to preserve leftover search parameters
-    // to ensure we don't lose any intentional parameters with special meaning
-    for (const key in params)
-        targetUrl.searchParams.append(key, params[key]);
-    // NOTE(@krystofwoldrich): Query matching is not supported at the moment.
-    // Copy original query parameters to the target URL
-    for (const [key, value] of originalQueryParams) {
-        // NOTE(@krystofwoldrich): Params created from route overwrite existing (might be unexpected to the user)
-        if (!targetUrl.searchParams.has(key)) {
-            targetUrl.searchParams.append(key, value);
-        }
-    }
-    return targetUrl;
-}
-function parseParams(request, route) {
-    const params = {};
-    const { pathname } = new URL(request.url);
-    const match = route.namedRegex.exec(pathname);
-    if (match?.groups) {
-        for (const [key, value] of Object.entries(match.groups)) {
-            const namedKey = route.routeKeys[key];
-            params[namedKey] = value;
-        }
-    }
-    return params;
-}
-/** Match `[page]` -> `page`
- * @privateRemarks Ported from `expo-router/src/matchers.tsx`
- */
-function matchDynamicName(name) {
-    // Don't match `...` or `[` or `]` inside the brackets
-    return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1]; // eslint-disable-line no-useless-escape
-}
-/** Match `[...page]` -> `page`
- * @privateRemarks Ported from `expo-router/src/matchers.tsx`
- */
-function matchDeepDynamicRouteName(name) {
-    return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
-}
-function isResponse(input) {
-    return !!input && typeof input === 'object' && input instanceof Response;
 }
 //# sourceMappingURL=index.js.map
