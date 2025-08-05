@@ -8,7 +8,6 @@
 #import <EXDevLauncher/EXDevLauncherController.h>
 
 #import <React/RCTReconnectingWebSocket.h>
-#import <React/RCTUtils.h>
 
 #import <objc/runtime.h>
 #import <mutex>
