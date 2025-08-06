@@ -442,7 +442,8 @@ To ease the migration from GitHub Actions to EAS Workflows we expose some contex
   "sha": string,
   "ref": string, // e.g. refs/heads/main
   "ref_name": string, // e.g. main
-  "ref_type": "branch" | "tag" | "other"
+  "ref_type": "branch" | "tag" | "other",
+  "commit_message": string // Only available for push and schedule events
 }
 ```
 
