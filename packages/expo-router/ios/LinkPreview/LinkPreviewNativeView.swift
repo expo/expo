@@ -1,6 +1,7 @@
 import ExpoModulesCore
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPreviewModalDismissible {
+class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
+  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable {
   private var trigger: NativeLinkPreviewTrigger?
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
@@ -49,9 +50,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
           trigger.addInteraction(interaction)
         }
       } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
-        actionView.updateMenuCallback = { [weak self] in
-          self?.updateMenu()
-        }
+        actionView.parentMenuUpdatable = self
         actions.append(actionView)
       } else {
         print(
@@ -170,7 +169,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
     return vc
   }
 
-  private func updateMenu() {
+  func updateMenu() {
     self.interaction?.updateVisibleMenu { _ in
       self.createContextMenu()
     }
