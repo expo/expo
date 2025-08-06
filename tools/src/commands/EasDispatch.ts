@@ -47,7 +47,7 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     action: iosSimulatorBuildAsync,
   },
   'ios-simulator-upload': {
-    name: '[internal] Upload a new iOS Client simulator to github expo-go-releases and updates www endpoint',
+    name: '[internal] Upload a new iOS Client simulator to expo/expo-go-releases repo and updates www endpoint',
     actionId: 'ios-simulator-upload',
     action: iosSimulatorUploadAsync,
   },
@@ -57,7 +57,7 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     action: androidApkBuildAsync,
   },
   'android-apk-upload': {
-    name: '[internal] Upload a new Android Client APK to github expo-go-releases and updates www endpoint',
+    name: '[internal] Upload a new Android Client APK to expo/expo-go-releases repo and updates www endpoint',
     actionId: 'android-apk-upload',
     action: androidApkUploadAsync,
   },

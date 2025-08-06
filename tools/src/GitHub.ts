@@ -343,9 +343,6 @@ export async function removeIssueLabelAsync(issue_number: number, name: string) 
   return data;
 }
 
-/**
- * Creates a release on GitHub.
- */
 export async function getOrCreateReleaseAsync(
   repoOwner: string,
   repoName: string,
