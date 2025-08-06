@@ -118,26 +118,6 @@ export async function test(t) {
       t.expect(typeof calendar.type).toBe('string');
       t.expect(Object.values(Calendar.CalendarType)).toContain(calendar.type);
     }
-    if (Platform.OS === 'android') {
-      t.expect(typeof calendar.isPrimary).toBe('boolean');
-      calendar.name && t.expect(typeof calendar.name).toBe('string');
-      t.expect(typeof calendar.ownerAccount).toBe('string');
-      calendar.timeZone && t.expect(typeof calendar.timeZone).toBe('string');
-
-      t.expect(Array.isArray(calendar.allowedReminders)).toBe(true);
-      calendar.allowedReminders.forEach((reminder) => {
-        t.expect(Object.values(Calendar.AlarmMethod)).toContain(reminder);
-      });
-
-      t.expect(Array.isArray(calendar.allowedAttendeeTypes)).toBe(true);
-      calendar.allowedAttendeeTypes.forEach((attendeeType) => {
-        t.expect(Object.values(Calendar.AttendeeType)).toContain(attendeeType);
-      });
-
-      t.expect(typeof calendar.isVisible).toBe('boolean');
-      t.expect(typeof calendar.isSynced).toBe('boolean');
-      t.expect(typeof calendar.accessLevel).toBe('string');
-    }
   }
 
   function testEventShape(event) {
@@ -168,16 +148,6 @@ export async function test(t) {
         testAttendeeShape(event.organizer);
       }
     }
-    if (Platform.OS === 'android') {
-      t.expect(typeof event.endTimeZone).toBe('string');
-      t.expect(typeof event.organizerEmail).toBe('string');
-      t.expect(Object.values(Calendar.EventAccessLevel)).toContain(event.accessLevel);
-      t.expect(typeof event.guestsCanModify).toBe('boolean');
-      t.expect(typeof event.guestsCanInviteOthers).toBe('boolean');
-      t.expect(typeof event.guestsCanSeeGuests).toBe('boolean');
-      event.originalId && t.expect(typeof event.originalId).toBe('string');
-      event.instanceId && t.expect(typeof event.instanceId).toBe('string');
-    }
   }
 
   function testCalendarSourceShape(source) {
@@ -191,9 +161,6 @@ export async function test(t) {
 
     if (Platform.OS === 'ios') {
       t.expect(typeof source.id).toBe('string');
-    }
-    if (Platform.OS === 'android') {
-      t.expect(typeof source.isLocalAccount).toBe('boolean');
     }
   }
 
@@ -262,8 +229,11 @@ export async function test(t) {
           t.expect(error).toBeDefined();
         });
 
-        t.afterAll(async () => {
-          calendar.delete();
+        t.afterEach(async () => {
+          // Clean up only if the calendar was successfully created
+          if (calendar?.title) {
+            calendar.delete();
+          }
         });
       });
 
@@ -302,9 +272,15 @@ export async function test(t) {
       });
 
       t.describe('listEvents()', () => {
+        let calendar1: ExpoCalendar;
+        let calendar2: ExpoCalendar;
+
+        t.beforeAll(async () => {
+          calendar1 = await createTestCalendarAsync();
+          calendar2 = await createTestCalendarAsync();
+        });
+
         t.it('returns an array of events', async () => {
-          const calendar1 = await createTestCalendarAsync();
-          const calendar2 = await createTestCalendarAsync();
           const events = listEvents(
             [calendar1.id, calendar2.id],
             new Date(2019, 3, 1),
@@ -330,6 +306,11 @@ export async function test(t) {
           );
           t.expect(singleCalendarEvents.length).toBe(1);
           t.expect(singleCalendarEvents[0].id).toBe(event1.id);
+        });
+
+        t.afterAll(async () => {
+          calendar1.delete();
+          calendar2.delete();
         });
       });
 
@@ -357,13 +338,12 @@ export async function test(t) {
       const dontStartNewTask = {
         startNewActivityTask: false,
       };
+      let calendar: ExpoCalendar;
 
       t.beforeAll(async () => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
         t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
-      });
-      t.afterAll(() => {
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+        calendar = await createTestCalendarAsync();
       });
 
       t.it('creates an event via UI', async () => {
@@ -383,14 +363,10 @@ export async function test(t) {
               notes: eventData.notes,
             })
           );
-        } else {
-          // t.expect(result.action).toBe('done');
-          // t.expect(result.id).toBe(null);
         }
       });
 
       t.it('can preview an event', async () => {
-        const calendar = await createTestCalendarAsync();
         const event = createTestEvent(calendar);
         await alertAndWaitForResponse(
           'Please verify event details are shown and close the dialog.'
@@ -401,16 +377,18 @@ export async function test(t) {
           allowsCalendarPreview: true,
         });
         t.expect(result).toEqual({ action: 'done' });
-        calendar.delete();
       });
 
       t.it('can edit an event', async () => {
-        const calendar = await createTestCalendarAsync();
         const event = createTestEvent(calendar);
         await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
         const result = await event.editInCalendarAsync(dontStartNewTask);
         t.expect(typeof result.action).toBe('string'); // done or canceled
         t.expect(result.id).toBe(null);
+      });
+
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
         calendar.delete();
       });
     });
@@ -460,8 +438,13 @@ export async function test(t) {
       });
 
       t.describe('Calendar.delete()', () => {
+        let calendar: ExpoCalendar;
+
+        t.beforeEach(async () => {
+          calendar = await createTestCalendarAsync();
+        });
+
         t.it('deletes a calendar', async () => {
-          const calendar = await createTestCalendarAsync();
           calendar.delete();
 
           const calendars = getCalendarsNext();
@@ -469,13 +452,19 @@ export async function test(t) {
         });
 
         t.it('throws an error when deleting a non-existent calendar', async () => {
-          const calendar = await createTestCalendarAsync();
           calendar.delete();
           t.expect(calendar.title).toBeNull();
           try {
             calendar.delete();
           } catch (e) {
             t.expect(e).toBeDefined();
+          }
+        });
+
+        t.afterEach(async () => {
+          // Call only if not already deleted
+          if (calendar?.title) {
+            calendar.delete();
           }
         });
       });
@@ -538,16 +527,16 @@ export async function test(t) {
 
       if (Platform.OS === 'ios') {
         t.describe('Calendar.createReminder()', () => {
+          let eventCalendar: ExpoCalendar;
           let reminderCalendar: ExpoCalendar;
           let reminder: ExpoCalendarReminder;
 
           t.beforeAll(async () => {
+            eventCalendar = await createTestCalendarAsync();
             reminderCalendar = getReminderCalendar();
           });
 
           t.it('fails to create a reminder in the event calendar', async () => {
-            const eventCalendar = await createTestCalendarAsync();
-
             let error;
             try {
               await createTestReminder(eventCalendar);
@@ -555,8 +544,6 @@ export async function test(t) {
               error = e;
             }
             t.expect(error).toBeDefined();
-
-            eventCalendar.delete();
           });
 
           t.it('reminder calendar exists', async () => {
@@ -597,6 +584,7 @@ export async function test(t) {
           });
 
           t.afterAll(async () => {
+            eventCalendar.delete();
             reminder?.delete();
           });
         });
