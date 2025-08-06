@@ -4,21 +4,53 @@ import {
   type NavigationRoute,
   type NavigationState,
 } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { store, type ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
 import { Href } from '../../types';
 import { resolveHref } from '../href';
+import { useLinkPreviewContext } from './LinkPreviewContext';
+import { useRouter } from '../../hooks';
 
 export function useNextScreenId(): [string | undefined, (href: Href) => void] {
+  const router = useRouter();
+  const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
-  const setNextScreenId = useCallback((href: Href): void => {
-    const preloadedRoute = getPreloadedRouteFromRootStateByHref(href);
-    const routeKey = preloadedRoute?.key;
-    internalSetNextScreenId(routeKey);
+  const currentHref = useRef<Href | undefined>(undefined);
+
+  useEffect(() => {
+    // When screen is prefetched, then the root state is updated with the preloaded route.
+    return store.navigationRef.addListener('state', () => {
+      // If we have the current href, it means that we prefetched the route
+      if (currentHref.current) {
+        const preloadedRoute = getPreloadedRouteFromRootStateByHref(currentHref.current);
+        const routeKey = preloadedRoute?.key;
+        // Without this timeout react-native does not have enough time to mount the new screen
+        // and thus it will not be found on the native side
+        if (routeKey) {
+          setTimeout(() => {
+            internalSetNextScreenId(routeKey);
+            setOpenPreviewKey(routeKey);
+          });
+          // We found the preloaded route, so we can reset the currentHref
+          // to prevent unnecessary processing
+          currentHref.current = undefined;
+        }
+      }
+    });
   }, []);
-  return [internalNextScreenId, setNextScreenId];
+
+  const prefetch = useCallback(
+    (href: Href): void => {
+      // Resetting the nextScreenId to undefined
+      internalSetNextScreenId(undefined);
+      router.prefetch(href);
+      currentHref.current = href;
+    },
+    [router.prefetch]
+  );
+  return [internalNextScreenId, prefetch];
 }
 
 function getPreloadedRouteFromRootStateByHref(
