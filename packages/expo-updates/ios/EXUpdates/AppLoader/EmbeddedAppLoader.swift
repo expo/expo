@@ -37,13 +37,24 @@ public final class EmbeddedAppLoader: AppLoader {
     guard config.hasEmbeddedUpdate else {
       return nil
     }
-    return requireEmbeddedManifest(withConfig: config, database: database)
+    return cachedEmbeddedManifest(withConfig: config, database: database)
+  }
+
+  /**
+   Gets the embedded update.
+   If the `UpdatesConfig.originalHasEmbeddedUpdate` is false, it returns nil
+   */
+  public static func originalEmbeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate? {
+    guard config.originalHasEmbeddedUpdate else {
+      return nil
+    }
+    return cachedEmbeddedManifest(withConfig: config, database: database)
   }
 
   /*
    Gets the embedded update even if `UpdatesConfig.hasEmbeddedUpdate` is false
    */
-  public static func requireEmbeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate {
+  private static func cachedEmbeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate {
     if let embeddedManifestInternal = embeddedManifestInternal {
       return embeddedManifestInternal
     }

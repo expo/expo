@@ -100,6 +100,7 @@ public final class UpdatesConfig: NSObject {
   public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   public let runtimeVersion: String
   public let hasEmbeddedUpdate: Bool
+  public let originalHasEmbeddedUpdate: Bool
   public let disableAntiBrickingMeasures: Bool
   public let hasUpdatesOverride: Bool
 
@@ -117,6 +118,7 @@ public final class UpdatesConfig: NSObject {
     codeSigningConfiguration: CodeSigningConfiguration?,
     runtimeVersion: String,
     hasEmbeddedUpdate: Bool,
+    originalHasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool,
     disableAntiBrickingMeasures: Bool,
     hasUpdatesOverride: Bool
@@ -132,6 +134,7 @@ public final class UpdatesConfig: NSObject {
     self.codeSigningConfiguration = codeSigningConfiguration
     self.runtimeVersion = runtimeVersion
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
+    self.originalHasEmbeddedUpdate = originalHasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
     self.disableAntiBrickingMeasures = disableAntiBrickingMeasures
     self.hasUpdatesOverride = hasUpdatesOverride
@@ -265,6 +268,7 @@ public final class UpdatesConfig: NSObject {
     }
 
     let hasEmbeddedUpdate = getHasEmbeddedUpdate(fromDictionary: config, configOverride: configOverride)
+    let originalHasEmbeddedUpdate = getOriginalHasEmbeddedUpdate(fromDictionary: config)
 
     let codeSigningConfiguration = config.optionalValue(forKey: EXUpdatesConfigCodeSigningCertificateKey).let { (certificateString: String) in
       let codeSigningMetadata: [String: String] = config.requiredValue(forKey: EXUpdatesConfigCodeSigningMetadataKey)
@@ -295,6 +299,7 @@ public final class UpdatesConfig: NSObject {
       codeSigningConfiguration: codeSigningConfiguration,
       runtimeVersion: runtimeVersion,
       hasEmbeddedUpdate: hasEmbeddedUpdate,
+      originalHasEmbeddedUpdate: originalHasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode,
       disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config),
       hasUpdatesOverride: configOverride != nil
@@ -368,6 +373,10 @@ public final class UpdatesConfig: NSObject {
     if getDisableAntiBrickingMeasures(fromDictionary: config) && configOverride != nil {
       return false
     }
+    return getOriginalHasEmbeddedUpdate(fromDictionary: config)
+  }
+
+  private static func getOriginalHasEmbeddedUpdate(fromDictionary config: [String: Any]) -> Bool {
     return config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
   }
 

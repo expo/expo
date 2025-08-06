@@ -92,9 +92,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
           return
         }
 
-        let embeddedManifest = selectionPolicy.launcherSelectionPolicy is LauncherSelectionPolicyFilterAware
-          ? EmbeddedAppLoader.requireEmbeddedManifest(withConfig: config, database: database)
-          : EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+        let embeddedManifest = EmbeddedAppLoader.originalEmbeddedManifest(withConfig: config, database: database)
         var filteredLaunchableUpdates: [Update] = []
         for update in launchableUpdates {
           // We can only run an update marked as embedded if it's actually the update embedded in the
