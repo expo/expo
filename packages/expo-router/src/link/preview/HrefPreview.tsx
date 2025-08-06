@@ -6,19 +6,50 @@ import {
   type ParamListBase,
 } from '@react-navigation/native';
 import { useMemo } from 'react';
+import { Text, View } from 'react-native';
 
 import { PreviewRouteContext } from './PreviewRouteContext';
 import { RouteNode } from '../../Route';
-import { INTERNAL_SLOT_NAME } from '../../constants';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
+import { type ResultState } from '../../exports';
 import { store } from '../../global-state/router-store';
+import { getRootStackRouteNames } from '../../global-state/utils';
+import { usePathname } from '../../hooks';
 import { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { getPathFromState } from '../linking';
 
 export function HrefPreview({ href }: { href: Href }) {
+  const hrefState = useMemo(() => getHrefState(href), [href]);
+  const index = hrefState?.index ?? 0;
+
+  if (hrefState?.routes[index]?.name === INTERNAL_SLOT_NAME) {
+    return <PreviewForRootHrefState hrefState={hrefState} href={href} />;
+  }
+
+  const isInternalRoute =
+    hrefState?.routes[index]?.name === NOT_FOUND_ROUTE_NAME ||
+    hrefState?.routes[index]?.name === SITEMAP_ROUTE_NAME;
+
+  const pathname = href.toString();
+  const segments = pathname.split('/').filter(Boolean);
+
+  return (
+    <PreviewRouteContext.Provider
+      value={{
+        params: {},
+        pathname,
+        segments,
+      }}>
+      {isInternalRoute ? <PreviewForInternalRoutes /> : null}
+    </PreviewRouteContext.Provider>
+  );
+}
+
+function PreviewForRootHrefState({ hrefState, href }: { hrefState: ResultState; href: Href }) {
   const navigation = useNavigation();
-  const { routeNode, params, state } = getParamsAndNodeFromHref(href);
+  const { routeNode, params, state } = getParamsAndNodeFromHref(hrefState);
 
   const path = state ? getPathFromState(state) : undefined;
 
@@ -32,7 +63,7 @@ export function HrefPreview({ href }: { href: Href }) {
   );
 
   // This can happen in a theoretical case where the state is not yet initialized or is incorrectly initialized.
-  // It also check ensures TypeScript type safety.
+  // This check ensures TypeScript type safety as well.
   if (!routeNode) {
     return null;
   }
@@ -49,18 +80,37 @@ export function HrefPreview({ href }: { href: Href }) {
   );
 }
 
-function getParamsAndNodeFromHref(href: Href) {
+function PreviewForInternalRoutes() {
+  const pathname = usePathname();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+      <Text style={{ fontWeight: '600', fontSize: 24 }}>Invalid preview</Text>
+      <Text style={{ fontWeight: '200', fontSize: 14 }}>{pathname}</Text>
+    </View>
+  );
+}
+
+function getHrefState(href: Href) {
   const hrefState = store.getStateForHref(href as any);
-  if (hrefState?.routes[0] && hrefState.routes[0].name !== INTERNAL_SLOT_NAME) {
-    const error = `Expo Router Error: Expected navigation state to begin with a ${INTERNAL_SLOT_NAME} route`;
+  return hrefState;
+}
+
+function getParamsAndNodeFromHref(hrefState: ResultState) {
+  const index = hrefState?.index ?? 0;
+  if (hrefState?.routes[index] && hrefState.routes[index].name !== INTERNAL_SLOT_NAME) {
+    const name = hrefState.routes[index].name;
+    if (name === SITEMAP_ROUTE_NAME || name === NOT_FOUND_ROUTE_NAME) {
+      console.log(store.routeNode);
+      console.log(hrefState);
+    }
+    const error = `Expo Router Error: Expected navigation state to begin with one of [${getRootStackRouteNames().join(', ')}] routes`;
     if (process.env.NODE_ENV !== 'production') {
       throw new Error(error);
     } else {
       console.warn(error);
     }
   }
-  // Assuming that root of the state is __root
-  const initialState = hrefState?.routes[0]?.state;
+  const initialState = hrefState?.routes[index]?.state;
   let state = initialState;
   let routeNode: RouteNode | undefined | null = store.routeNode;
 

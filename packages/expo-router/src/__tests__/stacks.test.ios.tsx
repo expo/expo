@@ -132,7 +132,7 @@ test('dismissAll nested', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -152,7 +152,7 @@ test('dismissAll nested', () => {
           index: 2,
           key: expect.any(String),
           preloadedRouteKeys: [],
-          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+          routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
@@ -232,16 +232,6 @@ test('dismissAll nested', () => {
                 type: 'stack',
               },
             },
-            {
-              key: expect.any(String),
-              name: '_sitemap',
-              params: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: '+not-found',
-              params: undefined,
-            },
           ],
           stale: false,
           type: 'tab',
@@ -259,7 +249,7 @@ test('dismissAll nested', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -279,7 +269,7 @@ test('dismissAll nested', () => {
           index: 2,
           key: expect.any(String),
           preloadedRouteKeys: [],
-          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+          routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
@@ -347,16 +337,6 @@ test('dismissAll nested', () => {
                 type: 'stack',
               },
             },
-            {
-              key: expect.any(String),
-              name: '_sitemap',
-              params: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: '+not-found',
-              params: undefined,
-            },
           ],
           stale: false,
           type: 'tab',
@@ -374,7 +354,7 @@ test('dismissAll nested', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -394,7 +374,7 @@ test('dismissAll nested', () => {
           index: 2,
           key: expect.any(String),
           preloadedRouteKeys: [],
-          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+          routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
@@ -428,16 +408,6 @@ test('dismissAll nested', () => {
                 stale: false,
                 type: 'stack',
               },
-            },
-            {
-              key: expect.any(String),
-              name: '_sitemap',
-              params: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: '+not-found',
-              params: undefined,
             },
           ],
           stale: false,
@@ -553,7 +523,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -565,7 +535,7 @@ describe('singular', () => {
             index: 0,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -591,7 +561,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -603,7 +573,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -638,7 +608,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -650,7 +620,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['[slug]', '_sitemap', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
