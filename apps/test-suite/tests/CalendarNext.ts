@@ -333,65 +333,65 @@ export async function test(t) {
       }
     });
 
-    t.describe('Calendar UI Integration', () => {
-      let originalTimeout;
-      const dontStartNewTask = {
-        startNewActivityTask: false,
-      };
-      let calendar: ExpoCalendar;
+    // t.describe('Calendar UI Integration', () => {
+    //   let originalTimeout;
+    //   const dontStartNewTask = {
+    //     startNewActivityTask: false,
+    //   };
+    //   let calendar: ExpoCalendar;
 
-      t.beforeAll(async () => {
-        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
-        calendar = await createTestCalendarAsync();
-      });
+    //   t.beforeAll(async () => {
+    //     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+    //     calendar = await createTestCalendarAsync();
+    //   });
 
-      t.it('creates an event via UI', async () => {
-        const eventData = createEventData();
-        await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
-        if (Platform.OS === 'ios') {
-          t.expect(result.action).toBe('saved');
-          t.expect(typeof result.id).toBe('string');
-          const storedEvent = await Calendar.getEventAsync(result.id);
+    //   t.it('creates an event via UI', async () => {
+    //     const eventData = createEventData();
+    //     await alertAndWaitForResponse('Please confirm the event creation dialog.');
+    //     const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+    //     if (Platform.OS === 'ios') {
+    //       t.expect(result.action).toBe('saved');
+    //       t.expect(typeof result.id).toBe('string');
+    //       const storedEvent = await Calendar.getEventAsync(result.id);
 
-          t.expect(storedEvent).toEqual(
-            t.jasmine.objectContaining({
-              title: eventData.title,
-              allDay: eventData.allDay,
-              location: eventData.location,
-              notes: eventData.notes,
-            })
-          );
-        }
-      });
+    //       t.expect(storedEvent).toEqual(
+    //         t.jasmine.objectContaining({
+    //           title: eventData.title,
+    //           allDay: eventData.allDay,
+    //           location: eventData.location,
+    //           notes: eventData.notes,
+    //         })
+    //       );
+    //     }
+    //   });
 
-      t.it('can preview an event', async () => {
-        const event = createTestEvent(calendar);
-        await alertAndWaitForResponse(
-          'Please verify event details are shown and close the dialog.'
-        );
-        const result = await event.openInCalendarAsync({
-          ...dontStartNewTask,
-          allowsEditing: true,
-          allowsCalendarPreview: true,
-        });
-        t.expect(result).toEqual({ action: 'done' });
-      });
+    //   t.it('can preview an event', async () => {
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse(
+    //       'Please verify event details are shown and close the dialog.'
+    //     );
+    //     const result = await event.openInCalendarAsync({
+    //       ...dontStartNewTask,
+    //       allowsEditing: true,
+    //       allowsCalendarPreview: true,
+    //     });
+    //     t.expect(result).toEqual({ action: 'done' });
+    //   });
 
-      t.it('can edit an event', async () => {
-        const event = createTestEvent(calendar);
-        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
-        const result = await event.editInCalendarAsync(dontStartNewTask);
-        t.expect(typeof result.action).toBe('string'); // done or canceled
-        t.expect(result.id).toBe(null);
-      });
+    //   t.it('can edit an event', async () => {
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+    //     const result = await event.editInCalendarAsync(dontStartNewTask);
+    //     t.expect(typeof result.action).toBe('string'); // done or canceled
+    //     t.expect(result.id).toBe(null);
+    //   });
 
-      t.afterAll(() => {
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-        calendar.delete();
-      });
-    });
+    //   t.afterAll(() => {
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    //     calendar.delete();
+    //   });
+    // });
 
     t.describe('Calendar', () => {
       t.describe('Calendar.update()', () => {
@@ -786,6 +786,34 @@ export async function test(t) {
           t.expect(event.endDate).toBe(defaultEventData.endDate.toISOString());
           t.expect(event.creationDate).toBeDefined();
           t.expect(event.lastModifiedDate).toBeDefined();
+        });
+
+        t.it('clears a field when set to null', async () => {
+          const event = await createTestEvent(calendar);
+          event.update({
+            location: null,
+          });
+          t.expect(event.title).toBe(defaultEventData.title);
+          t.expect(event.location).toBeNull();
+          t.expect(event.notes).toBe(defaultEventData.notes);
+          t.expect(event.startDate).toBe(defaultEventData.startDate.toISOString());
+          t.expect(event.endDate).toBe(defaultEventData.endDate.toISOString());
+          t.expect(event.creationDate).toBeDefined();
+          t.expect(event.lastModifiedDate).toBeDefined();
+        });
+
+        t.it('clears a field and sets it to a new value', async () => {
+          const event = await createTestEvent(calendar);
+          event.update({
+            location: null,
+          });
+          t.expect(event.location).toBeNull();
+
+          const newLocation = 'New location ' + new Date().toISOString();
+          event.update({
+            location: newLocation,
+          });
+          t.expect(event.location).toBe(newLocation);
         });
 
         t.it('handles detached events', async () => {

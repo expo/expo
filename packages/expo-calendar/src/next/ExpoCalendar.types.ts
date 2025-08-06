@@ -338,7 +338,11 @@ export declare class ExpoCalendarEvent {
    * @param details A map of properties to be updated.
    * @param recurringEventOptions A map of options for recurring events.
    */
-  update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
+  update(
+    details: Partial<Event>,
+    recurringEventOptions?: RecurringEventOptions,
+    nullableDetailsFields?: (keyof Event)[]
+  ): void;
 
   /**
    * Deletes the event.

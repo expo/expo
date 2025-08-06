@@ -24,7 +24,11 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   }
 
   override update(details: Partial<Event>, options: RecurringEventOptions = {}): void {
-    super.update(stringifyDateValues(details), stringifyDateValues(options));
+    const nullableDetailsFields = Object.keys(details).filter((key): key is keyof Event => {
+      // @ts-expect-error - key is a keyof Event
+      return details[key] === null;
+    });
+    super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
   }
 
   override delete(options: RecurringEventOptions = {}): void {

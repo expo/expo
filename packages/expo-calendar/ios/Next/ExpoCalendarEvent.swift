@@ -43,12 +43,12 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     self.init(event: calendarEvent)
   }
 
-  func update(eventRecord: Event, options: RecurringEventOptions?) throws {
+  func update(eventRecord: Event, options: RecurringEventOptions?, nullableFields: [String]? = nil) throws {
     guard let calendarEvent = self.event else {
       throw EventNotFoundException("EKevent not found")
     }
 
-    try self.initialize(event: calendarEvent, eventRecord: eventRecord)
+    try self.initialize(event: calendarEvent, eventRecord: eventRecord, nullableFields: nullableFields)
 
     let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent
 
@@ -71,15 +71,19 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     self.event = nil
   }
 
-  func initialize(eventRecord: Event) throws {
+  func initialize(eventRecord: Event, nullableFields: [String]? = nil) throws {
     guard let event = self.event else {
       throw EventNotFoundException("EKevent not found")
     }
-    try initialize(event: event, eventRecord: eventRecord)
+    try initialize(event: event, eventRecord: eventRecord, nullableFields: nullableFields)
   }
 
-  func initialize(event: EKEvent, eventRecord: Event) throws {
-    if let timeZone = eventRecord.timeZone {
+  func initialize(event: EKEvent, eventRecord: Event, nullableFields: [String]? = nil) throws {
+    let nullableSet = Set(nullableFields ?? [])
+    
+    if nullableSet.contains("timeZone") {
+      event.timeZone = nil
+    } else if let timeZone = eventRecord.timeZone {
       if let tz = TimeZone(identifier: timeZone) {
         event.timeZone = tz
       } else {
@@ -87,15 +91,24 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
       }
     }
 
-    event.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
-    if let rule = eventRecord.recurrenceRule {
+    if nullableSet.contains("alarms") {
+      event.alarms = []
+    } else if eventRecord.alarms != nil {
+      event.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
+    }
+    
+    if nullableSet.contains("recurrenceRule") {
+      event.recurrenceRules = nil
+    } else if let rule = eventRecord.recurrenceRule {
       let newRule = createRecurrenceRule(rule: rule)
       if let newRule {
         event.recurrenceRules = [newRule]
       }
     }
 
-    if let url = eventRecord.url {
+    if nullableSet.contains("url") {
+      event.url = nil
+    } else if let url = eventRecord.url {
       event.url = URL(string: url)
     }
 
@@ -118,11 +131,15 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
       event.title = title
     }
 
-    if let location = eventRecord.location {
+    if nullableSet.contains("location") {
+      event.location = nil
+    } else if let location = eventRecord.location {
       event.location = location
     }
 
-    if let notes = eventRecord.notes {
+    if nullableSet.contains("notes") {
+      event.notes = nil
+    } else if let notes = eventRecord.notes {
       event.notes = notes
     }
 

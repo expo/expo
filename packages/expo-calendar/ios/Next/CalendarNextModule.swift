@@ -241,8 +241,8 @@ public final class CalendarNextModule: Module {
         return calendar.listReminders(
           startDate: startDate, endDate: endDate, status: status, promise: promise)
       }
-      // swiftlint:enable closure_parameter_position
 
+      // swiftlint:enable closure_parameter_position
       Function("createEvent") { (expoCalendar: ExpoCalendar, eventRecord: Event, options: RecurringEventOptions?) -> ExpoCalendarEvent in
         try checkCalendarPermissions()
 
@@ -435,9 +435,9 @@ public final class CalendarNextModule: Module {
         return try customEvent.getAttendees(options: options)
       }
 
-      Function("update") { (customEvent: ExpoCalendarEvent, event: Event, options: RecurringEventOptions?) throws in
+      Function("update") { (customEvent: ExpoCalendarEvent, event: Event, options: RecurringEventOptions?, nullableFields: [String]?) throws in
         try checkCalendarPermissions()
-        try customEvent.update(eventRecord: event, options: options)
+        try customEvent.update(eventRecord: event, options: options, nullableFields: nullableFields)
       }
 
       Function("delete") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions) in

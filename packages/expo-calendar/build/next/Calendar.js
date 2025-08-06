@@ -12,7 +12,11 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
         return super.getAttendees(stringifyDateValues(recurringEventOptions));
     }
     update(details, options = {}) {
-        super.update(stringifyDateValues(details), stringifyDateValues(options));
+        const nullableDetailsFields = Object.keys(details).filter((key) => {
+            // @ts-expect-error - key is a keyof Event
+            return details[key] === null;
+        });
+        super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
     }
     delete(options = {}) {
         super.delete(stringifyDateValues(options));
