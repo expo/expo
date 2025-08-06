@@ -604,10 +604,23 @@ async function downloadBuildArtifactAsync(
     throw new Error(`No builds found. Make sure you have run ${platform}-build first.`);
   }
 
-  const buildChoices = builds.map((build: any, index: number) => ({
-    name: `Build ${index + 1}: ${build.platform} - ${build.status} - ${build.createdAt || 'Unknown date'} - ${build.id}`,
-    value: build,
-  }));
+  const buildChoices = builds.map((build: any, index: number) => {
+    const createdAt = build.createdAt
+      ? new Date(build.createdAt).toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      : 'Unknown date';
+
+    return {
+      name: `Build ${index + 1}: ${build.platform} - ${build.status} - ${createdAt} - ${build.id}`,
+      value: build,
+    };
+  });
 
   buildChoices.push({
     name: 'Enter custom build artifact URL',
