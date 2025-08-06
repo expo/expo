@@ -1,4 +1,3 @@
-import { S3 } from '@aws-sdk/client-s3';
 import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
@@ -6,7 +5,6 @@ import assert from 'assert';
 import fs, { mkdirp } from 'fs-extra';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
-import os from 'os';
 import path from 'path';
 import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,8 +15,6 @@ import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
 import { getOrCreateReleaseAsync, uploadReleaseAssetAsync } from '../GitHub';
-
-const s3Client = new S3({ region: 'us-east-1' });
 
 const RELEASE_BUILD_PROFILE = 'release-client';
 const PUBLISH_CLIENT_BUILD_PROFILE = 'publish-client';
