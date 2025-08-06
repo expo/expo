@@ -208,7 +208,7 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
 }
 ```
 
-Many package managers also support specifying workspace dependencies using `"workspace:*"` instead of `"*"`. This will ensure that the workspace package never instead resolves a published package of the same name from the npm registry.
+Bun, npm, and pnpm also support specifying workspace dependencies using `"workspace:*"` instead of `"*"`. This will ensure that the workspace package never resolves a published package of the same name from the npm registry.
 
 After adding the the package as a dependency, install your dependencies with your package manager from the root directory of your monorepo to check for common warnings once again.
 
