@@ -19,6 +19,7 @@ const inputMapping = (blobPart: BlobPart) => {
 };
 
 const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
+
 export class Blob extends NativeBlobModule.Blob {
   constructor(blobParts?: BlobPart[] | Iterable<BlobPart>, options?: BlobPropertyBag) {
     if (!new.target) {

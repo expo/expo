@@ -12,19 +12,17 @@ import kotlin.math.min
 
 internal const val DEFAULT_TYPE = ""
 
-internal class Blob(
-  val blobParts: List<InternalBlobPart> = listOf(),
-  rawType: String = DEFAULT_TYPE
-) : SharedObject() {
-
+internal class Blob(val blobParts: List<InternalBlobPart> = listOf(), rawType: String = DEFAULT_TYPE) : SharedObject() {
   val size: Int by lazy {
     blobParts.sumOf { it.size() }
   }
+
   val type = if (validType(rawType)) {
     rawType.lowercase()
   } else {
     DEFAULT_TYPE
   }
+
   override fun getAdditionalMemoryPressure(): Int {
     return size
   }
@@ -50,9 +48,7 @@ internal class Blob(
     return when (this) {
       is InternalBlobPart.StringWrapper -> InternalBlobPart.BufferWrapper(cachedBytes.slice(startIndex..<endIndex).toByteArray())
       is InternalBlobPart.BlobWrapper -> InternalBlobPart.BlobWrapper(blob.slice(startIndex, endIndex, ""))
-      is InternalBlobPart.BufferWrapper -> InternalBlobPart.BufferWrapper(
-        buffer.slice(startIndex..<endIndex).toByteArray()
-      )
+      is InternalBlobPart.BufferWrapper -> InternalBlobPart.BufferWrapper(buffer.slice(startIndex..<endIndex).toByteArray())
     }
   }
 
@@ -64,7 +60,7 @@ internal class Blob(
       return Blob(listOf(), contentType)
     }
     var i = 0
-    val bps: MutableList<InternalBlobPart> = mutableListOf()
+    val bps = mutableListOf<InternalBlobPart>()
     for (blobPart in blobParts) {
       if (i + blobPart.size() <= start) {
         i += blobPart.size()
@@ -154,6 +150,7 @@ internal sealed class InternalBlobPart {
       string.toByteArray()
     }
   }
+
   data class BlobWrapper(val blob: Blob) : InternalBlobPart()
   data class BufferWrapper(val buffer: ByteArray) : InternalBlobPart()
 
@@ -174,7 +171,7 @@ internal sealed class InternalBlobPart {
   }
 }
 
-internal enum class EndingType(val str: String = "transparent") : Enumerable {
+internal enum class EndingType(val str: String) : Enumerable {
   TRANSPARENT("transparent"),
   NATIVE("native")
 }
