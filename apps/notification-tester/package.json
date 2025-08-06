@@ -30,7 +30,7 @@
     "native-component-list": "*",
     "react-native-gesture-handler": "~2.26.0",
     "react": "19.1.0",
-    "react-native": "0.81.0-rc.3",
+    "react-native": "0.81.0-rc.5",
     "react-native-safe-area-context": "5.5.2",
     "react-native-screens": "4.14.0-nightly-20250803-1df3db25a"
   },
