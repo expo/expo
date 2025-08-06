@@ -48,7 +48,7 @@ jobs:
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:
-          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCNT_JSON }}
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
