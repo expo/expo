@@ -73,18 +73,6 @@ interface State {
   export: ImportRef[];
 }
 
-// NOTE(@kitten): We don't output warnings for these modules to the user
-// That's because users can do very little about these warnings, and it's redundant to show it to them, rather than the library maintainers
-const EXCLUDED_MODULES = [
-  '/@react-native/virtualized-lists/',
-  '/react-native-screens/',
-  '/react-native-safe-area-context/',
-  '/expo-asset/',
-  '/expo-router/',
-  '/@expo/',
-  '/expo/',
-];
-
 export const reactNativeWarnOnDeepImportsPlugin =
   ({ types: t, caller }: ConfigAPI & typeof import('@babel/core')): PluginObj<State> => {
   const isNodeModule = caller(getIsNodeModule);
@@ -135,7 +123,9 @@ export const reactNativeWarnOnDeepImportsPlugin =
       },
       Program: {
         enter(_path, state) {
-          state.isExcluded = isNodeModule && EXCLUDED_MODULES.some((exclusion) => state.filename.includes(exclusion));
+          // NOTE(@kitten): We don't output warnings for node modules to the user
+          // That's because users can do very little about these warnings, and it's redundant to show warnings to users, rather than library maintainers
+          state.isExcluded = isNodeModule;
           state.require = [];
           state.import = [];
           state.export = [];
