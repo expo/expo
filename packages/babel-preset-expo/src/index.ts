@@ -21,6 +21,7 @@ import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoImportMetaTransformPluginFactory } from './import-meta-transform-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
+import { reactNativeWarnOnDeepImportsPlugin } from './react-native-warn-on-deep-imports-plugin';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
@@ -348,6 +349,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
 
+  // NOTE(@kitten): Forked from `@react-native/babel-preset`'s warning plugin
+  // We add exceptions to this plugin to ignore Expo sources
+  if (isDev && !platformOptions.disableDeepImportWarnings) {
+    extraPlugins.push(reactNativeWarnOnDeepImportsPlugin);
+  }
+
   const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
 
   extraPlugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
@@ -375,7 +382,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           withDevTools: false,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
-          disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
+          disableDeepImportWarnings: true, // See above for forked version of this option/plugin
           lazyImportExportTransform:
             lazyImportsOption === true
               ? (importModuleSpecifier: string) => {
@@ -447,6 +454,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
     plugins: [
       ...extraPlugins,
+
       // TODO: Remove
       platformOptions.decorators !== false && [
         require('@babel/plugin-proposal-decorators'),
