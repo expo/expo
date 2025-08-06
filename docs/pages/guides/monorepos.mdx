@@ -4,20 +4,21 @@ description: Learn about setting up Expo projects in a monorepo with workspaces.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. They can help speed up development for larger projects, make it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. Expo has first-class support for monorepos with all common package managers - [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), [pnpm](https://pnpm.io/workspaces), and [yarn](https://yarnpkg.com/features/workspaces) (v1 Classic and Berry). Expo automatically detects monorepos and configures new app projects added to a monorepo. The detection is based on the workspace configuration in your project.
 
 > **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as `watchFolders` to Metro. This might slow Metro down for larger monorepos. You can also manually configure which directories Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Modify the Metro config](#modify-the-metro-config).
 
-<Collapsible summary={`Automatic Configuration (Migrating to SDK 52+)`}>
+<Collapsible summary="Automatic Configuration (Migrating to SDK 52+)">
 
 <a id="automatic-configuration" />
 
 Since SDK 52, Expo's Metro config configures itself automatically for monorepos. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/).
 
 If you're migrating to an Expo SDK version after 52 and have a **metro.config.js** that manually modifies one of the following properties, delete these from your configuration:
+
 - `watchFolders`
 - `resolver.nodeModulesPath`
 - `resolver.extraNodeModules`
@@ -27,7 +28,7 @@ After modifying these options, you'll need to run Expo with `expo start --clear`
 
 </Collapsible>
 
-<Collapsible summary={`Manual Configuration (Before SDK 52)`}>
+<Collapsible summary="Manual Configuration (Before SDK 52)">
 
 <a id="manual-configuration" />
 
@@ -98,18 +99,18 @@ Now that we have the basic monorepo structure set up, let's add our first app.
 Before we create our app, we have to create the **apps** directory. This directory contains all separate apps or websites that belong to this monorepo. Inside this **apps** directory, we can create a sub-directory that contains the React Native app.
 
 <Tabs>
-<Tab label="npm">
-<Terminal cmd={['$ npx create-expo-app@latest apps/cool-app']} />
-</Tab>
-<Tab label="Yarn">
-<Terminal cmd={['$ yarn create expo-app apps/cool-app']} />
-</Tab>
-<Tab label="pnpm">
-<Terminal cmd={['$ pnpm create expo-app apps/cool-app']} />
-</Tab>
-<Tab label="Bun">
-<Terminal cmd={['$ bun create expo apps/cool-app']} />
-</Tab>
+  <Tab label="npm">
+    <Terminal cmd={['$ npx create-expo-app@latest apps/cool-app']} />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal cmd={['$ yarn create expo-app apps/cool-app']} />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal cmd={['$ pnpm create expo-app apps/cool-app']} />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal cmd={['$ bun create expo apps/cool-app']} />
+  </Tab>
 </Tabs>
 
 > If you have an existing app, you can copy all those files into a directory inside **apps**.
@@ -123,58 +124,58 @@ Monorepos can help us group code in a single repository. That includes apps but 
 Let's go back to the root and create the **packages** directory. This directory can contain all the separate packages that you want to make. Once you are inside this directory, we need to add a new sub-directory. The sub-directory is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
 <Tabs>
-<Tab label="npm">
-<Terminal
-  cmd={[
-    '# Create our new package directory',
-    '$ mkdir -p packages/cool-package',
-    '$ cd packages/cool-package',
-    '',
-    '# And create the new package',
-    '$ npm init',
-  ]}
-  cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && npm init"
-/>
-</Tab>
-<Tab label="Yarn">
-<Terminal
-  cmd={[
-    '# Create our new package directory',
-    '$ mkdir -p packages/cool-package',
-    '$ cd packages/cool-package',
-    '',
-    '# And create the new package',
-    '$ yarn init',
-  ]}
-  cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && yarn init"
-/>
-</Tab>
-<Tab label="pnpm">
-<Terminal
-  cmd={[
-    '# Create our new package directory',
-    '$ mkdir -p packages/cool-package',
-    '$ cd packages/cool-package',
-    '',
-    '# And create the new package',
-    '$ pnpm init',
-  ]}
-  cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && pnpm init"
-/>
-</Tab>
-<Tab label="Bun">
-<Terminal
-  cmd={[
-    '# Create our new package directory',
-    '$ mkdir -p packages/cool-package',
-    '$ cd packages/cool-package',
-    '',
-    '# And create the new package',
-    '$ bun init --minimal',
-  ]}
-  cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && bun init --minimal"
-/>
-</Tab>
+  <Tab label="npm">
+    <Terminal
+      cmd={[
+        '# Create our new package directory',
+        '$ mkdir -p packages/cool-package',
+        '$ cd packages/cool-package',
+        '',
+        '# And create the new package',
+        '$ npm init',
+      ]}
+      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && npm init"
+    />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal
+      cmd={[
+        '# Create our new package directory',
+        '$ mkdir -p packages/cool-package',
+        '$ cd packages/cool-package',
+        '',
+        '# And create the new package',
+        '$ yarn init',
+      ]}
+      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && yarn init"
+    />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal
+      cmd={[
+        '# Create our new package directory',
+        '$ mkdir -p packages/cool-package',
+        '$ cd packages/cool-package',
+        '',
+        '# And create the new package',
+        '$ pnpm init',
+      ]}
+      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && pnpm init"
+    />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal
+      cmd={[
+        '# Create our new package directory',
+        '$ mkdir -p packages/cool-package',
+        '$ cd packages/cool-package',
+        '',
+        '# And create the new package',
+        '$ bun init --minimal',
+      ]}
+      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && bun init --minimal"
+    />
+  </Tab>
 </Tabs>
 
 We won't go into too much detail in creating a package. If you are not familiar with this, consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
@@ -253,6 +254,7 @@ node-linker=hoisted
 ### Duplicate native packages within monorepos
 
 Expo has improved support for more complete **node_modules** patterns, such as isolated modules. Unfortunately, if your app contains duplicate dependencies, issues may still occur:
+
 - Duplicate React Native versions in a single monorepo are not supported
 - Duplicate React versions in a single app will cause runtime errors
 - Duplicate versions of Turbo and Expo modules may cause runtime or build errors
@@ -260,22 +262,22 @@ Expo has improved support for more complete **node_modules** patterns, such as i
 You can check if your monorepo has multiple versions of a package, for example, `react-native`, and why they're installed through the package manager you use.
 
 <Tabs>
-<Tab label="npm">
-<Terminal cmd={['$ npm why react-native']} />
-</Tab>
-<Tab label="Yarn">
-<Terminal cmd={['$ yarn why react-native']} />
-</Tab>
-<Tab label="pnpm">
-<Terminal cmd={['$ pnpm why --depth=10 react-native']} />
-</Tab>
-<Tab label="Bun">
-<Terminal cmd={['$ bun pm why react-native']} />
-</Tab>
+  <Tab label="npm">
+    <Terminal cmd={['$ npm why react-native']} />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal cmd={['$ yarn why react-native']} />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal cmd={['$ pnpm why --depth=10 react-native']} />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal cmd={['$ bun pm why react-native']} />
+  </Tab>
 </Tabs>
 
 The output of these commands will be very different from one package manager to another, but you can spot duplicate packages in any of their outputs by looking for multiple versions of the package, for example `react-native@0.79.5` and `react-native@0.81.0`.
-**npm**, 
+**npm**,
 
 #### Adding dependency resolutions for peer dependencies
 
@@ -299,11 +301,11 @@ For [npm](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides),
 
 > **important** This is an experimental feature starting in SDK 54 and above.
 
- This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
+This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
 
 Often, duplicate dependencies won't cause any problems. However, native modules should never be duplicated, because only one version of a native module can be compiled for an app build at a time. Unlike JavaScript dependencies, native builds cannot contain two conflicting versions of a single native module.
 
-From **SDK 54**, you can set the [`EXPO_USE_STICKY_RESOLVER=1`](/more/expo-cli#environment-variables) environment variable to apply auto-linking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [auto-linking](/modules/autolinking/) links for your native builds.
+From **SDK 54**, you can set the [`EXPO_USE_STICKY_RESOLVER=1`](/more/expo-cli#environment-variables) environment variable to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [autolinking](/modules/autolinking/) links for your native builds.
 
 ### Script '...' does not exist
 

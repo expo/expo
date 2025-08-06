@@ -193,6 +193,16 @@ use_expo_modules!({
 
 </PaddedAPIBox>
 
+## Dependency resolution and conflicts
+
+> **important** This is an experimental feature starting in SDK 54 and above.
+
+Autolinking and Node resolution have different goals and the module resolution algorithm in Node and Metro can sometimes come into conflict. If your app contains duplicate installations of a native module that is picked up by autolinking, your JavaScript bundle may contain both versions of the native module, while autolinking and your native app will only contain one version. This might cause runtime crashes and risks incompatibilities.
+
+This is an especially common problem with isolated dependencies or monorepos, and you should [check for and deduplicate native modules in your dependencies](/guides/monorepos/#duplicate-native-packages-within-monorepos).
+
+From **SDK 54**, you can set the [`EXPO_USE_STICKY_RESOLVER=1`](/more/expo-cli#environment-variables) environment variable to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that **autolinking** resolves.
+
 ## Common questions
 
 ### How to set up the autolinking in my app?
