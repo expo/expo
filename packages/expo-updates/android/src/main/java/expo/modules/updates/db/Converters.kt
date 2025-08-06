@@ -105,7 +105,7 @@ class Converters {
   }
 
   @TypeConverter
-  fun stringToMapString(value: String?): Map<String, String>? =
+  fun stringToStringStringMap(value: String?): Map<String, String>? =
     value?.let { jsonText ->
       JSONObject(jsonText).let { json ->
         buildMap {
@@ -119,7 +119,7 @@ class Converters {
     }
 
   @TypeConverter
-  fun mapStringToString(value: Map<String, String>?): String? =
+  fun stringStringMapToString(value: Map<String, String>?): String? =
     value?.let { map ->
       JSONObject().apply {
         map.forEach { (k, v) -> put(k, v) }

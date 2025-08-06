@@ -229,7 +229,7 @@ abstract class UpdatesDatabase : RoomDatabase() {
     }
 
     /**
-     * Add the `from_override` column to `updates`
+     * Add the `url` and `headers` columns to `updates`
      */
     val MIGRATION_12_13: Migration = object : Migration(12, 13) {
       override fun migrate(db: SupportSQLiteDatabase) {
