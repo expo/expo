@@ -18,6 +18,7 @@
 - Remove Babel value-imports instead only relying on types and the `@babel/core` instance passed to the preset and plugins ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
 - Updated test snapshot. ([#38430](https://github.com/expo/expo/pull/38430) by [@kudo](https://github.com/kudo))
 - Replace `react-refresh` dependency with peer dependency fulfilled by `expo` ([#38562](https://github.com/expo/expo/pull/38562) by [@kitten](https://github.com/kitten))
+- Fork React Native's deep import warnings and redirect `disableDeepImportWarnings` option while disabling warnings for Node modules ([#38598](https://github.com/expo/expo/pull/38598) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
