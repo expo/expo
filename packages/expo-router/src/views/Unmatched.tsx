@@ -37,9 +37,11 @@ export function Unmatched() {
 
   /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
   useSafeLayoutEffect(() => {
-    navigation.setOptions({
-      title: 'Not Found',
-    });
+    if (!isPreloaded || (isPreloaded && isFocused)) {
+      navigation.setOptions({
+        title: 'Not Found',
+      });
+    }
   }, [isFocused, isPreloaded, navigation]);
 
   return (
