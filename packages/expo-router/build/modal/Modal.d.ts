@@ -65,6 +65,13 @@ export interface ModalProps extends ViewProps {
      * However, it will still close when navigating back or replacing the current screen.
      */
     closeOnNavigation?: boolean;
+    /**
+     * See {@link ScreenProps["initialDetentIndex"]}.
+     *
+     * The initial detent index when sheet is presented.
+     * Works only when `presentation` is set to `formSheet`.
+     */
+    initialDetentIndex?: ModalConfig['initialDetentIndex'];
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.
