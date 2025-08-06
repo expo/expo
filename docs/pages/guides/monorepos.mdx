@@ -303,7 +303,7 @@ For [npm](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides),
 
 Often, duplicate dependencies won't cause any problems. However, native modules should never be duplicated, because only one version of a native module can be compiled for an app build at a time. Unlike JavaScript dependencies, native builds cannot contain two conflicting versions of a single native module.
 
-From **SDK 54**, you can set the `EXPO_USE_STICKY_RESOLVER=1` environment variable to apply auto-linking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [auto-linking](/modules/autolinking/) links for your native builds.
+From **SDK 54**, you can set the [`EXPO_USE_STICKY_RESOLVER=1`](/more/expo-cli#environment-variables) environment variable to apply auto-linking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [auto-linking](/modules/autolinking/) links for your native builds.
 
 ### Script '...' does not exist
 
