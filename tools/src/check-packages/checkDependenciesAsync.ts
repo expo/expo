@@ -83,7 +83,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     '@expo/metro-config/build/babel-transformer': 'types-only',
     'react-native-worklets/plugin': 'ignore-dev', // Checked via hasModule before requiring
     'react-native-reanimated/plugin': 'ignore-dev', // Checked via hasModule before requiring
-    'expo/config': 'ignore-dev', // WARN: May need a reverse peer dependency
   },
 };
 
