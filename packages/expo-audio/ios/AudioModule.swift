@@ -234,8 +234,30 @@ public class AudioModule: Module {
         try recorder.prepare(options: options, sessionOptions: sessionOptions)
       }
 
-      Function("record") { (recorder: AudioRecorder) -> [String: Any] in
+      Function("record") { (recorder: AudioRecorder, options: [String: Any]?) in
         try checkPermissions()
+        let atTime = options?["atTime"] as? Double
+        let forDuration = options?["forDuration"] as? Double
+
+        if let atTime = atTime, let forDuration = forDuration {
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime, forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        }
+        if let atTime = atTime {
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime)
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        }
+        if let forDuration = forDuration {
+          recorder.ref.record(forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        }
         return try recorder.startRecording()
       }
 
