@@ -12,7 +12,8 @@ import {
 import React, { PropsWithChildren } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
-import { NativeTabOptions, NativeTabsView, type NativeTabsViewProps } from './NativeTabsView';
+import { NativeTabsView } from './NativeTabsView';
+import { NativeTabOptions, type NativeTabsViewProps } from './types';
 import { withLayoutContext } from '../..';
 
 export interface NativeTabsNavigatorProps

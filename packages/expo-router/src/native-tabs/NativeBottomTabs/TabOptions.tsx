@@ -3,7 +3,7 @@
 import type { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { isValidElement } from 'react';
 
-import type { NativeTabOptions } from './NativeTabsView';
+import type { NativeTabOptions } from './types';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
 import { Icon, Badge, Label } from '../common/elements';
 

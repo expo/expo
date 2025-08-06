@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement, ReactNode } from 'react';
-import type { NativeTabOptions } from './NativeTabsView';
+import type { NativeTabOptions } from './types';
 export type TabProps = PropsWithChildren<{
     name: string;
     /**

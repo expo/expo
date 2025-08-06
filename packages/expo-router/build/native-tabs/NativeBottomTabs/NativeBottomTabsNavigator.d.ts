@@ -1,6 +1,6 @@
 import { ParamListBase, type EventMapBase } from '@react-navigation/native';
 import React, { PropsWithChildren } from 'react';
-import { NativeTabOptions, type NativeTabsViewProps } from './NativeTabsView';
+import { NativeTabOptions, type NativeTabsViewProps } from './types';
 export interface NativeTabsNavigatorProps extends PropsWithChildren<Omit<NativeTabsViewProps, 'builder'>> {
     /**
      * The behavior when navigating back with the back button.

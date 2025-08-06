@@ -5,7 +5,9 @@ import { Appearance, Platform } from 'react-native';
 
 import { ActiveTabsContext } from '../utils/active-tabs-context';
 
-Appearance.setColorScheme('dark');
+if (process.env.EXPO_OS !== 'web') {
+  Appearance.setColorScheme('dark');
+}
 
 export default function Layout() {
   const [activeTabs, setActiveTabs] = useState<string[]>([]);

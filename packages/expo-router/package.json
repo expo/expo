@@ -140,6 +140,7 @@
     "fast-deep-equal": "^3.1.3",
     "invariant": "^2.2.4",
     "nanoid": "^3.3.8",
+    "radix-ui": "^1.4.2",
     "react-fast-compare": "^3.2.2",
     "react-native-is-edge-to-edge": "^1.1.6",
     "query-string": "^7.1.3",
