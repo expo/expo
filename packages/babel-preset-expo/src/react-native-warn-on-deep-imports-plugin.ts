@@ -15,7 +15,7 @@ import { getIsNodeModule } from './common';
 function getWarningMessage(
   importPath: string,
   loc: t.SourceLocation | undefined | null,
-  source: string,
+  source: string
 ) {
   const message = `Deep imports from the 'react-native' package are deprecated ('${importPath}').`;
 
@@ -35,10 +35,9 @@ function createWarning(
   const warningMessage = getWarningMessage(importPath, loc, source);
 
   const warning = t.expressionStatement(
-    t.callExpression(
-      t.memberExpression(t.identifier('console'), t.identifier('warn')),
-      [t.stringLiteral(warningMessage)],
-    ),
+    t.callExpression(t.memberExpression(t.identifier('console'), t.identifier('warn')), [
+      t.stringLiteral(warningMessage),
+    ])
   );
 
   return warning;
@@ -55,7 +54,7 @@ function isInitializeCoreImport(source: string) {
 
 function withLocation<T extends t.Node>(node: T, loc: t.SourceLocation | null | undefined): T {
   if (!node.loc) {
-    return {...node, loc};
+    return { ...node, loc };
   }
   return node;
 }
@@ -73,8 +72,10 @@ interface State {
   export: ImportRef[];
 }
 
-export const reactNativeWarnOnDeepImportsPlugin =
-  ({ types: t, caller }: ConfigAPI & typeof import('@babel/core')): PluginObj<State> => {
+export const reactNativeWarnOnDeepImportsPlugin = ({
+  types: t,
+  caller,
+}: ConfigAPI & typeof import('@babel/core')): PluginObj<State> => {
   const isNodeModule = caller(getIsNodeModule);
   return {
     name: 'warn-on-deep-imports',
@@ -82,9 +83,13 @@ export const reactNativeWarnOnDeepImportsPlugin =
       ImportDeclaration(path, state) {
         const source = path.node.source.value;
 
-        if (!state.isExcluded && isDeepReactNativeImport(source) && !isInitializeCoreImport(source)) {
+        if (
+          !state.isExcluded &&
+          isDeepReactNativeImport(source) &&
+          !isInitializeCoreImport(source)
+        ) {
           const loc = path.node.loc;
-          state.import.push({source, loc});
+          state.import.push({ source, loc });
         }
       },
       CallExpression(path, state) {
@@ -93,18 +98,14 @@ export const reactNativeWarnOnDeepImportsPlugin =
 
         if (
           !state.isExcluded &&
-          callee.isIdentifier({name: 'require'}) &&
+          callee.isIdentifier({ name: 'require' }) &&
           args.length === 1 &&
           args[0].isStringLiteral()
         ) {
-          const source =
-            args[0].node.type === 'StringLiteral' ? args[0].node.value : '';
-          if (
-            isDeepReactNativeImport(source) &&
-            !isInitializeCoreImport(source)
-          ) {
+          const source = args[0].node.type === 'StringLiteral' ? args[0].node.value : '';
+          if (isDeepReactNativeImport(source) && !isInitializeCoreImport(source)) {
             const loc = path.node.loc;
-            state.require.push({source, loc});
+            state.require.push({ source, loc });
           }
         }
       },
@@ -118,7 +119,7 @@ export const reactNativeWarnOnDeepImportsPlugin =
           !isInitializeCoreImport(source.value) // NOTE: This contained a bug before (source v source.value)
         ) {
           const loc = path.node.loc;
-          state.export.push({source: source.value, loc});
+          state.export.push({ source: source.value, loc });
         }
       },
       Program: {
@@ -131,37 +132,24 @@ export const reactNativeWarnOnDeepImportsPlugin =
           state.export = [];
         },
         exit(path, state) {
-          const {body} = path.node;
+          const { body } = path.node;
           if (state.isExcluded) {
             return;
           }
 
-          const requireWarnings = state.require.map(value =>
-            withLocation(
-              createWarning(t, value.source, value.loc, state.filename),
-              value.loc,
-            ),
+          const requireWarnings = state.require.map((value) =>
+            withLocation(createWarning(t, value.source, value.loc, state.filename), value.loc)
           );
 
-          const importWarnings = state.import.map(value =>
-            withLocation(
-              createWarning(t, value.source, value.loc, state.filename),
-              value.loc,
-            ),
+          const importWarnings = state.import.map((value) =>
+            withLocation(createWarning(t, value.source, value.loc, state.filename), value.loc)
           );
 
-          const exportWarnings = state.export.map(value =>
-            withLocation(
-              createWarning(t, value.source, value.loc, state.filename),
-              value.loc,
-            ),
+          const exportWarnings = state.export.map((value) =>
+            withLocation(createWarning(t, value.source, value.loc, state.filename), value.loc)
           );
 
-          const warnings = [
-            ...requireWarnings,
-            ...importWarnings,
-            ...exportWarnings,
-          ];
+          const warnings = [...requireWarnings, ...importWarnings, ...exportWarnings];
 
           body.push(...warnings);
         },

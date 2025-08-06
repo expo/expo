@@ -8,6 +8,7 @@ const expo_router_plugin_1 = require("./expo-router-plugin");
 const import_meta_transform_plugin_1 = require("./import-meta-transform-plugin");
 const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
+const react_native_warn_on_deep_imports_plugin_1 = require("./react-native-warn-on-deep-imports-plugin");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
@@ -191,6 +192,11 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
+    // NOTE(@kitten): Forked from `@react-native/babel-preset`'s warning plugin
+    // We add exceptions to this plugin to ignore Expo sources
+    if (isDev && !platformOptions.disableDeepImportWarnings) {
+        extraPlugins.push(react_native_warn_on_deep_imports_plugin_1.reactNativeWarnOnDeepImportsPlugin);
+    }
     const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
     extraPlugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(polyfillImportMeta === true));
     return {
@@ -215,7 +221,7 @@ function babelPresetExpo(api, options = {}) {
                     // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
                     withDevTools: false,
                     disableImportExportTransform: platformOptions.disableImportExportTransform,
-                    disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
+                    disableDeepImportWarnings: true, // See above for forked version of this option/plugin
                     lazyImportExportTransform: lazyImportsOption === true
                         ? (importModuleSpecifier) => {
                             // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
