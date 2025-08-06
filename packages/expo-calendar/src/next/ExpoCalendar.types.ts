@@ -213,9 +213,6 @@ export declare class ExpoCalendarEvent {
   /**
    * Description or notes saved with the event.
    */
-  /**
-   * Description or notes saved with the event.
-   */
   notes: string;
   /**
    * Array of Alarm objects which control automated reminders to the user.
@@ -360,7 +357,10 @@ export declare class ExpoCalendarReminder {
   lastModifiedDate?: string | Date;
   timeZone?: string;
   url?: string;
-  notes?: string;
+  /**
+   * Description or notes saved with the reminder.
+   */
+  notes: string;
   alarms?: Alarm[];
   recurrenceRule?: RecurrenceRule | null;
   startDate?: string | Date;
@@ -368,7 +368,7 @@ export declare class ExpoCalendarReminder {
   completed?: boolean;
   completionDate?: string | Date;
 
-  update(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): void;
+  update(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>, nullableFields?: string[]): void;
 
   /**
    * Creates an attendee.

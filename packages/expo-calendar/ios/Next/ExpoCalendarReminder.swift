@@ -17,6 +17,32 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
     self.init(reminder: EKReminder(eventStore: CalendarModule.sharedEventStore))
   }
 
+  convenience init(calendar: EKCalendar, reminderRecord: Reminder) throws {
+    let sharedEventStore = CalendarModule.sharedEventStore
+
+    if calendar.allowedEntityTypes.isDisjoint(with: [.reminder]) {
+      throw InvalidCalendarTypeException((calendar.calendarIdentifier, "reminder"))
+    }
+
+    let calendarReminder = EKReminder(eventStore: sharedEventStore)
+    calendarReminder.calendar = calendar
+    calendarReminder.title = reminderRecord.title
+    calendarReminder.location = reminderRecord.location
+    calendarReminder.notes = reminderRecord.notes
+
+    self.init(reminder: calendarReminder)
+  }
+
+  func update(reminderRecord: Reminder, nullableFields: [String]? = nil) throws {
+    guard let reminder = self.reminder else {
+      throw ItemNoLongerExistsException()
+    }
+
+    try self.initialize(reminderRecord: reminderRecord, nullableFields: nullableFields)
+
+    try eventStore.save(reminder, commit: true)
+  }
+
   func delete() throws {
     guard let reminder = self.reminder else {
       throw ItemNoLongerExistsException()
@@ -26,10 +52,13 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
     self.reminder = nil
   }
 
-  func initialize(reminderRecord: Reminder, calendar: EKCalendar? = nil) throws {
+  // swiftlint:disable:next cyclomatic_complexity
+  func initialize(reminderRecord: Reminder, calendar: EKCalendar? = nil, nullableFields: [String]? = nil) throws {
     guard let reminder else {
       throw ItemNoLongerExistsException()
     }
+
+    let nullableSet = Set(nullableFields ?? [])
 
     if let calendar {
       reminder.calendar = calendar
@@ -39,7 +68,9 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
       reminder.title = title
     }
 
-    if let location = reminderRecord.location {
+    if nullableSet.contains("location") {
+      reminder.location = nil
+    } else if let location = reminderRecord.location {
       reminder.location = location
     }
 
@@ -47,7 +78,9 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
     let dueDate = parse(date: reminderRecord.dueDate)
     let completionDate = parse(date: reminderRecord.completionDate)
 
-    if let timeZone = reminderRecord.timeZone {
+    if nullableSet.contains("timeZone") {
+      reminder.timeZone = nil
+    } else if let timeZone = reminderRecord.timeZone {
       if let eventTimeZone = TimeZone(identifier: timeZone) {
         reminder.timeZone = eventTimeZone
       } else {
@@ -55,33 +88,50 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
       }
     }
 
-    if let alarms = reminderRecord.alarms {
+    if nullableSet.contains("alarms") {
+      reminder.alarms = []
+    } else if let alarms = reminderRecord.alarms {
       reminder.alarms = createCalendarEventAlarms(alarms: alarms)
     }
 
-    if let recurrenceRule = reminderRecord.recurrenceRule {
+    if nullableSet.contains("recurrenceRule") {
+      reminder.recurrenceRules = nil
+    } else if let recurrenceRule = reminderRecord.recurrenceRule {
+      if dueDate == nil && reminder.dueDateComponents == nil {
+        throw DueDateRequiredException()
+      }
       if let rule = createRecurrenceRule(rule: recurrenceRule) {
         reminder.recurrenceRules = [rule]
       }
     }
 
-    if let url = reminderRecord.url {
+    if nullableSet.contains("url") {
+      reminder.url = nil
+    } else if let url = reminderRecord.url {
       reminder.url = URL(string: url)
     }
 
-    if let startDate {
+    if nullableSet.contains("startDate") {
+      reminder.startDateComponents = nil
+    } else if let startDate {
       reminder.startDateComponents = createDateComponents(for: startDate)
     }
 
-    if let dueDate {
+    if nullableSet.contains("dueDate") {
+      reminder.dueDateComponents = nil
+    } else if let dueDate {
       reminder.dueDateComponents = createDateComponents(for: dueDate)
     }
 
-    if let completionDate {
+    if nullableSet.contains("completionDate") {
+      reminder.completionDate = nil
+    } else if let completionDate {
       reminder.completionDate = completionDate
     }
 
-    if let notes = reminderRecord.notes {
+    if nullableSet.contains("notes") {
+      reminder.notes = nil
+    } else if let notes = reminderRecord.notes {
       reminder.notes = notes
     }
 

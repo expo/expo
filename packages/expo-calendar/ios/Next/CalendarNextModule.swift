@@ -271,8 +271,17 @@ public final class CalendarNextModule: Module {
 
       Function("createReminder") { (calendar: ExpoCalendar, eventRecord: Reminder, _: RecurringEventOptions?) -> ExpoCalendarReminder in
         try checkRemindersPermissions()
-        let expoReminder = ExpoCalendarReminder()
-        try expoReminder.initialize(reminderRecord: eventRecord, calendar: calendar.calendar)
+
+        guard let calendarInstance = calendar.calendar else {
+          throw CalendarNoLongerExistsException()
+        }
+
+        if eventRecord.title == nil {
+          throw MissingParameterException("title")
+        }
+
+        let expoReminder = try ExpoCalendarReminder(calendar: calendarInstance, reminderRecord: eventRecord)
+        try expoReminder.initialize(reminderRecord: eventRecord)
 
         guard let reminder = expoReminder.reminder else {
           throw Exception()
@@ -464,12 +473,18 @@ public final class CalendarNextModule: Module {
         reminder.reminder?.location
       }
 
-      Property("creationDate") { (reminder: ExpoCalendarReminder) in
-        dateFormatter.string(from: reminder.reminder?.creationDate ?? Date())
+      Property("creationDate") { (reminder: ExpoCalendarReminder) -> String? in
+        guard let creationDate = reminder.reminder?.creationDate else {
+          return nil
+        }
+        return dateFormatter.string(from: creationDate)
       }
 
-      Property("lastModifiedDate") { (reminder: ExpoCalendarReminder) in
-        dateFormatter.string(from: reminder.reminder?.lastModifiedDate ?? Date())
+      Property("lastModifiedDate") { (reminder: ExpoCalendarReminder) -> String? in
+        guard let lastModifiedDate = reminder.reminder?.lastModifiedDate else {
+          return nil
+        }
+        return dateFormatter.string(from: lastModifiedDate)
       }
 
       Property("timeZone") { (reminder: ExpoCalendarReminder) in
@@ -524,19 +539,16 @@ public final class CalendarNextModule: Module {
         reminder.reminder?.isCompleted ?? false
       }
 
-      Property("completionDate") { (reminder: ExpoCalendarReminder) in
-        dateFormatter.string(from: reminder.reminder?.completionDate ?? Date())
+      Property("completionDate") { (reminder: ExpoCalendarReminder) -> String? in
+        guard let completionDate = reminder.reminder?.completionDate else {
+          return nil
+        }
+        return dateFormatter.string(from: completionDate)
       }
 
-      Function("update") { (expoReminder: ExpoCalendarReminder, reminderRecord: Reminder) in
+      Function("update") { (expoReminder: ExpoCalendarReminder, reminderRecord: Reminder, nullableFields: [String]?) in
         try checkRemindersPermissions()
-
-        guard let reminder = expoReminder.reminder else {
-          throw ItemNoLongerExistsException()
-        }
-
-        try expoReminder.initialize(reminderRecord: reminderRecord)
-        try eventStore.save(reminder, commit: true)
+        try expoReminder.update(reminderRecord: reminderRecord, nullableFields: nullableFields)
       }
 
       Function("delete") { (reminder: ExpoCalendarReminder) in

@@ -10,7 +10,7 @@ import {
   ReminderStatus,
 } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
-import { stringifyDateValues, stringifyIfDate } from '../utils';
+import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
 
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
 
@@ -24,10 +24,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   }
 
   override update(details: Partial<Event>, options: RecurringEventOptions = {}): void {
-    const nullableDetailsFields = Object.keys(details).filter((key): key is keyof Event => {
-      // @ts-expect-error - key is a keyof Event
-      return details[key] === null;
-    });
+    const nullableDetailsFields = getNullableDetailsFields(details);
     super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
   }
 
@@ -38,7 +35,8 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
   override update(details: Partial<Reminder>): void {
-    super.update(stringifyDateValues(details));
+    const nullableDetailsFields = getNullableDetailsFields(details);
+    super.update(stringifyDateValues(details), nullableDetailsFields);
   }
 }
 

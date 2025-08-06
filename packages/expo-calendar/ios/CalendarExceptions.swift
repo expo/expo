@@ -140,3 +140,9 @@ final internal class NotImplementedYetException: Exception {
     "Not implemented yet."
   }
 }
+
+final internal class DueDateRequiredException: Exception {
+  override var reason: String {
+    "A repeating reminder must have a due date."
+  }
+}

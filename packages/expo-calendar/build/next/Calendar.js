@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
-import { stringifyDateValues, stringifyIfDate } from '../utils';
+import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
@@ -12,10 +12,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
         return super.getAttendees(stringifyDateValues(recurringEventOptions));
     }
     update(details, options = {}) {
-        const nullableDetailsFields = Object.keys(details).filter((key) => {
-            // @ts-expect-error - key is a keyof Event
-            return details[key] === null;
-        });
+        const nullableDetailsFields = getNullableDetailsFields(details);
         super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
     }
     delete(options = {}) {
@@ -24,7 +21,8 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 }
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     update(details) {
-        super.update(stringifyDateValues(details));
+        const nullableDetailsFields = getNullableDetailsFields(details);
+        super.update(stringifyDateValues(details), nullableDetailsFields);
     }
 }
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {

@@ -45,7 +45,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
 
   func update(eventRecord: Event, options: RecurringEventOptions?, nullableFields: [String]? = nil) throws {
     guard let calendarEvent = self.event else {
-      throw EventNotFoundException("EKevent not found")
+      throw ItemNoLongerExistsException()
     }
 
     try self.initialize(event: calendarEvent, eventRecord: eventRecord, nullableFields: nullableFields)
@@ -78,9 +78,10 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     try initialize(event: event, eventRecord: eventRecord, nullableFields: nullableFields)
   }
 
+  // swiftlint:disable:next cyclomatic_complexity
   func initialize(event: EKEvent, eventRecord: Event, nullableFields: [String]? = nil) throws {
     let nullableSet = Set(nullableFields ?? [])
-    
+
     if nullableSet.contains("timeZone") {
       event.timeZone = nil
     } else if let timeZone = eventRecord.timeZone {
@@ -96,7 +97,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     } else if eventRecord.alarms != nil {
       event.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
     }
-    
+
     if nullableSet.contains("recurrenceRule") {
       event.recurrenceRules = nil
     } else if let rule = eventRecord.recurrenceRule {

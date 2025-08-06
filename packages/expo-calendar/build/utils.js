@@ -16,4 +16,13 @@ export function stringifyDateValues(obj) {
         return acc;
     }, {});
 }
+/**
+ * Extracts keys from a details object where the value is null.
+ * Used for identifying which fields should be explicitly set to null in native updates.
+ */
+export function getNullableDetailsFields(details) {
+    return Object.keys(details).filter((key) => {
+        return details[key] === null;
+    });
+}
 //# sourceMappingURL=utils.js.map

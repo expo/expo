@@ -20,3 +20,15 @@ export function stringifyDateValues<T extends Record<string, any>>(obj: T): Stri
     return acc;
   }, {} as StringifyDates<T>);
 }
+
+/**
+ * Extracts keys from a details object where the value is null.
+ * Used for identifying which fields should be explicitly set to null in native updates.
+ */
+export function getNullableDetailsFields<T extends Record<string, any>>(
+  details: Partial<T>
+): (keyof T)[] {
+  return Object.keys(details).filter((key) => {
+    return details[key as keyof T] === null;
+  });
+}

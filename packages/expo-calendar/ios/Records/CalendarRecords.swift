@@ -146,5 +146,6 @@ struct DialogEditResponse: Record {
   @Field
   var action: ResponseAction = .canceled
   @Field
+  // swiftlint:disable:next redundant_optional_initialization
   var id: String? = nil
 }
