@@ -37,7 +37,7 @@ Since SDK 52, Expo's Metro config has monorepo support for Bun, npm, pnpm and Ya
 Prior to SDK 52, to configure a monorepo with Metro manually, there were two manual changes:
 
 1. Metro had to be configured to watch code within the monorepo manually (for example, not just **apps/cool-app**.)
-2. Metro's resolution has to be adjusted to find packages in other workspaces and multiple `node_modules` folders (for example, **apps/cool-app/node_modules** or **node_modules**.)
+2. Metro's resolution had to be adjusted to find packages in other workspaces and multiple `node_modules` folders (for example, **apps/cool-app/node_modules** or **node_modules**.)
 
 The configuration had to be adjusted by [creating a **metro.config.js**](/guides/customizing-metro/#customizing) with the following content:
 
