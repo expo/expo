@@ -123,11 +123,11 @@ async function main(actionId: string | undefined) {
 }
 
 function getAndroidApkUrl(appVersion: string): string {
-  return `https://d1ahtucjixef4r.cloudfront.net/Exponent-${appVersion}.apk`;
+  return `https://github.com/expo/expo-go-releases/releases/download/Exponent-${appVersion}/Exponent-${appVersion}.apk`;
 }
 
 function getIosSimulatorUrl(appVersion: string): string {
-  return `https://dpq5q02fu5f55.cloudfront.net/Exponent-${appVersion}.tar.gz`;
+  return `https://github.com/expo/expo-go-releases/releases/download/Exponent-${appVersion}/Exponent-${appVersion}.tar.gz`;
 }
 
 async function confirmPromptIfOverridingRemoteFileAsync(
@@ -401,9 +401,6 @@ async function androidApkBuildAsync() {
   await enforceRunningOnSdkReleaseBranchAsync();
   await prepareAndroidCredentialsAsync(projectDir);
 
-  const appVersion = await androidAppVersionAsync();
-  await confirmPromptIfOverridingRemoteFileAsync(getAndroidApkUrl(appVersion), appVersion);
-
   await spawnAsync(
     'eas',
     ['build', '--platform', 'android', '--profile', PUBLISH_CLIENT_BUILD_PROFILE],
@@ -566,9 +563,6 @@ async function iosSimulatorUploadAsync() {
 export async function iosSimulatorBuildAsync() {
   const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
   await enforceRunningOnSdkReleaseBranchAsync();
-
-  const appVersion = await iosAppVersionAsync();
-  await confirmPromptIfOverridingRemoteFileAsync(getIosSimulatorUrl(appVersion), appVersion);
 
   await spawnAsync(
     'eas',
