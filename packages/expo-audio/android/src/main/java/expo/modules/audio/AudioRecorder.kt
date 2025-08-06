@@ -86,10 +86,10 @@ class AudioRecorder(
     // Note: atTime is not supported on Android (no native equivalent), so we ignore it entirely
     // Only forDuration is implemented using coroutines
 
-    if (forDurationSeconds != null) {
+    forDurationSeconds?.let {
       record()
       recordingTimerJob = appContext?.mainQueue?.launch {
-        delay((forDurationSeconds * 1000).toLong())
+        delay((it * 1000).toLong())
         // Stop recording regardless of current state
         // This matches the iOS behaviour where the timer continues regardless of if
         // the recording was paused.
@@ -97,9 +97,7 @@ class AudioRecorder(
           stopRecording()
         }
       }
-    } else {
-      record()
-    }
+    } ?: record()
   }
 
   // Keep backward compatibility methods

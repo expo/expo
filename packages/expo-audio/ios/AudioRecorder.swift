@@ -112,7 +112,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       resetDurationTracking()
     }
 
-    _ = ref.record()
+    ref.record()
 
     startTimestamp = deviceCurrentTime
     currentState = .recording

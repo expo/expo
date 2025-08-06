@@ -267,12 +267,13 @@ export type RecordingStartOptions = {
      * If not provided, recording starts immediately.
      *
      * **Platform behavior:**
-     * - iOS: Uses native AVAudioRecorder.record(atTime:) for precise timing.
-     *   ⚠️ **Important**: The recording process starts immediately (you'll see status updates),
-     *   but actual audio capture begins after the specified delay. This is not a countdown -
-     *   the recorder is active but silent during the delay period.
      * - Android: Ignored, recording starts immediately
+     * - iOS: Uses native AVAudioRecorder.record(atTime:) for precise timing.
      * - Web: Ignored, recording starts immediately
+     *
+     * > **warning** On iOS, the recording process starts immediately (you'll see status updates),
+     * but actual audio capture begins after the specified delay. This is not a countdown, since
+     * the recorder is active but silent during the delay period.
      *
      * @platform ios
      */

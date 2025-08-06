@@ -465,12 +465,10 @@ class AudioModule : Module() {
         recorder.prepareRecording(options)
       }
 
-      Function("record") { recorder: AudioRecorder, options: Map<String, Any>? ->
+      Function("record") { recorder: AudioRecorder, options: RecordOptions? ->
         checkRecordingPermission()
         if (recorder.isPrepared) {
-          val atTime = options?.get("atTime") as? Double
-          val forDuration = options?.get("forDuration") as? Double
-          recorder.recordWithOptions(atTime, forDuration)
+          recorder.recordWithOptions(options?.atTime, options?.forDuration)
         }
       }
 
