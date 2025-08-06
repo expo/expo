@@ -350,7 +350,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   }
 
   // NOTE(@kitten): Forked from `@react-native/babel-preset`'s warning plugin
-  // We add exceptions to this plugin to ignore Expo sources
+  // We only allow warnings on modules that aren't in node modules
   if (isDev && !platformOptions.disableDeepImportWarnings) {
     extraPlugins.push(reactNativeWarnOnDeepImportsPlugin);
   }

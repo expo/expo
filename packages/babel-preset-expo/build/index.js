@@ -193,7 +193,7 @@ function babelPresetExpo(api, options = {}) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
     // NOTE(@kitten): Forked from `@react-native/babel-preset`'s warning plugin
-    // We add exceptions to this plugin to ignore Expo sources
+    // We only allow warnings on modules that aren't in node modules
     if (isDev && !platformOptions.disableDeepImportWarnings) {
         extraPlugins.push(react_native_warn_on_deep_imports_plugin_1.reactNativeWarnOnDeepImportsPlugin);
     }
