@@ -1,7 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
@@ -9,7 +9,7 @@ import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
-const EventRow: React.FunctionComponent<{
+type EventRowProps = {
   event: ExpoCalendarEvent;
   getEvent: (event: ExpoCalendarEvent) => void;
   getAttendees: (event: ExpoCalendarEvent) => void;
@@ -17,7 +17,9 @@ const EventRow: React.FunctionComponent<{
   deleteEvent: (event: ExpoCalendarEvent) => void;
   openEventInCalendar: (event: ExpoCalendarEvent) => void;
   editEventInCalendar: (event: ExpoCalendarEvent) => void;
-}> = ({
+};
+
+const EventRow = ({
   event,
   getEvent,
   getAttendees,
@@ -25,7 +27,7 @@ const EventRow: React.FunctionComponent<{
   deleteEvent,
   openEventInCalendar,
   editEventInCalendar,
-}) => (
+}: EventRowProps) => (
   <View style={styles.eventRow}>
     <HeadingText>{event.title}</HeadingText>
     <MonoText>{JSON.stringify(event, null, 2)}</MonoText>
@@ -37,11 +39,6 @@ const EventRow: React.FunctionComponent<{
     <ListButton onPress={() => editEventInCalendar(event)} title="Edit in Calendar App" />
   </View>
 );
-
-interface State {
-  events: ExpoCalendarEvent[];
-  calendar: ExpoCalendar | null;
-}
 
 type Links = {
   Events: { calendar: ExpoCalendar };
@@ -70,39 +67,28 @@ function prepareEvent(calendarId: string, recurring: boolean = false) {
   return newEvent;
 }
 
-export default class EventsScreen extends React.Component<Props, State> {
-  static navigationOptions = {
-    title: 'Events',
-  };
+const EventsScreen = ({ route }: Props) => {
+  const [events, setEvents] = useState<ExpoCalendarEvent[]>([]);
 
-  readonly state: State = {
-    calendar: null,
-    events: [],
-  };
-
-  componentDidMount() {
-    const { params } = this.props.route;
-    if (params) {
-      const { id } = params.calendar;
-      const calendar = new ExpoCalendar(id);
-      if (calendar) {
-        this._findEvents(calendar);
-        this.setState({ calendar });
-      }
-    }
-  }
-
-  _findEvents = async (calendar: ExpoCalendar) => {
+  const findEvents = async (calendar: ExpoCalendar) => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const nextYear = new Date();
     nextYear.setFullYear(nextYear.getFullYear() + 1);
     const events = calendar.listEvents(yesterday, nextYear);
-    this.setState({ events });
+    setEvents(events);
   };
 
-  _addEvent = async (recurring: boolean) => {
-    const { calendar } = this.props.route.params!;
+  const calendar = route.params?.calendar;
+
+  useEffect(() => {
+    if (calendar) {
+      findEvents(calendar);
+    }
+  }, [calendar]);
+
+  const addEvent = async (recurring: boolean) => {
+    const { calendar } = route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -112,13 +98,13 @@ export default class EventsScreen extends React.Component<Props, State> {
       const newEvent = prepareEvent(calendar.id, recurring);
       calendar.createEvent(newEvent);
       Alert.alert('Event saved successfully');
-      this._findEvents(calendar);
+      findEvents(calendar);
     } catch (e) {
       Alert.alert('Event not saved successfully', e.message);
     }
   };
 
-  _getEvent = async (event: ExpoCalendarEvent) => {
+  const getEvent = async (event: ExpoCalendarEvent) => {
     try {
       const newEvent = await Calendar.getEventAsync(event.id!, {
         futureEvents: false,
@@ -130,7 +116,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _getAttendees = async (event: ExpoCalendarEvent) => {
+  const getAttendees = async (event: ExpoCalendarEvent) => {
     try {
       const attendees = event.getAttendees();
       Alert.alert('Attendees found using getAttendees', JSON.stringify(attendees));
@@ -139,8 +125,8 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _updateEvent = async (event: ExpoCalendarEvent) => {
-    const { calendar } = this.props.route.params!;
+  const updateEvent = async (event: ExpoCalendarEvent) => {
+    const { calendar } = route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -158,28 +144,28 @@ export default class EventsScreen extends React.Component<Props, State> {
         futureEvents: false,
       });
       Alert.alert('Event saved successfully');
-      this._findEvents(calendar);
+      findEvents(calendar);
     } catch (e) {
       Alert.alert('Event not saved successfully', e.message);
     }
   };
 
-  _deleteEvent = async (event: ExpoCalendarEvent) => {
+  const deleteEvent = async (event: ExpoCalendarEvent) => {
     try {
       event.delete({
         futureEvents: false,
         instanceStartDate: event.recurrenceRule ? event.startDate : undefined,
       });
       Alert.alert('Event deleted successfully');
-      if (this.state.calendar) {
-        this._findEvents(this.state.calendar);
+      if (calendar) {
+        findEvents(calendar);
       }
     } catch (e) {
       Alert.alert('Event not deleted successfully', e.message);
     }
   };
 
-  _openEventInCalendar = async (event: ExpoCalendarEvent) => {
+  const openEventInCalendar = async (event: ExpoCalendarEvent) => {
     const result = await event.openInCalendarAsync({
       startNewActivityTask: false,
       allowsEditing: true,
@@ -192,7 +178,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }, 200);
   };
 
-  _editEventInCalendar = async (event: ExpoCalendarEvent) => {
+  const editEventInCalendar = async (event: ExpoCalendarEvent) => {
     const result = await event.editInCalendarAsync(null);
     setTimeout(() => {
       Alert.alert('editEventInCalendarAsync result', JSON.stringify(result), undefined, {
@@ -201,7 +187,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }, 200);
   };
 
-  _renderActionButtons = () => {
+  const renderActionButtons = () => {
     return (
       <View style={{ gap: 10 }}>
         <Button
@@ -210,11 +196,11 @@ export default class EventsScreen extends React.Component<Props, State> {
             Calendar.requestCalendarPermissionsAsync();
           }}
         />
-        <Button onPress={() => this._addEvent(false)} title="Add New Event" />
-        <Button onPress={() => this._addEvent(true)} title="Add New Recurring Event" />
+        <Button onPress={() => addEvent(false)} title="Add New Event" />
+        <Button onPress={() => addEvent(true)} title="Add New Recurring Event" />
         <Button
           onPress={async () => {
-            const { calendar } = this.props.route.params!;
+            const { calendar } = route.params!;
             const newEvent = prepareEvent(calendar.id);
             const result = calendar.createEvent(newEvent);
             setTimeout(() => {
@@ -229,36 +215,38 @@ export default class EventsScreen extends React.Component<Props, State> {
     );
   };
 
-  render() {
-    if (!this.props.route.params?.calendar) {
-      return <Text>Access this screen from the "Calendars" screen.</Text>;
-    }
-    const events = this.state.events.length ? (
-      <View>
-        {this.state.events.map((event) => (
-          <EventRow
-            event={event}
-            key={`${event.id}${event.startDate}`}
-            getEvent={this._getEvent}
-            getAttendees={this._getAttendees}
-            updateEvent={this._updateEvent}
-            deleteEvent={this._deleteEvent}
-            openEventInCalendar={this._openEventInCalendar}
-            editEventInCalendar={this._editEventInCalendar}
-          />
-        ))}
-      </View>
-    ) : (
-      <Text style={{ marginVertical: 12 }}>This calendar has no events.</Text>
-    );
-    return (
-      <ScrollView style={styles.container}>
-        {this._renderActionButtons()}
-        {events}
-      </ScrollView>
-    );
+  if (!route.params?.calendar) {
+    return <Text>Access this screen from the "Calendars" screen.</Text>;
   }
-}
+
+  const eventsComponent = events.length ? (
+    <View>
+      {events.map((event) => (
+        <EventRow
+          event={event}
+          key={`${event.id}${event.startDate}`}
+          getEvent={getEvent}
+          getAttendees={getAttendees}
+          updateEvent={updateEvent}
+          deleteEvent={deleteEvent}
+          openEventInCalendar={openEventInCalendar}
+          editEventInCalendar={editEventInCalendar}
+        />
+      ))}
+    </View>
+  ) : (
+    <Text style={{ marginVertical: 12 }}>This calendar has no events.</Text>
+  );
+
+  return (
+    <ScrollView style={styles.container}>
+      {renderActionButtons()}
+      {eventsComponent}
+    </ScrollView>
+  );
+};
+
+export default EventsScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,22 +1,17 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import { ExpoCalendar, ExpoCalendarReminder } from 'expo-calendar/next';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-interface RowProps {
+type RowProps = {
   reminder: ExpoCalendarReminder;
   getReminder: (reminder: ExpoCalendarReminder) => void;
   updateReminder: (reminder: ExpoCalendarReminder) => void;
   deleteReminder: (reminder: ExpoCalendarReminder) => void;
-}
+};
 
-const ReminderRow: React.FunctionComponent<RowProps> = ({
-  reminder,
-  getReminder,
-  updateReminder,
-  deleteReminder,
-}) => (
+const ReminderRow = ({ reminder, getReminder, updateReminder, deleteReminder }: RowProps) => (
   <View style={styles.reminderRow}>
     <Text style={styles.reminderName}>{reminder.title}</Text>
     <Text style={styles.reminderData}>{JSON.stringify(reminder)}</Text>
@@ -26,47 +21,35 @@ const ReminderRow: React.FunctionComponent<RowProps> = ({
   </View>
 );
 
-interface State {
-  reminders: ExpoCalendarReminder[];
-  calendar: ExpoCalendar | null;
-}
-
 type Links = {
   Reminders: { calendar: ExpoCalendar };
 };
 
 type Props = StackScreenProps<Links, 'Reminders'>;
 
-export default class RemindersScreen extends React.Component<Props, State> {
-  static navigationOptions = {
-    title: 'Reminders',
-  };
+const RemindersScreen = ({ route }: Props) => {
+  const [reminders, setReminders] = useState<ExpoCalendarReminder[]>([]);
 
-  readonly state: State = {
-    calendar: null,
-    reminders: [],
-  };
+  const calendar = route.params?.calendar;
 
-  componentDidMount() {
-    const { params } = this.props.route;
-    if (params) {
-      const calendar = new ExpoCalendar(params.calendar.id!);
-      this._findReminders(calendar);
+  useEffect(() => {
+    if (calendar) {
+      findReminders(calendar);
     }
-  }
+  }, [calendar]);
 
-  _findReminders = async (calendar: ExpoCalendar) => {
+  const findReminders = async (calendar: ExpoCalendar) => {
     try {
       const reminders = await calendar.listReminders(new Date(), new Date());
-      this.setState({ reminders });
+      setReminders(reminders);
     } catch (error) {
       console.error('Error fetching reminders:', error);
-      this.setState({ reminders: [] });
+      setReminders([]);
     }
   };
 
-  _addReminder = async () => {
-    const { calendar } = this.props.route.params!;
+  const addReminder = async () => {
+    const { calendar } = route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -84,23 +67,23 @@ export default class RemindersScreen extends React.Component<Props, State> {
       const createdReminder = calendar.createReminder(newReminder);
       console.log('newReminder', createdReminder);
       Alert.alert('Reminder saved successfully');
-      this._findReminders(calendar);
-    } catch (e) {
+      findReminders(calendar);
+    } catch (e: any) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
   };
 
-  _getReminder = async (reminder: Calendar.Reminder) => {
+  const getReminder = async (reminder: Calendar.Reminder) => {
     try {
       const newReminder = await Calendar.getReminderAsync(reminder.id!);
       Alert.alert('Reminder found using getReminderAsync', JSON.stringify(newReminder));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error finding reminder', e.message);
     }
   };
 
-  _updateReminder = async (reminder: ExpoCalendarReminder) => {
-    const { calendar } = this.props.route.params!;
+  const updateReminder = async (reminder: ExpoCalendarReminder) => {
+    const { calendar } = route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -112,52 +95,53 @@ export default class RemindersScreen extends React.Component<Props, State> {
     try {
       reminder.update(newReminder);
       Alert.alert('Reminder saved successfully');
-      this._findReminders(calendar);
-    } catch (e) {
+      findReminders(calendar);
+    } catch (e: any) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
   };
 
-  _deleteReminder = async (reminder: ExpoCalendarReminder) => {
+  const deleteReminder = async (reminder: ExpoCalendarReminder) => {
     try {
-      const { calendar } = this.props.route.params!;
+      const { calendar } = route.params!;
       reminder.delete();
       Alert.alert('Reminder deleted successfully');
-      this._findReminders(calendar);
-    } catch (e) {
+      findReminders(calendar);
+    } catch (e: any) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
   };
 
-  render() {
-    if (!this.props.route.params?.calendar) {
-      return <Text>Access this screen from the "Calendars" screen.</Text>;
-    }
-    if (this.state.reminders.length) {
-      return (
-        <ScrollView style={styles.container}>
-          <Button onPress={this._addReminder} title="Add New Reminder" />
-          {this.state.reminders.map((reminder) => (
-            <ReminderRow
-              reminder={reminder}
-              key={reminder.id}
-              getReminder={this._getReminder}
-              updateReminder={this._updateReminder}
-              deleteReminder={this._deleteReminder}
-            />
-          ))}
-        </ScrollView>
-      );
-    }
+  if (!route.params?.calendar) {
+    return <Text>Access this screen from the "Calendars" screen.</Text>;
+  }
 
+  if (reminders.length) {
     return (
-      <View style={{ padding: 10 }}>
-        <Text>This calendar has no reminders.</Text>
-        <Button onPress={this._addReminder} title="Add New Reminder" />
-      </View>
+      <ScrollView style={styles.container}>
+        <Button onPress={addReminder} title="Add New Reminder" />
+        {reminders.map((reminder) => (
+          <ReminderRow
+            reminder={reminder}
+            key={reminder.id}
+            getReminder={getReminder}
+            updateReminder={updateReminder}
+            deleteReminder={deleteReminder}
+          />
+        ))}
+      </ScrollView>
     );
   }
-}
+
+  return (
+    <View style={{ padding: 10 }}>
+      <Text>This calendar has no reminders.</Text>
+      <Button onPress={addReminder} title="Add New Reminder" />
+    </View>
+  );
+};
+
+export default RemindersScreen;
 
 const styles = StyleSheet.create({
   container: {
