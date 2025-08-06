@@ -11,10 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import Git from '../Git';
+import { getOrCreateReleaseAsync, uploadReleaseAssetAsync } from '../GitHub';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
-import { getOrCreateReleaseAsync, uploadReleaseAssetAsync } from '../GitHub';
 
 const RELEASE_BUILD_PROFILE = 'release-client';
 const PUBLISH_CLIENT_BUILD_PROFILE = 'publish-client';
