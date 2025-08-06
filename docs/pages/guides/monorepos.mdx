@@ -84,7 +84,7 @@ All monorepos should have a "root" **package.json** file. It is the main configu
 }
 ```
 
-For [pnpm](https://pnpm.io/workspaces), you'll instead have to create a [**pnpm-workspace.yaml**](https://pnpm.io/pnpm-workspace_yaml):
+For [pnpm](https://pnpm.io/workspaces), you'll have to create a [**pnpm-workspace.yaml**](https://pnpm.io/pnpm-workspace_yaml) instead:
 
 ```yaml pnpm-workspace.yaml
 packages:
@@ -208,9 +208,9 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
 }
 ```
 
-Bun, npm, and pnpm also support specifying workspace dependencies using `"workspace:*"` instead of `"*"`. This will ensure that the workspace package never resolves a published package of the same name from the npm registry.
+Bun, npm, and pnpm support specifying workspace dependencies using `"workspace:*"` instead of `"*"`. This will ensure that the workspace package never resolves a published package of the same name from the npm registry, but is optional.
 
-After adding the the package as a dependency, install your dependencies with your package manager from the root directory of your monorepo to check for common warnings once again.
+After adding the package, install your dependencies with your package manager from the root directory of your monorepo to check for common warnings once again.
 
 Now you should be able to use the package inside your app! To test this, let's edit the **App.js** in our app and render the `greeting` text from our **cool-package**.
 
@@ -232,11 +232,11 @@ export default function App() {
 
 ## Common issues
 
-Monorepos are not for everyone. They require in-depth knowledge of the used tooling, add more complexity, and often require specific tooling configuration. You take on increased complexity and need to solve issues you most likely will run into. Here are a couple of common issues you might encounter.
+Monorepos may cause resolution and dependency issues that a regular project won't. They require more in-depth knowledge and require specific tooling configuration. You take on increased complexity and will need to solve issues you wouldn't run into without workspaces. Here are a couple of common issues you might encounter.
 
 ### Package managers with isolated dependencies
 
-> **info** From **SDK 54**, Expo officially supports isolated dependencies and isolated installations.<br />
+> **info** From **SDK 54**, Expo supports isolated dependencies and isolated installations.<br />
 > With **SDK 53**, disabling isolated dependencies is recommended, or you may encounter native build errors and dependency conflicts.
 
 [bun](https://bun.com/docs/install/isolated) and [pnpm](https://pnpm.io/settings#nodelinker) have first-class support for isolated installs. For pnpm, this is the default installation strategy unless it's disabled.
