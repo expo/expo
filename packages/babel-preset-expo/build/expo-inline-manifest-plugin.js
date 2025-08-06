@@ -116,8 +116,11 @@ function getConfigMemo(projectRoot) {
             // this will fail and we won't return a config
             expoConfig = require('expo/config');
         }
-        catch {
-            return (configMemo = null);
+        catch (error) {
+            if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+                return (configMemo = null);
+            }
+            throw error;
         }
         const { getConfig, getNameFromConfig } = expoConfig;
         const config = getConfig(projectRoot, {
