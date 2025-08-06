@@ -139,7 +139,7 @@ function getConfigMemo(projectRoot: string): ConfigMemo | null {
       skipSDKVersionRequirement: true,
     });
     // rn-cli apps use a displayName value as well.
-    const { appName, webName } = getNameFromConfig(config);
+    const { appName, webName } = getNameFromConfig(config.exp);
     configMemo = {
       config,
       appName,
