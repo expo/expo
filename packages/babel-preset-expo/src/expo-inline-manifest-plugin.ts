@@ -127,8 +127,11 @@ function getConfigMemo(projectRoot: string): ConfigMemo | null {
       // since `expo` is a direct dependency in those. If `babel-preset-expo` is used independently
       // this will fail and we won't return a config
       expoConfig = require('expo/config');
-    } catch {
-      return (configMemo = null);
+    } catch (error: any) {
+      if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+        return (configMemo = null);
+      }
+      throw error;
     }
     const { getConfig, getNameFromConfig } = expoConfig;
     const config = getConfig(projectRoot, {
