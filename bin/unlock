@@ -1,11 +1,44 @@
 #!/usr/bin/env bash
 set -e -o pipefail
 
-KEYFILE=$HOME/.expo-internal/expo-git-crypt-key
+# Default secret names, can be overridden with environment variables
+EXPO_KEYS_SECRET_NAME=${EXPO_KEYS_SECRET_NAME:-"expo-expo-keys-json"}
+EXPO_EXPOTOOLS_SECRET_NAME=${EXPO_EXPOTOOLS_SECRET_NAME:-"expo-expotools-env"}
 
-if [ ! -f "$KEYFILE" ]; then
-  echo "The git-crypt key for the Expo repository is missing. Run \`update-local-secrets\` in Universe first and then run \`unlock\` here again."
+# Paths to the secrets files
+SECRETS_DIR="$(dirname "$0")/../secrets"
+KEYS_FILE="$SECRETS_DIR/keys.json"
+EXPOTOOLS_ENV_FILE="$SECRETS_DIR/expotools.env"
+
+echo "Fetching secrets from gcloud..."
+
+# Check if gcloud is installed and authenticated
+if ! command -v gcloud &> /dev/null; then
+  echo "Error: gcloud CLI is not installed. Please install it and authenticate."
   exit 1
 fi
 
-git-crypt unlock "$KEYFILE"
+# Fetch keys.json secret
+echo "Fetching keys.json..."
+if ! gcloud secrets versions access latest --project exponentjs --secret "$EXPO_KEYS_SECRET_NAME" > "$KEYS_FILE"; then
+  echo "Error: Failed to fetch keys secret from gcloud. Make sure you're authenticated and have access to the secret '$EXPO_KEYS_SECRET_NAME'."
+  exit 1
+fi
+
+# Fetch expotools.env secret and convert from JSON to env format
+echo "Fetching expotools.env..."
+TEMP_JSON=$(mktemp)
+if gcloud secrets versions access latest --project exponentjs --secret "$EXPO_EXPOTOOLS_SECRET_NAME" > "$TEMP_JSON" 2>/dev/null; then
+  # Convert JSON to env format
+  if command -v jq &> /dev/null; then
+    jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' "$TEMP_JSON" > "$EXPOTOOLS_ENV_FILE"
+  else
+    echo "Warning: jq not found. Storing expotools.env as raw JSON. Install jq for proper env format."
+    cat "$TEMP_JSON" > "$EXPOTOOLS_ENV_FILE"
+  fi
+  rm "$TEMP_JSON"
+else
+  echo "Warning: Failed to fetch expotools.env secret. It may not exist or you may not have access."
+fi
+
+echo "Successfully updated secrets from gcloud."

@@ -1,0 +1,49 @@
+name: iOS Client - EAS Build (migrated to EAS)
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - apps/eas-expo-go/**
+      - apps/expo-go/ios/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - secrets/**
+      - fastlane/**
+      - Gemfile.lock
+  push:
+    branches: [main, sdk-*]
+    paths:
+      - apps/eas-expo-go/**
+      - apps/expo-go/ios/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - secrets/**
+      - fastlane/**
+      - Gemfile.lock
+  schedule:
+    - cron: '20 5 * * *' # 5:20 AM UTC time every day
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+# note that there are also hooks in the `scripts` directory that run at different moments of the build process such as checking out the react-native submodule
+jobs:
+  build-android:
+    name: Android Client Build
+    type: build
+    env:
+      EAS_BUILD_PROFILE: unversioned-client
+    params:
+      platform: android
+      profile: unversioned-client
+# TODO vonovak: the following conditional probably isn't supported in workflows
+#  notify_failure:
+#    name: 🔔 Notify on Slack
+#    after: [build]
+#    if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+#    type: slack
+#    params:
+#      webhook_url: ${{ secrets.slack_webhook_ios }}
+#      message: 'Expo Go (iOS) build failed'

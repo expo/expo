@@ -14,24 +14,14 @@ type TemplateSubstitutions = {
   [key: string]: string;
 };
 
-async function getTemplateSubstitutionsFromSecrets(): Promise<TemplateSubstitutions> {
-  try {
-    return await new JsonFile<TemplateSubstitutions>(
-      path.join(EXPO_DIR, 'secrets', 'keys.json')
-    ).readAsync();
-  } catch {
-    // Don't have access to decrypted secrets, use public keys
-    console.log(
-      "You don't have access to decrypted secrets. Falling back to `template-files/keys.json`."
-    );
-    return await new JsonFile<TemplateSubstitutions>(
-      path.join(EXPO_DIR, 'template-files', 'keys.json')
-    ).readAsync();
-  }
+async function getTemplateSubstitutionsFromKeys(): Promise<TemplateSubstitutions> {
+  return await new JsonFile<TemplateSubstitutions>(
+    path.join(EXPO_DIR, 'secrets', 'keys.json')
+  ).readAsync();
 }
 
 async function getTemplateSubstitutionsAsync() {
-  const defaultKeys = await getTemplateSubstitutionsFromSecrets();
+  const defaultKeys = await getTemplateSubstitutionsFromKeys();
 
   try {
     // Keys from secrets/template-files can be overwritten by private-keys.json file.

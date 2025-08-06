@@ -65,7 +65,10 @@
       "ios": {
         "scheme": "Expo Go",
         "simulator": true,
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": true
+        }
       }
     },
     "release-client": {

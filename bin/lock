@@ -1,3 +1,47 @@
 #!/usr/bin/env bash
+set -e -o pipefail
 
-git-crypt lock
+# Paths to the secrets files
+SECRETS_DIR="$(dirname "$0")/../secrets"
+KEYS_FILE="$SECRETS_DIR/keys.json"
+EXPOTOOLS_ENV_FILE="$SECRETS_DIR/expotools.env"
+
+echo "Removing secrets from secrets directory..."
+
+# Create empty template for keys.json with instructions
+cat > "$KEYS_FILE" << 'EOF'
+{
+  "_instructions": "To populate this file with real secrets, get 'services-secrets-accessor' rights at https://console.cloud.google.com/iam-admin/pam/entitlements/my?inv=1&invt=Ab4UUw&project=exponentjs and run: ./bin/unlock",
+  "_note": "This file contains placeholder values. Real secrets are stored in GCP Secret Manager.",
+  "GOOGLE_TRACKING_ID": "",
+  "GOOGLE_MOBILE_SDK_APP_ID": "",
+  "GOOGLE_PROJECT_NUMBER": "",
+  "GOOGLE_PROJECT_ID": "",
+  "GOOGLE_PROJECT_INFO": "",
+  "GOOGLE_MAPS_API_KEY": "",
+  "GOOGLE_CLIENT_API_KEY": "",
+  "GOOGLE_MAPS_IOS_API_KEY": "",
+  "REACT_NATIVE_PATH": "../react-native-lab/react-native",
+  "UNIVERSAL_MODULES_PATH": "../packages",
+  "CERTIFICATE_HASH": "",
+  "FIREBASE_CLIENT_ID": "",
+  "FIREBASE_REVERSED_CLIENT_ID": "",
+  "FIREBASE_API_KEY": "",
+  "FIREBASE_GCM_SENDER_ID": "",
+  "FIREBASE_PLIST_VERSION": "1",
+  "FIREBASE_BUNDLE_ID": "",
+  "FIREBASE_PROJECT_ID": "",
+  "FIREBASE_STORAGE_BUCKET": "",
+  "FIREBASE_GOOGLE_APP_ID": "",
+  "FIREBASE_DATABASE_URL": ""
+}
+EOF
+
+# Create empty template for expotools.env
+cat > "$EXPOTOOLS_ENV_FILE" << 'EOF'
+# Expotools Environment Variables
+# To populate with real secrets, run: ./bin/unlock
+# Real secrets are stored in GCP Secret Manager.
+EOF
+
+echo "Successfully removed secrets from secrets directory."
