@@ -13,8 +13,8 @@ internal final class UpdatesDatabaseMigration10To11: UpdatesDatabaseMigration {
   func runMigration(onDatabase db: OpaquePointer) throws {
     try db.withTransaction { trx in
       try trx.safeExecOrRollback(sql: """
-        ALTER TABLE "updates" ADD COLUMN "url" TEXT
-        ALTER TABLE "updates" ADD COLUMN "headers" TEXT
+        ALTER TABLE "updates" ADD COLUMN "url" TEXT;
+        ALTER TABLE "updates" ADD COLUMN "headers" TEXT;
       """)
     }
   }
