@@ -31,6 +31,32 @@ Sometimes, it makes sense to build a UI to allow the user to set other localizat
 - Localized units if your app makes at least a moderate use of them (such as metric/imperial measurements, currency, temperature, and more)
 - Other preferences if there's no API to get the default value on platforms you want to support (check [`expo-localization`](/versions/latest/sdk/localization) API documentation for details)
 
+### Enabling per-app language selection via system settings
+
+Both Android and iOS allow users to choose a preferred language for individual apps via the system settings. To support this feature, your app must declare its supported locales to the system.
+
+To do so, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and pass the `supportedLocales` property to the `expo-localization` config plugin.
+You can either provide an array of supported locales directly, or use the `supportedLocales.ios` and `supportedLocales.android` fields to specify platform-specific values:
+
+```json app.json
+{
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": ["en", "ja"],
+            "android": ["en", "ja"]
+          }
+        }
+      ]
+  }
+}
+```
+
+> On Android, refer to the [locale naming guidelines](https://developer.android.com/guide/topics/resources/app-languages#locale-names) and the [list of most commonly used locales](https://developer.android.com/guide/topics/resources/app-languages#sample-config).
+>
+> On iOS, use the language name or ISO language designator.
+
 ## Translating an app
 
 Creating and managing translations quickly becomes a large task. You can handle translations manually, but it's best to use a library to handle this for you.
@@ -325,7 +351,12 @@ export default Text;
 
 ### Selecting assets based on locale direction
 
-If you need to use different icons for LTR/RTL or change styles based on this setting, you can use `I18nManager.isRTL` to get the current layout direction.
+If you need to use different icons for LTR/RTL or change styles based on this setting, you can use [`I18nManager.isRTL`](https://reactnative.dev/docs/next/i18nmanager#isrtl) to get the current layout direction.
+
+```tsx
+import { I18nManager } from 'react-native';
+const isRTL = I18nManager.isRTL;
+```
 
 ## Locale settings and units
 

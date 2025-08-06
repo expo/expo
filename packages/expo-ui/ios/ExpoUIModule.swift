@@ -17,11 +17,21 @@ public final class ExpoUIModule: Module {
     View(ExpoUI.ContextMenuPreview.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
-    View(TextInputView.self)
+    View(TextFieldView.self) {
+      AsyncFunction("setText") { (view: TextFieldView, text: String) in
+        view.setText(text)
+      }
+    }
+    View(SecureFieldView.self) {
+      AsyncFunction("setText") { (view: SecureFieldView, text: String) in
+        view.setText(text)
+      }
+    }
     View(ProgressView.self)
     View(GaugeView.self)
     View(ListView.self)
     View(LabelView.self)
+    View(ShareLinkView.self)
     View(HostView.self)
 
     // Preview components in the "primitives" exports
@@ -34,5 +44,6 @@ public final class ExpoUIModule: Module {
     View(SpacerView.self)
     View(GroupView.self)
     View(DisclosureGroupView.self)
+    View(ExpoUI.ContentUnavailableView.self)
   }
 }

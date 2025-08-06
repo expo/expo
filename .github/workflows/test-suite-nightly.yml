@@ -105,7 +105,8 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.js --test
         working-directory: apps/bare-expo
@@ -131,7 +132,7 @@ jobs:
           author_name: Test Suite Nightly (iOS)
 
   android-build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -164,8 +165,9 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
-      - name: 🛠️ Generate dynamic macros
-        run: expotools android-generate-dynamic-macros --configuration release --bare
+      - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
+        run: ./gradlew preBuild
+        working-directory: apps/bare-expo/android
       - name: 🤖 Build Android project
         run: ./scripts/start-android-e2e-test.js --build
         working-directory: apps/bare-expo
@@ -189,7 +191,7 @@ jobs:
 
   android-test:
     needs: android-build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         api-level: [34]
@@ -212,7 +214,8 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator
         with:

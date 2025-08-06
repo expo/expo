@@ -1,0 +1,218 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# Check that state is correct at different points in the update lifecycle
+#
+# Check state on initial launch with embedded bundle
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- copyTextFrom:
+    label: Copy text from isUpdatePending
+    id: state.isUpdatePending
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isUpdatePending is false
+- copyTextFrom:
+    label: Copy text from isUpdateAvailable
+    id: state.isUpdateAvailable
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isUpdateAvailable is false
+- copyTextFrom:
+    label: Copy text from isRollback
+    id: state.isRollback
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isRollback is false
+- copyTextFrom:
+    label: Copy text from latestManifestId
+    id: state.latestManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert latestManifestId is null
+- copyTextFrom:
+    label: Copy text from downloadedManifestId
+    id: state.downloadedManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert downloadedManifestId is null
+- copyTextFrom:
+    label: Copy text from download progress
+    id: state.downloadProgress
+- assertTrue:
+    condition: ${maestro.copiedText == "0"}
+    label: Assert download progress is 0
+# Serve an update and then press checkForUpdate button, verify the state
+# (update is available but not downloaded)
+- evalScript:
+    script:  ${output.downloadedUpdateId = output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a basic update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- tapOn:
+    label: Tap on check for update button
+    id: checkForUpdate
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from isUpdatePending
+    id: state.isUpdatePending
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isUpdatePending is false
+- copyTextFrom:
+    label: Copy text from isUpdateAvailable
+    id: state.isUpdateAvailable
+- assertTrue:
+    condition: ${maestro.copiedText == "true"}
+    label: Assert isUpdateAvailable is true
+- copyTextFrom:
+    label: Copy text from latestManifestId
+    id: state.latestManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == output.downloadedUpdateId}
+    label: Assert latestManifestId is the downloaded update's id
+- copyTextFrom:
+    label: Copy text from downloadedManifestId
+    id: state.downloadedManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert downloadedManifestId is null
+# Press downloadUpdate button, verify the state (update is downloaded but not launched)
+- tapOn:
+    label: Tap on downloadUpdate button
+    id: downloadUpdate
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from isUpdatePending
+    id: state.isUpdatePending
+- assertTrue:
+    condition: ${maestro.copiedText == "true"}
+    label: Assert isUpdatePending is true
+- copyTextFrom:
+    label: Copy text from isUpdateAvailable
+    id: state.isUpdateAvailable
+- assertTrue:
+    condition: ${maestro.copiedText == "true"}
+    label: Assert isUpdateAvailable is true
+- copyTextFrom:
+    label: Copy text from latestManifestId
+    id: state.latestManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == output.downloadedUpdateId}
+    label: Assert latestManifestId is the downloaded update's id
+- copyTextFrom:
+    label: Copy text from downloadedManifestId
+    id: state.downloadedManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == output.downloadedUpdateId}
+    label: Assert downloadedManifestId is the downloaded update's id
+- copyTextFrom:
+    label: Copy text from download progress
+    id: state.downloadProgress
+- assertTrue:
+    condition: ${maestro.copiedText == "1"}
+    label: Assert download progress is 1
+# Restart the app and verify the state (update is launched)
+- evalScript:
+    script:  ${output.api.restartUpdatesServer()}
+    label: Restart updates server
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-1"}
+    label: Assert update string is from downloaded update
+- copyTextFrom:
+    label: Copy text from isUpdatePending
+    id: state.isUpdatePending
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isUpdatePending is false
+- copyTextFrom:
+    label: Copy text from isUpdateAvailable
+    id: state.isUpdateAvailable
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isUpdateAvailable is false
+- copyTextFrom:
+    label: Copy text from isRollback
+    id: state.isRollback
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isRollback is false
+- copyTextFrom:
+    label: Copy text from latestManifestId
+    id: state.latestManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert latestManifestId is null
+- copyTextFrom:
+    label: Copy text from downloadedManifestId
+    id: state.downloadedManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert downloadedManifestId is null
+# Serve a rollback and verify the state
+- evalScript:
+    script:  ${output.api.restartUpdatesServer()}
+    label: Restart updates server
+- evalScript:
+    script:  ${output.api.serveManifest('test-rollback', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a rollback
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- tapOn:
+    label: Tap on check for update button
+    id: checkForUpdate
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from isUpdatePending
+    id: state.isUpdatePending
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isUpdatePending is false
+- copyTextFrom:
+    label: Copy text from isUpdateAvailable
+    id: state.isUpdateAvailable
+- assertTrue:
+    condition: ${maestro.copiedText == "true"}
+    label: Assert isUpdateAvailable is true
+- copyTextFrom:
+    label: Copy text from isRollback
+    id: state.isRollback
+- assertTrue:
+    condition: ${maestro.copiedText == "true"}
+    label: Assert isRollback is true
+- copyTextFrom:
+    label: Copy text from latestManifestId
+    id: state.latestManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert latestManifestId is null
+- copyTextFrom:
+    label: Copy text from downloadedManifestId
+    id: state.downloadedManifest.id
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert downloadedManifestId is null

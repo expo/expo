@@ -107,9 +107,23 @@ private func requestAsset(
     }
   }
 
+  var targetSize = PHImageManagerMaximumSize
+
+  // We compute the minimal size required to display the image to avoid having to downsample it later
+  if let scale = context?[ImageView.screenScaleKey] as? Double,
+    let containerSize = context?[ImageView.frameSizeKey] as? CGSize,
+    let contentFit = context?[ImageView.contentFitKey] as? ContentFit {
+    targetSize = idealSize(
+      contentPixelSize: CGSize(width: asset.pixelWidth, height: asset.pixelHeight),
+      containerSize: containerSize,
+      scale: scale,
+      contentFit: contentFit
+    ).rounded(.up) * scale
+  }
+
   return PHImageManager.default().requestImage(
     for: asset,
-    targetSize: PHImageManagerMaximumSize,
+    targetSize: targetSize,
     contentMode: .aspectFit,
     options: options,
     resultHandler: { image, info in

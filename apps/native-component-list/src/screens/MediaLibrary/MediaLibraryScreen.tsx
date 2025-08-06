@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
 import {
@@ -219,6 +219,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         first: PAGE_SIZE,
         after: state.endCursor ?? undefined,
         mediaType,
+        mediaSubtypes: [],
         sortBy,
         album: album?.id,
       });

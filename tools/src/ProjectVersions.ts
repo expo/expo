@@ -1,7 +1,7 @@
 import JsonFile from '@expo/json-file';
+import plist from '@expo/plist';
 import fs from 'fs-extra';
 import path from 'path';
-import plist from 'plist';
 import semver from 'semver';
 
 import {

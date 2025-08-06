@@ -1,7 +1,15 @@
-plugins {
-  id 'com.android.library'
-  id 'expo-module-gradle-plugin'
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
 }
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
 version = '6.1.10'
@@ -16,39 +24,12 @@ android {
     versionCode 10
     versionName '6.1.10'
   }
-
-  sourceSets {
-    debug {
-      java {
-        srcDirs += ['../vendored/react-native-gesture-handler/android/']
-        srcDirs += ['../vendored/react-native-safe-area-context/android/']
-
-      }
-    }
+  buildFeatures {
+    compose true
   }
   buildFeatures {
     buildConfig true
   }
-}
-
-task clenupAssets(type: Delete) {
-  // In the past, assets were placed in the `main` directory.
-  // However, this is no longer the case. To ensure a smooth transition,
-  // we’re also removing assets from the old location.
-  delete files("src/main/assets")
-}
-
-task copyAssets(type: Copy) {
-  dependsOn(clenupAssets)
-
-  from('../assets') {
-    exclude "*.ios.*"
-  }
-  into 'src/debug/assets'
-}
-
-project.afterEvaluate {
-  preBuild.dependsOn copyAssets
 }
 
 repositories {
@@ -87,6 +68,15 @@ dependencies {
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
+
+  def composeVersion = "1.8.2"
+
+  implementation "androidx.compose.foundation:foundation-android:$composeVersion"
+  implementation "androidx.compose.ui:ui:$composeVersion"
+  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+
+  implementation("com.composables:core:1.37.0")
+
 
   // Needed by gesture handler
   implementation "androidx.core:core-ktx:1.6.0"

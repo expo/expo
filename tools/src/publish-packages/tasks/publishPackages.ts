@@ -1,6 +1,7 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import inquirer from 'inquirer';
 import path from 'path';
 
 import { checkPackageAccess } from './checkPackageAccess';
@@ -52,14 +53,32 @@ export const publishPackages = new Task<TaskArgs>(
       await JsonFile.setAsync(packageJsonPath, 'gitHead', gitHead);
 
       // Publish the package.
-      await Npm.publishPackageAsync(pkg.path, {
-        source: packageSource,
-        tagName: options.tag,
-        dryRun: options.dry,
-        spawnOptions: {
-          stdio: requiresOTP ? 'inherit' : undefined,
-        },
-      });
+      try {
+        await Npm.publishPackageAsync(pkg.path, {
+          source: packageSource,
+          tagName: options.tag,
+          dryRun: options.dry,
+          spawnOptions: {
+            stdio: requiresOTP ? 'inherit' : undefined,
+          },
+        });
+      } catch (error) {
+        if (error.stderr.includes('You cannot publish over the previously published versions:')) {
+          const { confirmed } = await inquirer.prompt<{ confirmed: boolean }>([
+            {
+              type: 'confirm',
+              name: 'confirmed',
+              message: `Package ${pkg.packageName}@${releaseVersion} has already been published. Do you want to skip?`,
+              default: true,
+            },
+          ]);
+          if (!confirmed) {
+            throw error;
+          }
+        } else {
+          throw error;
+        }
+      }
 
       // Delete `gitHead` from `package.json` – no need to clutter it.
       await JsonFile.deleteKeyAsync(packageJsonPath, 'gitHead');

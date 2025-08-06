@@ -13,7 +13,10 @@ import { registerStaticFont } from './server';
  */
 export function isLoaded(fontFamily) {
     if (Platform.OS === 'web') {
-        return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded(fontFamily);
+        if (typeof ExpoFontLoader.isLoaded !== 'function') {
+            throw new Error(`expected ExpoFontLoader.isLoaded to be a function, was ${typeof ExpoFontLoader.isLoaded}`);
+        }
+        return isLoadedInCache(fontFamily) || ExpoFontLoader.isLoaded(fontFamily);
     }
     return isLoadedNative(fontFamily);
 }
@@ -155,6 +158,9 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
     // loop from this point.
     if (!fontFamily) {
         throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
+    }
+    if (!ExpoFontLoader.unloadAsync) {
+        throw new UnavailabilityError('expo-font', 'unloadAsync');
     }
     await ExpoFontLoader.unloadAsync(fontFamily, options);
 }

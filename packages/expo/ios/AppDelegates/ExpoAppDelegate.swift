@@ -9,11 +9,9 @@ import ReactAppDependencyProvider
  by forwarding `UIApplicationDelegate` events to the subscribers.
 
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
-
- TODO vonovak check macOS support once RN macOS 78 goes out
  */
 @objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: NSObject, ReactNativeFactoryProvider, UIApplicationDelegate {
+open class ExpoAppDelegate: NSObject, @preconcurrency ReactNativeFactoryProvider, UIApplicationDelegate {
   @objc public var factory: RCTReactNativeFactory?
   private let defaultModuleName = "main"
   private let defaultInitialProps = [AnyHashable: Any]()

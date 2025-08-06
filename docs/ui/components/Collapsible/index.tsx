@@ -1,5 +1,6 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
 import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/compat/router';
 import {
   type ComponentType,
@@ -7,6 +8,7 @@ import {
   type ReactNode,
   useRef,
   useEffect,
+  useState,
 } from 'react';
 
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
@@ -35,6 +37,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
     headingManager,
     open = false,
   }: CollapsibleProps & HeadingManagerProps) => {
+    const [isOpen, setIsOpen] = useState(open);
     const router = useRouter();
     const detailsRef = useRef<HTMLDetailsElement>(null);
 
@@ -54,17 +57,25 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
       }
     }, []);
 
+    const animate = {
+      transition: { type: 'tween' },
+      height: isOpen ? 'auto' : 0,
+    };
+
     return (
       <details
         ref={detailsRef}
         id={heading.current.slug}
+        onToggle={event => {
+          setIsOpen(event.currentTarget.open);
+        }}
         className={mergeClasses(
           'mb-3 scroll-m-4 rounded-md border border-default bg-default p-0',
           '[&[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
         )}
-        open={open}
+        open={isOpen}
         data-testid={testID}>
         <summary
           className={mergeClasses(
@@ -101,9 +112,12 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           </LinkBase>
           <div />
         </summary>
-        <div className={mergeClasses('px-5 py-4', 'last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0')}>
-          {children}
-        </div>
+        <motion.div initial={false} animate={animate} className="overflow-hidden">
+          <div
+            className={mergeClasses('px-5 py-4', 'last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0')}>
+            {children}
+          </div>
+        </motion.div>
       </details>
     );
   }

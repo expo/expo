@@ -88,6 +88,28 @@ Reload the path environment variables in your current shell:
 
 Finally, make sure that you can run `adb` from your terminal.
 
+<Collapsible summary="Troubleshooting: Android Studio not recognizing JDK">
+
+If Android Studio doesn't recognize your homebrew installed JDK, you can create a Gradle configuration file to explicitly set the Java path:
+
+1.  Create a Gradle properties file in your home directory:
+
+    <Terminal cmd={['$ touch ~/.gradle/gradle.properties']} />
+
+2.  Add the following line to the **gradle.properties** file, replacing the path with your actual Java installation path:
+
+    ```bash gradle.properties
+    java.home=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+    ```
+
+3.  If you have an existing `.gradle` folder in your project directory, delete it and reopen your project in Android Studio:
+
+    <Terminal cmd={['$ rm -rf .gradle']} />
+
+This should resolve issues with Android Studio not detecting your JDK installation.
+
+</Collapsible>
+
 </Step>
 
 </Tab>

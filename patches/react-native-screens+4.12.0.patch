@@ -1,0 +1,222 @@
+diff --git a/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt b/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt
+index 8502124..e021f45 100644
+--- a/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt
++++ b/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt
+@@ -10,16 +10,6 @@ set(LIB_COMMON_COMPONENTS_DIR ${LIB_COMMON_DIR}/react/renderer/components/${LIB_
+ set(LIB_ANDROID_GENERATED_JNI_DIR ${LIB_ANDROID_DIR}/build/generated/source/codegen/jni)
+ set(LIB_ANDROID_GENERATED_COMPONENTS_DIR ${LIB_ANDROID_GENERATED_JNI_DIR}/react/renderer/components/${LIB_LITERAL})
+ 
+-add_compile_options(
+-  -fexceptions
+-  -frtti
+-  -std=c++20
+-  -Wall
+-  -Wpedantic
+-  -Wno-gnu-zero-variadic-macro-arguments
+-  -Wno-dollar-in-identifier-extension
+-)
+-
+ file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS *.cpp ${LIB_COMMON_COMPONENTS_DIR}/*.cpp ${LIB_COMMON_COMPONENTS_DIR}/utils/*.cpp)
+ file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}/*.cpp)
+ 
+@@ -68,6 +58,23 @@ else()
+   )
+ endif()
+ 
++
++if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
++  target_compile_reactnative_options(${LIB_TARGET_NAME} PRIVATE)
++else()
++  target_compile_options(
++    ${LIB_TARGET_NAME}
++    PRIVATE
++    -fexceptions
++    -frtti
++    -std=c++20
++    -Wall
++    -Wpedantic
++    -Wno-gnu-zero-variadic-macro-arguments
++    -Wno-dollar-in-identifier-extension
++  )
++endif()
++
+ target_compile_options(
+   ${LIB_TARGET_NAME}
+   PRIVATE
+diff --git a/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.cpp b/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.cpp
+index 9e93139..4ca7045 100644
+--- a/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.cpp
++++ b/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.cpp
+@@ -14,9 +14,9 @@ Point RNSScreenShadowNode::getContentOriginOffset(
+   return stateData.contentOffset;
+ }
+ 
+-std::optional<std::reference_wrapper<const ShadowNode::Shared>>
++std::optional<std::reference_wrapper<const std::shared_ptr<const ShadowNode>>>
+ findHeaderConfigChild(const YogaLayoutableShadowNode &screenShadowNode) {
+-  for (const ShadowNode::Shared &child : screenShadowNode.getChildren()) {
++  for (const std::shared_ptr<const ShadowNode> &child : screenShadowNode.getChildren()) {
+     if (std::strcmp(child->getComponentName(), "RNSScreenStackHeaderConfig") ==
+         0) {
+       return {std::cref(child)};
+@@ -81,7 +81,7 @@ std::optional<float> findHeaderHeight(
+ }
+ #endif // ANDROID
+ 
+-void RNSScreenShadowNode::appendChild(const ShadowNode::Shared &child) {
++void RNSScreenShadowNode::appendChild(const std::shared_ptr<const ShadowNode> &child) {
+   YogaLayoutableShadowNode::appendChild(child);
+ #ifdef ANDROID
+   const auto &stateData = getStateData();
+diff --git a/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h b/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h
+index 6b4b72e..3379f89 100644
+--- a/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h
++++ b/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h
+@@ -28,7 +28,7 @@ class JSI_EXPORT RNSScreenShadowNode final : public ConcreteViewShadowNode<
+ 
+   Point getContentOriginOffset(bool includeTransform) const override;
+ 
+-  void appendChild(const ShadowNode::Shared &child) override;
++  void appendChild(const std::shared_ptr<const ShadowNode> &child) override;
+ 
+   void layout(LayoutContext layoutContext) override;
+ 
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.h b/node_modules/react-native-screens/ios/RNSScreenStack.h
+index 71dc7f3..0425e63 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStack.h
++++ b/node_modules/react-native-screens/ios/RNSScreenStack.h
+@@ -9,6 +9,14 @@
+ 
+ NS_ASSUME_NONNULL_BEGIN
+ 
++@protocol RNSDismissibleModalProtocol <NSObject>
++
++// If NO is returned, the modal will not be dismissed when new modal is presented.
++// Use it on your own responsibility, as it can lead to unexpected behavior.
++- (BOOL)isDismissible;
++
++@end
++
+ @interface RNSNavigationController : UINavigationController <RNSViewControllerDelegate>
+ 
+ @end
+diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+index b3970af..43bc304 100644
+--- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
++++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
+@@ -534,58 +534,66 @@ RNS_IGNORE_SUPER_CALL_END
+ 
+   UIViewController *firstModalToBeDismissed = changeRootController.presentedViewController;
+ 
+-  if (firstModalToBeDismissed != nil) {
+-    const BOOL firstModalToBeDismissedIsOwned = [firstModalToBeDismissed isKindOfClass:RNSScreen.class];
+-    const BOOL firstModalToBeDismissedIsOwnedByThisStack =
+-        firstModalToBeDismissedIsOwned && [_presentedModals containsObject:firstModalToBeDismissed];
+-
+-    if (firstModalToBeDismissedIsOwnedByThisStack || !firstModalToBeDismissedIsOwned) {
+-      // We dismiss every VC that was presented by changeRootController VC or its descendant.
+-      // After the series of dismissals is completed we run completion block in which
+-      // we present modals on top of changeRootController (which may be the this stack VC)
+-      //
+-      // There also might the second case, where the firstModalToBeDismissed is foreign.
+-      // See: https://github.com/software-mansion/react-native-screens/issues/2048
+-      // For now, to mitigate the issue, we also decide to trigger its dismissal before
+-      // starting the presentation chain down below in finish() callback.
+-      if (!firstModalToBeDismissed.isBeingDismissed) {
+-        // If the modal is owned we let it control whether the dismissal is animated or not. For foreign controllers
+-        // we just assume animation.
+-        const BOOL firstModalToBeDismissedPrefersAnimation = firstModalToBeDismissedIsOwned
+-            ? static_cast<RNSScreen *>(firstModalToBeDismissed).screenView.stackAnimation != RNSScreenStackAnimationNone
+-            : YES;
+-        [changeRootController dismissViewControllerAnimated:firstModalToBeDismissedPrefersAnimation completion:finish];
+-      } else {
+-        // We need to wait for its dismissal and then run our presentation code.
+-        // This happens, e.g. when we have foreign modal presented on top of owned one & we dismiss foreign one and
+-        // immediately present another owned one. Dismissal of the foreign one will be triggered by foreign controller.
+-        [[firstModalToBeDismissed transitionCoordinator]
+-            animateAlongsideTransition:nil
+-                            completion:^(id<UIViewControllerTransitionCoordinatorContext> _) {
+-                              finish();
+-                            }];
++  // This check is for external modals that are not owned by this stack. They can prevent the dismissal of the modal by
++  // extending RNSDismissibleModalProtocol and returning NO from isDismissible method.
++  if (![firstModalToBeDismissed conformsToProtocol:@protocol(RNSDismissibleModalProtocol)] ||
++      [(id<RNSDismissibleModalProtocol>)firstModalToBeDismissed isDismissible]) {
++    if (firstModalToBeDismissed != nil) {
++      const BOOL firstModalToBeDismissedIsOwned = [firstModalToBeDismissed isKindOfClass:RNSScreen.class];
++      const BOOL firstModalToBeDismissedIsOwnedByThisStack =
++          firstModalToBeDismissedIsOwned && [_presentedModals containsObject:firstModalToBeDismissed];
++
++      if (firstModalToBeDismissedIsOwnedByThisStack || !firstModalToBeDismissedIsOwned) {
++        // We dismiss every VC that was presented by changeRootController VC or its descendant.
++        // After the series of dismissals is completed we run completion block in which
++        // we present modals on top of changeRootController (which may be the this stack VC)
++        //
++        // There also might the second case, where the firstModalToBeDismissed is foreign.
++        // See: https://github.com/software-mansion/react-native-screens/issues/2048
++        // For now, to mitigate the issue, we also decide to trigger its dismissal before
++        // starting the presentation chain down below in finish() callback.
++        if (!firstModalToBeDismissed.isBeingDismissed) {
++          // If the modal is owned we let it control whether the dismissal is animated or not. For foreign controllers
++          // we just assume animation.
++          const BOOL firstModalToBeDismissedPrefersAnimation = firstModalToBeDismissedIsOwned
++              ? static_cast<RNSScreen *>(firstModalToBeDismissed).screenView.stackAnimation !=
++                  RNSScreenStackAnimationNone
++              : YES;
++          [changeRootController dismissViewControllerAnimated:firstModalToBeDismissedPrefersAnimation
++                                                   completion:finish];
++        } else {
++          // We need to wait for its dismissal and then run our presentation code.
++          // This happens, e.g. when we have foreign modal presented on top of owned one & we dismiss foreign one and
++          // immediately present another owned one. Dismissal of the foreign one will be triggered by foreign
++          // controller.
++          [[firstModalToBeDismissed transitionCoordinator]
++              animateAlongsideTransition:nil
++                              completion:^(id<UIViewControllerTransitionCoordinatorContext> _) {
++                                finish();
++                              }];
++        }
++        return;
+       }
+-      return;
+     }
+-  }
+ 
+-  // changeRootController does not have presentedViewController but it does not mean that no modals are in presentation;
+-  // modals could be presented by another stack (nested / outer), third-party view controller or they could be using
+-  // UIModalPresentationCurrentContext / UIModalPresentationOverCurrentContext presentation styles; in the last case
+-  // for some reason system asks top-level (react root) vc to present instead of our stack, despite the fact that
+-  // `definesPresentationContext` returns `YES` for UINavigationController.
+-  // So we first need to find top-level controller manually:
+-  UIViewController *reactRootVc = [self findReactRootViewController];
+-  UIViewController *topMostVc = [RNSScreenStackView findTopMostPresentedViewControllerFromViewController:reactRootVc];
+-
+-  if (topMostVc != reactRootVc) {
+-    changeRootController = topMostVc;
+-
+-    // Here we handle just the simplest case where the top level VC was dismissed. In any more complex
+-    // scenario we will still have problems, see: https://github.com/software-mansion/react-native-screens/issues/1813
+-    if ([_presentedModals containsObject:topMostVc] && ![controllers containsObject:topMostVc]) {
+-      [changeRootController dismissViewControllerAnimated:YES completion:finish];
+-      return;
++    // changeRootController does not have presentedViewController but it does not mean that no modals are in
++    // presentation; modals could be presented by another stack (nested / outer), third-party view controller or they
++    // could be using UIModalPresentationCurrentContext / UIModalPresentationOverCurrentContext presentation styles; in
++    // the last case for some reason system asks top-level (react root) vc to present instead of our stack, despite the
++    // fact that `definesPresentationContext` returns `YES` for UINavigationController. So we first need to find
++    // top-level controller manually:
++    UIViewController *reactRootVc = [self findReactRootViewController];
++    UIViewController *topMostVc = [RNSScreenStackView findTopMostPresentedViewControllerFromViewController:reactRootVc];
++
++    if (topMostVc != reactRootVc) {
++      changeRootController = topMostVc;
++
++      // Here we handle just the simplest case where the top level VC was dismissed. In any more complex
++      // scenario we will still have problems, see: https://github.com/software-mansion/react-native-screens/issues/1813
++      if ([_presentedModals containsObject:topMostVc] && ![controllers containsObject:topMostVc]) {
++        [changeRootController dismissViewControllerAnimated:YES completion:finish];
++        return;
++      }
+     }
+   }
+ 

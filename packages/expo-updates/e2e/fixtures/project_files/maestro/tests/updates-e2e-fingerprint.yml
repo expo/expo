@@ -1,0 +1,4 @@
+appId: dev.expo.updatese2e
+---
+- runFlow:
+    file: fingerprint_runUpdate.yml

@@ -259,13 +259,6 @@ module.exports = {
           { name: 'evalJsForWebViewAsync', argumentsCount: 2, key: 'evalJsForWebViewAsync' },
         ],
         ExpoFetchModule: [],
-        ExpoFontLoader: [
-          { name: 'getLoadedFonts', argumentsCount: 0, key: 'getLoadedFonts' },
-          { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
-        ],
-        ExpoFontUtils: [
-          { name: 'renderToImageAsync', argumentsCount: 2, key: 'renderToImageAsync' },
-        ],
         ExpoGo: [{ name: 'getModulesSchema', argumentsCount: 0, key: 'getModulesSchema' }],
         ExpoHaptics: [
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },
@@ -677,9 +670,6 @@ module.exports = {
           { name: 'openBrowserAsync', argumentsCount: 2, key: 'openBrowserAsync' },
           { name: 'warmUpAsync', argumentsCount: 0, key: 'warmUpAsync' },
         ],
-        FileSystemNext: [
-          { name: 'downloadFileAsync', argumentsCount: 2, key: 'downloadFileAsync' },
-        ],
         NotificationsServerRegistrationModule: [
           { name: 'getInstallationIdAsync', argumentsCount: 0, key: 'getInstallationIdAsync' },
           { name: 'getRegistrationInfoAsync', argumentsCount: 0, key: 'getRegistrationInfoAsync' },
@@ -906,17 +896,6 @@ module.exports = {
         ExpoFetchModule: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
-        },
-        ExpoFontLoader: {
-          addListener: { type: 'function' },
-          getLoadedFonts: { type: 'function' },
-          loadAsync: { type: 'function' },
-          removeListeners: { type: 'function' },
-        },
-        ExpoFontUtils: {
-          addListener: { type: 'function' },
-          removeListeners: { type: 'function' },
-          renderToImageAsync: { type: 'function' },
         },
         ExpoGo: {
           addListener: { type: 'function' },
@@ -1346,15 +1325,6 @@ module.exports = {
           removeListeners: { type: 'function' },
           warmUpAsync: { type: 'function' },
         },
-        FileSystemNext: {
-          addListener: { type: 'function' },
-          appleSharedContainers: { type: 'object' },
-          bundleDirectory: { type: 'string' },
-          cacheDirectory: { type: 'string' },
-          documentDirectory: { type: 'string' },
-          downloadFileAsync: { type: 'function' },
-          removeListeners: { type: 'function' },
-        },
         NotificationsServerRegistrationModule: {
           addListener: { type: 'function' },
           getInstallationIdAsync: { type: 'function' },
@@ -1431,6 +1401,9 @@ module.exports = {
         ExpoLinearGradient: { propNames: ['colors', 'endPoint', 'locations', 'startPoint'] },
         ExpoLivePhoto: {
           propNames: ['contentFit', 'isMuted', 'source', 'useDefaultGestureRecognizer'],
+        },
+        ExpoRouterNativeLinkPreview: {
+          propNames: ['nextScreenId', 'actions', 'preferredContentSize'],
         },
         ExponentGLView: { propNames: ['enableExperimentalWorkletSupport', 'msaaSamples'] },
         ExpoVideo: {

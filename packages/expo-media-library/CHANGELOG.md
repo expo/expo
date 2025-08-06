@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Fix `getAssetsAsync` loading performance, add `resolveWithFullInfo` option to control whether to load full EXIF data for images. This is a breaking change for Android apps, as it might break the orientation of images in some cases. ([#37957](https://github.com/expo/expo/pull/37957) by [@kosmydel](https://github.com/kosmydel)).
+
 ### 🎉 New features
 
+- [iOS] Add support for filtering assets by media subtype. by [@clarkg](https://github.com/clarkg) ([#36756](https://github.com/expo/expo/pull/36756) by [@clarkg](https://github.com/clarkg))
+
 ### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
@@ -41,7 +47,9 @@ _This version does not introduce any user-facing changes._
 
 ## 17.1.1 — 2025-04-09
 
-_This version does not introduce any user-facing changes._
+### 💡 Others
+
+- [Android] Add `granularPermissions` option to config plugin. ([#36142](https://github.com/expo/expo/pull/36142) by [@bang9](https://github.com/bang9))
 
 ## 17.1.0 — 2025-04-04
 

@@ -39,8 +39,6 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
-    "@expo/config": "~11.0.10",
-    "@expo/config-plugins": "~10.0.2",
     "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
     "chalk": "^4.1.2",
@@ -53,6 +51,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@expo/metro": "~0.1.0",
     "@types/jest": "^29.2.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.14.0",
@@ -60,8 +59,8 @@
     "@types/picomatch": "^4.0.0",
     "@vercel/ncc": "^0.38.1",
     "expo-module-scripts": "^4.1.7",
-    "express": "^4.21.1",
-    "form-data": "^4.0.0",
+    "express": "^5.1.0",
+    "form-data": "^4.0.4",
     "js-yaml": "^4.1.0",
     "memfs": "^3.2.0",
     "picomatch": "^4.0.2",
@@ -69,6 +68,7 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "react": "*"
+    "react": "*",
+    "react-native": "*"
   }
 }

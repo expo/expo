@@ -14,6 +14,7 @@ import * as React from 'react';
 
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
+import { INTERNAL_SLOT_NAME } from '../constants';
 import { ServerContext } from '../global-state/serverLocationContext';
 import { useExpoRouterStore } from '../global-state/storeContext';
 
@@ -147,16 +148,18 @@ export function useLinking(
   const validateRoutesNotExistInRootState = React.useCallback(
     (state: ResultState) => {
       // START FORK
-      // Instead of using the rootState (which might be stale) we should use the focused state
+      // Instead of using the rootState, we use INTERNAL_SLOT_NAME, which is the only route in the root navigator in Expo Router
       // const navigation = ref.current;
       // const rootState = navigation?.getRootState();
-      const rootState = store.state as NavigationState;
-
+      const routeNames = [INTERNAL_SLOT_NAME];
       // END FORK
 
       // Make sure that the routes in the state exist in the root navigator
       // Otherwise there's an error in the linking configuration
-      return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
+      // START FORK
+      // return state?.routes.some((r) => !rootState?.routeNames?.includes(r.name));
+      return state?.routes.some((r) => !routeNames.includes(r.name));
+      // END FORK
     },
     [ref]
   );

@@ -23,7 +23,10 @@ import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import com.th3rdwave.safeareacontext.SafeAreaContextModule
 import com.zoontek.rnedgetoedge.EdgeToEdgeModule
+import com.reactnativekeyboardcontroller.KeyboardControllerModule
+import com.reactnativekeyboardcontroller.KeyboardControllerPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -127,13 +130,15 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNViewShotModule(reactContext, scopedContext.cacheDir, scopedContext.externalCacheDir))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
+        nativeModules.add(SafeAreaContextModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
         nativeModules.add(RNGestureHandlerModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.add(EdgeToEdgeModule(reactContext))
+        nativeModules.add(KeyboardControllerModule(reactContext))
         nativeModules.addAll(SvgPackage().getReactModuleInfoProvider().getReactModuleInfos().map { SvgPackage().getModule(it.value.name, reactContext)!! })
-        nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
+        nativeModules.addAll(MapsPackage().getReactModuleInfoProvider().getReactModuleInfos().map { MapsPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().map { stripePackage.getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
@@ -168,8 +173,8 @@ class ExponentPackage : ReactPackage {
       viewManagers,
       listOf(
         SvgPackage(),
-        MapsPackage(),
         LottiePackage(),
+        MapsPackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),
         RNCWebViewPackage(),
@@ -181,7 +186,8 @@ class ExponentPackage : ReactPackage {
         SafeAreaContextPackage(),
         stripePackage,
         skiaPackage,
-        ReactNativeFlashListPackage()
+        ReactNativeFlashListPackage(),
+        KeyboardControllerPackage()
       )
     )
     viewManagers.addAll(moduleRegistryAdapter.createViewManagers(reactContext))

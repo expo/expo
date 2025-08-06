@@ -12,6 +12,8 @@ typealias SDWebImageContext = [SDWebImageContextOption: Any]
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
+  static let contentFitKey = SDWebImageContextOption(rawValue: "contentFit")
+  static let frameSizeKey = SDWebImageContextOption(rawValue: "frameSize")
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
@@ -57,6 +59,8 @@ public final class ImageView: ExpoView {
   var allowDownscaling: Bool = true
 
   var lockResource: Bool = false
+
+  var enforceEarlyResizing: Bool = false
 
   var recyclingKey: String? {
     didSet {
@@ -117,12 +121,10 @@ public final class ImageView: ExpoView {
     if window == nil {
       // Cancel pending requests when the view is unmounted.
       cancelPendingOperation()
-    } else if !bounds.isEmpty {
-      // Reload the image after mounting the view with non-empty bounds.
-      reload()
-    } else {
-      loadPlaceholderIfNecessary()
+      return
     }
+
+    loadPlaceholderIfNecessary()
   }
 
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -155,11 +157,14 @@ public final class ImageView: ExpoView {
     // Cancel currently running load requests.
     cancelPendingOperation()
 
-    context[.imageTransformer] = createTransformPipeline()
+    if blurRadius > 0 {
+      context[.imageTransformer] = createTransformPipeline()
+    }
 
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    if imageTintColor != nil {
+    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing || source.isPhotoLibraryAsset
+    if shouldEarlyResize {
       context[.imagePreserveAspectRatio] = true
       context[.imageThumbnailPixelSize] = CGSize(
         width: sdImageView.bounds.size.width * screenScale,
@@ -169,6 +174,8 @@ public final class ImageView: ExpoView {
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
     context[ImageView.screenScaleKey] = screenScale
+    context[ImageView.frameSizeKey] = frame.size
+    context[ImageView.contentFitKey] = contentFit
 
     // Do it here so we don't waste resources trying to fetch from a remote URL
     if maybeRenderLocalAsset(from: source) {
@@ -357,9 +364,6 @@ public final class ImageView: ExpoView {
   // MARK: - Processing
 
   private func createTransformPipeline() -> SDImagePipelineTransformer? {
-    if blurRadius <= 0 {
-      return nil
-    }
     let transformers: [SDImageTransformer] = [
       SDImageBlurTransformer(radius: blurRadius)
     ]

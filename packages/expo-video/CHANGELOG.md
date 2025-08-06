@@ -4,13 +4,29 @@
 
 ### 🛠 Breaking changes
 
+- [web] Update default crossOrigin value to "anonymous" to prevent common CORS issues ([#38341](https://github.com/expo/expo/pull/38341) by [@hirbod](https://github.com/hirbod))
+
 ### 🎉 New features
+
+- [iOS] Add complete support for AirPlay streaming. Add a device selection button and `VideoPlayer.isExternalPlaybackActive` property and appropriate listeners. ([#37207](https://github.com/expo/expo/pull/37207) by [@behenate](https://github.com/behenate))
+- Add fullscreen orientation and auto-exit functionality. ([#36910](https://github.com/expo/expo/pull/36910) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Android] Fix duration property resetting to 0 on video repeat. ([#37984](https://github.com/expo/expo/pull/37984) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Fix accessing player.loop causes app to crash. ([#37928](https://github.com/expo/expo/pull/37928) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
+- [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Export types using the `export type` syntax. ([#37396](https://github.com/expo/expo/pull/37396) by [@behenate](https://github.com/behenate))
+
+## 2.2.2 - 2025-06-18
 
 ### 🐛 Bug fixes
 
 - [Android] Fix aspect ratio of the Picture in Picture window when auto-entering for sources with ratio different from 16:9. ([#37225](https://github.com/expo/expo/pull/37225) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 2.2.1 - 2025-06-10
 

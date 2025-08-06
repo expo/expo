@@ -23,6 +23,7 @@ import { TextTheme } from '~/ui/components/Text/types';
 
 // @ts-expect-error Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
+const tippyFunc = testTippy ?? tippy;
 
 const attributes = {
   'data-text': true,
@@ -48,13 +49,22 @@ export function Code({ className, children, title }: CodeProps) {
   const [isExpanded, setExpanded] = useState(false);
   const [collapseBound, setCollapseBound] = useState<number | undefined>(undefined);
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined);
-
+  const [didMount, setDidMount] = useState(false);
   const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
   const highlightedHtml = getCodeData(value, language);
 
   useEffect(() => {
-    const tippyFunc = testTippy ?? tippy;
+    if (contentRef?.current?.clientHeight) {
+      setBlockHeight(contentRef.current.clientHeight);
+      if (contentRef.current.clientHeight > collapseHeight) {
+        setCollapseBound(collapseHeight);
+      }
+    }
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
     tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',
@@ -62,7 +72,7 @@ export function Code({ className, children, title }: CodeProps) {
       arrow: roundArrow,
       interactive: true,
       offset: [0, 20],
-      appendTo: document.body,
+      appendTo: () => document.body,
     });
 
     tippyFunc('.tutorial-code-annotation.with-tooltip', {
@@ -72,16 +82,9 @@ export function Code({ className, children, title }: CodeProps) {
       arrow: roundArrow,
       interactive: true,
       offset: [0, 20],
-      appendTo: document.body,
+      appendTo: () => document.body,
     });
-
-    if (contentRef?.current?.clientHeight) {
-      setBlockHeight(contentRef.current.clientHeight);
-      if (contentRef.current.clientHeight > collapseHeight) {
-        setCollapseBound(collapseHeight);
-      }
-    }
-  }, []);
+  }, [didMount, isExpanded]);
 
   function expandCodeBlock() {
     setExpanded(true);
@@ -90,7 +93,7 @@ export function Code({ className, children, title }: CodeProps) {
 
   const commonClasses = mergeClasses(
     wordWrap && '!break-words !whitespace-pre-wrap',
-    showExpand && !isExpanded && `!overflow-hidden`
+    showExpand && !isExpanded && `!overflow-y-hidden [&::-webkit-scrollbar-track]:!bg-default`
   );
 
   return codeBlockTitle ? (
@@ -105,12 +108,14 @@ export function Code({ className, children, title }: CodeProps) {
           style={{
             maxHeight: collapseBound,
           }}
-          className={mergeClasses('relative whitespace-pre p-4', commonClasses)}
+          className={mergeClasses('relative whitespace-pre', commonClasses)}
           {...attributes}>
-          <code
-            className="text-2xs text-default"
-            dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
-          />
+          <div className="w-fit p-4">
+            <code
+              className="text-2xs text-default"
+              dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
+            />
+          </div>
           {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
         </pre>
       </SnippetContent>
@@ -122,16 +127,18 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle p-4',
+        'relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
       )}
       {...attributes}>
-      <code
-        className="text-2xs text-default"
-        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-      />
+      <div className="w-fit p-4">
+        <code
+          className="text-2xs text-default"
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+        />
+      </div>
       {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
     </pre>
   );

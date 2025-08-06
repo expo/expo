@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+- Add Bun adapter to expo server runtime. ([#38240](https://github.com/expo/expo/pull/38240) by [@daavidaviid](https://github.com/daavidaviid))
+- Bump Express types to `@types/express@5`. ([#37635](https://github.com/expo/expo/pull/37635) by [@byCedric](https://github.com/byCedric))
+
+## 0.6.3 - 2025-06-18
+
+### 💡 Others
+
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 - Update dynamic name matching to be in line with `expo-router` changes ([#36961](https://github.com/expo/expo/pull/36961) by [@kitten](https://github.com/kitten))
 

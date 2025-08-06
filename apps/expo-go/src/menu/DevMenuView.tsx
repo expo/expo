@@ -4,6 +4,7 @@ import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { UpgradeWarning } from 'src/screens/HomeScreen/UpgradeWarning';
 
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
 import { DevMenuCloseButton } from './DevMenuCloseButton';
@@ -45,6 +46,7 @@ const MENU_ITEMS_ICON_MAPPINGS: {
   'dev-remote-debug': <ThemedMaterialIcon name="remote-desktop" />,
   'dev-perf-monitor': <ThemedMaterialIcon name="speedometer" />,
   'dev-inspector': <ThemedMaterialIcon name="border-style" />,
+  'dev-fab': <ThemedMaterialIcon name="chart-bubble" />,
 };
 
 export function DevMenuView({ uuid, task }: Props) {
@@ -159,7 +161,11 @@ export function DevMenuView({ uuid, task }: Props) {
           <View style={{ paddingBottom: insets.bottom }}>
             <DevMenuServerInfo task={task} />
             <Divider />
-            <View padding="medium">
+            <View padding="medium" style={{ paddingBottom: 0 }}>
+              <UpgradeWarning collapsible />
+            </View>
+            <Divider />
+            <View padding="medium" style={{ paddingTop: 0 }}>
               <View bg="default" rounded="large">
                 <DevMenuItem
                   buttonKey="reload"

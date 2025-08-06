@@ -86,6 +86,8 @@ export async function isAvailableAsync() {
  * @param writeOnly
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ *
+ * > When using granular permissions with a custom config plugin configuration, make sure that all the requested permissions are included in the plugin.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function requestPermissionsAsync(writeOnly = false, granularPermissions) {
@@ -386,15 +388,17 @@ export async function getAssetsAsync(assetsOptions = {}) {
     if (!MediaLibrary.getAssetsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
     }
-    const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
+    const { first, after, album, sortBy, mediaType, createdAfter, createdBefore, mediaSubtypes, resolveWithFullInfo, } = assetsOptions;
     const options = {
         first: first == null ? 20 : first,
         after: getId(after),
         album: getId(album),
         sortBy: arrayize(sortBy),
         mediaType: arrayize(mediaType || [MediaType.photo]),
+        mediaSubtypes: arrayize(mediaSubtypes),
         createdAfter: dateToNumber(createdAfter),
         createdBefore: dateToNumber(createdBefore),
+        resolveWithFullInfo: resolveWithFullInfo ?? false,
     };
     if (first != null && typeof options.first !== 'number') {
         throw new Error('Option "first" must be a number!');

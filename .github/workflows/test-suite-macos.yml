@@ -10,15 +10,21 @@ on:
       - packages/expo-asset/**
       - packages/expo-constants/**
       - packages/expo-crypto/**
+      - packages/expo-eas-client/**
       - packages/expo-file-system/**
       - packages/expo-font/**
       - packages/expo-keep-awake/**
       - packages/expo-linking/**
       - packages/expo-local-authentication/**
+      - packages/expo-manifests/**
       - packages/expo-mesh-gradient/**
       - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
       - packages/expo-sqlite/**
+      - packages/expo-structured-headers/**
+      - packages/expo-updates/**
+      - packages/expo-updates-interface/**
+      - packages/expo-web-browser/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -53,7 +59,8 @@ jobs:
           bare-expo-macos-pods: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/macos

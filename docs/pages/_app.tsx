@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@expo/styleguide';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
+import { MotionConfig } from 'framer-motion';
 import { AppProps } from 'next/app';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 
@@ -78,19 +79,21 @@ export default function App({ Component, pageProps }: AppProps) {
           font-family: ${monospaceFont.style.fontFamily}, monospace;
         }
       `}</style>
-      <AnalyticsProvider>
-        <ThemeProvider>
-          <TutorialChapterCompletionProvider>
-            <CodeBlockSettingsProvider>
-              <MDXProvider components={rootMarkdownComponents}>
-                <Tooltip.Provider>
-                  <Component {...pageProps} />
-                </Tooltip.Provider>
-              </MDXProvider>
-            </CodeBlockSettingsProvider>
-          </TutorialChapterCompletionProvider>
-        </ThemeProvider>
-      </AnalyticsProvider>
+      <MotionConfig reducedMotion="user">
+        <AnalyticsProvider>
+          <ThemeProvider>
+            <TutorialChapterCompletionProvider>
+              <CodeBlockSettingsProvider>
+                <MDXProvider components={rootMarkdownComponents}>
+                  <Tooltip.Provider>
+                    <Component {...pageProps} />
+                  </Tooltip.Provider>
+                </MDXProvider>
+              </CodeBlockSettingsProvider>
+            </TutorialChapterCompletionProvider>
+          </ThemeProvider>
+        </AnalyticsProvider>
+      </MotionConfig>
     </>
   );
 }

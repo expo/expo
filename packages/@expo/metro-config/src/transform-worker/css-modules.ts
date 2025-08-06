@@ -1,6 +1,7 @@
 import codeFrame from '@babel/code-frame';
 import type { TransformResult, Warning } from 'lightningcss';
 
+import { getBrowserslistTargets } from './browserslist';
 import type { CollectedDependencies } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
 import { CSSMetadata } from '../serializer/jsOutput';
@@ -43,6 +44,10 @@ export async function transformCssModuleWeb(props: {
     minify: props.options.minify,
     // @ts-expect-error: Added for testing against virtual file system.
     resolver: props.options._test_resolveCss,
+
+    targets: await getBrowserslistTargets(props.options.projectRoot),
+
+    include: 1, // Nesting
   });
 
   printCssWarnings(props.filename, props.src, cssResults.warnings);
