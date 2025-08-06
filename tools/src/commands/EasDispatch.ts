@@ -462,8 +462,6 @@ async function androidApkUploadAsync() {
         artifactContent
       );
 
-      clearInterval(progressInterval);
-      process.stdout.write('\r'); // clear the spinner
       const githubArtifactUrl = res.data.browser_download_url;
       logger.success(`✅ Upload completed successfully! ${githubArtifactUrl}`);
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
@@ -472,10 +470,11 @@ async function androidApkUploadAsync() {
         return sdkVersions;
       });
     } catch (error) {
-      clearInterval(progressInterval);
-      process.stdout.write('\r'); // clear the spinner
       logger.error('❌ Upload failed!');
       throw error;
+    } finally {
+      clearInterval(progressInterval);
+      process.stdout.write('\r'); // clear the spinner
     }
   } catch (error: any) {
     logger.error(`Error creating release: ${error.message}`);
@@ -533,8 +532,6 @@ async function iosSimulatorUploadAsync() {
         artifactContent
       );
 
-      clearInterval(progressInterval);
-      process.stdout.write('\r'); // clear the spinner
       const githubArtifactUrl = res.data.browser_download_url;
       logger.success(`✅ Upload completed successfully! ${githubArtifactUrl}`);
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
@@ -543,10 +540,11 @@ async function iosSimulatorUploadAsync() {
         return sdkVersions;
       });
     } catch (error) {
-      clearInterval(progressInterval);
-      process.stdout.write('\r'); // clear the spinner
       logger.error('❌ Upload failed!');
       throw error;
+    } finally {
+      clearInterval(progressInterval);
+      process.stdout.write('\r'); // clear the spinner
     }
   } catch (error: any) {
     logger.error(`Error creating release: ${error.message}`);
