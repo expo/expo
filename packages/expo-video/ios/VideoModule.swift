@@ -339,6 +339,7 @@ public final class VideoModule: Module {
 
       Function("replay") { player in
         player.ref.seek(to: CMTime.zero)
+        player.ref.play()
       }
 
       AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in
