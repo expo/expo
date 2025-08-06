@@ -32,7 +32,8 @@ data class UpdatesConfiguration(
   val runtimeVersionRaw: String?,
   val launchWaitMs: Int,
   val checkOnLaunch: CheckAutomaticallyConfiguration,
-  val hasEmbeddedUpdate: Boolean, // used only for expo-updates development
+  val hasEmbeddedUpdate: Boolean,
+  val originalHasEmbeddedUpdate: Boolean,
   val requestHeaders: Map<String, String>,
   val originalEmbeddedRequestHeaders: Map<String, String>,
   val codeSigningCertificate: String?,
@@ -108,6 +109,7 @@ data class UpdatesConfiguration(
       }
     },
     hasEmbeddedUpdate = getHasEmbeddedUpdate(context, overrideMap, disableAntiBrickingMeasures, configOverride),
+    originalHasEmbeddedUpdate = getOriginalHasEmbeddedUpdate(context, overrideMap),
     requestHeaders = getRequestHeaders(context, overrideMap, disableAntiBrickingMeasures, configOverride),
     originalEmbeddedRequestHeaders = getOriginalEmbeddedRequestHeaders(context, overrideMap),
     codeSigningCertificate = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_CERTIFICATE"),
@@ -176,10 +178,13 @@ data class UpdatesConfiguration(
       if (disableAntiBrickingMeasures && configOverride != null) {
         return false
       }
-      return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY)
+      return getOriginalHasEmbeddedUpdate(context, overrideMap)
+    }
+
+    private fun getOriginalHasEmbeddedUpdate(context: Context?, overrideMap: Map<String, Any>?): Boolean =
+      overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY)
         ?: context?.getMetadataValue("expo.modules.updates.HAS_EMBEDDED_UPDATE")
         ?: true
-    }
 
     private fun getUpdateUrl(
       context: Context?,

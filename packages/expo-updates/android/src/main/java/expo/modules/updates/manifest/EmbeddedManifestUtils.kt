@@ -23,13 +23,21 @@ object EmbeddedManifestUtils {
     if (!configuration.hasEmbeddedUpdate) {
       return null
     }
-    return requireEmbeddedUpdate(context, configuration)
+    return getCachedEmbeddedUpdate(context, configuration)
   }
 
   /**
-   * Gets the embedded update even if [UpdatesConfiguration.hasEmbeddedUpdate] is false
+   * Gets the embedded update.
+   * If the [UpdatesConfiguration.originalHasEmbeddedUpdate] is false, it returns null
    */
-  fun requireEmbeddedUpdate(context: Context, configuration: UpdatesConfiguration): EmbeddedUpdate =
+  fun getOriginalEmbeddedUpdate(context: Context, configuration: UpdatesConfiguration): EmbeddedUpdate? {
+    if (!configuration.originalHasEmbeddedUpdate) {
+      return null
+    }
+    return getCachedEmbeddedUpdate(context, configuration)
+  }
+
+  private fun getCachedEmbeddedUpdate(context: Context, configuration: UpdatesConfiguration): EmbeddedUpdate =
     sEmbeddedUpdate ?: loadEmbeddedUpdate(context, configuration).also { sEmbeddedUpdate = it }
 
   private fun loadEmbeddedUpdate(context: Context, configuration: UpdatesConfiguration): EmbeddedUpdate =

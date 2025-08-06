@@ -17,7 +17,6 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.ManifestMetadata
-import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.utils.AndroidResourceAssetUtils
 import kotlinx.coroutines.CoroutineScope
@@ -148,11 +147,7 @@ class DatabaseLauncher(
   suspend fun getLaunchableUpdate(database: UpdatesDatabase): UpdateEntity? {
     val launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(configuration.scopeKey)
 
-    val embeddedUpdate = if (selectionPolicy.launcherSelectionPolicy is LauncherSelectionPolicyFilterAware) {
-      EmbeddedManifestUtils.requireEmbeddedUpdate(context, configuration)
-    } else {
-      EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
-    }
+    val embeddedUpdate = EmbeddedManifestUtils.getOriginalEmbeddedUpdate(context, configuration)
     val filteredLaunchableUpdates = mutableListOf<UpdateEntity>()
     for (update in launchableUpdates) {
       // We can only run an update marked as embedded if it's actually the update embedded in the
