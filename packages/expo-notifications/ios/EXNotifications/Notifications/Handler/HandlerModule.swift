@@ -54,14 +54,14 @@ open class HandlerModule: Module, NotificationDelegate, SingleNotificationHandle
   public func handleNotification(_ notification: UNNotification) {
     sendEvent(onHandleNotification, [
       "id": notification.request.identifier,
-      "notification": EXNotificationSerializer.serializedNotification(notification)
+      "notification": NotificationSerializer.serializedNotification(notification)
     ])
   }
 
   public func handleNotificationTimeout(_ notification: UNNotification) {
     sendEvent(onHandleNotificationTimeout, [
       "id": notification.request.identifier,
-      "notification": EXNotificationSerializer.serializedNotification(notification)
+      "notification": NotificationSerializer.serializedNotification(notification)
     ])
   }
 }

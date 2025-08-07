@@ -121,7 +121,7 @@ open class SchedulerModule: Module {
 
   open func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [[String: Any]] {
     return requests.map {
-      EXNotificationSerializer.serializedNotificationRequest($0)
+      NotificationSerializer.serializedNotificationRequest($0)
     }
   }
 
