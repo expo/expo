@@ -1,5 +1,6 @@
 package expo.modules.updates.selectionpolicy
 
+import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.UpdateEntity
 import org.json.JSONObject
 
@@ -9,21 +10,17 @@ import org.json.JSONObject
  * for ordering) is chosen, but the manifest filters are always taken into account before the
  * `commitTime`.
  */
-class LauncherSelectionPolicyFilterAware(private val runtimeVersion: String) : LauncherSelectionPolicy {
+class LauncherSelectionPolicyFilterAware(
+  private val runtimeVersion: String,
+  private val config: UpdatesConfiguration
+) : LauncherSelectionPolicy {
 
   override fun selectUpdateToLaunch(
     updates: List<UpdateEntity>,
     filters: JSONObject?
-  ): UpdateEntity? {
-    var updateToLaunch: UpdateEntity? = null
-    for (update in updates) {
-      if (runtimeVersion != update.runtimeVersion || !SelectionPolicies.matchesFilters(update, filters)) {
-        continue
-      }
-      if (updateToLaunch == null || updateToLaunch.commitTime.before(update.commitTime)) {
-        updateToLaunch = update
-      }
-    }
-    return updateToLaunch
-  }
+  ): UpdateEntity? =
+    updates
+      .filter { runtimeVersion == it.runtimeVersion && SelectionPolicies.matchesFilters(it, filters) }
+      .filter { (it.url == null && it.requestHeaders == null) || (it.url == config.updateUrl && it.requestHeaders == config.requestHeaders) }
+      .maxByOrNull { it.commitTime }
 }

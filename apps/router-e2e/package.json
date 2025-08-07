@@ -23,6 +23,9 @@
     "ios:link-preview": "E2E_ROUTER_SRC=link-preview expo run:ios",
     "start:universal-linking": "EXPO_USE_STATIC=server EXPO_TUNNEL_SUBDOMAIN=expo-e2e-universal-linking E2E_ROUTER_SRC=universal-linking expo start --tunnel",
     "open:universal-linking": "xcrun simctl terminate booted com.expo.routere2e && npx uri-scheme open https://expo-e2e-universal-linking.ngrok.io/post/123 --ios",
+    "start:native-tabs": "E2E_ROUTER_SRC=native-tabs expo start",
+    "ios:native-tabs": "E2E_ROUTER_SRC=native-tabs expo run:ios",
+    "android:native-tabs": "E2E_ROUTER_JS_ENGINE=hermes E2E_ROUTER_SRC=native-tabs expo run:android",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
     "start:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes EXPO_WEB_DEV_HYDRATE=1 expo start",
     "export:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes expo export -p web",
@@ -40,7 +43,7 @@
     "expo-speech": "~13.1.7",
     "expo-sqlite": "~15.2.10",
     "react": "19.1.0",
-    "react-native": "0.81.0-rc.3",
+    "react-native": "0.81.0-rc.5",
     "react-native-safe-area-context": "5.5.2",
     "react-native-screens": "4.14.0-nightly-20250803-1df3db25a",
     "react-native-webview": "13.13.5"
