@@ -23,15 +23,15 @@ public final class CalendarNextModule: Module {
       initializePermittedEntities()
     }
 
-    Function("getDefaultCalendarId") { () -> String in
+    Function("getDefaultCalendar") { () -> ExpoCalendar in
       try checkCalendarPermissions()
       guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
         throw DefaultCalendarNotFoundException()
       }
-      return defaultCalendar.calendarIdentifier
+      return ExpoCalendar(calendar: defaultCalendar)
     }
 
-    Function("getCalendarsIds") { (type: CalendarEntity?) -> [String] in
+    Function("getCalendars") { (type: CalendarEntity?) -> [ExpoCalendar] in
       var calendars: [EKCalendar]
       if type == nil {
         try checkCalendarPermissions()
@@ -50,7 +50,7 @@ public final class CalendarNextModule: Module {
         throw InvalidCalendarEntityException(type?.rawValue)
       }
 
-      return calendars.map { $0.calendarIdentifier }
+      return calendars.map { ExpoCalendar(calendar: $0) }
     }
 
     Function("createCalendarNext") { (details: CalendarRecord) throws -> ExpoCalendar in

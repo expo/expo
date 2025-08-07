@@ -91,16 +91,22 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     }
 }
 export function getDefaultCalendarNext() {
-    if (!InternalExpoCalendar.getDefaultCalendarId) {
-        throw new UnavailabilityError('Calendar', 'getDefaultCalendarId');
+    if (!InternalExpoCalendar.getDefaultCalendar) {
+        throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
     }
-    return new ExpoCalendar(InternalExpoCalendar.getDefaultCalendarId());
+    const defaultCalendar = InternalExpoCalendar.getDefaultCalendar();
+    Object.setPrototypeOf(defaultCalendar, ExpoCalendar.prototype);
+    return defaultCalendar;
 }
 export function getCalendarsNext(type) {
-    if (!InternalExpoCalendar.getCalendarsIds) {
-        throw new UnavailabilityError('Calendar', 'getCalendarsIds');
+    if (!InternalExpoCalendar.getCalendars) {
+        throw new UnavailabilityError('Calendar', 'getCalendars');
     }
-    return InternalExpoCalendar.getCalendarsIds(type).map((id) => new ExpoCalendar(id));
+    const calendars = InternalExpoCalendar.getCalendars(type);
+    return calendars.map((calendar) => {
+        Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+        return calendar;
+    });
 }
 export function createCalendarNext(details = {}) {
     if (!InternalExpoCalendar.createCalendarNext) {

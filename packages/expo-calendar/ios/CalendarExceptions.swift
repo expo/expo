@@ -135,12 +135,6 @@ final internal class ItemNoLongerExistsException: Exception {
   }
 }
 
-final internal class NotImplementedYetException: Exception {
-  override var reason: String {
-    "Not implemented yet."
-  }
-}
-
 final internal class DueDateRequiredException: Exception {
   override var reason: String {
     "A repeating reminder must have a due date."
