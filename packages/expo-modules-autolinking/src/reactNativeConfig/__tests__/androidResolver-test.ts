@@ -57,7 +57,7 @@ public class TestPackage implements ReactPackage {
     });
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
-      undefined
+      {},
     );
     expect(result).toMatchInlineSnapshot(`
       {
@@ -104,7 +104,7 @@ public class TestPackage implements ReactPackage {
     });
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
-      undefined
+      {},
     );
     expect(result).not.toBeNull();
   });
@@ -210,7 +210,7 @@ public class TestPackage implements ReactPackage {
     });
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
-      undefined
+      {},
     );
     expect(result).toBeNull();
   });
@@ -227,7 +227,7 @@ public class TestPackage implements ReactPackage {
     mockGlob.mockResolvedValue([]);
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
-      undefined
+      {},
     );
     expect(result).toBeNull();
   });
