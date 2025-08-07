@@ -407,9 +407,9 @@ public final class UpdatesConfig: NSObject {
         requestHeadersOverride: requestHeaders
       ) || getDisableAntiBrickingMeasures(fromDictionary: config) {
         return requestHeaders
-      } else {
-        NSLog("Invalid update requestHeaders override, fallback to embedded requestHeaders - override requestHeaders: %@", requestHeaders)
       }
+
+      NSLog("Invalid update requestHeaders override, fallback to embedded requestHeaders - override requestHeaders: %@", requestHeaders)
     }
     return getOriginalEmbeddedRequestHeaders(fromDictionary: config)
   }
@@ -435,7 +435,7 @@ public final class UpdatesConfig: NSObject {
 
     // ensure none are disallowed AND all are in the original set
     return overrideKeys.allSatisfy { !disallowHeaderKeys.contains($0) } &&
-           overrideKeys.allSatisfy { originalEmbeddedKeys.contains($0) }
+      overrideKeys.allSatisfy { originalEmbeddedKeys.contains($0) }
   }
 }
 
