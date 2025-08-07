@@ -37,7 +37,9 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update2 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -50,7 +52,9 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update3 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -63,7 +67,9 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update4 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -76,7 +82,9 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update5 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -89,7 +97,9 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       
       selectionPolicy = ReaperSelectionPolicyFilterAware()
@@ -137,7 +147,9 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
           keep: true,
           status: update4.status,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://example.com"),
+          requestHeaders: [:]
         )
         
         let updatesToDelete = selectionPolicy.updatesToDelete(withLaunchedUpdate: update4DifferentScope, updates: [update1, update2, update3, update4DifferentScope], filters: nil)
