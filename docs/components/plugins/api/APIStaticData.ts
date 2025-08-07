@@ -11,6 +11,7 @@ export const nonLinkableTypes = [
   'ComponentClass',
   'ComponentProps',
   'ComponentType',
+  'DependencyList',
   'E',
   'EmitterSubscription',
   'EventName',
