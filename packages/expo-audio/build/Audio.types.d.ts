@@ -249,6 +249,36 @@ export declare enum AudioQuality {
  * file size consistency and quality characteristics.
  */
 export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrained' | 'variable';
+/**
+ * Options for controlling how audio recording is started.
+ */
+export type RecordingStartOptions = {
+    /**
+     * The duration in seconds after which recording should automatically stop.
+     * If not provided, recording continues until manually stopped.
+     *
+     * @platform ios
+     * @platform android
+     * @platform web
+     */
+    forDuration?: number;
+    /**
+     * The time in seconds to wait before starting the recording.
+     * If not provided, recording starts immediately.
+     *
+     * **Platform behavior:**
+     * - Android: Ignored, recording starts immediately
+     * - iOS: Uses native AVAudioRecorder.record(atTime:) for precise timing.
+     * - Web: Ignored, recording starts immediately
+     *
+     * > **warning** On iOS, the recording process starts immediately (you'll see status updates),
+     * but actual audio capture begins after the specified delay. This is not a countdown, since
+     * the recorder is active but silent during the delay period.
+     *
+     * @platform ios
+     */
+    atTime?: number;
+};
 export type RecordingOptions = {
     /**
      * A boolean that determines whether audio level information will be part of the status object under the "metering" key.

@@ -8,6 +8,7 @@ import {
   RecorderState,
   RecordingInput,
   RecordingOptions,
+  RecordingStartOptions,
 } from './Audio.types';
 import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
@@ -331,13 +332,32 @@ export class AudioRecorderWeb
     return this.mediaRecorder?.state === 'recording';
   }
 
-  record(): void {
+  record(options?: RecordingStartOptions): void {
     if (this.mediaRecorder === null) {
       throw new Error(
         'Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.'
       );
     }
 
+    // Clear any existing timeouts
+    this.clearTimeouts();
+
+    // Note: atTime is not supported on Web (no native equivalent), so we ignore it entirely
+    // Only forDuration is implemented using setTimeout
+    const { forDuration } = options || {};
+
+    this.startActualRecording();
+
+    if (forDuration !== undefined) {
+      this.timeoutIds.push(
+        setTimeout(() => {
+          this.stop();
+        }, forDuration * 1000)
+      );
+    }
+  }
+
+  private startActualRecording(): void {
     if (this.mediaRecorder?.state === 'paused') {
       this.mediaRecorder.resume();
     } else {
@@ -383,22 +403,13 @@ export class AudioRecorderWeb
   }
 
   recordForDuration(seconds: number): void {
-    this.record();
-    this.timeoutIds.push(
-      setTimeout(() => {
-        this.stop();
-      }, seconds * 1000)
-    );
+    this.record({ forDuration: seconds });
   }
 
   setInput(input: string): void {}
 
   startRecordingAtTime(seconds: number): void {
-    this.timeoutIds.push(
-      setTimeout(() => {
-        this.record();
-      }, seconds * 1000)
-    );
+    this.record({ atTime: seconds });
   }
 
   async stop(): Promise<void> {
