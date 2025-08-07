@@ -3,6 +3,8 @@ export const nonLinkableTypes = [
   'AndroidBarcode',
   'ArrayBufferView',
   'B',
+  'Buffer',
+  'BufferEncoding',
   'BufferSource',
   'CodedError',
   'ColorValue',
@@ -48,6 +50,7 @@ export const nonLinkableTypes = [
   'RouteSegments',
   'ScreenListeners',
   'ServiceActionResult',
+  'SourceSkipsKeys',
   'StyleProp',
   'T',
   'TaskOptions',
@@ -115,6 +118,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
   // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  FileHookTransformFunction:
+    '/versions/latest/sdk/fingerprint/#filehooktransformfunctionsource-chunk-isendoffile-encoding',
   HTMLAnchorElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement',
   HTMLInputElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement',
   IterableIterator:
