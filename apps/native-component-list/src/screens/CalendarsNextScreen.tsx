@@ -92,10 +92,8 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
         sourceId: calendars.find((cal) => cal.source && cal.source.name === 'Default')?.source.id,
       }),
       android: () => {
-        const calendar = calendars.find(
-          (cal) => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
-        );
-        return calendar ? { source: calendar.source, ownerAccount: calendar.ownerAccount } : {};
+        // TODO: Add source details for Android
+        return {};
       },
     })();
     const newCalendar = {
