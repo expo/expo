@@ -117,11 +117,18 @@ export default function App() {
     setExtraParamsString(JSON.stringify(params, null, 2));
   });
 
-  const handleSetUpdateURLAndRequestHeadersOverride = runBlockAsync(async () => {
-    Updates.setUpdateURLAndRequestHeadersOverride({
-      updateUrl: `${Constants.expoConfig?.updates?.url}-override`,
-      requestHeaders: {},
-    });
+  const handleSetUpdateURLOverride = runBlockAsync(async () => {
+    Updates.setUpdateURLOverride(`${Constants.expoConfig?.updates?.url}-override`);
+  });
+
+  const handleToggleUpdateRequestHeadersOverride = runBlockAsync(async () => {
+    if (currentlyRunning.channel !== 'preview') {
+      Updates.setUpdateRequestHeadersOverride({
+        'expo-channel-name': 'preview',
+      });
+    } else {
+      Updates.setUpdateRequestHeadersOverride(null);
+    }
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
@@ -218,6 +225,7 @@ export default function App() {
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
       <TestValue testID="isReloading" value={`${isReloading}`} />
       <TestValue testID="startTime" value={`${startTime}`} />
+      <TestValue testID="channel" value={`${currentlyRunning.channel}`} />
 
       <TestValue
         testID="wasIsStartupProcedureRunningEverTrue"
@@ -282,9 +290,10 @@ export default function App() {
             onPress={handleCheckAndDownloadAtSameTime}
           />
           <TestButton testID="reload" onPress={handleReload} />
+          <TestButton testID="setUpdateURLOverride" onPress={handleSetUpdateURLOverride} />
           <TestButton
-            testID="setUpdateURLAndRequestHeadersOverride"
-            onPress={handleSetUpdateURLAndRequestHeadersOverride}
+            testID="toggleUpdateRequestHeadersOverride"
+            onPress={handleToggleUpdateRequestHeadersOverride}
           />
         </View>
       </View>

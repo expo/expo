@@ -24,7 +24,7 @@ onFlowStart:
     label: Assert update string is from embedded bundle
 - tapOn:
     label: Tap on button to change updates URL
-    id: setUpdateURLAndRequestHeadersOverride
+    id: setUpdateURLOverride
 - evalScript:
     script: ${output.api.delay(3000)}
     label: Delay for 3 seconds

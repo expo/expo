@@ -524,6 +524,9 @@ function transformAppJsonForE2E(
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
         assetPatternsToBeBundled: ['includedAssets/*'],
         useNativeDebug: true,
+        requestHeaders: {
+          'expo-channel-name': 'default',
+        },
       },
       extra: {
         eas: {
