@@ -355,6 +355,14 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   public func setUpdateURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
     throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
   }
+
+  public func setUpdateURLOverride(_ updateUrl: URL?) throws {
+    throw NotAvailableInDevClientException("Updates.setUpdateURLOverride() is not supported in development builds.")
+  }
+
+  public func setUpdateRequestHeadersOverride(_ requestHeaders: [String: String]?) throws {
+    throw NotAvailableInDevClientException("Updates.setUpdateRequestHeadersOverride() is not supported in development builds.")
+  }
 }
 
 // swiftlint:enable force_unwrapping
