@@ -1,4 +1,7 @@
+import { isRunningInExpoGo } from 'expo';
 import { requireNativeModule } from 'expo-modules-core';
-// TODO: Support Expo Go
-export default requireNativeModule('CalendarNext');
+import ExpoGoCalendarNextStub from './ExpoGoCalendarNextStub';
+export default isRunningInExpoGo()
+    ? ExpoGoCalendarNextStub
+    : requireNativeModule('CalendarNext');
 //# sourceMappingURL=ExpoCalendar.js.map

@@ -1,3 +1,4 @@
+import { isRunningInExpoGo } from 'expo';
 import { NativeModule, PermissionResponse, requireNativeModule } from 'expo-modules-core';
 
 import {
@@ -7,6 +8,7 @@ import {
   ExpoCalendarReminder,
 } from './ExpoCalendar.types';
 import { Calendar, EntityTypes, Source } from '../Calendar';
+import ExpoGoCalendarNextStub from './ExpoGoCalendarNextStub';
 
 declare class ExpoCalendarNextModule extends NativeModule {
   ExpoCalendar: typeof ExpoCalendar;
@@ -32,5 +34,6 @@ declare class ExpoCalendarNextModule extends NativeModule {
   getSources(): Source[];
 }
 
-// TODO: Support Expo Go
-export default requireNativeModule<ExpoCalendarNextModule>('CalendarNext');
+export default isRunningInExpoGo()
+  ? (ExpoGoCalendarNextStub as any as ExpoCalendarNextModule)
+  : requireNativeModule<ExpoCalendarNextModule>('CalendarNext');

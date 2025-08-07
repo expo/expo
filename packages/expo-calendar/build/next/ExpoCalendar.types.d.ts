@@ -1,9 +1,15 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, Attendee, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod } from '../Calendar';
+import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions } from '../Calendar';
 type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 export type ModifableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
 export type ModifiableEventProperties = Pick<Event, 'title' | 'location' | 'timeZone' | 'url' | 'notes' | 'alarms' | 'recurrenceRule' | 'availability' | 'startDate' | 'endDate' | 'allDay'>;
 export type ModifableReminderProperties = Pick<Reminder, 'title' | 'location' | 'timeZone' | 'url' | 'notes' | 'alarms' | 'recurrenceRule' | 'startDate' | 'dueDate' | 'completed' | 'completionDate'>;
+/**
+ * Represents a calendar object that can be accessed and modified using the Expo Calendar Next API.
+ *
+ * This class provides properties and methods for interacting with a specific calendar on the device,
+ * such as retrieving its events, updating its details, and accessing its metadata.
+ */
 export declare class ExpoCalendar {
     constructor(id: string);
     /**
@@ -47,52 +53,6 @@ export declare class ExpoCalendar {
      */
     allowedAvailabilities: Availability[];
     /**
-     * Boolean value indicating whether this is the device's primary calendar.
-     * @platform android
-     */
-    isPrimary?: boolean;
-    /**
-     * Internal system name of the calendar.
-     * @platform android
-     */
-    name?: string | null;
-    /**
-     * Name for the account that owns this calendar.
-     * @platform android
-     */
-    ownerAccount?: string;
-    /**
-     * Time zone for the calendar.
-     * @platform android
-     */
-    timeZone?: string;
-    /**
-     * Alarm methods that this calendar supports.
-     * @platform android
-     */
-    allowedReminders?: AlarmMethod[];
-    /**
-     * Attendee types that this calendar supports.
-     * @platform android
-     */
-    allowedAttendeeTypes?: AttendeeType[];
-    /**
-     * Indicates whether the OS displays events on this calendar.
-     * @platform android
-     */
-    isVisible?: boolean;
-    /**
-     * Indicates whether this calendar is synced and its events stored on the device.
-     * Unexpected behavior may occur if this is not set to `true`.
-     * @platform android
-     */
-    isSynced?: boolean;
-    /**
-     * Level of access that the user has for the calendar.
-     * @platform android
-     */
-    accessLevel?: CalendarAccessLevel;
-    /**
      * Returns a calendar event list for the given date range.
      */
     listEvents(startDate: Date | string, endDate: Date | string): ExpoCalendarEvent[];
@@ -100,10 +60,10 @@ export declare class ExpoCalendar {
      * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
      * returns all reminders that overlap at all with the [startDate, endDate] interval - i.e. all reminders
      * that end after the `startDate` or begin before the `endDate`.
-     * @param startDate Beginning of time period to search for reminders in. Required if `status` is defined.
-     * @param endDate End of time period to search for reminders in. Required if `status` is defined.
-     * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`.
-     * @return An array of [`Reminder`](#reminder) objects matching the search criteria.
+     * @param startDate Beginning of time period to search for reminders in, or `null` for all completed reminders before `endDate`.
+     * @param endDate End of time period to search for reminders in, or `null` for all completed reminders after `startDate`.
+     * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`. If not defined, both completed and incomplete reminders will be returned.
+     * @return An array of [ExpoCalendarReminder](#expocalendarminder) objects matching the search criteria.
      * @platform ios
      */
     listReminders(startDate?: Date | string | null, endDate?: Date | string | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
@@ -131,6 +91,9 @@ export declare class ExpoCalendar {
      */
     delete(): void;
 }
+/**
+ * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
+ */
 export declare class ExpoCalendarEvent {
     constructor(id: string);
     /**
@@ -163,11 +126,6 @@ export declare class ExpoCalendarEvent {
      * Time zone the event is scheduled in.
      */
     timeZone: string;
-    /**
-     * Time zone for the event end time.
-     * @platform android
-     */
-    endTimeZone?: string;
     /**
      * URL for the event.
      * @platform ios
@@ -224,42 +182,6 @@ export declare class ExpoCalendarEvent {
      */
     organizer?: Organizer;
     /**
-     * Email address of the organizer of the event.
-     * @platform android
-     */
-    organizerEmail?: string;
-    /**
-     * User's access level for the event.
-     * @platform android
-     */
-    accessLevel?: EventAccessLevel;
-    /**
-     * Whether invited guests can modify the details of the event.
-     * @platform android
-     */
-    guestsCanModify?: boolean;
-    /**
-     * Whether invited guests can invite other guests.
-     * @platform android
-     */
-    guestsCanInviteOthers?: boolean;
-    /**
-     * Whether invited guests can see other guests.
-     * @platform android
-     */
-    guestsCanSeeGuests?: boolean;
-    /**
-     * For detached (modified) instances of recurring events, the ID of the original recurring event.
-     * @platform android
-     */
-    originalId?: string;
-    /**
-     * For instances of recurring events, volatile ID representing this instance. Not guaranteed to
-     * always refer to the same instance.
-     * @platform android
-     */
-    instanceId?: string;
-    /**
      * Launches the calendar UI provided by the OS to preview an event.
      * @return A promise which resolves with information about the dialog result.
      * @header systemProvidedUI
@@ -296,45 +218,109 @@ export declare class ExpoCalendarEvent {
      */
     delete(recurringEventOptions: RecurringEventOptions): void;
 }
+/**
+ * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ *
+ * @platform ios
+ */
 export declare class ExpoCalendarReminder {
+    /**
+     * Internal ID that represents this reminder on the device.
+     */
     id?: string;
+    /**
+     * ID of the calendar that contains this reminder.
+     */
     calendarId?: string;
+    /**
+     * Visible name of the reminder.
+     */
     title?: string;
+    /**
+     * Location field of the reminder
+     */
     location?: string;
+    /**
+     * Date when the reminder record was created.
+     */
     creationDate?: string | Date;
+    /**
+     * Date when the reminder record was last modified.
+     */
     lastModifiedDate?: string | Date;
+    /**
+     * Time zone the reminder is scheduled in.
+     */
     timeZone?: string;
+    /**
+     * URL for the reminder.
+     */
     url?: string;
     /**
      * Description or notes saved with the reminder.
      */
-    notes: string;
+    notes?: string;
+    /**
+     * Array of Alarm objects which control automated alarms to the user about the task.
+     */
     alarms?: Alarm[];
+    /**
+     * Object representing rules for recurring or repeated reminders. `null` for one-time tasks.
+     */
     recurrenceRule?: RecurrenceRule | null;
+    /**
+     * Date object or string representing the start date of the reminder task.
+     */
     startDate?: string | Date;
+    /**
+     * Date object or string representing the time when the reminder task is due.
+     */
     dueDate?: string | Date;
+    /**
+     * Indicates whether or not the task has been completed.
+     */
     completed?: boolean;
+    /**
+     * Date object or string representing the date of completion, if `completed` is `true`.
+     * Setting this property of a nonnull `Date` will automatically set the reminder's `completed` value to `true`.
+     */
     completionDate?: string | Date;
     update(details: Partial<ModifableReminderProperties>, nullableFields?: (keyof ModifableReminderProperties)[]): void;
-    /**
-     * Creates an attendee.
-     * @platform android
-     */
-    createAttendee(attendee: Omit<Attendee, 'id'>): ExpoCalendarAttendee;
     /**
      * Deletes the reminder.
      */
     delete(): void;
 }
+/**
+ * Represents a calendar attendee object.
+ */
 export declare class ExpoCalendarAttendee {
-    id?: string;
+    /**
+     * Indicates whether or not this attendee is the current OS user.
+     * @platform ios
+     */
+    isCurrentUser?: boolean;
+    /**
+     * Displayed name of the attendee.
+     */
     name: string;
-    isCurrentUser: boolean;
+    /**
+     * Role of the attendee at the event.
+     */
     role: AttendeeRole;
+    /**
+     * Status of the attendee in relation to the event.
+     */
     status: AttendeeStatus;
+    /**
+     * Type of the attendee.
+     */
     type: AttendeeType;
+    /**
+     * URL for the attendee.
+     * @platform ios
+     */
     url?: string;
-    email?: string;
 }
 export {};
 //# sourceMappingURL=ExpoCalendar.types.d.ts.map
