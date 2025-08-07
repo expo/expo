@@ -67,8 +67,13 @@ export interface PluginConfigTypeAndroid {
   kotlinVersion?: string;
   /**
    * Enable [Proguard or R8](https://developer.android.com/studio/build/shrink-code) in release builds to obfuscate Java code and reduce app size.
+   * @deprecated Use `enableMinifyInReleaseBuilds` instead.
    */
   enableProguardInReleaseBuilds?: boolean;
+  /**
+   * Enable minification in release builds to optimize the app using [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization).
+   */
+  enableMinifyInReleaseBuilds?: boolean;
   /**
    * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
    * This property should be used in combination with `enableProguardInReleaseBuilds`.
@@ -585,6 +590,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         kotlinVersion: { type: 'string', nullable: true },
 
         enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+        enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
@@ -811,10 +817,11 @@ export function validateConfig(config: any): PluginConfigType {
 
   if (
     config.android?.enableShrinkResourcesInReleaseBuilds === true &&
-    config.android?.enableProguardInReleaseBuilds !== true
+    config.android?.enableProguardInReleaseBuilds !== true &&
+    config.android?.enableMinifyInReleaseBuilds !== true
   ) {
     throw new Error(
-      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.'
+      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` or `android.enableMinifyInReleaseBuilds` to be enabled.'
     );
   }
 

@@ -34,6 +34,7 @@ const schema = {
                 buildToolsVersion: { type: 'string', nullable: true },
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+                enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
                 enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
                 enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
@@ -241,8 +242,9 @@ function validateConfig(config) {
     }
     maybeThrowInvalidVersions(config);
     if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&
-        config.android?.enableProguardInReleaseBuilds !== true) {
-        throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.');
+        config.android?.enableProguardInReleaseBuilds !== true &&
+        config.android?.enableMinifyInReleaseBuilds !== true) {
+        throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` or `android.enableMinifyInReleaseBuilds` to be enabled.');
     }
     return config;
 }

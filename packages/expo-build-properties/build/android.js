@@ -63,6 +63,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
     {
+        propName: 'android.enableMinifyInReleaseBuilds',
+        propValueGetter: (config) => config.android?.enableMinifyInReleaseBuilds?.toString(),
+    },
+    {
         propName: 'android.enableShrinkResourcesInReleaseBuilds',
         propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
     },
