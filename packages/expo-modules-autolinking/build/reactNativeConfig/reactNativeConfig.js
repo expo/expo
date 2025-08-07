@@ -13,7 +13,10 @@ const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
 const autolinking_1 = require("../autolinking");
 const dependencies_1 = require("../dependencies");
-async function _resolveReactNativeModule(resolution, projectConfig, platform) {
+async function _resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
+    if (excludeNames.has(resolution.name)) {
+        return null;
+    }
     const libraryConfig = await (0, config_1.loadConfigAsync)(resolution.path);
     const reactNativeConfig = {
         ...libraryConfig?.dependency,
@@ -50,6 +53,7 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform) {
  */
 async function createReactNativeConfigAsync(providedOptions) {
     const options = await (0, autolinking_1.mergeLinkingOptionsAsync)(providedOptions);
+    const excludeNames = new Set(options.exclude);
     const projectConfig = await (0, config_1.loadConfigAsync)(options.projectRoot);
     // custom native modules should be resolved first so that they can override other modules
     const searchPaths = options.nativeModulesDir && fs_1.default.existsSync(options.nativeModulesDir)
@@ -60,7 +64,7 @@ async function createReactNativeConfigAsync(providedOptions) {
         ...searchPaths.map((searchPath) => (0, dependencies_1.scanDependenciesInSearchPath)(searchPath)),
         (0, dependencies_1.scanDependenciesRecursively)(options.projectRoot),
     ]));
-    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => _resolveReactNativeModule(resolution, projectConfig, options.platform));
+    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => _resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames));
     return {
         root: options.projectRoot,
         reactNativePath: resolutions['react-native']?.path,
