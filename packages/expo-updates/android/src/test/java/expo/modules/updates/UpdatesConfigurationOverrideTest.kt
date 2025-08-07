@@ -2,9 +2,7 @@ package expo.modules.updates
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import androidx.core.net.toUri
-import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth
 import io.mockk.clearAllMocks
 import io.mockk.every

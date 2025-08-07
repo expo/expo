@@ -4,8 +4,6 @@ import android.net.Uri
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
-import junit.framework.TestCase
-import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -42,45 +40,51 @@ class UpdatesConfigurationTest {
   @Test
   fun `isValidRequestHeadersOverride should return true for headers matched with embedded headers`() {
     val originalEmbeddedRequestHeaders = mapOf(
-      "expo-channel-name" to "default",
+      "expo-channel-name" to "default"
     )
     val requestHeadersOverride = mapOf(
       "Expo-Channel-Name" to "preview"
     )
-    Truth.assertThat(UpdatesConfiguration.isValidRequestHeadersOverride(
-      originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders,
-      requestHeadersOverride = requestHeadersOverride
-    )).isTrue()
+    Truth.assertThat(
+      UpdatesConfiguration.isValidRequestHeadersOverride(
+        originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders,
+        requestHeadersOverride = requestHeadersOverride
+      )
+    ).isTrue()
   }
 
   @Test
   fun `isValidRequestHeadersOverride should return false for headers unmatched with embedded headers`() {
     val originalEmbeddedRequestHeaders = mapOf(
-      "expo-channel-name" to "default",
+      "expo-channel-name" to "default"
     )
     val requestHeadersOverride = mapOf(
       "Expo-Channel-Name" to "preview",
       "X-Custom" to "custom"
     )
-    Truth.assertThat(UpdatesConfiguration.isValidRequestHeadersOverride(
-      originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders,
-      requestHeadersOverride = requestHeadersOverride
-    )).isFalse()
+    Truth.assertThat(
+      UpdatesConfiguration.isValidRequestHeadersOverride(
+        originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders,
+        requestHeadersOverride = requestHeadersOverride
+      )
+    ).isFalse()
   }
 
   @Test
   fun `isValidRequestHeadersOverride should return false for Host override header`() {
     val originalEmbeddedRequestHeaders = mapOf(
       "expo-channel-name" to "default",
-      "Host" to "example.org",
+      "Host" to "example.org"
     )
     val requestHeadersOverride = mapOf(
       "Expo-Channel-Name" to "preview",
-      "Host" to "override.org",
+      "Host" to "override.org"
     )
-    Truth.assertThat(UpdatesConfiguration.isValidRequestHeadersOverride(
-      originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders,
-      requestHeadersOverride = requestHeadersOverride
-    )).isFalse()
+    Truth.assertThat(
+      UpdatesConfiguration.isValidRequestHeadersOverride(
+        originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders,
+        requestHeadersOverride = requestHeadersOverride
+      )
+    ).isFalse()
   }
 }

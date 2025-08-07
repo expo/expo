@@ -243,7 +243,9 @@ data class UpdatesConfiguration(
 
     private fun isValidRequestHeadersOverride(context: Context?, overrideMap: Map<String, Any>?, requestHeadersOverride: Map<String, String>?): Boolean {
       return isValidRequestHeadersOverride(
-        getOriginalEmbeddedRequestHeaders(context, overrideMap), requestHeadersOverride)
+        getOriginalEmbeddedRequestHeaders(context, overrideMap),
+        requestHeadersOverride
+      )
     }
 
     private fun getOriginalEmbeddedRequestHeaders(context: Context?, overrideMap: Map<String, Any>?) =

@@ -302,7 +302,9 @@ class EnabledUpdatesController(
 
   override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
     val isValidRequestHeaders = UpdatesConfiguration.isValidRequestHeadersOverride(
-      updatesConfiguration.originalEmbeddedRequestHeaders, requestHeaders)
+      updatesConfiguration.originalEmbeddedRequestHeaders,
+      requestHeaders
+    )
     if (!isValidRequestHeaders) {
       throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Invalid update requestHeaders override: $requestHeaders", null)
     }
