@@ -13,6 +13,7 @@ jest.mock('expo-router/build/views/Navigator', () => ({}));
 
 jest.mock('react-native', () => ({}));
 jest.mock('expo-linking', () => ({}));
+jest.mock('expo-constants', () => ({}));
 jest.mock('expo-modules-core', () => ({}));
 jest.mock('@react-navigation/native', () => ({}));
 
@@ -421,7 +422,7 @@ describe(getFilesToExportFromServerAsync, () => {
     );
 
     // Convert to navigation config
-    const mockManifest = getNavigationConfig(routes!, false);
+    const mockManifest = getNavigationConfig(routes!, false, { sitemap: false, notFound: false });
 
     const files = await getFilesToExportFromServerAsync('/', {
       exportServer: true,
