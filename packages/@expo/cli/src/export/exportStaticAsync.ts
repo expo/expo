@@ -288,7 +288,7 @@ export function getHtmlFiles({
       let leaf: string | null = null;
       if (typeof value === 'string') {
         leaf = value;
-      } else if (Object.keys(value.screens).length === 0) {
+      } else if (value.screens && Object.keys(value.screens).length === 0) {
         // Ensure the trailing index is accounted for.
         if (key === value.path + '/index') {
           leaf = key;
