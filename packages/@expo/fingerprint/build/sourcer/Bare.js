@@ -96,7 +96,7 @@ async function getCoreAutolinkingSourcesFromRncCliAsync(projectRoot, options, us
         return [];
     }
 }
-async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, coreAutolinkingTransitiveDeps, useRNCoreAutolinkingFromExpo) {
+async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, useRNCoreAutolinkingFromExpo) {
     if (useRNCoreAutolinkingFromExpo === false || !options.platforms.includes('android')) {
         return [];
     }
@@ -107,9 +107,6 @@ async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, co
         '--platform',
         'android',
     ];
-    if (coreAutolinkingTransitiveDeps.length > 0) {
-        args.push('--transitive-linking-dependencies', ...coreAutolinkingTransitiveDeps);
-    }
     try {
         const { stdout } = await (0, spawn_async_1.default)('node', args, { cwd: projectRoot });
         const config = JSON.parse(stdout);
