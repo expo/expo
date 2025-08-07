@@ -1,4 +1,5 @@
 export const nonLinkableTypes = [
+  '_default',
   'B',
   'BufferSource',
   'CodedError',
@@ -147,6 +148,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   SQLiteStorageSetItemUpdateFunction:
     '/versions/latest/sdk/sqlite/#sqlitestoragesetitemupdatefunctionprevvalue',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
+  TaskManagerTaskExecutor: '/versions/latest/sdk/task-manager/#taskmanagertaskexecutorbody',
   Text: 'https://reactnative.dev/docs/text',
   TextProps: 'https://reactnative.dev/docs/text#props',
   Uint8Array:
