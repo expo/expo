@@ -33,6 +33,9 @@ describe(createReactNativeConfigAsync, () => {
   const mockPlatformResolverIos = resolveDependencyConfigImplIosAsync as jest.MockedFunction<
     typeof resolveDependencyConfigImplIosAsync
   >;
+  const mockLoadReactNativeConfigAsync = loadConfigAsync as jest.MockedFunction<
+    typeof loadConfigAsync
+  >;
 
   afterEach(() => {
     vol.reset();
@@ -57,6 +60,14 @@ describe(createReactNativeConfigAsync, () => {
       '/app/node_modules/react-native-test/package.json': '',
       '/app/node_modules/@react-native/subtest/package.json': '',
     });
+    const projectConfig: RNConfigReactNativeProjectConfig = {
+      dependencies: {
+        'react-native-test': {
+          root: '/app/modules/react-native-test',
+        },
+      },
+    };
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce(projectConfig);
     mockPlatformResolverIos.mockImplementationOnce(
       async ({ path: packageRoot }, _reactNativeConfig) => {
         if (packageRoot.endsWith('react-native-test')) {
@@ -118,9 +129,7 @@ describe(createReactNativeConfigAsync, () => {
         },
       },
     };
-    const mockLoadReactNativeConfigAsync = loadConfigAsync as jest.MockedFunction<
-      typeof loadConfigAsync
-    >;
+
     mockLoadReactNativeConfigAsync.mockResolvedValueOnce(projectConfig);
 
     vol.fromJSON({
@@ -272,6 +281,9 @@ describe(_resolveReactNativeModule, () => {
   >;
 
   it('should return config with platform config', async () => {
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce({
+      dependency: {},
+    });
     mockPlatformResolverIos.mockResolvedValueOnce({
       podspecPath: '/app/node_modules/react-native-test/RNTest.podspec',
       version: '1.0.0',
@@ -308,6 +320,9 @@ describe(_resolveReactNativeModule, () => {
   });
 
   it('should call the platform resolver', async () => {
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce({
+      dependency: {},
+    });
     await _resolveReactNativeModule(
       {
         name: 'react-native-test',
