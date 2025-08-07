@@ -35,7 +35,10 @@ export type ModifiableEventProperties = Pick<
   Event,
   | 'title'
   | 'location'
+  | 'timeZone'
+  | 'url'
   | 'notes'
+  | 'alarms'
   | 'recurrenceRule'
   | 'availability'
   | 'startDate'
@@ -47,7 +50,10 @@ export type ModifableReminderProperties = Pick<
   Reminder,
   | 'title'
   | 'location'
+  | 'timeZone'
+  | 'url'
   | 'notes'
+  | 'alarms'
   | 'recurrenceRule'
   | 'startDate'
   | 'dueDate'
@@ -161,8 +167,8 @@ export declare class ExpoCalendar {
    * @platform ios
    */
   listReminders(
-    startDate: Date | string,
-    endDate: Date | string,
+    startDate?: Date | string | null,
+    endDate?: Date | string | null,
     status?: ReminderStatus | null
   ): Promise<ExpoCalendarReminder[]>;
 

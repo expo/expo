@@ -29,7 +29,7 @@ internal final class ExpoCalendar: SharedObject {
     return events.map { ExpoCalendarEvent(event: $0) }
   }
 
-  func listReminders(startDate: Date, endDate: Date, status: String?, promise: Promise) {
+  func listReminders(startDate: Date?, endDate: Date?, status: String?, promise: Promise) {
     guard let calendar = self.calendar else {
       promise.reject(CalendarNoLongerExistsException())
       return

@@ -40,7 +40,7 @@ const RemindersScreen = ({ route }: Props) => {
 
   const findReminders = async (calendar: ExpoCalendar) => {
     try {
-      const reminders = await calendar.listReminders(new Date(), new Date());
+      const reminders = await calendar.listReminders();
       setReminders(reminders);
     } catch (error) {
       console.error('Error fetching reminders:', error);

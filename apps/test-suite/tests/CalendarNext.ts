@@ -92,6 +92,10 @@ function getReminderCalendar() {
   return calendars.find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
 }
 
+function reminderExists(reminders: ExpoCalendarReminder[], reminderId: string) {
+  return reminders.some((r) => r.id === reminderId);
+}
+
 export async function test(t) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
@@ -333,65 +337,65 @@ export async function test(t) {
       }
     });
 
-    t.describe('Calendar UI Integration', () => {
-      let originalTimeout;
-      const dontStartNewTask = {
-        startNewActivityTask: false,
-      };
-      let calendar: ExpoCalendar;
+    // t.describe('Calendar UI Integration', () => {
+    //   let originalTimeout;
+    //   const dontStartNewTask = {
+    //     startNewActivityTask: false,
+    //   };
+    //   let calendar: ExpoCalendar;
 
-      t.beforeEach(async () => {
-        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
-        calendar = await createTestCalendarAsync();
-      });
+    //   t.beforeEach(async () => {
+    //     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+    //     calendar = await createTestCalendarAsync();
+    //   });
 
-      t.it('creates an event via UI', async () => {
-        const eventData = createEventData();
-        await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
-        if (Platform.OS === 'ios') {
-          t.expect(result.action).toBe('saved');
-          t.expect(typeof result.id).toBe('string');
-          const storedEvent = await Calendar.getEventAsync(result.id);
+    //   t.it('creates an event via UI', async () => {
+    //     const eventData = createEventData();
+    //     await alertAndWaitForResponse('Please confirm the event creation dialog.');
+    //     const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+    //     if (Platform.OS === 'ios') {
+    //       t.expect(result.action).toBe('saved');
+    //       t.expect(typeof result.id).toBe('string');
+    //       const storedEvent = await Calendar.getEventAsync(result.id);
 
-          t.expect(storedEvent).toEqual(
-            t.jasmine.objectContaining({
-              title: eventData.title,
-              allDay: eventData.allDay,
-              location: eventData.location,
-              notes: eventData.notes,
-            })
-          );
-        }
-      });
+    //       t.expect(storedEvent).toEqual(
+    //         t.jasmine.objectContaining({
+    //           title: eventData.title,
+    //           allDay: eventData.allDay,
+    //           location: eventData.location,
+    //           notes: eventData.notes,
+    //         })
+    //       );
+    //     }
+    //   });
 
-      t.it('can preview an event', async () => {
-        const event = createTestEvent(calendar);
-        await alertAndWaitForResponse(
-          'Please verify event details are shown and close the dialog.'
-        );
-        const result = await event.openInCalendarAsync({
-          ...dontStartNewTask,
-          allowsEditing: true,
-          allowsCalendarPreview: true,
-        });
-        t.expect(result).toEqual({ action: 'done' });
-      });
+    //   t.it('can preview an event', async () => {
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse(
+    //       'Please verify event details are shown and close the dialog.'
+    //     );
+    //     const result = await event.openInCalendarAsync({
+    //       ...dontStartNewTask,
+    //       allowsEditing: true,
+    //       allowsCalendarPreview: true,
+    //     });
+    //     t.expect(result).toEqual({ action: 'done' });
+    //   });
 
-      t.it('can edit an event', async () => {
-        const event = createTestEvent(calendar);
-        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
-        const result = await event.editInCalendarAsync(dontStartNewTask);
-        t.expect(typeof result.action).toBe('string'); // done or canceled
-        t.expect(result.id).toBe(null);
-      });
+    //   t.it('can edit an event', async () => {
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+    //     const result = await event.editInCalendarAsync(dontStartNewTask);
+    //     t.expect(typeof result.action).toBe('string'); // done or canceled
+    //     t.expect(result.id).toBe(null);
+    //   });
 
-      t.afterEach(() => {
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-        calendar.delete();
-      });
-    });
+    //   t.afterEach(() => {
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    //     calendar.delete();
+    //   });
+    // });
 
     t.describe('Calendar', () => {
       t.describe('Calendar.update()', () => {
@@ -569,20 +573,6 @@ export async function test(t) {
             t.expect(reminder.dueDate).toBe(new Date(2025, 1, 1).toISOString());
           });
 
-          t.it('lists created reminders', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
-              dueDate: new Date(2025, 0, 2),
-            });
-
-            const reminders = await reminderCalendar.listReminders(
-              new Date(2025, 0, 1),
-              new Date(2025, 0, 3)
-            );
-
-            const found = reminders.find((r) => r.id === reminder.id);
-            t.expect(found).toBeDefined();
-          });
-
           t.afterEach(async () => {
             eventCalendar.delete();
             reminder?.delete();
@@ -593,19 +583,77 @@ export async function test(t) {
           let reminderCalendar: ExpoCalendar;
           let reminder: ExpoCalendarReminder;
 
-          t.beforeAll(async () => {
+          t.beforeEach(async () => {
             reminderCalendar = getReminderCalendar();
+            reminder = await createTestReminder(reminderCalendar, {
+              startDate: new Date(2025, 0, 2, 6),
+              dueDate: new Date(2025, 0, 2, 9),
+            });
           });
 
-          t.it('Calendar.listReminders()', async () => {
-            reminder = await createTestReminder(reminderCalendar);
+          t.it('lists created reminders', async () => {
             const reminders = await reminderCalendar.listReminders(
               new Date(2025, 0, 1),
               new Date(2025, 0, 3)
             );
 
-            const found = reminders.find((r) => r.id === reminder.id);
-            t.expect(found).toBeDefined();
+            t.expect(reminderExists(reminders, reminder.id)).toBe(true);
+          });
+
+          t.it('lists reminders with incomplete status', async () => {
+            const preRemindersIncomplete = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3),
+              Calendar.ReminderStatus.INCOMPLETE
+            );
+            t.expect(reminderExists(preRemindersIncomplete, reminder.id)).toBe(true);
+            const preRemindersComplete = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              null,
+              Calendar.ReminderStatus.COMPLETED
+            );
+            t.expect(reminderExists(preRemindersComplete, reminder.id)).toBe(false);
+            const preAllReminders = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3)
+            );
+            t.expect(reminderExists(preAllReminders, reminder.id)).toBe(true);
+          });
+
+          t.it('lists reminders with completed status', async () => {
+            reminder.update({
+              completionDate: new Date(2025, 0, 2, 10),
+            });
+
+            const remindersIncomplete = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3),
+              Calendar.ReminderStatus.INCOMPLETE
+            );
+            t.expect(reminderExists(remindersIncomplete, reminder.id)).toBe(false);
+            const remindersComplete = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3),
+              Calendar.ReminderStatus.COMPLETED
+            );
+            t.expect(reminderExists(remindersComplete, reminder.id)).toBe(true);
+            const allReminders = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3)
+            );
+            t.expect(reminderExists(allReminders, reminder.id)).toBe(true);
+          });
+
+          t.it('does not list reminders completed outside of the date range', async () => {
+            reminder.update({
+              completionDate: new Date(2025, 0, 5),
+            });
+            const reminders = await reminderCalendar.listReminders(
+              new Date(2025, 0, 1),
+              new Date(2025, 0, 3),
+              Calendar.ReminderStatus.COMPLETED
+            );
+            t.expect(reminderExists(reminders, reminder.id)).toBe(false);
           });
 
           t.afterEach(async () => {

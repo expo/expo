@@ -226,16 +226,27 @@ public final class CalendarNextModule: Module {
       // swiftlint:disable closure_parameter_position
       AsyncFunction("listReminders") {
         ( calendar: ExpoCalendar,
-          startDateStr: Either<String, Double>,
-          endDateStr: Either<String, Double>,
+          startDateStr: String?,
+          endDateStr: String?,
           status: String?,
           promise: Promise) throws in
         try checkRemindersPermissions()
 
-        guard let startDate = parse(date: startDateStr),
-          let endDate = parse(date: endDateStr)
-        else {
-          throw InvalidDateFormatException()
+        var startDate: Date?
+        var endDate: Date?
+
+        if let startDateStr = startDateStr {
+          guard let parsedStartDate = parse(date: startDateStr) else {
+            throw InvalidDateFormatException()
+          }
+          startDate = parsedStartDate
+        }
+
+        if let endDateStr = endDateStr {
+          guard let parsedEndDate = parse(date: endDateStr) else {
+            throw InvalidDateFormatException()
+          }
+          endDate = parsedEndDate
         }
 
         return calendar.listReminders(

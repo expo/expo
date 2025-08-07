@@ -89,24 +89,14 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
   }
 
   override async listReminders(
-    startDate: Date,
-    endDate: Date,
-    status?: ReminderStatus | null
+    startDate: Date | null = null,
+    endDate: Date | null = null,
+    status: ReminderStatus | null = null
   ): Promise<ExpoCalendarReminder[]> {
-    if (!startDate) {
-      throw new Error(
-        'listReminders must be called with a startDate (date) to search for reminders'
-      );
-    }
-    if (!endDate) {
-      throw new Error(
-        'listReminders must be called with an endDate (date) to search for reminders'
-      );
-    }
     const reminders = await super.listReminders(
-      stringifyIfDate(startDate),
-      stringifyIfDate(endDate),
-      status || null
+      startDate ? stringifyIfDate(startDate) : null,
+      endDate ? stringifyIfDate(endDate) : null,
+      status
     );
     return reminders.map((reminder) => {
       Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);

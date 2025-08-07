@@ -58,14 +58,8 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
             return event;
         });
     }
-    async listReminders(startDate, endDate, status) {
-        if (!startDate) {
-            throw new Error('listReminders must be called with a startDate (date) to search for reminders');
-        }
-        if (!endDate) {
-            throw new Error('listReminders must be called with an endDate (date) to search for reminders');
-        }
-        const reminders = await super.listReminders(stringifyIfDate(startDate), stringifyIfDate(endDate), status || null);
+    async listReminders(startDate = null, endDate = null, status = null) {
+        const reminders = await super.listReminders(startDate ? stringifyIfDate(startDate) : null, endDate ? stringifyIfDate(endDate) : null, status);
         return reminders.map((reminder) => {
             Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
             return reminder;
