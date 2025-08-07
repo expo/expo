@@ -6,13 +6,9 @@ import expo.modules.updates.loader.UpdateDirective
 import org.json.JSONObject
 
 /**
- * LoaderSelectionPolicy which decides whether or not to load an update or directive, taking filters into
- * account. Returns true (should load the update) if we don't have an existing newer update that
- * matches the given manifest filters.
- *
- * Uses `commitTime` to determine ordering of updates.
+ * A policy like [LoaderSelectionPolicyFilterAware] for dev-client that allows nullable [UpdatesConfiguration]
  */
-class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration) : LoaderSelectionPolicy {
+class LoaderSelectionPolicyDevelopmentClient(private val config: UpdatesConfiguration?) : LoaderSelectionPolicy {
   override fun shouldLoadNewUpdate(
     newUpdate: UpdateEntity?,
     launchedUpdate: UpdateEntity?,
@@ -35,22 +31,22 @@ class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration)
     }
 
     // if new update doesn't match the configured URL, don't load it
-    if (newUpdate.url != null && newUpdate.url != config.updateUrl) {
+    if (newUpdate.url != null && newUpdate.url != config?.updateUrl) {
       return false
     }
 
     // if new update doesn't match the configured request headers, don't load it
-    if (newUpdate.requestHeaders != null && newUpdate.requestHeaders != config.requestHeaders) {
+    if (newUpdate.requestHeaders != null && newUpdate.requestHeaders != config?.requestHeaders) {
       return false
     }
 
     // if the launched update no longer matches the configured URL, we should load the new update
-    if (launchedUpdate.url != null && launchedUpdate.url != config.updateUrl) {
+    if (launchedUpdate.url != null && launchedUpdate.url != config?.updateUrl) {
       return true
     }
 
     // if the launched update no longer matches the configured request headers, we should load the new update
-    if (launchedUpdate.requestHeaders != null && launchedUpdate.requestHeaders != config.requestHeaders) {
+    if (launchedUpdate.requestHeaders != null && launchedUpdate.requestHeaders != config?.requestHeaders) {
       return true
     }
 
