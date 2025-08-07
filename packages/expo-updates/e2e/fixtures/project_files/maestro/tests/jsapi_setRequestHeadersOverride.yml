@@ -8,13 +8,13 @@ onFlowStart:
     label: Copy text from update string
     id: updateString
 - assertTrue:
-    condition: ${maestro.copiedText == "test"}
+    condition: ${maestro.copiedText == 'test'}
     label: Assert update string is from embedded bundle
 - copyTextFrom:
     label: Copy text from ('channel')
     id: channel
 - assertTrue:
-    condition: ${maestro.copiedText == "default"}
+    condition: ${maestro.copiedText == 'default'}
     label: Assert channel is default
 
 # Send update to preview channel and verify new update
@@ -58,8 +58,8 @@ onFlowStart:
     label: Delay for 1.5 seconds
 - tapOn: "reload"
 - evalScript:
-    script: ${output.api.delay(1500)}
-    label: Delay for 1.5 seconds
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
 - copyTextFrom:
     label: Copy text from update channel
     id: channel
@@ -114,8 +114,8 @@ onFlowStart:
     label: Delay for 1.5 seconds
 - tapOn: "reload"
 - evalScript:
-    script: ${output.api.delay(1500)}
-    label: Delay for 1.5 seconds
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
 - copyTextFrom:
     label: Copy text from update channel
     id: channel
