@@ -7,6 +7,7 @@
     "expo-internal": "build/bin/cli"
   },
   "files": [
+    "internal",
     "static",
     "build"
   ],
@@ -109,10 +110,15 @@
     ]
   },
   "peerDependencies": {
-    "expo-router": "*"
+    "expo": "*",
+    "expo-router": "*",
+    "react-native": "*"
   },
   "peerDependenciesMeta": {
     "expo-router": {
+      "optional": true
+    },
+    "react-native": {
       "optional": true
     }
   },

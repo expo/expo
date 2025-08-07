@@ -30,6 +30,8 @@
 - Fix duplicate code frames printed in transformation error ([#38288](https://github.com/expo/expo/pull/38288) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Fix processing circular dependencies for inverse dependency resolver stack trace ([#38414](https://github.com/expo/expo/pull/38414) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Run prebuild only for the platforms specified in app config (if listed). ([#31752](https://github.com/expo/expo/pull/31752) by [@prathameshmm02](https://github.com/prathameshmm02))
+- Improve API Routes development errors (remove duplicates and misleading stack traces) ([#38465](https://github.com/expo/expo/pull/38465) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Resolve extensionless routes as HTML in static server ([#38610](https://github.com/expo/expo/pull/38610) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
@@ -45,6 +47,8 @@
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 - Treat Meta Quest devices as Android devices in `resolvePlatformFromUserAgentHeader` ([#37749](https://github.com/expo/expo/pull/37749) by [@behenate](https://github.com/behenate))
 - Add missing `expo-router` optional peer dependency and `@expo/server` dependency ([#38533](https://github.com/expo/expo/pull/38533) by [@kitten](https://github.com/kitten))
+- Update `@react-native/js-polyfills` to instead be loaded from `react-native/rn-get-polyfills` ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
+- Add missing (reverse) peer dependency on `expo` ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

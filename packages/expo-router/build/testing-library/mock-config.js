@@ -10,7 +10,10 @@ const context_stubs_1 = require("./context-stubs");
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
 function getMockConfig(context, metaOnly = true) {
-    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(getMockContext(context)), metaOnly);
+    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(getMockContext(context)), metaOnly, {
+        sitemap: true,
+        notFound: true,
+    });
 }
 function getMockContext(context) {
     if (typeof context === 'string') {

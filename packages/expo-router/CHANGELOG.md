@@ -19,6 +19,7 @@
 - Add `location.origin`, Expo SDK version and Hermes version to sitemap UI ([#38201](https://github.com/expo/expo/pull/38201) by [@hassankhan](https://github.com/hassankhan))
 - Add option to show only Link menu actions without preview ([#38398](https://github.com/expo/expo/pull/38398) by [@Ubax](https://github.com/Ubax))
 - Add more customization options to Link.Preview menu ([#38401](https://github.com/expo/expo/pull/38401) by [@Ubax](https://github.com/Ubax))
+- Native bottom tabs ([#37912](https://github.com/expo/expo/pull/37912) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -40,6 +41,9 @@
 - Fix modal with detents fixToContents on Android ([#38440](https://github.com/expo/expo/pull/38440) by [@Ubax](https://github.com/Ubax))
 - Fix detents in web modal ([#38446](https://github.com/expo/expo/pull/38446) by [@Ubax](https://github.com/Ubax))
 - Fix Link Preview between two separate stacks ([#38299](https://github.com/expo/expo/pull/38299) by [@Ubax](https://github.com/Ubax))
+- Fix preloading of Unmatched screen ([#38556](https://github.com/expo/expo/pull/38556) by [@Ubax](https://github.com/Ubax))
+- Fix context menu updates ([#38561](https://github.com/expo/expo/pull/38561) by [@Ubax](https://github.com/Ubax))
+- Fix issues with link preview in heavy views ([#38534](https://github.com/expo/expo/pull/38534) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
@@ -49,6 +53,9 @@
 - Extract screen search logic to swift ([#38320](https://github.com/expo/expo/pull/38320) by [@Ubax](https://github.com/Ubax))
 - Throw error when Stack.Screen is used with name outside of layout ([#38116](https://github.com/expo/expo/pull/38116) by [@Ubax](https://github.com/Ubax))
 - Update dependencies and peer dependencies to align with transitive dependencies and missing optional peers ([#38530](https://github.com/expo/expo/pull/38530) by [@kitten](https://github.com/kitten))
+- Update doctor checks to not assume project has a `@react-navigation/native` direct dependency ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
+- Upgrade rnscreens to nigthly version and remove RNSDismissibleModalProtocol patch ([#38522](https://github.com/expo/expo/pull/38522) by [@Ubax](https://github.com/Ubax))
+- Move not-found and site map to root stack navigator ([#38417](https://github.com/expo/expo/pull/38417) by [@Ubax](https://github.com/Ubax))
 
 ## 5.1.4 - 2025-07-18
 

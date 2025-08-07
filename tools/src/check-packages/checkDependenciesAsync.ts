@@ -33,12 +33,7 @@ type SourceFileImportRef = {
   isTypeOnly?: boolean;
 };
 
-// We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
-const IGNORED_PACKAGES = [
-  '@expo/html-elements', // package: react, react-native, react-native-web
-  'expo-gl', // package: react-dom, react-native-reanimated
-  'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
-];
+const IGNORED_PACKAGES: string[] = [];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
   'expo-dev-menu': {
@@ -48,17 +43,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     typescript: 'ignore-dev', // TODO: Should probably be a peer dep
   },
 
-  'expo-asset': {
-    '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
-  },
-
-  'expo-font': {
-    '@expo/config-plugins/build/android/codeMod': 'ignore-dev', // TODO: Remove
-    '@expo/config-plugins/build/utils/generateCode': 'ignore-dev', // TODO: Remove
-  },
-
   '@expo/cli': {
     eslint: 'ignore-dev', // TODO: Switch to resolve-from / project root require
+    'expo-constants/package.json': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
+    'metro-runtime/package.json': 'ignore-dev', // NOTE: Only used in developmnt in the expo/expo monorepo
   },
 
   'expo-router': {
@@ -75,6 +63,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
   },
 
+  'jest-expo': {
+    'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
+  },
+
   '@expo/metro-runtime': {
     'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
   },
@@ -88,7 +80,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     '@expo/metro-config/build/babel-transformer': 'types-only',
     'react-native-worklets/plugin': 'ignore-dev', // Checked via hasModule before requiring
     'react-native-reanimated/plugin': 'ignore-dev', // Checked via hasModule before requiring
-    'expo/config': 'ignore-dev', // WARN: May need a reverse peer dependency
   },
 };
 
@@ -136,7 +127,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
     for (const importRef of source.importRefs) {
       if (importRef.type !== 'external' || pkg.packageName === importRef.packageName) {
         continue;
-      } else if (isDisallowedImport(importRef, pkg.packageName)) {
+      } else if (isDisallowedImport(importRef)) {
         invalidImports.push({ file: source.file, importRef, kind: undefined });
       } else if (isIgnoredPackage) {
         continue;
@@ -188,7 +179,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       Logger.verbose(
         `     > ${path.relative(pkg.path, file.path)} - ${importRef.importValue}` +
           `${importRef.isTypeOnly ? ' (types only)' : ''}` +
-          `${isDisallowedImport(importRef, pkg.packageName) ? ' (disallowed)' : ''}`
+          `${isDisallowedImport(importRef) ? ' (disallowed)' : ''}`
       );
     });
 
@@ -203,13 +194,7 @@ function isNCCBuilt(pkg: Package): boolean {
   return !!pkg.packageJson.bin && !!buildScript?.includes('ncc');
 }
 
-function isDisallowedImport(ref: SourceFileImportRef, sourceName: string): boolean {
-  if (sourceName === 'expo-updates') {
-    // TODO: We're currently allowing disallowed `metro` imports in `expo-updates`
-    // since the same file that contains them also contains more invalid imports
-    // that should all be fixed in one go
-    return false;
-  }
+function isDisallowedImport(ref: SourceFileImportRef): boolean {
   const packageName = getPackageName(ref.packageName);
   return packageName === 'metro' || packageName.startsWith('metro-');
 }
@@ -311,6 +296,14 @@ function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: Source
     node.arguments.every((arg) => ts.isStringLiteral(arg)) // Filter `require(requireFrom(...))
   ) {
     // Collect `require` statement
+    imports.push(createTypescriptImportRef(node.arguments[0].getText()));
+  } else if (
+    ts.isCallExpression(node) &&
+    node.expression.getText() === 'require.resolve' &&
+    node.arguments.length === 1 && // Filter out `require.resolve('', { paths: ... })`
+    ts.isStringLiteral(node.arguments[0]) // Filter `require(requireFrom(...))
+  ) {
+    // Collect `require.resolve` statement
     imports.push(createTypescriptImportRef(node.arguments[0].getText()));
   } else {
     ts.forEachChild(node, (child) => {

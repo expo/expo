@@ -104,7 +104,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-11v9fek{min-width:180px;}
 .r-11yh6sk{overflow-x:hidden;}
 .r-12f6czt{top:17px;}
-.r-12vffkv>*{pointer-events:auto;}
+.r-12vffkv * {pointer-events:auto;}
 .r-12vffkv{pointer-events:none!important;}
 .r-135wba7{line-height:24px;}
 .r-13aq9py{animation-name:r-1iq689l;}

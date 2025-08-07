@@ -10,6 +10,7 @@
 - Add support for a customisable reloading view when `reloadAsync` is called. ([#38074](https://github.com/expo/expo/pull/38074) by [@alanjhughes](https://github.com/alanjhughes)), ([#38362](https://github.com/expo/expo/pull/38362) by [@alanjhughes](https://github.com/alanjhughes)) and ([#38409](https://github.com/expo/expo/pull/38409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add `downloadProgress` state to the `useUpdates` hook to support listening to overall asset download progress. ([#38307](https://github.com/expo/expo/pull/38307)) by [@nishan](https://github.com/intergalacticspacehighway)
 - [iOS] dev-client support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
+- Added reload support to `setUpdateURLAndRequestHeadersOverride`. ([#38167](https://github.com/expo/expo/pull/38167), [#38180](https://github.com/expo/expo/pull/38180) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -28,6 +29,7 @@
 - Updates imports from `@expo/config`, `@expo/config-plugins` to `expo/config`, `expo/config-plugins`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Migrate loaders and file downloader to coroutines. ([#37959](https://github.com/expo/expo/pull/37959) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix procedure scope no surviving app reloads. ([#38073](https://github.com/expo/expo/pull/38073) by [@alanjhughes](https://github.com/alanjhughes))
+- [Internal] Replace dependency chain to `@expo/cli` internals with an internal entrypoint ([#38574](https://github.com/expo/expo/pull/38574) by [@kitten](https://github.com/kitten))
 
 ### 📚 3rd party library updates
 

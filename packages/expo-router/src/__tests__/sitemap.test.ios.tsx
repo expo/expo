@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { router } from '../imperative-api';
 import { act, fireEvent, renderRouter, screen, waitFor, within } from '../testing-library';
@@ -39,13 +39,18 @@ afterAll(() => {
   (global as any).HermesInternal = originalHermes;
 });
 
-test('given no routes, unmatched route', () => {
+test('given no routes, renders no route in the sitemap', () => {
   renderRouter({
-    _layout: () => <Slot />,
+    _layout: () => (
+      <View testID="layout">
+        <Slot />
+      </View>
+    ),
   });
   act(() => router.replace('/_sitemap'));
   expect(screen).toHavePathname('/_sitemap');
-  expect(screen.getByText('Unmatched Route')).toBeOnTheScreen();
+  expect(screen.getByTestId('expo-router-sitemap')).toBeVisible();
+  expect(screen.queryByTestId('sitemap-item-container')).toBeNull();
 });
 
 test('given single index route, renders one route', () => {
@@ -54,7 +59,8 @@ test('given single index route, renders one route', () => {
     index: () => <Text />,
   });
   act(() => router.replace('/_sitemap'));
-  expect(screen.getByText('index.js')).toBeOnTheScreen();
+  expect(screen.getByTestId('expo-router-sitemap')).toBeVisible();
+  expect(screen.getByText('index.js')).toBeVisible();
 });
 
 test('given multiple same level routes, renders them as flat list', () => {

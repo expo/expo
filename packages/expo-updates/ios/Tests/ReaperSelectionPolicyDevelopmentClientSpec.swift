@@ -35,7 +35,9 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update2 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -52,7 +54,9 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update3 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -69,7 +73,9 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update4 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -86,7 +92,9 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       update5 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -103,7 +111,9 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         keep: true,
         status: .StatusReady,
         isDevelopmentMode: false,
-        assetsFromManifest: []
+        assetsFromManifest: [],
+        url: URL(string: "https://example.com"),
+        requestHeaders: [:]
       )
       
       // for readability/writability, test with a policy that keeps only 3 updates;

@@ -4,9 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- [iOS][Android][Web]: Change `useAudioPlayer` and `createAudioPlayer` to accept options object as second parameter instead of `updateInterval`. Moved `updateInterval` to options and add `downloadFirst` option for pre-downloading assets ([#38563](https://github.com/expo/expo/pull/38563) by [@hirbod](https://github.com/hirbod))
+
 ### 🎉 New features
 
 - [Android] Add support for `recordForDuration`. ([#38405](https://github.com/expo/expo/pull/38405) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS][Android][Web]: Add downloadFirst option for audio playback and update related documentation ([#38563](https://github.com/expo/expo/pull/38563) by [@hirbod](https://github.com/hirbod))
 
 ### 🐛 Bug fixes
 
@@ -15,6 +18,7 @@
 - [iOS] Prevent autoplaying when setting the playback rate. ([#38293](https://github.com/expo/expo/pull/38293) by [@alanjhughes](https://github.com/alanjhughes))
 - Add shallow state comparison to prevent unnecessary re-renders in `useAudioRecorderState`. ([#38273](https://github.com/expo/expo/pull/38273) by [@alanjhughes](https://github.com/alanjhughes))
 - [web] Fixed broken player state when `replace` was called while audio was running, added missing `updateInterval` to web, and improved audio status event emitting. ([#38505](https://github.com/expo/expo/pull/38505) by [@hirbod](https://github.com/hirbod))
+- [android][iOS][web] Fix recordForDuration status updates and add new record() options API ([#38612](https://github.com/expo/expo/pull/38612) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
 

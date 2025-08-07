@@ -45,5 +45,8 @@
     "resolve-workspace-root": "^2.0.0",
     "ts-jest": "~29.0.4",
     "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0"
   }
 }

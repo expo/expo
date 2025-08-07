@@ -14,13 +14,13 @@ import {
 import {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
-  createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
 import { ComponentProps, useMemo } from 'react';
 import { StackAnimationTypes } from 'react-native-screens';
 
 import { withLayoutContext } from './withLayoutContext';
+import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import { SingularOptions, getSingularId } from '../useScreens';
 import { Protected } from '../views/Protected';
@@ -475,13 +475,13 @@ function filterSingular<
 
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
-    const { isPreviewOpen } = useLinkPreviewContext();
+    const { isStackAnimationDisabled } = useLinkPreviewContext();
     const screenOptions = useMemo(() => {
-      if (isPreviewOpen) {
+      if (isStackAnimationDisabled) {
         return disableAnimationInScreenOptions(props.screenOptions);
       }
       return props.screenOptions;
-    }, [props.screenOptions, isPreviewOpen]);
+    }, [props.screenOptions, isStackAnimationDisabled]);
 
     return (
       <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />

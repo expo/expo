@@ -11,6 +11,7 @@ const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const NoSSR_1 = require("./NoSSR");
 const Pressable_1 = require("./Pressable");
 const useSitemap_1 = require("./useSitemap");
 const Link_1 = require("../link/Link");
@@ -49,11 +50,18 @@ function getNavOptions() {
     };
 }
 function Sitemap() {
+    // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
+    // we need to ensure that the Sitemap component is not rendered on the server.
+    return (<NoSSR_1.NoSSR>
+      <SitemapInner />
+    </NoSSR_1.NoSSR>);
+}
+function SitemapInner() {
     const sitemap = (0, useSitemap_1.useSitemap)();
     const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
-    return (<react_native_1.View style={styles.container}>
+    return (<react_native_1.View style={styles.container} testID="expo-router-sitemap">
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
-      <react_native_1.ScrollView contentContainerStyle={styles.scroll}>
+      <react_native_1.ScrollView contentContainerStyle={styles.scroll} contentInsetAdjustmentBehavior="automatic">
         {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
             <SitemapItem node={child}/>
           </react_native_1.View>))}
