@@ -2,8 +2,14 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
+/**
+ * Represents a calendar attendee object.
+ */
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
+/**
+ * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
+ */
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions = {}) {
         return super.getOccurrence(stringifyDateValues(recurringEventOptions));
@@ -19,12 +25,23 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
         super.delete(stringifyDateValues(options));
     }
 }
+/**
+ * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ *
+ * @platform ios
+ */
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     update(details) {
         const nullableDetailsFields = getNullableDetailsFields(details);
         super.update(stringifyDateValues(details), nullableDetailsFields);
     }
 }
+/**
+ * Represents a calendar object that can be accessed and modified using the Expo Calendar Next API.
+ *
+ * This class provides properties and methods for interacting with a specific calendar on the device,
+ * such as retrieving its events, updating its details, and accessing its metadata.
+ */
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details) {
         const newEvent = super.createEvent(stringifyDateValues(details));
@@ -73,7 +90,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 }
 /**
  * Gets an instance of the default calendar object.
- * @return An [ExpoCalendar](#expocalendar) object that is the user's default calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  * @platform ios
  */
 export function getDefaultCalendarNext() {
@@ -85,12 +102,12 @@ export function getDefaultCalendarNext() {
     return defaultCalendar;
 }
 /**
- * Gets an array of [ExpoCalendar](#expocalendar) shared objects with details about the different calendars stored on the device.
+ * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the different calendars stored on the device.
  * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
  * a specific [entity type](#entitytypes). Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
  * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
- * @return An array of [ExpoCalendar](#expocalendar) shared objects matching the provided entity type (if provided).
+ * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
 export function getCalendarsNext(type) {
     if (!InternalExpoCalendar.getCalendars) {
@@ -105,7 +122,7 @@ export function getCalendarsNext(type) {
 /**
  * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
  * @param details A map of details for the calendar to be created.
- * @returns An [ExpoCalendar](#expocalendar) object representing the newly created calendar.
+ * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
 export function createCalendarNext(details = {}) {
     if (!InternalExpoCalendar.createCalendarNext) {
@@ -119,11 +136,11 @@ export function createCalendarNext(details = {}) {
 }
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
- * > **Note:** If you want to search events in a single calendar, you can use [ExpoCalendar.listEvents](#listeventsstartdate-enddate) instead.
+ * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
  * @param calendarIds An array of calendar IDs to search for events.
  * @param startDate The start date of the time range to search for events.
  * @param endDate The end date of the time range to search for events.
- * @returns An array of [ExpoCalendarEvent](#expocalendarevent) objects representing the events found.
+ * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
 export function listEvents(calendarIds, startDate, endDate) {
     if (!InternalExpoCalendar.listEvents) {

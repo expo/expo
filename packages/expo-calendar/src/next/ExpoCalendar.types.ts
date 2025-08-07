@@ -56,13 +56,6 @@ export type ModifableReminderProperties = Pick<
   | 'completed'
   | 'completionDate'
 >;
-
-/**
- * Represents a calendar object that can be accessed and modified using the Expo Calendar Next API.
- *
- * This class provides properties and methods for interacting with a specific calendar on the device,
- * such as retrieving its events, updating its details, and accessing its metadata.
- */
 export declare class ExpoCalendar {
   constructor(id: string);
 
@@ -114,12 +107,12 @@ export declare class ExpoCalendar {
 
   /**
    * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
-   * returns all reminders that overlap at all with the [startDate, endDate] interval - i.e. all reminders
+   * returns all reminders that overlap at all with the `[startDate, endDate]` interval, that is, all reminders
    * that end after the `startDate` or begin before the `endDate`.
    * @param startDate Beginning of time period to search for reminders in, or `null` for all completed reminders before `endDate`.
    * @param endDate End of time period to search for reminders in, or `null` for all completed reminders after `startDate`.
    * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`. If not defined, both completed and incomplete reminders will be returned.
-   * @return An array of [ExpoCalendarReminder](#expocalendarminder) objects matching the search criteria.
+   * @return An array of [`ExpoCalendarReminder`](#expocalendarreminder) objects matching the search criteria.
    * @platform ios
    */
   listReminders(
@@ -156,9 +149,6 @@ export declare class ExpoCalendar {
   delete(): void;
 }
 
-/**
- * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
- */
 export declare class ExpoCalendarEvent {
   constructor(id: string);
   /**
@@ -240,7 +230,7 @@ export declare class ExpoCalendarEvent {
   status: EventStatus;
   /**
    * Organizer of the event.
-   * This property is only available on events associated with calendars that are managed by a service ie. Google Calendar or iCloud.
+   * This property is only available on events associated with calendars that are managed by a service such as Google Calendar or iCloud.
    * The organizer is read-only and cannot be set.
    *
    * @platform ios
@@ -298,11 +288,6 @@ export declare class ExpoCalendarEvent {
   delete(recurringEventOptions: RecurringEventOptions): void;
 }
 
-/**
- * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
- *
- * @platform ios
- */
 export declare class ExpoCalendarReminder {
   /**
    * Internal ID that represents this reminder on the device.
