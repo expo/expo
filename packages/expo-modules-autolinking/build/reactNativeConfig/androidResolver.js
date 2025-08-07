@@ -13,10 +13,25 @@ exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const fileUtils_1 = require("../fileUtils");
+const isExpoModule = async (targetPath) => {
+    try {
+        return !!(await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(targetPath));
+    }
+    catch {
+        // We can find an Expo config which doesn't parse
+        // We then know this is an Expo Module, but it has a broken config
+        return true;
+    }
+};
 async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeConfig) {
     if (reactNativeConfig === null) {
         // Skip autolinking for this package.
+        return null;
+    }
+    else if (reactNativeConfig === undefined && await isExpoModule(packageRoot)) {
+        // NOTE(@kitten): This also matches Expo Modules, so we make sure it's a React Native module first
         return null;
     }
     const sourceDir = reactNativeConfig?.sourceDir || 'android';
