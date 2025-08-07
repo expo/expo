@@ -13,7 +13,7 @@ function getTabPathFromRootStateByHref(href, rootState) {
         return [];
     }
     // Replicating the logic from `linkTo`
-    const { navigationRoutes } = (0, routing_1.findDivergentState)(hrefState, state, 'PRELOAD');
+    const { navigationRoutes } = (0, routing_1.findDivergentState)(hrefState, state, true);
     if (!navigationRoutes.length) {
         return [];
     }
@@ -38,7 +38,7 @@ function getPreloadedRouteFromRootStateByHref(href, rootState) {
         return undefined;
     }
     // Replicating the logic from `linkTo`
-    const { navigationState, actionStateRoute } = (0, routing_1.findDivergentState)(hrefState, state, 'PRELOAD');
+    const { navigationState, actionStateRoute } = (0, routing_1.findDivergentState)(hrefState, state, true);
     if (!navigationState || !actionStateRoute) {
         return undefined;
     }
@@ -60,7 +60,7 @@ function deepEqual(a, b) {
     if (typeof a !== 'object' || typeof b !== 'object') {
         return false;
     }
-    return (Object.keys(a).length === Object.keys(b).length &&
-        Object.keys(a).every((key) => deepEqual(a[key], b[key])));
+    const keys = Object.keys(a).filter((key) => key !== '__internal__expoRouterIsPreviewNavigation');
+    return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
 }
 //# sourceMappingURL=utils.js.map

@@ -249,7 +249,7 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
       options.event,
       options.withAnchor,
       options.dangerouslySingular,
-      options.__internal__PreviewKey
+      !!options.__internal__PreviewKey
     )
   );
 }
@@ -260,7 +260,7 @@ function getNavigateAction(
   type = 'NAVIGATE',
   withAnchor?: boolean,
   singular?: SingularOptions,
-  previewKey?: string
+  isPreviewNavigation?: boolean
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -280,7 +280,7 @@ function getNavigateAction(
   const { actionStateRoute, navigationState } = findDivergentState(
     _actionState,
     _navigationState,
-    type
+    type === 'PRELOAD'
   );
 
   /*
@@ -315,15 +315,19 @@ function getNavigateAction(
     rootPayload.params.initial = !withAnchor;
   }
 
+  const previewKeyParams = isPreviewNavigation
+    ? { __internal__expoRouterIsPreviewNavigation: isPreviewNavigation }
+    : {};
+  const params = { ...rootPayload.params, ...previewKeyParams };
+
   return {
     type,
     target: navigationState.key,
     payload: {
       // key: rootPayload.key,
       name: rootPayload.screen,
-      params: rootPayload.params,
+      params,
       singular,
-      previewKey,
     },
   };
 }
@@ -364,7 +368,8 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
 export function findDivergentState(
   _actionState: ResultState,
   _navigationState: NavigationState,
-  type: string
+  // If true, look through all tabs to find the target state, rather then just the current tab
+  lookThroughAllTabs: boolean = false
 ) {
   let actionState: PartialState<NavigationState> | undefined = _actionState;
   let navigationState: NavigationState | undefined = _navigationState;
@@ -373,7 +378,7 @@ export function findDivergentState(
   while (actionState && navigationState) {
     actionStateRoute = actionState.routes[actionState.routes.length - 1];
     const stateRoute = (() => {
-      if (navigationState.type === 'tab' && type === 'PRELOAD') {
+      if (navigationState.type === 'tab' && lookThroughAllTabs) {
         return (
           navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
           navigationState.routes[navigationState.index ?? 0]
