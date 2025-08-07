@@ -53,7 +53,6 @@ struct SettingsTabView: View {
           debugSettings
           easUpdateConfig
         }
-
       }
     }
     #if !os(tvOS)

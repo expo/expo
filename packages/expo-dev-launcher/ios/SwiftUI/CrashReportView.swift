@@ -103,7 +103,7 @@ struct CrashReportView: View {
 
       ScrollView([.horizontal, .vertical]) {
         VStack(alignment: .leading, spacing: 4) {
-          if let errorInstance = errorInstance, !errorInstance.stack.isEmpty {
+          if let errorInstance, !errorInstance.stack.isEmpty {
             Text(errorInstance.stack)
               .font(.system(.caption, design: .monospaced))
               .foregroundColor(.primary)
@@ -146,8 +146,7 @@ struct CrashReportView: View {
           return nil
         }
         let file = frame.file ?? "Unknown file"
-        return "\tat \(methodName) (\(file):\(frame.lineNumber):\(frame.column))"
-      }.joined(separator: "\n")
+        return "\tat \(methodName) (\(file):\(frame.lineNumber):\(frame.column))"}.joined(separator: "\n")
       stackTrace = "\(stackString)"
     } else {
       stackTrace = "No stack trace available"
@@ -170,9 +169,7 @@ struct CrashReportView: View {
   private func getCrashDate() -> Date {
     if let errorInstance {
       return Date(timeIntervalSince1970: TimeInterval(errorInstance.timestamp) / 1000.0)
-    } else {
-      return Date()
     }
+    return Date()
   }
-
 }

@@ -57,12 +57,12 @@ public class EXDevLauncherErrorManager: NSObject {
       hostingController.didMove(toParent: rootVC)
     }
   }
-  
+
   private func dismissCurrentErrorView() {
     guard let vc = currentErrorViewController else {
       return
     }
-    
+
     vc.willMove(toParent: nil)
     vc.view.removeFromSuperview()
     vc.removeFromParent()

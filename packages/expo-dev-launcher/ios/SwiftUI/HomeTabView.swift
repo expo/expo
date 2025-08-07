@@ -54,9 +54,10 @@ struct HomeTabView: View {
   }
 
   private var crashReportBanner: some View {
-    Button(action: {
+    Button {
       viewModel.showCrashReport()
-    }) {
+    }
+    label: {
       Text("The last time you tried to open an app the development build crashed. Tap to get more information.")
         .font(.body)
         .foregroundColor(.primary)
