@@ -32,7 +32,9 @@ const mailClientURLs = [
 const withMailComposer = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         const existingSchemes = config.modResults.LSApplicationQueriesSchemes ?? [];
-        const newSchemes = [...new Set([...existingSchemes, ...mailClientURLs])];
+        // Filter out any existing mail client URLs to prevent duplicates during re-prebuild
+        const filteredExistingSchemes = existingSchemes.filter(scheme => !mailClientURLs.includes(scheme));
+        const newSchemes = [...new Set([...filteredExistingSchemes, ...mailClientURLs])];
         config.modResults.LSApplicationQueriesSchemes = newSchemes;
         return config;
     });
