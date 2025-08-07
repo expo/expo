@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+- Reject React Native modules without configs or platform configs ([#38655](https://github.com/expo/expo/pull/38655) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
