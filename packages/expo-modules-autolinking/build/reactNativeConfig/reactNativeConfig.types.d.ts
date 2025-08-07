@@ -5,7 +5,7 @@ import type { SupportedPlatform } from '../types';
 export interface RNConfigCommandOptions {
     platform: SupportedPlatform;
     projectRoot: string;
-    searchPaths: string[];
+    searchPaths?: string[];
     transitiveLinkingDependencies: string[];
     sourceDir?: string;
     nativeModulesDir?: string | null;

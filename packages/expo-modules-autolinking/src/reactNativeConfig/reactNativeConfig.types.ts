@@ -6,7 +6,7 @@ import type { SupportedPlatform } from '../types';
 export interface RNConfigCommandOptions {
   platform: SupportedPlatform;
   projectRoot: string;
-  searchPaths: string[];
+  searchPaths?: string[];
   transitiveLinkingDependencies: string[];
   sourceDir?: string;
   // NOTE(@kitten): This was missing before. The options utils are very imprecisely defined. Sometimes some options
