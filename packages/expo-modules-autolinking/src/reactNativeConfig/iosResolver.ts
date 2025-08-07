@@ -10,7 +10,7 @@ export async function resolveDependencyConfigImplIosAsync(
   resolution: { path: string; version: string },
   reactNativeConfig: RNConfigReactNativePlatformsConfigIos | null | undefined
 ): Promise<RNConfigDependencyIos | null> {
-  if (reactNativeConfig === null) {
+  if (reactNativeConfig == null) {
     // Skip autolinking for this package.
     return null;
   }
