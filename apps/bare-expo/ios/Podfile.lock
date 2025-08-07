@@ -413,6 +413,8 @@ PODS:
     - ExpoModulesCore
   - ExpoBattery (9.1.4):
     - ExpoModulesCore
+  - ExpoBlob (0.1.0):
+    - ExpoModulesCore
   - ExpoBlur (14.1.4):
     - ExpoModulesCore
   - ExpoBrightness (13.1.4):
@@ -3822,6 +3824,7 @@ DEPENDENCIES:
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
+  - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
@@ -4060,6 +4063,9 @@ EXTERNAL SOURCES:
   ExpoBattery:
     inhibit_warnings: false
     :path: "../../../packages/expo-battery/ios"
+  ExpoBlob:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-blob/ios"
   ExpoBlur:
     inhibit_warnings: false
     :path: "../../../packages/expo-blur/ios"
