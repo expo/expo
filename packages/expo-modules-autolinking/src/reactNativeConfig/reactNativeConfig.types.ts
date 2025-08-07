@@ -19,8 +19,8 @@ export interface RNConfigCommandOptions {
  */
 export interface RNConfigDependencyAndroid {
   sourceDir: string;
-  packageImportPath: string;
-  packageInstance: string;
+  packageImportPath: string | null;
+  packageInstance: string | null;
   dependencyConfiguration?: string;
   buildTypes: string[];
   libraryName?: string | null;
@@ -29,6 +29,7 @@ export interface RNConfigDependencyAndroid {
   cxxModuleCMakeListsModuleName?: string | null;
   cxxModuleCMakeListsPath?: string | null;
   cxxModuleHeaderName?: string | null;
+  isPureCxxDependency?: boolean;
 }
 
 /**
