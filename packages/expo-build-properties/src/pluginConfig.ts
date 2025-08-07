@@ -71,7 +71,7 @@ export interface PluginConfigTypeAndroid {
    */
   enableProguardInReleaseBuilds?: boolean;
   /**
-   * Enable minification in release builds to optimize the app using [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization).
+   * Enable [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) in release builds to obfuscate Java code and reduce app size.
    */
   enableMinifyInReleaseBuilds?: boolean;
   /**
@@ -821,7 +821,7 @@ export function validateConfig(config: any): PluginConfigType {
     config.android?.enableMinifyInReleaseBuilds !== true
   ) {
     throw new Error(
-      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` or `android.enableMinifyInReleaseBuilds` to be enabled.'
+      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.'
     );
   }
 

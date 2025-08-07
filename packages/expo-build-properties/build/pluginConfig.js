@@ -244,7 +244,7 @@ function validateConfig(config) {
     if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&
         config.android?.enableProguardInReleaseBuilds !== true &&
         config.android?.enableMinifyInReleaseBuilds !== true) {
-        throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` or `android.enableMinifyInReleaseBuilds` to be enabled.');
+        throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.');
     }
     return config;
 }
