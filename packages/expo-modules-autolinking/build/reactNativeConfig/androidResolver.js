@@ -22,20 +22,30 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
     const sourceDir = reactNativeConfig?.sourceDir || 'android';
     const androidDir = path_1.default.join(packageRoot, sourceDir);
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
-    if (!manifest && !gradle) {
+    const isPureCxxDependency = reactNativeConfig?.cxxModuleCMakeListsModuleName != null &&
+        reactNativeConfig?.cxxModuleCMakeListsPath != null &&
+        reactNativeConfig?.cxxModuleHeaderName != null &&
+        !manifest &&
+        !gradle;
+    if (!manifest && !gradle && !isPureCxxDependency) {
         return null;
     }
-    const packageName = reactNativeConfig?.packageName || (await parsePackageNameAsync(androidDir, manifest, gradle));
-    if (!packageName) {
-        return null;
-    }
-    const nativePackageClassName = await parseNativePackageClassNameAsync(packageRoot, androidDir);
-    if (!nativePackageClassName) {
-        return null;
+    let packageInstance = null;
+    let packageImportPath = null;
+    if (!isPureCxxDependency) {
+        const packageName = reactNativeConfig?.packageName || (await parsePackageNameAsync(androidDir, manifest, gradle));
+        if (!packageName) {
+            return null;
+        }
+        const nativePackageClassName = await parseNativePackageClassNameAsync(packageRoot, androidDir);
+        if (!nativePackageClassName) {
+            return null;
+        }
+        packageImportPath =
+            reactNativeConfig?.packageImportPath || `import ${packageName}.${nativePackageClassName};`;
+        packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
     }
     const packageJson = JSON.parse(await promises_1.default.readFile(path_1.default.join(packageRoot, 'package.json'), 'utf8'));
-    const packageImportPath = reactNativeConfig?.packageImportPath || `import ${packageName}.${nativePackageClassName};`;
-    const packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
     const buildTypes = reactNativeConfig?.buildTypes || [];
     const dependencyConfiguration = reactNativeConfig?.dependencyConfiguration;
     const libraryName = reactNativeConfig?.libraryName || (await parseLibraryNameAsync(androidDir, packageJson));
@@ -67,6 +77,7 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
         cxxModuleCMakeListsModuleName,
         cxxModuleCMakeListsPath,
         cxxModuleHeaderName,
+        isPureCxxDependency,
     };
     if (!result.libraryName) {
         delete result.libraryName;
