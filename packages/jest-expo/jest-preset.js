@@ -30,7 +30,7 @@ const babelConfigFile = resolveBabelConfig(process.cwd());
 if (babelConfigFile) {
   babelOpts.configFile = babelConfigFile;
 }
-jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
+jestPreset.transform['\\.m?[jt]sx?$'] = ['babel-jest', babelOpts];
 
 /* Update this when metro changes their default extensions */
 const defaultMetroAssetExts = [
