@@ -31,6 +31,7 @@ export const nonLinkableTypes = [
   'PartialState',
   'PathUtilities',
   'PermissionHookBehavior',
+  'PermissionHookOptions',
   'PropsWithChildren',
   'PropsWithoutRef',
   'ProxyNativeModule',
@@ -112,6 +113,10 @@ export const hardcodedTypeLinks: Record<string, string> = {
   HTMLInputElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
+  KeepAwakeListener: '/versions/latest/sdk/keep-awake/#keepawakelistenerevent',
+  LocationCallback: '/versions/latest/sdk/location/#locationcallbacklocation',
+  LocationErrorCallback: '/versions/latest/sdk/location/#locationerrorcallbackreason',
+  LocationHeadingCallback: '/versions/latest/sdk/location/#locationheadingcallbacklocation',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   MouseEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent',
@@ -124,6 +129,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   PureComponent: 'https://react.dev/reference/react/PureComponent',
+  PushTokenListener: '/versions/latest/sdk/notifications/#pushtokenlistenertoken',
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
@@ -136,6 +142,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   TextProps: 'https://reactnative.dev/docs/text#props',
   Uint8Array:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array',
+  URLListener: '/versions/latest/sdk/linking/#urllistenerevent',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
