@@ -30,7 +30,7 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
         // Skip autolinking for this package.
         return null;
     }
-    else if (reactNativeConfig === undefined && await isExpoModule(packageRoot)) {
+    else if (reactNativeConfig === undefined && (await isExpoModule(packageRoot))) {
         // NOTE(@kitten): This also matches Expo Modules, so we make sure it's a React Native module first
         return null;
     }
