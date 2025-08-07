@@ -95,11 +95,47 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 <SnackInline label='Basic Calendar Next usage' dependencies={['expo-calendar']}>
 
 ```jsx
-import { View } from 'react-native';
+import * as Calendar from 'expo-calendar/next';
+import { useEffect } from 'react';
+import { StyleSheet, View, Text, Button } from 'react-native';
 
-export default function App() {
-  return <View />;
+const BasicUsage = () => {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = Calendar.getCalendarsNext(Calendar.EntityTypes.EVENT);
+        console.log('Here are all your calendars:');
+        console.log(JSON.stringify(calendars));
+      }
+    })();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Calendar Module Example</Text>
+      <Button title="Create a new calendar" onPress={createCalendar} />
+    </View>
+  );
+};
+
+async function createCalendar() {
+  const newCalendar = await Calendar.createCalendarNext({
+    title: 'Expo Calendar',
+    color: 'blue',
+    entityType: Calendar.EntityTypes.EVENT,
+  });
+  console.log(`Your new calendar: ${JSON.stringify(newCalendar)}`);
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+});
 ```
 
 </SnackInline>
