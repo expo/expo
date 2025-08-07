@@ -109,16 +109,24 @@ describe('exports middleware', () => {
     });
 
     it('runs third-party libraries like jose', async () => {
-      const signJwtResponse = await server.fetchAsync('/?e2e=sign-jwt').then((res) => res.json());
-      expect(signJwtResponse).toHaveProperty('token');
+      const signJwtResponse = await server.fetchAsync('/?e2e=sign-jwt');
+      const signJwtResponseData = await signJwtResponse.text();
 
+      console.log('[sign-jwt]:', signJwtResponseData);
+
+      const signJwtResponseDataJwt = JSON.parse(signJwtResponseData);
+      expect(signJwtResponseDataJwt).toHaveProperty('token');
       const verifyJwtResponse = await server.fetchAsync('/?e2e=verify-jwt', {
         headers: {
-          'Authorization': signJwtResponse.token,
-        }
-      }).then((res) => res.json());
+          Authorization: signJwtResponseDataJwt.token,
+        },
+      });
+      const verifyJwtResponseData = await verifyJwtResponse.text();
 
-      expect(verifyJwtResponse.payload).toHaveProperty('foo', 'bar');
+      console.log('[verify-jwt]:', verifyJwtResponseData);
+
+      const verifyJwtResponseJson = JSON.parse(verifyJwtResponseData);
+      expect(verifyJwtResponseJson.payload).toHaveProperty('foo', 'bar');
     });
   });
 
