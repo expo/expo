@@ -2,6 +2,8 @@ import { PermissionResponse } from 'expo-modules-core';
 import { ProcessedColorValue } from 'react-native';
 export { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
 /**
+ * Options for specifying a particular instance of a recurring event.
+ * This type is used in various methods that operate on recurring events, such as updating or deleting a single occurrence or a set of future occurrences.
  * @platform ios
  */
 export type RecurringEventOptions = {

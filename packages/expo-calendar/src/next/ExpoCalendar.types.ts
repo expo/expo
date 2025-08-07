@@ -333,7 +333,7 @@ export declare class ExpoCalendarEvent {
   ): void;
 
   /**
-   * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+   * Launches the calendar UI provided by the OS to edit or delete an event.
    * @return A promise which resolves with information about the dialog result.
    * @header systemProvidedUI
    */
