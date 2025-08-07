@@ -1,8 +1,8 @@
 import { MiddlewareFunction } from 'expo-router/server';
 import { jwtVerify, SignJWT } from 'jose';
 
-const secret = new TextEncoder().encode(process.env.TEST_SECRET_VALUE);
-const secret2 = new TextEncoder().encode(process.env.TEST_SECRET_VALUE  + '111');
+const secret = new TextEncoder().encode(process.env.TEST_SECRET_KEY);
+const secret2 = new TextEncoder().encode(process.env.TEST_SECRET_KEY  + '111');
 
 const middleware: MiddlewareFunction = async (request) => {
   const url = new URL(request.url);

@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import path from 'path';
+import path from 'node:path';
 
 import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
@@ -26,7 +26,9 @@ describe('static export with middleware', () => {
         }
       );
 
-      expect(results.stderr).toContain('Skipping export for middleware because `web.output` is not "server"');
+      expect(results.stderr).toContain(
+        'Skipping export for middleware because `web.output` is not "server"'
+      );
 
       const files = findProjectFiles(outputDir);
       expect(files).not.toContain('server/_expo/functions/+middleware.js');
