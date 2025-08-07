@@ -1,4 +1,6 @@
 export const nonLinkableTypes = [
+  '_default',
+  'AndroidBarcode',
   'ArrayBufferView',
   'B',
   'BufferSource',
