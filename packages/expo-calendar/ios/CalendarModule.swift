@@ -410,12 +410,8 @@ public class CalendarModule: Module {
     calendarEvent.title = event.title
     calendarEvent.location = event.location
     calendarEvent.notes = event.notes
-    if let allDay = event.allDay {
-      calendarEvent.isAllDay = allDay
-    }
-    if let availability = event.availability {
-      calendarEvent.availability = getAvailability(availability: availability)
-    }
+    calendarEvent.isAllDay = event.allDay ?? false
+    calendarEvent.availability = getAvailability(availability: event.availability ?? "")
   }
 
   private func initializePermittedEntities() {
@@ -518,9 +514,7 @@ public class CalendarModule: Module {
       guard let calendar = eventStore.calendar(withIdentifier: id) else {
         throw CalendarIdNotFoundException(id)
       }
-      guard let title = record.title else {
-        throw MissingParameterException("title")
-      }
+      let title = record.title ?? ""
       if calendar.isImmutable == true {
         throw CalendarNotSavedException(title)
       }
