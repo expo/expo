@@ -1,10 +1,9 @@
 'use client';
 
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
-import type { SharedRef as SharedRefType } from './ts-declarations/SharedRef';
+import { ExpoGlobal } from './ts-declarations/global';
 
 ensureNativeModulesAreInstalled();
 
-const SharedRef = globalThis.expo.SharedRef as typeof SharedRefType;
-
-export default SharedRef;
+export type SharedRef = typeof ExpoGlobal.SharedRef;
+export const SharedRef: typeof ExpoGlobal.SharedRef = globalThis.expo.SharedRef;

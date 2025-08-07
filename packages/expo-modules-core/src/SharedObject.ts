@@ -1,10 +1,9 @@
 'use client';
 
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
-import type { SharedObject as SharedObjectType } from './ts-declarations/SharedObject';
+import { ExpoGlobal } from './ts-declarations/global';
 
 ensureNativeModulesAreInstalled();
 
-const SharedObject = globalThis.expo.SharedObject as typeof SharedObjectType;
-
-export default SharedObject;
+export type SharedObject = typeof ExpoGlobal.SharedObject;
+export const SharedObject: typeof ExpoGlobal.SharedObject = globalThis.expo.SharedObject;
