@@ -19,7 +19,7 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { mergeLinkingOptionsAsync } from '../autolinking';
+import { mergeLinkingOptionsAsync, SearchOptions } from '../autolinking';
 import {
   DependencyResolution,
   filterMapResolutionResult,
@@ -32,8 +32,13 @@ import {
 export async function _resolveTurboModule(
   resolution: DependencyResolution,
   projectConfig: RNConfigReactNativeProjectConfig | null,
-  platform: SupportedPlatform
+  platform: SupportedPlatform,
+  excludeNames: Set<string>,
 ): Promise<RNConfigDependency | null> {
+  if (excludeNames.has(resolution.name)) {
+    return null;
+  }
+
   const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(resolution.path);
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
@@ -80,7 +85,8 @@ export async function _resolveTurboModule(
 export async function createReactNativeConfigAsync(
   providedOptions: RNConfigCommandOptions
 ): Promise<RNConfigResult> {
-  const options = await mergeLinkingOptionsAsync(providedOptions);
+  const options = await mergeLinkingOptionsAsync<SearchOptions & RNConfigCommandOptions>(providedOptions);
+  const excludeNames = new Set(options.exclude);
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(
     options.projectRoot
   );
@@ -100,7 +106,7 @@ export async function createReactNativeConfigAsync(
   );
 
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
-    _resolveTurboModule(resolution, projectConfig, options.platform)
+    _resolveTurboModule(resolution, projectConfig, options.platform, excludeNames)
   );
 
   return {

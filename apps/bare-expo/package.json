@@ -25,7 +25,10 @@
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-module-template",
-        "expo-module-template-local"
+        "expo-module-template-local",
+        "expo-dev-client",
+        "expo-dev-launcher",
+        "@shopify/react-native-skia"
       ],
       "ios": {
         "flags": {
