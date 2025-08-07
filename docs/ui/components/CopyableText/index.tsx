@@ -1,29 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useRef } from 'react';
 
 type CopyTextButtonProps = {
   children: ReactNode;
   copyText?: string;
   className?: string;
 };
-
-function extractTextFromChildren(children: ReactNode): string {
-  if (typeof children === 'string') {
-    return children;
-  }
-  if (typeof children === 'number') {
-    return children.toString();
-  }
-  if (Array.isArray(children)) {
-    return children.map(extractTextFromChildren).join('');
-  }
-  if (children && typeof children === 'object' && 'props' in children) {
-    return extractTextFromChildren((children as any).props.children);
-  }
-  return '';
-}
 
 function cleanTextForCopy(text: string): string {
   return text
@@ -38,9 +22,10 @@ function cleanTextForCopy(text: string): string {
 
 export function CopyTextButton({ children, copyText, className }: CopyTextButtonProps) {
   const [copied, setCopied] = useState(false);
+  const textRef = useRef<HTMLSpanElement>(null);
 
   const handleCopyAsync = async () => {
-    const textToCopy = copyText ?? cleanTextForCopy(extractTextFromChildren(children));
+    const textToCopy = copyText ?? cleanTextForCopy(textRef.current?.textContent ?? '');
 
     try {
       await navigator.clipboard.writeText(textToCopy);
@@ -59,7 +44,7 @@ export function CopyTextButton({ children, copyText, className }: CopyTextButton
 
   return (
     <span className={mergeClasses('group inline-flex items-center gap-1', className)}>
-      <span>{children}</span>
+      <span ref={textRef}>{children}</span>
       <button
         type="button"
         onClick={handleCopyAsync}
