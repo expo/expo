@@ -1,22 +1,23 @@
 import { Calendar, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
+import { ModifiableEventProperties, ModifableReminderProperties, ModifableCalendarProperties } from './ExpoCalendar.types';
 export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
 }
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
-    update(details: Partial<Event>, options?: RecurringEventOptions): void;
+    update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): void;
     delete(options?: RecurringEventOptions): void;
 }
 export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
-    update(details: Partial<Reminder>): void;
+    update(details: Partial<ModifableReminderProperties>): void;
 }
 export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details: Partial<Event>): ExpoCalendarEvent;
     createReminder(details: Partial<Reminder>): ExpoCalendarReminder;
     listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[];
     listReminders(startDate: Date, endDate: Date, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
-    update(details: Partial<Calendar>): void;
+    update(details: Partial<ModifableCalendarProperties>): void;
 }
 export declare function getDefaultCalendarNext(): ExpoCalendar;
 export declare function getCalendarsNext(type?: EntityTypes): ExpoCalendar[];

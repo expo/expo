@@ -73,19 +73,6 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     }
     update(details) {
         const color = details.color ? processColor(details.color) : undefined;
-        if (Platform.OS === 'android') {
-            // TODO: Implement
-            throw new Error('Not implemented yet');
-        }
-        else {
-            if (details.hasOwnProperty('source') ||
-                details.hasOwnProperty('type') ||
-                details.hasOwnProperty('entityType') ||
-                details.hasOwnProperty('allowsModifications') ||
-                details.hasOwnProperty('allowedAvailabilities')) {
-                console.warn('ExpoCalendar.update was called with one or more read-only properties, which will not be updated');
-            }
-        }
         const newDetails = { ...details, color: color || undefined };
         super.update(newDetails);
     }

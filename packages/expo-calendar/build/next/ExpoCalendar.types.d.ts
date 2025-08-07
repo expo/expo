@@ -1,6 +1,9 @@
 import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, Attendee, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod } from '../Calendar';
 type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
+export type ModifableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
+export type ModifiableEventProperties = Pick<Event, 'title' | 'location' | 'notes' | 'recurrenceRule' | 'availability' | 'startDate' | 'endDate' | 'allDay'>;
+export type ModifableReminderProperties = Pick<Reminder, 'title' | 'location' | 'notes' | 'recurrenceRule' | 'startDate' | 'dueDate' | 'completed' | 'completionDate'>;
 export declare class ExpoCalendar {
     constructor(id: string);
     /**
@@ -122,7 +125,7 @@ export declare class ExpoCalendar {
      * explicitly set it to `null` in `details`.
      * @param details A map of properties to be updated.
      */
-    update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
+    update(details: Partial<ModifableCalendarProperties>): void;
     /**
      * Deletes the calendar.
      */
@@ -286,7 +289,7 @@ export declare class ExpoCalendarEvent {
      * @param details A map of properties to be updated.
      * @param recurringEventOptions A map of options for recurring events.
      */
-    update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions, nullableDetailsFields?: (keyof Event)[]): void;
+    update(details: Partial<ModifiableEventProperties>, recurringEventOptions?: RecurringEventOptions, nullableFields?: (keyof ModifiableEventProperties)[]): void;
     /**
      * Deletes the event.
      * @param recurringEventOptions A map of options for recurring events.
@@ -312,7 +315,7 @@ export declare class ExpoCalendarReminder {
     dueDate?: string | Date;
     completed?: boolean;
     completionDate?: string | Date;
-    update(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>, nullableFields?: string[]): void;
+    update(details: Partial<ModifableReminderProperties>, nullableFields?: (keyof ModifableReminderProperties)[]): void;
     /**
      * Creates an attendee.
      * @platform android

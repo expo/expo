@@ -11,6 +11,11 @@ import {
 } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
+import {
+  ModifiableEventProperties,
+  ModifableReminderProperties,
+  ModifableCalendarProperties,
+} from './ExpoCalendar.types';
 
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
 
@@ -23,7 +28,10 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     return super.getAttendees(stringifyDateValues(recurringEventOptions));
   }
 
-  override update(details: Partial<Event>, options: RecurringEventOptions = {}): void {
+  override update(
+    details: Partial<ModifiableEventProperties>,
+    options: RecurringEventOptions = {}
+  ): void {
     const nullableDetailsFields = getNullableDetailsFields(details);
     super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
   }
@@ -34,7 +42,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 }
 
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
-  override update(details: Partial<Reminder>): void {
+  override update(details: Partial<ModifableReminderProperties>): void {
     const nullableDetailsFields = getNullableDetailsFields(details);
     super.update(stringifyDateValues(details), nullableDetailsFields);
   }
@@ -106,26 +114,8 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     });
   }
 
-  override update(details: Partial<Calendar>): void {
+  override update(details: Partial<ModifableCalendarProperties>): void {
     const color = details.color ? processColor(details.color) : undefined;
-
-    if (Platform.OS === 'android') {
-      // TODO: Implement
-      throw new Error('Not implemented yet');
-    } else {
-      if (
-        details.hasOwnProperty('source') ||
-        details.hasOwnProperty('type') ||
-        details.hasOwnProperty('entityType') ||
-        details.hasOwnProperty('allowsModifications') ||
-        details.hasOwnProperty('allowedAvailabilities')
-      ) {
-        console.warn(
-          'ExpoCalendar.update was called with one or more read-only properties, which will not be updated'
-        );
-      }
-    }
-
     const newDetails = { ...details, color: color || undefined };
     super.update(newDetails);
   }
