@@ -1,4 +1,5 @@
 export const nonLinkableTypes = [
+  'ArrayBufferView',
   'B',
   'BufferSource',
   'CodedError',
@@ -124,6 +125,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   PureComponent: 'https://react.dev/reference/react/PureComponent',
+  ReadableStream: 'https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream',
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
@@ -193,6 +195,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/unversioned/sdk/router/#href-1',
     BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
+    PromptMethod: '/versions/unversioned/sdk/auth-session/#promptmethodoptions',
+    AuthSessionOpenOptions: '/versions/unversioned/sdk/webbrowser/#authsessionopenoptions',
   },
 };
 
