@@ -67,6 +67,7 @@ public class TestPackage implements ReactPackage {
         "cxxModuleCMakeListsModuleName": null,
         "cxxModuleCMakeListsPath": null,
         "cxxModuleHeaderName": null,
+        "isPureCxxDependency": false,
         "packageImportPath": "import com.test.TestPackage;",
         "packageInstance": "new TestPackage()",
         "sourceDir": "/app/node_modules/react-native-test/android",
