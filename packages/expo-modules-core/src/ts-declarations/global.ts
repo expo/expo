@@ -62,12 +62,14 @@ declare global {
      * @platform android
      * @platform ios
      */
-    export const expoModulesCoreVersion: undefined | {
-      version: string;
-      major: number;
-      minor: number;
-      patch: number;
-    };
+    export const expoModulesCoreVersion:
+      | undefined
+      | {
+          version: string;
+          major: number;
+          minor: number;
+          patch: number;
+        };
 
     /**
      * The path to the cache directory
