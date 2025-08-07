@@ -14,9 +14,9 @@ import * as React from 'react';
 
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
-import { INTERNAL_SLOT_NAME } from '../constants';
 import { ServerContext } from '../global-state/serverLocationContext';
 import { useExpoRouterStore } from '../global-state/storeContext';
+import { getRootStackRouteNames } from '../global-state/utils';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -151,7 +151,7 @@ export function useLinking(
       // Instead of using the rootState, we use INTERNAL_SLOT_NAME, which is the only route in the root navigator in Expo Router
       // const navigation = ref.current;
       // const rootState = navigation?.getRootState();
-      const routeNames = [INTERNAL_SLOT_NAME];
+      const routeNames = getRootStackRouteNames();
       // END FORK
 
       // Make sure that the routes in the state exist in the root navigator

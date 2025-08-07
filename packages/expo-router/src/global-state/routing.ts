@@ -363,7 +363,7 @@ export function findDivergentState(_actionState: ResultState, _navigationState: 
   let actionStateRoute: PartialRoute<any> | undefined;
   while (actionState && navigationState) {
     actionStateRoute = actionState.routes[actionState.routes.length - 1];
-    const stateRoute = navigationState.routes[navigationState.index];
+    const stateRoute = navigationState.routes[navigationState.index ?? 0];
 
     const childState: PartialState<NavigationState> | undefined = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;

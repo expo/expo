@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Use `Networking` module and streaming to suppress warning for async bundles on native. ([#38587](https://github.com/expo/expo/pull/38587) by [@EvanBacon](https://github.com/EvanBacon))
+- Fork `react-native/Libraries/Utilities/PolyfillFunctions` to suppress warning. ([#38495](https://github.com/expo/expo/pull/38495) by [@EvanBacon](https://github.com/EvanBacon))
 - Change how FormData is parsed in expo/fetch. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))
 - Simplify expo-modules-core usage. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
 - Reexport `@expo/config/paths` paths as `expo/config/paths`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
@@ -24,6 +26,7 @@
 - [Android] Remove react-native 0.74 support files ([#38216](https://github.com/expo/expo/pull/38216) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 - Moved **src/devtools** code to the `@expo/devtools` package. ([#38438](https://github.com/expo/expo/pull/38438) by [@kudo](https://github.com/kudo))
+- Remove (newly added) peer dependencies on `react-refresh` and `metro-runtime` ([#38562](https://github.com/expo/expo/pull/38562) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

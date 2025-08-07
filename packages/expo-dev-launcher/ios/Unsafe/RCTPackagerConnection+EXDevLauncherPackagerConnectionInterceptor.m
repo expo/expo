@@ -5,6 +5,7 @@
  */
 
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
+#import <EXDevLauncher/EXDevLauncherController.h>
 
 #import <React/RCTReconnectingWebSocket.h>
 
@@ -54,18 +55,31 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
     return; // already stopped
   }
 
+  [self setValue:@NO forKey:@"_socketConnected"];
+
   oldSocket.delegate = nil;
   [oldSocket stop];
   
   RCTReconnectingWebSocket *newSocket = createSocketForURL(url);
   newSocket.delegate = (id<RCTReconnectingWebSocketDelegate>)self;
   [newSocket start];
-  
-  @try {
-    // _serverHostForSocket was removed in RN 0.64
-    [self setValue:url.absoluteString forKey:@"_serverHostForSocket"];
-  } @catch(id exception) {}
+
   [self setValue:newSocket forKey:@"_socket"];
+
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"RCTTriggerReloadCommandNotification"
+                                                      object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification *_Nonnull __unused note) {
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSURL *bundleUrl = [EXDevLauncherController sharedInstance].sourceUrl;
+        if (bundleUrl && ![bundleUrl.scheme isEqualToString:@"file"]) {
+          [self setSocketConnectionURL:bundleUrl];
+        }
+      });
+    }];
+  });
 }
 
 @end

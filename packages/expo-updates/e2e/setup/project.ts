@@ -36,6 +36,8 @@ function getExpoDependencyChunks({
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],
+    ['unimodules-app-loader'],
+    ['expo-task-manager'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
@@ -61,11 +63,16 @@ function getExpoDependencyChunks({
     ...(includeTV
       ? [
           [
+            'expo-app-integrity',
             'expo-audio',
             'expo-av',
+            'expo-background-task',
             'expo-blur',
             'expo-crypto',
             'expo-image',
+            'expo-image-loader',
+            'expo-image-manipulator',
+            'expo-insights',
             'expo-linear-gradient',
             'expo-linking',
             'expo-localization',
@@ -77,6 +84,7 @@ function getExpoDependencyChunks({
             'expo-system-ui',
             'expo-ui',
             'expo-video',
+            'expo-video-thumbnails',
           ],
         ]
       : []),
@@ -309,6 +317,7 @@ async function preparePackageJson(
   const extraScripts = configureE2E
     ? {
         start: 'expo start --private-key-path ./keys/private-key.pem',
+        'ios:pod-install-old-arch': 'npx pod-install',
         'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':

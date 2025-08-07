@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- [Android] Migrate to coroutines. ([#38193](https://github.com/expo/expo/pull/38193) by [@Wenszel](http://github.com/wenszel))
+
 ## 17.1.7 - 2025-06-04
 
 ### 🐛 Bug fixes

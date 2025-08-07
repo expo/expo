@@ -11,6 +11,7 @@ const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const NoSSR_1 = require("./NoSSR");
 const Pressable_1 = require("./Pressable");
 const useSitemap_1 = require("./useSitemap");
 const Link_1 = require("../link/Link");
@@ -24,7 +25,6 @@ function getNavOptions() {
         headerTitleStyle: {
             color: 'white',
         },
-        headerShown: true,
         headerTintColor: 'white',
         headerLargeTitleStyle: {
             color: 'white',
@@ -50,11 +50,18 @@ function getNavOptions() {
     };
 }
 function Sitemap() {
+    // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
+    // we need to ensure that the Sitemap component is not rendered on the server.
+    return (<NoSSR_1.NoSSR>
+      <SitemapInner />
+    </NoSSR_1.NoSSR>);
+}
+function SitemapInner() {
     const sitemap = (0, useSitemap_1.useSitemap)();
     const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
-    return (<react_native_1.View style={styles.container}>
+    return (<react_native_1.View style={styles.container} testID="expo-router-sitemap">
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
-      <react_native_1.ScrollView contentContainerStyle={styles.scroll} automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
+      <react_native_1.ScrollView contentContainerStyle={styles.scroll} contentInsetAdjustmentBehavior="automatic">
         {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
             <SitemapItem node={child}/>
           </react_native_1.View>))}
@@ -72,25 +79,26 @@ function SitemapItem({ node, level = 0 }) {
 }
 function LayoutSitemapItem({ node, level, info }) {
     const [isCollapsed, setIsCollapsed] = react_1.default.useState(true);
-    return (<react_native_1.View style={styles.itemInnerContainer}>
+    return (<>
       <SitemapItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} rightIcon={<ArrowIcon rotation={isCollapsed ? 0 : 180}/>} filename={node.filename} level={level} info={info} onPress={() => setIsCollapsed((prev) => !prev)}/>
       {!isCollapsed &&
             node.children.map((child) => (<SitemapItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
-    </react_native_1.View>);
+    </>);
 }
 function StandardSitemapItem({ node, info, level }) {
-    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} asChild replace>
+    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} asChild 
+    // Ensure we replace the history so you can't go back to this page.
+    replace>
       <SitemapItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
     </Link_1.Link>);
 }
 function SitemapItemPressable({ style, leftIcon, rightIcon, filename, level, info, ...pressableProps }) {
     return (<Pressable_1.Pressable {...pressableProps}>
       {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
-                styles.itemInnerContainer,
                 styles.itemPressable,
                 {
                     paddingLeft: INDENT + level * INDENT,
-                    backgroundColor: hovered ? '#202425' : '#151718',
+                    backgroundColor: hovered ? '#202425' : 'transparent',
                 },
                 pressed && { backgroundColor: '#26292b' },
                 style,
@@ -129,46 +137,33 @@ function ArrowIcon({ rotation = 0 }) {
 }
 function SystemInfo() {
     const getHermesVersion = () => {
-        if (!global.HermesInternal) {
-            return null;
+        if (global.HermesInternal) {
+            const runtimeProps = global.HermesInternal.getRuntimeProperties?.();
+            if (runtimeProps) {
+                return runtimeProps['OSS Release Version'] || 'Unknown';
+            }
         }
-        const HERMES_RUNTIME = global.HermesInternal?.getRuntimeProperties?.() ?? {};
-        const HERMES_VERSION = HERMES_RUNTIME['OSS Release Version'];
-        const isStaticHermes = HERMES_RUNTIME['Static Hermes'];
-        if (!HERMES_RUNTIME) {
-            return null;
-        }
-        if (isStaticHermes) {
-            return `${HERMES_VERSION} (shermes)`;
-        }
-        return HERMES_VERSION;
+        return null;
     };
     const locationOrigin = window.location.origin;
     const expoSdkVersion = expo_constants_1.default.expoConfig?.sdkVersion || 'Unknown';
     const hermesVersion = getHermesVersion();
-    return (<react_native_1.View testID="sitemap-system-info" style={{
-            gap: 8,
-            marginTop: 16,
-        }}>
+    return (<react_native_1.View testID="sitemap-system-info" style={styles.systemInfoContainer}>
       <react_native_1.Text style={styles.systemInfoTitle}>System Information</react_native_1.Text>
-      <react_native_1.View style={styles.systemInfoContainer}>
-        <FormText right={process.env.NODE_ENV}>Mode</FormText>
-        <FormText right={expoSdkVersion}>Expo SDK</FormText>
-        {hermesVersion && <FormText right={hermesVersion}>Hermes version</FormText>}
-        {locationOrigin && <FormText right={locationOrigin}>Location origin</FormText>}
+      {locationOrigin && (<react_native_1.View style={styles.systemInfoItem}>
+          <react_native_1.Text style={styles.systemInfoLabel}>Location origin:</react_native_1.Text>
+          <react_native_1.Text style={styles.systemInfoValue}>{locationOrigin}</react_native_1.Text>
+        </react_native_1.View>)}
+      <react_native_1.View style={styles.systemInfoItem}>
+        <react_native_1.Text style={styles.systemInfoLabel}>Expo SDK version:</react_native_1.Text>
+        <react_native_1.Text style={styles.systemInfoValue}>{expoSdkVersion}</react_native_1.Text>
       </react_native_1.View>
-    </react_native_1.View>);
-}
-function FormText({ children, right }) {
-    return (<react_native_1.View style={styles.systemInfoItem}>
-      <react_native_1.Text style={styles.systemInfoLabel} numberOfLines={1} ellipsizeMode="tail">
-        {children}
-      </react_native_1.Text>
-      <react_native_1.View style={{ flex: 1 }}/>
-
-      <react_native_1.Text selectable style={[styles.systemInfoValue, styles.code]} numberOfLines={1} ellipsizeMode="tail">
-        {right}
-      </react_native_1.Text>
+      {hermesVersion && (<react_native_1.View style={styles.systemInfoItem}>
+          <react_native_1.Text style={styles.systemInfoLabel}>Hermes version:</react_native_1.Text>
+          <react_native_1.Text style={styles.systemInfoValue} numberOfLines={1} ellipsizeMode="tail">
+            {hermesVersion}
+          </react_native_1.Text>
+        </react_native_1.View>)}
     </react_native_1.View>);
 }
 const styles = react_native_1.StyleSheet.create({
@@ -203,7 +198,6 @@ const styles = react_native_1.StyleSheet.create({
         fontWeight: 'bold',
     },
     scroll: {
-        gap: 12,
         paddingHorizontal: '5%',
         paddingVertical: 16,
         ...react_native_1.Platform.select({
@@ -226,13 +220,8 @@ const styles = react_native_1.StyleSheet.create({
         borderColor: '#313538',
         backgroundColor: '#151718',
         borderRadius: 12,
-        borderCurve: 'continuous',
-    },
-    itemInnerContainer: {
-        backgroundColor: '#151718',
-        borderRadius: 12,
-        borderCurve: 'continuous',
-        gap: 12,
+        marginBottom: 12,
+        overflow: 'hidden',
     },
     itemPressable: {
         paddingHorizontal: INDENT,
@@ -263,43 +252,32 @@ const styles = react_native_1.StyleSheet.create({
         borderColor: '#313538',
         backgroundColor: '#151718',
         borderRadius: 12,
-        gap: 8,
-        borderCurve: 'continuous',
         padding: INDENT,
+        marginTop: 24,
     },
     systemInfoTitle: {
         color: 'white',
         fontSize: 18,
         fontWeight: '600',
         marginBottom: 12,
-        paddingHorizontal: INDENT,
     },
     systemInfoItem: {
         flexDirection: 'row',
-        gap: 8,
+        justifyContent: 'space-between',
         alignItems: 'center',
-        flexWrap: 'wrap',
+        paddingVertical: 8,
     },
     systemInfoLabel: {
         color: 'white',
         fontSize: 16,
-        lineHeight: 24,
+        opacity: 0.7,
     },
     systemInfoValue: {
         color: 'white',
         fontSize: 16,
-        opacity: 0.7,
-        flexShrink: 1,
-        letterSpacing: 0.5,
-    },
-    code: {
-        fontVariant: ['tabular-nums'],
-        fontFamily: react_native_1.Platform.select({
-            default: `SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`,
-            ios: 'ui-monospace',
-            android: 'monospace',
-        }),
-        fontWeight: '500',
+        flex: 1,
+        textAlign: 'right',
+        marginLeft: 12,
     },
 });
 //# sourceMappingURL=Sitemap.js.map

@@ -66,6 +66,7 @@ async function startStaticServerAsync(dist: string, options: Options) {
     send(req, filePath, {
       root: dist,
       index: 'index.html',
+      extensions: ['html'],
     })
       .on('error', (err: any) => {
         if (err.status === 404) {

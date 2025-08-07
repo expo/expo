@@ -5,7 +5,7 @@ import { Button, Platform, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
-import { renderRouter, screen } from '../../testing-library';
+import { renderRouter, screen, waitFor } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
 import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';
@@ -25,15 +25,9 @@ jest.mock('../preview/native', () => {
   const handlerMap: Record<string, Function | undefined> = {};
   return {
     NativeLinkPreview: jest.fn(
-      ({
-        children,
-        onWillPreviewOpen,
-        onPreviewTapped,
-        onDidPreviewOpen,
-      }: NativeLinkPreviewProps) => {
+      ({ children, onWillPreviewOpen, onPreviewTapped }: NativeLinkPreviewProps) => {
         handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen();
         handlerMap['link-onPreviewTapped'] = onPreviewTapped;
-        handlerMap['link-onDidPreviewOpen'] = onDidPreviewOpen;
         return <View testID="link-preview-native-view">{children}</View>;
       }
     ),
@@ -282,7 +276,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -294,7 +288,7 @@ describe('singular', () => {
             index: 3,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -345,7 +339,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -357,7 +351,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -413,7 +407,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -425,7 +419,7 @@ test('can dynamically route using singular function', () => {
           index: 4,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -487,7 +481,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -499,7 +493,7 @@ test('can dynamically route using singular function', () => {
           index: 3,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -559,7 +553,7 @@ describe('prefetch', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -575,7 +569,7 @@ describe('prefetch', () => {
                 params: {},
               },
             ],
-            routeNames: ['index', 'test', '_sitemap', '+not-found'],
+            routeNames: ['index', 'test'],
             routes: [
               {
                 key: expect.any(String),
@@ -959,7 +953,7 @@ describe('Preview', () => {
     };
   });
   describe('multiple preloaded paths with the same name', () => {
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -993,15 +987,12 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByTestId('index')));
       act(() => fireEvent.press(screen.getByText('Preload A and C')));
       act(() => emitters['link-onWillPreviewOpen']());
-      act(() => emitters['link-onDidPreviewOpen']());
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen and onDidPreviewOpen
-      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
-      expect(
-        NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB-[-\w]+/);
+      // Initial render, onWillPreviewOpen, setTimeout from prefetch
+      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
+      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
     });
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1039,11 +1030,10 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByTestId('index')));
       act(() => fireEvent.press(screen.getByText('Preload Other Routes')));
       act(() => emitters['link-onWillPreviewOpen']());
-      act(() => emitters['link-onDidPreviewOpen']());
 
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen and onDidPreviewOpen
-      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
+      // Initial render, onWillPreviewOpen, setTimeout from prefetch
+      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(
         NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
       ).toMatch(/slotB\/\[xyz\]-[-\w]+/);

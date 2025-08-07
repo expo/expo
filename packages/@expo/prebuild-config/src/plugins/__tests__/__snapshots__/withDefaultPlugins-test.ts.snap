@@ -673,6 +673,26 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
+            "value": "Use this property to enable edge-to-edge display support.",
+          },
+          {
+            "type": "comment",
+            "value": "This allows your app to draw behind system bars for an immersive UI.",
+          },
+          {
+            "type": "comment",
+            "value": "Note: Only works with ReactActivity and should not be used with custom Activity.",
+          },
+          {
+            "key": "edgeToEdgeEnabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
             "value": "Enable GIF support in React Native images (~200 B increase)",
           },
           {

@@ -329,16 +329,8 @@ export function getDefaultConfig(
           return [];
         }
 
-        if (platform === 'web') {
-          return [
-            // Ensure that the error-guard polyfill is included in the web polyfills to
-            // make metro-runtime work correctly.
-            require.resolve('@react-native/js-polyfills/error-guard'),
-          ];
-        }
-
         // Native behavior.
-        return require('@react-native/js-polyfills')();
+        return require(path.join(reactNativePath, 'rn-get-polyfills'))();
       },
     },
     server: {

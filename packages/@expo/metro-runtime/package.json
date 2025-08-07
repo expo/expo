@@ -34,6 +34,22 @@
     "url": "https://github.com/expo/expo.git"
   },
   "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-dom": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "anser": "^1.4.9",
+    "stacktrace-parser": "^0.1.10",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "react-dom": "19.1.0"
   }
 }
