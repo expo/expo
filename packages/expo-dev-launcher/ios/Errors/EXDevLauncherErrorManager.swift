@@ -26,7 +26,7 @@ public class EXDevLauncherErrorManager: NSObject {
 
     DispatchQueue.main.async { [weak self] in
       guard let window = self?.controller?.currentWindow(),
-        let currentRootVC = window.rootViewController else {
+        let rootVC = window.rootViewController else {
         return
       }
 
@@ -50,20 +50,22 @@ public class EXDevLauncherErrorManager: NSObject {
       let hostingController = UIHostingController(rootView: errorView)
       self?.currentErrorViewController = hostingController
 
-      currentRootVC.addChild(hostingController)
-      hostingController.view.frame = currentRootVC.view.bounds
+      rootVC.addChild(hostingController)
+      hostingController.view.frame = rootVC.view.bounds
       hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-      currentRootVC.view.addSubview(hostingController.view)
-      hostingController.didMove(toParent: currentRootVC)
+      rootVC.view.addSubview(hostingController.view)
+      hostingController.didMove(toParent: rootVC)
     }
   }
   
   private func dismissCurrentErrorView() {
-    guard let errorVC = currentErrorViewController else { return }
+    guard let vc = currentErrorViewController else {
+      return
+    }
     
-    errorVC.willMove(toParent: nil)
-    errorVC.view.removeFromSuperview()
-    errorVC.removeFromParent()
+    vc.willMove(toParent: nil)
+    vc.view.removeFromSuperview()
+    vc.removeFromParent()
     currentErrorViewController = nil
   }
 }

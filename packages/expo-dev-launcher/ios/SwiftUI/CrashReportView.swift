@@ -13,10 +13,10 @@ struct CrashReportView: View {
   var body: some View {
     VStack(spacing: 0) {
       VStack(spacing: 16) {
-          clipboardButton
-          occuredSection
-          reasonSection
-          traceSection
+        clipboardButton
+        occuredSection
+        reasonSection
+        traceSection
       }
       .padding()
 

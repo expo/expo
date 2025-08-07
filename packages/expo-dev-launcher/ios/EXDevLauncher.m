@@ -19,7 +19,6 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-
 - (NSDictionary *)constantsToExport
 {
   NSDictionary *rawManifestJSON = [EXDevLauncherController.sharedInstance appManifest].rawManifestJSON;
