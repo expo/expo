@@ -40,7 +40,7 @@ export const fastJoin: (from: string, append: string) => string =
 
 export const maybeRealpath = async (target: string): Promise<string | null> => {
   try {
-    return fs.realpathSync(target);
+    return await fs.promises.realpath(target);
   } catch {
     return null;
   }

@@ -11,7 +11,7 @@ import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 import {
   createReactNativeConfigAsync,
   resolveAppProjectConfigAsync,
-  _resolveTurboModule,
+  _resolveReactNativeModule,
 } from '../reactNativeConfig';
 import type {
   RNConfigReactNativeLibraryConfig,
@@ -259,7 +259,7 @@ describe(resolveAppProjectConfigAsync, () => {
   });
 });
 
-describe(_resolveTurboModule, () => {
+describe(_resolveReactNativeModule, () => {
   const mockLoadReactNativeConfigAsync = loadConfigAsync as jest.MockedFunction<
     typeof loadConfigAsync
   >;
@@ -275,7 +275,7 @@ describe(_resolveTurboModule, () => {
       scriptPhases: [],
     });
 
-    const result = await _resolveTurboModule(
+    const result = await _resolveReactNativeModule(
       {
         name: 'react-native-test',
         version: '',
@@ -304,7 +304,7 @@ describe(_resolveTurboModule, () => {
   });
 
   it('should call the platform resolver', async () => {
-    await _resolveTurboModule(
+    await _resolveReactNativeModule(
       {
         name: 'react-native-test',
         version: '',
@@ -335,7 +335,7 @@ describe(_resolveTurboModule, () => {
     };
     mockLoadReactNativeConfigAsync.mockResolvedValueOnce(libraryConfig);
 
-    await _resolveTurboModule(
+    await _resolveReactNativeModule(
       {
         name: 'react-native-test',
         version: '',
@@ -378,7 +378,7 @@ describe(_resolveTurboModule, () => {
     };
     mockLoadReactNativeConfigAsync.mockResolvedValueOnce(libraryConfig);
 
-    await _resolveTurboModule(
+    await _resolveReactNativeModule(
       {
         name: 'react-native-test',
         version: '',
@@ -398,7 +398,7 @@ describe(_resolveTurboModule, () => {
   });
 
   it(`should return null for the react-native because it's a platform package`, async () => {
-    const result = await _resolveTurboModule(
+    const result = await _resolveReactNativeModule(
       {
         name: 'react-native',
         version: '',

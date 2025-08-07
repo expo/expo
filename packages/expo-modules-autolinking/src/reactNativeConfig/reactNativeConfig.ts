@@ -29,7 +29,7 @@ import {
   scanDependenciesRecursively,
 } from '../dependencies';
 
-export async function _resolveTurboModule(
+export async function _resolveReactNativeModule(
   resolution: DependencyResolution,
   projectConfig: RNConfigReactNativeProjectConfig | null,
   platform: SupportedPlatform
@@ -100,7 +100,7 @@ export async function createReactNativeConfigAsync(
   );
 
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
-    _resolveTurboModule(resolution, projectConfig, options.platform)
+    _resolveReactNativeModule(resolution, projectConfig, options.platform)
   );
 
   return {
