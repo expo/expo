@@ -16,7 +16,7 @@ export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
   reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined
 ): Promise<RNConfigDependencyAndroid | null> {
-  if (reactNativeConfig == null) {
+  if (reactNativeConfig === null) {
     // Skip autolinking for this package.
     return null;
   }
