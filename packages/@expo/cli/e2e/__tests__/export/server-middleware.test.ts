@@ -36,6 +36,7 @@ describe('exports middleware', () => {
 
   describe('server', () => {
     const server = createExpoServe({
+      verbose: true,
       cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
