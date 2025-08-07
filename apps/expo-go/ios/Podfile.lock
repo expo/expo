@@ -3317,7 +3317,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNGestureHandler (2.26.0):
+  - RNGestureHandler (2.28.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -4398,7 +4398,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: b58e9627004f47043897eeae830c3ef023678f3b
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: b7bb3bbf7797b50c3be0abbd15a0a347e1bf4746
+  hermes-engine: 1631c0d1b00943a54db6d3003d924621239e506d
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4489,7 +4489,7 @@ SPEC CHECKSUMS:
   RNCPicker: 6da395ee9db8d67a38c6102d4128b5a0b9ec0e21
   RNDateTimePicker: 5e3503a3a82a9710b0269fa6617e27f7896509bd
   RNFlashList: 3b0c6a34ba86318f897ff55ff7482b7e8ae18996
-  RNGestureHandler: f47ece8192844e594954cd8477b15a0e1a9fd874
+  RNGestureHandler: 4f7cc97a71d4fe0fcba38c94acdd969f5f17c91c
   RNReanimated: bc92d92315bde5372395f9f9b96e44bde14ea612
   RNScreens: fc90db67db667de4fa6caf1355d679e04fe4c30f
   RNSVG: 8d87cff016edf1b6ca409ed39804101836d75e90
@@ -4512,6 +4512,6 @@ SPEC CHECKSUMS:
   Yoga: 72ab8318e9f1910fbdd236b045eb5455c8415d92
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 6c9d0ce09e0896f726dda0aeac28e43823a06e04
+PODFILE CHECKSUM: 8c02d6375ca9e94808af454e704b44d0ccf2c0af
 
 COCOAPODS: 1.16.2

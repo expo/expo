@@ -3451,7 +3451,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNGestureHandler (2.26.0):
+  - RNGestureHandler (2.28.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -4435,6 +4435,7 @@ SPEC CHECKSUMS:
   ExpoBackgroundFetch: 76c48b3cd9a4ee46e5267614a30fac804de6f33e
   ExpoBackgroundTask: 63e54818a257ad36aeff7e04ef67598e68c18fbb
   ExpoBattery: 6229d981d12dffb00c9e8e48181162729febb541
+  ExpoBlob: b1f107944873fb5803aab930b44bac388373ca32
   ExpoBlur: 5d95f7ca771a0f3b9618466525dd68e46dc95f3a
   ExpoBrightness: 05e750736f8886dcf235212b0caf85b0f605fc88
   ExpoCalendar: 660542dc1c5ef98f46bedcc8745aa707df5d501a
@@ -4580,7 +4581,7 @@ SPEC CHECKSUMS:
   RNCPicker: 6da395ee9db8d67a38c6102d4128b5a0b9ec0e21
   RNDateTimePicker: 5e3503a3a82a9710b0269fa6617e27f7896509bd
   RNFlashList: 3b0c6a34ba86318f897ff55ff7482b7e8ae18996
-  RNGestureHandler: f47ece8192844e594954cd8477b15a0e1a9fd874
+  RNGestureHandler: 4f7cc97a71d4fe0fcba38c94acdd969f5f17c91c
   RNReanimated: bc92d92315bde5372395f9f9b96e44bde14ea612
   RNScreens: fc90db67db667de4fa6caf1355d679e04fe4c30f
   RNSVG: 8d87cff016edf1b6ca409ed39804101836d75e90
