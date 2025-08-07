@@ -20,7 +20,7 @@ describe(resolveDependencyConfigImplIosAsync, () => {
     });
     const result = await resolveDependencyConfigImplIosAsync(
       { path: '/app/node_modules/react-native-test', version: '1.0.0' },
-      {},
+      {}
     );
     expect(result).toMatchInlineSnapshot(`
       {
@@ -72,7 +72,7 @@ describe(resolveDependencyConfigImplIosAsync, () => {
   it('should return null if no podspec found', async () => {
     const result = await resolveDependencyConfigImplIosAsync(
       { path: '/app/node_modules/react-native-test', version: '' },
-      {},
+      {}
     );
     expect(result).toBeNull();
   });
@@ -88,7 +88,7 @@ describe(resolveDependencyConfigImplIosAsync, () => {
     });
     const result = await resolveDependencyConfigImplIosAsync(
       { path: '/app/node_modules/react-native-maps', version: '' },
-      {},
+      {}
     );
     expect(result?.podspecPath).toBe(
       '/app/node_modules/react-native-maps/react-native-maps.podspec'

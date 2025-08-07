@@ -19,6 +19,12 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform) {
         ...libraryConfig?.dependency,
         ...projectConfig?.dependencies?.[resolution.name],
     };
+    if (!libraryConfig && Object.keys(reactNativeConfig).length === 0) {
+        // This means we have no config entries from the `projectConfig`
+        // and no `react-native.config.{js,ts}, which means, this isn't
+        // a React Native module
+        return null;
+    }
     if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
         // Package defines platforms would be a platform host package.
         // The rnc-cli will skip this package.

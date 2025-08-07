@@ -45,7 +45,8 @@ export async function _resolveReactNativeModule(
     // and no `react-native.config.{js,ts}, which means, this isn't
     // a React Native module
     return null;
-  } if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
+  }
+  if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
     return null;

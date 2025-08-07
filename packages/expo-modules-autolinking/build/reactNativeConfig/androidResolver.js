@@ -15,7 +15,7 @@ const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 const fileUtils_1 = require("../fileUtils");
 async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeConfig) {
-    if (reactNativeConfig == null) {
+    if (reactNativeConfig === null) {
         // Skip autolinking for this package.
         return null;
     }

@@ -7,7 +7,7 @@ exports.resolveDependencyConfigImplIosAsync = resolveDependencyConfigImplIosAsyn
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
 async function resolveDependencyConfigImplIosAsync(resolution, reactNativeConfig) {
-    if (reactNativeConfig == null) {
+    if (reactNativeConfig === null) {
         // Skip autolinking for this package.
         return null;
     }
