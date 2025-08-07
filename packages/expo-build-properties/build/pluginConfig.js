@@ -33,7 +33,6 @@ const schema = {
                 targetSdkVersion: { type: 'integer', nullable: true },
                 buildToolsVersion: { type: 'string', nullable: true },
                 kotlinVersion: { type: 'string', nullable: true },
-                enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
                 enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
                 enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
@@ -237,12 +236,16 @@ function maybeThrowInvalidVersions(config) {
  */
 function validateConfig(config) {
     const validate = new ajv_1.default({ allowUnionTypes: true }).compile(schema);
+    // handle deprecated enableProguardInReleaseBuilds
+    if (config.android?.enableProguardInReleaseBuilds !== undefined &&
+        config.android?.enableMinifyInReleaseBuilds === undefined) {
+        config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
+    }
     if (!validate(config)) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }
     maybeThrowInvalidVersions(config);
     if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&
-        config.android?.enableProguardInReleaseBuilds !== true &&
         config.android?.enableMinifyInReleaseBuilds !== true) {
         throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.');
     }

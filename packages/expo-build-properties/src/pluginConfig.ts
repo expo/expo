@@ -66,17 +66,12 @@ export interface PluginConfigTypeAndroid {
    */
   kotlinVersion?: string;
   /**
-   * Enable [Proguard or R8](https://developer.android.com/studio/build/shrink-code) in release builds to obfuscate Java code and reduce app size.
-   * @deprecated Use `enableMinifyInReleaseBuilds` instead.
-   */
-  enableProguardInReleaseBuilds?: boolean;
-  /**
    * Enable [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) in release builds to obfuscate Java code and reduce app size.
    */
   enableMinifyInReleaseBuilds?: boolean;
   /**
    * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
-   * This property should be used in combination with `enableProguardInReleaseBuilds`.
+   * This property should be used in combination with `enableMinifyInReleaseBuilds`.
    */
   enableShrinkResourcesInReleaseBuilds?: boolean;
   /**
@@ -589,7 +584,6 @@ const schema: JSONSchemaType<PluginConfigType> = {
         buildToolsVersion: { type: 'string', nullable: true },
         kotlinVersion: { type: 'string', nullable: true },
 
-        enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
         enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
@@ -809,6 +803,13 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
  */
 export function validateConfig(config: any): PluginConfigType {
   const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
+  // handle deprecated enableProguardInReleaseBuilds
+  if (
+    config.android?.enableProguardInReleaseBuilds !== undefined &&
+    config.android?.enableMinifyInReleaseBuilds === undefined
+  ) {
+    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
+  }
   if (!validate(config)) {
     throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
   }
@@ -817,7 +818,6 @@ export function validateConfig(config: any): PluginConfigType {
 
   if (
     config.android?.enableShrinkResourcesInReleaseBuilds === true &&
-    config.android?.enableProguardInReleaseBuilds !== true &&
     config.android?.enableMinifyInReleaseBuilds !== true
   ) {
     throw new Error(
