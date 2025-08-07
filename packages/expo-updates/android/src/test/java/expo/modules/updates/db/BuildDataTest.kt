@@ -99,6 +99,7 @@ class BuildDataTest {
       launchWaitMs = 0,
       checkOnLaunch = CheckAutomaticallyConfiguration.ALWAYS,
       hasEmbeddedUpdate = hasEmbeddedUpdate,
+      originalHasEmbeddedUpdate = hasEmbeddedUpdate,
       requestHeaders = requestHeaders,
       originalEmbeddedRequestHeaders = requestHeaders,
       codeSigningCertificate = null,

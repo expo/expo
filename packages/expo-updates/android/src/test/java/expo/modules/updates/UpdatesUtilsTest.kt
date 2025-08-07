@@ -43,6 +43,7 @@ class UpdatesUtilsTest : TestCase() {
       launchWaitMs = 0,
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       hasEmbeddedUpdate = true,
+      originalHasEmbeddedUpdate = true,
       requestHeaders = mapOf(),
       originalEmbeddedRequestHeaders = mapOf(),
       codeSigningCertificate = null,
