@@ -1,6 +1,8 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <React/React-Core-umbrella.h>
+@class RCTComponent;
+
+#import <React/RCTComponentData.h>
 
 typedef void (^RCTPropBlockAlias)(id<RCTComponent> _Nonnull view, id _Nullable json);
 

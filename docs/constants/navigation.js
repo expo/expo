@@ -119,7 +119,9 @@ export const home = [
         makePage('config-plugins/introduction.mdx'),
         makePage('config-plugins/plugins.mdx'),
         makePage('config-plugins/mods.mdx'),
+        makePage('config-plugins/dangerous-mods.mdx'),
         makePage('config-plugins/development-and-debugging.mdx'),
+        makePage('config-plugins/patch-project.mdx'),
       ],
       { expanded: false }
     ),
@@ -187,6 +189,7 @@ export const general = [
         makePage('guides/local-app-development.mdx'),
         makePage('guides/local-app-production.mdx'),
         makePage('guides/cache-builds-remotely.mdx'),
+        makePage('guides/prebuilt-expo-modules.mdx'),
       ],
       {
         expanded: false,
@@ -363,6 +366,7 @@ export const general = [
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
         makePage('guides/using-push-notifications-services.mdx'),
+        makePage('guides/using-feature-flags.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
@@ -467,6 +471,12 @@ export const eas = [
       { expanded: false }
     ),
   ]),
+  makeSection('EAS Submit', [
+    makePage('submit/introduction.mdx'),
+    makePage('submit/android.mdx'),
+    makePage('submit/ios.mdx'),
+    makePage('submit/eas-json.mdx'),
+  ]),
   makeSection('EAS Hosting', [
     makePage('eas/hosting/introduction.mdx'),
     makePage('eas/hosting/get-started.mdx'),
@@ -480,12 +490,6 @@ export const eas = [
       makePage('eas/hosting/reference/responses-and-headers.mdx'),
       makePage('eas/hosting/reference/worker-runtime.mdx'),
     ]),
-  ]),
-  makeSection('EAS Submit', [
-    makePage('submit/introduction.mdx'),
-    makePage('submit/android.mdx'),
-    makePage('submit/ios.mdx'),
-    makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),

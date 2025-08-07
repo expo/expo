@@ -8,6 +8,7 @@ var _exportNames = {
   AndroidConfig: true,
   IOSConfig: true,
   XML: true,
+  CodeGenerator: true,
   History: true,
   WarningAggregator: true,
   Updates: true,
@@ -42,7 +43,7 @@ var _exportNames = {
   evalModsAsync: true,
   PluginError: true
 };
-exports.IOSConfig = exports.History = exports.BaseMods = exports.AndroidConfig = void 0;
+exports.IOSConfig = exports.History = exports.CodeGenerator = exports.BaseMods = exports.AndroidConfig = void 0;
 Object.defineProperty(exports, "PluginError", {
   enumerable: true,
   get: function () {
@@ -282,6 +283,19 @@ Object.defineProperty(exports, "XML", {
   enumerable: true,
   get: function () {
     return XML();
+  }
+});
+function CodeGenerator() {
+  const data = _interopRequireWildcard(require("./utils/generateCode"));
+  CodeGenerator = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "CodeGenerator", {
+  enumerable: true,
+  get: function () {
+    return CodeGenerator();
   }
 });
 function History() {

@@ -32,7 +32,7 @@ How to use these APIs:
 
 ## Security considerations
 
-The anti-bricking measures that can be disabled with `disableAntiBrickingMeasures` ensure that, no matter what update is published, you can always publish another update afterwards that will be applied. By disabling the anti-bricking measures, certain categories of attacks and exploits become possible, especially around in-house (malicious employee) publishing of malicious updates. For example, an employee with the ability to publish updates could publish a malicious update that changes the update URL and request headers to point to their own server, and take over installations of the app. This risk can be mitigated, but not eliminated, by using [code signing](/eas-update/code-signing/) for production updates and limiting access to the key.
+The anti-bricking measures that can be disabled with `disableAntiBrickingMeasures` ensure that, no matter what update is published, you can always publish another update afterwards that will be applied. By disabling the anti-bricking measures, certain categories of attacks and exploits become possible, especially around in-house (compromised employee) publishing of malicious updates. For example, an employee with the ability to publish updates could publish a malicious update that changes the update URL and request headers to point to their own server, and take over installations of the app. This risk can be mitigated, but not eliminated, by using [code signing](/eas-update/code-signing/) for production updates and limiting access to the key.
 
 <Collapsible summary="Did similar usage of CodePush carry the same risk?">
 

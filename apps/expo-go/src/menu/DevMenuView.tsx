@@ -3,7 +3,9 @@ import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIc
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
+import { Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { UpgradeWarning } from 'src/screens/HomeScreen/UpgradeWarning';
 
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
 import { DevMenuCloseButton } from './DevMenuCloseButton';
@@ -12,7 +14,6 @@ import * as DevMenu from './DevMenuModule';
 import { DevMenuOnboarding } from './DevMenuOnboarding';
 import { DevMenuServerInfo } from './DevMenuServerInfo';
 import { DevMenuTaskInfo } from './DevMenuTaskInfo';
-
 type Props = {
   task: { manifestUrl: string; manifestString: string };
   uuid: string;
@@ -28,6 +29,17 @@ const DEV_MENU_ORDER = [
   'dev-hmr',
   'dev-reload',
 ];
+
+function ThemedCustomIcon({ source }: { source: number }) {
+  const theme = useExpoTheme();
+  return (
+    <Image
+      source={source}
+      style={{ width: iconSize.regular, height: iconSize.regular }}
+      tintColor={theme.icon.default}
+    />
+  );
+}
 
 function ThemedMaterialIcon({
   name,
@@ -45,6 +57,7 @@ const MENU_ITEMS_ICON_MAPPINGS: {
   'dev-remote-debug': <ThemedMaterialIcon name="remote-desktop" />,
   'dev-perf-monitor': <ThemedMaterialIcon name="speedometer" />,
   'dev-inspector': <ThemedMaterialIcon name="border-style" />,
+  'dev-fab': <ThemedCustomIcon source={require('../assets/dev_menu_fab_icon.png')} />,
 };
 
 export function DevMenuView({ uuid, task }: Props) {
@@ -159,7 +172,11 @@ export function DevMenuView({ uuid, task }: Props) {
           <View style={{ paddingBottom: insets.bottom }}>
             <DevMenuServerInfo task={task} />
             <Divider />
-            <View padding="medium">
+            <View padding="medium" style={{ paddingBottom: 0 }}>
+              <UpgradeWarning collapsible />
+            </View>
+            <Divider />
+            <View padding="medium" style={{ paddingTop: 0 }}>
               <View bg="default" rounded="large">
                 <DevMenuItem
                   buttonKey="reload"

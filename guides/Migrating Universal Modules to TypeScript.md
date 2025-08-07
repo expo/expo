@@ -16,7 +16,7 @@ To optimize our libraries for _dead code elimination_ we should migrate our expo
 
 - import { FileSystem } from 'expo-file-system';
 
-+ import * as FileSystem from 'expo-file-system';
++ import * as FileSystem from 'expo-file-system/legacy';
 
 ```
 

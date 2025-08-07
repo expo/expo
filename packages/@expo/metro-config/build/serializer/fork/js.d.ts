@@ -8,8 +8,8 @@
  * Fork of the metro helper, but with bundle splitting support.
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/helpers/js.js#L1
  */
-import type { MixedOutput, Module } from 'metro';
-import type { JsOutput } from 'metro-transform-worker';
+import type { MixedOutput, Module } from '@expo/metro/metro/DeltaBundler';
+import type { JsOutput } from '@expo/metro/metro-transform-worker';
 export type Options = {
     createModuleId: (module: string) => number | string;
     dev: boolean;

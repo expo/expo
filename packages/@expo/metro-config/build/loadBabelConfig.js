@@ -37,7 +37,14 @@ exports.loadBabelConfig = (function () {
         }
         // Use the default preset for react-native if no babel config file is found
         if (!babelRC.extends) {
-            babelRC.presets = [require('babel-preset-expo')];
+            try {
+                babelRC.presets = [require('expo/internal/babel-preset')];
+            }
+            catch {
+                // TODO(@kitten): Temporary, since our E2E tests don't use monorepo
+                // packages consistently, including the `expo` package
+                babelRC.presets = [require('babel-preset-expo')];
+            }
         }
         return babelRC;
     };

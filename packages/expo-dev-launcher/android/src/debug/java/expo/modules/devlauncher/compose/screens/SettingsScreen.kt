@@ -1,5 +1,6 @@
 package expo.modules.devlauncher.compose.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -9,12 +10,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.SettingsAction
-import expo.modules.devlauncher.compose.SettingsState
+import expo.modules.devlauncher.compose.models.SettingsAction
+import expo.modules.devlauncher.compose.models.SettingsState
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.utils.copyToClipboard
 import expo.modules.devlauncher.services.ApplicationInfo
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -41,8 +43,8 @@ fun SettingsScreen(
 
     RoundedSurface {
       MenuSwitch(
-        "Show menu as launch",
-        icon = painterResource(R.drawable._expodevclientcomponents_assets_showmenuatlaunchicon),
+        "Show menu at launch",
+        icon = painterResource(R.drawable.show_menu_at_launch_icon),
         toggled = state.showMenuAtLaunch,
         onToggled = { onAction(SettingsAction.ToggleShowMenuAtLaunch(it)) }
       )
@@ -60,25 +62,51 @@ fun SettingsScreen(
       Column {
         MenuButton(
           "Shake device",
-          icon = painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_shakedeviceicon),
+          leftComponent = @Composable {
+            // This icon has two different versions file version, one for light and one for dark mode.
+            // That's why we use Image instead of DayNighIcon.
+            Image(
+              painter = painterResource(R.drawable.shake_device_icon),
+              contentDescription = "Shake device to open menu icon"
+            )
+          },
           onClick = {
             onAction(SettingsAction.ToggleShakeEnable(!state.isShakeEnable))
           },
-          rightIcon = if (state.isShakeEnable) {
-            painterResource(R.drawable._expodevclientcomponents_assets_checkicon)
+          rightComponent = @Composable {
+            if (state.isShakeEnable) {
+              DayNighIcon(
+                id = R.drawable.check_icon,
+                contentDescription = "Shake enabled icon"
+              )
+            } else {
+              null
+            }
+          }
+        )
+        Divider()
+        MenuButton(
+          "Three three-finger long press",
+          leftIcon = painterResource(R.drawable.three_finger_long_press_icon),
+          onClick = {
+            onAction(SettingsAction.ToggleThreeFingerLongPressEnable(!state.isThreeFingerLongPressEnable))
+          },
+          rightIcon = if (state.isThreeFingerLongPressEnable) {
+            painterResource(R.drawable.check_icon)
           } else {
             null
           }
         )
         Divider()
         MenuButton(
-          "Three three-finger long press",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_threefingerlongpressicon),
+          "Developer Action Button",
+          // TODO: @behenate Find a proper icon for this option
+          leftIcon = painterResource(R.drawable.dev_menu_fab_icon),
           onClick = {
-            onAction(SettingsAction.ToggleThreeFingerLongPressEnable(!state.isThreeFingerLongPressEnable))
+            onAction(SettingsAction.ToggleShowFabAtLaunch(!state.showFabAtLaunch))
           },
-          rightIcon = if (state.isThreeFingerLongPressEnable) {
-            painterResource(R.drawable._expodevclientcomponents_assets_checkicon)
+          rightIcon = if (state.showFabAtLaunch) {
+            painterResource(R.drawable.check_icon)
           } else {
             null
           }
@@ -115,7 +143,7 @@ fun SettingsScreen(
               text = state.applicationInfo?.toJson() ?: "No application info available"
             )
           },
-          icon = null,
+          leftIcon = null,
           labelTextColor = Theme.colors.text.link
         )
       }

@@ -1,7 +1,7 @@
 import type { NavigationState, PartialState } from '@react-navigation/native';
 
 import type { FocusedRouteState } from './router-store';
-import { INTERNAL_SLOT_NAME } from '../constants';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 
 export type UrlObject = {
@@ -48,7 +48,20 @@ type StrictFocusedRouteParams =
 export function getRouteInfoFromState(state?: StrictState): UrlObject {
   if (!state) return defaultRouteInfo;
 
-  let route = state.routes[0];
+  const index = 'index' in state ? (state.index ?? 0) : 0;
+  let route = state.routes[index];
+
+  if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
+    const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
+    return {
+      ...defaultRouteInfo,
+      unstable_globalHref: appendBaseUrl(path),
+      pathname: path,
+      pathnameWithParams: path,
+      segments: [route.name],
+    };
+  }
+
   if (route.name !== INTERNAL_SLOT_NAME) {
     throw new Error(`Expected the first route to be ${INTERNAL_SLOT_NAME}, but got ${route.name}`);
   }

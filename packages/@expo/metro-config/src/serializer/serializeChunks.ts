@@ -4,18 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import assert from 'assert';
-import {
-  AssetData,
-  MetroConfig,
+import type { MetroConfig, AssetData } from '@expo/metro/metro';
+import sourceMapStringMod from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+import type {
   MixedOutput,
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
-import { ConfigT, SerializerConfigT } from 'metro-config';
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import bundleToString from '@expo/metro/metro/lib/bundleToString';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
+import assert from 'assert';
 import path from 'path';
 
 import { stringToUUID } from './debugId';
@@ -34,7 +34,6 @@ import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
-
 type SerializerParameters = Parameters<Serializer>;
 
 type ChunkSettings = {
@@ -175,8 +174,11 @@ export async function graphToSerialAssetsAsync(
   const isExporting = true;
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
   const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+  const platform = getPlatformOption(graph, options) ?? 'web';
+  const isHosted =
+    platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
   const publicPath = isExporting
-    ? graph.transformOptions.platform === 'web'
+    ? isHosted
       ? `/assets?export_path=${assetPublicUrl}`
       : assetPublicUrl
     : '/assets/?unstable_path=.';
@@ -186,9 +188,10 @@ export async function graphToSerialAssetsAsync(
   const metroAssets = (await getMetroAssets(graph.dependencies, {
     processModuleFilter: options.processModuleFilter,
     assetPlugins: config.transformer?.assetPlugins ?? [],
-    platform: getPlatformOption(graph, options) ?? 'web',
+    platform,
     projectRoot: options.projectRoot, // this._getServerRootDir(),
     publicPath,
+    isHosted,
   })) as AssetData[];
 
   return {
@@ -302,7 +305,7 @@ export class Chunk {
 
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
-        if (dependency.data.data.asyncType) {
+        if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
           const chunkContainingModule = chunks.find((chunk) =>
             chunk.hasAbsolutePath(dependency.absolutePath)
           );
@@ -569,6 +572,7 @@ export class Chunk {
 
       // TODO: Generate hbc for each chunk
       const hermesBundleOutput = await buildHermesBundleAsync({
+        projectRoot: this.options.projectRoot,
         filename: this.name,
         code: adjustedSource,
         map: assets[1] ? assets[1].source : null,
@@ -681,7 +685,9 @@ function gatherChunks(
 
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
-      if (
+      if (!isResolvedDependency(dependency)) {
+        continue;
+      } else if (
         dependency.data.data.asyncType &&
         // Support disabling multiple chunks.
         entryChunk.options.serializerOptions?.splitChunks !== false

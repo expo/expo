@@ -28,10 +28,33 @@ public final class EmbeddedAppLoader: AppLoader {
   public static let EXUpdatesBareEmbeddedBundleFileType = "jsbundle"
 
   private static var embeddedManifestInternal: EmbeddedUpdate?
+
+  /**
+   Gets the embedded update.
+   If the `UpdatesConfig.hasEmbeddedUpdate` is false, it returns nil
+   */
   public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate? {
     guard config.hasEmbeddedUpdate else {
       return nil
     }
+    return cachedEmbeddedManifest(withConfig: config, database: database)
+  }
+
+  /**
+   Gets the embedded update.
+   If the `UpdatesConfig.originalHasEmbeddedUpdate` is false, it returns nil
+   */
+  public static func originalEmbeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate? {
+    guard config.originalHasEmbeddedUpdate else {
+      return nil
+    }
+    return cachedEmbeddedManifest(withConfig: config, database: database)
+  }
+
+  /*
+   Gets the embedded update even if `UpdatesConfig.hasEmbeddedUpdate` is false
+   */
+  private static func cachedEmbeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> EmbeddedUpdate {
     if let embeddedManifestInternal = embeddedManifestInternal {
       return embeddedManifestInternal
     }
@@ -69,7 +92,7 @@ public final class EmbeddedAppLoader: AppLoader {
         reason: "The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
       )
       .raise()
-      return nil
+      fatalError("Should never reach here")
     }
 
     guard let manifest = try? JSONSerialization.jsonObject(with: manifestData) else {
@@ -78,7 +101,7 @@ public final class EmbeddedAppLoader: AppLoader {
         reason: "The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
       )
       .raise()
-      return nil
+      fatalError("Should never reach here")
     }
 
     guard let manifestDictionary = manifest as? [String: Any] else {
@@ -87,14 +110,15 @@ public final class EmbeddedAppLoader: AppLoader {
         reason: "embedded manifest should be a valid JSON file"
       )
       .raise()
-      return nil
+      fatalError("Should never reach here")
     }
 
     var mutableManifest = manifestDictionary
     // automatically verify embedded manifest since it was already codesigned
     mutableManifest["isVerified"] = true
-    embeddedManifestInternal = Update.update(withRawEmbeddedManifest: mutableManifest, config: config, database: database)
-    return embeddedManifestInternal
+    let update = Update.update(withRawEmbeddedManifest: mutableManifest, config: config, database: database)
+    embeddedManifestInternal = update
+    return update
   }
 
   internal func loadUpdateResponseFromEmbeddedManifest(

@@ -465,10 +465,17 @@ class AudioModule : Module() {
         recorder.prepareRecording(options)
       }
 
-      Function("record") { recorder: AudioRecorder ->
+      Function("record") { recorder: AudioRecorder, options: RecordOptions? ->
         checkRecordingPermission()
         if (recorder.isPrepared) {
-          recorder.record()
+          recorder.recordWithOptions(options?.atTime, options?.forDuration)
+        }
+      }
+
+      Function("recordForDuration") { recorder: AudioRecorder, seconds: Double ->
+        checkRecordingPermission()
+        if (recorder.isPrepared) {
+          recorder.recordForDuration(seconds)
         }
       }
 
@@ -500,6 +507,13 @@ class AudioModule : Module() {
 
       Function("setInput") { recorder: AudioRecorder, input: String ->
         recorder.setInput(input, audioManager)
+      }
+
+      Function("startRecordingAtTime") { recorder: AudioRecorder, seconds: Double ->
+        checkRecordingPermission()
+        if (recorder.isPrepared) {
+          recorder.startRecordingAtTime(seconds)
+        }
       }
     }
   }

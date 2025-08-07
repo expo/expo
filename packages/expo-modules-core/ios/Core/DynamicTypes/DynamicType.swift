@@ -50,6 +50,9 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if T.self == Void.self {
     return DynamicVoidType.shared
   }
+  if let AnyEitherType = T.self as? AnyEither.Type {
+    return AnyEitherType.getDynamicType()
+  }
   return DynamicRawType(innerType: T.self)
 }
 

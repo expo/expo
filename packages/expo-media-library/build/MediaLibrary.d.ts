@@ -256,6 +256,13 @@ export type AssetsOptions = {
      * date.
      */
     createdBefore?: Date | number;
+    /**
+     * Whether to resolve full info for the assets during the query.
+     * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+     * @default false
+     * @platform android
+     */
+    resolveWithFullInfo?: boolean;
 };
 export type PagedInfo<T> = {
     /**

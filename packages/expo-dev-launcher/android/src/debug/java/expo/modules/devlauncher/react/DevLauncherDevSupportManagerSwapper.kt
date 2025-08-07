@@ -47,7 +47,7 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       val devManagerClass = DevSupportManagerBase::class.java
       val newDevSupportManager = createDevLauncherBridgeDevSupportManager(devManagerClass, currentDevSupportManager)
 
-      ReactInstanceManager::class.java.setProtectedDeclaredField(reactInstanceManager, "mDevSupportManager", newDevSupportManager)
+      ReactInstanceManager::class.java.setProtectedDeclaredField(reactInstanceManager, "devSupportManager", newDevSupportManager)
 
       closeExistingConnection(devManagerClass, currentDevSupportManager)
     } catch (e: Exception) {
@@ -73,7 +73,7 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
         currentDevSupportManager
       )
 
-      ReactHostImpl::class.java.setProtectedDeclaredField(reactHost, "mDevSupportManager", newDevSupportManager)
+      ReactHostImpl::class.java.setProtectedDeclaredField(reactHost, "devSupportManager", newDevSupportManager)
 
       closeExistingConnection(devManagerClass, currentDevSupportManager)
     } catch (e: Exception) {

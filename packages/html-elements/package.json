@@ -59,6 +59,16 @@
       }
     ]
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "expo-module-scripts": "^4.1.7",
     "@testing-library/jest-dom": "^5.16.5",

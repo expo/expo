@@ -40,6 +40,7 @@ describe('useUpdates()', () => {
         isDownloading: false,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 0,
+        downloadProgress: 0,
       },
     };
     const updateAvailableEvent: UpdatesNativeStateChangeTestEvent = {
@@ -54,6 +55,7 @@ describe('useUpdates()', () => {
         latestManifest: mockManifest,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 1,
+        downloadProgress: 0,
       },
     };
     const updateUnavailableEvent: UpdatesNativeStateChangeTestEvent = {
@@ -67,6 +69,7 @@ describe('useUpdates()', () => {
         isDownloading: false,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 1,
+        downloadProgress: 0,
       },
     };
     const checkErrorEvent: UpdatesNativeStateChangeTestEvent = {
@@ -81,6 +84,7 @@ describe('useUpdates()', () => {
         checkError: mockError,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 1,
+        downloadProgress: 0,
       },
     };
     const isDownloadingEvent: UpdatesNativeStateChangeTestEvent = {
@@ -94,6 +98,7 @@ describe('useUpdates()', () => {
         isDownloading: true,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 0,
+        downloadProgress: 0,
       },
     };
     const updateDownloadedEvent: UpdatesNativeStateChangeTestEvent = {
@@ -109,6 +114,7 @@ describe('useUpdates()', () => {
         downloadedManifest: mockManifest,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 1,
+        downloadProgress: 0,
       },
     };
     const downloadErrorEvent: UpdatesNativeStateChangeTestEvent = {
@@ -123,6 +129,7 @@ describe('useUpdates()', () => {
         downloadError: mockError,
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 1,
+        downloadProgress: 0,
       },
     };
     const updateAvailableWithRollbackEvent: UpdatesNativeStateChangeTestEvent = {
@@ -139,6 +146,7 @@ describe('useUpdates()', () => {
         },
         lastCheckForUpdateTimeString: mockDate.toISOString(),
         sequenceNumber: 1,
+        downloadProgress: 0,
       },
     };
 

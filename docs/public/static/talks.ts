@@ -237,6 +237,11 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'Shipping with Expo: How to get your Bolt app to the app stores',
+    event: 'Expo Live Stream',
+    videoId: 'ViU7207_W54',
+  },
+  {
     title: 'How to use Protected Routes in Expo Router V5 for smooth auth',
     event: 'Expo Live Stream',
     videoId: 'XCTaMu0qnFY',
@@ -356,6 +361,36 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'How to Add In-App Subscriptions with RevenueCat + Expo',
+    event: 'Expo Tutorials',
+    videoId: 'R3fLKC-2Qh0',
+  },
+  {
+    title: 'How to build a Custom Expo Module',
+    event: 'Expo Tutorials',
+    videoId: 'zReFsPgUdMs',
+  },
+  {
+    title: 'Speed up your Expo Builds with Remote Build Cache',
+    event: 'Expo Tutorials',
+    videoId: '5SmaC-JQS_k',
+  },
+  {
+    title: 'Build a Local-First Sketch App with Expo, Instant & Reanimated',
+    event: 'Expo Tutorials',
+    videoId: 'DEJIcaGN3vY',
+  },
+  {
+    title: 'How to use Expo Background Tasks',
+    event: 'Expo Tutorials',
+    videoId: '4lFus7TvayI',
+  },
+  {
+    title: 'Building auth and onboarding flows with protected routes',
+    event: 'Expo Tutorials',
+    videoId: 'zHZjJDTTHJg',
+  },
   {
     title: 'Golden Workflow: Automate the creation of development builds',
     event: 'EAS Tutorials',

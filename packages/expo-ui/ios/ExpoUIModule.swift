@@ -17,7 +17,16 @@ public final class ExpoUIModule: Module {
     View(ExpoUI.ContextMenuPreview.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
-    View(TextInputView.self)
+    View(TextFieldView.self) {
+      AsyncFunction("setText") { (view: TextFieldView, text: String) in
+        view.setText(text)
+      }
+    }
+    View(SecureFieldView.self) {
+      AsyncFunction("setText") { (view: SecureFieldView, text: String) in
+        view.setText(text)
+      }
+    }
     View(ProgressView.self)
     View(GaugeView.self)
     View(ListView.self)
@@ -35,5 +44,6 @@ public final class ExpoUIModule: Module {
     View(SpacerView.self)
     View(GroupView.self)
     View(DisclosureGroupView.self)
+    View(ExpoUI.ContentUnavailableView.self)
   }
 }

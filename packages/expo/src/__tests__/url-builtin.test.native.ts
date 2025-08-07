@@ -12,6 +12,10 @@ describe(URL, () => {
     expect(new URL('http://acme.com').toString()).toBe('http://acme.com/');
     expect(new URL('/home', 'http://localhost:3000').toString()).toBe('http://localhost:3000/home');
   });
+  it(`supports canParse`, () => {
+    expect(URL.canParse('http://acme.com')).toBe(true);
+    expect(URL.canParse('invalid url')).toBe(false);
+  });
 });
 
 describe(URLSearchParams, () => {

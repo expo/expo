@@ -9,6 +9,7 @@ import {
   VStack,
   HStack,
   DisclosureGroup,
+  ContentUnavailableView,
 } from '@expo/ui/swift-ui-primitives';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
@@ -48,7 +49,7 @@ export default function SwiftUIPrimitivesScreen() {
               value={sendReadReceipts}
               onValueChange={setSendReadReceipts}
             />
-            <Text weight="regular" size={17}>
+            <Text weight="regular" size={17} testID="test-id-from-expo-ui!">
               plain text
             </Text>
           </Section>
@@ -78,6 +79,11 @@ export default function SwiftUIPrimitivesScreen() {
               <Text>Email: john.doe@example.com</Text>
               <Text>Role: Administrator</Text>
             </DisclosureGroup>
+            <ContentUnavailableView
+              title="Card expired"
+              systemImage="creditcard.trianglebadge.exclamationmark"
+              description="Please update your payment information to continue using our services."
+            />
           </Section>
         </Form>
       </Host>

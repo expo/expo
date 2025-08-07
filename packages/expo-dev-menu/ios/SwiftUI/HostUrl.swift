@@ -29,12 +29,16 @@ struct HostUrl: View {
           Image(systemName: "doc.on.clipboard")
             .foregroundColor(.secondary)
         }
+        #if !os(tvOS)
         .background(Color(.systemBackground))
+        #endif
         .cornerRadius(8)
       }
       .buttonStyle(.plain)
     }
     .padding()
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
   }
 }

@@ -10,9 +10,11 @@ class DevMenuGestureRecognizerDelegate {
   func handleLongPress(_ gestureReconizer: UILongPressGestureRecognizer) {
     if gestureReconizer.state == UIGestureRecognizer.State.began {
       if DevMenuManager.shared.toggleMenu() {
+        #if !os(tvOS)
         let feedback = UIImpactFeedbackGenerator(style: .light)
         feedback.prepare()
         feedback.impactOccurred()
+        #endif
       }
       cancelGesture(gestureReconizer)
     }
@@ -33,7 +35,9 @@ class DevMenuGestureRecognizer: UILongPressGestureRecognizer {
   init() {
     super.init(target: DevMenuGestureRecognizer.gestureDelegate, action: #selector(DevMenuGestureRecognizer.gestureDelegate.handleLongPress(_:)))
 
+    #if !os(tvOS)
     numberOfTouchesRequired = 3
+    #endif
     minimumPressDuration = 0.5
     allowableMovement = 30
   }

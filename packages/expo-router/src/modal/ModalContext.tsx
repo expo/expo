@@ -15,43 +15,60 @@ import { type ModalConfig } from './types';
 
 export { type ModalConfig };
 
+const ALLOWED_EVENT_TYPE_LISTENERS = ['close', 'show'] as const;
+type AllowedEventTypeListeners = (typeof ALLOWED_EVENT_TYPE_LISTENERS)[number];
+
 export interface ModalContextType {
   modalConfigs: ModalConfig[];
   openModal: (config: ModalConfig) => void;
+  updateModal: (id: string, config: Omit<Partial<ModalConfig>, 'uniqueId'>) => void;
   closeModal: (id: string) => void;
-  addEventListener: (type: 'close' | 'show', callback: (id: string) => void) => () => void;
+  addEventListener: (type: AllowedEventTypeListeners, callback: (id: string) => void) => () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const ModalContextProvider = ({ children }: PropsWithChildren) => {
   const [modalConfigs, setModalConfigs] = useState<ModalConfig[]>([]);
-  const closeEventListeners = useRef<Set<(id: string) => void>>(new Set());
-  const showEventListeners = useRef<Set<(id: string) => void>>(new Set());
+  const eventListeners = useRef<Record<AllowedEventTypeListeners, Set<(id: string) => void>>>({
+    close: new Set(),
+    show: new Set(),
+  });
   const prevModalConfigs = useRef<ModalConfig[]>([]);
 
   useEffect(() => {
     if (prevModalConfigs.current !== modalConfigs) {
       prevModalConfigs.current.forEach((config) => {
         if (!modalConfigs.find((c) => c.uniqueId === config.uniqueId)) {
-          closeEventListeners.current.forEach((callback) => callback(config.uniqueId));
+          emitCloseEvent(config.uniqueId);
         }
       });
       prevModalConfigs.current = modalConfigs;
     }
   }, [modalConfigs]);
 
-  const openModal = useCallback(
-    (config: ModalConfig) => setModalConfigs((prev) => [...prev, config]),
-    []
-  );
+  const openModal = useCallback((config: ModalConfig) => {
+    setModalConfigs((prev) => [...prev, config]);
+  }, []);
+
+  const updateModal = useCallback((id: string, config: Omit<Partial<ModalConfig>, 'uniqueId'>) => {
+    setModalConfigs((prev) => {
+      const index = prev.findIndex((c) => c.uniqueId === id);
+      if (index >= 0) {
+        const updatedConfigs = [...prev];
+        updatedConfigs[index] = { ...updatedConfigs[index], ...config };
+        return updatedConfigs;
+      }
+      return prev;
+    });
+  }, []);
 
   const emitCloseEvent = useCallback((id: string) => {
-    closeEventListeners.current.forEach((callback) => callback(id));
+    eventListeners.current.close.forEach((callback) => callback(id));
   }, []);
 
   const emitShowEvent = useCallback((id: string) => {
-    showEventListeners.current.forEach((callback) => callback(id));
+    eventListeners.current.show.forEach((callback) => callback(id));
   }, []);
 
   const closeModal = useCallback((id: string) => {
@@ -64,21 +81,23 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
     });
   }, []);
 
-  const addEventListener = useCallback((type: 'close' | 'show', callback: (id: string) => void) => {
-    if (type !== 'close' && type !== 'show') return () => {};
+  const addEventListener = useCallback(
+    (type: AllowedEventTypeListeners, callback: (id: string) => void) => {
+      if (!ALLOWED_EVENT_TYPE_LISTENERS.includes(type)) return () => {};
 
-    if (!callback) {
-      console.warn('Passing undefined as a callback to addEventListener is forbidden');
-      return () => {};
-    }
+      if (!callback) {
+        console.warn('Passing undefined as a callback to addEventListener is forbidden');
+        return () => {};
+      }
 
-    const eventListeners = type === 'close' ? closeEventListeners : showEventListeners;
-    eventListeners.current.add(callback);
+      eventListeners.current[type].add(callback);
 
-    return () => {
-      eventListeners.current.delete(callback);
-    };
-  }, []);
+      return () => {
+        eventListeners.current[type].delete(callback);
+      };
+    },
+    []
+  );
 
   return (
     <ModalContext.Provider
@@ -86,13 +105,13 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
         modalConfigs,
         openModal,
         closeModal,
+        updateModal,
         addEventListener,
       }}>
       <ModalsRenderer
         modalConfigs={modalConfigs}
         onDismissed={(id) => {
           closeModal(id);
-          emitCloseEvent(id);
         }}
         onShow={emitShowEvent}>
         {children}

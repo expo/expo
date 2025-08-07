@@ -55,7 +55,6 @@ module.exports = {
         },
       },
     ],
-
     [
       'expo-router',
       {
@@ -71,6 +70,9 @@ module.exports = {
           process.env.E2E_ROUTER_SITEMAP === 'false' ? false : process.env.E2E_ROUTER_SITEMAP,
         redirects: process.env.E2E_ROUTER_REDIRECTS
           ? JSON.parse(process.env.E2E_ROUTER_REDIRECTS)
+          : undefined,
+        rewrites: process.env.E2E_ROUTER_REWRITES
+          ? JSON.parse(process.env.E2E_ROUTER_REWRITES)
           : undefined,
       },
     ],

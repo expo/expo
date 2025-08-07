@@ -18,8 +18,7 @@ import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.Tab
 import expo.modules.devmenu.compose.theme.Theme
 import androidx.compose.runtime.getValue
-import expo.modules.devlauncher.compose.routes.Home
-import expo.modules.devlauncher.compose.routes.Settings
+import expo.modules.devlauncher.compose.routes.Routes
 
 @Composable
 fun BottomTabBar(
@@ -43,13 +42,18 @@ fun BottomTabBar(
       val icons = listOf(
         Tab(
           label = "Home",
-          icon = painterResource(id = R.drawable._expodevclientcomponents_assets_homefilledinactiveicon),
-          screen = Home
+          icon = painterResource(id = R.drawable.home_icon),
+          screen = Routes.Home
+        ),
+        Tab(
+          label = "Extensions",
+          icon = painterResource(id = R.drawable.extensions_icon),
+          screen = Routes.Updates
         ),
         Tab(
           label = "Settings",
-          icon = painterResource(id = R.drawable._expodevclientcomponents_assets_settingsfilledinactiveicon),
-          screen = Settings
+          icon = painterResource(id = R.drawable.settings_icon),
+          screen = Routes.Settings
         )
       )
       for (tab in icons) {

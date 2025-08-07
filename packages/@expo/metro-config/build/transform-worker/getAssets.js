@@ -5,8 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUniversalAssetData = getUniversalAssetData;
 exports.default = getAssets;
-const Assets_1 = require("metro/src/Assets");
-const js_js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js.js");
+/**
+ * Copyright 2023-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+const Assets_1 = require("@expo/metro/metro/Assets");
+// NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
+const js_js_1 = require("@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js");
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -62,11 +70,11 @@ async function ensureOtaAssetHashesAsync(asset) {
     }
     return asset;
 }
-async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, platform, publicPath) {
+async function getUniversalAssetData(assetPath, localPath, assetDataPlugins, platform, publicPath, isHosted = false) {
     const metroAssetData = await (0, Assets_1.getAssetData)(assetPath, localPath, assetDataPlugins, platform, publicPath);
     const data = await ensureOtaAssetHashesAsync(metroAssetData);
     // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
-    if (platform === 'web' && publicPath.includes('?export_path=')) {
+    if ((isHosted || platform === 'web') && publicPath.includes('?export_path=')) {
         // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
         // TODO: Prevent one multi-res image from updating the hash in all images.
         // @ts-expect-error: name is typed as readonly.
@@ -82,7 +90,7 @@ async function getAssets(dependencies, options) {
             processModuleFilter(module) &&
             (0, js_js_1.getJsOutput)(module).type === 'js/module/asset' &&
             node_path_1.default.relative(options.projectRoot, module.path) !== 'package.json') {
-            promises.push(getUniversalAssetData(module.path, node_path_1.default.relative(options.projectRoot, module.path), options.assetPlugins, options.platform, options.publicPath));
+            promises.push(getUniversalAssetData(module.path, node_path_1.default.relative(options.projectRoot, module.path), options.assetPlugins, options.platform, options.publicPath, options.isHosted));
         }
     }
     return await Promise.all(promises);

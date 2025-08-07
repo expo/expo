@@ -1,7 +1,12 @@
-import { addImports } from '@expo/config-plugins/build/android/codeMod';
-import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
-import { type ExpoConfig } from '@expo/config-types';
-import { type ConfigPlugin, withDangerousMod, withMainApplication, XML } from 'expo/config-plugins';
+import type { ExpoConfig } from 'expo/config';
+import {
+  type ConfigPlugin,
+  withDangerousMod,
+  withMainApplication,
+  XML,
+  CodeGenerator,
+  AndroidConfig,
+} from 'expo/config-plugins';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
@@ -104,7 +109,7 @@ function addFontXmlToMainApplication(config: ExpoConfig, xmlFontObjects: Grouped
       modResults: { language },
     } = config;
 
-    modResults.contents = addImports(
+    modResults.contents = AndroidConfig.CodeMod.addImports(
       modResults.contents,
       ['com.facebook.react.common.assets.ReactFontManager'],
       language === 'java'
@@ -112,7 +117,7 @@ function addFontXmlToMainApplication(config: ExpoConfig, xmlFontObjects: Grouped
 
     const fontManagerCalls = generateFontManagerCalls(xmlFontObjects, language).join(os.EOL);
 
-    const withInit = mergeContents({
+    const withInit = CodeGenerator.mergeContents({
       src: modResults.contents,
       comment: '    //',
       tag: 'xml-fonts-init',

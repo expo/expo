@@ -9,6 +9,7 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -40,7 +41,7 @@ class ProgressView(context: Context, appContext: AppContext) :
   override val props = ProgressProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     val (variant) = props.variant
     val (progress) = props.progress
     val (color) = props.color

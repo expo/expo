@@ -5,10 +5,14 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
+
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 
 ## 1.13.5 - 2025-07-03
 

@@ -8,10 +8,9 @@
  * Fork of the upstream transformer, but with modifications made for web production hashing.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
-import template from '@babel/template';
-import * as t from '@babel/types';
-import { generateAssetCodeFileAst } from 'metro/src/Bundler/util';
-import { BabelTransformerArgs } from 'metro-babel-transformer';
+import { type ParseResult, template, types as t } from '@babel/core';
+import { generateAssetCodeFileAst } from '@expo/metro/metro/Bundler/util';
+import type { BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import path from 'node:path';
 import url from 'node:url';
 
@@ -44,7 +43,7 @@ export async function transform(
   assetRegistryPath: string,
   assetDataPlugins: readonly string[]
 ): Promise<{
-  ast: import('@babel/core').ParseResult;
+  ast: ParseResult;
   reactClientReference?: string;
 }> {
   options ??= options || {
@@ -56,6 +55,8 @@ export async function transform(
   const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
   const useMd5Filename = options.customTransformOptions?.useMd5Filename;
   const isExport = options.publicPath.includes('?export_path=');
+  const isHosted =
+    options.platform === 'web' || (options.customTransformOptions?.hosted && isExport);
   const isReactServer = options.customTransformOptions?.environment === 'react-server';
   const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
 
@@ -98,7 +99,8 @@ export async function transform(
       ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
         // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
         `/assets?export_path=assets`
-      : options.publicPath
+      : options.publicPath,
+    isHosted
   );
 
   if (isServerEnv || options.platform === 'web') {

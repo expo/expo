@@ -1,0 +1,46 @@
+{
+  "name": "@expo/app-integrity",
+  "version": "0.0.1",
+  "description": "A native module that helps assert app integrity on mobile platforms",
+  "sideEffects": false,
+  "main": "build/index.js",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/app-integrity/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-app-integrity"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "integrity",
+    "app-integrity",
+    "ios",
+    "android"
+  ],
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "^4.1.7"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*"
+  }
+}
