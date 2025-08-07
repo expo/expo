@@ -2,6 +2,7 @@ package expo.modules.updates
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -288,6 +289,24 @@ class EnabledUpdatesController(
       throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
     }
     UpdatesConfigurationOverride.save(context, configOverride)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
+  }
+
+  override fun setUpdateURLOverride(updateUrl: Uri?) {
+    if (!updatesConfiguration.disableAntiBrickingMeasures) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
+    }
+    val configOverride = UpdatesConfigurationOverride.save(context, updateUrl)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
+  }
+
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    val isValidRequestHeaders = UpdatesConfiguration.isValidRequestHeadersOverride(
+      updatesConfiguration.originalEmbeddedRequestHeaders, requestHeaders)
+    if (!isValidRequestHeaders) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Invalid update requestHeaders override: $requestHeaders", null)
+    }
+    val configOverride = UpdatesConfigurationOverride.save(context, requestHeaders)
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 

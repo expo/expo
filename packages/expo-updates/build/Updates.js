@@ -280,14 +280,30 @@ export async function fetchUpdateAsync() {
     return result;
 }
 /**
- * Overrides updates URL and reuqest headers in runtime from build time.
+ * @deprecated Use `setUpdateURLOverride` and `setUpdateRequestHeadersOverride` instead.
+ */
+export function setUpdateURLAndRequestHeadersOverride(configOverride) {
+    ExpoUpdates.setUpdateURLAndRequestHeadersOverride(configOverride);
+}
+/**
+ * Overrides updates URL in runtime from build time.
  * This method allows you to load specific updates from a URL that you provide.
  * Use this method at your own risk, as it may cause unexpected behavior.
  * [Learn more about use cases and limitations](https://docs.expo.dev/eas-update/override/).
  * @experimental
  */
-export function setUpdateURLAndRequestHeadersOverride(configOverride) {
-    ExpoUpdates.setUpdateURLAndRequestHeadersOverride(configOverride);
+export function setUpdateURLOverride(updateUrl) {
+    ExpoUpdates.setUpdateURLOverride(updateUrl);
+}
+/**
+ * Overrides updates request headers in runtime from build time.
+ * This method allows you to load specific updates with custom request headers.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * [Learn more about use cases and limitations](https://docs.expo.dev/eas-update/override/).
+ * @experimental
+ */
+export function setUpdateRequestHeadersOverride(requestHeaders) {
+    ExpoUpdates.setUpdateRequestHeadersOverride(requestHeaders);
 }
 /**
  * Shows the reload screen with customizable appearance. This is primarily useful for testing

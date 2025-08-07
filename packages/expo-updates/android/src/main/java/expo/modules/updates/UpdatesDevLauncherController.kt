@@ -365,6 +365,14 @@ class UpdatesDevLauncherController(
     throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
   }
 
+  override fun setUpdateURLOverride(updateUrl: Uri?) {
+    throw NotAvailableInDevClientException("Updates.setUpdateURLOverride() is not supported in development builds.")
+  }
+
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    throw NotAvailableInDevClientException("Updates.setUpdateRequestHeadersOverride() is not supported in development builds.")
+  }
+
   override fun shutdown() {
     // no-op
   }

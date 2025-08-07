@@ -2,6 +2,7 @@ package expo.modules.updates
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -169,6 +170,14 @@ class DisabledUpdatesController(
 
   override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
     throw UpdatesDisabledException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported when expo-updates is not enabled.")
+  }
+
+  override fun setUpdateURLOverride(updateUrl: Uri?) {
+    throw UpdatesDisabledException("Updates.setUpdateURLOverride() is not supported when expo-updates is not enabled.")
+  }
+
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    throw UpdatesDisabledException("Updates.setUpdateRequestHeadersOverride() is not supported when expo-updates is not enabled.")
   }
 
   @Synchronized

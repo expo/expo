@@ -177,16 +177,28 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
 /**
- * Overrides updates URL and reuqest headers in runtime from build time.
- * This method allows you to load specific updates from a URL that you provide.
- * Use this method at your own risk, as it may cause unexpected behavior.
- * [Learn more about use cases and limitations](https://docs.expo.dev/eas-update/override/).
- * @experimental
+ * @deprecated Use `setUpdateURLOverride` and `setUpdateRequestHeadersOverride` instead.
  */
 export declare function setUpdateURLAndRequestHeadersOverride(configOverride: {
     updateUrl: string;
     requestHeaders: Record<string, string>;
 } | null): void;
+/**
+ * Overrides updates URL in runtime from build time.
+ * This method allows you to load specific updates from a URL that you provide.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * [Learn more about use cases and limitations](https://docs.expo.dev/eas-update/override/).
+ * @experimental
+ */
+export declare function setUpdateURLOverride(updateUrl: string | null): void;
+/**
+ * Overrides updates request headers in runtime from build time.
+ * This method allows you to load specific updates with custom request headers.
+ * Use this method at your own risk, as it may cause unexpected behavior.
+ * [Learn more about use cases and limitations](https://docs.expo.dev/eas-update/override/).
+ * @experimental
+ */
+export declare function setUpdateRequestHeadersOverride(requestHeaders: Record<string, string> | null): void;
 /**
  * Shows the reload screen with customizable appearance. This is primarily useful for testing
  * how the reload screen will appear to users during app reloads and is only available in

@@ -165,6 +165,14 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
     }
 
+    Function("setUpdateURLOverride") { updateUrl: Uri? ->
+      UpdatesController.instance.setUpdateURLOverride(updateUrl)
+    }
+
+    Function("setUpdateRequestHeadersOverride") { requestHeaders: Map<String, String>? ->
+      UpdatesController.instance.setUpdateRequestHeadersOverride(requestHeaders)
+    }
+
     AsyncFunction("showReloadScreen") { options: ReloadScreenOptions? ->
       if (BuildConfig.DEBUG) {
         val activity = appContext.currentActivity
