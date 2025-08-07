@@ -40,11 +40,12 @@ async function resolveExpoModule(
       path: resolution.path,
       version: resolution.version,
       config: expoModuleConfig,
-      duplicates: resolution.duplicates?.map((duplicate) => ({
-        name: resolution.name,
-        path: duplicate,
-        version: '', // NOTE: Are we actually using this?
-      })) ?? [],
+      duplicates:
+        resolution.duplicates?.map((duplicate) => ({
+          name: resolution.name,
+          path: duplicate,
+          version: '', // NOTE: Are we actually using this?
+        })) ?? [],
     };
   } else {
     return null;
