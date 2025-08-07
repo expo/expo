@@ -1,0 +1,87 @@
+---
+title: react-native-webview
+description: A library that provides a WebView component.
+sourceCodeUrl: 'https://github.com/react-native-webview/react-native-webview'
+packageName: react-native-webview
+platforms: ['android', 'ios']
+inExpoGo: true
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`react-native-webview` provides a `WebView` component that renders web content in a native view.
+
+## Installation
+
+<APIInstallSection href="https://github.com/react-native-webview/react-native-webview/blob/master/docs/Getting-Started.md#react-native-webview-getting-started-guide" />
+
+## Usage
+
+<SnackInline label="Basic Webview usage" dependencies={["react-native-webview", "expo-constants"]}>
+
+{/* prettier-ignore */}
+```jsx collapseHeight=310
+import { WebView } from 'react-native-webview';
+import Constants from 'expo-constants';
+import { StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <WebView
+      style={styles.container}
+      source={{ uri: 'https://expo.dev' }}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+});
+```
+
+</SnackInline>
+
+### With inline HTML
+
+<SnackInline label="Webview inline HTML" dependencies={["react-native-webview", "expo-constants"]}>
+
+```jsx collapseHeight=310
+import { WebView } from 'react-native-webview';
+import Constants from 'expo-constants';
+import { StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <WebView
+      style={styles.container}
+      originWhitelist={['*']}
+      source={{ html: '<h1><center>Hello world</center></h1>' }}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+});
+```
+
+</SnackInline>
+
+## Learn more
+
+<BoxLink
+  title="Visit official documentation"
+  description="Get full information on API and its usage."
+  Icon={BookOpen02Icon}
+  href="https://github.com/react-native-webview/react-native-webview/blob/master/docs/Guide.md"
+/>
