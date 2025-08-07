@@ -12,6 +12,7 @@ import React, {
 } from 'react';
 
 import { useContextKey } from '../Route';
+import { convertTabPropsToOptions, isTab } from '../native-tabs/NativeBottomTabs/TabOptions';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
@@ -40,6 +41,18 @@ export function useFilterScreenChildren(
           protectedScreens.add(child.props.name);
         } else {
           screens.push(child.props);
+        }
+        return;
+      }
+
+      if (isTab(child, contextKey)) {
+        if (exclude) {
+          protectedScreens.add(child.props.name);
+        } else {
+          screens.push({
+            ...child.props,
+            options: convertTabPropsToOptions(child.props),
+          });
         }
         return;
       }

@@ -9,6 +9,7 @@ import TabIcon from '../components/TabIcon';
 import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import { CalendarsNextScreens } from '../screens/CalendarsNextScreen';
+import { BlobScreens } from '../screens/Blob/BlobScreen';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
@@ -125,6 +126,12 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/BatteryScreen'));
     },
     name: 'Battery',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Blob/BlobScreen'));
+    },
+    name: 'Blob',
   },
   {
     getComponent() {
@@ -440,6 +447,7 @@ export const Screens: ScreenConfig[] = [
   ...ScreensList,
   ...ModulesCoreScreens,
   ...AudioScreens,
+  ...BlobScreens,
   ...ContactsScreens,
   ...CalendarsScreens,
   ...CalendarsNextScreens,

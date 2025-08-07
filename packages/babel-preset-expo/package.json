@@ -41,7 +41,13 @@
     "extends": "universe/node"
   },
   "peerDependencies": {
-    "react-refresh": ">=0.14.0 <1.0.0"
+    "react-refresh": ">=0.14.0 <1.0.0",
+    "expo": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@babel/helper-module-imports": "^7.25.9",
@@ -59,7 +65,7 @@
     "@babel/plugin-transform-parameters": "^7.24.7",
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
-    "@react-native/babel-preset": "0.81.0-rc.3",
+    "@react-native/babel-preset": "0.81.0-rc.5",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "babel-plugin-react-native-web": "~0.21.0",
     "babel-plugin-transform-flow-enums": "^0.0.2",

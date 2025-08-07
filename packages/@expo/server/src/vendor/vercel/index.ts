@@ -6,7 +6,8 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
-import { createRequestHandler as createExpoHandler } from '../index';
+import { createReadableStreamFromReadable } from './utils';
+import { createRequestHandler as createExpoHandler } from '../../index';
 
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
@@ -65,7 +66,9 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = Readable.toWeb(req) as ReadableStream;
+    // NOTE(@krystofwoldrich) Readable.toWeb breaks the stream in Vercel Functions, unknown why.
+    // No error is thrown, but reading the stream like `await req.json()` never resolves.
+    init.body = createReadableStreamFromReadable(req);
     init.duplex = 'half';
   }
 
