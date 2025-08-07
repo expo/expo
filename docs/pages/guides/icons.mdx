@@ -4,7 +4,6 @@ description: Learn how to use various types of icons in your Expo app, including
 ---
 
 import { SnackInline } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Not every app needs to use emojis for icons. You can use a popular icon set through an icon font such as FontAwesome, Glyphicons, or Ionicons, or choose PNGs from [The Noun Project](https://thenounproject.com/). This guide explains various ways to use icons in your Expo app.
 
@@ -144,82 +143,6 @@ import fontelloConfig from './config.json';
 // Ensure this is the `fontname.ttf` and not the file path.
 const Icon = createIconSetFromFontello(fontelloConfig, 'fontello', 'fontello.ttf');
 ```
-
-## Icon images
-
-You can use the `Image` component from [Expo Image](/versions/latest/sdk/image/) or React Native to display an icon. The `source` prop takes the relative path to refer to the image.
-
-<Tabs>
-
-<Tab label="Expo Image">
-
-<SnackInline
-  label='Usage with Expo Image'
-  dependencies={['expo-image']}
-  files={{
-    'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
-  }}>
-
-```jsx collapseHeight=440
-import { Image } from 'expo-image';
-import { View, StyleSheet } from 'react-native';
-
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Image source={require('./assets/images/slack-icon.png')} style={{ width: 50, height: 50 }} />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-```
-
-</SnackInline>
-
-</Tab>
-
-<Tab label="React Native Image">
-
-<SnackInline
-  label='Usage with React Native Image'
-  files={{
-    'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
-  }}>
-
-```jsx
-import { Image, View, StyleSheet } from 'react-native';
-
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Image source={require('./assets/images/slack-icon.png')} style={{ width: 50, height: 50 }} />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-```
-
-</SnackInline>
-
-</Tab>
-
-</Tabs>
-
-You can also provide different versions of your icon at various pixel densities. The `Image` component takes care of using the image with appropriate pixel density automatically. For example, if the image has variants such as `icon@2x.png` and `icon@3x.png`, the `@2x` suffix is served for a device's screen density for older devices such as iPhone 8 and the `@3x` suffix is served for a device's screen density on newer devices such as iPhone 13. [Learn more about serving different densities in React Native documentation](https://reactnative.dev/docs/images#static-image-resources).
 
 ## Button component
 
