@@ -5,6 +5,6 @@
  * and works out of the box with the expo jest preset.
  *  */
 
-export async function isAvailableAsync(): Promise<any> {}
-
-export async function setUpdateInterval(_: number): Promise<any> {}
+export async function getWebViewUserAgentAsync(): Promise<string | undefined> {
+  return '';
+}
