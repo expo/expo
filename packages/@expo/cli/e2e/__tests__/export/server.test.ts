@@ -5,24 +5,30 @@ import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
 import { createExpoStart, executeExpoAsync } from '../../utils/expo';
-import { processFindPrefixedValue } from '../../utils/process';
+import { executeAsync, processFindPrefixedValue } from '../../utils/process';
 import { type BackgroundServer, createBackgroundServer } from '../../utils/server';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
+const EXPRESS_SERVER = 'express server';
+const EXPO_DEV_SERVER = 'dev server';
+const WORKERD_SERVER = 'workerd server';
+
 describe('server-output', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputDir = path.join(projectRoot, 'dist-server');
 
   describe.each([
     {
-      name: 'express server',
+      name: WORKERD_SERVER,
       prepareDist: async () => {
+        const outputDirName = 'dist-server-workerd';
+        const outputDir = path.join(projectRoot, outputDirName);
+
         console.time('export-server');
         await executeExpoAsync(
           projectRoot,
-          ['export', '-p', 'web', '--output-dir', 'dist-server'],
+          ['export', '-p', 'web', '--output-dir', outputDirName],
           {
             env: {
               NODE_ENV: 'production',
@@ -34,6 +40,54 @@ describe('server-output', () => {
           }
         );
         console.timeEnd('export-server');
+
+        await executeAsync(projectRoot, [
+          'npx',
+          'esbuild',
+          '--bundle',
+          '--format=esm',
+          `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
+          path.join(projectRoot, '__e2e__/server/workerd/workerd.mjs'),
+        ]);
+        await fs.copyFile(
+          path.join(projectRoot, '__e2e__/server/workerd/config.capnp'),
+          path.join(outputDir, 'server/config.capnp')
+        );
+
+        return outputDir;
+      },
+      createServer: () =>
+        createBackgroundServer({
+          command: [
+            'npx',
+            'workerd',
+            'serve',
+            path.join(path.join(projectRoot, 'dist-server-workerd'), 'server/config.capnp'),
+          ],
+          host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
+          port: 8787,
+          cwd: projectRoot,
+        }),
+    },
+    {
+      name: EXPRESS_SERVER,
+      prepareDist: async () => {
+        const outputDirName = 'dist-server-express';
+        const outputDir = path.join(projectRoot, outputDirName);
+
+        console.time('export-server');
+        await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputDir], {
+          env: {
+            NODE_ENV: 'production',
+            EXPO_USE_STATIC: 'server',
+            E2E_ROUTER_SRC: 'server',
+            E2E_ROUTER_ASYNC: 'development',
+            EXPO_USE_FAST_RESOLVER: 'true',
+          },
+        });
+        console.timeEnd('export-server');
+
+        return outputDir;
       },
       createServer: () =>
         createBackgroundServer({
@@ -47,7 +101,7 @@ describe('server-output', () => {
         }),
     },
     {
-      name: 'dev server',
+      name: EXPO_DEV_SERVER,
       createServer: () =>
         createExpoStart({
           cwd: projectRoot,
@@ -61,17 +115,22 @@ describe('server-output', () => {
           },
         }),
     },
-  ])('$name requests', ({ createServer, prepareDist }) => {
+  ] as {
+    name: string;
+    createServer: () => BackgroundServer;
+    prepareDist?: () => Promise<string>;
+  }[])('$name requests', ({ name, createServer, prepareDist }) => {
+    let outputDir: string | undefined;
     let server: BackgroundServer;
 
     beforeAll(async () => {
-      await prepareDist?.();
+      outputDir = await prepareDist?.();
       server = createServer();
       await server.startAsync();
     });
+
     afterAll(async () => {
-      await server.stopAsync();
-      await fs.rm(outputDir, { recursive: true, force: true });
+      await server.stopAsync(true);
     });
 
     ['POST', 'GET', 'PUT', 'DELETE'].map(async (method) => {
@@ -189,12 +248,6 @@ describe('server-output', () => {
       );
     });
 
-    it('can use environment variables', async () => {
-      expect(await server.fetchAsync('/api/env-vars').then((res) => res.json())).toEqual({
-        // This is defined when we start the production server in `beforeAll`.
-        var: 'test-secret-key',
-      });
-    });
     it('serves the empty route as 405', async () => {
       await expect(server.fetchAsync('/api/empty').then((r) => r.status)).resolves.toBe(405);
     });
@@ -260,15 +313,26 @@ describe('server-output', () => {
         results: '1/2/3',
       });
     });
-    it('supports using Node.js externals to read local files', async () => {
-      await expect(server.fetchAsync('/api/externals').then((r) => r.text())).resolves.toMatchPath(
-        'a/b/c'
-      );
-    });
 
-    if (prepareDist) {
+    if (name !== WORKERD_SERVER) {
+      // NOTE(@krystofwoldrich): Skipped for now, we can simulate prod by injecting the env vars
+      it('can use environment variables', async () => {
+        expect(await server.fetchAsync('/api/env-vars').then((res) => res.json())).toEqual({
+          // This is defined when we start the production server in `beforeAll`.
+          var: 'test-secret-key',
+        });
+      });
+
+      it('supports using Node.js externals to read local files', async () => {
+        await expect(
+          server.fetchAsync('/api/externals').then((r) => r.text())
+        ).resolves.toMatchPath('a/b/c');
+      });
+    }
+
+    if (name !== EXPO_DEV_SERVER) {
       it(`has expected static html from array group`, async () => {
-        const files = findProjectFiles(outputDir);
+        const files = findProjectFiles(outputDir!);
         expect(files).not.toContain('server/multi-group.html');
         expect(files).not.toContain('server/(a,b)/multi-group.html');
         expect(files).toContain('server/(a)/multi-group.html');
@@ -276,7 +340,7 @@ describe('server-output', () => {
       });
 
       it(`has expected API route from array group`, async () => {
-        const files = findProjectFiles(outputDir);
+        const files = findProjectFiles(outputDir!);
         expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
         expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
         expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
@@ -285,7 +349,7 @@ describe('server-output', () => {
         // Load the sourcemap and check that the paths are relative
         const map = JSON.parse(
           await fs.readFile(
-            path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
+            path.join(outputDir!, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
             { encoding: 'utf8' }
           )
         );
@@ -295,7 +359,7 @@ describe('server-output', () => {
 
       it('has expected files', async () => {
         // Request HTML
-        const files = findProjectFiles(outputDir);
+        const files = findProjectFiles(outputDir!);
 
         // The wrapper should not be included as a route.
         expect(files).not.toContain('server/+html.html');
@@ -334,7 +398,7 @@ describe('server-output', () => {
       // This test is created to avoid and detect regressions on Windows
       it('has expected routes manifest entries', async () => {
         expect(
-          await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'))
+          await JsonFile.readAsync(path.join(outputDir!, 'server/_expo/routes.json'))
         ).toMatchSnapshot();
       });
     }
