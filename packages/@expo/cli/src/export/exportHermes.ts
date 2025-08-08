@@ -92,26 +92,26 @@ export async function maybeThrowFromInconsistentEngineAsync(
   ) {
     throw new Error(
       `JavaScript engine configuration is inconsistent between ${configFileName} and Android native project.\n` +
-      `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
-      `In Android native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
-      `Check the following files for inconsistencies:\n` +
-      `  - ${configFilePath}\n` +
-      `  - ${path.join(projectRoot, 'android', 'gradle.properties')}\n` +
-      `  - ${path.join(projectRoot, 'android', 'app', 'build.gradle')}\n` +
-      'Learn more: https://expo.fyi/hermes-android-config'
+        `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
+        `In Android native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
+        `Check the following files for inconsistencies:\n` +
+        `  - ${configFilePath}\n` +
+        `  - ${path.join(projectRoot, 'android', 'gradle.properties')}\n` +
+        `  - ${path.join(projectRoot, 'android', 'app', 'build.gradle')}\n` +
+        'Learn more: https://expo.fyi/hermes-android-config'
     );
   }
 
   if (platform === 'ios' && (await maybeInconsistentEngineIosAsync(projectRoot, isHermesManaged))) {
     throw new Error(
       `JavaScript engine configuration is inconsistent between ${configFileName} and iOS native project.\n` +
-      `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
-      `In iOS native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
-      `Check the following files for inconsistencies:\n` +
-      `  - ${configFilePath}\n` +
-      `  - ${path.join(projectRoot, 'ios', 'Podfile')}\n` +
-      `  - ${path.join(projectRoot, 'ios', 'Podfile.properties.json')}\n` +
-      'Learn more: https://expo.fyi/hermes-ios-config'
+        `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
+        `In iOS native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
+        `Check the following files for inconsistencies:\n` +
+        `  - ${configFilePath}\n` +
+        `  - ${path.join(projectRoot, 'ios', 'Podfile')}\n` +
+        `  - ${path.join(projectRoot, 'ios', 'Podfile.properties.json')}\n` +
+        'Learn more: https://expo.fyi/hermes-ios-config'
     );
   }
 }
