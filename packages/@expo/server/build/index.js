@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRoutesManifest = getRoutesManifest;
 exports.createRequestHandler = createRequestHandler;
 require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
@@ -11,83 +10,29 @@ const node_path_1 = __importDefault(require("node:path"));
 const ImmutableRequest_1 = require("./ImmutableRequest");
 const error_1 = require("./error");
 const utils_1 = require("./utils");
-const debug = process.env.NODE_ENV === 'development'
-    ? require('debug')('expo:server')
-    : () => { };
-function getProcessedManifest(path) {
-    // TODO: JSON Schema for validation
-    const routesManifest = JSON.parse(node_fs_1.default.readFileSync(path, 'utf-8'));
-    const parsed = {
-        ...routesManifest,
-        middleware: routesManifest.middleware,
-        notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        apiRoutes: routesManifest.apiRoutes.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        htmlRoutes: routesManifest.htmlRoutes.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        redirects: routesManifest.redirects?.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-        rewrites: routesManifest.rewrites?.map((value) => {
-            return { ...value, namedRegex: new RegExp(value.namedRegex) };
-        }),
-    };
-    return parsed;
-}
-function getRoutesManifest(distFolder) {
-    return getProcessedManifest(node_path_1.default.join(distFolder, '_expo/routes.json'));
-}
-function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
-    // Serve a static file by exact route name
-    const filePath = node_path_1.default.join(distFolder, route.page + '.html');
-    if (node_fs_1.default.existsSync(filePath)) {
-        return node_fs_1.default.readFileSync(filePath, 'utf-8');
-    }
-    // Serve a static file by route name with hoisted index
-    // See: https://github.com/expo/expo/pull/27935
-    const hoistedFilePath = route.page.match(/\/index$/)
-        ? node_path_1.default.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
-        : null;
-    if (hoistedFilePath && node_fs_1.default.existsSync(hoistedFilePath)) {
-        return node_fs_1.default.readFileSync(hoistedFilePath, 'utf-8');
-    }
-    return null;
-}, getApiRoute = async (route) => {
-    const filePath = node_path_1.default.join(distFolder, route.file);
-    debug(`Handling API route: ${route.page}: ${filePath}`);
+function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware = async (middleware) => {
+    // TODO: pass dist
+    const filePath = node_path_1.default.join('.', middleware.file);
     return loadServerModule(filePath);
-}, getMiddleware = async (middleware) => {
-    const filePath = node_path_1.default.join(distFolder, middleware.file);
-    debug(`Loading middleware: ${middleware.file}: ${filePath}`);
-    return loadServerModule(filePath);
-}, handleRouteError = async (error) => {
-    // In production the server should handle unexpected errors
-    throw error;
-}, } = {}) {
-    let routesManifest;
-    const getRoutesManifestCached = async () => {
-        let manifest = null;
-        if (getInternalRoutesManifest) {
-            // Only used for development by the dev server
-            manifest = await getInternalRoutesManifest(distFolder);
+}, }) {
+    return async function handler(request) {
+        const manifest = await getRoutesManifest();
+        if (!manifest) {
+            // NOTE(@EvanBacon): Development error when Expo Router is not setup.
+            // NOTE(@kitten): If the manifest is not found, we treat this as
+            // an SSG deployment and do nothing
+            return new Response('Not found', {
+                status: 404,
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+            });
         }
-        else if (!routesManifest) {
-            // Production
-            manifest = await getRoutesManifest(distFolder);
-        }
-        if (manifest) {
-            routesManifest = manifest;
-        }
-        return routesManifest;
+        return requestHandler(request, manifest);
     };
     async function requestHandler(incomingRequest, manifest) {
         let request = incomingRequest;
         let url = new URL(request.url);
-        debug('Request', url.pathname);
         if (manifest.middleware && shouldRunMiddleware(request, manifest.middleware)) {
             try {
                 const middlewareModule = await getMiddleware(manifest.middleware);
@@ -95,14 +40,12 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                     const middlewareFn = middlewareModule.default;
                     const middlewareResponse = await middlewareFn(new ImmutableRequest_1.ImmutableRequest(request));
                     if (middlewareResponse instanceof Response) {
-                        debug('Middleware returned response, short-circuiting');
                         return middlewareResponse;
                     }
                     // If middleware returns undefined/void, continue to route matching
                 }
             }
             catch (error) {
-                debug('Middleware execution error:', error);
                 // Shows RedBox in development
                 return handleRouteError(error);
             }
@@ -184,21 +127,6 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             headers: { 'Content-Type': 'text/plain' },
         });
     }
-    return async function handler(request) {
-        const manifest = await getRoutesManifestCached();
-        if (!manifest) {
-            // NOTE(@EvanBacon): Development error when Expo Router is not setup.
-            // NOTE(@kitten): If the manifest is not found, we treat this as
-            // an SSG deployment and do nothing
-            return new Response('Not found', {
-                status: 404,
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
-            });
-        }
-        return requestHandler(request, manifest);
-    };
 }
 async function respondNotFoundHTML(html, route) {
     if (typeof html === 'string') {
@@ -265,7 +193,6 @@ function respondRedirect(url, request, route) {
     else {
         status = route.permanent ? 308 : 307;
     }
-    debug('Redirecting', status, target);
     return Response.redirect(target, status);
 }
 function loadServerModule(filePath) {
@@ -283,7 +210,6 @@ function loadServerModule(filePath) {
  */
 function shouldRunMiddleware(request, middleware) {
     // TODO(@hassankhan): Implement pattern matching for middleware
-    debug('Middleware pattern matching is not yet implemented');
     return true;
     // No matcher means middleware runs on all requests
     // if (!middleware.matcher) {

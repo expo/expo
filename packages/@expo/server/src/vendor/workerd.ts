@@ -1,10 +1,10 @@
 import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getRoutesManifest, handleRouteError } from '../runtime/node';
+import { getApiRoute, getHtml, getRoutesManifest, handleRouteError } from '../runtime/workerd';
 
 export type RequestHandler = (req: Request) => Promise<Response>;
 
 /**
- * Returns a request handler for Express that serves the response using Remix.
+ * Returns a request handler for Workerd deployments.
  */
 export function createRequestHandler(
   { build }: { build: string },

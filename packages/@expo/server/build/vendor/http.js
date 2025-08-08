@@ -7,11 +7,35 @@ exports.respond = respond;
 const node_stream_1 = require("node:stream");
 const promises_1 = require("node:stream/promises");
 const index_1 = require("../index");
+const node_1 = require("../runtime/node");
 /**
  * Returns a request handler for http that serves the response using Remix.
  */
-function createRequestHandler({ build }, setup) {
-    const handleRequest = (0, index_1.createRequestHandler)(build, setup);
+function createRequestHandler({ build }, setup = {}) {
+    let routesManifest = null;
+    const defaultGetRoutesManifest = (0, node_1.getRoutesManifest)(build);
+    const getRoutesManifestCached = async () => {
+        let manifest = null;
+        if (setup.getRoutesManifest) {
+            // Development
+            manifest = await setup.getRoutesManifest();
+        }
+        else if (!routesManifest) {
+            // Production
+            manifest = await defaultGetRoutesManifest();
+        }
+        if (manifest) {
+            routesManifest = manifest;
+        }
+        return routesManifest;
+    };
+    const handleRequest = (0, index_1.createRequestHandler)({
+        getRoutesManifest: getRoutesManifestCached,
+        getHtml: (0, node_1.getHtml)(build),
+        getApiRoute: (0, node_1.getApiRoute)(build),
+        handleRouteError: (0, node_1.handleRouteError)(),
+        ...setup,
+    });
     return async (req, res, next) => {
         if (!req?.url || !req.method) {
             return next();
