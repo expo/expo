@@ -36,10 +36,7 @@ jobs:
             ${{ runner.os }}-yarn-cache-
 
       - name: Install dependencies
-        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
-        run: yarn install --frozen-lockfile --ignore-engines
-        env:
-          YARN_IGNORE_SCRIPTS: 'true'
+        run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
 
       - uses: actions/setup-java@v4
         with:
