@@ -6,6 +6,12 @@ exports.Badge = Badge;
 function Label(props) {
     return null;
 }
+/**
+ * Renders an icon for the tab.
+ *
+ * @platform ios
+ * @platform android
+ */
 function Icon(props) {
     return null;
 }
