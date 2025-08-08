@@ -31,52 +31,63 @@ export function getProjectPackageJsonPathSync(projectRoot: string): string {
   return result;
 }
 
+interface LinkingOptionsFactory<OptionsType extends SearchOptions> {
+  getProjectRoot(): Promise<string>;
+  getPlatformOptions(platform?: SupportedPlatform): Promise<OptionsType>;
+}
+
 export function createLinkingOptionsFactory<OptionsType extends SearchOptions>(
   providedOptions: OptionsType
-): (platform?: SupportedPlatform) => Promise<OptionsType> {
-  let _packageJsonPath: string | undefined;
+): LinkingOptionsFactory<OptionsType> {
+  let _packageJsonPath: Promise<string> | undefined;
   const getPackageJsonPath = async () => {
     return (
       _packageJsonPath ||
-      (_packageJsonPath = await getProjectPackageJsonPathAsync(providedOptions.projectRoot))
+      (_packageJsonPath = getProjectPackageJsonPathAsync(providedOptions.projectRoot))
     );
   };
 
-  let _baseOptions: PlatformAutolinkingOptions | undefined;
+  let _baseOptions: Promise<PlatformAutolinkingOptions> | undefined;
   const getBaseOptions = async () => {
     if (!_baseOptions) {
-      const packageJson = await loadPackageJSONAsync(await getPackageJsonPath());
-      _baseOptions = packageJson.expo?.autolinking as PlatformAutolinkingOptions;
+      _baseOptions = loadPackageJSONAsync(await getPackageJsonPath()).then((packageJson) => {
+        return packageJson.expo?.autolinking as PlatformAutolinkingOptions;
+      });
     }
     return _baseOptions;
   };
 
-  return async (platform = providedOptions.platform) => {
-    const baseOptions = await getBaseOptions();
+  return {
+    async getProjectRoot() {
+      return path.dirname(await getPackageJsonPath());
+    },
+    async getPlatformOptions(platform = providedOptions.platform) {
+      const baseOptions = await getBaseOptions();
 
-    const platformOptions = getPlatformOptions(platform, baseOptions);
-    const finalOptions = Object.assign(
-      {},
-      baseOptions,
-      platformOptions,
-      providedOptions
-    ) as OptionsType;
+      const platformOptions = getPlatformOptions(platform, baseOptions);
+      const finalOptions = Object.assign(
+        {},
+        baseOptions,
+        platformOptions,
+        providedOptions
+      ) as OptionsType;
 
-    // Makes provided paths absolute or falls back to default paths if none was provided.
-    finalOptions.searchPaths = resolveSearchPaths(
-      finalOptions.searchPaths || [],
-      providedOptions.projectRoot
-    );
+      // Makes provided paths absolute or falls back to default paths if none was provided.
+      finalOptions.searchPaths = resolveSearchPaths(
+        finalOptions.searchPaths || [],
+        providedOptions.projectRoot
+      );
 
-    finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(
-      finalOptions.nativeModulesDir,
-      providedOptions.projectRoot
-    );
+      finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(
+        finalOptions.nativeModulesDir,
+        providedOptions.projectRoot
+      );
 
-    // We shouldn't assume that `projectRoot` (which typically is CWD) is already at the project root
-    finalOptions.projectRoot = path.dirname(await getPackageJsonPath());
+      // We shouldn't assume that `projectRoot` (which typically is CWD) is already at the project root
+      finalOptions.projectRoot = await this.getProjectRoot();
 
-    return finalOptions;
+      return finalOptions;
+    },
   };
 }
 
@@ -89,7 +100,7 @@ export function createLinkingOptionsFactory<OptionsType extends SearchOptions>(
 export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions>(
   providedOptions: OptionsType
 ): Promise<OptionsType> {
-  return await createLinkingOptionsFactory(providedOptions)();
+  return await createLinkingOptionsFactory(providedOptions).getPlatformOptions();
 }
 
 /**
