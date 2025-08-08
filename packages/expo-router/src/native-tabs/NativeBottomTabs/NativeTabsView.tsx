@@ -180,9 +180,6 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       const isFocused = state.index === index;
       const title = descriptor.options.title ?? route.name;
 
-      console.log('icon', convertOptionsIconToPropsIcon(descriptor.options.icon));
-      console.log('selectedIcon', convertOptionsIconToPropsIcon(descriptor.options.selectedIcon));
-
       return (
         <BottomTabsScreen
           key={route.key}

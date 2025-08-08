@@ -1,7 +1,14 @@
 import type { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import type { NativeTabOptions } from './NativeTabsView';
 export type TabProps = PropsWithChildren<{
-    name: string;
+    /**
+     * The name of the route.
+     *
+     * This is required when used inside a Layout component.
+     *
+     * When used in a route it has no effect.
+     */
+    name?: string;
     /**
      * If true, the tab will be hidden from the tab bar.
      */

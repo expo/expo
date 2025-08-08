@@ -21,6 +21,7 @@
 - Add more customization options to Link.Preview menu ([#38401](https://github.com/expo/expo/pull/38401) by [@Ubax](https://github.com/Ubax))
 - Native bottom tabs ([#37912](https://github.com/expo/expo/pull/37912) by [@Ubax](https://github.com/Ubax))
 - Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
+- NativeTabs dynamic options ([#38581](https://github.com/expo/expo/pull/38581) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
