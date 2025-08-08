@@ -9,7 +9,7 @@ export const handleRouteError = () => async (error: Error) => {
 
 let _routes: Manifest | null = null;
 export const getRoutesManifest = (dist: string) => async (): Promise<Manifest | null> => {
-  if (_routes !== undefined) {
+  if (_routes) {
     return _routes;
   }
 
@@ -33,10 +33,9 @@ export const getHtml =
 
 export const getApiRoute =
   (dist: string) =>
-  // TODO: Can we type this more strict?
-  (route: Route): any => {
+  async (route: Route): Promise<any> => {
     const filePath = `${dist}/${route.file}`;
-    return import(filePath);
+    return (await import(filePath)).default;
   };
 
 const _importCache = new Map();

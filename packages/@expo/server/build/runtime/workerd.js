@@ -9,7 +9,7 @@ const handleRouteError = () => async (error) => {
 exports.handleRouteError = handleRouteError;
 let _routes = null;
 const getRoutesManifest = (dist) => async () => {
-    if (_routes !== undefined) {
+    if (_routes) {
         return _routes;
     }
     try {
@@ -29,11 +29,9 @@ const getHtml = (dist) => async (_request, route) => {
     return typeof html === 'string' ? html : null;
 };
 exports.getHtml = getHtml;
-const getApiRoute = (dist) => 
-// TODO: Can we type this more strict?
-(route) => {
+const getApiRoute = (dist) => async (route) => {
     const filePath = `${dist}/${route.file}`;
-    return import(filePath);
+    return (await import(filePath)).default;
 };
 exports.getApiRoute = getApiRoute;
 const _importCache = new Map();
