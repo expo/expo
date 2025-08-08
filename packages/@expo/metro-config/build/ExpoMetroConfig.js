@@ -25,7 +25,6 @@ const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
 const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
-const metro_config_1 = require("./traveling/metro-config");
 const filePath_1 = require("./utils/filePath");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
@@ -124,7 +123,7 @@ function createStableModuleIdFactory(root) {
     };
 }
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
-    const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
+    const { getDefaultConfig: getDefaultMetroConfig, mergeConfig, } = require('@expo/metro/metro-config');
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
     }

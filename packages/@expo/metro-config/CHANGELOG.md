@@ -25,6 +25,7 @@
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 - Fix `@react-native/js-polyfills`, `hermes-parser`, and `babel-preset-expo` (fallback) dependency resolution for isolated dependencies ([#38535](https://github.com/expo/expo/pull/38535) by [@kitten](https://github.com/kitten))
 - Resolve `react-native` from project root when looking up Hermes compiler ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
+- Import `getDefaultConfig` and `mergeConfig` from pinned `metro-config` version ([#38682](https://github.com/expo/expo/pull/38682) by [@kitten](https://github.com/kitten))
 
 ## 0.20.17 - 2025-07-03
 
