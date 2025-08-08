@@ -41,7 +41,7 @@ struct EventNext: Record {
   @Field
   var notes: String?
   @Field
-  var alarms: [Alarm]
+  var alarms: [Alarm]?
   @Field
   var recurrenceRule: RecurrenceRule?
   @Field

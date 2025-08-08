@@ -56,7 +56,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
   }
 
   func delete(options: RecurringEventOptions) throws {
-    guard let id = self.event?.calendarItemIdentifier else {
+    if self.event?.calendarItemIdentifier == nil {
       throw ItemNoLongerExistsException()
     }
 
@@ -94,8 +94,8 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
 
     if nullableSet.contains("alarms") {
       event.alarms = []
-    } else if eventRecord.alarms != nil {
-      event.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
+    } else if let alarms = eventRecord.alarms {
+      event.alarms = createCalendarEventAlarms(alarms: alarms)
     }
 
     if nullableSet.contains("recurrenceRule") {

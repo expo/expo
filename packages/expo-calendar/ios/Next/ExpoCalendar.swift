@@ -64,8 +64,8 @@ internal final class ExpoCalendar: SharedObject {
       calendar.title = title
     }
 
-    if let color = calendarRecord.color {
-      calendar.cgColor = calendarRecord.color?.cgColor
+    if let cgColor = calendarRecord.color?.cgColor {
+      calendar.cgColor = cgColor
     }
 
     try eventStore.saveCalendar(calendar, commit: true)
