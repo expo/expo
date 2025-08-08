@@ -57,6 +57,7 @@ struct DevMenuToggleButton: View {
       Image(systemName: icon)
         .frame(width: 24, height: 24)
         .foregroundColor(disabled ? .secondary : .primary)
+        .opacity(0.6)
 
       Text(title)
         .foregroundColor(disabled ? .secondary : .primary)

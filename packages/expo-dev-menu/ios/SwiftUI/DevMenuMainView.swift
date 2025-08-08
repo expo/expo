@@ -2,10 +2,10 @@ import SwiftUI
 
 struct DevMenuMainView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
-  
+
   var body: some View {
     ScrollView {
-      VStack(spacing: 20) {
+      VStack(spacing: 32) {
         VStack {
           if let hostUrl = viewModel.appInfo?.hostUrl {
             HostUrl(
@@ -14,29 +14,29 @@ struct DevMenuMainView: View {
               copiedMessage: viewModel.hostUrlCopiedMessage
             )
           }
-          
+
           if !viewModel.registeredCallbacks.isEmpty {
             CustomItems(
               callbacks: viewModel.registeredCallbacks,
               onFireCallback: viewModel.fireCallback
             )
           }
-          
+
           DevMenuActions(
             isDevLauncherInstalled: viewModel.isDevLauncherInstalled,
             onReload: viewModel.reload,
             onGoHome: viewModel.goHome
           )
         }
-        
+
         DevMenuDeveloperTools()
-        
+
         if viewModel.appInfo?.engine == "Hermes" {
           HermesWarning()
         }
-        
+
         DevMenuAppInfo()
-        
+
         DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
       }
       .padding()

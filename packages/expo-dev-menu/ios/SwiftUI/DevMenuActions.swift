@@ -15,7 +15,7 @@ struct DevMenuActions: View {
       #if !os(tvOS)
       .background(Color(.secondarySystemBackground))
       #endif
-      .cornerRadius(12)
+      .cornerRadius(18)
 
       if isDevLauncherInstalled {
         DevMenuActionButton(
@@ -26,7 +26,7 @@ struct DevMenuActions: View {
         #if !os(tvOS)
         .background(Color(.secondarySystemBackground))
         #endif
-        .cornerRadius(12)
+        .cornerRadius(18)
       }
     }
   }

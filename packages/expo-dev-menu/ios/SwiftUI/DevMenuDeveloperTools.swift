@@ -8,7 +8,7 @@ struct DevMenuDeveloperTools: View {
       Text("TOOLS")
         .font(.caption)
         .foregroundColor(.primary).opacity(0.6)
-      
+
       VStack(spacing: 0) {
         DevMenuActionButton(
           title: "Toggle performance monitor",
@@ -16,28 +16,28 @@ struct DevMenuDeveloperTools: View {
           action: viewModel.togglePerformanceMonitor,
           disabled: !(viewModel.devSettings?.isPerfMonitorAvailable ?? true)
         )
-        
+
         Divider()
-        
+
         DevMenuActionButton(
           title: "Toggle element inspector",
           icon: "viewfinder",
           action: viewModel.toggleElementInspector,
           disabled: !(viewModel.devSettings?.isElementInspectorAvailable ?? true)
         )
-        
+
         if viewModel.devSettings?.isJSInspectorAvailable == true {
           Divider()
-          
+
           DevMenuActionButton(
             title: "Open JS debugger",
             icon: "ladybug",
             action: viewModel.openJSInspector
           )
         }
-        
+
         Divider()
-        
+
         DevMenuToggleButton(
           title: "Fast refresh",
           icon: "figure.run",
@@ -49,7 +49,7 @@ struct DevMenuDeveloperTools: View {
 #if !os(tvOS)
       .background(Color(.systemBackground))
 #endif
-      .cornerRadius(12)
+      .cornerRadius(18)
     }
   }
 }

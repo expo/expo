@@ -36,7 +36,7 @@ struct CustomItems: View {
           }
         }
       }
-      .cornerRadius(12)
+      .cornerRadius(18)
       .padding(.horizontal)
     }
   }

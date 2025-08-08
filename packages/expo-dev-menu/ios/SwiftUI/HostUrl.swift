@@ -30,7 +30,7 @@ struct HostUrl: View {
 #if !os(tvOS)
       .background(Color(.secondarySystemBackground))
 #endif
-      .cornerRadius(8)
+      .cornerRadius(20)
     }
     .buttonStyle(.plain)
   }
