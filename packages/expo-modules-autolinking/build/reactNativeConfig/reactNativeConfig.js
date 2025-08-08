@@ -34,18 +34,26 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform, ex
         // Therefore, we need to manually filter it out.
         return null;
     }
-    const hasConfig = !!libraryConfig || Object.keys(reactNativeConfig).length > 0;
-    if (!hasConfig && (await isExpoModule(resolution.path))) {
-        // NOTE(@kitten): We don't allow a package to be both an Expo Module and React Native module
-        // at the same time, if it doesn't contain a library config
-        return null;
+    let maybeExpoModuleConfig;
+    if (!libraryConfig) {
+        // NOTE(@kitten): If we don't have an explicit react-native.config.{js,ts} file,
+        // we should pass the Expo Module config (if it exists) to the resolvers below,
+        // which can then decide if the React Native inferred config and Expo Module
+        // configs conflict
+        try {
+            maybeExpoModuleConfig = await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(resolution.path);
+        }
+        catch {
+            // We ignore invalid Expo Modules for the purpose of auto-linking and
+            // pretend the config doesn't exist, if it isn't valid JSON
+        }
     }
     let platformData = null;
     if (platform === 'android') {
-        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(resolution.path, reactNativeConfig.platforms?.android);
+        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(resolution.path, reactNativeConfig.platforms?.android, maybeExpoModuleConfig);
     }
     else if (platform === 'ios') {
-        platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios);
+        platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios, maybeExpoModuleConfig);
     }
     return (platformData && {
         root: resolution.path,
@@ -104,14 +112,4 @@ async function resolveAppProjectConfigAsync(projectRoot, platform, sourceDir) {
     }
     return {};
 }
-const isExpoModule = async (targetPath) => {
-    try {
-        return !!(await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(targetPath));
-    }
-    catch {
-        // We can find an Expo config which doesn't parse
-        // We then know this is an Expo Module, but it has a broken config
-        return true;
-    }
-};
 //# sourceMappingURL=reactNativeConfig.js.map
