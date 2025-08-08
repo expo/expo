@@ -1,9 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getApiRoute = exports.getHtml = exports.getRoutesManifest = exports.handleRouteError = void 0;
-const common_1 = require("./common");
-Object.defineProperty(exports, "handleRouteError", { enumerable: true, get: function () { return common_1.handleRouteError; } });
 const initManifestRegExp_1 = require("../utils/initManifestRegExp");
+// TODO: Allow adding extra prod headers like Cache-Control...
+const handleRouteError = () => async (error) => {
+    throw error;
+};
+exports.handleRouteError = handleRouteError;
 let _routes = null;
 const getRoutesManifest = (dist) => async () => {
     if (_routes !== undefined) {

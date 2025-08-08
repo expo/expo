@@ -1,6 +1,5 @@
-import { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
-import { handleRouteError } from './common';
-export { handleRouteError };
-export declare const getRoutesManifest: (dist: string) => () => Promise<ExpoRoutesManifestV1<RegExp>>;
-export declare const getHtml: (dist: string) => (_request: Request, route: RouteInfo<RegExp>) => Promise<string | null>;
-export declare const getApiRoute: (dist: string) => (route: RouteInfo<RegExp>) => Promise<any>;
+import { Manifest, Route } from '../types';
+export declare const handleRouteError: () => (error: Error) => Promise<never>;
+export declare const getRoutesManifest: (dist: string) => () => Promise<Manifest>;
+export declare const getHtml: (dist: string) => (_request: Request, route: Route) => Promise<string | null>;
+export declare const getApiRoute: (dist: string) => (route: Route) => Promise<any>;

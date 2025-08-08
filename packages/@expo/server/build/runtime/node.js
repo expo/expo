@@ -6,12 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getApiRoute = exports.getHtml = exports.getRoutesManifest = exports.handleRouteError = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const common_1 = require("./common");
-Object.defineProperty(exports, "handleRouteError", { enumerable: true, get: function () { return common_1.handleRouteError; } });
 const initManifestRegExp_1 = require("../utils/initManifestRegExp");
 const debug = process.env.NODE_ENV === 'development'
     ? require('debug')('expo:server')
     : () => { };
+const handleRouteError = () => async (error) => {
+    throw error;
+};
+exports.handleRouteError = handleRouteError;
 const getRoutesManifest = (dist) => async () => {
     const raw = node_path_1.default.join(dist, '_expo/routes.json');
     // TODO: JSON Schema for validation

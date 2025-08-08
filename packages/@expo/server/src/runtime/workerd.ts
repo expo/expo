@@ -1,33 +1,32 @@
-import { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
-
-import { handleRouteError } from './common';
+import { Manifest, RawManifest, Route } from '../types';
 import { initManifestRegExp } from '../utils/initManifestRegExp';
 
 // TODO: Allow adding extra prod headers like Cache-Control...
 
-export { handleRouteError };
+export const handleRouteError = () => async (error: Error) => {
+  throw error;
+};
 
-let _routes: ExpoRoutesManifestV1<RegExp> | null = null;
-export const getRoutesManifest =
-  (dist: string) => async (): Promise<ExpoRoutesManifestV1<RegExp> | null> => {
-    if (_routes !== undefined) {
-      return _routes;
-    }
+let _routes: Manifest | null = null;
+export const getRoutesManifest = (dist: string) => async (): Promise<Manifest | null> => {
+  if (_routes !== undefined) {
+    return _routes;
+  }
 
-    try {
-      const routesMod = await import(`${dist}/_expo/routes.json`);
-      // NOTE(@krystofwoldrich) Import should return parsed JSON, this seems like workerd specific behavior.
-      const routesManifest: ExpoRoutesManifestV1 = JSON.parse(routesMod.default);
-      return (_routes = initManifestRegExp(routesManifest));
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      return (_routes = null);
-    }
-  };
+  try {
+    const routesMod = await import(`${dist}/_expo/routes.json`);
+    // NOTE(@krystofwoldrich) Import should return parsed JSON, this seems like workerd specific behavior.
+    const routesManifest: RawManifest = JSON.parse(routesMod.default);
+    return (_routes = initManifestRegExp(routesManifest));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return (_routes = null);
+  }
+};
 
 export const getHtml =
   (dist: string) =>
-  async (_request: Request, route: RouteInfo<RegExp>): Promise<string | null> => {
+  async (_request: Request, route: Route): Promise<string | null> => {
     const html = (await importWithIndexFallback(`${dist}/${route.page}`, '.html')).default;
     return typeof html === 'string' ? html : null;
   };
@@ -35,7 +34,7 @@ export const getHtml =
 export const getApiRoute =
   (dist: string) =>
   // TODO: Can we type this more strict?
-  (route: RouteInfo<RegExp>): any => {
+  (route: Route): any => {
     const filePath = `${dist}/${route.file}`;
     return import(filePath);
   };
