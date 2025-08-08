@@ -2,6 +2,7 @@ import type {
   BaseDependencyResolution,
   DependencyResolution,
 } from 'expo-modules-autolinking/exports';
+import fs from 'fs';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
@@ -61,21 +62,43 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
       );
     }
 
-    function getHumanReadableDependency(dependency: BaseDependencyResolution): string {
-      const name = dependency.version
-        ? `${dependency.name}@${dependency.version}`
-        : dependency.name;
+    async function getHumanReadableDependency(
+      dependency: BaseDependencyResolution
+    ): Promise<string> {
+      let version = dependency.version || null;
+      if (!version) {
+        try {
+          const pkgContents = await fs.promises.readFile(
+            path.join(dependency.path, 'package.json'),
+            'utf8'
+          );
+          const pkg: unknown = JSON.parse(pkgContents);
+          if (
+            pkg &&
+            typeof pkg === 'object' &&
+            'version' in pkg &&
+            typeof pkg.version === 'string'
+          ) {
+            version = pkg.version;
+          }
+        } catch (error) {
+          version = null;
+        }
+      }
       const relative = path.relative(projectRoot, dependency.originPath);
-      return `${name} (at: ${relative})`;
+      return version
+        ? `${dependency.name}@${version} (at: ${relative})`
+        : `${dependency.name} at: ${relative}`;
     }
 
     for (const dependency of packagesWithIssues.values()) {
       if (dependency.duplicates?.length) {
-        const line = [`Found duplicates for ${getHumanReadableDependency(dependency)}:`];
-        for (let idx = 0; idx < dependency.duplicates.length; idx++) {
-          const prefix = idx !== dependency.duplicates.length - 1 ? '├─' : '└─';
-          const duplicate = dependency.duplicates[idx];
-          line.push(`  ${prefix} ${getHumanReadableDependency(duplicate)}`);
+        const line = [`Found duplicates for ${dependency.name}:`];
+        const versions = [dependency, ...dependency.duplicates];
+        for (let idx = 0; idx < versions.length; idx++) {
+          const prefix = idx !== versions.length - 1 ? '├─' : '└─';
+          const duplicate = versions[idx];
+          line.push(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
         }
         issues.push(line.join('\n'));
       }
