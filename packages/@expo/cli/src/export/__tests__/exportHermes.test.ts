@@ -211,12 +211,12 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
       `
   use_react_native!(
     :path => config[:reactNativePath],
-    hermes_enabled: true
+    hermes_enabled: false
   )`,
       `
   use_react_native!(
     :path => config[:reactNativePath],
-    hermes_enabled: true, // with comments
+    hermes_enabled: false, // with comments
   )`,
     ];
 
@@ -232,7 +232,7 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
           'ios',
           /* isHermesManaged */ true
         )
-      ).resolves.toBeUndefined();
+      ).rejects.toThrow();
 
       expect(readPaths).toEqual(['/expo/ios/Podfile']);
     }

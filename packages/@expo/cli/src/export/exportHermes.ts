@@ -3,10 +3,19 @@ import JsonFile from '@expo/json-file';
 import fs from 'fs';
 import path from 'path';
 
-const PODFILE_HERMES_PROPS_REFERENCE_RE =
-  /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m;
-const PODFILE_HERMES_TRUE_RE = /^\s*:hermes_enabled\s*=>\s*true,?\s+/m;
-const PODFILE_HERMES_FALSE_RE = /^\s*:hermes_enabled\s*=>\s*false,?\s+/m;
+const PODFILE_HERMES_LHS = /(?::hermes_enabled\s*=>|hermes_enabled\s*:)/;
+const PODFILE_HERMES_PROPS_REFERENCE_RE = new RegExp(
+  String.raw`^\s*${PODFILE_HERMES_LHS.source}\s*podfile_properties\['expo\.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo\.jsEngine'\]\s*==\s*'hermes'\s*,?\s*(?:#.*)?$`,
+  'm'
+);
+const PODFILE_HERMES_TRUE_RE = new RegExp(
+  String.raw`^\s*${PODFILE_HERMES_LHS.source}\s*true\s*(?:,\s*)?(?:[^\n]*)?$`,
+  'm'
+);
+const PODFILE_HERMES_FALSE_RE = new RegExp(
+  String.raw`^\s*${PODFILE_HERMES_LHS.source}\s*false\s*(?:,\s*)?(?:[^\n]*)?$`,
+  'm'
+);
 
 function getLiteralHermesSettingFromPodfile(content: string): boolean | null {
   const isPropsReference = content.search(PODFILE_HERMES_PROPS_REFERENCE_RE) >= 0;
@@ -83,26 +92,26 @@ export async function maybeThrowFromInconsistentEngineAsync(
   ) {
     throw new Error(
       `JavaScript engine configuration is inconsistent between ${configFileName} and Android native project.\n` +
-        `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
-        `In Android native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
-        `Check the following files for inconsistencies:\n` +
-        `  - ${configFilePath}\n` +
-        `  - ${path.join(projectRoot, 'android', 'gradle.properties')}\n` +
-        `  - ${path.join(projectRoot, 'android', 'app', 'build.gradle')}\n` +
-        'Learn more: https://expo.fyi/hermes-android-config'
+      `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
+      `In Android native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
+      `Check the following files for inconsistencies:\n` +
+      `  - ${configFilePath}\n` +
+      `  - ${path.join(projectRoot, 'android', 'gradle.properties')}\n` +
+      `  - ${path.join(projectRoot, 'android', 'app', 'build.gradle')}\n` +
+      'Learn more: https://expo.fyi/hermes-android-config'
     );
   }
 
   if (platform === 'ios' && (await maybeInconsistentEngineIosAsync(projectRoot, isHermesManaged))) {
     throw new Error(
       `JavaScript engine configuration is inconsistent between ${configFileName} and iOS native project.\n` +
-        `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
-        `In iOS native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
-        `Check the following files for inconsistencies:\n` +
-        `  - ${configFilePath}\n` +
-        `  - ${path.join(projectRoot, 'ios', 'Podfile')}\n` +
-        `  - ${path.join(projectRoot, 'ios', 'Podfile.properties.json')}\n` +
-        'Learn more: https://expo.fyi/hermes-ios-config'
+      `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
+      `In iOS native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
+      `Check the following files for inconsistencies:\n` +
+      `  - ${configFilePath}\n` +
+      `  - ${path.join(projectRoot, 'ios', 'Podfile')}\n` +
+      `  - ${path.join(projectRoot, 'ios', 'Podfile.properties.json')}\n` +
+      'Learn more: https://expo.fyi/hermes-ios-config'
     );
   }
 }
@@ -129,7 +138,7 @@ export async function maybeInconsistentEngineAndroidAsync(
 export function isHermesPossiblyEnabled(projectRoot: string): boolean | null {
   // Trying best to check ios native project if by chance to be consistent between app config
 
-  // Check ios/Podfile for a literal :hermes_enabled => (true|false)
+  // Check ios/Podfile for a literal :hermes_enabled => (true|false) or hermes_enabled: (true|false)
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   if (fs.existsSync(podfilePath)) {
     const content = fs.readFileSync(podfilePath, 'utf8');
