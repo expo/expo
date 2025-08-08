@@ -17,6 +17,9 @@ import { createPackageTarball } from '../utils/package';
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
+// to avoid flaky fail when testing prebuild form github template
+jest.retryTimes(3, { logErrorsBeforeRetry: true });
+
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
@@ -227,7 +230,6 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
     'with-blank',
     { reuseExisting: false }
   );
-  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
   const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
   const expoSdkVersion = semver.minVersion(expoPackage)?.major;
@@ -237,57 +239,64 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
 
   const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/this-template-does-not-exist`;
 
-  let failed = false;
+  let error: unknown = undefined;
   try {
     await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--template', templateUrl], {
       // To avoid error log output in tests
       verbose: false,
     });
   } catch (e) {
-    failed = true;
+    error = e;
   }
 
-  expect(failed).toBeTruthy();
+  expect(error).toBeDefined();
+  expect(error).toMatchObject({
+    message: expect.stringContaining(`Could not locate the repository for "${templateUrl}".`),
+  });
+  expect(error).toMatchObject({
+    message: expect.stringContaining(`Failed to create the native directories`),
+  });
+  expect(findProjectFiles(projectRoot)).toEqual(
+    expect.not.arrayContaining([
+      expect.stringMatching(/^ios\//),
+      expect.stringMatching(/^android\//),
+    ])
+  );
 });
 
-describe('prebuild from github', () => {
-  // scope retry only for the github url test
-  jest.retryTimes(3, { logErrorsBeforeRetry: true });
+itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'github-template-prebuild',
+    'with-blank',
+    { reuseExisting: false }
+  );
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
-  itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      'github-template-prebuild',
-      'with-blank',
-      { reuseExisting: false }
-    );
-    const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
+  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  if (!expoSdkVersion) {
+    throw new Error('Could not determine Expo SDK major version from template');
+  }
 
-    const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-    const expoSdkVersion = semver.minVersion(expoPackage)?.major;
-    if (!expoSdkVersion) {
-      throw new Error('Could not determine Expo SDK major version from template');
-    }
+  const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
 
-    const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
+  await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--template', templateUrl]);
 
-    await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--template', templateUrl]);
-
-    // Added new packages
-    expect(pkg.read().dependencies).toMatchObject({
-      expo: expect.any(String),
-      react: expect.any(String),
-      'react-native': expect.any(String),
-    });
-
-    // Updated scripts
-    expect(pkg.read().scripts).toMatchObject({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
-
-    // If this changes then everything else probably changed as well.
-    expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+  // Added new packages
+  expect(pkg.read().dependencies).toMatchObject({
+    expo: expect.any(String),
+    react: expect.any(String),
+    'react-native': expect.any(String),
   });
+
+  // Updated scripts
+  expect(pkg.read().scripts).toMatchObject({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
+
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
 
 // Regression test for https://github.com/expo/expo/issues/36289
