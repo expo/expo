@@ -80,7 +80,7 @@
     "@types/react": "~19.0.10",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-preset-expo": "~13.2.3",
-    "expo-module-scripts": "^4.1.9",
+    "expo-module-scripts": "^4.1.10",
     "jest": "^29.3.1"
   },
   "codegenConfig": {

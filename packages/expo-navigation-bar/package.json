@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "expo-module-scripts": "^4.1.9"
+    "expo-module-scripts": "^4.1.10"
   },
   "peerDependencies": {
     "expo": "*",
