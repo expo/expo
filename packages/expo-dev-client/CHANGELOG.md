@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- fix TS error when running tests ([#38660](https://github.com/expo/expo/pull/38660) by [@vonovak](https://github.com/vonovak))
+
 ## 5.2.4 - 2025-07-03
 
 _This version does not introduce any user-facing changes._
