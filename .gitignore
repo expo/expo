@@ -4,9 +4,6 @@ __generated__
 web-build
 bare-apps
 
-apps/expo-go/android/app/src/mobile/AndroidManifest.xml
-apps/expo-go/android/app/src/quest/AndroidManifest.xml
-
 # macOS
 .DS_Store
 
