@@ -20,6 +20,7 @@ struct DevMenuActionButton: View {
         Image(systemName: icon)
           .frame(width: 24, height: 24)
           .foregroundColor(disabled ? .secondary : .primary)
+          .opacity(0.6)
 
         Text(title)
           .foregroundColor(disabled ? .secondary : .primary)
@@ -29,6 +30,9 @@ struct DevMenuActionButton: View {
       .padding()
     }
     .disabled(disabled)
+#if !os(tvOS)
+    .background(Color(.secondarySystemBackground))
+#endif
     .opacity(disabled ? 0.6 : 1.0)
   }
 }
@@ -66,6 +70,9 @@ struct DevMenuToggleButton: View {
       .disabled(disabled)
     }
     .padding()
+#if !os(tvOS)
+    .background(Color(.secondarySystemBackground))
+#endif
     .opacity(disabled ? 0.6 : 1.0)
   }
 }

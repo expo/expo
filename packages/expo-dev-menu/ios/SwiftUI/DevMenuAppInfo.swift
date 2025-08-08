@@ -22,9 +22,13 @@ struct DevMenuAppInfo: View {
       }
       label: {
         HStack {
-          Text(viewModel.clipboardMessage ?? "Tap to Copy All")
+          Text(viewModel.clipboardMessage ?? "Copy system info")
             .foregroundColor(.blue)
           Spacer()
+          Image(systemName: "document.on.clipboard")
+            .resizable()
+            .frame(width: 16, height: 16)
+            .opacity(0.6)
         }
         .padding()
       }
@@ -37,8 +41,6 @@ struct DevMenuAppInfo: View {
     .background(Color(.systemBackground))
     #endif
     .cornerRadius(12)
-    .padding(.horizontal)
-    .padding(.vertical, 8)
   }
 }
 

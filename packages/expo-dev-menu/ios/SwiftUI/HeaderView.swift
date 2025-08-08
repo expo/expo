@@ -29,13 +29,18 @@ struct HeaderView: View {
         viewModel.hideMenu()
       } label: {
         Image(systemName: "xmark")
-          .font(.title2)
+          .font(.title3)
           .foregroundColor(.primary)
-          .frame(width: 24, height: 24)
+          .overlay {
+            Circle()
+            #if !os(tvOS)
+              .fill(Color(.secondarySystemBackground))
+            #endif
+              .frame(width: 24, height: 24)
+          }
       }
     }
-    .padding(.horizontal)
-    .padding(.vertical, 12)
+    .padding()
     #if !os(tvOS)
     .background(Color(.systemBackground))
     #endif
@@ -61,8 +66,4 @@ struct HeaderView: View {
       }
     }
   }
-}
-
-#Preview {
-  HeaderView()
 }

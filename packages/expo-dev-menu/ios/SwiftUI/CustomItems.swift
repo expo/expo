@@ -39,6 +39,5 @@ struct CustomItems: View {
       .cornerRadius(12)
       .padding(.horizontal)
     }
-    .padding(.vertical, 8)
   }
 }
