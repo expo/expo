@@ -11,7 +11,7 @@ import {
 } from '../dependencies';
 import { PackageRevision, SearchOptions, SearchResults, SupportedPlatform } from '../types';
 
-async function resolveExpoModule(
+export async function resolveExpoModule(
   resolution: DependencyResolution,
   platform: SupportedPlatform,
   excludeNames: Set<string>
