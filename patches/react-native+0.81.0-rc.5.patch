@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec b/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec
+index 32ebe58..c10c2a2 100644
+--- a/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec
++++ b/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec
+@@ -64,7 +64,7 @@ Pod::Spec.new do |spec|
+ 
+     cp -R "$HEADERS_PATH/" Headers
+     mkdir -p framework/packages/react-native
+-    cp -R "$XCFRAMEWORK_PATH/.." framework/packages/react-native/
++    cp -R "$XCFRAMEWORK_PATH/../." framework/packages/react-native/
+     find "$XCFRAMEWORK_PATH/.." -type f -exec rm {} +
+     find "$CURRENT_PATH" -type d -empty -delete
+   CMD
