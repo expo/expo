@@ -11,6 +11,7 @@ const path_1 = __importDefault(require("path"));
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const autolinking_1 = require("../autolinking");
 const dependencies_1 = require("../dependencies");
 async function _resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
@@ -33,12 +34,26 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform, ex
         // Therefore, we need to manually filter it out.
         return null;
     }
+    let maybeExpoModuleConfig;
+    if (!libraryConfig) {
+        // NOTE(@kitten): If we don't have an explicit react-native.config.{js,ts} file,
+        // we should pass the Expo Module config (if it exists) to the resolvers below,
+        // which can then decide if the React Native inferred config and Expo Module
+        // configs conflict
+        try {
+            maybeExpoModuleConfig = await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(resolution.path);
+        }
+        catch {
+            // We ignore invalid Expo Modules for the purpose of auto-linking and
+            // pretend the config doesn't exist, if it isn't valid JSON
+        }
+    }
     let platformData = null;
     if (platform === 'android') {
-        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(resolution.path, reactNativeConfig.platforms?.android);
+        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(resolution.path, reactNativeConfig.platforms?.android, maybeExpoModuleConfig);
     }
     else if (platform === 'ios') {
-        platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios);
+        platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios, maybeExpoModuleConfig);
     }
     return (platformData && {
         root: resolution.path,

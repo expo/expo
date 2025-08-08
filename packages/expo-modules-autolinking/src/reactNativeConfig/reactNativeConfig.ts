@@ -19,6 +19,7 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
+import { discoverExpoModuleConfigAsync, ExpoModuleConfig } from '../ExpoModuleConfig';
 import { mergeLinkingOptionsAsync } from '../autolinking';
 import {
   DependencyResolution,
@@ -56,16 +57,32 @@ export async function _resolveReactNativeModule(
     return null;
   }
 
+  let maybeExpoModuleConfig: ExpoModuleConfig | null | undefined;
+  if (!libraryConfig) {
+    // NOTE(@kitten): If we don't have an explicit react-native.config.{js,ts} file,
+    // we should pass the Expo Module config (if it exists) to the resolvers below,
+    // which can then decide if the React Native inferred config and Expo Module
+    // configs conflict
+    try {
+      maybeExpoModuleConfig = await discoverExpoModuleConfigAsync(resolution.path);
+    } catch {
+      // We ignore invalid Expo Modules for the purpose of auto-linking and
+      // pretend the config doesn't exist, if it isn't valid JSON
+    }
+  }
+
   let platformData: RNConfigDependencyAndroid | RNConfigDependencyIos | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
       resolution.path,
-      reactNativeConfig.platforms?.android
+      reactNativeConfig.platforms?.android,
+      maybeExpoModuleConfig
     );
   } else if (platform === 'ios') {
     platformData = await resolveDependencyConfigImplIosAsync(
       resolution,
-      reactNativeConfig.platforms?.ios
+      reactNativeConfig.platforms?.ios,
+      maybeExpoModuleConfig
     );
   }
   return (

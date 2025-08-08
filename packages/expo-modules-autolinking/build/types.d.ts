@@ -226,6 +226,7 @@ export type RawAndroidProjectConfig = {
      * Prebuilded AAR projects.
      */
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+    gradlePath?: string;
 };
 export type RawAndroidConfig = {
     projects?: WithRequired<RawAndroidProjectConfig, 'name' | 'path'>[];
