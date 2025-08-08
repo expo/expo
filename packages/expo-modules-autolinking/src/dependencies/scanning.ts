@@ -1,6 +1,10 @@
 import fs from 'fs';
 
-import type { ResolutionResult, DependencyResolution } from './types';
+import {
+  type ResolutionResult,
+  type DependencyResolution,
+  DependencyResolutionSource,
+} from './types';
 import { defaultShouldIncludeDependency, loadPackageJson, maybeRealpath, fastJoin } from './utils';
 
 async function resolveDependency(
@@ -16,6 +20,7 @@ async function resolveDependency(
   const packageJson = await loadPackageJson(fastJoin(realPath || originPath, 'package.json'));
   if (packageJson) {
     return {
+      source: DependencyResolutionSource.SEARCH_PATH,
       name: packageJson.name,
       version: packageJson.version || '',
       path: realPath || originPath,
@@ -25,6 +30,7 @@ async function resolveDependency(
     };
   } else if (realPath) {
     return {
+      source: DependencyResolutionSource.SEARCH_PATH,
       name: dependencyName.toLowerCase(),
       version: '',
       path: realPath,
