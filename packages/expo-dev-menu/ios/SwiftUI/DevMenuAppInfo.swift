@@ -7,7 +7,7 @@ struct DevMenuAppInfo: View {
     VStack(alignment: .leading) {
       Text("SYSTEM")
         .font(.caption)
-        .foregroundColor(.primary).opacity(0.6)
+        .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
         Divider()

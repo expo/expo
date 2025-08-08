@@ -7,7 +7,7 @@ struct DevMenuDeveloperTools: View {
     VStack(alignment: .leading, spacing: 8) {
       Text("TOOLS")
         .font(.caption)
-        .foregroundColor(.primary).opacity(0.6)
+        .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
         DevMenuActionButton(
