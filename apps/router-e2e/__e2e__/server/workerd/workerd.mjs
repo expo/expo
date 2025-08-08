@@ -1,6 +1,6 @@
 import { createRequestHandler } from '@expo/server/build/vendor/workerd';
 
-console.log('Workerd server listening on port 8080');
+console.log('Workerd server listening on configured port');
 
 export default {
   async fetch(request) {
