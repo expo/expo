@@ -94,7 +94,7 @@ export default class CameraView extends Component<CameraViewProps> {
      * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
      * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
      *
-     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
+     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-1)
      * > to make a permanent copy of the image.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;

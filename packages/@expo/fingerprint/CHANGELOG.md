@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed `--transitive-linking-dependencies` since `react-native-edge-to-edge` built-in dependency will be replaced. This reverts [#37209](https://github.com/expo/expo/pull/37209). ([#38637](https://github.com/expo/expo/pull/38637) by [@kitten](https://github.com/kitten))
+
 ## 0.13.4 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

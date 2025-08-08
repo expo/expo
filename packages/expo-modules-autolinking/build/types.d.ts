@@ -23,7 +23,7 @@ export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
     android?: AndroidAutolinkingOptions;
 }
 export interface SearchOptions {
-    searchPaths: string[];
+    searchPaths?: string[];
     ignorePaths?: string[] | null;
     exclude?: string[] | null;
     platform: SupportedPlatform;
@@ -55,6 +55,7 @@ export interface GenerateModulesProviderOptions extends ResolveOptions {
     packages: string[];
 }
 export type PackageRevision = {
+    name: string;
     path: string;
     version: string;
     config?: ExpoModuleConfig;

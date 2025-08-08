@@ -47,18 +47,23 @@ public struct DevLauncherRootView: View {
       AccountSheet()
         .environmentObject(viewModel)
     }
-    .fullScreenCover(isPresented: $viewModel.showingError) {
+    .fullScreenCover(isPresented: $viewModel.showingCrashReport) {
       if let error = viewModel.currentError {
-        ErrorView(
+        CrashReportView(
           error: error,
-          onReload: {
-            viewModel.reloadCurrentApp()
-          },
-          onGoHome: {
-            viewModel.dismissError()
+          errorInstance: viewModel.storedCrashInstance,
+          onDismiss: {
+            viewModel.dismissCrashReport()
           }
         )
       }
+    }
+    .alert("Error loading app", isPresented: $viewModel.showingErrorAlert) {
+      Button("OK") {
+        viewModel.dismissErrorAlert()
+      }
+    } message: {
+      Text(viewModel.errorAlertMessage)
     }
   }
 }

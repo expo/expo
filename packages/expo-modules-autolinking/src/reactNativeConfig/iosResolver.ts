@@ -1,4 +1,3 @@
-import fs from 'fs/promises';
 import { glob } from 'glob';
 import path from 'path';
 
@@ -8,7 +7,7 @@ import type {
 } from './reactNativeConfig.types';
 
 export async function resolveDependencyConfigImplIosAsync(
-  packageRoot: string,
+  resolution: { path: string; version: string },
   reactNativeConfig: RNConfigReactNativePlatformsConfigIos | null | undefined
 ): Promise<RNConfigDependencyIos | null> {
   if (reactNativeConfig === null) {
@@ -16,21 +15,19 @@ export async function resolveDependencyConfigImplIosAsync(
     return null;
   }
 
-  const podspecs = await glob('*.podspec', { cwd: packageRoot });
+  const podspecs = await glob('*.podspec', { cwd: resolution.path });
   if (!podspecs?.length) {
     return null;
   }
-  const mainPackagePodspec = path.basename(packageRoot) + '.podspec';
+
+  const mainPackagePodspec = path.basename(resolution.path) + '.podspec';
   const podspecFile = podspecs.includes(mainPackagePodspec)
     ? mainPackagePodspec
     : podspecs.sort((a, b) => a.localeCompare(b))[0];
-  const podspecPath = path.join(packageRoot, podspecFile);
-
-  const packageJson = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf8'));
-
+  const podspecPath = path.join(resolution.path, podspecFile);
   return {
     podspecPath,
-    version: packageJson.version,
+    version: resolution.version,
     configurations: reactNativeConfig?.configurations || [],
     scriptPhases: reactNativeConfig?.scriptPhases || [],
   };

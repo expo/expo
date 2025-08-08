@@ -13,6 +13,10 @@ struct HomeTabView: View {
 
       ScrollView {
         VStack(spacing: 20) {
+          if viewModel.hasStoredCrash {
+            crashReportBanner
+          }
+
           DevServersView(showingInfoDialog: $showingInfoDialog)
 
           if !viewModel.recentlyOpenedApps.isEmpty {
@@ -43,12 +47,27 @@ struct HomeTabView: View {
         .padding()
       }
     }
-    #if !os(tvOS)
-    .background(Color(.systemGroupedBackground))
-    #endif
+    .systemGroupedBackground()
     .overlay(
       DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
     )
+  }
+
+  private var crashReportBanner: some View {
+    Button {
+      viewModel.showCrashReport()
+    }
+    label: {
+      Text("The last time you tried to open an app the development build crashed. Tap to get more information.")
+        .font(.body)
+        .foregroundColor(.primary)
+        .multilineTextAlignment(.leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+    }
+    .buttonStyle(PlainButtonStyle())
+    .background(Color(.secondarySystemGroupedBackground))
+    .cornerRadius(12)
   }
 }
 
