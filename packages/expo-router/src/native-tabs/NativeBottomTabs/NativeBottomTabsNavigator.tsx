@@ -9,10 +9,15 @@ import {
   useNavigationBuilder,
   type EventMapBase,
 } from '@react-navigation/native';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, use } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
-import { NativeTabOptions, NativeTabsView, type NativeTabsViewProps } from './NativeTabsView';
+import {
+  NativeTabOptions,
+  NativeTabsContext,
+  NativeTabsView,
+  type NativeTabsViewProps,
+} from './NativeTabsView';
 import { withLayoutContext } from '../..';
 
 export interface NativeTabsNavigatorProps
@@ -33,6 +38,11 @@ export function NativeTabsNavigator({
   backBehavior = defaultBackBehavior,
   ...rest
 }: NativeTabsNavigatorProps) {
+  if (use(NativeTabsContext)) {
+    throw new Error(
+      'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
+    );
+  }
   const builder = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,

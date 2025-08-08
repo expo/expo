@@ -150,6 +150,8 @@ export interface NativeTabsViewProps {
   >;
 }
 
+export const NativeTabsContext = React.createContext<boolean>(false);
+
 // TODO: Add support for dynamic params inside a route
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { builder, style, minimizeBehavior, disableIndicator } = props;
@@ -226,7 +228,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
           },
         });
       }}>
-      {children}
+      <NativeTabsContext value>{children}</NativeTabsContext>
     </BottomTabs>
   );
 }

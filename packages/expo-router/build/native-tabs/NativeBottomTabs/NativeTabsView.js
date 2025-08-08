@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NativeTabsContext = void 0;
 exports.NativeTabsView = NativeTabsView;
 const react_1 = __importDefault(require("react"));
 const react_native_screens_1 = require("react-native-screens");
@@ -13,6 +14,7 @@ const linking_1 = require("../../link/linking");
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 // TODO: ENG-16896: Enable freeze globally and disable only for NativeTabsView
 (0, react_native_screens_1.enableFreeze)(false);
+exports.NativeTabsContext = react_1.default.createContext(false);
 // TODO: Add support for dynamic params inside a route
 function NativeTabsView(props) {
     const { builder, style, minimizeBehavior, disableIndicator } = props;
@@ -51,7 +53,7 @@ function NativeTabsView(props) {
                 },
             });
         }}>
-      {children}
+      <exports.NativeTabsContext value>{children}</exports.NativeTabsContext>
     </react_native_screens_1.BottomTabs>);
 }
 function convertOptionsIconToPropsIcon(icon) {

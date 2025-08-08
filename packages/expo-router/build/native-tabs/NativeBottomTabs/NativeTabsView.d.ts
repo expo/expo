@@ -98,6 +98,7 @@ export interface NativeTabsViewProps {
     disableIndicator?: boolean;
     builder: ReturnType<typeof useNavigationBuilder<TabNavigationState<ParamListBase>, TabRouterOptions, Record<string, (...args: any) => void>, NativeTabOptions, Record<string, any>>>;
 }
+export declare const NativeTabsContext: React.Context<boolean>;
 export declare function NativeTabsView(props: NativeTabsViewProps): React.JSX.Element;
 export {};
 //# sourceMappingURL=NativeTabsView.d.ts.map

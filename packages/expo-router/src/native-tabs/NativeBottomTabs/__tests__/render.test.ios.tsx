@@ -278,3 +278,25 @@ describe('First focused tab', () => {
     expect(BottomTabsScreen).not.toHaveBeenCalled();
   });
 });
+
+it('when nesting NativeTabs, it throws an Error', () => {
+  expect(() =>
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="nested" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'nested/_layout': () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="nested" />
+        </NativeTabs>
+      ),
+      'nested/index': () => <View testID="index-nested" />,
+    })
+  ).toThrow(
+    'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
+  );
+});
