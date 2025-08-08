@@ -222,11 +222,13 @@ It's also necessary to include supported platforms in the `platforms` array — 
 
 ### How is it different from React Native community CLI autolinking?
 
-- Expo Autolinking comes in with built-in support for monorepos, Yarn workspaces and transitive dependencies.
-- It's also significantly faster, even though the module resolution algorithm is more complex to be more reliable and match the Node's module resolution.
-- Expo module resolution is also capable of detecting the duplicates which is a common issue in monorepos.
-- Last but not least, it integrates well with all the features offered by Expo Modules APIs.
+- Expo Autolinking comes with built-in support for monorepos, package manager workspaces, transitive dependencies, and isolated dependencies installations.
+- It's also significantly faster, although the module resolution algorithm is more complex to be more reliable and match Node.js's module resolution.
+- Expo module resolution is also capable of detecting duplicate dependencies, which is a common issue in monorepos.
+- Last but not least, it integrates well with the features offered by Expo Modules APIs and supports React Native modules.
 
 ### Opting out of Expo Autolinking for React Native modules
 
-Starting from SDK 52, Expo Autolinking comes enabled by default, if you would like to use the React Native community CLI autolinking instead, set `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.
+Starting from SDK 52, Expo Autolinking replaces the React Native community CLI autolinking by default. If you would like to use the React Native community CLI's autolinking instead, set `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.
+
+With this environment variable set, Expo Autolinking will not be used to resolve React Native modules, but will continue to autolink Expo modules.
