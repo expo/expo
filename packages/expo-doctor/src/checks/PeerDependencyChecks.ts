@@ -1,9 +1,9 @@
-import { getVersionedNativeModulesAsync } from '@expo/cli/src/start/doctor/dependencies/bundledNativeModules';
 import fs from 'fs';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { Log } from '../utils/log';
+import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
 
 interface PackageJson {
   name: string;
@@ -34,11 +34,11 @@ export class PeerDependencyChecks implements DoctorCheck {
       };
     }
 
-    let bundledNativeModules: Record<string, string> = {};
-    try {
-      bundledNativeModules = await getVersionedNativeModulesAsync(projectRoot, exp.sdkVersion!);
-    } catch (error) {
-      Log.error('Warning: Could not fetch bundled native modules');
+    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(
+      projectRoot,
+      exp.sdkVersion!
+    );
+    if (!bundledNativeModules) {
       // If we can't get bundled native modules, return early to avoid false positives
       return {
         isSuccessful: true,
@@ -55,8 +55,9 @@ export class PeerDependencyChecks implements DoctorCheck {
       )
     ).flat();
 
+    const bundledNativeModulesSet = new Set(bundledNativeModules);
     const filteredPeerDependencyIssues = peerDependencyIssues.filter((issue) =>
-      bundledNativeModules.hasOwnProperty(issue.missingPeerDependency)
+      bundledNativeModulesSet.has(issue.missingPeerDependency)
     );
 
     const groupedByMissingPeerDependency = filteredPeerDependencyIssues.reduce(
