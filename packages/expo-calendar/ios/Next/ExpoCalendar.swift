@@ -51,7 +51,7 @@ internal final class ExpoCalendar: SharedObject {
     }
   }
 
-  func update(calendarRecord: CalendarRecord) throws {
+  func update(calendarRecord: CalendarRecordNext) throws {
     guard let calendar = self.calendar else {
       throw CalendarNoLongerExistsException()
     }
