@@ -53,7 +53,7 @@ public final class JavaScriptFunction<ReturnType>: AnyArgument, AnyJavaScriptVal
 
   // MARK: - AnyJavaScriptValue
 
-  internal static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
+  public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
     guard value.kind == .function else {
       throw Conversions.ConvertingException<JavaScriptFunction<ReturnType>>(value)
     }
