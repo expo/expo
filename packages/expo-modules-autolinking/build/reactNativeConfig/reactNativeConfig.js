@@ -11,6 +11,7 @@ const path_1 = __importDefault(require("path"));
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const autolinking_1 = require("../autolinking");
 const dependencies_1 = require("../dependencies");
 async function _resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
@@ -31,6 +32,12 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform, ex
         // Starting from version 0.76, the `react-native` package only defines platforms
         // when @react-native-community/cli-platform-android/ios is installed.
         // Therefore, we need to manually filter it out.
+        return null;
+    }
+    const hasConfig = !!libraryConfig || Object.keys(reactNativeConfig).length > 0;
+    if (!hasConfig && (await isExpoModule(resolution.path))) {
+        // NOTE(@kitten): We don't allow a package to be both an Expo Module and React Native module
+        // at the same time, if it doesn't contain a library config
         return null;
     }
     let platformData = null;
@@ -97,4 +104,14 @@ async function resolveAppProjectConfigAsync(projectRoot, platform, sourceDir) {
     }
     return {};
 }
+const isExpoModule = async (targetPath) => {
+    try {
+        return !!(await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(targetPath));
+    }
+    catch {
+        // We can find an Expo config which doesn't parse
+        // We then know this is an Expo Module, but it has a broken config
+        return true;
+    }
+};
 //# sourceMappingURL=reactNativeConfig.js.map
