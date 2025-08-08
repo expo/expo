@@ -40,9 +40,7 @@ The behavior of the module resolution can be customized using some configuration
 - per platform overrides with `expo.autolinking.ios` and `expo.autolinking.android` objects
 - options provided to the CLI command, the `use_expo_modules!` method in the **Podfile** or `useExpoModules` function in the **settings.gradle**
 
-<PaddedAPIBox>
-
-### `searchPaths`
+<PaddedAPIBox header="searchPaths">
 
 A list of paths relative to the app's root directory that Expo Autolinking should search for modules to autolink.
 Useful when your project has a custom structure or you want to link local packages from directories different than **node_modules**.
@@ -62,9 +60,7 @@ The paths you specify must still be structured like **node_modules** directories
 > To opt back into to the old behavior, set this list to your app's **node_modules** directories, for example: `["../../node_modules", "./node_modules"]`.
 
 </PaddedAPIBox>
-<PaddedAPIBox>
-
-### `exclude`
+<PaddedAPIBox header="exclude">
 
 A list of package names to exclude from autolinking.
 This is useful if you don't want to link some packages that specific platforms aren't using to reduce the binary size.
@@ -99,9 +95,7 @@ module.exports = {
 > **info** Before **SDK 54**, the `exclude` option only applied to Expo modules and not React Native modules. React Native modules could only be excluded using a **react-native.config.js** file in the root directory of your project.
 
 </PaddedAPIBox>
-<PaddedAPIBox platforms={['ios']}>
-
-### `flags`
+<PaddedAPIBox header="flags" platforms={["ios"]}>
 
 CocoaPods flags to pass to each autolinked pod. `inhibit_warnings` is likely the only flag most developers want to use, to inhibit Xcode warnings produced when compiling the autolinked modules.
 You can refer to the [CocoaPods Podfile documentation](https://guides.cocoapods.org/syntax/podfile.html#pod) for available flags.
@@ -133,17 +127,13 @@ use_expo_modules!({
 </CodeBlocksTable>
 
 </PaddedAPIBox>
-<PaddedAPIBox platforms={['android']}>
-
-### `buildFromSource`
+<PaddedAPIBox header="buildFromSource" platforms={["android"]}>
 
 A list of package names to opt out of prebuilt Expo modules.
 For complete reference, see [Prebuilt Expo Modules for Android](/guides/prebuilt-expo-modules/#selectively-opt-out).
 
 </PaddedAPIBox>
-<PaddedAPIBox>
-
-### `legacy_shallowReactNativeLinking`
+<PaddedAPIBox header="legacy_shallowReactNativeLinking">
 
 When resolving your app's React Native modules, Expo Autolinking searches your app's dependencies, and those dependencies' dependencies recursively (matching the [Node.js resolution algorithm](https://nodejs.org/api/modules.html#loading-from-node_modules-folders)). Before **SDK 54**, Expo Autolinking didn't search dependencies recursively and only resolved your app's direct dependencies.
 
@@ -153,9 +143,7 @@ When enabled, this flag opts you out of the new behavior and restores the behavi
 
 ## CLI commands
 
-<PaddedAPIBox>
-
-### `search`
+<PaddedAPIBox header="search">
 
 Searching is the first phase of resolving the Expo modules installed in a project. Its implementation is shared between all platforms. It finds all modules marked as Expo modules and determines which version is of the highest precedence (in case of duplicates).
 
@@ -181,9 +169,7 @@ The above command returns an object in JSON format with modules that have been f
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox>
-
-### `resolve`
+<PaddedAPIBox header="resolve">
 
 Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details, such as the path to the podspec or **build.gradle** files and module classes to link.
 
@@ -215,17 +201,13 @@ For example, with the `--platform apple` option it returns an object in JSON for
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox>
-
-### `verify`
+<PaddedAPIBox header="verify">
 
 Verifies the search results by checking whether there are no duplicate packages, otherwise an appropriate warning is shown.
 
 <Terminal cmd={['$ npx expo-modules-autolinking verify']} />
 
 </PaddedAPIBox>
-
-
 
 ## Common questions
 
