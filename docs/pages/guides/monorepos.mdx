@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. They can help speed up development for larger projects, make it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. Expo has first-class support for monorepos managed with package managers supporting workspaces - [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), [pnpm](https://pnpm.io/workspaces), and [yarn](https://yarnpkg.com/features/workspaces) (v1 Classic and Berry). Expo automatically detects monorepos and configures new app projects added to a monorepo. The detection is based on the workspace configuration in your project.
+Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. They can help speed up development for larger projects, make it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. Expo has first-class support for monorepos managed with package managers supporting workspaces: [Bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), [pnpm](https://pnpm.io/workspaces), and [Yarn](https://yarnpkg.com/features/workspaces) (v1 Classic and Berry). Expo automatically detects monorepos and configures new app projects added to a monorepo. The detection is based on the workspace configuration in your project.
 
 > **info** Monorepos are not for every project. They're useful if multiple apps live in a single repository and share code, or can be helpful to colocate native modules with your app. The tradeoff is increased complexity when setting up and configuring tooling. Check whether your tools and libraries work well within a monorepo before setting one up.
 
@@ -24,7 +24,7 @@ If you're migrating to an Expo SDK version after 52 and have a **metro.config.js
 - `resolver.extraNodeModules`
 - `resolver.disableHierarchicalLookup`
 
-After modifying these options, you'll need to run Expo with `expo start --clear` once to erase the outdated Metro cache. If your app continues working as expected afterwards, it's a regular Node monorepo and won't need any special configuration going forward.
+After deleting these options, you'll need to run Expo with `npx expo start --clear` once to erase the outdated Metro cache. If your app continues working as expected afterwards, it's a regular Node monorepo and won't need any special configuration going forward.
 
 </Collapsible>
 
@@ -69,11 +69,11 @@ module.exports = config;
 In a monorepo, your app will typically be a in sub-directory of your repository and your package manager is configured to allow you to add dependencies to other packages from within your monorepo.
 For example, a basic structure of a monorepo containing Expo apps may look like this:
 
-- **apps** - Contains multiple projects, including Expo apps.
-- **packages** - Contains different packages used by apps.
-- **package.json** - Root package file
+- **apps**: Contains multiple projects, including Expo apps.
+- **packages**: Contains different packages used by apps.
+- **package.json**: Root package file.
 
-All monorepos should have a "root" **package.json** file. It is the main configuration for monorepos and may contain tools installed for all projects in the repository. Depending on which package manager you're using, the steps for setting up workspaces might differ, but for [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), and [yarn](https://yarnpkg.com/features/workspaces) a `workspaces` property should be added to the root **package.json** file that specifies [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks) for all workspaces in your monorepo:
+All monorepos should have a "root" **package.json** file. It is the main configuration for monorepos and may contain tools installed for all projects in the repository. Depending on which package manager you're using, the steps for setting up workspaces might differ, but for [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), and [yarn](https://yarnpkg.com/features/workspaces), a `workspaces` property should be added to the root **package.json** file that specifies [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks) for all workspaces in your monorepo:
 
 ```json package.json
 {
@@ -92,11 +92,11 @@ packages:
   - 'packages/*'
 ```
 
-### Create our first app
+### Create your first app
 
-Now that we have the basic monorepo structure set up, let's add our first app.
+Now that you have the basic monorepo structure set up, add your first app.
 
-Before we create our app, we have to create the **apps** directory. This directory contains all separate apps or websites that belong to this monorepo. Inside this **apps** directory, we can create a sub-directory that contains the Expo app.
+Before you create your app, you have to create the **apps** directory. This directory contains all separate apps or websites that belong to this monorepo. Inside this **apps** directory, you can create a sub-directory that contains the Expo app.
 
 <Tabs>
   <Tab label="npm">
@@ -127,7 +127,7 @@ Let's go back to the root and create the **packages** directory. This directory 
   <Tab label="npm">
     <Terminal
       cmd={[
-        '# Create our new package directory',
+        '# Create your new package directory',
         '$ mkdir -p packages/cool-package',
         '$ cd packages/cool-package',
         '',
@@ -140,7 +140,7 @@ Let's go back to the root and create the **packages** directory. This directory 
   <Tab label="Yarn">
     <Terminal
       cmd={[
-        '# Create our new package directory',
+        '# Create your new package directory',
         '$ mkdir -p packages/cool-package',
         '$ cd packages/cool-package',
         '',
@@ -153,7 +153,7 @@ Let's go back to the root and create the **packages** directory. This directory 
   <Tab label="pnpm">
     <Terminal
       cmd={[
-        '# Create our new package directory',
+        '# Create your new package directory',
         '$ mkdir -p packages/cool-package',
         '$ cd packages/cool-package',
         '',
@@ -166,7 +166,7 @@ Let's go back to the root and create the **packages** directory. This directory 
   <Tab label="Bun">
     <Terminal
       cmd={[
-        '# Create our new package directory',
+        '# Create your new package directory',
         '$ mkdir -p packages/cool-package',
         '$ cd packages/cool-package',
         '',
@@ -212,7 +212,7 @@ Bun, npm, and pnpm support specifying workspace dependencies using `"workspace:*
 
 After adding the package, install your dependencies with your package manager from the root directory of your monorepo to check for common warnings once again.
 
-Now you should be able to use the package inside your app! To test this, let's edit the **App.js** in our app and render the `greeting` text from our **cool-package**.
+Now you should be able to use the package inside your app! To test this, let's edit the **App.js** in your app and render the `greeting` text from our **cool-package**.
 
 ```jsx App.js
 import { greeting } from 'cool-package';
@@ -241,11 +241,11 @@ Monorepos may cause resolution and dependency issues that a regular project won'
 
 [bun](https://bun.com/docs/install/isolated) and [pnpm](https://pnpm.io/settings#nodelinker) have first-class support for isolated installs. For pnpm, this is the default installation strategy unless it's disabled.
 
-With isolated dependencies, package managers don't hoist packages from nested `node_modules` directories into higher ones. Instead, they create a central directory that contains your Node modules and create links to this directory instead. This dependency structure enforces that packages may only access their explicitly declared dependencies. This is a much stricter installation strategy than the traditional **hoisted** installation strategy, which are npm's and Yarn's default, which install dependencies in a flattened structure.
+With isolated dependencies, package managers don't hoist packages from nested `node_modules` directories into higher ones. Instead, they create a central directory that contains your Node modules and create links to this directory. This dependency structure enforces that packages may only access their explicitly declared dependencies. This is a much stricter installation strategy than the traditional **hoisted** installation strategy, which are npm's and Yarn's default, to install dependencies in a flattened structure.
 
 A side-effect of **hoisted** installations is that you can accidentally depend on Node modules you haven't specified in your own **package.json**'s `dependencies` or `peerDependencies`. Instead, many more dependencies that other packages rely on are hoisted and become accessible to you. This can cause non-deterministic behavior, and allow you to have broken dependency chains, which are more fragile and can cause resolution errors when updating or upgrading packages. This is especially common in monorepos.
 
-Starting with **SDK 54**, Expo supports isolated dependencies. Unfortunately, not all packages you install will work and some React Native libraries may cause build or resolution errors when used with isolated dependencies. If you encounter issues with isolated installations with [pnpm](https://pnpm.io/settings#nodelinker), switch to the **hoisted** installation strategy by changing the `node-linker` setting in an **.npmrc** file in the root of your repository:
+**Starting with SDK 54**, Expo supports isolated dependencies. Unfortunately, not all packages you install will work and some React Native libraries may cause build or resolution errors when used with isolated dependencies. If you encounter issues with isolated installations with [pnpm](https://pnpm.io/settings#nodelinker), switch to the **hoisted** installation strategy by changing the `node-linker` setting in an **.npmrc** file in the root of your repository:
 
 ```plain .npmrc
 node-linker=hoisted
