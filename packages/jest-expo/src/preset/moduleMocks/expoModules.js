@@ -1314,7 +1314,7 @@ module.exports = {
           isEmergencyLaunch: { type: 'boolean', mock: false },
           isEnabled: { type: 'boolean', mock: true },
           isUsingEmbeddedAssets: { type: 'boolean', mock: false },
-          launchDuration: { type: 'number', mock: 155.20203113555908 },
+          launchDuration: { type: 'number', mock: 455.30903339385986 },
           readLogEntriesAsync: { type: 'function' },
           reload: { type: 'function' },
           removeListeners: { type: 'function' },
