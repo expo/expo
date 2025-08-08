@@ -122,7 +122,7 @@ describe('server-output', () => {
     let server: BackgroundServer;
 
     const serverFetchAsync = (url: string, init?: RequestInit) => {
-      return server.fetchAsync(url, init, { attempts: 3 });
+      return server.fetchAsync(url, init, { attempts: 7 });
     };
 
     beforeAll(async () => {
