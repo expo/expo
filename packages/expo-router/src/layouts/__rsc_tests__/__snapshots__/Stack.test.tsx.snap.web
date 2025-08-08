@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`renders to RSC 1`] = `
-"1:I["src/modal/web/ModalStack.web.tsx",[],"RouterModalScreen",1]
+"1:I["src/modal/web/ModalStack.tsx",[],"RouterModalScreen",1]
 0:["$","$L1",null,{"options":{"title":"..."}},null]"
 `;
