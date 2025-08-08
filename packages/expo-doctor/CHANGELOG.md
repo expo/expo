@@ -5,8 +5,9 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
 
+- Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
+- Add check that detects duplicated native modules ([#38683](https://github.com/expo/expo/pull/38683) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 

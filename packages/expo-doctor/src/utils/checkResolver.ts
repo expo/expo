@@ -8,6 +8,7 @@ import {
 import { env } from './env';
 import { Log } from './log';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
+import { AutolinkingDependencyDuplicatesCheck } from '../checks/AutolinkingDependencyDuplicatesCheck';
 import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
@@ -47,6 +48,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new GlobalPackageInstalledLocallyCheck(),
     new DirectPackageInstallCheck(),
     new PeerDependencyChecks(),
+    new AutolinkingDependencyDuplicatesCheck(),
 
     // Version Checks
     new SupportPackageVersionCheck(),
