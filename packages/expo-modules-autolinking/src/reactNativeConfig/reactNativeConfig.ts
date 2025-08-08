@@ -99,11 +99,13 @@ export async function createReactNativeConfigAsync(
       ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
       : (options.searchPaths ?? []);
 
+  const limitDepth = options.legacy_shallowReactNativeLinking ? 1 : undefined;
+
   const resolutions = mergeResolutionResults(
     await Promise.all([
       scanDependenciesFromRNProjectConfig(options.projectRoot, projectConfig),
       ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
-      scanDependenciesRecursively(options.projectRoot),
+      scanDependenciesRecursively(options.projectRoot, { limitDepth }),
     ])
   );
 
