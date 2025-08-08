@@ -1,6 +1,7 @@
-import { Link, Modal } from 'expo-router';
+import { Link } from 'expo-router';
+import { Modal } from 'expo-router/build/modal/Modal';
 import { useState } from 'react';
-import { Button, ScrollView, Text, View } from 'react-native';
+import { Button, ScrollView, View } from 'react-native';
 
 import { MutateButton } from '../components/MutateButton';
 

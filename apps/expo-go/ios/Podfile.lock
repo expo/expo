@@ -2265,7 +2265,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-keyboard-controller (1.18.2):
+  - react-native-keyboard-controller (1.18.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2283,7 +2283,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-keyboard-controller/common (= 1.18.2)
+    - react-native-keyboard-controller/common (= 1.18.3)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2294,7 +2294,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-keyboard-controller/common (1.18.2):
+  - react-native-keyboard-controller/common (1.18.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3937,7 +3937,6 @@ DEPENDENCIES:
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - RNWorklets (from `../../../node_modules/react-native-worklets`)
-  - SocketRocket
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -4398,7 +4397,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: b58e9627004f47043897eeae830c3ef023678f3b
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 1631c0d1b00943a54db6d3003d924621239e506d
+  hermes-engine: 508aef00fe18a32c9a667e72afe990aa7f2829c5
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4444,7 +4443,7 @@ SPEC CHECKSUMS:
   React-logger: 3903016c02ae4dff7387d028501a3b03ba72879d
   React-Mapbuffer: 48d6d8d0361ab4be5a7b4825006ddfff5e3686ec
   React-microtasksnativemodule: bd7cfbd456840ebd272edad86b0e09595f2c80d5
-  react-native-keyboard-controller: 2ea75136c309c43b5f1b9b02e332628e80c8d936
+  react-native-keyboard-controller: bf7ec487800e1283b95532d1259bde1fdf7c4bd5
   react-native-maps: fece4020ca8007967fa5eb48c914a8f2c73e7d4c
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 5aa9fb30444ca4bbe382991b6783cc014ed5ca07
@@ -4512,6 +4511,6 @@ SPEC CHECKSUMS:
   Yoga: 72ab8318e9f1910fbdd236b045eb5455c8415d92
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 8c02d6375ca9e94808af454e704b44d0ccf2c0af
+PODFILE CHECKSUM: c3ca5c35bd03b01b9d8e595bfb1626ce9577aff9
 
 COCOAPODS: 1.16.2

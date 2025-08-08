@@ -21,7 +21,12 @@ function isStackAction(action) {
         action.type === 'REPLACE' ||
         action.type === 'PRELOAD');
 }
-const isPreviewAction = (action) => !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
+const isPreviewAction = (action) => !!action.payload &&
+    'params' in action.payload &&
+    !!action.payload.params &&
+    typeof action.payload === 'object' &&
+    '__internal__expoRouterIsPreviewNavigation' in action.payload.params &&
+    !!action.payload.params.__internal__expoRouterIsPreviewNavigation;
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.

@@ -1,14 +1,23 @@
 'use client';
 
+import { useNavigation, useRoute } from '@react-navigation/native';
 import type { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { isValidElement } from 'react';
 
 import type { NativeTabOptions } from './NativeTabsView';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
+import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import { Icon, Badge, Label } from '../common/elements';
 
 export type TabProps = PropsWithChildren<{
-  name: string;
+  /**
+   * The name of the route.
+   *
+   * This is required when used inside a Layout component.
+   *
+   * When used in a route it has no effect.
+   */
+  name?: string;
   /**
    * If true, the tab will be hidden from the tab bar.
    */
@@ -34,6 +43,25 @@ export type TabProps = PropsWithChildren<{
 }>;
 
 export function TabTrigger(props: TabProps) {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const isFocused = navigation.isFocused();
+
+  useSafeLayoutEffect(() => {
+    // This will cause the tab to update only when it is focused.
+    // As long as all tabs are loaded at the start, we don't need this check.
+    // It is here to ensure similar behavior to stack
+    if (isFocused) {
+      if (navigation.getState()?.type !== 'tab') {
+        throw new Error(
+          `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+        );
+      }
+      const options = convertTabPropsToOptions(props);
+      navigation.setOptions(options);
+    }
+  }, [isFocused, props]);
+
   return null;
 }
 

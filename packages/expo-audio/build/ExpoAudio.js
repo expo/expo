@@ -25,6 +25,10 @@ AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
     const processedOptions = options ? createRecordingOptions(options) : undefined;
     return prepareToRecordAsync.call(this, processedOptions);
 };
+const record = AudioModule.AudioRecorder.prototype.record;
+AudioModule.AudioRecorder.prototype.record = function (options) {
+    return record.call(this, options);
+};
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.
  *

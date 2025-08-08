@@ -46,7 +46,7 @@ The necessary changes to the native Android and iOS files are minimal and can be
 ### Apple TV
 
 - [Node.js (LTS)](https://nodejs.org/en/) on macOS.
-- Xcode 15 or later.
+- Xcode 16 or later.
 - tvOS SDK 17 or later. (This is not installed automatically with Xcode. You can install it later with `xcodebuild -downloadAllPlatforms`).
 
 ## Quick start
@@ -71,15 +71,19 @@ At this time, TV applications work with the following libraries and APIs listed 
 - [Asset](/versions/latest/sdk/asset/)
 - [AsyncStorage](/versions/latest/sdk/async-storage/)
 - [AV](/versions/latest/sdk/av/)
+- [BackgroundTask](/versions/latest/sdk/background-task/)
 - [BlurView](/versions/latest/sdk/blur-view/)
 - [BuildProperties](/versions/latest/sdk/build-properties/)
 - [Constants](/versions/latest/sdk/constants/)
 - [Crypto](/versions/latest/sdk/crypto/)
+- [DevClient](/versions/latest/sdk/dev-client/)
 - [Device](/versions/latest/sdk/device/)
+- [Expo UI](/versions/latest/sdk/ui/)
 - [FileSystem](/versions/latest/sdk/filesystem/)
 - [FlashList](/versions/latest/sdk/flash-list/)
 - [Font](/versions/latest/sdk/font/)
 - [Image](/versions/latest/sdk/image)
+- [ImageManipulator](/versions/latest/sdk/imagemanipulator/)]
 - [KeepAwake](/versions/latest/sdk/keep-awake/)
 - [LinearGradient](/versions/latest/sdk/linear-gradient/)
 - [Localization](/versions/latest/sdk/localization/)
@@ -90,18 +94,24 @@ At this time, TV applications work with the following libraries and APIs listed 
 - [Reanimated](/versions/latest/sdk/reanimated/)
 - [SafeAreaContext](/versions/latest/sdk/safe-area-context/)
 - [SecureStore](/versions/latest/sdk/securestore/)
+- [Skia](/versions/latest/sdk/skia/)
 - [SplashScreen](/versions/latest/sdk/splash-screen/)
+- [SQLite](/versions/latest/sdk/sqlite/)
 - [Svg](/versions/latest/sdk/svg/)
 - [SystemUI](/versions/latest/sdk/system-ui/)
+- [TaskManager](/versions/latest/sdk/task-manager/)
 - [TrackingTransparency](/versions/latest/sdk/tracking-transparency/)
 - [Updates](/versions/latest/sdk/updates/)
 - [Video](/versions/latest/sdk/video/)
+- [VideoThumbnails](/versions/latest/sdk/video-thumbnails/)
 
 TV also works with [React Navigation](https://reactnavigation.org/), [React Native Skia](https://shopify.github.io/react-native-skia/), and many other commonly used third-party React Native libraries. See [React Native directory](https://reactnative.directory/?tvos=true) to learn more about supported third-party libraries.
 
 #### Limitations
 
-- The [Expo DevClient](/versions/latest/sdk/dev-client/) library is not supported at this time.
+- The [Expo DevClient](/versions/latest/sdk/dev-client/) library is only supported in SDK 54 and later:
+  - **Android TV**: All operations are supported, similar to an Android phone.
+  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
 - The [Expo Router](/router/introduction/) library is only supported in SDK 51 and later.
 
 </Collapsible>
