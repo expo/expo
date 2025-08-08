@@ -59,10 +59,11 @@ async function createReactNativeConfigAsync(providedOptions) {
     const searchPaths = options.nativeModulesDir && fs_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
         : (options.searchPaths ?? []);
+    const limitDepth = options.legacy_shallowReactNativeLinking ? 1 : undefined;
     const resolutions = (0, dependencies_1.mergeResolutionResults)(await Promise.all([
         (0, dependencies_1.scanDependenciesFromRNProjectConfig)(options.projectRoot, projectConfig),
         ...searchPaths.map((searchPath) => (0, dependencies_1.scanDependenciesInSearchPath)(searchPath)),
-        (0, dependencies_1.scanDependenciesRecursively)(options.projectRoot),
+        (0, dependencies_1.scanDependenciesRecursively)(options.projectRoot, { limitDepth }),
     ]));
     const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => _resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames));
     return {
