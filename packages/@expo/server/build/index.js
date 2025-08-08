@@ -8,6 +8,7 @@ exports.createRequestHandler = createRequestHandler;
 require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
+const ImmutableRequest_1 = require("./ImmutableRequest");
 const error_1 = require("./error");
 const utils_1 = require("./utils");
 const debug = process.env.NODE_ENV === 'development'
@@ -18,6 +19,7 @@ function getProcessedManifest(path) {
     const routesManifest = JSON.parse(node_fs_1.default.readFileSync(path, 'utf-8'));
     const parsed = {
         ...routesManifest,
+        middleware: routesManifest.middleware,
         notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
             return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
@@ -57,14 +59,11 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
 }, getApiRoute = async (route) => {
     const filePath = node_path_1.default.join(distFolder, route.file);
     debug(`Handling API route: ${route.page}: ${filePath}`);
-    // TODO: What's the standard behavior for malformed projects?
-    if (!node_fs_1.default.existsSync(filePath)) {
-        return null;
-    }
-    if (/\.c?js$/.test(filePath)) {
-        return require(filePath);
-    }
-    return import(filePath);
+    return loadServerModule(filePath);
+}, getMiddleware = async (middleware) => {
+    const filePath = node_path_1.default.join(distFolder, middleware.file);
+    debug(`Loading middleware: ${middleware.file}: ${filePath}`);
+    return loadServerModule(filePath);
 }, handleRouteError = async (error) => {
     // In production the server should handle unexpected errors
     throw error;
@@ -89,6 +88,25 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         let request = incomingRequest;
         let url = new URL(request.url);
         debug('Request', url.pathname);
+        if (manifest.middleware && shouldRunMiddleware(request, manifest.middleware)) {
+            try {
+                const middlewareModule = await getMiddleware(manifest.middleware);
+                if (middlewareModule?.default) {
+                    const middlewareFn = middlewareModule.default;
+                    const middlewareResponse = await middlewareFn(new ImmutableRequest_1.ImmutableRequest(request));
+                    if (middlewareResponse instanceof Response) {
+                        debug('Middleware returned response, short-circuiting');
+                        return middlewareResponse;
+                    }
+                    // If middleware returns undefined/void, continue to route matching
+                }
+            }
+            catch (error) {
+                debug('Middleware execution error:', error);
+                // Shows RedBox in development
+                return handleRouteError(error);
+            }
+        }
         if (manifest.redirects) {
             for (const route of manifest.redirects) {
                 if (!route.namedRegex.test(url.pathname)) {
@@ -249,5 +267,27 @@ function respondRedirect(url, request, route) {
     }
     debug('Redirecting', status, target);
     return Response.redirect(target, status);
+}
+function loadServerModule(filePath) {
+    // TODO: What's the standard behavior for malformed projects?
+    if (!node_fs_1.default.existsSync(filePath)) {
+        return null;
+    }
+    if (/\.c?js$/.test(filePath)) {
+        return require(filePath);
+    }
+    return import(filePath);
+}
+/**
+ * Determines whether middleware should run for a given request based on matcher configuration.
+ */
+function shouldRunMiddleware(request, middleware) {
+    // TODO(@hassankhan): Implement pattern matching for middleware
+    debug('Middleware pattern matching is not yet implemented');
+    return true;
+    // No matcher means middleware runs on all requests
+    // if (!middleware.matcher) {
+    //   return true;
+    // }
 }
 //# sourceMappingURL=index.js.map
