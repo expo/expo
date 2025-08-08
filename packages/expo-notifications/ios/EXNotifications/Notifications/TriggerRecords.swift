@@ -401,7 +401,7 @@ struct NotificationRequestContentRecord: Record {
   @Field
   var attachments: [[String: Any]]?
   @Field
-  var interruptionLevel: String?
+  var interruptionLevel: InterruptionLevelRecord?
 
   func attachment(_ request: [String: Any]) -> UNNotificationAttachment? {
     let identifier = request["identifier"] as? String ?? ""
@@ -449,15 +449,6 @@ struct NotificationRequestContentRecord: Record {
     return options
   }
 
-  func deserializeInterruptionLevel(_ interruptionLevel: String) -> UNNotificationInterruptionLevel {
-    switch interruptionLevel {
-    case "passive": return .passive
-    case "active": return .active
-    case "timeSensitive": return .timeSensitive
-    case "critical": return .critical
-    default: return .passive
-    }
-  }
 
   func toUNMutableNotificationContent() -> UNMutableNotificationContent {
     let content = UNMutableNotificationContent()
@@ -514,8 +505,8 @@ struct NotificationRequestContentRecord: Record {
       }
     }
     content.attachments = notificationAttachments
-    if let interruptionLevel = interruptionLevel {
-      content.interruptionLevel = deserializeInterruptionLevel(interruptionLevel)
+    if #available(iOS 15.0, *), let interruptionLevel = interruptionLevel {
+      content.interruptionLevel = interruptionLevel.toUNNotificationInterruptionLevel()
     }
 
     return content

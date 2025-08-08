@@ -51,12 +51,10 @@ open class EmitterModule: Module, NotificationDelegate {
   }
 
   open func serializedNotification(_ notification: UNNotification) -> [String: Any] {
-    // TODO: convert serialization to Records
-    return EXNotificationSerializer.serializedNotification(notification)
+    return NotificationSerializer.serializedNotification(notification)
   }
 
   open func serializedResponse(_ response: UNNotificationResponse) -> [String: Any] {
-    // TODO: convert serialization to Records
-    return EXNotificationSerializer.serializedNotificationResponse(response)
+    return NotificationSerializer.serializedNotificationResponse(response)
   }
 }
