@@ -34,8 +34,8 @@ const getApiRoute = (dist) => async (route) => {
     return (await import(filePath)).default;
 };
 exports.getApiRoute = getApiRoute;
-const getMiddleware = (dist) => async (route) => {
-    const filePath = `${dist}/${route.file}`;
+const getMiddleware = (dist) => async (middleware) => {
+    const filePath = `${dist}/${middleware.file}`;
     return (await import(filePath)).default;
 };
 exports.getMiddleware = getMiddleware;

@@ -39,17 +39,16 @@ const getHtml = (dist) => async (_request, route) => {
 };
 exports.getHtml = getHtml;
 const getApiRoute = (dist) => async (route) => {
-    const filePath = node_path_1.default.join(dist, route.file);
-    debug(`Handling API route: ${route.page}: ${filePath}`);
-    return loadServerModule(filePath);
+    debug(`Handling API route: ${route.page}: ${route.file}`);
+    return loadServerModule(dist, route);
 };
 exports.getApiRoute = getApiRoute;
 const getMiddleware = (dist) => async (middleware) => {
-    const filePath = node_path_1.default.join(dist, middleware.file);
-    return loadServerModule(filePath);
+    return loadServerModule(dist, middleware);
 };
 exports.getMiddleware = getMiddleware;
-function loadServerModule(filePath) {
+async function loadServerModule(dist, mod) {
+    const filePath = node_path_1.default.join(dist, mod.file);
     // TODO: What's the standard behavior for malformed projects?
     if (!node_fs_1.default.existsSync(filePath)) {
         return null;

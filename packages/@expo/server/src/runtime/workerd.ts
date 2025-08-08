@@ -40,8 +40,8 @@ export const getApiRoute =
 
 export const getMiddleware =
   (dist: string) =>
-  async (route: Middleware): Promise<any> => {
-    const filePath = `${dist}/${route.file}`;
+  async (middleware: Middleware): Promise<any> => {
+    const filePath = `${dist}/${middleware.file}`;
     return (await import(filePath)).default;
   };
 
