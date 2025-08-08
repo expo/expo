@@ -145,11 +145,11 @@ When enabled, this flag opts you out of the new behavior and restores the behavi
 
 <PaddedAPIBox header="search">
 
-Searching is the first phase of resolving the Expo modules installed in a project. Its implementation is shared between all platforms. It finds all modules marked as Expo modules and determines which version is of the highest precedence (in case of duplicates).
+This command is called by the build system to resolve Expo modules during the first phase of autolinking. Its implementation is shared between all platforms. The output from `search` will contain a list of `duplicates` per package, if any duplicates were found.
 
 <Terminal cmd={['$ npx expo-modules-autolinking search']} />
 
-The above command returns an object in JSON format with modules that have been found as dependencies:
+The above command returns an object in JSON format with Expo modules that Expo Autolinking found:
 
 ```json
 {
@@ -158,12 +158,11 @@ The above command returns an object in JSON format with modules that have been f
     "version": "13.0.0",
     "config": {
       // Contents of `expo-module.config.json`
-      "platforms": ["ios", "android"],
-      "ios": { "modules": ["RandomModule"] },
-      "android": { "modules": ["expo.modules.random.RandomModule"] }
     },
-    "duplicates": [] // An array of other revisions (with lower precedence) of the same module
-  }
+    "duplicates": [
+      // List of conflicting duplicates for this module (with lower precedence)
+    ]
+  },
   // more modules...
 }
 ```
@@ -171,7 +170,7 @@ The above command returns an object in JSON format with modules that have been f
 </PaddedAPIBox>
 <PaddedAPIBox header="resolve">
 
-Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details, such as the path to the podspec or **build.gradle** files and module classes to link.
+This command is called by the build system during the second phase of autolinking. It outputs an object with more (platform-specific) details for each Expo module, such as the path to the podspec or **build.gradle** files and module classes to link.
 
 <Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <apple|android>']} />
 
@@ -203,9 +202,40 @@ For example, with the `--platform apple` option it returns an object in JSON for
 </PaddedAPIBox>
 <PaddedAPIBox header="verify">
 
-Verifies the search results by checking whether there are no duplicate packages, otherwise an appropriate warning is shown.
+Verifies the search results by checking for duplicate Expo modules. Warnings are shown for each conflicting, duplicate installation.
 
 <Terminal cmd={['$ npx expo-modules-autolinking verify']} />
+
+</PaddedAPIBox>
+<PaddedAPIBox header="react-native-config">
+
+This command is called by the build system when autolinking React Native modules. It outputs an object with more platform-specific details for each React Native module, such as the path to the podspec or gradle files.
+
+<Terminal cmd={['$ npx expo-modules-autolinking react-native-config']} />
+
+For example, with the `--platform ios` option it returns an object in **react-native.config.js**'s output format with information about each React Native dependency, and the path to the React Native installation.
+
+```json
+{
+  root: '/absolute/path/to',
+  reactNativePath: '/absolute/path/to/node_modules/react-native',
+  dependencies: {
+    '@react-native-async-storage/async-storage': {
+      root: '/absolute/path/to/node_modules/@react-native-async-storage/async-storage',
+      name: '@react-native-async-storage/async-storage',
+      platforms: {
+        ios: {
+          podspecPath: '/absolute/path/to/node_modules/@react-native-async-storage/async-storage/RNCAsyncStorage.podspec',
+          version: '',
+          configurations: [],
+          scriptPhases: []
+        }
+      }
+    },
+    // more modules...
+  }
+}
+```
 
 </PaddedAPIBox>
 
