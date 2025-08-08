@@ -67,7 +67,7 @@ struct HomeTabView: View {
     }
     .buttonStyle(PlainButtonStyle())
     .background(Color(.secondarySystemGroupedBackground))
-    .cornerRadius(12)
+    .cornerRadius(18)
   }
 }
 

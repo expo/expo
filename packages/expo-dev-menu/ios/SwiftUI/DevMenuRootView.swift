@@ -11,8 +11,6 @@ struct DevMenuRootView: View {
         HeaderView()
           .environmentObject(viewModel)
 
-        Divider()
-
         ZStack {
           DevMenuMainView()
             .environmentObject(viewModel)
@@ -24,9 +22,6 @@ struct DevMenuRootView: View {
           #endif
         }
       }
-      #if !os(tvOS)
-      .background(Color(.systemGroupedBackground))
-      #endif
     }
   }
 }

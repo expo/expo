@@ -3446,6 +3446,14 @@
     canvaskit-wasm "0.40.0"
     react-reconciler "0.31.0"
 
+"@shopify/react-native-skia@^2.1.1":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-2.2.2.tgz#eb8f762253509b000e7bbb2b8ce2b5508ab7b91f"
+  integrity sha512-5cAmTLdTi/ihH5iyyfBefWD7xhqPhMBBsy/za9+WrF4vXwWpsRXABQJbiz88rDpMsN9GCtEzI4p9pEP3fHRRGQ==
+  dependencies:
+    canvaskit-wasm "0.40.0"
+    react-reconciler "0.31.0"
+
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
