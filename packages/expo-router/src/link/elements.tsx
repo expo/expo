@@ -19,28 +19,28 @@ export interface LinkMenuActionProps {
    */
   icon?: SFSymbol;
   /**
-   * If true, the menu item will be disabled and not selectable.
+   * If `true`, the menu item will be disabled and not selectable.
    *
-   * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled) for more information.
    */
   disabled?: boolean;
   /**
-   * If true, the menu item will be displayed as destructive.
+   * If `true`, the menu item will be displayed as destructive.
    *
-   * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
    */
   destructive?: boolean;
   /**
-   * If true, the menu will be kept presented after the action is selected.
+   * If `true`, the menu will be kept presented after the action is selected.
    *
    * This is marked as unstable, because when action is selected it will recreate the menu,
    * which will close all opened submenus and reset the scroll position.
    *
-   * https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented) for more information.
    */
   unstable_keepPresented?: boolean;
   /**
-   * If true, the menu item will be displayed as selected.
+   * If `true`, the menu item will be displayed as selected.
    */
   isOn?: boolean;
   onPress: () => void;
@@ -50,7 +50,7 @@ export interface LinkMenuActionProps {
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
  *
- * **Note:** You can use the alias `Link.MenuAction` for this component.
+ * > **Note**: You can use the alias `Link.MenuAction` for this component.
  *
  * @platform ios
  */
@@ -78,23 +78,23 @@ export interface LinkMenuProps {
    */
   icon?: string;
   /**
-   * If true, the menu will be displayed as a palette.
+   * If `true`, the menu will be displayed as a palette.
    * This means that the menu will be displayed as one row
    *
-   * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
    */
   displayAsPalette?: boolean;
   /**
-   * If true, the menu will be displayed inline.
+   * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
    *
-   * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
    */
   displayInline?: boolean;
   /**
-   * If true, the menu item will be displayed as destructive.
+   * If `true`, the menu item will be displayed as destructive.
    *
-   * https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
    */
   destructive?: boolean;
   children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
@@ -114,7 +114,7 @@ export interface LinkMenuProps {
  * </Link.Menu>
  * ```
  *
- * **Note:** You can use the alias `Link.Menu` for this component.
+ * > **Note**: You can use the alias `Link.Menu` for this component.
  *
  * @platform ios
  */
@@ -179,7 +179,7 @@ export interface LinkPreviewProps {
  * </Link>
  * ```
  *
- * **Note:** You can use the alias `Link.Preview` for this component.
+ * > **Note**: You can use the alias `Link.Preview` for this component.
  *
  * @platform ios
  */
@@ -230,7 +230,7 @@ export type LinkTriggerProps = PropsWithChildren;
  * </Link>
  * ```
  *
- * **Note:** You can use the alias `Link.Trigger` for this component.
+ * > **Note**: You can use the alias `Link.Trigger` for this component.
  *
  * @platform ios
  */
