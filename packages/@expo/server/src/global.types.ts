@@ -1,7 +1,9 @@
-import type * as undici from 'undici';
-
 declare global {
-  interface RequestInit extends undici.RequestInit {
+  interface RequestInit {
+    duplex?: 'half';
+  }
+
+  interface Request {
     duplex?: 'half';
   }
 }
