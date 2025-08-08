@@ -78,13 +78,11 @@ class DevMenuViewModel: ObservableObject {
   func togglePerformanceMonitor() {
     devMenuManager.togglePerformanceMonitor()
     devMenuManager.closeMenu()
-    loadDevSettings()
   }
 
   func toggleElementInspector() {
     devMenuManager.toggleInspector()
     devMenuManager.closeMenu()
-    loadDevSettings()
   }
 
   func openJSInspector() {
