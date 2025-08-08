@@ -42,8 +42,7 @@ describe('server-output', () => {
         console.timeEnd('export-server');
 
         await executeAsync(projectRoot, [
-          'npx',
-          'esbuild',
+          'node_modules/.bin/esbuild',
           '--bundle',
           '--format=esm',
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
@@ -59,8 +58,7 @@ describe('server-output', () => {
       createServer: () =>
         createBackgroundServer({
           command: [
-            'npx',
-            'workerd',
+            'node_modules/.bin/workerd',
             'serve',
             path.join(path.join(projectRoot, 'dist-server-workerd'), 'server/config.capnp'),
           ],
