@@ -6,6 +6,26 @@ import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
 const debug = require('debug')('expo:start:server:metro:sticky-resolver') as typeof console.log;
 
+// This is a list of known modules we want to always include in sticky resolution
+const AUTOLINKING_MODULES = [
+  // NOTE: react-native won't be in autolinking output, since it's special
+  // We include it here manually, since we know it should be an unduplicated direct dependency
+  'react-native',
+  // Peer dependencies from expo
+  'react-native-webview',
+  '@expo/dom-webview',
+  // Dependencies from expo
+  'expo-asset',
+  'expo-constants',
+  'expo-file-system',
+  'expo-font',
+  'expo-keep-awake',
+  'expo-modules-core',
+  // Peer dependencies from expo-router
+  'react-native-gesture-handler',
+  'react-native-reanimated',
+];
+
 const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
 type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 
@@ -72,10 +92,14 @@ export async function createStickyModuleResolverInput({
         .map(async (platform) => {
           const dependencies = await autolinking.scanDependencyResolutionsForPlatform(
             linker,
-            platform
+            platform,
+            AUTOLINKING_MODULES
           );
           const moduleDescription = toPlatformModuleDescription(dependencies, platform);
-          return [platform, moduleDescription] satisfies [AutolinkingPlatform, PlatformModuleDescription];
+          return [platform, moduleDescription] satisfies [
+            AutolinkingPlatform,
+            PlatformModuleDescription,
+          ];
         })
     )
   ) as StickyModuleResolverInput;
