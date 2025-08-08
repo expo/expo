@@ -85,9 +85,11 @@ export function makeCachedDependenciesLinker(params: {
 
 export async function scanDependencyResolutionsForPlatform(
   linker: CachedDependenciesLinker,
-  platform: SupportedPlatform
+  platform: SupportedPlatform,
+  include?: string[]
 ): Promise<ResolutionResult> {
   const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
+  const includeNames = new Set(include);
   const reactNativeProjectConfig = await linker.loadReactNativeProjectConfig();
 
   const resolutions = mergeResolutionResults(
@@ -103,6 +105,8 @@ export async function scanDependencyResolutionsForPlatform(
   const dependencies = await filterMapResolutionResult(resolutions, async (resolution) => {
     if (excludeNames.has(resolution.name)) {
       return null;
+    } else if (includeNames.has(resolution.name)) {
+      return resolution;
     } else if (resolution.source === DependencyResolutionSource.RN_CLI_LOCAL) {
       // If the dependency was resolved frpom the React Native project config, we'll only
       // attempt to resolve it as a React Native module
