@@ -20,6 +20,18 @@ The core implementation can be found in the [`expo-modules-autolinking`](https:/
 
 Since SDK 52, Expo Autolinking not only links Expo modules, but also React Native modules. To use the React Native community CLI autolinking instead, refer to this page's guide on [opting out of Expo Autolinking for React Native modules].
 
+## Linking Behavior
+
+Expo Autolinking is integrated into the Gradle build system for Android, and CocoaPods for iOS. When building your app, the Expo Autolinking CLI is called and searches for Expo and React Native modules to autolink.
+This module resolution searches for candidate dependencies to autolink in four separate steps:
+
+1. For React Native modules only, it considers any `dependencies` in your project root's **react-native.config.js** that contain an explicit `root` path. This file is optional and doesn't exist in most Expo projects.
+2. It searches all directories specified in your autolinking configuration's `searchPaths` option.
+3. It searches local modules in the directory specified in your autolinking configuration's `nativeModulesDir` option, which defaults to `./modules/`.
+4. It resolves the dependencies of your app, and any dependency or peer dependency recursively. This matches the [Node.js resolution algorithm](https://nodejs.org/api/modules.html#loading-from-node_modules-folders).
+
+The autolinked modules are automatically added to the build, which usually means that your app's dependencies that contain native (platform-specific) code are set up automatically.
+
 ## Configuration
 
 The behavior of the module resolution can be customized using some configuration options. These options can be defined in three different places, from the lowest to the highest precedence:
