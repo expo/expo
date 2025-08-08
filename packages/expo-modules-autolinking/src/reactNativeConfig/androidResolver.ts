@@ -6,22 +6,11 @@ import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
-import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
 import {
   fileExistsAsync,
   globMatchFunctorAllAsync,
   globMatchFunctorFirstAsync,
 } from '../fileUtils';
-
-const isExpoModule = async (targetPath: string): Promise<boolean> => {
-  try {
-    return !!(await discoverExpoModuleConfigAsync(targetPath));
-  } catch {
-    // We can find an Expo config which doesn't parse
-    // We then know this is an Expo Module, but it has a broken config
-    return true;
-  }
-};
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
@@ -30,10 +19,10 @@ export async function resolveDependencyConfigImplAndroidAsync(
   if (reactNativeConfig === null) {
     // Skip autolinking for this package.
     return null;
-  } else if (reactNativeConfig === undefined && (await isExpoModule(packageRoot))) {
-    // NOTE(@kitten): This also matches Expo Modules, so we make sure it's a React Native module first
-    return null;
   }
+
+  // NOTE(@kitten): We allow `reactNativeConfig === undefined` here. That indicates a missing config file
+  // However, React Native modules with left out config files are explicitly supported and valid
 
   const sourceDir = reactNativeConfig?.sourceDir || 'android';
   const androidDir = path.join(packageRoot, sourceDir);

@@ -19,6 +19,7 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
+import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
 import { mergeLinkingOptionsAsync } from '../autolinking';
 import {
   DependencyResolution,
@@ -53,6 +54,13 @@ export async function _resolveReactNativeModule(
     // Starting from version 0.76, the `react-native` package only defines platforms
     // when @react-native-community/cli-platform-android/ios is installed.
     // Therefore, we need to manually filter it out.
+    return null;
+  }
+
+  const hasConfig = !!libraryConfig || Object.keys(reactNativeConfig).length > 0;
+  if (!hasConfig && (await isExpoModule(resolution.path))) {
+    // NOTE(@kitten): We don't allow a package to be both an Expo Module and React Native module
+    // at the same time, if it doesn't contain a library config
     return null;
   }
 
@@ -156,3 +164,13 @@ export async function resolveAppProjectConfigAsync(
 
   return {};
 }
+
+const isExpoModule = async (targetPath: string): Promise<boolean> => {
+  try {
+    return !!(await discoverExpoModuleConfigAsync(targetPath));
+  } catch {
+    // We can find an Expo config which doesn't parse
+    // We then know this is an Expo Module, but it has a broken config
+    return true;
+  }
+};
