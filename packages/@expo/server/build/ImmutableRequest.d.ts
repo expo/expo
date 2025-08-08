@@ -52,4 +52,5 @@ export declare class ImmutableRequest implements _ImmutableRequest {
      */
     clone(): Request;
 }
+export declare function assertRuntimeFetchAPISupport({ Request, Response, Headers, process, }?: any): void;
 export {};
