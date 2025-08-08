@@ -1,6 +1,3 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
 import { ImmutableRequest } from './ImmutableRequest';
 import { ExpoError } from './error';
 import { Manifest, Middleware, MiddlewareFunction, Route } from './types';
@@ -27,12 +24,7 @@ export function createRequestHandler({
   getHtml,
   getApiRoute,
   handleRouteError,
-  getMiddleware = async (middleware) => {
-    // TODO: pass dist
-    const filePath = path.join('.', middleware.file);
-
-    return loadServerModule(filePath);
-  },
+  getMiddleware,
   beforeErrorResponse = noopBeforeResponse,
   beforeResponse = noopBeforeResponse,
   beforeHTMLResponse = noopBeforeResponse,
@@ -41,7 +33,7 @@ export function createRequestHandler({
   getHtml: (request: Request, route: Route) => Promise<string | Response | null>;
   getRoutesManifest: () => Promise<Manifest | null>;
   getApiRoute: (route: Route) => Promise<any>;
-  getMiddleware?: (route: Middleware) => Promise<any>;
+  getMiddleware: (route: Middleware) => Promise<any>;
   handleRouteError: (error: Error) => Promise<Response>;
   beforeErrorResponse?: BeforeResponseCallback;
   beforeResponse?: BeforeResponseCallback;
@@ -293,18 +285,6 @@ export function createRequestHandler({
 
     return Response.redirect(target, status);
   }
-}
-
-function loadServerModule(filePath: string) {
-  // TODO: What's the standard behavior for malformed projects?
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
-
-  if (/\.c?js$/.test(filePath)) {
-    return require(filePath);
-  }
-  return import(filePath);
 }
 
 /**

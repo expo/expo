@@ -11,6 +11,7 @@ function createRequestHandler({ build }, setup = {}) {
         getRoutesManifest: (0, node_1.getRoutesManifest)(build),
         getHtml: (0, node_1.getHtml)(build),
         getApiRoute: (0, node_1.getApiRoute)(build),
+        getMiddleware: (0, node_1.getMiddleware)(build),
         handleRouteError: (0, node_1.handleRouteError)(),
         ...setup,
     });

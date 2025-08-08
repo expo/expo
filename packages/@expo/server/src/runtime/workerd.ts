@@ -1,4 +1,4 @@
-import { Manifest, RawManifest, Route } from '../types';
+import { Manifest, Middleware, RawManifest, Route } from '../types';
 import { initManifestRegExp } from '../utils/initManifestRegExp';
 
 // TODO: Allow adding extra prod headers like Cache-Control...
@@ -34,6 +34,13 @@ export const getHtml =
 export const getApiRoute =
   (dist: string) =>
   async (route: Route): Promise<any> => {
+    const filePath = `${dist}/${route.file}`;
+    return (await import(filePath)).default;
+  };
+
+export const getMiddleware =
+  (dist: string) =>
+  async (route: Middleware): Promise<any> => {
     const filePath = `${dist}/${route.file}`;
     return (await import(filePath)).default;
   };

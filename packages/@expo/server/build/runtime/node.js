@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getApiRoute = exports.getHtml = exports.getRoutesManifest = exports.handleRouteError = void 0;
+exports.getMiddleware = exports.getApiRoute = exports.getHtml = exports.getRoutesManifest = exports.handleRouteError = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const initManifestRegExp_1 = require("../utils/initManifestRegExp");
@@ -38,11 +38,18 @@ const getHtml = (dist) => async (_request, route) => {
     return null;
 };
 exports.getHtml = getHtml;
-const getApiRoute = (dist) => 
-// TODO: Can we type this more strict?
-async (route) => {
+const getApiRoute = (dist) => async (route) => {
     const filePath = node_path_1.default.join(dist, route.file);
     debug(`Handling API route: ${route.page}: ${filePath}`);
+    return loadServerModule(filePath);
+};
+exports.getApiRoute = getApiRoute;
+const getMiddleware = (dist) => async (middleware) => {
+    const filePath = node_path_1.default.join(dist, middleware.file);
+    return loadServerModule(filePath);
+};
+exports.getMiddleware = getMiddleware;
+function loadServerModule(filePath) {
     // TODO: What's the standard behavior for malformed projects?
     if (!node_fs_1.default.existsSync(filePath)) {
         return null;
@@ -51,6 +58,5 @@ async (route) => {
         return require(filePath);
     }
     return import(filePath);
-};
-exports.getApiRoute = getApiRoute;
+}
 //# sourceMappingURL=node.js.map

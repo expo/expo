@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { RawManifest, Manifest, Route } from '../types';
+import { RawManifest, Manifest, Route, Middleware } from '../types';
 import { initManifestRegExp } from '../utils/initManifestRegExp';
 
 const debug =
@@ -41,21 +41,25 @@ export const getHtml =
     return null;
   };
 
-export const getApiRoute =
-  (dist: string) =>
-  // TODO: Can we type this more strict?
-  async (route: Route): Promise<any> => {
-    const filePath = path.join(dist, route.file);
+export const getApiRoute = (dist: string) => async (route: Route) => {
+  const filePath = path.join(dist, route.file);
+  debug(`Handling API route: ${route.page}: ${filePath}`);
+  return loadServerModule(filePath);
+};
 
-    debug(`Handling API route: ${route.page}: ${filePath}`);
+export const getMiddleware = (dist: string) => async (middleware: Middleware) => {
+  const filePath = path.join(dist, middleware.file);
+  return loadServerModule(filePath);
+};
 
-    // TODO: What's the standard behavior for malformed projects?
-    if (!fs.existsSync(filePath)) {
-      return null;
-    }
+function loadServerModule(filePath: string) {
+  // TODO: What's the standard behavior for malformed projects?
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
 
-    if (/\.c?js$/.test(filePath)) {
-      return require(filePath);
-    }
-    return import(filePath);
-  };
+  if (/\.c?js$/.test(filePath)) {
+    return require(filePath);
+  }
+  return import(filePath);
+}

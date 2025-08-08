@@ -4,7 +4,13 @@ import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getRoutesManifest, handleRouteError } from '../runtime/node';
+import {
+  getApiRoute,
+  getHtml,
+  getMiddleware,
+  getRoutesManifest,
+  handleRouteError,
+} from '../runtime/node';
 import type { Manifest } from '../types';
 
 type NextFunction = (err?: any) => void;
@@ -46,6 +52,7 @@ export function createRequestHandler(
     getRoutesManifest: getRoutesManifestCached,
     getHtml: getHtml(build),
     getApiRoute: getApiRoute(build),
+    getMiddleware: getMiddleware(build),
     handleRouteError: handleRouteError(),
     ...setup,
   });

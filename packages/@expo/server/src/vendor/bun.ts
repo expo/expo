@@ -1,5 +1,11 @@
 import { createRequestHandler as createExpoHandler } from '../index';
-import { getApiRoute, getHtml, getRoutesManifest, handleRouteError } from '../runtime/node';
+import {
+  getApiRoute,
+  getHtml,
+  getMiddleware,
+  getRoutesManifest,
+  handleRouteError,
+} from '../runtime/node';
 
 export type RequestHandler = (req: Request) => Promise<Response>;
 
@@ -14,6 +20,7 @@ export function createRequestHandler(
     getRoutesManifest: getRoutesManifest(build),
     getHtml: getHtml(build),
     getApiRoute: getApiRoute(build),
+    getMiddleware: getMiddleware(build),
     handleRouteError: handleRouteError(),
     ...setup,
   });

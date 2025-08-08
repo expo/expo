@@ -1,22 +1,13 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRequestHandler = createRequestHandler;
-const node_fs_1 = __importDefault(require("node:fs"));
-const node_path_1 = __importDefault(require("node:path"));
 const ImmutableRequest_1 = require("./ImmutableRequest");
 const error_1 = require("./error");
 const utils_1 = require("./utils");
 function noopBeforeResponse(_route, responseInit) {
     return responseInit;
 }
-function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware = async (middleware) => {
-    // TODO: pass dist
-    const filePath = node_path_1.default.join('.', middleware.file);
-    return loadServerModule(filePath);
-}, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
+function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     return async function handler(request) {
         const manifest = await getRoutesManifest();
         return requestHandler(request, manifest);
@@ -214,16 +205,6 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
         }
         return Response.redirect(target, status);
     }
-}
-function loadServerModule(filePath) {
-    // TODO: What's the standard behavior for malformed projects?
-    if (!node_fs_1.default.existsSync(filePath)) {
-        return null;
-    }
-    if (/\.c?js$/.test(filePath)) {
-        return require(filePath);
-    }
-    return import(filePath);
 }
 /**
  * Determines whether middleware should run for a given request based on matcher configuration.

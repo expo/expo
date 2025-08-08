@@ -8,7 +8,13 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createReadableStreamFromReadable } from './utils';
 import { createRequestHandler as createExpoHandler } from '../../index';
-import { getApiRoute, getHtml, getRoutesManifest, handleRouteError } from '../../runtime/node';
+import {
+  getApiRoute,
+  getHtml,
+  getMiddleware,
+  getRoutesManifest,
+  handleRouteError,
+} from '../../runtime/node';
 
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
@@ -21,6 +27,7 @@ export function createRequestHandler({ build }: { build: string }): RequestHandl
     getRoutesManifest: getRoutesManifest(build),
     getHtml: getHtml(build),
     getApiRoute: getApiRoute(build),
+    getMiddleware: getMiddleware(build),
     handleRouteError: handleRouteError(),
   });
 

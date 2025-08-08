@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getApiRoute = exports.getHtml = exports.getRoutesManifest = exports.handleRouteError = void 0;
+exports.getMiddleware = exports.getApiRoute = exports.getHtml = exports.getRoutesManifest = exports.handleRouteError = void 0;
 const initManifestRegExp_1 = require("../utils/initManifestRegExp");
 // TODO: Allow adding extra prod headers like Cache-Control...
 const handleRouteError = () => async (error) => {
@@ -34,6 +34,11 @@ const getApiRoute = (dist) => async (route) => {
     return (await import(filePath)).default;
 };
 exports.getApiRoute = getApiRoute;
+const getMiddleware = (dist) => async (route) => {
+    const filePath = `${dist}/${route.file}`;
+    return (await import(filePath)).default;
+};
+exports.getMiddleware = getMiddleware;
 const _importCache = new Map();
 async function importCached(target) {
     let result = _importCache.get(target);
