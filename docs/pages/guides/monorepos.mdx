@@ -39,7 +39,7 @@ Prior to SDK 52, to configure a monorepo with Metro manually, there were two man
 1. Metro had to be configured to watch code within the monorepo manually (for example, not just **apps/cool-app**.)
 2. Metro's resolution had to be adjusted to find packages in other workspaces and multiple `node_modules` folders (for example, **apps/cool-app/node_modules** or **node_modules**.)
 
-The configuration had to be adjusted by [creating a **metro.config.js**](/guides/customizing-metro/#customizing) with the following content:
+The configuration was adjusted by [creating a **metro.config.js**](/guides/customizing-metro/#customizing) with the following content:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
