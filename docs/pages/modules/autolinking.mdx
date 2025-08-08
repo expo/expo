@@ -162,7 +162,7 @@ The above command returns an object in JSON format with Expo modules that Expo A
     "duplicates": [
       // List of conflicting duplicates for this module (with lower precedence)
     ]
-  },
+  }
   // more modules...
 }
 ```
@@ -217,21 +217,21 @@ For example, with the `--platform ios` option it returns an object in **react-na
 
 ```json
 {
-  root: '/absolute/path/to',
-  reactNativePath: '/absolute/path/to/node_modules/react-native',
-  dependencies: {
-    '@react-native-async-storage/async-storage': {
-      root: '/absolute/path/to/node_modules/@react-native-async-storage/async-storage',
-      name: '@react-native-async-storage/async-storage',
-      platforms: {
-        ios: {
-          podspecPath: '/absolute/path/to/node_modules/@react-native-async-storage/async-storage/RNCAsyncStorage.podspec',
-          version: '',
-          configurations: [],
-          scriptPhases: []
+  "root": "/absolute/path/to",
+  "reactNativePath": "/absolute/path/to/node_modules/react-native",
+  "dependencies": {
+    "@react-native-async-storage/async-storage": {
+      "root": "/absolute/path/to/node_modules/@react-native-async-storage/async-storage",
+      "name": "@react-native-async-storage/async-storage",
+      "platforms": {
+        "ios": {
+          "podspecPath": "/absolute/path/to/node_modules/@react-native-async-storage/async-storage/RNCAsyncStorage.podspec",
+          "version": "",
+          "configurations": [],
+          "scriptPhases": []
         }
       }
-    },
+    }
     // more modules...
   }
 }
