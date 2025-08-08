@@ -14,5 +14,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.scanDependencyResolutionsForPlatform = exports.makeCachedDependenciesLinker = void 0;
 __exportStar(require("./autolinking"), exports);
+var dependencies_1 = require("./dependencies");
+Object.defineProperty(exports, "makeCachedDependenciesLinker", { enumerable: true, get: function () { return dependencies_1.makeCachedDependenciesLinker; } });
+Object.defineProperty(exports, "scanDependencyResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanDependencyResolutionsForPlatform; } });
 //# sourceMappingURL=exports.js.map
