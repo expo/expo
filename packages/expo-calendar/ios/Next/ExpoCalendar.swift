@@ -65,7 +65,7 @@ internal final class ExpoCalendar: SharedObject {
     }
 
     if let color = calendarRecord.color {
-      calendar.cgColor = EXUtilities.uiColor(color)?.cgColor
+      calendar.cgColor = calendarRecord.color?.cgColor
     }
 
     try eventStore.saveCalendar(calendar, commit: true)

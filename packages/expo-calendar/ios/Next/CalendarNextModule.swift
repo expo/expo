@@ -50,32 +50,32 @@ public final class CalendarNextModule: Module {
       return calendars.map { ExpoCalendar(calendar: $0) }
     }
 
-    Function("createCalendarNext") { (expoCalendar: CalendarRecordNext) throws -> ExpoCalendar in
+    Function("createCalendarNext") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
       let calendar: EKCalendar
-      switch expoCalendar.entityType {
+      switch calendarRecord.entityType {
       case .event:
         calendar = EKCalendar(for: .event, eventStore: eventStore)
       case .reminder:
         calendar = EKCalendar(for: .reminder, eventStore: eventStore)
       case .none:
-        throw EntityNotSupportedException(expoCalendar.entityType?.rawValue)
+        throw EntityNotSupportedException(calendarRecord.entityType?.rawValue)
       }
 
-      guard let title = expoCalendar.title else {
+      guard let title = calendarRecord.title else {
         throw MissingParameterException("title")
       }
 
-      if let sourceId = expoCalendar.sourceId {
+      if let sourceId = calendarRecord.sourceId {
         calendar.source = eventStore.source(withIdentifier: sourceId)
       } else {
         calendar.source =
-        expoCalendar.entityType == .event
+        calendarRecord.entityType == .event
         ? eventStore.defaultCalendarForNewEvents?.source
         : eventStore.defaultCalendarForNewReminders()?.source
       }
 
       calendar.title = title
-      calendar.cgColor = expoCalendar.color?.cgColor
+      calendar.cgColor = calendarRecord.color?.cgColor
 
       try eventStore.saveCalendar(calendar, commit: true)
       return ExpoCalendar(calendar: calendar)

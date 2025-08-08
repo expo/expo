@@ -1,5 +1,4 @@
 import ExpoModulesCore
-import SwiftUICore
 
 struct CalendarRecordNext: Record {
   @Field
@@ -13,7 +12,7 @@ struct CalendarRecordNext: Record {
   @Field
   var type: String?
   @Field
-  var color: Color?
+  var color: UIColor?
   @Field
   var entityType: CalendarEntity?
   @Field
