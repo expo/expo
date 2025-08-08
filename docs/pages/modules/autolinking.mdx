@@ -14,9 +14,11 @@ installing a library will require configuring even up to three different package
 Expo Autolinking is a mechanism that automates this process and reduces the library installation process to the minimum — usually just installing the package from `npm` and re-running `pod install`.
 The core implementation can be found in the [`expo-modules-autolinking`](https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking) package and is divided into three parts:
 
-1. common JavaScript CLI tool with the module resolution algorithm
-2. code that integrates with the Gradle build system for Android platform
-3. Ruby script that integrates with CocoaPods for iOS platform
+1. a CLI command with the module resolution algorithms
+2. code that integrates with the Gradle build system for Android
+3. code that integrates with CocoaPods for iOS
+
+Since SDK 52, Expo Autolinking not only links Expo modules, but also React Native modules. To use the React Native community CLI autolinking instead, refer to this page's guide on [opting out of Expo Autolinking for React Native modules].
 
 ## Configuration
 
@@ -213,6 +215,6 @@ It's also necessary to include supported platforms in the `platforms` array — 
 - Expo module resolution is also capable of detecting the duplicates which is a common issue in monorepos.
 - Last but not least, it integrates well with all the features offered by Expo Modules APIs.
 
-### Opting out of Expo Autolinking
+### Opting out of Expo Autolinking for React Native modules
 
 Starting from SDK 52, Expo Autolinking comes enabled by default, if you would like to use the React Native community CLI autolinking instead, set `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.
