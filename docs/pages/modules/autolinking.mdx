@@ -60,6 +60,21 @@ The paths you specify must still be structured like **node_modules** directories
 > To opt back into to the old behavior, set this list to your app's **node_modules** directories, for example: `["../../node_modules", "./node_modules"]`.
 
 </PaddedAPIBox>
+<PaddedAPIBox header="nativeModulesDir">
+
+A path relative to the app's root directory that Expo Autolinking should search for local modules to autolink. This option defaults to `"./modules"`. Changing this option is only useful if you need to change the path [for local Expo modules](/modules/get-started/).
+
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "nativeModulesDir": "./modules"
+    }
+  }
+}
+```
+
+</PaddedAPIBox>
 <PaddedAPIBox header="exclude">
 
 A list of package names to exclude from autolinking.
