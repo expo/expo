@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { Platform, processColor } from 'react-native';
+import { processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
 /**
@@ -45,16 +45,6 @@ export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarRemin
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details) {
         const newEvent = super.createEvent(stringifyDateValues(details));
-        if (Platform.OS === 'ios') {
-            if (details.hasOwnProperty('creationDate') ||
-                details.hasOwnProperty('lastModifiedDate') ||
-                details.hasOwnProperty('originalStartDate') ||
-                details.hasOwnProperty('isDetached') ||
-                details.hasOwnProperty('status') ||
-                details.hasOwnProperty('organizer')) {
-                console.warn('updateEventAsync was called with one or more read-only properties, which will not be updated');
-            }
-        }
         Object.setPrototypeOf(newEvent, ExpoCalendarEvent.prototype);
         return newEvent;
     }

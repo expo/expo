@@ -30,7 +30,7 @@ export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalen
  * such as retrieving its events, updating its details, and accessing its metadata.
  */
 export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
-    createEvent(details: Partial<Event>): ExpoCalendarEvent;
+    createEvent(details: Partial<Omit<Event, 'creationDate' | 'lastModifiedDate' | 'originalStartDate' | 'isDetached' | 'status' | 'organizer'>>): ExpoCalendarEvent;
     createReminder(details: Partial<Reminder>): ExpoCalendarReminder;
     listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[];
     listReminders(startDate?: Date | null, endDate?: Date | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
