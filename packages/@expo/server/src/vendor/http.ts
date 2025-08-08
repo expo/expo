@@ -1,4 +1,3 @@
-import { ExpoRoutesManifestV1 } from 'expo-router/build/routes-manifest';
 import * as http from 'http';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -6,6 +5,7 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from '../index';
 import { getApiRoute, getHtml, getRoutesManifest, handleRouteError } from '../runtime/node';
+import type { Manifest } from '../types';
 
 type NextFunction = (err?: any) => void;
 
@@ -22,11 +22,11 @@ export function createRequestHandler(
   { build }: { build: string },
   setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
 ): RequestHandler {
-  let routesManifest: ExpoRoutesManifestV1<RegExp> | null = null;
+  let routesManifest: Manifest | null = null;
 
   const defaultGetRoutesManifest = getRoutesManifest(build);
   const getRoutesManifestCached = async () => {
-    let manifest: ExpoRoutesManifestV1<RegExp> | null = null;
+    let manifest: Manifest | null = null;
     if (setup.getRoutesManifest) {
       // Development
       manifest = await setup.getRoutesManifest();
