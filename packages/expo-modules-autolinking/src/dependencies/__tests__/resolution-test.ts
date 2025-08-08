@@ -317,7 +317,12 @@ describe(scanDependenciesRecursively, () => {
         "react-native-dependency": {
           "depth": 1,
           "duplicates": [
-            "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
+            {
+              "name": "react-native-dependency",
+              "originPath": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
+              "path": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
+              "version": "",
+            },
           ],
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/parent-a/node_modules/react-native-dependency",

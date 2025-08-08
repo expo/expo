@@ -28,9 +28,9 @@ export async function resolveExpoModule(
       config: expoModuleConfig,
       duplicates:
         resolution.duplicates?.map((duplicate) => ({
-          name: resolution.name,
-          path: duplicate,
-          version: '', // NOTE: Are we actually using this?
+          name: duplicate.name,
+          path: duplicate.path,
+          version: duplicate.version,
         })) ?? [],
     };
   } else {

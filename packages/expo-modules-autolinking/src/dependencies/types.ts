@@ -1,9 +1,12 @@
-export interface DependencyResolution {
+export interface BaseDependencyResolution {
   name: string;
   version: string;
   path: string;
   originPath: string;
-  duplicates: string[] | null;
+}
+
+export interface DependencyResolution extends BaseDependencyResolution {
+  duplicates: BaseDependencyResolution[] | null;
   depth: number;
   [prop: string]: unknown;
 }

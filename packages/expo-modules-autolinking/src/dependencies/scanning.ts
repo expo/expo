@@ -94,7 +94,12 @@ export async function scanDependenciesInSearchPath(
     const resolution = resolvedDependencies[idx];
     const prevEntry = searchResults[resolution.name];
     if (prevEntry != null && resolution.path !== prevEntry.path) {
-      (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push(resolution.path);
+      (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push({
+        name: resolution.name,
+        version: resolution.version,
+        path: resolution.path,
+        originPath: resolution.originPath,
+      });
     } else if (prevEntry == null) {
       searchResults[resolution.name] = resolution;
     }

@@ -157,7 +157,12 @@ describe(scanDependenciesInSearchPath, () => {
         "duplicate": {
           "depth": 0,
           "duplicates": [
-            "/fake/project/node_modules/b",
+            {
+              "name": "duplicate",
+              "originPath": "/fake/project/node_modules/b",
+              "path": "/fake/project/node_modules/b",
+              "version": "0.0.1",
+            },
           ],
           "name": "duplicate",
           "originPath": "/fake/project/node_modules/a",
