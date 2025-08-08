@@ -35,7 +35,7 @@ export declare class ImmutableRequest implements _ImmutableRequest {
     get signal(): AbortSignal;
     get url(): string;
     get bodyUsed(): boolean;
-    get duplex(): "half";
+    get duplex(): any;
     get headers(): ImmutableHeaders;
     /**
      * The request body is not accessible in immutable requests.

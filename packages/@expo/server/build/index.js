@@ -4,33 +4,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRequestHandler = createRequestHandler;
-require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const ImmutableRequest_1 = require("./ImmutableRequest");
 const error_1 = require("./error");
 const utils_1 = require("./utils");
+function noopBeforeResponse(_route, responseInit) {
+    return responseInit;
+}
 function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware = async (middleware) => {
     // TODO: pass dist
     const filePath = node_path_1.default.join('.', middleware.file);
     return loadServerModule(filePath);
-}, }) {
+}, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     return async function handler(request) {
         const manifest = await getRoutesManifest();
+        return requestHandler(request, manifest);
+    };
+    async function requestHandler(incomingRequest, manifest) {
         if (!manifest) {
             // NOTE(@EvanBacon): Development error when Expo Router is not setup.
             // NOTE(@kitten): If the manifest is not found, we treat this as
             // an SSG deployment and do nothing
-            return new Response('Not found', {
+            return createResponse(null, 'Not found', {
                 status: 404,
                 headers: {
                     'Content-Type': 'text/plain',
                 },
             });
         }
-        return requestHandler(request, manifest);
-    };
-    async function requestHandler(incomingRequest, manifest) {
         let request = incomingRequest;
         let url = new URL(request.url);
         if (manifest.middleware && shouldRunMiddleware(request, manifest.middleware)) {
@@ -122,78 +124,95 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
             }
         }
         // 404
-        return new Response('Not found', {
+        return createResponse(null, 'Not found', {
             status: 404,
             headers: { 'Content-Type': 'text/plain' },
         });
     }
-}
-async function respondNotFoundHTML(html, route) {
-    if (typeof html === 'string') {
-        return new Response(html, {
-            status: 404,
-            headers: {
-                'Content-Type': 'text/html',
-            },
-        });
+    function createResponse(route, bodyInit, responseInit, routeType = null) {
+        let modifiedResponseInit = responseInit;
+        // Callback call order matters, general rule is to call more specific callbacks first.
+        if (routeType === 'html') {
+            modifiedResponseInit = beforeHTMLResponse(route, modifiedResponseInit);
+        }
+        if (routeType === 'api') {
+            modifiedResponseInit = beforeAPIResponse(route, modifiedResponseInit);
+        }
+        // Second to last is error response callback
+        if (responseInit.status && responseInit.status > 399) {
+            modifiedResponseInit = beforeErrorResponse(route, modifiedResponseInit);
+        }
+        // Generic before response callback last
+        modifiedResponseInit = beforeResponse(route, modifiedResponseInit);
+        return new Response(bodyInit, modifiedResponseInit);
     }
-    if ((0, utils_1.isResponse)(html)) {
-        // Only used for development errors
-        return html;
+    async function respondNotFoundHTML(html, route) {
+        if (typeof html === 'string') {
+            return createResponse(route, html, {
+                status: 404,
+                headers: {
+                    'Content-Type': 'text/html',
+                },
+            });
+        }
+        if ((0, utils_1.isResponse)(html)) {
+            // Only used for development errors
+            return html;
+        }
+        throw new error_1.ExpoError(`HTML route file ${route.page}.html could not be loaded`);
     }
-    throw new error_1.ExpoError(`HTML route file ${route.page}.html could not be loaded`);
-}
-async function respondAPI(mod, request, route) {
-    if (!mod || typeof mod !== 'object') {
-        throw new error_1.ExpoError(`API route module ${route.page} could not be loaded`);
+    async function respondAPI(mod, request, route) {
+        if (!mod || typeof mod !== 'object') {
+            throw new error_1.ExpoError(`API route module ${route.page} could not be loaded`);
+        }
+        if ((0, utils_1.isResponse)(mod)) {
+            // Only used for development API route bundling errors
+            return mod;
+        }
+        const handler = mod[request.method];
+        if (!handler || typeof handler !== 'function') {
+            return createResponse(route, 'Method not allowed', {
+                status: 405,
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+            }, 'api');
+        }
+        const params = (0, utils_1.parseParams)(request, route);
+        const response = await handler(request, params);
+        if (!(0, utils_1.isResponse)(response)) {
+            throw new error_1.ExpoError(`API route ${request.method} handler ${route.page} resolved to a non-Response result`);
+        }
+        return response;
     }
-    if ((0, utils_1.isResponse)(mod)) {
-        // Only used for development API route bundling errors
-        return mod;
+    function respondHTML(html, route) {
+        if (typeof html === 'string') {
+            return createResponse(route, html, {
+                status: 200,
+                headers: {
+                    'Content-Type': 'text/html',
+                },
+            }, 'html');
+        }
+        if ((0, utils_1.isResponse)(html)) {
+            // Only used for development error responses
+            return html;
+        }
+        throw new error_1.ExpoError(`HTML route file ${route.page}.html could not be loaded`);
     }
-    const handler = mod[request.method];
-    if (!handler || typeof handler !== 'function') {
-        return new Response('Method not allowed', {
-            status: 405,
-            headers: {
-                'Content-Type': 'text/plain',
-            },
-        });
+    function respondRedirect(url, request, route) {
+        // NOTE(@krystofwoldrich): @expo/server would not redirect when location was empty,
+        // it would keep searching for match and eventually return 404. Worker redirects to origin.
+        const target = (0, utils_1.getRedirectRewriteLocation)(url, request, route);
+        let status;
+        if (request.method === 'GET' || request.method === 'HEAD') {
+            status = route.permanent ? 301 : 302;
+        }
+        else {
+            status = route.permanent ? 308 : 307;
+        }
+        return Response.redirect(target, status);
     }
-    const params = (0, utils_1.parseParams)(request, route);
-    const response = await handler(request, params);
-    if (!(0, utils_1.isResponse)(response)) {
-        throw new error_1.ExpoError(`API route ${request.method} handler ${route.page} resolved to a non-Response result`);
-    }
-    return response;
-}
-function respondHTML(html, route) {
-    if (typeof html === 'string') {
-        return new Response(html, {
-            status: 200,
-            headers: {
-                'Content-Type': 'text/html',
-            },
-        });
-    }
-    if ((0, utils_1.isResponse)(html)) {
-        // Only used for development error responses
-        return html;
-    }
-    throw new error_1.ExpoError(`HTML route file ${route.page}.html could not be loaded`);
-}
-function respondRedirect(url, request, route) {
-    // NOTE(@krystofwoldrich): @expo/server would not redirect when location was empty,
-    // it would keep searching for match and eventually return 404. Worker redirects to origin.
-    const target = (0, utils_1.getRedirectRewriteLocation)(url, request, route);
-    let status;
-    if (request.method === 'GET' || request.method === 'HEAD') {
-        status = route.permanent ? 301 : 302;
-    }
-    else {
-        status = route.permanent ? 308 : 307;
-    }
-    return Response.redirect(target, status);
 }
 function loadServerModule(filePath) {
     // TODO: What's the standard behavior for malformed projects?
