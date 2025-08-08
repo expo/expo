@@ -3,6 +3,25 @@ import JsonFile from '@expo/json-file';
 import fs from 'fs';
 import path from 'path';
 
+const PODFILE_HERMES_PROPS_REFERENCE_RE =
+  /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m;
+const PODFILE_HERMES_TRUE_RE = /^\s*:hermes_enabled\s*=>\s*true,?\s+/m;
+const PODFILE_HERMES_FALSE_RE = /^\s*:hermes_enabled\s*=>\s*false,?\s+/m;
+
+function getLiteralHermesSettingFromPodfile(content: string): boolean | null {
+  const isPropsReference = content.search(PODFILE_HERMES_PROPS_REFERENCE_RE) >= 0;
+  if (isPropsReference) {
+    return null;
+  }
+  if (PODFILE_HERMES_TRUE_RE.test(content)) {
+    return true;
+  }
+  if (PODFILE_HERMES_FALSE_RE.test(content)) {
+    return false;
+  }
+  return null;
+}
+
 export async function assertEngineMismatchAsync(
   projectRoot: string,
   exp: Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>,
@@ -110,16 +129,16 @@ export async function maybeInconsistentEngineAndroidAsync(
 export function isHermesPossiblyEnabled(projectRoot: string): boolean | null {
   // Trying best to check ios native project if by chance to be consistent between app config
 
-  // Check ios/Podfile for ":hermes_enabled => true"
+  // Check ios/Podfile for a literal :hermes_enabled => (true|false)
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   if (fs.existsSync(podfilePath)) {
     const content = fs.readFileSync(podfilePath, 'utf8');
-    const isPropsReference =
-      content.search(
-        /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m
-      ) >= 0;
-    const isHermesBare = content.search(/^\s*:hermes_enabled\s*=>\s*true,?\s+/m) >= 0;
-    if (!isPropsReference && isHermesBare) {
+    const literal = getLiteralHermesSettingFromPodfile(content);
+    if (literal != null) return literal;
+
+    // If there is no props reference and no literal, assume Hermes is enabled by default
+    const hasPropsReference = PODFILE_HERMES_PROPS_REFERENCE_RE.test(content);
+    if (!hasPropsReference) {
       return true;
     }
   }
@@ -144,17 +163,20 @@ export async function maybeInconsistentEngineIosAsync(
 ): Promise<boolean> {
   // Trying best to check ios native project if by chance to be consistent between app config
 
-  // Check ios/Podfile for ":hermes_enabled => true"
+  // Check ios/Podfile for a literal :hermes_enabled => (true|false)
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   if (fs.existsSync(podfilePath)) {
     const content = await fs.promises.readFile(podfilePath, 'utf8');
-    const isPropsReference =
-      content.search(
-        /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m
-      ) >= 0;
-    const isHermesBare = content.search(/^\s*:hermes_enabled\s*=>\s*true,?\s+/m) >= 0;
-    if (!isPropsReference && isHermesManaged !== isHermesBare) {
-      return true;
+    const literal = getLiteralHermesSettingFromPodfile(content);
+    if (literal != null) {
+      if (isHermesManaged !== literal) return true;
+    } else {
+      // If there is no props reference and no literal, assume Hermes is enabled by default
+      const hasPropsReference = PODFILE_HERMES_PROPS_REFERENCE_RE.test(content);
+      if (!hasPropsReference) {
+        const assumedEnabled = true;
+        if (isHermesManaged !== assumedEnabled) return true;
+      }
     }
   }
 
