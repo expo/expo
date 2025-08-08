@@ -66,4 +66,96 @@ Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links
   description="View analytics about a project's performance, usage, and reach."
   href="/eas-insights/introduction/"
   Icon={DataIcon}
-/>
+/>EAS_REPOS=(
+  "Aqsaa6146-gmail-com/expo-winner-4tres"
+)
+
+for R in "${EAS_REPOS[@]}"; do
+  # secrets/vars
+  gh secret set EXPO_TOKEN -R "$R" -b"$EXPO_TOKEN"
+  [ -n "$SLACK_WEBHOOK_URL" ] && gh secret set SLACK_WEBHOOK_URL -R "$R" -b"$SLACK_WEBHOOK_URL"
+
+  gh repo clone "$R" repo -- -q
+  cd repo
+  git checkout -b ci/eas-build || git checkout -b ci/eas-build-2
+  mkdir -p .github/workflows
+  cat > .github/workflows/eas-build.yml <<'YAML'
+name: EAS Build
+on:
+  workflow_dispatch:
+  push: {branches: [main]}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EXPO_DEBUG: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Install EAS CLI
+        run: npm i -g eas-cli
+      - name: Install deps
+        run: if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else npm ci; fi
+      - name: EAS build (Android)
+        run: eas build --platform android --non-interactive --no-wait
+      - name: EAS build (iOS)
+        run: eas build --platform ios --non-interactive --no-wait
+YAML
+  git add . && git commit -m "ci: add EAS Build workflow"
+  git push -u origin HEAD
+  gh pr create -t "ci(eas): add Expo EAS build" -b "Adds EAS CI with EXPO_TOKEN"
+  cd ..; rm -rf repo
+done
+ECS_REPOS=(
+  "$ORG/thefortressapp-pro"
+)
+
+for R in "${ECS_REPOS[@]}"; do
+  # GitHub variables
+  gh variable set AWS_REGION   -R "$R" -b"$AWS_REGION"
+  gh variable set AWS_ROLE_ARN -R "$R" -b"$AWS_ROLE_ARN"
+  [ -n "$SLACK_WEBHOOK_URL" ] && gh secret set SLACK_WEBHOOK_URL -R "$R" -b"$SLACK_WEBHOOK_URL"
+
+  gh repo clone "$R" repo -- -q
+  cd repo
+  git checkout -b ci/deploy-ecs || git checkout -b ci/deploy-ecs-2
+  mkdir -p .github/workflows
+  cat > .github/workflows/deploy-ecs.yml <<'YAML'
+name: Deploy to Amazon ECS
+on:
+  push: {branches: [main]}
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region:     ${{ vars.AWS_REGION }}
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        id: ecr
+      - name: Build & Push image
+        run: |
+          REPO="${{ steps.ecr.outputs.registry }}/thefortressapp-pro"
+          docker build -t "$REPO:latest" .
+          docker push "$REPO:latest"
+      - name: Deploy service
+        run: |
+          aws ecs update-service \
+            --cluster fortress-cluster \
+            --service fortress-service \
+            --force-new-deployment
+YAML
+  git add . && git commit -m "ci: add ECS deploy via OIDC"
+  git push -u origin HEAD
+  gh pr create -t "ci(deploy): ECS via OIDC" -b "Adds OIDC + ECR/ECS deploy"
+  cd ..; rm -rf repo
+done
