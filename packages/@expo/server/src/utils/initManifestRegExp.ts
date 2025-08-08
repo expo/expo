@@ -1,8 +1,6 @@
-import type { ExpoRoutesManifestV1 } from 'expo-router/build/routes-manifest';
+import type { RawManifest, Manifest } from '../types';
 
-export function initManifestRegExp(
-  manifest: ExpoRoutesManifestV1<string>
-): ExpoRoutesManifestV1<RegExp> {
+export function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
     ...manifest,
     htmlRoutes: manifest.htmlRoutes.map((route) => ({

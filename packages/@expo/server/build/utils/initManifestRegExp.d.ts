@@ -1,2 +1,2 @@
-import type { ExpoRoutesManifestV1 } from 'expo-router/build/routes-manifest';
-export declare function initManifestRegExp(manifest: ExpoRoutesManifestV1<string>): ExpoRoutesManifestV1<RegExp>;
+import type { RawManifest, Manifest } from '../types';
+export declare function initManifestRegExp(manifest: RawManifest): Manifest;
