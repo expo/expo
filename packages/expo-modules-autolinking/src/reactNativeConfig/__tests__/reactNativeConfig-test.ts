@@ -324,7 +324,8 @@ describe(_resolveReactNativeModule, () => {
     );
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-      undefined
+      undefined,
+      null
     );
   });
 
@@ -359,7 +360,8 @@ describe(_resolveReactNativeModule, () => {
       {
         configurations: ['Debug'],
         scriptPhases: [{ name: 'test', path: './test.js' }],
-      }
+      },
+      undefined
     );
   });
 
@@ -401,7 +403,8 @@ describe(_resolveReactNativeModule, () => {
 
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-      null
+      null,
+      undefined
     );
   });
 

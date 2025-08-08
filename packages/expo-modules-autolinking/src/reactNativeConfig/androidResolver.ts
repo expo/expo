@@ -6,6 +6,7 @@ import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
 import {
   fileExistsAsync,
   globMatchFunctorAllAsync,
@@ -14,7 +15,8 @@ import {
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
-  reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined
+  reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined,
+  expoModuleConfig?: ExpoModuleConfig | null
 ): Promise<RNConfigDependencyAndroid | null> {
   if (reactNativeConfig === null) {
     // Skip autolinking for this package.
@@ -37,6 +39,14 @@ export async function resolveDependencyConfigImplAndroidAsync(
 
   if (!manifest && !gradle && !isPureCxxDependency) {
     return null;
+  }
+
+  if (reactNativeConfig === undefined && expoModuleConfig?.supportsPlatform('android')) {
+    if (!!gradle && !expoModuleConfig?.rawConfig.android?.gradlePath) {
+      // If the React Native module has a gradle file and the Expo module doesn't redirect it,
+      // they will conflict and we can't link both at the same time
+      return null;
+    }
   }
 
   let packageInstance: string | null = null;
