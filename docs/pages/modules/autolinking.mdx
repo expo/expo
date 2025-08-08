@@ -18,80 +18,6 @@ The core implementation can be found in the [`expo-modules-autolinking`](https:/
 2. code that integrates with the Gradle build system for Android platform
 3. Ruby script that integrates with CocoaPods for iOS platform
 
-## CLI commands
-
-<PaddedAPIBox>
-
-### `search`
-
-Searching is the first phase of resolving the Expo modules installed in a project. Its implementation is shared between all platforms. It finds all modules marked as Expo modules and determines which version is of the highest precedence (in case of duplicates).
-
-<Terminal cmd={['$ npx expo-modules-autolinking search']} />
-
-The above command returns an object in JSON format with modules that have been found as dependencies:
-
-```json
-{
-  "expo-random": {
-    "path": "/absolute/path/to/node_modules/expo-random",
-    "version": "13.0.0",
-    "config": {
-      // Contents of `expo-module.config.json`
-      "platforms": ["ios", "android"],
-      "ios": { "modules": ["RandomModule"] },
-      "android": { "modules": ["expo.modules.random.RandomModule"] }
-    },
-    "duplicates": [] // An array of other revisions (with lower precedence) of the same module
-  }
-  // more modules...
-}
-```
-
-</PaddedAPIBox>
-<PaddedAPIBox>
-
-### `resolve`
-
-Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details, such as the path to the podspec or **build.gradle** files and module classes to link.
-
-<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <apple|android>']} />
-
-For example, with the `--platform apple` option it returns an object in JSON format with an array of modules and resolved details for the platform:
-
-```json
-{
-  "modules": [
-    {
-      "packageName": "expo-random",
-      "packageVersion": "13.0.0",
-      "pods": [
-        {
-          "podName": "ExpoRandom",
-          "podspecDir": "/absolute/path/to/node_modules/expo-random/ios"
-        }
-      ],
-      "swiftModuleNames": ["ExpoRandom"],
-      "modules": ["RandomModule"],
-      "appDelegateSubscribers": [],
-      "reactDelegateHandlers": [],
-      "debugOnly": false
-    }
-    // more modules...
-  ]
-}
-```
-
-</PaddedAPIBox>
-<PaddedAPIBox>
-
-### `verify`
-
-Verifies the search results by checking whether there are no duplicate packages, otherwise an appropriate warning is shown.
-
-<Terminal cmd={['$ npx expo-modules-autolinking verify']} />
-
-</PaddedAPIBox>
-
 ## Configuration
 
 The behavior of the module resolution can be customized using some configuration options. These options can be defined in three different places, from the lowest to the highest precedence:
@@ -192,6 +118,82 @@ use_expo_modules!({
 </CodeBlocksTable>
 
 </PaddedAPIBox>
+
+## CLI commands
+
+<PaddedAPIBox>
+
+### `search`
+
+Searching is the first phase of resolving the Expo modules installed in a project. Its implementation is shared between all platforms. It finds all modules marked as Expo modules and determines which version is of the highest precedence (in case of duplicates).
+
+<Terminal cmd={['$ npx expo-modules-autolinking search']} />
+
+The above command returns an object in JSON format with modules that have been found as dependencies:
+
+```json
+{
+  "expo-random": {
+    "path": "/absolute/path/to/node_modules/expo-random",
+    "version": "13.0.0",
+    "config": {
+      // Contents of `expo-module.config.json`
+      "platforms": ["ios", "android"],
+      "ios": { "modules": ["RandomModule"] },
+      "android": { "modules": ["expo.modules.random.RandomModule"] }
+    },
+    "duplicates": [] // An array of other revisions (with lower precedence) of the same module
+  }
+  // more modules...
+}
+```
+
+</PaddedAPIBox>
+<PaddedAPIBox>
+
+### `resolve`
+
+Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details, such as the path to the podspec or **build.gradle** files and module classes to link.
+
+<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <apple|android>']} />
+
+For example, with the `--platform apple` option it returns an object in JSON format with an array of modules and resolved details for the platform:
+
+```json
+{
+  "modules": [
+    {
+      "packageName": "expo-random",
+      "packageVersion": "13.0.0",
+      "pods": [
+        {
+          "podName": "ExpoRandom",
+          "podspecDir": "/absolute/path/to/node_modules/expo-random/ios"
+        }
+      ],
+      "swiftModuleNames": ["ExpoRandom"],
+      "modules": ["RandomModule"],
+      "appDelegateSubscribers": [],
+      "reactDelegateHandlers": [],
+      "debugOnly": false
+    }
+    // more modules...
+  ]
+}
+```
+
+</PaddedAPIBox>
+<PaddedAPIBox>
+
+### `verify`
+
+Verifies the search results by checking whether there are no duplicate packages, otherwise an appropriate warning is shown.
+
+<Terminal cmd={['$ npx expo-modules-autolinking verify']} />
+
+</PaddedAPIBox>
+
+
 
 ## Common questions
 
