@@ -325,4 +325,42 @@ describe(scanDependenciesRecursively, () => {
       }
     `);
   });
+
+  it('allows depth to be limited', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedNodeModule('root', {
+          pkgDependencies: { 'react-native-third-party': '*' },
+        }),
+        node_modules: {
+          'react-native-third-party': {
+            ...mockedNodeModule('react-native-third-party', {
+              pkgDependencies: { 'react-native-dependency': '*' },
+            }),
+            node_modules: {
+              'react-native-dependency': {
+                ...mockedNodeModule('react-native-dependency'),
+              },
+            },
+          },
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesRecursively(projectRoot, { limitDepth: 1 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "version": "",
+        },
+      }
+    `);
+  });
 });

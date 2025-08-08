@@ -100,11 +100,12 @@ async function resolveDependencies(
 
 interface ResolutionOptions {
   shouldIncludeDependency?(name: string): boolean;
+  limitDepth?: number;
 }
 
 export async function scanDependenciesRecursively(
   rawPath: string,
-  { shouldIncludeDependency = defaultShouldIncludeDependency }: ResolutionOptions = {}
+  { shouldIncludeDependency = defaultShouldIncludeDependency, limitDepth }: ResolutionOptions = {}
 ): Promise<ResolutionResult> {
   const rootPath = await maybeRealpath(rawPath);
   if (!rootPath) {
@@ -125,7 +126,8 @@ export async function scanDependenciesRecursively(
   const _visitedPackagePaths = new Set();
   const getNodeModulePaths = createNodeModulePathsCreator();
   const searchResults: ResolutionResult = Object.create(null);
-  for (let depth = 0; modulePathsQueue.length > 0 && depth < MAX_DEPTH; depth++) {
+  const maxDepth = limitDepth != null ? limitDepth : MAX_DEPTH;
+  for (let depth = 0; modulePathsQueue.length > 0 && depth < maxDepth; depth++) {
     const resolutions = await Promise.all(
       modulePathsQueue.map(async (resolution) => {
         const nodeModulePaths = await getNodeModulePaths(resolution.path);

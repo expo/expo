@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { SupportedPlatform } from '../types';
+import type { SearchOptions, SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
   parsePackageNameAsync,
@@ -32,8 +32,13 @@ import {
 export async function _resolveReactNativeModule(
   resolution: DependencyResolution,
   projectConfig: RNConfigReactNativeProjectConfig | null,
-  platform: SupportedPlatform
+  platform: SupportedPlatform,
+  excludeNames: Set<string>
 ): Promise<RNConfigDependency | null> {
+  if (excludeNames.has(resolution.name)) {
+    return null;
+  }
+
   const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(resolution.path);
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
@@ -80,7 +85,10 @@ export async function _resolveReactNativeModule(
 export async function createReactNativeConfigAsync(
   providedOptions: RNConfigCommandOptions
 ): Promise<RNConfigResult> {
-  const options = await mergeLinkingOptionsAsync(providedOptions);
+  const options = await mergeLinkingOptionsAsync<SearchOptions & RNConfigCommandOptions>(
+    providedOptions
+  );
+  const excludeNames = new Set(options.exclude);
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(
     options.projectRoot
   );
@@ -91,16 +99,18 @@ export async function createReactNativeConfigAsync(
       ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
       : (options.searchPaths ?? []);
 
+  const limitDepth = options.legacy_shallowReactNativeLinking ? 1 : undefined;
+
   const resolutions = mergeResolutionResults(
     await Promise.all([
       scanDependenciesFromRNProjectConfig(options.projectRoot, projectConfig),
       ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
-      scanDependenciesRecursively(options.projectRoot),
+      scanDependenciesRecursively(options.projectRoot, { limitDepth }),
     ])
   );
 
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
-    _resolveReactNativeModule(resolution, projectConfig, options.platform)
+    _resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames)
   );
 
   return {

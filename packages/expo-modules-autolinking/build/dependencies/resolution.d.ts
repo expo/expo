@@ -4,6 +4,7 @@ declare module 'node:module' {
 }
 interface ResolutionOptions {
     shouldIncludeDependency?(name: string): boolean;
+    limitDepth?: number;
 }
-export declare function scanDependenciesRecursively(rawPath: string, { shouldIncludeDependency }?: ResolutionOptions): Promise<ResolutionResult>;
+export declare function scanDependenciesRecursively(rawPath: string, { shouldIncludeDependency, limitDepth }?: ResolutionOptions): Promise<ResolutionResult>;
 export {};

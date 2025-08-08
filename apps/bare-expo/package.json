@@ -21,6 +21,7 @@
   },
   "expo": {
     "autolinking": {
+      "legacy_shallowReactNativeLinking": true,
       "exclude": [
         "expo-ads-facebook",
         "expo-ads-admob",
