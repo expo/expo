@@ -44,9 +44,20 @@ function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, 
             if (child.props.children) {
                 acc.badgeValue = String(child.props.children);
             }
+            else if (!child.props.hidden) {
+                // If no value is provided, we set it to a space to show the badge
+                // Otherwise, the `react-native-screens` will interpret it as a hidden badge
+                // https://github.com/software-mansion/react-native-screens/blob/b4358fd95dd0736fc54df6bb97f210dc89edf24c/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm#L172
+                acc.badgeValue = ' ';
+            }
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Label)) {
-            acc.title = child.props.children;
+            if (child.props.hidden) {
+                acc.title = '';
+            }
+            else {
+                acc.title = child.props.children;
+            }
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Icon)) {
             if ('src' in child.props || 'selectedSrc' in child.props) {
