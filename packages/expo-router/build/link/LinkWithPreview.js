@@ -66,7 +66,7 @@ function LinkWithPreview({ children, ...rest }) {
             prevHrefWithoutQuery.current = hrefWithoutQuery;
         }
     }, [hrefWithoutQuery]);
-    const [nextScreenId, prefetch] = (0, useNextScreenId_1.useNextScreenId)();
+    const [{ nextScreenId, tabPath }, prefetch] = (0, useNextScreenId_1.useNextScreenId)();
     (0, react_1.useEffect)(() => {
         if ((0, url_1.shouldLinkExternally)(String(rest.href))) {
             if (process.env.NODE_ENV !== 'production') {
@@ -99,10 +99,13 @@ function LinkWithPreview({ children, ...rest }) {
     const trigger = react_1.default.useMemo(() => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>, [triggerElement, children]);
     const preview = react_1.default.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
+    const tabPathValue = (0, react_1.useMemo)(() => ({
+        path: tabPath,
+    }), [tabPath]);
     if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
     }
-    return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} onWillPreviewOpen={() => {
+    return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} tabPath={tabPathValue} onWillPreviewOpen={() => {
             isPreviewTapped.current = false;
             prefetch(rest.href);
             setIsCurrenPreviewOpen(true);

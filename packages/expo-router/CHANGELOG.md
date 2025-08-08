@@ -46,6 +46,7 @@
 - Fix preloading of Unmatched screen ([#38556](https://github.com/expo/expo/pull/38556) by [@Ubax](https://github.com/Ubax))
 - Fix context menu updates ([#38561](https://github.com/expo/expo/pull/38561) by [@Ubax](https://github.com/Ubax))
 - Fix issues with link preview in heavy views ([#38534](https://github.com/expo/expo/pull/38534) by [@Ubax](https://github.com/Ubax))
+- Fix Link Preview navigation in NativeTabs ([#38283](https://github.com/expo/expo/pull/38283) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
