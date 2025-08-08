@@ -69,7 +69,13 @@ if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
 
   MESSAGE="Release triggered by: $EAS_BUILD_USERNAME\\nCommit author: $COMMIT_AUTHOR\\n$EAS_BUILD_MESSAGE_PART\\n$GITHUB_MESSAGE_PART"
 
-  source $ROOT_DIR/secrets/expotools.env
+  SECRET_NAME="${EXPO_EXPOTOOLS_SECRET_NAME:-expo-expotools-env}"
+  if secrets=$(gcloud secrets versions access latest --secret "$SECRET_NAME" 2>/dev/null); then
+    eval "export $(echo "$secrets" | jq -r 'to_entries | map("\(.key)=\(.value)") | @sh')"
+  else
+    echo "Error: Failed to access GCP secret '$SECRET_NAME'"
+    exit 1
+  fi
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
     et eas android-apk-publish
     notify_slack "Successful Expo Go Android APK build. Published to S3 and updated staging versions endpoint" "$MESSAGE"

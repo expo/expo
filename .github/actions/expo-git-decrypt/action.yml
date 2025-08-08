@@ -1,31 +1,22 @@
-name: 'Expo Git Decrypt'
-description: 'Composite action to perform git secrets decryption.'
+name: 'Expo GCP Secrets Setup'
+description: 'Composite action to set up Google Cloud secrets access.'
 
 inputs:
-  key:
-    description: 'An encrypted git key.'
+  service_account_key:
+    description: 'GCP service account key JSON for secrets access (e.g., secrets.GCP_SERVICE_ACCOUNT_KEY)'
     required: true
 
 runs:
   using: 'composite'
   steps:
-    # OS labels for runners has been taken from docs:
-    # * https://docs.github.com/en/actions/learn-github-actions/contexts#runner-context
-    - name: 🐙 Install git-crypt on Linux
-      if: ${{ runner.os == 'Linux' }}
-      shell: bash
-      run: sudo apt-get install git-crypt
-    - name: 🍺 Install git-crypt on macOS
-      if: ${{ runner.os == 'macOS' }}
-      shell: bash
-      run: brew install git-crypt || true
-    - name: 🔓 Decrypt secrets if possible
-      env:
-        GIT_CRYPT_KEY_BASE64: ${{ inputs.key }}
+    - name: 🔐 Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ inputs.service_account_key }}
+    - name: 🔧 Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+    - name: 🔓 Verify GCP secrets access
       shell: bash
       run: |
-        if [[ ${GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then
-          echo 'git-crypt key not present in environment'
-        else
-          git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
-        fi
+        echo "GCP secrets access configured successfully"
+        gcloud auth list

@@ -1,5 +1,6 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
+import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -16,13 +17,16 @@ type TemplateSubstitutions = {
 
 async function getTemplateSubstitutionsFromSecrets(): Promise<TemplateSubstitutions> {
   try {
-    return await new JsonFile<TemplateSubstitutions>(
-      path.join(EXPO_DIR, 'secrets', 'keys.json')
-    ).readAsync();
+    const secretName = process.env.EXPO_KEYS_SECRET_NAME || 'expo-expo-keys-json';
+    const secretJson = execSync(`gcloud secrets versions access latest --secret ${secretName}`, {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    return JSON.parse(secretJson);
   } catch {
-    // Don't have access to decrypted secrets, use public keys
+    // Don't have access to GCP secrets, use public keys
     console.log(
-      "You don't have access to decrypted secrets. Falling back to `template-files/keys.json`."
+      "You don't have access to GCP secrets. Falling back to `template-files/keys.json`."
     );
     return await new JsonFile<TemplateSubstitutions>(
       path.join(EXPO_DIR, 'template-files', 'keys.json')
