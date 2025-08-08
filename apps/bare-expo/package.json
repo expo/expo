@@ -21,12 +21,12 @@
   },
   "expo": {
     "autolinking": {
+      "legacy_shallowReactNativeLinking": true,
       "exclude": [
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-module-template",
-        "expo-module-template-local",
-        "@shopify/react-native-skia"
+        "expo-module-template-local"
       ],
       "ios": {
         "flags": {
