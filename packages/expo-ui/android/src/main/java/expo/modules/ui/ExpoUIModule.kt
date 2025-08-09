@@ -66,5 +66,9 @@ class ExpoUIModule : Module() {
         "onConfirmPressed"
       )
     }
+
+    View(SnackbarView::class) {
+      Events("onActionPressed", "onDismissed")
+    }
   }
 }

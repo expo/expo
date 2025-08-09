@@ -122,6 +122,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./SwiftUIPrimitivesScreen'));
     },
   },
+  {
+    name: 'Snackbar component',
+    route: 'ui/snackbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SnackbarScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
