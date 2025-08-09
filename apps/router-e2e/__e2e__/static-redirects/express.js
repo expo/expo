@@ -3,7 +3,7 @@
 // TODO: Remove this file in favor of `npx expo serve` in the E2E tests.
 
 const path = require('path');
-const { createRequestHandler } = require('@expo/server/build/vendor/express');
+const { createRequestHandler } = require('@expo/server/adapter/express');
 
 const express = require('express');
 const compression = require('compression');

@@ -4,6 +4,14 @@ import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from '../index';
+import {
+  getApiRoute,
+  getHtml,
+  getMiddleware,
+  getRoutesManifest,
+  handleRouteError,
+} from '../runtime/node';
+import type { Manifest } from '../types';
 
 type NextFunction = (err?: any) => void;
 
@@ -18,9 +26,36 @@ export type RequestHandler = (
  */
 export function createRequestHandler(
   { build }: { build: string },
-  setup?: Parameters<typeof createExpoHandler>[1]
+  setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
 ): RequestHandler {
-  const handleRequest = createExpoHandler(build, setup);
+  let routesManifest: Manifest | null = null;
+
+  const defaultGetRoutesManifest = getRoutesManifest(build);
+  const getRoutesManifestCached = async () => {
+    let manifest: Manifest | null = null;
+    if (setup.getRoutesManifest) {
+      // Development
+      manifest = await setup.getRoutesManifest();
+    } else if (!routesManifest) {
+      // Production
+      manifest = await defaultGetRoutesManifest();
+    }
+
+    if (manifest) {
+      routesManifest = manifest;
+    }
+
+    return routesManifest;
+  };
+
+  const handleRequest = createExpoHandler({
+    getRoutesManifest: getRoutesManifestCached,
+    getHtml: getHtml(build),
+    getApiRoute: getApiRoute(build),
+    getMiddleware: getMiddleware(build),
+    handleRouteError: handleRouteError(),
+    ...setup,
+  });
 
   return async (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
     if (!req?.url || !req.method) {

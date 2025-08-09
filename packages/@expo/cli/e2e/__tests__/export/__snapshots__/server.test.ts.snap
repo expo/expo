@@ -161,3 +161,165 @@ exports[`server-output express server requests has expected routes manifest entr
   "rewrites": [],
 }
 `;
+
+exports[`server-output workerd server requests has expected routes manifest entries 1`] = `
+{
+  "apiRoutes": [
+    {
+      "file": "_expo/functions/(a,b)/multi-group-api+api.js",
+      "namedRegex": "^(?:/\\((?:a|b)\\))?/multi\\-group\\-api(?:/)?$",
+      "page": "/(b)/multi-group-api",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/methods+api.js",
+      "namedRegex": "^/methods(?:/)?$",
+      "page": "/methods",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/json+api.js",
+      "namedRegex": "^/api/json(?:/)?$",
+      "page": "/api/json",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/empty+api.js",
+      "namedRegex": "^/api/empty(?:/)?$",
+      "page": "/api/empty",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/error+api.js",
+      "namedRegex": "^/api/error(?:/)?$",
+      "page": "/api/error",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/env-vars+api.js",
+      "namedRegex": "^/api/env\\-vars(?:/)?$",
+      "page": "/api/env-vars",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/redirect+api.js",
+      "namedRegex": "^/api/redirect(?:/)?$",
+      "page": "/api/redirect",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/externals+api.js",
+      "namedRegex": "^/api/externals(?:/)?$",
+      "page": "/api/externals",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/problematic+api.js",
+      "namedRegex": "^/api/problematic(?:/)?$",
+      "page": "/api/problematic",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/matching-route/alpha+api.js",
+      "namedRegex": "^/matching\\-route/alpha(?:/)?$",
+      "page": "/matching-route/alpha",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/[dynamic]+api.js",
+      "namedRegex": "^/api/(?<dynamic>[^/]+?)(?:/)?$",
+      "page": "/api/[dynamic]",
+      "routeKeys": {
+        "dynamic": "dynamic",
+      },
+    },
+    {
+      "file": "_expo/functions/api/a/[...spread]+api.js",
+      "namedRegex": "^/api/a(?:/(?<spread>.+?))?(?:/)?$",
+      "page": "/api/a/[...spread]",
+      "routeKeys": {
+        "spread": "spread",
+      },
+    },
+  ],
+  "htmlRoutes": [
+    {
+      "file": "./index.tsx",
+      "namedRegex": "^/(?:/)?$",
+      "page": "/index",
+      "routeKeys": {},
+    },
+    {
+      "file": "./(alpha)/beta.tsx",
+      "namedRegex": "^(?:/\\(alpha\\))?/beta(?:/)?$",
+      "page": "/(alpha)/beta",
+      "routeKeys": {},
+    },
+    {
+      "file": "./(alpha)/index.tsx",
+      "namedRegex": "^(?:/\\(alpha\\))?(?:/)?$",
+      "page": "/(alpha)/index",
+      "routeKeys": {},
+    },
+    {
+      "file": "./(a,b)/multi-group.tsx",
+      "namedRegex": "^(?:/\\(b\\))?/multi\\-group(?:/)?$",
+      "page": "/(b)/multi-group",
+      "routeKeys": {},
+    },
+    {
+      "file": "./(a,b)/multi-group.tsx",
+      "namedRegex": "^(?:/\\(a\\))?/multi\\-group(?:/)?$",
+      "page": "/(a)/multi-group",
+      "routeKeys": {},
+    },
+    {
+      "file": "expo-router/build/views/Sitemap.js",
+      "generated": true,
+      "namedRegex": "^/_sitemap(?:/)?$",
+      "page": "/_sitemap",
+      "routeKeys": {},
+    },
+    {
+      "file": "./blog-ssg/abc.tsx",
+      "namedRegex": "^/blog\\-ssg/abc(?:/)?$",
+      "page": "/blog-ssg/abc",
+      "routeKeys": {},
+    },
+    {
+      "file": "./matching-route/alpha.tsx",
+      "namedRegex": "^/matching\\-route/alpha(?:/)?$",
+      "page": "/matching-route/alpha",
+      "routeKeys": {},
+    },
+    {
+      "file": "./blog/[post].tsx",
+      "namedRegex": "^/blog/(?<post>[^/]+?)(?:/)?$",
+      "page": "/blog/[post]",
+      "routeKeys": {
+        "post": "post",
+      },
+    },
+    {
+      "file": "./blog-ssg/[post].tsx",
+      "namedRegex": "^/blog\\-ssg/(?<post>[^/]+?)(?:/)?$",
+      "page": "/blog-ssg/[post]",
+      "routeKeys": {
+        "post": "post",
+      },
+    },
+  ],
+  "notFoundRoutes": [
+    {
+      "file": "./+not-found.tsx",
+      "namedRegex": "^(?:/(?<notfound>.+?))?(?:/)?$",
+      "page": "/+not-found",
+      "routeKeys": {
+        "notfound": "not-found",
+      },
+    },
+  ],
+  "redirects": [],
+  "rewrites": [],
+}
+`;
