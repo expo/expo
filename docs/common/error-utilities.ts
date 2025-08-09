@@ -366,6 +366,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/root-layout': '/router/basics/layout/#root-layout',
   '/router/advance/stack': '/router/advanced/stack/',
   '/router/advance/tabs': '/router/advanced/tabs/',
+  '/router/advance/native-tabs': '/router/advanced/native-tabs/',
   '/router/advance/drawer': '/router/advanced/drawer/',
   '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
   '/router/advance/modal': '/router/advanced/modals/',

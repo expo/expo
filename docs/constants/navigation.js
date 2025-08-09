@@ -257,6 +257,7 @@ export const general = [
     makeGroup('Navigation patterns', [
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
+      makePage('router/advanced/native-tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
       makePage('router/advanced/authentication.mdx'),
       makePage('router/advanced/authentication-rewrites.mdx'),
