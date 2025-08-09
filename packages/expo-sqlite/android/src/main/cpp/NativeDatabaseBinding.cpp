@@ -100,10 +100,10 @@ int64_t NativeDatabaseBinding::sqlite3_last_insert_rowid() {
 }
 
 int NativeDatabaseBinding::sqlite3_load_extension(
-    const std::string &libPath, const std::string &entryProc) {
+    const std::string &libPath, const std::string &entryPoint) {
   char *error;
-  int ret = ::exsqlite3_load_extension(db, libPath.c_str(), entryProc.c_str(),
-                                       &error);
+  auto *entryProc = !entryPoint.empty() ? entryPoint.c_str() : nullptr;
+  int ret = ::exsqlite3_load_extension(db, libPath.c_str(), entryProc, &error);
   if (ret != SQLITE_OK && error) {
     std::string errorString(error);
     ::exsqlite3_free(error);
