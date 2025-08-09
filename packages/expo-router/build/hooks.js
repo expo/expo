@@ -4,7 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useRouteInfo = void 0;
+exports.LoaderDataProvider = exports.useRouteInfo = void 0;
+exports.useLoader = useLoader;
 exports.useRootNavigationState = useRootNavigationState;
 exports.useRootNavigation = useRootNavigation;
 exports.useNavigationContainerRef = useNavigationContainerRef;
@@ -23,6 +24,42 @@ const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
 const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
+// Context for passing loader data during SSR
+const LoaderDataContext = react_1.default.createContext(null);
+exports.LoaderDataProvider = LoaderDataContext.Provider;
+/**
+ * Returns the data loaded by the route's loader function. This hook only works
+ * in SSR/SSG modes (web.output: "server" or "static").
+ *
+ * @example
+ * ```tsx
+ * // Route file
+ * export async function loader({ params }) {
+ *   return { user: await fetchUser(params.id) };
+ * }
+ *
+ * export default function UserRoute() {
+ *   const data = useLoader(loader);
+ *   return <Text>{data.user.name}</Text>;
+ * }
+ * ```
+ */
+function useLoader(loader) {
+    const routePath = usePathname();
+    const loaderDataContext = react_1.default.useContext(LoaderDataContext);
+    // During SSR, use the loader data from context
+    if (loaderDataContext && routePath in loaderDataContext) {
+        return loaderDataContext[routePath];
+    }
+    // During client-side hydration, check for preloaded SSR/SSG data
+    if (typeof window !== 'undefined' && window.__EXPO_ROUTER_LOADER_DATA__) {
+        const preloadedData = window.__EXPO_ROUTER_LOADER_DATA__[routePath];
+        if (preloadedData !== undefined) {
+            return preloadedData;
+        }
+    }
+    throw new Error('Loader data not found - loaders only work in SSR/SSG mode');
+}
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.

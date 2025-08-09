@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScrollViewStyleReset = ScrollViewStyleReset;
+exports.LoaderDataScript = LoaderDataScript;
 exports.Html = Html;
 /**
  * Copyright © 2023 650 Industries.
@@ -18,6 +19,17 @@ const react_1 = __importDefault(require("react"));
 function ScrollViewStyleReset() {
     return (<style id="expo-reset" dangerouslySetInnerHTML={{
             __html: `#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}`,
+        }}/>);
+}
+/**
+ * Injects loader data into the HTML as a script tag for client-side hydration.
+ * The data is serialized as JSON and made available on window.__EXPO_ROUTER_LOADER_DATA__.
+ */
+function LoaderDataScript({ data }) {
+    // https://redux.js.org/usage/server-rendering/#security-considerations
+    const safeJson = JSON.stringify(data).replace(/</g, '\\u003c');
+    return (<script type="module" data-testid="loader-script" dangerouslySetInnerHTML={{
+            __html: `window.__EXPO_ROUTER_LOADER_DATA__ = ${safeJson};`,
         }}/>);
 }
 function Html({ children }) {

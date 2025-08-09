@@ -1,7 +1,32 @@
+import React from 'react';
 import { useRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
 export { useRouteInfo };
+declare global {
+    interface Window {
+        __EXPO_ROUTER_LOADER_DATA__?: Record<string, any>;
+    }
+}
+export declare const LoaderDataProvider: React.Provider<Record<string, any> | null>;
+/**
+ * Returns the data loaded by the route's loader function. This hook only works
+ * in SSR/SSG modes (web.output: "server" or "static").
+ *
+ * @example
+ * ```tsx
+ * // Route file
+ * export async function loader({ params }) {
+ *   return { user: await fetchUser(params.id) };
+ * }
+ *
+ * export default function UserRoute() {
+ *   const data = useLoader(loader);
+ *   return <Text>{data.user.name}</Text>;
+ * }
+ * ```
+ */
+export declare function useLoader<T = any>(loader: LoaderFunction<T>): T;
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.

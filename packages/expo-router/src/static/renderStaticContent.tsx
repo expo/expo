@@ -14,9 +14,11 @@ import ReactDOMServer from 'react-dom/server.node';
 import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
+import { LoaderDataScript } from './html';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { Head } from '../head';
+import { LoaderDataProvider } from '../hooks';
 
 const debug = require('debug')('expo:router:renderStaticContent');
 
@@ -32,7 +34,12 @@ function resetReactNavigationContexts() {
   global[contexts] = new Map<string, React.Context<any>>();
 }
 
-export async function getStaticContent(location: URL): Promise<string> {
+export async function getStaticContent(
+  location: URL,
+  options?: {
+    loaderData?: Record<string, any>;
+  }
+): Promise<string> {
   const headContext: { helmet?: any } = {};
 
   const ref = React.createRef<ServerContainerRef>();
@@ -66,7 +73,9 @@ export async function getStaticContent(location: URL): Promise<string> {
 
   const html = await ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
-      <ServerContainer ref={ref}>{element}</ServerContainer>
+      <LoaderDataProvider value={options?.loaderData || null}>
+        <ServerContainer ref={ref}>{element}</ServerContainer>
+      </LoaderDataProvider>
     </Head.Provider>
   );
 
@@ -82,6 +91,14 @@ export async function getStaticContent(location: URL): Promise<string> {
   // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
+
+  // Inject loader data if provided
+  if (options?.loaderData) {
+    const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
+      <LoaderDataScript data={options.loaderData} />
+    );
+    output = output.replace('</head>', `${loaderDataScript}</head>`);
+  }
 
   return '<!DOCTYPE html>' + output;
 }

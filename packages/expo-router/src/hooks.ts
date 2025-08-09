@@ -8,9 +8,57 @@ import { INTERNAL_SLOT_NAME } from './constants';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
 
 export { useRouteInfo };
+
+declare global {
+  interface Window {
+    __EXPO_ROUTER_LOADER_DATA__?: Record<string, any>;
+  }
+}
+
+// Context for passing loader data during SSR
+const LoaderDataContext = React.createContext<Record<string, any> | null>(null);
+
+export const LoaderDataProvider = LoaderDataContext.Provider;
+
+/**
+ * Returns the data loaded by the route's loader function. This hook only works
+ * in SSR/SSG modes (web.output: "server" or "static").
+ *
+ * @example
+ * ```tsx
+ * // Route file
+ * export async function loader({ params }) {
+ *   return { user: await fetchUser(params.id) };
+ * }
+ *
+ * export default function UserRoute() {
+ *   const data = useLoader(loader);
+ *   return <Text>{data.user.name}</Text>;
+ * }
+ * ```
+ */
+export function useLoader<T = any>(loader: LoaderFunction<T>): T {
+  const routePath = usePathname();
+  const loaderDataContext = React.useContext(LoaderDataContext);
+
+  // During SSR, use the loader data from context
+  if (loaderDataContext && routePath in loaderDataContext) {
+    return loaderDataContext[routePath];
+  }
+
+  // During client-side hydration, check for preloaded SSR/SSG data
+  if (typeof window !== 'undefined' && window.__EXPO_ROUTER_LOADER_DATA__) {
+    const preloadedData = window.__EXPO_ROUTER_LOADER_DATA__[routePath];
+    if (preloadedData !== undefined) {
+      return preloadedData;
+    }
+  }
+
+  throw new Error('Loader data not found - loaders only work in SSR/SSG mode');
+}
 
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)

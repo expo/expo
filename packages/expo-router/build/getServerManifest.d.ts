@@ -28,6 +28,8 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     permanent?: boolean;
     /** If a redirect, which methods are allowed. Undefined represents all methods */
     methods?: string[];
+    /** If this route exports a loader function, this is the contextKey */
+    loader?: string;
 };
 export type ExpoRouterServerManifestV1Middleware = {
     /**

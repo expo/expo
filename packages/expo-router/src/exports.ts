@@ -11,6 +11,7 @@ export {
   useSegments,
   useRootNavigation,
   useRootNavigationState,
+  useLoader,
 } from './hooks';
 
 export { router, Router } from './imperative-api';

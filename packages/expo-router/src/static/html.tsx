@@ -6,6 +6,16 @@
  */
 import React, { type PropsWithChildren } from 'react';
 
+// TODO(@hassankhan): Add this to global types
+declare global {
+  interface Window {
+    /**
+     * Data injected by the Expo Router loader for the current route.
+     */
+    __EXPO_ROUTER_LOADER_DATA__?: Record<string, any>;
+  }
+}
+
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */
@@ -15,6 +25,25 @@ export function ScrollViewStyleReset() {
       id="expo-reset"
       dangerouslySetInnerHTML={{
         __html: `#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}`,
+      }}
+    />
+  );
+}
+
+/**
+ * Injects loader data into the HTML as a script tag for client-side hydration.
+ * The data is serialized as JSON and made available on window.__EXPO_ROUTER_LOADER_DATA__.
+ */
+export function LoaderDataScript({ data }: { data: Record<string, any> }) {
+  // https://redux.js.org/usage/server-rendering/#security-considerations
+  const safeJson = JSON.stringify(data).replace(/</g, '\\u003c');
+
+  return (
+    <script
+      type="module"
+      data-testid="loader-script"
+      dangerouslySetInnerHTML={{
+        __html: `window.__EXPO_ROUTER_LOADER_DATA__ = ${safeJson};`,
       }}
     />
   );

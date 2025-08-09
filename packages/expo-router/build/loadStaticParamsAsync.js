@@ -69,15 +69,21 @@ async function loadStaticParamsRecursive(route, props) {
         const dynamicChildren = await traverseForNode(nextParams);
         const parsedRoute = createParsedRouteName(route.route, params);
         const generatedContextKey = createParsedRouteName(route.contextKey, params);
-        return {
+        const generatedRoute = {
             ...route,
-            // TODO: Add a new field for this
             contextKey: generatedContextKey,
+            // Mark as a generated route.
+            generated: true,
             // Convert the dynamic route to a static route.
             dynamic: null,
             route: parsedRoute,
             children: dynamicChildren,
         };
+        // Use the original dynamic route's contextKey so we can re-use the loader from it
+        if (loaded.loader) {
+            generatedRoute.loaderContextKey = route.contextKey;
+        }
+        return generatedRoute;
     }));
     return [route, ...generatedRoutes];
 }

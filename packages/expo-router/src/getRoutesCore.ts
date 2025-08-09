@@ -382,6 +382,12 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
               `The default export from route "${filePath}" is an async function. Ensure the React Component does not use async or promises.`
             );
           }
+
+          // Validate loader export in development
+          const loaderExport = routeModule?.loader;
+          if (loaderExport && typeof loaderExport !== 'function') {
+            throw new Error(`Route "${filePath}" exports a loader that is not a function.`);
+          }
         }
 
         return routeModule;
