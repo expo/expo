@@ -46,12 +46,12 @@ export interface PluginConfigTypeAndroid {
      */
     kotlinVersion?: string;
     /**
-     * Enable [Proguard or R8](https://developer.android.com/studio/build/shrink-code) in release builds to obfuscate Java code and reduce app size.
+     * Enable [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) in release builds to obfuscate Java code and reduce app size.
      */
-    enableProguardInReleaseBuilds?: boolean;
+    enableMinifyInReleaseBuilds?: boolean;
     /**
      * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
-     * This property should be used in combination with `enableProguardInReleaseBuilds`.
+     * This property should be used in combination with `enableMinifyInReleaseBuilds`.
      */
     enableShrinkResourcesInReleaseBuilds?: boolean;
     /**
