@@ -8,7 +8,6 @@ import {
   withAndroidQueries,
   withAndroidDayNightTheme,
   withAndroidSettingsGradle,
-  withAndroidMainApplication,
 } from './android';
 import { withIosBuildProperties, withIosDeploymentTarget } from './ios';
 import { PluginConfigType, validateConfig } from './pluginConfig';
@@ -27,7 +26,6 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   config = withAndroidCleartextTraffic(config, pluginConfig);
   config = withAndroidSettingsGradle(config, pluginConfig);
   config = withAndroidQueries(config, pluginConfig);
-  config = withAndroidMainApplication(config, pluginConfig);
   // Assuming `withBuildProperties` could be called multiple times from different config-plugins,
   // the `withAndroidProguardRules` always appends new rules by default.
   // That is not ideal if we leave generated contents from previous prebuild there.
