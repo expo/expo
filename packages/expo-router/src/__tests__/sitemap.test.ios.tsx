@@ -184,13 +184,13 @@ describe('system information', () => {
     act(() => router.replace('/_sitemap'));
     expect(screen.getByText('System Information')).toBeOnTheScreen();
 
-    expect(screen.getByText('Location origin:')).toBeOnTheScreen();
+    expect(screen.getByText('Location origin')).toBeOnTheScreen();
     expect(screen.getByText('http://localhost:8081')).toBeOnTheScreen();
 
-    expect(screen.getByText('Expo SDK version:')).toBeOnTheScreen();
+    expect(screen.getByText('Expo SDK')).toBeOnTheScreen();
     expect(screen.getByText('54.0.0')).toBeOnTheScreen();
 
-    expect(screen.getByText('Hermes version:')).toBeOnTheScreen();
+    expect(screen.getByText('Hermes version')).toBeOnTheScreen();
     expect(screen.getByText('for RN 0.79.5')).toBeOnTheScreen();
   });
 });

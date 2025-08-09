@@ -32,6 +32,7 @@ export function getNavOptions(): NativeStackNavigationOptions {
     headerTitleStyle: {
       color: 'white',
     },
+    headerShown: true,
     headerTintColor: 'white',
     headerLargeTitleStyle: {
       color: 'white',
@@ -78,7 +79,10 @@ function SitemapInner() {
   return (
     <View style={styles.container} testID="expo-router-sitemap">
       {canOverrideStatusBarBehavior && <StatusBar barStyle="light-content" />}
-      <ScrollView contentContainerStyle={styles.scroll} contentInsetAdjustmentBehavior="automatic">
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        automaticallyAdjustContentInsets
+        contentInsetAdjustmentBehavior="automatic">
         {children.map((child) => (
           <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
             <SitemapItem node={child} />
@@ -108,11 +112,12 @@ function SitemapItem({ node, level = 0 }: SitemapItemProps) {
   }
   return <StandardSitemapItem node={node} level={level} info={info} />;
 }
+
 function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
   const [isCollapsed, setIsCollapsed] = React.useState(true);
 
   return (
-    <>
+    <View style={styles.itemInnerContainer}>
       <SitemapItemPressable
         style={{ opacity: 0.4 }}
         leftIcon={<PkgIcon />}
@@ -130,18 +135,13 @@ function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
             level={level + (node.isGenerated ? 0 : 1)}
           />
         ))}
-    </>
+    </View>
   );
 }
 
 function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) {
   return (
-    <Link
-      accessibilityLabel={node.contextKey}
-      href={node.href}
-      asChild
-      // Ensure we replace the history so you can't go back to this page.
-      replace>
+    <Link accessibilityLabel={node.contextKey} href={node.href} asChild replace>
       <SitemapItemPressable
         leftIcon={<FileIcon />}
         rightIcon={<ForwardIcon />}
@@ -175,10 +175,11 @@ function SitemapItemPressable({
         <View
           testID="sitemap-item"
           style={[
+            styles.itemInnerContainer,
             styles.itemPressable,
             {
               paddingLeft: INDENT + level * INDENT,
-              backgroundColor: hovered ? '#202425' : 'transparent',
+              backgroundColor: hovered ? '#202425' : '#151718',
             },
             pressed && { backgroundColor: '#26292b' },
             style,
@@ -230,13 +231,22 @@ function ArrowIcon({ rotation = 0 }: { rotation?: number }) {
 
 function SystemInfo() {
   const getHermesVersion = () => {
-    if (global.HermesInternal) {
-      const runtimeProps = global.HermesInternal.getRuntimeProperties?.();
-      if (runtimeProps) {
-        return runtimeProps['OSS Release Version'] || 'Unknown';
-      }
+    if (!global.HermesInternal) {
+      return null;
     }
-    return null;
+
+    const HERMES_RUNTIME = global.HermesInternal?.getRuntimeProperties?.() ?? {};
+    const HERMES_VERSION = HERMES_RUNTIME['OSS Release Version'];
+    const isStaticHermes = HERMES_RUNTIME['Static Hermes'];
+
+    if (!HERMES_RUNTIME) {
+      return null;
+    }
+
+    if (isStaticHermes) {
+      return `${HERMES_VERSION} (shermes)`;
+    }
+    return HERMES_VERSION;
   };
 
   const locationOrigin = window.location.origin;
@@ -244,26 +254,38 @@ function SystemInfo() {
   const hermesVersion = getHermesVersion();
 
   return (
-    <View testID="sitemap-system-info" style={styles.systemInfoContainer}>
+    <View
+      testID="sitemap-system-info"
+      style={{
+        gap: 8,
+        marginTop: 16,
+      }}>
       <Text style={styles.systemInfoTitle}>System Information</Text>
-      {locationOrigin && (
-        <View style={styles.systemInfoItem}>
-          <Text style={styles.systemInfoLabel}>Location origin:</Text>
-          <Text style={styles.systemInfoValue}>{locationOrigin}</Text>
-        </View>
-      )}
-      <View style={styles.systemInfoItem}>
-        <Text style={styles.systemInfoLabel}>Expo SDK version:</Text>
-        <Text style={styles.systemInfoValue}>{expoSdkVersion}</Text>
+      <View style={styles.systemInfoContainer}>
+        <FormText right={process.env.NODE_ENV}>Mode</FormText>
+        <FormText right={expoSdkVersion}>Expo SDK</FormText>
+        {hermesVersion && <FormText right={hermesVersion}>Hermes version</FormText>}
+        {locationOrigin && <FormText right={locationOrigin}>Location origin</FormText>}
       </View>
-      {hermesVersion && (
-        <View style={styles.systemInfoItem}>
-          <Text style={styles.systemInfoLabel}>Hermes version:</Text>
-          <Text style={styles.systemInfoValue} numberOfLines={1} ellipsizeMode="tail">
-            {hermesVersion}
-          </Text>
-        </View>
-      )}
+    </View>
+  );
+}
+
+function FormText({ children, right }: { children?: React.ReactNode; right?: React.ReactNode }) {
+  return (
+    <View style={styles.systemInfoItem}>
+      <Text style={styles.systemInfoLabel} numberOfLines={1} ellipsizeMode="tail">
+        {children}
+      </Text>
+      <View style={{ flex: 1 }} />
+
+      <Text
+        selectable
+        style={[styles.systemInfoValue, styles.code]}
+        numberOfLines={1}
+        ellipsizeMode="tail">
+        {right}
+      </Text>
     </View>
   );
 }
@@ -300,6 +322,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   scroll: {
+    gap: 12,
     paddingHorizontal: '5%',
     paddingVertical: 16,
     ...Platform.select({
@@ -322,8 +345,13 @@ const styles = StyleSheet.create({
     borderColor: '#313538',
     backgroundColor: '#151718',
     borderRadius: 12,
-    marginBottom: 12,
-    overflow: 'hidden',
+    borderCurve: 'continuous',
+  },
+  itemInnerContainer: {
+    backgroundColor: '#151718',
+    borderRadius: 12,
+    borderCurve: 'continuous',
+    gap: 12,
   },
   itemPressable: {
     paddingHorizontal: INDENT,
@@ -354,31 +382,43 @@ const styles = StyleSheet.create({
     borderColor: '#313538',
     backgroundColor: '#151718',
     borderRadius: 12,
+    gap: 8,
+    borderCurve: 'continuous',
     padding: INDENT,
-    marginTop: 24,
   },
   systemInfoTitle: {
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
+    paddingHorizontal: INDENT,
   },
   systemInfoItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 8,
     alignItems: 'center',
-    paddingVertical: 8,
+    flexWrap: 'wrap',
   },
   systemInfoLabel: {
     color: 'white',
     fontSize: 16,
-    opacity: 0.7,
+    lineHeight: 24,
   },
   systemInfoValue: {
     color: 'white',
     fontSize: 16,
-    flex: 1,
-    textAlign: 'right',
-    marginLeft: 12,
+    opacity: 0.7,
+
+    flexShrink: 1,
+    letterSpacing: 0.5,
+  },
+  code: {
+    fontVariant: ['tabular-nums'],
+    fontFamily: Platform.select({
+      default: `SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`,
+      ios: 'ui-monospace',
+      android: 'monospace',
+    }),
+    fontWeight: '500',
   },
 });
