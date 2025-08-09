@@ -1,4 +1,5 @@
 import AwaitLock from 'await-lock';
+import { installGlobal as install } from 'expo/src/winter/installGlobal';
 
 import { openDatabaseAsync, openDatabaseSync, type SQLiteDatabase } from './index';
 
@@ -412,6 +413,39 @@ export class SQLiteStorage {
   //#endregion
 }
 
+//#region Web Storage compatible API
+
+class WebStorageWrapper {
+  constructor(private readonly storage: SQLiteStorage) {}
+
+  clear() {
+    this.storage.clearSync();
+  }
+
+  getItem(key: string): string | null {
+    return this.storage.getItemSync(key);
+  }
+
+  key(index: number): string | null {
+    const keys = this.storage.getAllKeysSync();
+    return keys[index] ?? null;
+  }
+
+  removeItem(key: string) {
+    this.storage.removeItemSync(key);
+  }
+
+  setItem(key: string, value: string) {
+    this.storage.setItemSync(key, value);
+  }
+
+  get length(): number {
+    return this.storage.getAllKeysSync().length;
+  }
+}
+
+//#endregion
+
 /**
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).
  */
@@ -423,3 +457,15 @@ export default AsyncStorage;
  * Alias for [`AsyncStorage`](#sqliteasyncstorage), given the storage not only offers asynchronous methods.
  */
 export const Storage = AsyncStorage;
+
+/**
+ * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
+ */
+export const LocalStorage = new WebStorageWrapper(AsyncStorage);
+
+/**
+ * Install the `localStorage` to the `globalThis` object.
+ */
+export function installGlobal() {
+  install('localStorage', () => LocalStorage);
+}

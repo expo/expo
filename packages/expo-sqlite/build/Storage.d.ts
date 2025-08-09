@@ -118,6 +118,16 @@ export declare class SQLiteStorage {
     private static mergeDeep;
     private checkValidInput;
 }
+declare class WebStorageWrapper {
+    private readonly storage;
+    constructor(storage: SQLiteStorage);
+    clear(): void;
+    getItem(key: string): string | null;
+    key(index: number): string | null;
+    removeItem(key: string): void;
+    setItem(key: string, value: string): void;
+    get length(): number;
+}
 /**
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).
  */
@@ -127,4 +137,12 @@ export default AsyncStorage;
  * Alias for [`AsyncStorage`](#sqliteasyncstorage), given the storage not only offers asynchronous methods.
  */
 export declare const Storage: SQLiteStorage;
+/**
+ * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
+ */
+export declare const LocalStorage: WebStorageWrapper;
+/**
+ * Install the `localStorage` to the `globalThis` object.
+ */
+export declare function installGlobal(): void;
 //# sourceMappingURL=Storage.d.ts.map
