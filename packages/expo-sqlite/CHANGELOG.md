@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Support Apple TV. ([#38475](https://github.com/expo/expo/pull/38475) by [@douglowder](https://github.com/douglowder))
+- Added `expo-sqlite/kv-store/installGlobal` for [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) drop-in replacement API. ([#38699](https://github.com/expo/expo/pull/38699) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

@@ -1,7 +1,7 @@
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 
-import { SQLiteStorage } from '../Storage';
+import { SQLiteStorage, LocalStorage } from '../Storage';
 
 jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
@@ -259,5 +259,37 @@ describe('react-native-async-storage API compatibility', () => {
     const value2 = await storage.getItem('key2');
     expect(value1).toBe(JSON.stringify({ a: 1, b: 3, c: 4 }));
     expect(value2).toBe(JSON.stringify({ x: 10, y: 30, z: 40 }));
+  });
+});
+
+describe('Web Storage API compatibility', () => {
+  const localStorage = LocalStorage;
+
+  afterAll(async () => {
+    await fs.unlink('ExpoSQLiteStorage').catch(() => {});
+  });
+
+  it('should implement all the methods', () => {
+    expect(typeof localStorage.clear).toBe('function');
+    expect(typeof localStorage.getItem).toBe('function');
+    expect(typeof localStorage.key).toBe('function');
+    expect(typeof localStorage.length).toBe('number');
+    expect(typeof localStorage.removeItem).toBe('function');
+    expect(typeof localStorage.setItem).toBe('function');
+  });
+
+  it('should support CRUD operations', () => {
+    localStorage.setItem('test', 'test');
+    expect(localStorage.getItem('test')).toBe('test');
+    expect(localStorage.length).toBe(1);
+    localStorage.removeItem('test');
+    expect(localStorage.getItem('test')).toBeNull();
+    localStorage.setItem('test', 'test');
+    localStorage.clear();
+    expect(localStorage.getItem('test')).toBeNull();
+    expect(localStorage.length).toBe(0);
+    localStorage.setItem('test', 'test');
+    expect(localStorage.key(0)).toBe('test');
+    localStorage.clear();
   });
 });

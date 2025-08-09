@@ -12,8 +12,11 @@
       "types": "./build/index.d.ts"
     },
     "./kv-store": {
-      "default": "./kv-store.js",
-      "types": "./kv-store.d.ts"
+      "default": "./kv-store/index.js",
+      "types": "./kv-store/index.d.ts"
+    },
+    "./kv-store/installGlobal": {
+      "default": "./kv-store/installGlobal.js"
     },
     "./app.plugin.js": "./app.plugin.js"
   },
