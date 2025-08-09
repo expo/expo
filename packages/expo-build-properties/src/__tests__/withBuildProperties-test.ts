@@ -1,4 +1,9 @@
-import { AndroidConfig, withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
+import {
+  AndroidConfig,
+  withGradleProperties,
+  withPodfileProperties,
+  withMainApplication,
+} from 'expo/config-plugins';
 
 import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';
@@ -9,6 +14,7 @@ jest.mock('expo/config-plugins', () => {
   return {
     ...plugins,
     withDangerousMod: jest.fn().mockImplementation((config) => config),
+    withMainApplication: jest.fn().mockImplementation((config) => config),
   };
 });
 
@@ -277,5 +283,72 @@ describe(withBuildProperties, () => {
       key: 'exclusiveEnterpriseRepository',
       value: 'https://my.internal.proxy.net/',
     });
+  });
+
+  it.only('add correct release level to MainApplication given the android.reactNativeReleaseLevel property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { reactNativeReleaseLevel: 'canary' },
+    };
+
+    const mockMainApplicationContent = `
+package com.example.myapp
+
+import android.app.Application
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.loadReactNative
+import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+
+class MainApplication : Application(), ReactApplication {
+
+  override val reactHost: ReactHost
+    get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
+
+  override fun onCreate() {
+    super.onCreate()
+    loadReactNative(this)
+  }
+}
+`.trim();
+
+    const expectedContent = `
+package com.example.myapp
+import com.facebook.react.common.ReleaseLevel
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+
+import android.app.Application
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.loadReactNative
+import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+
+class MainApplication : Application(), ReactApplication {
+
+  override val reactHost: ReactHost
+    get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
+
+  override fun onCreate() {
+    super.onCreate()
+    DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.CANARY
+    loadReactNative(this)
+  }
+}
+`.trim();
+
+    const { modResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withMainApplication,
+        modResults: {
+          contents: mockMainApplicationContent,
+          language: 'kt',
+          path: 'android/app/src/main/java/com/example/myapp/MainApplication.kt',
+        },
+      }
+    );
+
+    expect(modResults.contents).toEqual(expectedContent);
   });
 });
