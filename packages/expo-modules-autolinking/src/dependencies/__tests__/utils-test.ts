@@ -51,25 +51,45 @@ describe(mergeWithDuplicate, () => {
     const b = { ...BASE_RESOLUTION, path: 'b' };
     expect(mergeWithDuplicate(a, b)).toMatchObject({
       path: 'a',
-      duplicates: ['b'],
+      duplicates: [expect.objectContaining({ path: 'b' })],
     });
   });
 
   it('merges duplicates', () => {
-    const a = { ...BASE_RESOLUTION, path: 'x', duplicates: ['a'] };
-    const b = { ...BASE_RESOLUTION, path: 'b', duplicates: ['c'] };
+    const a = {
+      ...BASE_RESOLUTION,
+      path: 'x',
+      duplicates: [{ ...BASE_RESOLUTION, path: 'a' }],
+    };
+    const b = {
+      ...BASE_RESOLUTION,
+      path: 'b',
+      duplicates: [{ ...BASE_RESOLUTION, path: 'c' }],
+    };
     expect(mergeWithDuplicate(a, b)).toMatchObject({
       path: 'x',
-      duplicates: ['a', 'b', 'c'],
+      duplicates: [
+        expect.objectContaining({ path: 'a' }),
+        expect.objectContaining({ path: 'b' }),
+        expect.objectContaining({ path: 'c' }),
+      ],
     });
   });
 
   it('merges duplicates and deduplicates', () => {
-    const a = { ...BASE_RESOLUTION, path: 'x', duplicates: ['a'] };
-    const b = { ...BASE_RESOLUTION, path: 'b', duplicates: ['a'] };
+    const a = {
+      ...BASE_RESOLUTION,
+      path: 'x',
+      duplicates: [{ ...BASE_RESOLUTION, path: 'a' }],
+    };
+    const b = {
+      ...BASE_RESOLUTION,
+      path: 'b',
+      duplicates: [{ ...BASE_RESOLUTION, path: 'a' }],
+    };
     expect(mergeWithDuplicate(a, b)).toMatchObject({
       path: 'x',
-      duplicates: ['a', 'b'],
+      duplicates: [expect.objectContaining({ path: 'a' }), expect.objectContaining({ path: 'b' })],
     });
   });
 });
@@ -91,7 +111,7 @@ describe(mergeResolutionResults, () => {
     expect(mergeResolutionResults([{ a: a1, b }, { a: a2 }])).toEqual({
       a: {
         ...a1,
-        duplicates: ['2'],
+        duplicates: [expect.objectContaining({ path: '2' })],
       },
       b,
     });

@@ -44,6 +44,7 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
             const nodeModulePath = await (0, utils_1.maybeRealpath)(originPath);
             if (nodeModulePath != null) {
                 modules.push({
+                    source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
                     name: dependencyName,
                     version: '',
                     path: nodeModulePath,
@@ -65,6 +66,7 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
                 const nodeModulePath = await (0, utils_1.maybeRealpath)(originPath);
                 if (nodeModulePath != null) {
                     modules.push({
+                        source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
                         name: dependencyName,
                         version: '',
                         path: nodeModulePath,
@@ -86,6 +88,7 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
     }
     const modulePathsQueue = [
         {
+            source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
             name: '',
             version: '',
             path: rootPath,

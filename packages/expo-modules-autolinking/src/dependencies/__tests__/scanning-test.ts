@@ -56,6 +56,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "@my/expo-module",
           "originPath": "/fake/project/node_modules/@my/expo-module",
           "path": "/fake/project/node_modules/@my/expo-module",
+          "source": 1,
           "version": "0.0.1",
         },
         "react-native-third-party": {
@@ -64,6 +65,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 1,
           "version": "0.0.1",
         },
       }
@@ -95,6 +97,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/react-native-third-party",
+          "source": 1,
           "version": "0.0.1",
         },
       }
@@ -133,6 +136,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party",
+          "source": 1,
           "version": "0.0.1",
         },
       }
@@ -157,11 +161,17 @@ describe(scanDependenciesInSearchPath, () => {
         "duplicate": {
           "depth": 0,
           "duplicates": [
-            "/fake/project/node_modules/b",
+            {
+              "name": "duplicate",
+              "originPath": "/fake/project/node_modules/b",
+              "path": "/fake/project/node_modules/b",
+              "version": "0.0.1",
+            },
           ],
           "name": "duplicate",
           "originPath": "/fake/project/node_modules/a",
           "path": "/fake/project/node_modules/a",
+          "source": 1,
           "version": "0.0.1",
         },
       }
@@ -189,6 +199,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "@my/expo-module",
           "originPath": "/fake/project/node_modules/@my/expo-module",
           "path": "/fake/project/node_modules/@my/expo-module",
+          "source": 1,
           "version": "",
         },
         "react-native-third-party": {
@@ -197,6 +208,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 1,
           "version": "",
         },
       }
@@ -241,6 +253,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "included",
           "originPath": "/fake/project/node_modules/included",
           "path": "/fake/project/node_modules/included",
+          "source": 1,
           "version": "0.0.1",
         },
       }

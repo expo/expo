@@ -1,6 +1,10 @@
 import Module from 'node:module';
 
-import type { ResolutionResult, DependencyResolution } from './types';
+import {
+  type ResolutionResult,
+  type DependencyResolution,
+  DependencyResolutionSource,
+} from './types';
 import {
   type PackageJson,
   defaultShouldIncludeDependency,
@@ -60,6 +64,7 @@ async function resolveDependencies(
       const nodeModulePath = await maybeRealpath(originPath);
       if (nodeModulePath != null) {
         modules.push({
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
           name: dependencyName,
           version: '',
           path: nodeModulePath,
@@ -82,6 +87,7 @@ async function resolveDependencies(
         const nodeModulePath = await maybeRealpath(originPath);
         if (nodeModulePath != null) {
           modules.push({
+            source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
             name: dependencyName,
             version: '',
             path: nodeModulePath,
@@ -114,6 +120,7 @@ export async function scanDependenciesRecursively(
 
   const modulePathsQueue: DependencyResolution[] = [
     {
+      source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
       name: '',
       version: '',
       path: rootPath,

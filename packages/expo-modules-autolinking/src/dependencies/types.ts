@@ -1,9 +1,19 @@
-export interface DependencyResolution {
+export const enum DependencyResolutionSource {
+  RECURSIVE_RESOLUTION,
+  SEARCH_PATH,
+  RN_CLI_LOCAL,
+}
+
+export interface BaseDependencyResolution {
   name: string;
   version: string;
   path: string;
   originPath: string;
-  duplicates: string[] | null;
+}
+
+export interface DependencyResolution extends BaseDependencyResolution {
+  source: DependencyResolutionSource;
+  duplicates: BaseDependencyResolution[] | null;
   depth: number;
   [prop: string]: unknown;
 }

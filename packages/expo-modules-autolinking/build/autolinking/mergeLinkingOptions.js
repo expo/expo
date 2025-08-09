@@ -5,8 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProjectPackageJsonPathAsync = getProjectPackageJsonPathAsync;
 exports.getProjectPackageJsonPathSync = getProjectPackageJsonPathSync;
+exports.createLinkingOptionsFactory = createLinkingOptionsFactory;
 exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;
-exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
+exports.resolveSearchPaths = resolveSearchPaths;
 const find_up_1 = __importDefault(require("find-up"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -34,6 +35,38 @@ function getProjectPackageJsonPathSync(projectRoot) {
     }
     return result;
 }
+function createLinkingOptionsFactory(providedOptions) {
+    let _packageJsonPath;
+    const getPackageJsonPath = async () => {
+        return (_packageJsonPath ||
+            (_packageJsonPath = getProjectPackageJsonPathAsync(providedOptions.projectRoot)));
+    };
+    let _baseOptions;
+    const getBaseOptions = async () => {
+        if (!_baseOptions) {
+            _baseOptions = loadPackageJSONAsync(await getPackageJsonPath()).then((packageJson) => {
+                return packageJson.expo?.autolinking;
+            });
+        }
+        return _baseOptions;
+    };
+    return {
+        async getProjectRoot() {
+            return path_1.default.dirname(await getPackageJsonPath());
+        },
+        async getPlatformOptions(platform = providedOptions.platform) {
+            const baseOptions = await getBaseOptions();
+            const platformOptions = getPlatformOptions(platform, baseOptions);
+            const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);
+            // Makes provided paths absolute or falls back to default paths if none was provided.
+            finalOptions.searchPaths = resolveSearchPaths(finalOptions.searchPaths || [], providedOptions.projectRoot);
+            finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(finalOptions.nativeModulesDir, providedOptions.projectRoot);
+            // We shouldn't assume that `projectRoot` (which typically is CWD) is already at the project root
+            finalOptions.projectRoot = await this.getProjectRoot();
+            return finalOptions;
+        },
+    };
+}
 /**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field
@@ -41,23 +74,13 @@ function getProjectPackageJsonPathSync(projectRoot) {
  * - options provided to the CLI command
  */
 async function mergeLinkingOptionsAsync(providedOptions) {
-    const packageJsonPath = await getProjectPackageJsonPathAsync(providedOptions.projectRoot);
-    const packageJson = await loadPackageJSONAsync(packageJsonPath);
-    const baseOptions = packageJson.expo?.autolinking;
-    const platformOptions = getPlatformOptions(providedOptions.platform, baseOptions);
-    const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);
-    // Makes provided paths absolute or falls back to default paths if none was provided.
-    finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths || [], providedOptions.projectRoot);
-    finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(finalOptions.nativeModulesDir, providedOptions.projectRoot);
-    // We shouldn't assume that `projectRoot` (which typically is CWD) is already at the project root
-    finalOptions.projectRoot = path_1.default.dirname(packageJsonPath);
-    return finalOptions;
+    return await createLinkingOptionsFactory(providedOptions).getPlatformOptions();
 }
 /**
  * Resolves autolinking search paths. If none is provided, it accumulates all node_modules when
  * going up through the path components. This makes workspaces work out-of-the-box without any configs.
  */
-async function resolveSearchPathsAsync(searchPaths, cwd) {
+function resolveSearchPaths(searchPaths, cwd) {
     return searchPaths?.map((searchPath) => path_1.default.resolve(cwd, searchPath)) || [];
 }
 /**

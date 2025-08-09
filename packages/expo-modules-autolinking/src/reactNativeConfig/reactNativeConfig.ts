@@ -30,7 +30,7 @@ import {
   scanDependenciesRecursively,
 } from '../dependencies';
 
-export async function _resolveReactNativeModule(
+export async function resolveReactNativeModule(
   resolution: DependencyResolution,
   projectConfig: RNConfigReactNativeProjectConfig | null,
   platform: SupportedPlatform,
@@ -127,7 +127,7 @@ export async function createReactNativeConfigAsync(
   );
 
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
-    _resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames)
+    resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames)
   );
 
   return {
