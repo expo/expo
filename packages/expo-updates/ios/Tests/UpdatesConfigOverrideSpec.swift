@@ -64,7 +64,7 @@ class UpdatesConfigOverrideSpec: ExpoSpec {
         }
       }
 
-      describe("save") {
+      describe("save with configOverride") {
         it("should store configuration when override is not null") {
           let updateUrl = URL(string: "https://example.com/manifest")
           let requestHeaders = ["Authorization": "Bearer token"]
@@ -86,43 +86,6 @@ class UpdatesConfigOverrideSpec: ExpoSpec {
 
           let result = UpdatesConfigOverride.load()
           expect(result).to(beNil())
-        }
-      }
-
-      describe("save with updateUrl") {
-        it("should create new override when none exists") {
-          let updateUrl = URL(string: "https://example.com/manifest")
-
-          let result = UpdatesConfigOverride.save(updateUrl: updateUrl)
-
-          expect(result).toNot(beNil())
-          expect(result?.updateUrl).to(equal(updateUrl))
-          expect(result?.requestHeaders).to(beNil())
-
-          let loaded = UpdatesConfigOverride.load()
-          expect(loaded?.updateUrl).to(equal(updateUrl))
-          expect(loaded?.requestHeaders).to(beNil())
-        }
-
-        it("should update existing override") {
-          let existingHeaders = ["Authorization": "Bearer token"]
-          let existingOverride = UpdatesConfigOverride(updateUrl: nil, requestHeaders: existingHeaders)
-          UpdatesConfigOverride.save(configOverride: existingOverride)
-
-          let newUpdateUrl = URL(string: "https://example.com/new-manifest")
-
-          let result = UpdatesConfigOverride.save(updateUrl: newUpdateUrl)
-
-          expect(result).toNot(beNil())
-          expect(result?.updateUrl).to(equal(newUpdateUrl))
-          expect(result?.requestHeaders).to(equal(existingHeaders))
-        }
-
-        it("should return nil when updateUrl is nil and no other values exist") {
-          let result = UpdatesConfigOverride.save(updateUrl: nil)
-
-          expect(result).to(beNil())
-          expect(UpdatesConfigOverride.load()).to(beNil())
         }
       }
 

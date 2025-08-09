@@ -31,16 +31,6 @@ public struct UpdatesConfigOverride: Codable {
     }
   }
 
-  internal static func save(updateUrl: URL?) -> UpdatesConfigOverride? {
-    let newOverride = UpdatesConfigOverride(
-      updateUrl: updateUrl,
-      requestHeaders: load()?.requestHeaders
-    )
-    let finalOverride = (newOverride.updateUrl != nil || newOverride.requestHeaders != nil) ? newOverride : nil
-    save(configOverride: finalOverride)
-    return finalOverride
-  }
-
   internal static func save(requestHeaders: [String: String]?) -> UpdatesConfigOverride? {
     let newOverride = UpdatesConfigOverride(
       updateUrl: load()?.updateUrl,

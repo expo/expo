@@ -263,14 +263,6 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     self.config = try UpdatesConfig.config(fromConfig: self.config, configOverride: configOverride)
   }
 
-  public func setUpdateURLOverride(_ updateUrl: URL?) throws {
-    if !config.disableAntiBrickingMeasures {
-      throw NotAllowedAntiBrickingMeasuresException()
-    }
-    let configOverride = UpdatesConfigOverride.save(updateUrl: updateUrl)
-    self.config = try UpdatesConfig.config(fromConfig: self.config, configOverride: configOverride)
-  }
-
   public func setUpdateRequestHeadersOverride(_ requestHeaders: [String: String]?) throws {
     if !UpdatesConfig.isValidRequestHeadersOverride(
       originalEmbeddedRequestHeaders: config.originalEmbeddedRequestHeaders,

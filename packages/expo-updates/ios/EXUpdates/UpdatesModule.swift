@@ -146,10 +146,6 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       try AppController.sharedInstance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigOverride())
     }
 
-    Function("setUpdateURLOverride") { (updateUrl: URL?) in
-      try AppController.sharedInstance.setUpdateURLOverride(updateUrl)
-    }
-
     Function("setUpdateRequestHeadersOverride") { (requestHeaders: [String: String]?) in
       try AppController.sharedInstance.setUpdateRequestHeadersOverride(requestHeaders)
     }
