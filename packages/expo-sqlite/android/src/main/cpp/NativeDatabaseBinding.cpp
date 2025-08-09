@@ -58,8 +58,8 @@ void NativeDatabaseBinding::sqlite3_finalize_all_statement() {
     int ret = ::exsqlite3_finalize(stmt);
     if (ret != SQLITE_OK) {
       std::string error = convertSqlLiteErrorToSTLString();
-      __android_log_print(ANDROID_LOG_WARN, TAG, "exsqlite3_finalize failed: %s",
-                          error.c_str());
+      __android_log_print(ANDROID_LOG_WARN, TAG,
+                          "exsqlite3_finalize failed: %s", error.c_str());
     }
     stmt = nextStmt;
   }

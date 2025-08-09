@@ -33,10 +33,13 @@ class SQLiteModule : Module() {
       val defaultDatabaseDirectory = context.filesDir.canonicalPath + File.separator + "SQLite"
       val bundledExtensions: Map<String, Map<String, String?>> = buildMap {
         if (BuildConfig.WITH_SQLITE_VEC) {
-          put("sqlite-vec", mapOf(
-            "libPath" to "vec",
-            "entryPoint" to "sqlite3_vec_init"
-          ))
+          put(
+            "sqlite-vec",
+            mapOf(
+              "libPath" to "vec",
+              "entryPoint" to "sqlite3_vec_init"
+            )
+          )
         }
       }
       return@Constants mapOf(
