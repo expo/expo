@@ -141,6 +141,11 @@ const schema = {
                 buildReactNativeFromSource: { type: 'boolean', nullable: true },
                 buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
                 exclusiveMavenMirror: { type: 'string', nullable: true },
+                reactNativeReleaseLevel: {
+                    type: 'string',
+                    enum: ['stable', 'canary', 'experimental'],
+                    nullable: true,
+                },
             },
             nullable: true,
         },

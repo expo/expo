@@ -1,3 +1,5 @@
+import { addImports } from '@expo/config-plugins/build/android/codeMod';
+import { insertContentsAtOffset } from '@expo/config-plugins/build/utils/commonCodeMod';
 import {
   AndroidConfig,
   ConfigPlugin,
@@ -7,6 +9,7 @@ import {
   withAndroidStyles,
   withDangerousMod,
   withSettingsGradle,
+  withMainApplication,
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
@@ -347,3 +350,59 @@ export function updateAndroidSettingsGradle({
 
   return newContents;
 }
+
+/**
+ * Injects react native release level into MainApplication.kt
+ *
+ * @param contents MainApplication source contents
+ * @param reactNativeReleaseLevel release level to set
+ * @returns updated contents
+ */
+function injectReleaseLevelInsideMainApplication(
+  contents: string,
+  reactNativeReleaseLevel: 'stable' | 'canary' | 'experimental'
+): string {
+  const importsMod = addImports(
+    contents,
+    [
+      'com.facebook.react.common.ReleaseLevel',
+      'com.facebook.react.defaults.DefaultNewArchitectureEntryPoint',
+    ],
+    false
+  );
+
+  // Add releaseLevel before loadReactNative(this)
+  const start = importsMod.search(new RegExp(`\\s*onCreate.*?[\\(\\{]`));
+  if (start < 0) {
+    throw new Error(`Unable to find code block - declaration[onCreate]`);
+  }
+
+  const loadReactNativePos = importsMod.indexOf('loadReactNative(this)', start);
+  return insertContentsAtOffset(
+    importsMod,
+    `DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.${reactNativeReleaseLevel.toLocaleUpperCase()}\n    `,
+    loadReactNativePos
+  );
+}
+
+export const withAndroidMainApplication: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withMainApplication(config, (config) => {
+    const mainApplication = config.modResults;
+    let mainApplicationContents = mainApplication.contents;
+
+    if (props.android?.reactNativeReleaseLevel) {
+      mainApplicationContents = injectReleaseLevelInsideMainApplication(
+        mainApplicationContents,
+        props.android.reactNativeReleaseLevel
+      );
+    }
+
+    return {
+      ...config,
+      modResults: {
+        ...config.modResults,
+        contents: mainApplicationContents,
+      },
+    };
+  });
+};

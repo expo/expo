@@ -3,9 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidSettingsGradle = exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidMainApplication = exports.withAndroidSettingsGradle = exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 exports.updateAndroidProguardRules = updateAndroidProguardRules;
 exports.updateAndroidSettingsGradle = updateAndroidSettingsGradle;
+const codeMod_1 = require("@expo/config-plugins/build/android/codeMod");
+const commonCodeMod_1 = require("@expo/config-plugins/build/utils/commonCodeMod");
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -285,3 +287,40 @@ function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
     }
     return newContents;
 }
+/**
+ * Injects react native release level into MainApplication.kt
+ *
+ * @param contents MainApplication source contents
+ * @param reactNativeReleaseLevel release level to set
+ * @returns updated contents
+ */
+function injectReleaseLevelInsideMainApplication(contents, reactNativeReleaseLevel) {
+    const importsMod = (0, codeMod_1.addImports)(contents, [
+        'com.facebook.react.common.ReleaseLevel',
+        'com.facebook.react.defaults.DefaultNewArchitectureEntryPoint',
+    ], false);
+    // Add releaseLevel before loadReactNative(this)
+    const start = importsMod.search(new RegExp(`\\s*onCreate.*?[\\(\\{]`));
+    if (start < 0) {
+        throw new Error(`Unable to find code block - declaration[onCreate]`);
+    }
+    const loadReactNativePos = importsMod.indexOf('loadReactNative(this)', start);
+    return (0, commonCodeMod_1.insertContentsAtOffset)(importsMod, `DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.${reactNativeReleaseLevel.toLocaleUpperCase()}\n    `, loadReactNativePos);
+}
+const withAndroidMainApplication = (config, props) => {
+    return (0, config_plugins_1.withMainApplication)(config, (config) => {
+        const mainApplication = config.modResults;
+        let mainApplicationContents = mainApplication.contents;
+        if (props.android?.reactNativeReleaseLevel) {
+            mainApplicationContents = injectReleaseLevelInsideMainApplication(mainApplicationContents, props.android.reactNativeReleaseLevel);
+        }
+        return {
+            ...config,
+            modResults: {
+                ...config.modResults,
+                contents: mainApplicationContents,
+            },
+        };
+    });
+};
+exports.withAndroidMainApplication = withAndroidMainApplication;
