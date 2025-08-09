@@ -1,6 +1,5 @@
 package expo.modules.updates
 
-import android.net.Uri
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -167,7 +166,6 @@ interface IUpdatesController {
   suspend fun setExtraParam(key: String, value: String?)
 
   fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?)
-  fun setUpdateURLOverride(updateUrl: Uri?)
   fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?)
 
   fun shutdown()

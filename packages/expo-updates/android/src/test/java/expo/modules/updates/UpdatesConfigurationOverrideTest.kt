@@ -106,38 +106,11 @@ class UpdatesConfigurationOverrideTest {
   }
 
   @Test
-  fun `save with updateUrl should create new override when none exists`() {
-    val updateUrl = "https://example.com/manifest".toUri()
-    every { mockPrefs.getString(any(), any()) } returns null
-    val stringSlot = slot<String>()
-
-    val result = UpdatesConfigurationOverride.save(mockContext, updateUrl)
-
-    Truth.assertThat(result).isNotNull()
-    Truth.assertThat(result?.updateUrl).isEqualTo(updateUrl)
-    Truth.assertThat(result?.requestHeaders).isNull()
-    verify { mockEditor.putString(any(), capture(stringSlot)) }
-  }
-
-  @Test
-  fun `save with updateUrl should update existing override`() {
-    val existingJson = """{"requestHeaders":{"Authorization":"Bearer token"}}"""
-    val newUpdateUrl = "https://example.com/new-manifest".toUri()
-    every { mockPrefs.getString(any(), any()) } returns existingJson
-
-    val result = UpdatesConfigurationOverride.save(mockContext, newUpdateUrl)
-
-    Truth.assertThat(result).isNotNull()
-    Truth.assertThat(result?.updateUrl).isEqualTo(newUpdateUrl)
-    Truth.assertThat(result?.requestHeaders).isEqualTo(mapOf("Authorization" to "Bearer token"))
-  }
-
-  @Test
-  fun `save with requestHeaders should create new override when none exists`() {
+  fun `saveRequestHeaders should create new override when none exists`() {
     val requestHeaders = mapOf("Authorization" to "Bearer token")
     every { mockPrefs.getString(any(), any()) } returns null
 
-    val result = UpdatesConfigurationOverride.save(mockContext, requestHeaders)
+    val result = UpdatesConfigurationOverride.saveRequestHeaders(mockContext, requestHeaders)
 
     Truth.assertThat(result).isNotNull()
     Truth.assertThat(result?.updateUrl).isNull()
@@ -145,12 +118,12 @@ class UpdatesConfigurationOverrideTest {
   }
 
   @Test
-  fun `save with requestHeaders should update existing override`() {
+  fun `saveRequestHeaders should update existing override`() {
     val existingJson = """{"updateUrl":"https://example.com/manifest"}"""
     val newHeaders = mapOf("User-Agent" to "ExpoApp")
     every { mockPrefs.getString(any(), any()) } returns existingJson
 
-    val result = UpdatesConfigurationOverride.save(mockContext, newHeaders)
+    val result = UpdatesConfigurationOverride.saveRequestHeaders(mockContext, newHeaders)
 
     Truth.assertThat(result).isNotNull()
     Truth.assertThat(result?.updateUrl).isEqualTo("https://example.com/manifest".toUri())
@@ -158,20 +131,10 @@ class UpdatesConfigurationOverrideTest {
   }
 
   @Test
-  fun `save with null updateUrl should return null when no other values exist`() {
+  fun `saveRequestHeaders with null value should return null when no other values exist`() {
     every { mockPrefs.getString(any(), any()) } returns null
 
-    val result = UpdatesConfigurationOverride.save(mockContext, updateUrl = null)
-
-    Truth.assertThat(result).isNull()
-    verify { mockEditor.remove(any()) }
-  }
-
-  @Test
-  fun `save with null requestHeaders should return null when no other values exist`() {
-    every { mockPrefs.getString(any(), any()) } returns null
-
-    val result = UpdatesConfigurationOverride.save(mockContext, requestHeaders = null)
+    val result = UpdatesConfigurationOverride.saveRequestHeaders(mockContext, null)
 
     Truth.assertThat(result).isNull()
     verify { mockEditor.remove(any()) }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.content.edit
 import androidx.core.net.toUri
+import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.toMap
 import org.json.JSONObject
 
@@ -49,15 +50,7 @@ data class UpdatesConfigurationOverride(
       }
     }
 
-    internal fun save(context: Context, updateUrl: Uri?): UpdatesConfigurationOverride? {
-      val newOverride = (load(context) ?: UpdatesConfigurationOverride(null, null))
-        .copy(updateUrl = updateUrl)
-        .takeIf { it.updateUrl != null || it.requestHeaders != null }
-      save(context, newOverride)
-      return newOverride
-    }
-
-    internal fun save(context: Context, requestHeaders: Map<String, String>?): UpdatesConfigurationOverride? {
+    internal fun saveRequestHeaders(context: Context, requestHeaders: Map<String, String>?): UpdatesConfigurationOverride? {
       val newOverride = (load(context) ?: UpdatesConfigurationOverride(null, null))
         .copy(requestHeaders = requestHeaders)
         .takeIf { it.updateUrl != null || it.requestHeaders != null }
@@ -67,11 +60,10 @@ data class UpdatesConfigurationOverride(
 
     internal fun fromJSONObject(json: JSONObject): UpdatesConfigurationOverride =
       UpdatesConfigurationOverride(
-        updateUrl = json.optString("updateUrl")
-          .takeIf { it.isNotBlank() }
+        updateUrl = json.getNullable<String>("updateUrl")
           ?.toUri(),
 
-        requestHeaders = json.optJSONObject("requestHeaders")
+        requestHeaders = json.getNullable<JSONObject>("requestHeaders")
           ?.toMap()
           ?.mapValues { it.value.toString() }
       )
