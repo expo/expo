@@ -34,7 +34,7 @@ public final class SQLiteModule: Module {
       #if WITH_SQLITE_VEC
       bundledExtensions["sqlite-vec"] = [
         "libPath": Bundle(identifier: "sqlite-vec")?.path(forResource: "vec", ofType: ""),
-        "entryPoint": "sqlite3_vec_init",
+        "entryPoint": "sqlite3_vec_init"
       ]
       #endif
 
