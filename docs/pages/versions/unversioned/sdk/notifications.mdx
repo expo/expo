@@ -668,3 +668,14 @@ import * as Notifications from 'expo-notifications';
     categories: 'Manage notification categories (interactive notifications)',
   }}
 />
+
+## Known issues
+
+When launching the app from a push notification in **Android development builds**, the splash screen may fail to display correctly about 70% of the time. The icon and fade animation may not appear as expected.
+
+- Icon may be missing
+- Fade animation may not run
+- Only the background color may flash briefly
+
+This issue only affects debug builds and does not occur in release builds.
+**Workaround:** Test notification launches in release mode (`expo run:android --variant release`) for accurate behavior.
