@@ -16,6 +16,7 @@ String toPlatformIndependentPath(File path) {
 ext {
   USE_SQLCIPHER = findProperty('expo.sqlite.useSQLCipher') == 'true'
   USE_LIBSQL = findProperty('expo.sqlite.useLibSQL') == 'true'
+  WITH_SQLITE_VEC = findProperty('expo.sqlite.withSQLiteVecExtension') == 'true'
 }
 def SQLITE3_SRC_DIR = new File("${projectDir}/../vendor/sqlite3")
 if (ext.USE_SQLCIPHER) {
@@ -53,6 +54,7 @@ android {
     versionCode 18
     versionName "15.2.10"
     buildConfigField "boolean", "USE_LIBSQL", project.ext.USE_LIBSQL.toString()
+    buildConfigField "boolean", "WITH_SQLITE_VEC", project.ext.WITH_SQLITE_VEC.toString()
 
     externalNativeBuild {
       cmake {
@@ -80,6 +82,13 @@ android {
       "**/libc++_shared.so",
       "**/libfbjni.so",
     ]
+  }
+  sourceSets {
+    main {
+      if (project.ext.WITH_SQLITE_VEC) {
+        jniLibs.srcDirs += ['vec']
+      }
+    }
   }
 }
 
