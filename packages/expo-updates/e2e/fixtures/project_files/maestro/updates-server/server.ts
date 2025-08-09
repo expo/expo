@@ -41,6 +41,7 @@ let updateRequest: Request | null = null;
 
 let manifestToServe: null = null;
 let manifestHeadersToServe: { [x: string]: any } | null = null;
+let serveChannel: string | null = null;
 
 let logEntries: UpdatesLogEntry[] = [];
 
@@ -83,6 +84,7 @@ function stop() {
   updateRequest = null;
   manifestToServe = null;
   manifestHeadersToServe = null;
+  serveChannel = null;
   multipartResponseToServe = null;
   requestedStaticFiles = [];
   logEntries = [];
@@ -165,7 +167,7 @@ app.get('/update-override', (req: any, res: any) => {
 const updateRequestHandler = (req: any, res: any) => {
   console.log('Received update request: ', JSON.stringify(req.headers, null, 2));
   updateRequest = req;
-  if (multipartResponseToServe) {
+  if (multipartResponseToServe && isChannelMatched(req)) {
     console.log('Serving multipart response');
     // Protocol 1: multipart and rollbacks supported
     const form = new FormData();
@@ -207,22 +209,28 @@ const updateRequestHandler = (req: any, res: any) => {
     } else {
       sendResponse();
     }
-  } else {
+  } else if (manifestToServe && isChannelMatched(req)) {
     // Protocol 0
-    if (manifestToServe) {
-      console.log('Serving manifest with protocol 0');
-      if (manifestHeadersToServe) {
-        Object.keys(manifestHeadersToServe).forEach((headerName) => {
-          res.set(headerName, manifestHeadersToServe ? manifestHeadersToServe[headerName] : '');
-        });
-      }
-      res.json(manifestToServe);
-    } else {
-      console.log('No manifest to serve');
-      res.status(404).send('No update available');
+    console.log('Serving manifest with protocol 0');
+    if (manifestHeadersToServe) {
+      Object.keys(manifestHeadersToServe).forEach((headerName) => {
+        res.set(headerName, manifestHeadersToServe ? manifestHeadersToServe[headerName] : '');
+      });
     }
+    res.json(manifestToServe);
+  } else {
+    console.log('No manifest to serve');
+    res.status(404).send('No update available');
   }
 };
+
+function isChannelMatched(req: any): boolean {
+  if (!serveChannel) {
+    return true;
+  }
+  const channel = req.headers['expo-channel-name'];
+  return channel === serveChannel;
+}
 
 async function waitForUpdateRequest(timeout: number): Promise<{ headers: any }> {
   const finishTime = new Date().getTime() + timeout;
@@ -454,12 +462,15 @@ app.get('/last-request-headers', (_: Request, res: Response) => {
 });
 
 app.get('/serve-manifest', async (req: Request, res: Response) => {
-  console.log(
-    'Received request to serve manifest named: ',
-    req.query.name,
-    ' on platform: ',
-    req.query.platform
-  );
+  if (req.query.channel) {
+    console.log(
+      `Received request to serve manifest named: ${req.query.name} on platform: ${req.query.platform} with channel: ${req.query.channel}`
+    );
+  } else {
+    console.log(
+      `Received request to serve manifest named: ${req.query.name} on platform: ${req.query.platform}`
+    );
+  }
   try {
     if (!supportedManifestRequests.has(req.query.name as string)) {
       const errorMessage = `Missing or unknown manifest name: ${req.query.name}`;
@@ -472,6 +483,9 @@ app.get('/serve-manifest', async (req: Request, res: Response) => {
       console.log(errorMessage);
       res.status(400).send(errorMessage);
       return;
+    }
+    if (req.query.channel) {
+      serveChannel = String(req.query.channel);
     }
     const manifestId = await respondToServeManifestRequest(
       req.query.name as string,
