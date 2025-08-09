@@ -7,9 +7,26 @@
  */
 
 // @ts-expect-error
-import Networking from 'react-native/Libraries/Network/RCTNetworking';
+import { Networking } from 'react-native';
 
 type Subscriber = { remove: () => void };
+
+class LoadBundleFromServerError extends Error {
+  name = 'LoadBundleFromServerError';
+
+  constructor(
+    message: string,
+    public url: string,
+    public isTimeout: boolean,
+    options?: ErrorOptions
+  ) {
+    super(message, options);
+  }
+}
+
+class LoadBundleFromServerRequestError extends LoadBundleFromServerError {
+  name = 'LoadBundleFromServerRequestError';
+}
 
 export function fetchAsync(
   url: string
@@ -21,9 +38,10 @@ export function fetchAsync(
   let dataListener: Subscriber | null = null;
   let completeListener: Subscriber | null = null;
   let responseListener: Subscriber | null = null;
+  let incrementalDataListener: Subscriber | null = null;
   return new Promise<{ body: string; status: number; headers: Record<string, string> }>(
     (resolve, reject) => {
-      const addListener = Networking.addListener.bind(Networking) as (
+      const addListener = Networking.addListener.bind() as (
         event: string,
         callback: (props: [string, any, any]) => any
       ) => Subscriber;
@@ -32,6 +50,18 @@ export function fetchAsync(
           responseText = response;
         }
       });
+      incrementalDataListener = addListener(
+        'didReceiveNetworkIncrementalData',
+        ([requestId, data]) => {
+          if (requestId === id) {
+            if (responseText != null) {
+              responseText += data;
+            } else {
+              responseText = data;
+            }
+          }
+        }
+      );
       responseListener = addListener(
         'didReceiveNetworkResponse',
         ([requestId, status, responseHeaders]) => {
@@ -41,15 +71,22 @@ export function fetchAsync(
           }
         }
       );
-      completeListener = addListener('didCompleteNetworkResponse', ([requestId, error]) => {
-        if (requestId === id) {
-          if (error) {
-            reject(error);
-          } else {
-            resolve({ body: responseText!, status: statusCode!, headers });
+      completeListener = addListener(
+        'didCompleteNetworkResponse',
+        ([requestId, error, isTimeout]) => {
+          if (requestId === id) {
+            if (error) {
+              reject(
+                new LoadBundleFromServerRequestError('Could not load bundle', url, isTimeout, {
+                  cause: error,
+                })
+              );
+            } else {
+              resolve({ body: responseText!, status: statusCode!, headers });
+            }
           }
         }
-      });
+      );
       (Networking.sendRequest as any)(
         'GET',
         'asyncRequest',
@@ -59,7 +96,7 @@ export function fetchAsync(
         },
         '',
         'text',
-        false,
+        true,
         0,
         (requestId: string) => {
           id = requestId;
@@ -71,5 +108,6 @@ export function fetchAsync(
     dataListener?.remove();
     completeListener?.remove();
     responseListener?.remove();
+    incrementalDataListener?.remove();
   });
 }

@@ -39,19 +39,21 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
+    "@expo/plist": "^0.3.4",
     "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
     "chalk": "^4.1.2",
+    "debug": "^4.3.4",
     "expo-eas-client": "~0.14.3",
     "expo-manifests": "~0.16.5",
     "expo-structured-headers": "~4.1.0",
     "expo-updates-interface": "~1.1.0",
+    "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "ignore": "^5.3.1",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "@expo/metro": "~0.1.0",
     "@types/jest": "^29.2.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.14.0",

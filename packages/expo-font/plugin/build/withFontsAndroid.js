@@ -7,8 +7,6 @@ exports.withFontsAndroid = void 0;
 exports.groupByFamily = groupByFamily;
 exports.getXmlSpecs = getXmlSpecs;
 exports.generateFontManagerCalls = generateFontManagerCalls;
-const codeMod_1 = require("@expo/config-plugins/build/android/codeMod");
-const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
 const config_plugins_1 = require("expo/config-plugins");
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
@@ -86,9 +84,9 @@ function getXmlSpecs(fontsDir, xmlFontObjects) {
 function addFontXmlToMainApplication(config, xmlFontObjects) {
     return (0, config_plugins_1.withMainApplication)(config, (config) => {
         const { modResults, modResults: { language }, } = config;
-        modResults.contents = (0, codeMod_1.addImports)(modResults.contents, ['com.facebook.react.common.assets.ReactFontManager'], language === 'java');
+        modResults.contents = config_plugins_1.AndroidConfig.CodeMod.addImports(modResults.contents, ['com.facebook.react.common.assets.ReactFontManager'], language === 'java');
         const fontManagerCalls = generateFontManagerCalls(xmlFontObjects, language).join(os_1.default.EOL);
-        const withInit = (0, generateCode_1.mergeContents)({
+        const withInit = config_plugins_1.CodeGenerator.mergeContents({
             src: modResults.contents,
             comment: '    //',
             tag: 'xml-fonts-init',

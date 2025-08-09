@@ -1,14 +1,12 @@
-import {
-  createMetroServerAndBundleRequestAsync,
-  exportEmbedAssetsAsync,
-} from '@expo/cli/build/src/export/embed/exportEmbedAsync';
-import { drawableFileTypes } from '@expo/cli/build/src/export/metroAssetLocalPath';
-import Server from '@expo/metro/metro/Server';
-import type { BundleOptions } from '@expo/metro/metro/shared/types.flow';
-import { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
+import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
 import { convertEntryPointToRelative, resolveRelativeEntryPoint } from 'expo/config/paths';
-import { EmbeddedManifest } from 'expo-manifests';
+import {
+  drawableFileTypes,
+  createMetroServerAndBundleRequestAsync,
+  exportEmbedAssetsAsync,
+} from 'expo/internal/unstable-expo-updates-cli-exports';
+import type { EmbeddedManifest } from 'expo-manifests';
 import fs from 'fs';
 import path from 'path';
 
@@ -39,15 +37,13 @@ export async function createManifestForBuildAsync(
     minify: false,
     dev: process.env.CONFIGURATION === 'Debug', // ensures debug assets packaged correctly for iOS and native debug
     sourcemapUseAbsolutePath: false,
+    resetCache: false,
   };
 
-  const { server, bundleRequest } = (await createMetroServerAndBundleRequestAsync(
+  const { server, bundleRequest } = await createMetroServerAndBundleRequestAsync(
     projectRoot,
     options
-  )) as {
-    server: Server;
-    bundleRequest: BundleOptions;
-  };
+  );
 
   let assets: HashedAssetData[];
   try {

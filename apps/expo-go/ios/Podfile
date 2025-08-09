@@ -20,9 +20,6 @@ target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'MBProgressHUD', '~> 1.2.0'
 
-  # transitive dependency of React-Core and we use it to get the `RCTInspectorPackagerConnection` state
-  pod 'SocketRocket'
-
   # Required by react-native-maps
   # See https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md
   pod 'react-native-maps/Google', :path => '../../../node_modules/react-native-maps'
@@ -55,6 +52,7 @@ target 'Expo Go' do
       'expo-network-addons',
       'expo-insights',
       'expo-splash-screen',
+      'expo-blob',
       '@expo/ui',
       '@expo/app-integrity'
     ],

@@ -5,6 +5,7 @@ import React, {
   isValidElement,
   use,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type FC,
@@ -35,7 +36,7 @@ const InternalLinkPreviewContext = createContext<
 
 export function LinkWithPreview({ children, ...rest }: LinkProps) {
   const router = useRouter();
-  const { setIsPreviewOpen } = useLinkPreviewContext();
+  const { setOpenPreviewKey } = useLinkPreviewContext();
   const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
 
   const hrefWithoutQuery = String(rest.href).split('?')[0];
@@ -53,7 +54,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     }
   }, [hrefWithoutQuery]);
 
-  const [nextScreenId, updateNextScreenId] = useNextScreenId();
+  const [{ nextScreenId, tabPath }, prefetch] = useNextScreenId();
 
   useEffect(() => {
     if (shouldLinkExternally(String(rest.href))) {
@@ -103,6 +104,13 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
 
   const isPreviewTapped = useRef(false);
 
+  const tabPathValue = useMemo(
+    () => ({
+      path: tabPath,
+    }),
+    [tabPath]
+  );
+
   if (shouldLinkExternally(String(rest.href)) || rest.replace) {
     return <BaseExpoRouterLink children={children} {...rest} />;
   }
@@ -110,29 +118,18 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   return (
     <NativeLinkPreview
       nextScreenId={nextScreenId}
+      tabPath={tabPathValue}
       onWillPreviewOpen={() => {
         isPreviewTapped.current = false;
-        router.prefetch(rest.href);
-        setIsPreviewOpen(true);
+        prefetch(rest.href);
         setIsCurrenPreviewOpen(true);
       }}
-      onDidPreviewOpen={() => {
-        updateNextScreenId(rest.href);
-      }}
       onPreviewWillClose={() => {
+        setIsCurrenPreviewOpen(false);
         // When preview was not tapped, then we need to enable the screen stack animation
-        // Otherwise a quick user could tap another link before onDidPreviewClose is called
+        // Otherwise this will happen in StackNavigator, when new screen is opened
         if (!isPreviewTapped.current) {
-          setIsCurrenPreviewOpen(false);
-          setIsPreviewOpen(false);
-        }
-      }}
-      onPreviewDidClose={() => {
-        // If preview was tapped we need to enable the screen stack animation
-        // For other cases we did it in onPreviewWillClose
-        if (isPreviewTapped.current) {
-          setIsCurrenPreviewOpen(false);
-          setIsPreviewOpen(false);
+          setOpenPreviewKey(undefined);
         }
       }}
       onPreviewTapped={() => {

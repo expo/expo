@@ -112,8 +112,10 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     const isExporting = true;
     const baseUrl = (0, baseJSBundle_1.getBaseUrlOption)(graph, { serializerOptions: serializeChunkOptions });
     const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+    const platform = (0, baseJSBundle_1.getPlatformOption)(graph, options) ?? 'web';
+    const isHosted = platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
     const publicPath = isExporting
-        ? graph.transformOptions.platform === 'web'
+        ? isHosted
             ? `/assets?export_path=${assetPublicUrl}`
             : assetPublicUrl
         : '/assets/?unstable_path=.';
@@ -122,9 +124,10 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     const metroAssets = (await (0, getAssets_1.default)(graph.dependencies, {
         processModuleFilter: options.processModuleFilter,
         assetPlugins: config.transformer?.assetPlugins ?? [],
-        platform: (0, baseJSBundle_1.getPlatformOption)(graph, options) ?? 'web',
+        platform,
         projectRoot: options.projectRoot, // this._getServerRootDir(),
         publicPath,
+        isHosted,
     }));
     return {
         artifacts: [...jsAssets, ...cssDeps],
@@ -417,6 +420,7 @@ class Chunk {
             });
             // TODO: Generate hbc for each chunk
             const hermesBundleOutput = await (0, exportHermes_1.buildHermesBundleAsync)({
+                projectRoot: this.options.projectRoot,
                 filename: this.name,
                 code: adjustedSource,
                 map: assets[1] ? assets[1].source : null,

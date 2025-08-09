@@ -37,6 +37,8 @@ const withRouter: ConfigPlugin<
     sitemap?: boolean;
     /** Generate partial typed routes */
     partialTypedGroups?: boolean;
+    /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
+    unstable_useServerMiddleware?: boolean;
   } | void
 > = (config, _props) => {
   const props = _props || {};

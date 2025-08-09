@@ -315,7 +315,7 @@ export const withAndroidSettingsGradle: ConfigPlugin<PluginConfigType> = (config
   return withSettingsGradle(config, (config) => {
     config.modResults.contents = updateAndroidSettingsGradle({
       contents: config.modResults.contents,
-      buildFromSource: props.android?.buildFromSource,
+      buildFromSource: props.android?.buildReactNativeFromSource ?? props.android?.buildFromSource,
     });
     return config;
   });

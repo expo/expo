@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/native-tabs/index.ts"],"names":[],"mappings":";;;AAAA,8CAAuD;AAA9C,iGAAA,KAAK,OAAA;AAAE,gGAAA,IAAI,OAAA;AAAE,iGAAA,KAAK,OAAA;AAC3B,4DAA2D;AAAlD,wGAAA,UAAU,OAAA","sourcesContent":["export { Label, Icon, Badge } from './common/elements';\nexport { NativeTabs } from './NativeBottomTabs/NativeTabs';\n"]}

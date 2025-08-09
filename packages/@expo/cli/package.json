@@ -7,6 +7,7 @@
     "expo-internal": "build/bin/cli"
   },
   "files": [
+    "internal",
     "static",
     "build"
   ],
@@ -48,12 +49,13 @@
     "@expo/env": "~1.0.5",
     "@expo/image-utils": "^0.7.4",
     "@expo/json-file": "^9.1.4",
-    "@expo/metro": "~0.1.0",
+    "@expo/metro": "~0.1.1",
     "@expo/metro-config": "~0.20.14",
     "@expo/osascript": "^2.2.4",
     "@expo/package-manager": "^1.8.4",
     "@expo/plist": "^0.3.4",
     "@expo/prebuild-config": "^9.0.6",
+    "@expo/server": "^0.6.2",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",
     "@expo/xcpretty": "^4.3.0",
@@ -107,10 +109,22 @@
       "./taskfile-swc.js"
     ]
   },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-router": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-router": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@expo/multipart-body-parser": "^1.0.0",
     "@expo/ngrok": "4.1.3",
-    "@expo/server": "^0.6.2",
     "@graphql-codegen/cli": "^2.16.3",
     "@graphql-codegen/typescript": "^2.8.7",
     "@graphql-codegen/typescript-operations": "^2.5.12",

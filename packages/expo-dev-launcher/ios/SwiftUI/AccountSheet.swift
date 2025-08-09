@@ -95,10 +95,16 @@ struct AccountSheet: View {
         .multilineTextAlignment(.leading)
         .frame(maxWidth: .infinity, alignment: .leading)
 
+      #if os(tvOS)
+      VStack(spacing: 8) {
+        Text("Login and signup are not yet available on tvOS")
+      }
+      #else
       VStack(spacing: 8) {
         signInButton
         signUpButton
       }
+      #endif
 
       if viewModel.isAuthenticating {
         ProgressView()

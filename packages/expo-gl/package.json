@@ -49,10 +49,18 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*",
+    "react-dom": "*",
     "react-native": "*",
+    "react-native-reanimated": "*",
     "react-native-web": "*"
   },
   "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
     "react-native-web": {
       "optional": true
     }
