@@ -40,7 +40,12 @@ function NativeTabsView(props) {
           {descriptor.render()}
         </react_native_screens_1.BottomTabsScreen>);
     });
-    return (<react_native_screens_1.BottomTabs tabBarItemTitleFontColor={style?.color} tabBarItemTitleFontFamily={style?.fontFamily} tabBarItemTitleFontSize={style?.fontSize} tabBarItemTitleFontWeight={style?.fontWeight} tabBarItemTitleFontStyle={style?.fontStyle} tabBarBackgroundColor={style?.backgroundColor} tabBarBlurEffect={style?.blurEffect} tabBarTintColor={style?.tintColor} tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor} tabBarItemRippleColor={style?.rippleColor} tabBarItemLabelVisibilityMode={style?.labelVisibilityMode} tabBarItemIconColor={style?.iconColor} tabBarItemIconColorActive={style?.['&:active']?.iconColor ?? style?.tintColor} tabBarItemTitleFontColorActive={style?.['&:active']?.color ?? style?.tintColor} tabBarItemTitleFontSizeActive={style?.['&:active']?.fontSize} tabBarItemActiveIndicatorColor={style?.['&:active']?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} tabBarMinimizeBehavior={minimizeBehavior} onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
+    return (<react_native_screens_1.BottomTabs tabBarItemTitleFontColor={style?.color} tabBarItemTitleFontFamily={style?.fontFamily} tabBarItemTitleFontSize={style?.fontSize} tabBarItemTitleFontWeight={style?.fontWeight} tabBarItemTitleFontStyle={style?.fontStyle} tabBarBackgroundColor={style?.backgroundColor} tabBarBlurEffect={style?.blurEffect} tabBarTintColor={style?.tintColor} tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor} tabBarItemRippleColor={style?.rippleColor} tabBarItemLabelVisibilityMode={style?.labelVisibilityMode} tabBarItemIconColor={style?.iconColor} 
+    // tabBarItemIconColorActive={style?.['&:active']?.iconColor ?? style?.tintColor}
+    // tabBarItemTitleFontColorActive={style?.['&:active']?.color ?? style?.tintColor}
+    // tabBarItemTitleFontSizeActive={style?.['&:active']?.fontSize}
+    // tabBarItemActiveIndicatorColor={style?.['&:active']?.indicatorColor}
+    tabBarItemActiveIndicatorEnabled={!disableIndicator} tabBarMinimizeBehavior={minimizeBehavior} onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
             const descriptor = descriptors[tabKey];
             const route = descriptor.route;
             navigation.dispatch({

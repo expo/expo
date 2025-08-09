@@ -1,48 +1,53 @@
 'use client';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import type { PropsWithChildren, ReactElement, ReactNode } from 'react';
-import { isValidElement } from 'react';
+import { isValidElement, type ReactElement, type ReactNode } from 'react';
 
-import type { NativeTabOptions } from './NativeTabsView';
+import type { ExtendedNativeTabOptions, NativeTabTriggerProps } from './types';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
 import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import { Icon, Badge, Label } from '../common/elements';
 
-export type TabProps = PropsWithChildren<{
-  /**
-   * The name of the route.
-   *
-   * This is required when used inside a Layout component.
-   *
-   * When used in a route it has no effect.
-   */
-  name?: string;
-  /**
-   * If true, the tab will be hidden from the tab bar.
-   */
-  hidden?: boolean;
-  /**
-   * The options for the tab.
-   */
-  options?: Omit<NativeTabOptions, 'hidden' | 'specialEffects'>;
-  /**
-   * If true, the tab will not pop stack to the root when selected again.
-   * @default false
-   *
-   * @platform ios
-   */
-  disablePopToTop?: boolean;
-  /**
-   * If true, the tab will not scroll to the top when selected again.
-   * @default false
-   *
-   * @platform ios
-   */
-  disableScrollToTop?: boolean;
-}>;
-
-export function TabTrigger(props: TabProps) {
+/**
+ * The component used to customize the native tab options both in the _layout file and from the tab screen.
+ *
+ * When used in the _layout file, you need to provide a `name` prop.
+ * When used in the tab screen, the `name` prop takes no effect.
+ *
+ * @example
+ * ```tsx
+ * // In _layout file
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <NativeTabs>
+ *       <NativeTabs.Trigger name="home" />
+ *       <NativeTabs.Trigger name="settings" />
+ *     </NativeTabs>
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // In a tab screen
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ *
+ * export default function HomeScreen() {
+ *   return (
+ *     <View>
+ *       <NativeTabs.Trigger>
+ *         <Label>Home</Label>
+ *       </NativeTabs.Trigger>
+ *       <Text>This is home screen!</Text>
+ *     </View>
+ *   );
+ * }
+ *
+ * **Note:** You can use the alias `NativeTabs.Trigger` for this component.
+ */
+export function NativeTabTrigger(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
   const isFocused = navigation.isFocused();
@@ -71,8 +76,8 @@ export function convertTabPropsToOptions({
   children,
   disablePopToTop,
   disableScrollToTop,
-}: TabProps) {
-  const initialOptions: NativeTabOptions = {
+}: NativeTabTriggerProps) {
+  const initialOptions: ExtendedNativeTabOptions = {
     ...options,
     hidden: !!hidden,
     specialEffects: {
@@ -83,7 +88,7 @@ export function convertTabPropsToOptions({
     },
   };
   const allowedChildren = filterAllowedChildrenElements(children, [Badge, Label, Icon]);
-  return allowedChildren.reduce<NativeTabOptions>(
+  return allowedChildren.reduce<ExtendedNativeTabOptions>(
     (acc, child) => {
       if (isChildOfType(child, Badge)) {
         if (child.props.children) {
@@ -134,11 +139,11 @@ export function convertTabPropsToOptions({
   );
 }
 
-export function isTab(
+export function isNativeTabTrigger(
   child: ReactNode,
   contextKey?: string
-): child is ReactElement<TabProps & { name: string }> {
-  if (isValidElement(child) && child && child.type === TabTrigger) {
+): child is ReactElement<NativeTabTriggerProps & { name: string }> {
+  if (isValidElement(child) && child && child.type === NativeTabTrigger) {
     if (
       typeof child.props === 'object' &&
       child.props &&

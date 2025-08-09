@@ -1,7 +1,7 @@
 import type { ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-interface LabelProps {
+export interface LabelProps {
   /**
    * The text to display as the label for the tab.
    */
@@ -18,7 +18,7 @@ export function Label(props: LabelProps) {
   return null;
 }
 
-interface SourceIconProps {
+export interface SourceIconCombination {
   /**
    * The image source to use as an icon.
    * @platform iOS
@@ -39,7 +39,7 @@ interface SourceIconProps {
   selectedSf?: never;
 }
 
-interface NamedIconProps {
+export interface NamedIconCombination {
   /**
    * The name of the SF Symbol to use as an icon.
    * @platform iOS
@@ -59,13 +59,13 @@ interface NamedIconProps {
   selectedSrc?: never;
 }
 
-type IconProps = SourceIconProps | NamedIconProps;
+export type IconProps = NamedIconCombination | SourceIconCombination;
 
 export function Icon(props: IconProps) {
   return null;
 }
 
-interface BadgeProps {
+export interface BadgeProps {
   /**
    * The text to display as the badge for the tab.
    * If not provided, the badge will not be displayed.

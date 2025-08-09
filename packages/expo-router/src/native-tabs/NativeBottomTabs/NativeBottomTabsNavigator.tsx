@@ -9,21 +9,12 @@ import {
   useNavigationBuilder,
   type EventMapBase,
 } from '@react-navigation/native';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
-import { NativeTabOptions, NativeTabsView, type NativeTabsViewProps } from './NativeTabsView';
+import { NativeTabsView } from './NativeTabsView';
 import { withLayoutContext } from '../..';
-
-export interface NativeTabsNavigatorProps
-  extends PropsWithChildren<Omit<NativeTabsViewProps, 'builder'>> {
-  /**
-   * The behavior when navigating back with the back button.
-   *
-   * @platform android
-   */
-  backBehavior?: 'none' | 'initialRoute' | 'history';
-}
+import type { NativeTabOptions, NativeTabsProps } from './types';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
@@ -32,7 +23,7 @@ export function NativeTabsNavigator({
   children,
   backBehavior = defaultBackBehavior,
   ...rest
-}: NativeTabsNavigatorProps) {
+}: NativeTabsProps) {
   const builder = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,

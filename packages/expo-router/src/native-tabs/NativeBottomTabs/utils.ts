@@ -1,7 +1,7 @@
 import type { JSXElementConstructor, ReactNode } from 'react';
 import React from 'react';
 
-import type { NativeTabOptions } from './NativeTabsView';
+import type { ExtendedNativeTabOptions } from './types';
 
 export function filterAllowedChildrenElements<Components extends JSXElementConstructor<any>[]>(
   children: ReactNode | ReactNode[],
@@ -22,7 +22,7 @@ export function isChildOfType<T extends JSXElementConstructor<any>>(
   return React.isValidElement(child) && child.type === type;
 }
 
-export function shouldTabBeVisible(options: NativeTabOptions): boolean {
+export function shouldTabBeVisible(options: ExtendedNativeTabOptions): boolean {
   // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
   // If it is not defined, then it was not specified, and we should hide the tab.
   return options.hidden === false;
