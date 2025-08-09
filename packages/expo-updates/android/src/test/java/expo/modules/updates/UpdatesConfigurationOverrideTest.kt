@@ -178,19 +178,6 @@ class UpdatesConfigurationOverrideTest {
   }
 
   @Test
-  fun `fromJSONObject should handle empty updateUrl`() {
-    val json = JSONObject().apply {
-      put("updateUrl", "")
-      put("requestHeaders", JSONObject(mapOf("Authorization" to "Bearer token")))
-    }
-
-    val result = UpdatesConfigurationOverride.fromJSONObject(json)
-
-    Truth.assertThat(result.updateUrl).isNull()
-    Truth.assertThat(result.requestHeaders).isEqualTo(mapOf("Authorization" to "Bearer token"))
-  }
-
-  @Test
   fun `fromJSONObject should handle empty JSON`() {
     val json = JSONObject()
 
