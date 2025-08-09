@@ -297,7 +297,7 @@ function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
 function injectReleaseLevelInsideMainApplication(contents, reactNativeReleaseLevel) {
     const importsMod = (0, codeMod_1.addImports)(contents, [
         'com.facebook.react.common.ReleaseLevel',
-        'com.facebook.react.defaults.DefaultNewArchitectureEntryPoint',
+        'com.facebook.react.defaults.DefaultNewArchitectureEntryPoint ',
     ], false);
     // Add releaseLevel before loadReactNative(this)
     const start = importsMod.search(new RegExp(`\\s*onCreate.*?[\\(\\{]`));

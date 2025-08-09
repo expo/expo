@@ -366,7 +366,7 @@ function injectReleaseLevelInsideMainApplication(
     contents,
     [
       'com.facebook.react.common.ReleaseLevel',
-      'com.facebook.react.defaults.DefaultNewArchitectureEntryPoint',
+      'com.facebook.react.defaults.DefaultNewArchitectureEntryPoint ',
     ],
     false
   );
