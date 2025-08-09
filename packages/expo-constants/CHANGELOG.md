@@ -48,6 +48,7 @@ _This version does not introduce any user-facing changes._
 
 - Remove invalid import from expo-dev-launcher. ([#37558](https://github.com/expo/expo/pull/37558) by [@douglowder](https://github.com/douglowder))
 - Fix check-packages warning. ([#37570](https://github.com/expo/expo/pull/37570) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix invalid path pattern in podspec for projects with spaces ([#38695](https://github.com/expo/expo/pull/38695) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
