@@ -1,12 +1,36 @@
 import type { ResolutionContext } from '@expo/metro/metro-resolver';
-import type { SearchOptions as AutolinkingSearchOptions } from 'expo-modules-autolinking/exports';
+import type { ResolutionResult as AutolinkingResolutionResult } from 'expo-modules-autolinking/exports';
 
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
 const debug = require('debug')('expo:start:server:metro:sticky-resolver') as typeof console.log;
 
-const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
+// This is a list of known modules we want to always include in sticky resolution
+// Specifying these skips platform- and module-specific checks and always includes them in the output
+const KNOWN_STICKY_DEPENDENCIES = [
+  // NOTE: react and react-dom aren't native modules, but must also be deduplicated in bundles
+  'react',
+  'react-dom',
+  // NOTE: react-native won't be in autolinking output, since it's special
+  // We include it here manually, since we know it should be an unduplicated direct dependency
+  'react-native',
+  // Peer dependencies from expo
+  'react-native-webview',
+  '@expo/dom-webview',
+  // Dependencies from expo
+  'expo-asset',
+  'expo-constants',
+  'expo-file-system',
+  'expo-font',
+  'expo-keep-awake',
+  'expo-modules-core',
+  // Peer dependencies from expo-router
+  'react-native-gesture-handler',
+  'react-native-reanimated',
+];
+
+const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
 type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 
 const escapeDependencyName = (dependency: string) =>
@@ -16,69 +40,8 @@ const escapeDependencyName = (dependency: string) =>
 export const _dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
 
-/** Creates a function to load a dependency of the `expo` package */
-const createExpoDependencyLoader = <T>(request: string) => {
-  let mod: T | undefined;
-  return (): T => {
-    if (!mod) {
-      const expoPath = require.resolve('expo/package.json');
-      const autolinkingPath = require.resolve(request, {
-        paths: [expoPath],
-      });
-      return (mod = require(autolinkingPath));
-    }
-    return mod;
-  };
-};
-
-const getAutolinkingModule = createExpoDependencyLoader<
-  typeof import('expo-modules-autolinking/exports')
->('expo-modules-autolinking/exports');
-
-const getReactNativeConfigModule = createExpoDependencyLoader<
-  typeof import('expo-modules-autolinking/build/reactNativeConfig')
->('expo-modules-autolinking/build/reactNativeConfig');
-
-const getAutolinkingOptions = async (
-  projectRoot: string,
-  platform: AutolinkingPlatform
-): Promise<AutolinkingSearchOptions> => {
-  const autolinking = getAutolinkingModule();
-  return await autolinking.mergeLinkingOptionsAsync({
-    searchPaths: [],
-    projectRoot,
-    platform: platform === 'ios' ? 'apple' : platform,
-    onlyProjectDeps: true,
-    silent: true,
-  });
-};
-
-const getAutolinkingResolutions = async (
-  opts: AutolinkingSearchOptions
-): Promise<Record<string, string>> => {
-  const autolinking = getAutolinkingModule();
-  const resolvedModules = await autolinking.findModulesAsync(opts);
-  return Object.fromEntries(
-    Object.entries(resolvedModules).map(([key, entry]) => [key, entry.path])
-  );
-};
-
-const getReactNativeConfigResolutions = async (
-  opts: AutolinkingSearchOptions
-): Promise<Record<string, string>> => {
-  const reactNativeConfigModule = getReactNativeConfigModule();
-  const configResult = await reactNativeConfigModule.createReactNativeConfigAsync({
-    ...opts,
-    // NOTE(@kitten): web will use ios here. This is desired since this function only accepts android|ios.
-    // However, we'd still like to sticky resolve dependencies for web
-    platform: opts.platform === 'android' ? 'android' : 'ios',
-    // TODO(@kitten): Unclear if this should be populated or directly relates to sticky resolution
-    transitiveLinkingDependencies: [],
-  });
-  return Object.fromEntries(
-    Object.entries(configResult.dependencies).map(([key, entry]) => [key, entry.root])
-  );
-};
+const getAutolinkingExports = (): typeof import('expo/internal/unstable-autolinking-exports') =>
+  require('expo/internal/unstable-autolinking-exports');
 
 interface PlatformModuleDescription {
   platform: AutolinkingPlatform;
@@ -86,18 +49,19 @@ interface PlatformModuleDescription {
   resolvedModulePaths: Record<string, string>;
 }
 
-const getPlatformModuleDescription = async (
-  projectRoot: string,
+const toPlatformModuleDescription = (
+  dependencies: AutolinkingResolutionResult,
   platform: AutolinkingPlatform
-): Promise<PlatformModuleDescription> => {
-  const searchOptions = await getAutolinkingOptions(projectRoot, platform);
-  const autolinkingResolutions$ = getAutolinkingResolutions(searchOptions);
-  const reactNativeConfigResolutions$ = getReactNativeConfigResolutions(searchOptions);
-  const resolvedModulePaths = {
-    ...(await reactNativeConfigResolutions$),
-    ...(await autolinkingResolutions$),
-  };
-  const resolvedModuleNames = Object.keys(resolvedModulePaths);
+): PlatformModuleDescription => {
+  const resolvedModulePaths: Record<string, string> = {};
+  const resolvedModuleNames: string[] = [];
+  for (const dependencyName in dependencies) {
+    const dependency = dependencies[dependencyName];
+    if (dependency) {
+      resolvedModuleNames.push(dependency.name);
+      resolvedModulePaths[dependency.name] = dependency.path;
+    }
+  }
   debug(
     `Sticky resolution for ${platform} registered ${resolvedModuleNames.length} resolutions:`,
     resolvedModuleNames
@@ -120,18 +84,26 @@ export async function createStickyModuleResolverInput({
   projectRoot: string;
   platforms: string[];
 }): Promise<StickyModuleResolverInput> {
+  const autolinking = getAutolinkingExports();
+  const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
+
   return Object.fromEntries(
     await Promise.all(
       platforms
-        .filter((platform): platform is AutolinkingPlatform =>
-          AUTOLINKING_PLATFORMS.includes(platform as any)
-        )
+        .filter((platform): platform is AutolinkingPlatform => {
+          return AUTOLINKING_PLATFORMS.includes(platform as any);
+        })
         .map(async (platform) => {
-          const platformModuleDescription = await getPlatformModuleDescription(
-            projectRoot,
-            platform
+          const dependencies = await autolinking.scanDependencyResolutionsForPlatform(
+            linker,
+            platform,
+            KNOWN_STICKY_DEPENDENCIES
           );
-          return [platformModuleDescription.platform, platformModuleDescription] as const;
+          const moduleDescription = toPlatformModuleDescription(dependencies, platform);
+          return [platform, moduleDescription] satisfies [
+            AutolinkingPlatform,
+            PlatformModuleDescription,
+          ];
         })
     )
   ) as StickyModuleResolverInput;
@@ -150,6 +122,9 @@ export function createStickyModuleResolver(
     !!platform && (input as any)[platform] != null;
 
   return function requestStickyModule(immutableContext, moduleName, platform) {
+    // NOTE(@kitten): We currently don't include Web. The `expo-doctor` check already warns
+    // about duplicates, and we can try to add Web later on. We should expand expo-modules-autolinking
+    // properly to support web first however
     if (!isAutolinkingPlatform(platform)) {
       return null;
     } else if (fileSpecifierRe.test(moduleName)) {
@@ -168,7 +143,7 @@ export function createStickyModuleResolver(
         originModulePath: resolvedModulePath,
       };
       const res = getStrictResolver(context, platform)(moduleName);
-      debug(`Sticky resolution for ${platform}: ${moduleName} -> ${resolvedModulePath}`);
+      debug(`Sticky resolution for ${platform}: ${moduleName} -> from: ${resolvedModulePath}`);
       return res;
     }
 
