@@ -4,7 +4,8 @@ import Constants from 'expo-constants';
 import React, { Children, isValidElement } from 'react';
 
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
-import { LinkMenu, LinkPreview, LinkWithPreview } from './LinkWithPreview';
+import { LinkWithPreview } from './LinkWithPreview';
+import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { LinkProps } from './useLinkHooks';
 
