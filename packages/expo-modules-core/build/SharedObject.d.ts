@@ -1,4 +1,4 @@
-import type { SharedObject as SharedObjectType } from './ts-declarations/SharedObject';
-declare const SharedObject: typeof SharedObjectType;
-export default SharedObject;
+import { ExpoGlobal } from './ts-declarations/global';
+export type SharedObject = typeof ExpoGlobal.SharedObject;
+export declare const SharedObject: typeof ExpoGlobal.SharedObject;
 //# sourceMappingURL=SharedObject.d.ts.map

@@ -1,8 +1,9 @@
 'use client';
 
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
-import type { NativeModule } from './ts-declarations/NativeModule';
+import { ExpoGlobal } from './ts-declarations/global';
 
 ensureNativeModulesAreInstalled();
 
-export default globalThis.expo.NativeModule as typeof NativeModule;
+export type NativeModule = typeof ExpoGlobal.NativeModule;
+export const NativeModule: typeof ExpoGlobal.NativeModule = globalThis.expo.NativeModule;

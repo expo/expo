@@ -1,1 +1,1 @@
-{"version":3,"file":"NativeModule.d.ts","sourceRoot":"","sources":["../src/NativeModule.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,gCAAgC,CAAC;wBAIpB,OAAO,YAAY;AAAlE,wBAAmE"}
+{"version":3,"file":"NativeModule.d.ts","sourceRoot":"","sources":["../src/NativeModule.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,UAAU,EAAE,MAAM,0BAA0B,CAAC;AAItD,MAAM,MAAM,YAAY,GAAG,OAAO,UAAU,CAAC,YAAY,CAAC;AAC1D,eAAO,MAAM,YAAY,EAAE,OAAO,UAAU,CAAC,YAA2C,CAAC"}

@@ -1,4 +1,4 @@
-import type { NativeModule } from './ts-declarations/NativeModule';
-declare const _default: typeof NativeModule;
-export default _default;
+import { ExpoGlobal } from './ts-declarations/global';
+export type NativeModule = typeof ExpoGlobal.NativeModule;
+export declare const NativeModule: typeof ExpoGlobal.NativeModule;
 //# sourceMappingURL=NativeModule.d.ts.map

@@ -1,4 +1,4 @@
-import type { SharedRef as SharedRefType } from './ts-declarations/SharedRef';
-declare const SharedRef: typeof SharedRefType;
-export default SharedRef;
+import { ExpoGlobal } from './ts-declarations/global';
+export type SharedRef = typeof ExpoGlobal.SharedRef;
+export declare const SharedRef: typeof ExpoGlobal.SharedRef;
 //# sourceMappingURL=SharedRef.d.ts.map

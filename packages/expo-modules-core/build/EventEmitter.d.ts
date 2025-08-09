@@ -1,4 +1,4 @@
-import type { EventEmitter } from './ts-declarations/EventEmitter';
+import { ExpoGlobal } from './ts-declarations/global';
 /**
  * A subscription object that allows to conveniently remove an event listener from the emitter.
  */
@@ -9,6 +9,6 @@ export interface EventSubscription {
      */
     remove(): void;
 }
-declare const _default: typeof EventEmitter;
-export default _default;
+export type EventEmitter = typeof ExpoGlobal.EventEmitter;
+export declare const EventEmitter: typeof ExpoGlobal.EventEmitter;
 //# sourceMappingURL=EventEmitter.d.ts.map
