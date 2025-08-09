@@ -143,7 +143,7 @@ export function createStickyModuleResolver(
         originModulePath: resolvedModulePath,
       };
       const res = getStrictResolver(context, platform)(moduleName);
-      debug(`Sticky resolution for ${platform}: ${moduleName} -> ${resolvedModulePath}`);
+      debug(`Sticky resolution for ${platform}: ${moduleName} -> from: ${resolvedModulePath}`);
       return res;
     }
 
