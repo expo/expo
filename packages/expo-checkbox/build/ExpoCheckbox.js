@@ -10,11 +10,11 @@ export default function ExpoCheckbox({ color, disabled, onChange, onValueChange,
     // Announces "checked" status and "checkbox" as the focused element
     accessibilityRole="checkbox" accessibilityState={{ disabled, checked: value }} style={[
             styles.root,
-            style,
             value && styles.checked,
             !!color && { backgroundColor: value ? color : undefined, borderColor: color },
             disabled && styles.disabled,
             value && disabled && styles.checkedAndDisabled,
+            style,
         ]} onPress={handleChange}>
       {value && (<Image source={{
                 uri: checkmarkBase64,
