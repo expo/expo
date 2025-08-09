@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
+- Add missing packages to `DirectPackageInstallCheck` ([#38701](https://github.com/expo/expo/pull/38701) by [@kitten](https://github.com/kitten))
 
 ## 1.13.5 - 2025-07-03
 
