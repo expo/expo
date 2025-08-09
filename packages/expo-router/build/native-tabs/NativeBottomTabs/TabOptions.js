@@ -44,9 +44,17 @@ function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, 
             if (child.props.children) {
                 acc.badgeValue = String(child.props.children);
             }
+            else if (!child.props.hidden) {
+                acc.badgeValue = ' ';
+            }
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Label)) {
-            acc.title = child.props.children;
+            if (child.props.hidden) {
+                acc.title = '';
+            }
+            else {
+                acc.title = child.props.children;
+            }
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Icon)) {
             if ('src' in child.props || 'selectedSrc' in child.props) {

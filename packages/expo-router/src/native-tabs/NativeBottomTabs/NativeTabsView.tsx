@@ -240,7 +240,7 @@ function convertOptionsIconToPropsIcon(
   if ('sf' in icon && icon.sf) {
     return { sfSymbolName: icon.sf };
   } else if ('src' in icon && icon.src) {
-    return { imageSource: icon.src };
+    return { templateSource: icon.src };
   }
   return undefined;
 }

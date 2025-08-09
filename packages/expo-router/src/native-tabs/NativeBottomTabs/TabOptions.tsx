@@ -88,9 +88,15 @@ export function convertTabPropsToOptions({
       if (isChildOfType(child, Badge)) {
         if (child.props.children) {
           acc.badgeValue = String(child.props.children);
+        } else if (!child.props.hidden) {
+          acc.badgeValue = ' ';
         }
       } else if (isChildOfType(child, Label)) {
-        acc.title = child.props.children;
+        if (child.props.hidden) {
+          acc.title = '';
+        } else {
+          acc.title = child.props.children;
+        }
       } else if (isChildOfType(child, Icon)) {
         if ('src' in child.props || 'selectedSrc' in child.props) {
           acc.icon = child.props.src
