@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS][next] Implement `ExpoCalendar@next` ([#38564](https://github.com/expo/expo/pull/38564) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
 
 - [iOS] Don't encode event URLs. ([#37243](https://github.com/expo/expo/pull/37243) by [@jakex7](https://github.com/jakex7))
