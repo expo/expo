@@ -58,8 +58,9 @@ class SwitchColors : Record {
 data class SwitchProps(
   val value: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<String> = mutableStateOf("switch"),
-  val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors())
-) : ComposeProps
+  val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors()),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
+  ) : ComposeProps
 
 @Composable
 fun SwitchComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier = Modifier) {
@@ -129,7 +130,7 @@ class SwitchView(context: Context, appContext: AppContext) :
     }
 
     AutoSizingComposable(shadowNodeProxy) {
-      ThemedHybridSwitch(variant, checked, onCheckedChange, colors)
+      ThemedHybridSwitch(variant, checked, onCheckedChange, colors, modifier.fromExpoModifiers(props.modifiers.value))
     }
   }
 }
