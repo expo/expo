@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `<BR />` to render as `<br>` ([#38354](https://github.com/expo/expo/pull/38354) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 - Add missing peer dependencies on `react` and `react-native` and optional peer dependency on `react-native-web` ([#38570](https://github.com/expo/expo/pull/38570) by [@kitten](https://github.com/kitten))
