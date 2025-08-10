@@ -34,7 +34,7 @@ After deleting these options, you'll need to run Expo with `npx expo start --cle
 
 Since SDK 52, Expo's Metro config has monorepo support for Bun, npm, pnpm and Yarn and configures itself automatically. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you don't need to manually configure monorepo support.
 
-Prior to SDK 52, to configure a monorepo with Metro manually, there were two manual changes:
+Before SDK 52, to configure a monorepo with Metro manually, there were two manual changes:
 
 1. Metro had to be configured to watch code within the monorepo manually (for example, not just **apps/cool-app**.)
 2. Metro's resolution had to be adjusted to find packages in other workspaces and multiple `node_modules` folders (for example, **apps/cool-app/node_modules** or **node_modules**.)
@@ -73,7 +73,7 @@ For example, a basic structure of a monorepo containing Expo apps may look like 
 - **packages**: Contains different packages used by apps.
 - **package.json**: Root package file.
 
-All monorepos should have a "root" **package.json** file. It is the main configuration for monorepos and may contain tools installed for all projects in the repository. Depending on which package manager you're using, the steps for setting up workspaces might differ, but for [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), and [yarn](https://yarnpkg.com/features/workspaces), a `workspaces` property should be added to the root **package.json** file that specifies [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks) for all workspaces in your monorepo:
+All monorepos should have a "root" **package.json** file. It is the main configuration for monorepos and may contain tools installed for all projects in the repository. Depending on which package manager you're using, the steps for setting up workspaces might differ, but for [Bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), and [Yarn](https://yarnpkg.com/features/workspaces), a `workspaces` property should be added to the root **package.json** file that specifies [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks) for all workspaces in your monorepo:
 
 ```json package.json
 {
@@ -239,7 +239,7 @@ Monorepos may cause resolution and dependency issues that a regular project won'
 > **info** From **SDK 54**, Expo supports isolated dependencies and isolated installations.<br />
 > With **SDK 53**, disabling isolated dependencies is recommended, or you may encounter native build errors and dependency conflicts.
 
-[bun](https://bun.com/docs/install/isolated) and [pnpm](https://pnpm.io/settings#nodelinker) have first-class support for isolated installs. For pnpm, this is the default installation strategy unless it's disabled.
+[Bun](https://bun.com/docs/install/isolated) and [pnpm](https://pnpm.io/settings#nodelinker) have first-class support for isolated installs. For pnpm, this is the default installation strategy unless it's disabled.
 
 With isolated dependencies, package managers don't hoist packages from nested `node_modules` directories into higher ones. Instead, they create a central directory that contains your Node modules and create links to this directory. This dependency structure enforces that packages may only access their explicitly declared dependencies. This is a much stricter installation strategy than the traditional **hoisted** installation strategy, which are npm's and Yarn's default, to install dependencies in a flattened structure.
 
