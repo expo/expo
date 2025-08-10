@@ -18,17 +18,18 @@ The core implementation can be found in the [`expo-modules-autolinking`](https:/
 2. code that integrates with the Gradle build system for Android
 3. code that integrates with CocoaPods for iOS
 
-Since SDK 52, Expo Autolinking not only links Expo modules, but also React Native modules. To use the React Native community CLI autolinking instead, refer to this page's guide on [opting out of Expo Autolinking for React Native modules].
+Since SDK 52, Expo Autolinking not only links Expo modules, but also React Native modules. To use the React Native community CLI autolinking instead, see [opting out of Expo Autolinking for React Native modules](#opting-out-of-expo-autolinking-for-react-native-modules) section.
 
-## Linking Behavior
+## Linking behavior
 
-Expo Autolinking is integrated into the Gradle build system for Android, and CocoaPods for iOS. When building your app, the Expo Autolinking CLI is called and searches for Expo and React Native modules to autolink.
+Expo Autolinking is integrated into the Gradle build system for Android and CocoaPods for iOS. When building your app, the Expo Autolinking CLI is called and searches for Expo and React Native modules to autolink.
+
 This module resolution searches for candidate dependencies to autolink in four separate steps:
 
 1. For React Native modules only, it considers any `dependencies` in your project root's **react-native.config.js** that contain an explicit `root` path. This file is optional and doesn't exist in most Expo projects.
 2. It searches all directories specified in your autolinking configuration's `searchPaths` option.
 3. It searches local modules in the directory specified in your autolinking configuration's `nativeModulesDir` option, which defaults to `./modules/`.
-4. It resolves the dependencies of your app, and any dependency or peer dependency recursively. This matches the [Node.js resolution algorithm](https://nodejs.org/api/modules.html#loading-from-node_modules-folders).
+4. It resolves the dependencies of your app and any dependency or peer dependency recursively. This matches the [Node.js resolution algorithm](https://nodejs.org/api/modules.html#loading-from-node_modules-folders).
 
 The autolinked modules are automatically added to the build, which usually means that your app's dependencies that contain native (platform-specific) code are set up automatically.
 
@@ -77,8 +78,7 @@ A path relative to the app's root directory that Expo Autolinking should search 
 </PaddedAPIBox>
 <PaddedAPIBox header="exclude">
 
-A list of package names to exclude from autolinking.
-This is useful if you don't want to link some packages that specific platforms aren't using to reduce the binary size.
+A list of package names to exclude from autolinking. This is useful if you don't want to link some packages that specific platforms aren't using to reduce the binary size.
 The following config in **package.json** will exclude `expo-random` and `third-party-expo-module` from autolinking on Android:
 
 ```json package.json
@@ -144,8 +144,7 @@ use_expo_modules!({
 </PaddedAPIBox>
 <PaddedAPIBox header="buildFromSource" platforms={["android"]}>
 
-A list of package names to opt out of prebuilt Expo modules.
-For complete reference, see [Prebuilt Expo Modules for Android](/guides/prebuilt-expo-modules/#selectively-opt-out).
+A list of package names to opt out of prebuilt Expo modules. For complete reference, see [Prebuilt Expo Modules for Android](/guides/prebuilt-expo-modules/#selectively-opt-out).
 
 </PaddedAPIBox>
 <PaddedAPIBox header="legacy_shallowReactNativeLinking">
@@ -185,11 +184,11 @@ The above command returns an object in JSON format with Expo modules that Expo A
 </PaddedAPIBox>
 <PaddedAPIBox header="resolve">
 
-This command is called by the build system during the second phase of autolinking. It outputs an object with more (platform-specific) details for each Expo module, such as the path to the podspec or **build.gradle** files and module classes to link.
+This command is called by the build system during the second phase of autolinking. It outputs an object with more (platform-specific) details for each Expo module, such as the path to the **build.gradle** or podspec files and module classes to link.
 
 <Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <apple|android>']} />
 
-For example, with the `--platform apple` option it returns an object in JSON format with an array of modules and resolved details for the platform:
+For example, with the `--platform apple` option, it returns an object in JSON format with an array of modules and resolved details for the platform:
 
 ```json
 {
@@ -224,11 +223,11 @@ Verifies the search results by checking for duplicate Expo modules. Warnings are
 </PaddedAPIBox>
 <PaddedAPIBox header="react-native-config">
 
-This command is called by the build system when autolinking React Native modules. It outputs an object with more platform-specific details for each React Native module, such as the path to the podspec or gradle files.
+This command is called by the build system when autolinking React Native modules. It outputs an object with more platform-specific details for each React Native module, such as the path to the gradle or podspec files.
 
 <Terminal cmd={['$ npx expo-modules-autolinking react-native-config']} />
 
-For example, with the `--platform ios` option it returns an object in **react-native.config.js**'s output format with information about each React Native dependency, and the path to the React Native installation.
+For example, with the `--platform ios` option, it returns an object in **react-native.config.js**'s output format with information about each React Native dependency and the path to the React Native installation.
 
 ```json
 {
@@ -274,6 +273,6 @@ It's also necessary to include supported platforms in the `platforms` array — 
 
 ### Opting out of Expo Autolinking for React Native modules
 
-Starting from SDK 52, Expo Autolinking replaces the React Native community CLI autolinking by default. If you would like to use the React Native community CLI's autolinking instead, set `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.
+Starting from SDK 52, Expo Autolinking replaces the React Native community CLI autolinking by default. If you would like to use the React Native community CLI's autolinking instead, set the environment variable `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.
 
 With this environment variable set, Expo Autolinking will not be used to resolve React Native modules, but will continue to autolink Expo modules.
