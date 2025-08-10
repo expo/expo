@@ -70,7 +70,8 @@ export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
   {
     packageName: '@expo/config-plugins',
     getMessage: () =>
-      `The package "@expo/config-plugins" should not be installed directly in your project. You should instead use "expo/config-plugins" which is a sub-export of the expo package.`,
+      `The package "@expo/config-plugins" should not be installed directly in your project. You should instead use "expo/config-plugins" which is a sub-export of the expo package.\n` +
+        `If you installed "@expo/config-plugins" to fulfill a peer dependency for a config plugin, the plugin's maintainer should switch to the "expo/config-plugins" import, and you can ignore this warning.`,
     // See: https://github.com/expo/expo/pull/18855
     sdkVersionRange: '>=48.0.0',
   },
