@@ -12,11 +12,12 @@ const FILES = [
   require('../assets/icons/app.png'),
   require('../assets/icons/loading.png'),
   require('../assets/black-128x256.png'),
+  require('../assets/hdr.jpg'),
   require('../assets/big_buck_bunny.mp4'),
 ];
 
 const WAIT_TIME = 1000;
-const IMG_NUMBER = 3;
+const IMG_NUMBER = 4;
 const VIDEO_NUMBER = 1;
 const DEFAULT_MEDIA_TYPES = [MediaLibrary.MediaType.photo];
 const DEFAULT_PAGE_SIZE = 20;
