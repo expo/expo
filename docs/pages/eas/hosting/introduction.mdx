@@ -1,61 +1,384 @@
----
-title: Introduction to EAS Hosting
-sidebar_title: Introduction
-hideTOC: true
-description: EAS Hosting is a service for quickly deploying the web projects built using the Expo Router library and React Native web.
-searchRank: 10
----
+import React, { useState } from 'react';
+import { View, Text, TextInput, Image, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 
-import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+const userProfile = {
+  name: 'Grace Uwizeye',
+  username: '@graceuwizeye',
+  following: 238,
+  followers: 1500,
+  likes: 312,
+  notes: [
+    { id: '1', text: 'A rited. 1 ay ago', hashtags: ['#travel', '#Kigali'], likes: 238, comments: 18 },
+  ],
+};
 
-import { BoxLink } from '~/ui/components/BoxLink';
+const posts = [
+  {
+    id: '1',
+    user: 'Alice Nimubona',
+    time: '3h',
+    content: 'Lorem ipsuam dolort atuixnet, consectetueradipiscing elit.',
+    hashtags: ['#fashion', '#style'],
+    likes: 879,
+    comments: 34,
+  },
+  {
+    id: '2',
+    user: 'Tastana Nano',
+    time: '2h',
+    content: 'Another post content here...',
+    hashtags: [],
+    likes: 150,
+    comments: 10,
+  },
+];
 
-> **important** **EAS Hosting** is currently in preview. If you have any issues or feedback, post to our [Discord](https://chat.expo.dev/) channel or send us an email at hosting@expo.dev.
+const products = [
+  { id: '1', name: 'Product Name', price: 'Fr12,000' },
+  { id: '2', name: 'Product Name', price: 'Fr12,000' },
+  { id: '3', name: 'Product Name', price: 'Fr12,000' },
+  { id: '4', name: 'Product Name', price: 'Fr12,000' },
+];
 
-**EAS Hosting** is a service for quickly deploying your web projects built using [Expo Router](/router/introduction/) and React Native web. It seamlessly integrates with the Expo CLI, allowing you to automate the deployment of API routes, server functions, and server-side assets.
+export default function App() {
+  const [page, setPage] = useState('home');
+  const [editProfile, setEditProfile] = useState(false);
+  const [name, setName] = useState(userProfile.name);
+  const [username, setUsername] = useState(userProfile.username);
+  const [bio, setBio] = useState('');
 
-Hosting offers the fastest path from `npx create-expo-app` to a fully deployed web app with API routes and server functions.
+  if (page === 'profile' && editProfile) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => setEditProfile(false)}>
+            <Text style={styles.linkText}>Cancel</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Edit Profile</Text>
+          <TouchableOpacity onPress={() => setEditProfile(false)}>
+            <Text style={styles.linkText}>Save</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ alignItems: 'center', marginVertical: 20 }}>
+          <View style={styles.avatar} />
+        </View>
+        <Text style={styles.label}>Name</Text>
+        <TextInput style={styles.input} value={name} onChangeText={setName} />
+        <Text style={styles.label}>Username</Text>
+        <TextInput style={styles.input} value={username} onChangeText={setUsername} />
+        <Text style={styles.label}>Bio</Text>
+        <TextInput
+          style={[styles.input, { height: 80 }]}
+          value={bio}
+          onChangeText={setBio}
+          multiline
+          numberOfLines={4}
+        />
+      </SafeAreaView>
+    );
+  }
 
-### Get started
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => setPage('home')}>
+          <Text style={[styles.logo, page === 'home' && styles.activeLogo]}>X</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerText}>BINYUNGU</Text>
+      </View>
 
-<BoxLink
-  title="Create your first deployment"
-  description="From a new app to a deployed website in under a minute."
-  href="/eas/hosting/get-started"
-  Icon={Cloud01Icon}
-/>
+      {/* Content */}
+      {page === 'profile' && (
+        <View style={{ padding: 20 }}>
+          <View style={{ alignItems: 'center', marginBottom: 15 }}>
+            <View style={styles.avatar} />
+            <Text style={styles.name}>{userProfile.name}</Text>
+            <Text style={styles.username}>{userProfile.username}</Text>
+          </View>
+          <View style={styles.stats}>
+            <View style={styles.statBox}>
+              <Text style={styles.statNumber}>{userProfile.following}</Text>
+              <Text>Following</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statNumber}>{userProfile.followers}</Text>
+              <Text>Followers</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statNumber}>{userProfile.likes}</Text>
+              <Text>Likes</Text>
+            </View>
+          </View>
 
-<BoxLink
-  title="Assign deployment aliases"
-  description="Create aliases and promote deployments to production."
-  href="/eas/hosting/deployments-and-aliases"
-  Icon={Cloud01Icon}
-/>
+          <View style={{ marginTop: 30 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Notes</Text>
+            {userProfile.notes.map(note => (
+              <View key={note.id} style={styles.note}>
+                <View style={styles.noteHeader}>
+                  <View style={styles.avatarSmall} />
+                  <Text style={{ fontWeight: 'bold' }}>{userProfile.name}</Text>
+                  <Text style={{ marginLeft: 10, color: '#777' }}>{note.text}</Text>
+                </View>
+                <View style={styles.noteContent}>
+                  <View style={{ height: 100, backgroundColor: '#ddd', borderRadius: 6, flex: 1, marginRight: 10 }} />
+                  <View>
+                    {note.hashtags.map((tag, idx) => (
+                      <Text key={idx} style={styles.hashtag}>{tag}</Text>
+                    ))}
+                    <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                      <Text style={{ marginRight: 15 }}>❤️ {note.likes}</Text>
+                      <Text>💬 {note.comments}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
 
-<BoxLink
-  title="Configure environment variables"
-  description="Use environment variables in your web and server code."
-  href="/eas/hosting/environment-variables"
-  Icon={Cloud01Icon}
-/>
+      {page === 'home' && (
+        <FlatList
+          style={{ paddingHorizontal: 10 }}
+          data={posts}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.post}>
+              <View style={styles.postHeader}>
+                <View style={styles.avatarSmall} />
+                <View>
+                  <Text style={{ fontWeight: 'bold' }}>{item.user}</Text>
+                  <Text style={{ color: '#777' }}>{item.time}</Text>
+                </View>
+              </View>
+              <Text style={{ marginVertical: 10 }}>{item.content}</Text>
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                {item.hashtags.map((tag, idx) => (
+                  <Text key={idx} style={styles.hashtag}>{tag}</Text>
+                ))}
+              </View>
+              <View style={styles.postFooter}>
+                <Text>❤️ {item.likes}</Text>
+                <Text>💬 {item.comments}</Text>
+              </View>
+            </View>
+          )}
+        />
+      )}
 
-<BoxLink
-  title="Custom domain"
-  description="Set up a custom domain for your production deployment."
-  href="/eas/hosting/custom-domain"
-  Icon={Cloud01Icon}
-/>
+      {page === 'market' && (
+        <View style={{ padding: 20 }}>
+          <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'space-around' }}>
+            <TouchableOpacity style={[styles.filterButton, styles.activeFilter]}>
+              <Text style={{ color: 'white', fontWeight: 'bold' }}>All</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.filterButton}>
+              <Text>Beauty</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.filterButton}>
+              <Text>Clothing</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.productsGrid}>
+            {products.map(product => (
+              <View key={product.id} style={styles.productCard}>
+                <View style={styles.productImagePlaceholder} />
+                <Text>{product.name}</Text>
+                <Text>{product.price}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
 
-<BoxLink
-  title="API Routes"
-  description="Inspect requests from API routes on the EAS Hosting Dashboard."
-  href="/eas/hosting/api-routes"
-  Icon={Cloud01Icon}
-/>
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity onPress={() => setPage('home')} style={styles.navItem}>
+          <Text style={[styles.navText, page === 'home' && styles.activeNavText]}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setPage('market')} style={styles.navItem}>
+          <Text style={[styles.navText, page === 'market' && styles.activeNavText]}>Market</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { setPage('profile'); setEditProfile(false); }} style={styles.navItem}>
+          <Text style={[styles.navText, page === 'profile' && styles.activeNavText]}>Profile</Text>
+        </TouchableOpacity>
+      </View>
 
-<BoxLink
-  title="Deploy with EAS Workflows"
-  description="Automate deployments with EAS Workflows."
-  href="/eas/hosting/workflows"
-  Icon={Cloud01Icon}
-/>
+      {/* Edit Profile Button */}
+      {page === 'profile' && !editProfile && (
+        <TouchableOpacity style={styles.editProfileBtn} onPress={() => setEditProfile(true)}>
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>Edit Profile</Text>
+        </TouchableOpacity>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: 'white' },
+  header: {
+    height: 60,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    borderBottomColor: '#ddd',
+    borderBottomWidth: 1,
+    justifyContent: 'flex-start',
+    gap: 8,
+  },
+  logo: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: 'red',
+  },
+  activeLogo: {
+    textDecorationLine: 'underline',
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: 'black',
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#bbb',
+    borderRadius: 50,
+  },
+  avatarSmall: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#bbb',
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  name: {
+    fontWeight: 'bold',
+    fontSize: 22,
+    marginTop: 10,
+  },
+  username: {
+    color: '#666',
+  },
+  stats: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  statBox: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  note: {
+    marginTop: 15,
+  },
+  noteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  noteContent: {
+    flexDirection: 'row',
+  },
+  hashtag: {
+    color: 'blue',
+    marginRight: 10,
+  },
+  post: {
+    borderBottomColor: '#ddd',
+    borderBottomWidth: 1,
+    paddingVertical: 12,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  postFooter: {
+    flexDirection: 'row',
+    gap: 15,
+    marginTop: 10,
+  },
+  bottomNav: {
+    height: 60,
+    flexDirection: 'row',
+    borderTopColor: '#ddd',
+    borderTopWidth: 1,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  navItem: {},
+  navText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  activeNavText: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  filterButton: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+  },
+  activeFilter: {
+    backgroundColor: 'red',
+    borderColor: 'red',
+  },
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 15,
+    justifyContent: 'space-between',
+  },
+  productCard: {
+    width: '48%',
+    backgroundColor: '#eee',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  productImagePlaceholder: {
+    height: 100,
+    backgroundColor: '#ccc',
+    borderRadius: 6,
+    marginBottom: 10,
+  },
+  editProfileBtn: {
+    backgroundColor: 'red',
+    padding: 12,
+    alignItems: 'center',
+    margin: 20,
+    borderRadius: 25,
+  },
+  label: {
+    marginLeft: 10,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    marginHorizontal: 10,
+    marginBottom: 15,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  linkText: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+});
