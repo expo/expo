@@ -41,9 +41,7 @@ class CalendarModule : Module() {
   private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
   private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
 
-  private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
-    timeZone = TimeZone.getTimeZone("GMT")
-  }
+  private val sdf = CalendarUtils.sdf;
 
   override fun definition() = ModuleDefinition {
     Name("ExpoCalendar")
@@ -112,8 +110,8 @@ class CalendarModule : Module() {
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {
           try {
-            val results = findEvents(startDate, endDate, calendars)
-            promise.resolve(results)
+            val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, calendars)
+            promise.resolve(cursor.use(::serializeEvents))
           } catch (e: Exception) {
             promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
           }
@@ -264,50 +262,6 @@ class CalendarModule : Module() {
     val cursor = contentResolver.query(uri, findCalendarsQueryParameters, null, null, null)
     requireNotNull(cursor) { "Cursor shouldn't be null" }
     return cursor.use(::serializeEventCalendars)
-  }
-
-  private fun findEvents(startDate: Any, endDate: Any, calendars: List<String>): List<Bundle> {
-    val eStartDate = Calendar.getInstance()
-    val eEndDate = Calendar.getInstance()
-    try {
-      setDateInCalendar(eStartDate, startDate)
-      setDateInCalendar(eEndDate, endDate)
-    } catch (e: ParseException) {
-      Log.e(TAG, "error parsing", e)
-    } catch (e: Exception) {
-      Log.e(TAG, "misc error parsing", e)
-    }
-    val uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
-    ContentUris.appendId(uriBuilder, eStartDate.timeInMillis)
-    ContentUris.appendId(uriBuilder, eEndDate.timeInMillis)
-    val uri = uriBuilder.build()
-    var selection =
-      "((${CalendarContract.Instances.BEGIN} >= ${eStartDate.timeInMillis}) " +
-        "AND (${CalendarContract.Instances.END} <= ${eEndDate.timeInMillis}) " +
-        "AND (${CalendarContract.Instances.VISIBLE} = 1) "
-    if (calendars.isNotEmpty()) {
-      var calendarQuery = "AND ("
-      for (i in calendars.indices) {
-        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = '" + calendars[i] + "'"
-        if (i != calendars.size - 1) {
-          calendarQuery += " OR "
-        }
-      }
-      calendarQuery += ")"
-      selection += calendarQuery
-    }
-    selection += ")"
-    val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
-    val cursor = contentResolver.query(
-      uri,
-      findEventsQueryParameters,
-      selection,
-      null,
-      sortOrder
-    )
-
-    requireNotNull(cursor) { "Cursor shouldn't be null" }
-    return cursor.use(::serializeEvents)
   }
 
   private fun findEventById(eventID: String): Bundle? {
@@ -848,27 +802,6 @@ class CalendarModule : Module() {
       return false
     }
     return true
-  }
-
-  private fun setDateInCalendar(calendar: Calendar, date: Any) {
-    when (date) {
-      is String -> {
-        val parsedDate = sdf.parse(date)
-        if (parsedDate != null) {
-          calendar.time = parsedDate
-        } else {
-          Log.e(TAG, "Parsed date is null")
-        }
-      }
-
-      is Number -> {
-        calendar.timeInMillis = date.toLong()
-      }
-
-      else -> {
-        Log.e(TAG, "date has unsupported type")
-      }
-    }
   }
 
   companion object {

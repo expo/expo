@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { processColor } from 'react-native';
+import { Platform, processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
 /**
@@ -51,14 +51,15 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
         return newReminder;
     }
-    listEvents(startDate, endDate) {
+    async listEvents(startDate, endDate) {
         if (!startDate) {
             throw new Error('listEvents must be called with a startDate (date) to search for events');
         }
         if (!endDate) {
             throw new Error('listEvents must be called with an endDate (date) to search for events');
         }
-        return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate)).map((event) => {
+        const events = await super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+        return events.map((event) => {
             Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
             return event;
         });
@@ -81,7 +82,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
 export function getDefaultCalendarNext() {
-    if (!InternalExpoCalendar.getDefaultCalendar) {
+    if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendar) {
         throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
     }
     const defaultCalendar = InternalExpoCalendar.getDefaultCalendar();
@@ -96,11 +97,11 @@ export function getDefaultCalendarNext() {
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export function getCalendarsNext(type) {
+export async function getCalendarsNext(type) {
     if (!InternalExpoCalendar.getCalendars) {
         throw new UnavailabilityError('Calendar', 'getCalendars');
     }
-    const calendars = InternalExpoCalendar.getCalendars(type);
+    const calendars = await InternalExpoCalendar.getCalendars(type);
     return calendars.map((calendar) => {
         Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
         return calendar;
@@ -112,7 +113,7 @@ export function getCalendarsNext(type) {
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
 export function createCalendarNext(details = {}) {
-    if (!InternalExpoCalendar.createCalendarNext) {
+    if (Platform.OS === 'android' || !InternalExpoCalendar.createCalendarNext) {
         throw new UnavailabilityError('Calendar', 'createCalendarNext');
     }
     const color = details.color ? processColor(details.color) : undefined;
@@ -130,6 +131,8 @@ export function createCalendarNext(details = {}) {
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
 export function listEvents(calendarIds, startDate, endDate) {
+    if (Platform.OS === 'android')
+        return [];
     if (!InternalExpoCalendar.listEvents) {
         throw new UnavailabilityError('Calendar', 'listEvents');
     }

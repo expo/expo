@@ -40,7 +40,15 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     const fetchCalendars = async () => {
       try {
         const calendars = await getCalendarsNext();
-        console.log(calendars);
+        for (const calendar of calendars) {
+          const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+          const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+          const events = await calendar.listEvents(oneWeekAgo, oneWeekFromNow);
+          console.log(
+            'events',
+            events.map((event) => event.title)
+          );
+        }
       } catch (error) {
         console.log(error);
       }

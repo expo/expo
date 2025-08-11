@@ -88,14 +88,15 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     return newReminder;
   }
 
-  override listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[] {
+  override async listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]> {
     if (!startDate) {
       throw new Error('listEvents must be called with a startDate (date) to search for events');
     }
     if (!endDate) {
       throw new Error('listEvents must be called with an endDate (date) to search for events');
     }
-    return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate)).map((event) => {
+    const events = await super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+    return events.map((event) => {
       Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
       return event;
     });
@@ -129,8 +130,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
 export function getDefaultCalendarNext(): ExpoCalendar {
-  if (Platform.OS === 'android') return null;
-  if (!InternalExpoCalendar.getDefaultCalendar) {
+  if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendar) {
     throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
   }
   const defaultCalendar = InternalExpoCalendar.getDefaultCalendar();
@@ -146,12 +146,11 @@ export function getDefaultCalendarNext(): ExpoCalendar {
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export async function getCalendarsNext(type?: EntityTypes): Promise<any> {
+export async function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalendar[]> {
   if (!InternalExpoCalendar.getCalendars) {
     throw new UnavailabilityError('Calendar', 'getCalendars');
   }
   const calendars = await InternalExpoCalendar.getCalendars(type);
-  return calendars;
   return calendars.map((calendar) => {
     Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
     return calendar;
@@ -164,8 +163,7 @@ export async function getCalendarsNext(type?: EntityTypes): Promise<any> {
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
 export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalendar {
-  if (Platform.OS === 'android') return null;
-  if (!InternalExpoCalendar.createCalendarNext) {
+  if (Platform.OS === 'android' || !InternalExpoCalendar.createCalendarNext) {
     throw new UnavailabilityError('Calendar', 'createCalendarNext');
   }
   const color = details.color ? processColor(details.color) : undefined;

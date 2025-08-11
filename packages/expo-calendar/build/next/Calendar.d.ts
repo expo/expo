@@ -30,7 +30,7 @@ export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalen
 export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createEvent(details: Partial<Omit<Event, 'creationDate' | 'lastModifiedDate' | 'originalStartDate' | 'isDetached' | 'status' | 'organizer'>>): ExpoCalendarEvent;
     createReminder(details: Partial<Reminder>): ExpoCalendarReminder;
-    listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[];
+    listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
     listReminders(startDate?: Date | null, endDate?: Date | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
     update(details: Partial<ModifiableCalendarProperties>): void;
 }
@@ -47,7 +47,7 @@ export declare function getDefaultCalendarNext(): ExpoCalendar;
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export declare function getCalendarsNext(type?: EntityTypes): ExpoCalendar[];
+export declare function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalendar[]>;
 /**
  * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
  * @param details A map of details for the calendar to be created.

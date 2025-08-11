@@ -100,7 +100,7 @@ export declare class ExpoCalendar {
   /**
    * Returns a calendar event list for the given date range.
    */
-  listEvents(startDate: Date | string, endDate: Date | string): ExpoCalendarEvent[];
+  listEvents(startDate: Date | string, endDate: Date | string): Promise<ExpoCalendarEvent[]>;
 
   /**
    * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
