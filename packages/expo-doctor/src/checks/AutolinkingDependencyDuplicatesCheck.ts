@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
 import { importAutolinkingExportsFromProject } from '../utils/autolinkingExportsLoader';
 import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
 
@@ -107,10 +108,11 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
     return {
       isSuccessful: issues.length === 0,
       issues,
-      // TODO: We should either determine the package manager and output per-package-manager advice for deduplication
-      // or, if `expo install --check` has failed, let the user do that first, if there's any overlap,
-      // or have an fyi page
-      advice: [],
+      advice: issues.length
+        ? [
+            `Resolve your dependency issues and deduplicate your dependencies. ${learnMore('https://expo.fyi/resolving-dependency-issues')}`,
+          ]
+        : [],
     };
   }
 }
