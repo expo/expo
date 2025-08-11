@@ -260,7 +260,7 @@ const withAndroidSettingsGradle = (config, props) => {
     return (0, config_plugins_1.withSettingsGradle)(config, (config) => {
         config.modResults.contents = updateAndroidSettingsGradle({
             contents: config.modResults.contents,
-            buildFromSource: props.android?.buildFromSource,
+            buildFromSource: props.android?.buildReactNativeFromSource ?? props.android?.buildFromSource,
         });
         return config;
     });

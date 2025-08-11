@@ -27,7 +27,7 @@ describe('push', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -37,7 +37,7 @@ describe('push', () => {
             index: 5,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['page', '_sitemap', '+not-found'],
+            routeNames: ['page'],
             routes: [
               {
                 key: expect.any(String),
@@ -101,7 +101,7 @@ describe('push', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -111,7 +111,7 @@ describe('push', () => {
             index: 0,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['page', '_sitemap', '+not-found'],
+            routeNames: ['page'],
             routes: [
               {
                 key: expect.any(String),
@@ -158,7 +158,7 @@ describe('navigate', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -168,7 +168,7 @@ describe('navigate', () => {
             index: 0,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['page', '_sitemap', '+not-found'],
+            routeNames: ['page'],
             routes: [
               {
                 key: expect.any(String),
@@ -207,7 +207,7 @@ describe('navigate', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -217,7 +217,7 @@ describe('navigate', () => {
             index: 3,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['index', '_sitemap', '[page]', '+not-found'],
+            routeNames: ['index', '[page]'],
             routes: [
               {
                 key: expect.any(String),
@@ -265,7 +265,7 @@ describe('navigate', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -275,7 +275,7 @@ describe('navigate', () => {
             index: 0,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['index', '_sitemap', '[page]', '+not-found'],
+            routeNames: ['index', '[page]'],
             routes: [
               {
                 key: expect.any(String),
@@ -317,7 +317,7 @@ describe('replace', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -327,7 +327,7 @@ describe('replace', () => {
             index: 3,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['page', '_sitemap', '+not-found'],
+            routeNames: ['page'],
             routes: [
               {
                 key: expect.any(String),

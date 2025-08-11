@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.services
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import expo.modules.devlauncher.MeQuery
 import expo.modules.devlauncher.compose.Session
 import expo.modules.devlauncher.compose.saveToPreferences
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import androidx.core.content.edit
 
 sealed interface UserState {
   object LoggedOut : UserState
@@ -28,11 +28,6 @@ class SessionService(
   private val apolloClientService: ApolloClientService,
   private val httpClientService: HttpClientService
 ) {
-  data class User(
-    val isFetching: Boolean = false,
-    val data: MeQuery.Data? = null
-  )
-
   private val _session = MutableStateFlow<Session?>(restoreSession())
 
   private val _user = MutableStateFlow<UserState>(UserState.LoggedOut)

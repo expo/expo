@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.compose.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +39,7 @@ import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
+import expo.modules.devlauncher.compose.ui.AppLoadingErrorDialog
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
@@ -132,16 +133,31 @@ fun HomeScreen(
   onProfileClick: () -> Unit
 ) {
   val hasPackager = state.runningPackagers.isNotEmpty()
-  val dialogState = rememberDialogState(initiallyVisible = false)
+  val howToStartDevelopmentDialogState = rememberDialogState(initiallyVisible = false)
+  val errorDialogState = rememberDialogState(initiallyVisible = false)
   val scrollState = rememberScrollState()
 
-  HowToStartDevelopmentServerDialog(dialogState)
+  LaunchedEffect(state.loadingError) {
+    if (state.loadingError != null) {
+      errorDialogState.visible = true
+    }
+  }
+
+  LaunchedEffect(errorDialogState.visible) {
+    if (!errorDialogState.visible) {
+      onAction(HomeAction.ClearLoadingError)
+    }
+  }
+
+  HowToStartDevelopmentServerDialog(howToStartDevelopmentDialogState)
+  AppLoadingErrorDialog(
+    errorDialogState,
+    currentError = state.loadingError
+  )
 
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
       AppHeader(
-        appName = state.appName,
-        currentAccount = state.currentAccount,
         onProfileClick = onProfileClick
       )
     }
@@ -176,7 +192,7 @@ fun HomeScreen(
             if (hasPackager) {
               Row {
                 Button(onClick = {
-                  dialogState.visible = true
+                  howToStartDevelopmentDialogState.visible = true
                 }) {
                   Theme.colors.icon
                   DayNighIcon(
@@ -220,7 +236,6 @@ fun HomeScreen(
           var fetchStartTime by remember { mutableStateOf<Instant?>(null) }
 
           LaunchedEffect(isFetching) {
-            Log.e("DevLauncher", "isFetchingPackagers changed: $isFetching")
             if (isFetching) {
               isFetchingUIState = true
               fetchStartTime = Clock.System.now()
@@ -303,7 +318,7 @@ fun HomeScreen(
                   Image(
                     painter = painterResource(R.drawable.qr_code),
                     contentDescription = "QR Code Icon",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(Theme.spacing.medium)
                   )
                 }
               ) {
@@ -340,18 +355,24 @@ fun HomeScreen(
             "Recently",
             rightIcon = {
               Row {
-                Button(onClick = {
-                  onAction(HomeAction.ResetRecentlyOpenedApps)
-                }) {
-                  Text(
-                    "Reset",
-                    color = Theme.colors.text.secondary,
-                    fontSize = Theme.typography.small,
-                    fontWeight = FontWeight.Bold
-                  )
+                RoundedSurface(color = Color.Unspecified, borderRadius = Theme.sizing.borderRadius.extraSmall) {
+                  Button(
+                    onClick = {
+                      onAction(HomeAction.ResetRecentlyOpenedApps)
+                    }
+                  ) {
+                    Text(
+                      "Reset",
+                      color = Theme.colors.text.secondary,
+                      fontSize = Theme.typography.small,
+                      fontWeight = FontWeight.Bold,
+                      modifier = Modifier
+                        .padding(horizontal = Theme.spacing.tiny, vertical = Theme.spacing.micro)
+                    )
+                  }
                 }
 
-                Spacer(Theme.spacing.small)
+                Spacer(Theme.spacing.small - Theme.spacing.tiny)
               }
             }
           )

@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
   ];
   EXUpdatesSelectionPolicy *selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
                                                initWithLauncherSelectionPolicy:[[EXExpoGoLauncherSelectionPolicyFilterAware alloc] initWithSdkVersions:sdkVersions]
-                                               loaderSelectionPolicy:[EXUpdatesLoaderSelectionPolicyFilterAware new]
+                                               loaderSelectionPolicy:[[EXUpdatesLoaderSelectionPolicyFilterAware alloc] initWithConfig:config]
                                                reaperSelectionPolicy:[EXUpdatesReaperSelectionPolicyDevelopmentClient new]];
 
   EXHomeAppLoaderTask *loaderTask = [[EXHomeAppLoaderTask alloc] initWithManifestAndAssetRequestHeaders:self.manifestAndAssetRequestHeaders

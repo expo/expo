@@ -10,6 +10,7 @@
 
 - [iOS] Add complete support for AirPlay streaming. Add a device selection button and `VideoPlayer.isExternalPlaybackActive` property and appropriate listeners. ([#37207](https://github.com/expo/expo/pull/37207) by [@behenate](https://github.com/behenate))
 - Add fullscreen orientation and auto-exit functionality. ([#36910](https://github.com/expo/expo/pull/36910) by [@behenate](https://github.com/behenate))
+- [Android] React to system wide subtitle changes in real time, does not require an app reload ([#38591](https://github.com/expo/expo/pull/38591) by [@hirbod](https://github.com/hirbod))
 
 ### 🐛 Bug fixes
 
@@ -17,6 +18,8 @@
 - [Android] Fix accessing player.loop causes app to crash. ([#37928](https://github.com/expo/expo/pull/37928) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
 - [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
+- [Android] Fix: Respect accessibility settings for HLS subtitle sizing and system settings, added listener ([#38591](https://github.com/expo/expo/pull/38591) by [@hirbod](https://github.com/hirbod))
+- [iOS] Fix inconsistent behavior of "replay" on iOS by calling "play()" after seeking to position 0. ([#38590](https://github.com/expo/expo/pull/38590)) by [@saviocmc](https://github.com/saviocmc)
 
 ### 💡 Others
 

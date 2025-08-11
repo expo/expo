@@ -36,6 +36,8 @@ function getExpoDependencyChunks({
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],
+    ['unimodules-app-loader'],
+    ['expo-task-manager'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
@@ -55,27 +57,34 @@ function getExpoDependencyChunks({
       'expo-updates-interface',
     ],
     ...(includeSplashScreen ? [['expo-splash-screen']] : []),
-    ...(includeDevClient
+    ...(includeDevClient || includeTV
       ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
       : []),
     ...(includeTV
       ? [
           [
+            'expo-app-integrity',
             'expo-audio',
             'expo-av',
+            'expo-background-task',
             'expo-blur',
             'expo-crypto',
             'expo-image',
+            'expo-image-loader',
+            'expo-image-manipulator',
+            'expo-insights',
             'expo-linear-gradient',
             'expo-linking',
             'expo-localization',
             'expo-media-library',
             'expo-network',
             'expo-secure-store',
+            'expo-sqlite',
             'expo-symbols',
             'expo-system-ui',
             'expo-ui',
             'expo-video',
+            'expo-video-thumbnails',
           ],
         ]
       : []),
@@ -307,6 +316,9 @@ async function preparePackageJson(
   // Additional scripts and dependencies for Maestro testing
   const extraScripts = configureE2E
     ? {
+        start: 'expo start --private-key-path ./keys/private-key.pem',
+        'ios:pod-install-old-arch': 'npx pod-install',
+        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':
           'adb install android/app/build/outputs/apk/debug/app-debug.apk',
@@ -384,7 +396,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.80.0-0',
+        'react-native': 'npm:react-native-tvos@0.81.0-0rc3',
         '@react-native-tvos/config-tv': '^0.1.3',
       },
       expo: {
@@ -1082,12 +1094,12 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
 
 export async function setupUpdatesDevClientE2EAppAsync(
   projectRoot: string,
-  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+  { localCliBin, repoRoot, isTV }: { localCliBin: string; repoRoot: string; isTV?: boolean }
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
     ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
-    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+    { appJsFileName: 'App.tsx', repoRoot, isTV: isTV ?? false }
   );
 
   // install extra fonts package

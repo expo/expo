@@ -1,5 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// swiftlint:disable force_unwrapping
+// swiftlint:disable legacy_objc_type
+// swiftlint:disable identifier_name
 import Foundation
 
 let DEV_LAUNCHER_INSTALLATION_ID_FILENAME = "expo-dev-launcher-installation-id.txt"
@@ -68,3 +71,6 @@ public class EXDevLauncherInstallationIDHelper: NSObject {
     return applicationSupportURL.appendingPathComponent(DEV_LAUNCHER_INSTALLATION_ID_FILENAME)
   }
 }
+// swiftlint:enable force_unwrapping
+// swiftlint:enable identifier_name
+// swiftlint:enable legacy_objc_type

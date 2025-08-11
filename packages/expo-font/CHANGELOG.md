@@ -14,6 +14,8 @@
 ### 💡 Others
 
 - [web] remove deprecated style 'type' attribute ([#38114](https://github.com/expo/expo/pull/38114) by [@vonovak](https://github.com/vonovak))
+- Add missing `react-native` peer dependency ([#38540](https://github.com/expo/expo/pull/38540) by [@kitten](https://github.com/kitten))
+- Update remaining `@expo/config-plugins` in config plugin to `expo/config-plugins` ([#38580](https://github.com/expo/expo/pull/38580) by [@kitten](https://github.com/kitten))
 
 ## 13.3.2 - 2025-07-01
 

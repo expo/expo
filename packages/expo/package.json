@@ -20,6 +20,7 @@
     "android",
     "bin",
     "build",
+    "internal",
     "ios",
     "scripts",
     "src",
@@ -43,7 +44,8 @@
     "requiresExtraSetup.json",
     "tsconfig.base.json",
     "types",
-    "virtual"
+    "virtual",
+    "template.tgz"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -76,8 +78,9 @@
     "@expo/cli": "0.24.13",
     "@expo/config": "~11.0.10",
     "@expo/config-plugins": "~10.0.2",
+    "@expo/devtools": "0.0.1",
     "@expo/fingerprint": "0.13.0",
-    "@expo/metro": "~0.1.0",
+    "@expo/metro": "~0.1.1",
     "@expo/metro-config": "0.20.14",
     "@expo/vector-icons": "^14.0.0",
     "babel-preset-expo": "~13.1.11",
@@ -90,6 +93,7 @@
     "expo-modules-core": "2.3.13",
     "pretty-format": "^29.7.0",
     "react-native-edge-to-edge": "1.6.0",
+    "react-refresh": "^0.14.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
@@ -99,16 +103,13 @@
     "expo-module-scripts": "^4.1.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.80.1",
-    "web-streams-polyfill": "^3.3.2",
-    "ws": "^8.18.0"
+    "react-native": "0.81.0-rc.5",
+    "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
-    "metro-runtime": "*",
     "react": "*",
-    "react-refresh": "*",
     "react-native": "*",
     "react-native-webview": "*"
   },

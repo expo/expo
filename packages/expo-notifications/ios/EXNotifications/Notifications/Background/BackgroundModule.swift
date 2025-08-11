@@ -40,7 +40,9 @@ public class BackgroundModule: Module {
     }
 
     AsyncFunction("unregisterTaskAsync") {(name: String, promise: Promise) in
-      taskManager?.unregisterTask(withName: name, consumerClass: NotificationsBackgroundTaskConsumer.self)
+      try EXUtilities.catchException {
+        self.taskManager?.unregisterTask(withName: name, consumerClass: NotificationsBackgroundTaskConsumer.self)
+      }
       promise.resolve(nil)
     }
   }

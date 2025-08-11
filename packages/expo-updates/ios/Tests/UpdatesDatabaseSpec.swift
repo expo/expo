@@ -58,8 +58,8 @@ class UpdatesDatabaseSpec : ExpoSpec {
         )
         
         db.databaseQueue.sync {
-          try! db.addUpdate(update)
-          
+          try! db.addUpdate(update, config: config)
+
           let sql = """
             INSERT OR REPLACE INTO updates_assets ("update_id", "asset_id") VALUES (?1, ?2)
           """
@@ -231,8 +231,8 @@ class UpdatesDatabaseSpec : ExpoSpec {
         )
         
         db.databaseQueue.sync {
-          try! db.addUpdate(update1)
-          try! db.addUpdate(update2)
+          try! db.addUpdate(update1, config: config)
+          try! db.addUpdate(update2, config: config)
           try! db.addNewAssets([asset1, asset2], toUpdateWithId: update1.updateId)
           try! db.addNewAssets([asset3], toUpdateWithId: update2.updateId)
           
@@ -256,6 +256,44 @@ class UpdatesDatabaseSpec : ExpoSpec {
           expect(try! db.asset(withKey: "key2")).toNot(beNil())
           expect(try! db.asset(withKey: "key3")).toNot(beNil())
         }
+      }
+    }
+
+    describe("encode/decode requestHeaders") {
+      it("should encode to json string") {
+        let requestHeaders = [
+          "key1": "value1",
+          "key2": "value2"
+        ]
+        let jsonString = UpdatesDatabase.encodeRequestHeaders(requestHeaders)
+        guard let data = jsonString?.data(using: .utf8),
+          let dict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
+          fatalError()
+        }
+        expect(dict["key1"]).to(equal("value1"))
+        expect(dict["key2"]).to(equal("value2"))
+      }
+
+      it("should encode empty headers") {
+        let jsonString = UpdatesDatabase.encodeRequestHeaders([:])
+        expect(jsonString).to(equal("{}"))
+      }
+
+      it("should decode to dictionary") {
+        let jsonString = "{\"key1\":\"value1\",\"key2\":\"value2\"}"
+        let requestHeaders = UpdatesDatabase.decodeRequestHeaders(jsonString)
+        expect(requestHeaders).to(equal(["key1": "value1", "key2": "value2"]))
+      }
+
+      it("should decode empty headers") {
+        let requestHeaders = UpdatesDatabase.decodeRequestHeaders("{}")
+        expect(requestHeaders).to(equal([:]))
+      }
+
+      it("should decode to nil from invalid input") {
+        let jsonString = "{\"key1\"}"
+        let requestHeaders = UpdatesDatabase.decodeRequestHeaders(jsonString)
+        expect(requestHeaders).to(beNil())
       }
     }
   }

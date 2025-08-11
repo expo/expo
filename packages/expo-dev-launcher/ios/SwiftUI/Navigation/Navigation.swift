@@ -13,10 +13,8 @@ class DevLauncherNavigation: ObservableObject {
 }
 
 func loadAppIcon(from path: String) -> UIImage? {
-  if let url = URL(string: path), url.isFileURL {
-    if let image = UIImage(contentsOfFile: url.path) {
-      return image
-    }
+  if let url = URL(string: path), url.isFileURL, let image = UIImage(contentsOfFile: url.path) {
+    return image
   }
 
   return nil
@@ -57,15 +55,25 @@ struct DevLauncherNavigationHeader: View {
         if viewModel.isAuthenticated, let selectedAccount = viewModel.selectedAccount {
           createAccountAvatar(account: selectedAccount)
         } else {
-          Image("user-icon", bundle: getDevLauncherBundle())
-            .font(.title2)
-            .foregroundColor(.black)
+          ZStack {
+            Circle()
+            #if !os(tvOS)
+              .fill(Color(.systemGray6))
+            #endif
+              .frame(width: 36, height: 36)
+
+            Image("user-icon", bundle: getDevLauncherBundle())
+              .font(.headline)
+              .tint(.gray.opacity(0.6))
+          }
         }
       }
     }
     .padding(.horizontal)
     .padding(.vertical, 8)
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
   }
 
   @ViewBuilder
@@ -85,7 +93,7 @@ struct DevLauncherNavigationHeader: View {
             .font(.system(size: 14))
             .foregroundColor(color.foreground)
         )
-    } else if let profilePhoto = profilePhoto,
+    } else if let profilePhoto,
       !profilePhoto.isEmpty,
       let url = URL(string: profilePhoto) {
       Avatar(url: url) { image in
@@ -94,7 +102,9 @@ struct DevLauncherNavigationHeader: View {
           .aspectRatio(contentMode: .fill)
       } placeholder: {
         Circle()
+        #if !os(tvOS)
           .fill(Color(.systemGray5))
+        #endif
           .overlay(
             Image(systemName: "person")
               .font(.system(size: 16))

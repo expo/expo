@@ -6,12 +6,19 @@
 
 ### 🎉 New features
 
+- Add Bun adapter to expo server runtime. ([#38240](https://github.com/expo/expo/pull/38240) by [@daavidaviid](https://github.com/daavidaviid))
+- Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
+- Add `workerd` adapter. ([#38531](https://github.com/expo/expo/pull/38531) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Add `mjs` build files. ([#38717](https://github.com/expo/expo/pull/38717) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 🐛 Bug fixes
+
+- Fix Vercel adapter POST requests timeouts. Revert `Readable.toWeb` conversion back to `createReadableStreamFromReadable` from `remix-run/node`. ([#38603](https://github.com/expo/expo/pull/38603) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
-- Add Bun adapter to expo server runtime. ([#38240](https://github.com/expo/expo/pull/38240) by [@daavidaviid](https://github.com/daavidaviid))
 - Bump Express types to `@types/express@5`. ([#37635](https://github.com/expo/expo/pull/37635) by [@byCedric](https://github.com/byCedric))
+- Sync development and self host server behavior with EAS Hosting ([#38465](https://github.com/expo/expo/pull/38465) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 0.6.3 - 2025-06-18
 

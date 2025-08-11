@@ -2,16 +2,19 @@ import { createContext, PropsWithChildren, use, useState } from 'react';
 
 const LinkPreviewContext = createContext<
   | {
-      isPreviewOpen: boolean;
-      setIsPreviewOpen: (isOpen: boolean) => void;
+      isStackAnimationDisabled: boolean;
+      openPreviewKey: string | undefined;
+      setOpenPreviewKey: (openPreviewKey: string | undefined) => void;
     }
   | undefined
 >(undefined);
 
 export function LinkPreviewContextProvider({ children }: PropsWithChildren) {
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [openPreviewKey, setOpenPreviewKey] = useState<string | undefined>(undefined);
+  const isStackAnimationDisabled = openPreviewKey !== undefined;
   return (
-    <LinkPreviewContext.Provider value={{ isPreviewOpen, setIsPreviewOpen }}>
+    <LinkPreviewContext.Provider
+      value={{ isStackAnimationDisabled, openPreviewKey, setOpenPreviewKey }}>
       {children}
     </LinkPreviewContext.Provider>
   );

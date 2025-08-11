@@ -27,7 +27,6 @@ import { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
-import { importMetroConfig } from './traveling/metro-config';
 import { toPosixPath } from './utils/filePath';
 import { setOnReadonly } from './utils/setOnReadonly';
 
@@ -188,7 +187,10 @@ export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ): InputConfigT {
-  const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
+  const {
+    getDefaultConfig: getDefaultMetroConfig,
+    mergeConfig,
+  }: typeof import('@expo/metro/metro-config') = require('@expo/metro/metro-config');
 
   if (isCSSEnabled) {
     patchMetroGraphToSupportUncachedModules();
@@ -329,16 +331,8 @@ export function getDefaultConfig(
           return [];
         }
 
-        if (platform === 'web') {
-          return [
-            // Ensure that the error-guard polyfill is included in the web polyfills to
-            // make metro-runtime work correctly.
-            require.resolve('@react-native/js-polyfills/error-guard'),
-          ];
-        }
-
         // Native behavior.
-        return require('@react-native/js-polyfills')();
+        return require(path.join(reactNativePath, 'rn-get-polyfills'))();
       },
     },
     server: {

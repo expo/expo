@@ -5,6 +5,9 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+
+- [Android] Add ref functions for setting text in swiftui textinputs. ([#38276](https://github.com/expo/expo/pull/38276) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add ref functions for setting text in swiftui textinputs. ([#38276](https://github.com/expo/expo/pull/38276) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Add ContentUnavailableView. ([#38128](https://github.com/expo/expo/pull/38128) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
 - Add ios `glassProminent` button variant. ([#37995](https://github.com/expo/expo/pull/37995) by [@betomoedano](https://github.com/betomoedano))
 - Add support for icon only button. ([#37899](https://github.com/expo/expo/pull/37899) by [@betomoedano](https://github.com/betomoedano))
@@ -20,6 +23,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Add `placeholder` TextInput prop. ([#36590](https://github.com/expo/expo/pull/36590) by [@ramonfabrega](https://github.com/ramonfabrega))
+- [iOS] Fix tvOS compilation. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

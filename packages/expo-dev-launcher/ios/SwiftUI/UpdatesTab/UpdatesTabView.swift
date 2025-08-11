@@ -2,17 +2,6 @@
 
 import SwiftUI
 
-func getDevLauncherBundle() -> Bundle? {
-  if let bundleURL = Bundle.main.url(forResource: "EXDevLauncher", withExtension: "bundle") {
-    if let bundle = Bundle(url: bundleURL) {
-      return bundle
-    }
-  }
-
-  // fallback to the main bundle
-  return .main
-}
-
 struct UpdatesTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
 
@@ -22,13 +11,13 @@ struct UpdatesTabView: View {
 
       if !viewModel.isLoggedIn {
         NotSignedInView()
+          .padding()
       } else if !viewModel.structuredBuildInfo.usesEASUpdates {
         NotUsingUpdatesView()
       } else {
         UpdatesListView()
       }
     }
-    .background(Color(.systemGroupedBackground))
   }
 }
 

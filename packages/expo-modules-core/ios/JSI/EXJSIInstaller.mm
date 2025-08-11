@@ -1,6 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React_NativeModulesApple/React-NativeModulesApple-umbrella.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>

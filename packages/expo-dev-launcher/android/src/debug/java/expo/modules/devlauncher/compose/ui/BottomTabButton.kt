@@ -2,12 +2,14 @@ package expo.modules.devlauncher.compose.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import com.composables.core.Icon
+import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
+import com.composeunstyled.Icon
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
@@ -29,11 +31,12 @@ fun BottomTabButton(
         } else {
           Theme.colors.icon.default
         },
-        contentDescription = "$label Icon"
+        contentDescription = "$label Icon",
+        modifier = Modifier.size(18.dp)
       )
       Spacer(Theme.spacing.tiny)
       Text(
-        "Home",
+        label,
         fontSize = Theme.typography.small,
         color = if (isSelected) {
           Theme.colors.button.primary.background
