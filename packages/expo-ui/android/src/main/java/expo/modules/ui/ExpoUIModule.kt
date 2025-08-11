@@ -122,7 +122,7 @@ class ExpoUIModule : Module() {
     }
 
     Function("shadow") { elevation: Int ->
-      return@Function ExpoModifier(Modifier.shadow(elevation.dp)) // todo more options
+      return@Function ExpoModifier(Modifier.shadow(elevation.dp)) // TODO: Support more options
     }
 
     Function("alpha") { alpha: Float ->
@@ -153,6 +153,6 @@ class ExpoUIModule : Module() {
       return@Function ExpoModifier(Modifier.zIndex(index))
     }
 
-    // TODO: Implement semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding
+    // TODO: Consider implementing semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding
   }
 }
