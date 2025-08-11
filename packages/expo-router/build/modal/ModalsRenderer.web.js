@@ -6,8 +6,8 @@ const native_1 = require("@react-navigation/native");
 const react_native_1 = require("react-native");
 const ModalComponent_1 = require("./ModalComponent");
 const utils_1 = require("./utils");
-const ModalStackRouteDrawer_web_1 = require("./web/ModalStackRouteDrawer.web");
-const TransparentModalStackRouteDrawer_web_1 = require("./web/TransparentModalStackRouteDrawer.web");
+const ModalStackRouteDrawer_1 = require("./web/ModalStackRouteDrawer");
+const TransparentModalStackRouteDrawer_1 = require("./web/TransparentModalStackRouteDrawer");
 const utils_2 = require("./web/utils");
 const ModalsRenderer = ({ children, modalConfigs, onDismissed, onShow, }) => {
     return (<div style={{ flex: 1, display: 'flex' }}>
@@ -21,8 +21,8 @@ function Modal({ config, onDismissed }) {
     const presentation = (0, utils_1.getStackPresentationType)(config);
     const isTransparentModal = (0, utils_2.isTransparentModalPresentation)({ presentation });
     const SelectedModalComponent = isTransparentModal
-        ? TransparentModalStackRouteDrawer_web_1.TransparentModalStackRouteDrawer
-        : ModalStackRouteDrawer_web_1.ModalStackRouteDrawer;
+        ? TransparentModalStackRouteDrawer_1.TransparentModalStackRouteDrawer
+        : ModalStackRouteDrawer_1.ModalStackRouteDrawer;
     return (<SelectedModalComponent routeKey={config.uniqueId} onDismiss={onDismissed} themeColors={colors} key={config.uniqueId} options={{
             presentation,
             animation: (0, utils_1.getStackAnimationType)(config),
