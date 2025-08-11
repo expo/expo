@@ -48,7 +48,7 @@ const Slot_1 = require("../ui/Slot");
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
  *
- * **Note:** You can use the alias `Link.MenuAction` for this component.
+ * > **Note**: You can use the alias `Link.MenuAction` for this component.
  *
  * @platform ios
  */
@@ -73,7 +73,7 @@ function LinkMenuAction(props) {
  * </Link.Menu>
  * ```
  *
- * **Note:** You can use the alias `Link.Menu` for this component.
+ * > **Note**: You can use the alias `Link.Menu` for this component.
  *
  * @platform ios
  */
@@ -110,7 +110,7 @@ exports.LinkMenu = LinkMenu;
  * </Link>
  * ```
  *
- * **Note:** You can use the alias `Link.Preview` for this component.
+ * > **Note**: You can use the alias `Link.Preview` for this component.
  *
  * @platform ios
  */
@@ -154,7 +154,7 @@ function LinkPreview(props) {
  * </Link>
  * ```
  *
- * **Note:** You can use the alias `Link.Trigger` for this component.
+ * > **Note**: You can use the alias `Link.Trigger` for this component.
  *
  * @platform ios
  */

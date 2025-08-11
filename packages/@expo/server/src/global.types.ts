@@ -7,3 +7,6 @@ declare global {
     duplex?: 'half';
   }
 }
+
+// To augment the global types, this file has to be a module.
+export {};
