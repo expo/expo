@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { createViewModifierEventListener } from './modifiers/utils';
 import { type CommonViewModifierProps } from './types';
 import { ViewEvent } from '../types';
 
@@ -20,8 +21,10 @@ interface StackBaseProps extends CommonViewModifierProps {
 export type NativeStackProps = Omit<StackBaseProps, 'onPress'> | TapEvent;
 
 function transformNativeProps(props: StackBaseProps): NativeStackProps {
-  const { onPress, ...restProps } = props;
+  const { onPress, modifiers, ...restProps } = props;
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),
   };
@@ -73,7 +76,17 @@ const GroupNativeView: React.ComponentType<NativeGroupProps> = requireNativeView
   'GroupView'
 );
 
+function transformGroupProps(props: GroupProps): NativeGroupProps {
+  const { onPress, modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+    ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),
+  };
+}
+
 export function Group(props: GroupProps) {
-  return <GroupNativeView {...transformNativeProps(props)} />;
+  return <GroupNativeView {...transformGroupProps(props)} />;
 }
 //#endregion

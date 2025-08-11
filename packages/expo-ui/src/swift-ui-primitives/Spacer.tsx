@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { createViewModifierEventListener } from './modifiers/utils';
 import { type CommonViewModifierProps } from './types';
 
 export interface SpacerProps extends CommonViewModifierProps {
@@ -17,6 +18,15 @@ const SpacerNativeView: React.ComponentType<NativeSpacerProps> = requireNativeVi
   'SpacerView'
 );
 
+function transformSpacerProps(props: SpacerProps): NativeSpacerProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
 export function Spacer(props: SpacerProps) {
-  return <SpacerNativeView {...props} />;
+  return <SpacerNativeView {...transformSpacerProps(props)} />;
 }

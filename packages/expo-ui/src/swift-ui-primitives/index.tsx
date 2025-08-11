@@ -8,6 +8,9 @@ export * from './DisclosureGroup';
 export * from './ContentUnavailableView';
 export * from './GlassEffectContainer';
 
+// Export all modifier functions
+export * from './modifiers';
+
 export { BottomSheetPrimitive as BottomSheet } from '../swift-ui/BottomSheet';
 export { ButtonPrimitive as Button } from '../swift-ui/Button';
 export { ColorPickerPrimitive as ColorPicker } from '../swift-ui/ColorPicker';
