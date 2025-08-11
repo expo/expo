@@ -25,11 +25,10 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/server#readme",
   "files": [
     "build",
-    "adapter",
-    "install.d.ts",
-    "install.js"
+    "adapter"
   ],
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "debug": "^4.3.4"
   },
   "devDependencies": {
