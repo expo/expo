@@ -5,8 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUniversalAssetData = getUniversalAssetData;
 exports.default = getAssets;
-const Assets_1 = require("metro/src/Assets");
-const js_js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js.js");
+/**
+ * Copyright 2023-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+const Assets_1 = require("@expo/metro/metro/Assets");
+// NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
+const js_js_1 = require("@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js");
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));

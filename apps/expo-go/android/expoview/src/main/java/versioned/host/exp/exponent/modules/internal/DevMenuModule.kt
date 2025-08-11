@@ -1,5 +1,4 @@
 package versioned.host.exp.exponent.modules.internal
-
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -78,6 +77,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val debuggerMap = Bundle()
     val hmrMap = Bundle()
     val perfMap = Bundle()
+    val fabMap = Bundle()
 
     if (devSettings != null && devSupportManager.devSupportEnabled) {
       inspectorMap.putString("label", getString(if (devSettings.isElementInspectorEnabled) R.string.devmenu_hide_element_inspector else R.string.devmenu_show_element_inspector))
@@ -93,6 +93,17 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
     }
+
+    if (devSettings != null && devSupportManager.devSupportEnabled) {
+      val label = if (devSettings.isFloatingActionButtonEnabled) {
+        getString(R.string.devmenu_hide_fab)
+      } else {
+        getString(R.string.devmenu_show_fab)
+      }
+      fabMap.putString("label", label)
+      fabMap.putBoolean("isEnabled", true)
+    }
+    items.putBundle("dev-fab", fabMap)
 
     if (devSettings != null && devSupportManager.devSupportEnabled && devSettings is DevInternalSettings) {
       hmrMap.putString("label", getString(if (devSettings.isHotModuleReplacementEnabled) R.string.devmenu_disable_fast_refresh else R.string.devmenu_enable_fast_refresh))
@@ -146,6 +157,9 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
             requestOverlaysPermission()
           }
           devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
+        }
+        "dev-fab" -> {
+          devSupportManager.setFloatingActionButtonEnabled(!devSettings.isFloatingActionButtonEnabled)
         }
       }
     }

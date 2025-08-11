@@ -259,6 +259,13 @@ module.exports = {
           { name: 'evalJsForWebViewAsync', argumentsCount: 2, key: 'evalJsForWebViewAsync' },
         ],
         ExpoFetchModule: [],
+        ExpoFontLoader: [
+          { name: 'getLoadedFonts', argumentsCount: 0, key: 'getLoadedFonts' },
+          { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
+        ],
+        ExpoFontUtils: [
+          { name: 'renderToImageAsync', argumentsCount: 2, key: 'renderToImageAsync' },
+        ],
         ExpoGo: [{ name: 'getModulesSchema', argumentsCount: 0, key: 'getModulesSchema' }],
         ExpoHaptics: [
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },
@@ -276,6 +283,7 @@ module.exports = {
           { name: 'clearDiskCache', argumentsCount: 0, key: 'clearDiskCache' },
           { name: 'clearMemoryCache', argumentsCount: 0, key: 'clearMemoryCache' },
           { name: 'generateBlurhashAsync', argumentsCount: 2, key: 'generateBlurhashAsync' },
+          { name: 'generateThumbhashAsync', argumentsCount: 1, key: 'generateThumbhashAsync' },
           { name: 'getCachePathAsync', argumentsCount: 1, key: 'getCachePathAsync' },
           { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
           { name: 'prefetch', argumentsCount: 3, key: 'prefetch' },
@@ -534,14 +542,14 @@ module.exports = {
         ],
         ExpoNotificationsEmitter: [
           {
-            name: 'clearLastNotificationResponseAsync',
+            name: 'clearLastNotificationResponse',
             argumentsCount: 0,
-            key: 'clearLastNotificationResponseAsync',
+            key: 'clearLastNotificationResponse',
           },
           {
-            name: 'getLastNotificationResponseAsync',
+            name: 'getLastNotificationResponse',
             argumentsCount: 0,
-            key: 'getLastNotificationResponseAsync',
+            key: 'getLastNotificationResponse',
           },
         ],
         ExpoNotificationsHandlerModule: [
@@ -560,8 +568,19 @@ module.exports = {
             key: 'unregisterForNotificationsAsync',
           },
         ],
+        ExpoRouterNativeLinkPreview: [],
         ExpoScreenCapture: [
           { name: 'allowScreenCapture', argumentsCount: 0, key: 'allowScreenCapture' },
+          {
+            name: 'disableAppSwitcherProtection',
+            argumentsCount: 0,
+            key: 'disableAppSwitcherProtection',
+          },
+          {
+            name: 'enableAppSwitcherProtection',
+            argumentsCount: 1,
+            key: 'enableAppSwitcherProtection',
+          },
           { name: 'preventScreenCapture', argumentsCount: 0, key: 'preventScreenCapture' },
         ],
         ExpoScreenOrientation: [
@@ -670,8 +689,9 @@ module.exports = {
           { name: 'openBrowserAsync', argumentsCount: 2, key: 'openBrowserAsync' },
           { name: 'warmUpAsync', argumentsCount: 0, key: 'warmUpAsync' },
         ],
-        FileSystemNext: [
-          { name: 'downloadFileAsync', argumentsCount: 2, key: 'downloadFileAsync' },
+        FileSystem: [
+          { name: 'downloadFileAsync', argumentsCount: 3, key: 'downloadFileAsync' },
+          { name: 'info', argumentsCount: 1, key: 'info' },
         ],
         NotificationsServerRegistrationModule: [
           { name: 'getInstallationIdAsync', argumentsCount: 0, key: 'getInstallationIdAsync' },
@@ -900,6 +920,17 @@ module.exports = {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
         },
+        ExpoFontLoader: {
+          addListener: { type: 'function' },
+          getLoadedFonts: { type: 'function' },
+          loadAsync: { type: 'function' },
+          removeListeners: { type: 'function' },
+        },
+        ExpoFontUtils: {
+          addListener: { type: 'function' },
+          removeListeners: { type: 'function' },
+          renderToImageAsync: { type: 'function' },
+        },
         ExpoGo: {
           addListener: { type: 'function' },
           expoVersion: { type: 'string' },
@@ -929,6 +960,7 @@ module.exports = {
           clearDiskCache: { type: 'function' },
           clearMemoryCache: { type: 'function' },
           generateBlurhashAsync: { type: 'function' },
+          generateThumbhashAsync: { type: 'function' },
           getCachePathAsync: { type: 'function' },
           loadAsync: { type: 'function' },
           prefetch: { type: 'function' },
@@ -1154,8 +1186,8 @@ module.exports = {
         },
         ExpoNotificationsEmitter: {
           addListener: { type: 'function' },
-          clearLastNotificationResponseAsync: { type: 'function' },
-          getLastNotificationResponseAsync: { type: 'function' },
+          clearLastNotificationResponse: { type: 'function' },
+          getLastNotificationResponse: { type: 'function' },
           removeListeners: { type: 'function' },
         },
         ExpoNotificationsHandlerModule: {
@@ -1177,9 +1209,15 @@ module.exports = {
           removeListeners: { type: 'function' },
           unregisterForNotificationsAsync: { type: 'function' },
         },
+        ExpoRouterNativeLinkPreview: {
+          addListener: { type: 'function' },
+          removeListeners: { type: 'function' },
+        },
         ExpoScreenCapture: {
           addListener: { type: 'function' },
           allowScreenCapture: { type: 'function' },
+          disableAppSwitcherProtection: { type: 'function' },
+          enableAppSwitcherProtection: { type: 'function' },
           preventScreenCapture: { type: 'function' },
           removeListeners: { type: 'function' },
         },
@@ -1230,16 +1268,6 @@ module.exports = {
           resume: { type: 'function' },
           speak: { type: 'function' },
           stop: { type: 'function' },
-        },
-        ExpoSplashScreen: {
-          addListener: { type: 'function' },
-          hide: { type: 'function' },
-          hideAsync: { type: 'function' },
-          internalMaybeHideAsync: { type: 'function' },
-          internalPreventAutoHideAsync: { type: 'function' },
-          preventAutoHideAsync: { type: 'function' },
-          removeListeners: { type: 'function' },
-          setOptions: { type: 'function' },
         },
         ExpoSQLite: {
           addListener: { type: 'function' },
@@ -1328,14 +1356,17 @@ module.exports = {
           removeListeners: { type: 'function' },
           warmUpAsync: { type: 'function' },
         },
-        FileSystemNext: {
+        FileSystem: {
           addListener: { type: 'function' },
           appleSharedContainers: { type: 'object' },
+          availableDiskSpace: { type: 'property' },
           bundleDirectory: { type: 'string' },
           cacheDirectory: { type: 'string' },
           documentDirectory: { type: 'string' },
           downloadFileAsync: { type: 'function' },
+          info: { type: 'function' },
           removeListeners: { type: 'function' },
+          totalDiskSpace: { type: 'property' },
         },
         NotificationsServerRegistrationModule: {
           addListener: { type: 'function' },
@@ -1401,6 +1432,7 @@ module.exports = {
             'contentFit',
             'contentPosition',
             'enableLiveTextInteraction',
+            'enforceEarlyResizing',
             'placeholder',
             'placeholderContentFit',
             'priority',
@@ -1408,28 +1440,46 @@ module.exports = {
             'source',
             'tintColor',
             'transition',
+            'useAppleWebpCodec',
           ],
         },
         ExpoLinearGradient: { propNames: ['colors', 'endPoint', 'locations', 'startPoint'] },
         ExpoLivePhoto: {
           propNames: ['contentFit', 'isMuted', 'source', 'useDefaultGestureRecognizer'],
         },
-        ExpoRouterNativeLinkPreview: {
-          propNames: ['nextScreenId', 'actions', 'preferredContentSize'],
-        },
         ExponentGLView: { propNames: ['enableExperimentalWorkletSupport', 'msaaSamples'] },
+        ExpoRouterNativeLinkPreview: {
+          propNames: [
+            'destructive',
+            'disabled',
+            'displayAsPalette',
+            'displayInline',
+            'icon',
+            'isOn',
+            'keepPresented',
+            'nextScreenId',
+            'preferredContentSize',
+            'singleSelection',
+            'tabPath',
+            'title',
+          ],
+        },
         ExpoVideo: {
           propNames: [
+            'activeTint',
             'allowsFullscreen',
             'allowsPictureInPicture',
             'allowsVideoFrameAnalysis',
             'contentFit',
             'contentPosition',
+            'fullscreenOptions',
             'nativeControls',
             'player',
+            'prioritizeVideoDevices',
             'requiresLinearPlayback',
             'showsTimecodes',
             'startsPictureInPictureAutomatically',
+            'tint',
           ],
         },
         ExpoVideoView: { propNames: ['resizeMode', 'source', 'status', 'useNativeControls'] },

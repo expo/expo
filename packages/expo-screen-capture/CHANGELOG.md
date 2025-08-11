@@ -13,8 +13,11 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix permissions on Android 13.
+- [iOS] Fix issue with header flickering on screenshot prevention. ([#38384](https://github.com/expo/expo/pull/38384) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 💡 Others
+
+- [iOS] Replaced deprecated keyWindow usage. ([#38207](https://github.com/expo/expo/pull/38207) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ## 7.1.5 - 2025-07-01
 

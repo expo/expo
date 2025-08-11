@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Badge 1`] = `
+"1:{"name":"Badge","env":"Server","key":null,"owner":null,"props":{"children":"Test"}}
+0:D"$1"
+0:null"
+`;
+
+exports[`renders Icon drawable 1`] = `
+"1:{"name":"Icon","env":"Server","key":null,"owner":null,"props":{"drawable":"0.circle"}}
+0:D"$1"
+0:null"
+`;
+
+exports[`renders Icon sf 1`] = `
+"1:{"name":"Icon","env":"Server","key":null,"owner":null,"props":{"sf":"0.circle"}}
+0:D"$1"
+0:null"
+`;
+
+exports[`renders Icon src 1`] = `
+"1:{"name":"Icon","env":"Server","key":null,"owner":null,"props":{"src":{"testUri":"../../../packages/expo-router/assets/sitemap.png"}}}
+0:D"$1"
+0:null"
+`;
+
+exports[`renders Label 1`] = `
+"1:{"name":"Label","env":"Server","key":null,"owner":null,"props":{"children":"Test"}}
+0:D"$1"
+0:null"
+`;
+
+exports[`renders NativeTabs 1`] = `
+"2:I["src/native-tabs/NativeBottomTabs/NativeBottomTabsNavigator.tsx",[],"NativeTabsNavigatorWithContext",1]
+1:{"name":"","env":"Server","key":null,"owner":null,"props":{}}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;
+
+exports[`renders NativeTabs.Trigger 1`] = `
+"1:I["src/native-tabs/NativeBottomTabs/NativeTabTrigger.tsx",[],"NativeTabTrigger",1]
+0:["$","$L1",null,{"name":"test"},null]"
+`;

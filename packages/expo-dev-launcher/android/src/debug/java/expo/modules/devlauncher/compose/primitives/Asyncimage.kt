@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import expo.modules.devlauncher.services.ImageLoaderService
 import expo.modules.devlauncher.services.inject
@@ -20,7 +19,7 @@ fun AsyncImage(
 ) {
   val imageLoaderService = inject<ImageLoaderService>()
   val scope = rememberCoroutineScope()
-  var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+  var imageBitmap by remember { mutableStateOf(imageLoaderService.loadFromMemory(url)?.asImageBitmap()) }
 
   LaunchedEffect(url) {
     scope.launch {

@@ -1,8 +1,5 @@
 package expo.interfaces.devmenu
 
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
-
 interface DevMenuPreferencesInterface {
   /**
    * Whether to enable shake gesture.
@@ -29,4 +26,8 @@ interface DevMenuPreferencesInterface {
    */
   var isOnboardingFinished: Boolean
 
+  /**
+   * Whether to show a floating action button that pulls up the DevMenu when pressed.
+   */
+  var showFab: Boolean
 }

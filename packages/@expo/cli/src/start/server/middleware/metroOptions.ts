@@ -1,6 +1,5 @@
 import { ExpoConfig } from '@expo/config';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
-import resolveFrom from 'resolve-from';
+import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types.flow';
 
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -434,7 +433,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     minify: isTruthy(getStringParam('minify') ?? 'false'),
     lazy: isTruthy(getStringParam('lazy') ?? 'false'),
     routerRoot: getStringParam('transform.routerRoot') ?? 'app',
-    hosted: isTruthy(getStringParam('transform.hosted') ?? 'false'),
+    hosted: isTruthy(getStringParam('transform.hosted')),
     isExporting: isTruthy(getStringParam('resolver.exporting') ?? 'false'),
     environment: assertEnvironment(getStringParam('transform.environment') ?? 'node'),
     platform: url.searchParams.get('platform') ?? 'web',

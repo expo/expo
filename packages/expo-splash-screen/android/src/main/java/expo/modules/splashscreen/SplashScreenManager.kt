@@ -42,10 +42,10 @@ object SplashScreenManager {
         .setInterpolator(AccelerateInterpolator())
         .withEndAction {
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            splashScreenViewProvider.remove();
+            splashScreenViewProvider.remove()
           } else {
             // Avoid calling applyThemesSystemBarAppearance
-            (splashScreenView as SplashScreenView).remove();
+            (splashScreenView as SplashScreenView).remove()
           }
         }.start()
     }

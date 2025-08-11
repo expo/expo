@@ -24,7 +24,7 @@ it('can push a hash url', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -34,7 +34,7 @@ it('can push a hash url', () => {
           index: 4,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -144,7 +144,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -154,7 +154,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', '+not-found'],
+          routeNames: ['index'],
           routes: [
             {
               key: expect.any(String),

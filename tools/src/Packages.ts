@@ -9,6 +9,7 @@ import * as Npm from './Npm';
 const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 const IOS_DIR = Directories.getExpoGoIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
+const TEMPLATES_DIR = Directories.getTemplatesDir();
 
 /**
  * Cached list of packages or `null` if they haven't been loaded yet. See `getListOfPackagesAsync`.
@@ -386,6 +387,10 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
         '**/__fixtures__/**',
       ],
     });
+    const templatesPaths = await glob('**/package.json', {
+      cwd: TEMPLATES_DIR,
+      ignore: ['**/node_modules/**', '**/__tests__/**', '**/__mocks__/**', '**/__fixtures__/**'],
+    });
     cachedPackages = paths
       .map((packageJsonPath) => {
         const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
@@ -394,6 +399,15 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
 
         return new Package(packagePath, packageJson);
       })
+      .concat(
+        templatesPaths.map((packageJsonPath) => {
+          const fullPackageJsonPath = path.join(TEMPLATES_DIR, packageJsonPath);
+          const packagePath = path.dirname(fullPackageJsonPath);
+          const packageJson = require(fullPackageJsonPath);
+
+          return new Package(packagePath, packageJson);
+        })
+      )
       .filter((pkg) => !!pkg.packageName);
   }
   return cachedPackages;

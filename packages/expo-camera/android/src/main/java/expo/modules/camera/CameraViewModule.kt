@@ -22,6 +22,7 @@ import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.tasks.writeStreamToFile
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
@@ -47,6 +48,15 @@ val cameraEvents = arrayOf(
   "onAvailableLensesChanged"
 )
 
+val cameraPermissions = if (VRUtilities.isQuest()) {
+  arrayOf(
+    Manifest.permission.CAMERA,
+    VRUtilities.HZOS_CAMERA_PERMISSION
+  )
+} else {
+  arrayOf(Manifest.permission.CAMERA)
+}
+
 class CameraViewModule : Module() {
   private val moduleScope = CoroutineScope(Dispatchers.Main)
 
@@ -57,8 +67,9 @@ class CameraViewModule : Module() {
 
     // Aligned with iOS which has the same property. Will always be true on Android since
     // the Google code scanner's min sdk is 21 - and our min sdk is currently 24.
+    // False on Horizon OS, as there is no google services.
     Property("isModernBarcodeScannerAvailable") {
-      true
+      !VRUtilities.isQuest()
     }
 
     // Again, aligned with iOS.
@@ -70,7 +81,7 @@ class CameraViewModule : Module() {
       Permissions.askForPermissionsWithPermissionsManager(
         permissionsManager,
         promise,
-        Manifest.permission.CAMERA
+        *cameraPermissions
       )
     }
 
@@ -86,7 +97,7 @@ class CameraViewModule : Module() {
       Permissions.getPermissionsWithPermissionsManager(
         permissionsManager,
         promise,
-        Manifest.permission.CAMERA
+        *cameraPermissions
       )
     }
 
@@ -122,9 +133,13 @@ class CameraViewModule : Module() {
       )
     }
 
-    AsyncFunction("launchScanner") { settings: BarcodeSettings ->
+    AsyncFunction("launchScanner") { settings: BarcodeSettings, promise: Promise ->
       val reactContext = appContext.reactContext
-        ?: throw Exceptions.ReactContextLost()
+
+      if (reactContext == null) {
+        promise.reject(Exceptions.ReactContextLost())
+        return@AsyncFunction
+      }
 
       val options = GmsBarcodeScannerOptions.Builder().apply {
         if (settings.barcodeTypes.isNotEmpty()) {
@@ -140,9 +155,13 @@ class CameraViewModule : Module() {
         .addOnSuccessListener { barcode ->
           val result = BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode)
           sendEvent("onModernBarcodeScanned", BarCodeScannerResultSerializer.toBundle(result, 1.0f))
+          promise.resolve()
+        }
+        .addOnCanceledListener {
+          promise.reject(CameraExceptions.BarcodeScanningCancelledException())
         }
         .addOnFailureListener {
-          throw CameraExceptions.BarcodeScanningFailedException()
+          promise.reject(CameraExceptions.BarcodeScanningFailedException())
         }
     }
 

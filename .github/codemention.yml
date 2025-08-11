@@ -7,7 +7,7 @@ rules:
   - patterns: ['.github/workflows/cli.yml/**']
     mentions: ['EvanBacon', 'bycedric']
   - patterns: ['docs/**']
-    mentions: ['Simek', 'amandeepmittal']
+    mentions: ['amandeepmittal']
   - patterns: ['packages/@expo/cli/**']
     mentions: ['EvanBacon', 'bycedric']
   - patterns: ['packages/@expo/config/**']
@@ -18,6 +18,8 @@ rules:
     mentions: ['EvanBacon', 'douglowder']
   - patterns: ['packages/@expo/dev-server/**']
     mentions: ['bycedric']
+  - patterns: ['packages/@expo/devtools/**']
+    mentions: ['chrfalch', 'kudo']
   - patterns: ['packages/@expo/env/**']
     mentions: ['EvanBacon', 'bycedric']
   - patterns: ['packages/@expo/fingerprint/**']
@@ -232,7 +234,12 @@ rules:
     mentions: ['bycedric', 'EvanBacon']
   - patterns: ['packages/uri-scheme/**']
     mentions: ['bycedric', 'EvanBacon']
-  - patterns: ['packages/eslint-config-expo/**', 'packages/eslint-config-universe/**', 'packages/eslint-plugin-expo/**']
-    mentions: ['kadikraman', 'Simek']
+  - patterns:
+      [
+        'packages/eslint-config-expo/**',
+        'packages/eslint-config-universe/**',
+        'packages/eslint-plugin-expo/**',
+      ]
+    mentions: ['kadikraman']
   - patterns: ['tools/**']
     mentions: ['kudo']

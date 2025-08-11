@@ -19,8 +19,10 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
     /**
-     * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
-     * Enable React Native new architecture for Android platform.
+     * Enable React Native New Architecture for Android platform.
+     *
+     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
+     * app config file instead.
      */
     newArchEnabled?: boolean;
     /**
@@ -113,7 +115,8 @@ export interface PluginConfigTypeAndroid {
     /**
      * Indicates whether the app intends to use cleartext network traffic.
      *
-     * @default false
+     * For Android 8 and below, the default platform-specific value is `true`.
+     * For Android 9 and above, the default platform-specific value is `false`.
      *
      * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
      */
@@ -147,9 +150,10 @@ export interface PluginConfigTypeAndroid {
      * @default false
      */
     enableBundleCompression?: boolean;
+    buildReactNativeFromSource?: boolean;
     /**
      * Enable building React Native from source. Turning this on will significantly increase the build times.
-     *
+     * @deprecated Use `buildReactNativeFromSource` instead.
      * @default false
      */
     buildFromSource?: boolean;
@@ -250,8 +254,10 @@ export type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCr
  */
 export interface PluginConfigTypeIos {
     /**
-     * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
-     * Enable React Native new architecture for iOS platform.
+     * Enable React Native New Architecture for iOS platform.
+     *
+     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
+     * app config file instead.
      */
     newArchEnabled?: boolean;
     /**
@@ -311,13 +317,19 @@ export interface PluginConfigTypeIos {
      */
     privacyManifestAggregationEnabled?: boolean;
     /**
-     * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-     * This feature is available from React Native 0.80.
-     * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies.
+     * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * This feature is available from React Native 0.80 and later when using the new architecture.
+     * From React Native 0.81, this setting will also use a precompiled React Native Core (`React.xcframework`).
      *
-     * @default true
-     * @see React Native documentation on [prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt) for more information.
+     * @default false
+     * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
      * @experimental
+     */
+    buildReactNativeFromSource?: boolean;
+    /**
+     * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * This feature is available from React Native 0.80 and later.
+     * @deprecated Use `buildReactNativeFromSource` instead.
      */
     buildFromSource?: boolean;
 }

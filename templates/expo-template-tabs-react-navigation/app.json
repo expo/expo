@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "expo-template-tabs-react-navigation",
+    "slug": "expo-template-tabs-react-navigation",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": ".src/assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "helloworld",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.satya164.reactnavigationtemplate"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": ".src/assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.satya164.reactnavigationtemplate"
+    },
+    "web": {
+      "favicon": ".src/assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": ".src/assets/images/splash-icon.png"
+        }
+      ],
+      "react-native-edge-to-edge"
+    ]
+  }
+}

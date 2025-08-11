@@ -17,7 +17,7 @@ struct ContentUnavailableView: ExpoSwiftUI.View {
   @ObservedObject var props: ContentUnavailableViewProps
 
   var body: some View {
-    if #available(iOS 17.0, *) {
+    if #available(iOS 17.0, tvOS 17.0, *) {
       SwiftUI.ContentUnavailableView(props.title, systemImage: props.systemImage, description: Text(props.description))
         .modifier(CommonViewModifiers(props: props))
     }

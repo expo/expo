@@ -22,7 +22,7 @@ export class SupportPackageVersionCheck implements DoctorCheck {
   description =
     'Check that native modules use compatible support package versions for installed Expo SDK';
 
-  sdkVersionRange = '>=45.0.0';
+  sdkVersionRange = '>=45.0.0 <54.0.0';
 
   async runAsync({ exp, pkg, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     let issues: string[] = [];

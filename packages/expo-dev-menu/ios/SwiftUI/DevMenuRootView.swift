@@ -11,18 +11,17 @@ struct DevMenuRootView: View {
         HeaderView()
           .environmentObject(viewModel)
 
-        Divider()
-
         ZStack {
           DevMenuMainView()
             .environmentObject(viewModel)
 
+          #if !os(tvOS)
           if !viewModel.isOnboardingFinished {
             DevMenuOnboardingView(onFinish: viewModel.finishOnboarding)
           }
+          #endif
         }
       }
-      .background(Color(.systemGroupedBackground))
     }
   }
 }

@@ -102,11 +102,35 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Maps content padding',
+      route: 'expo-maps/content-padding',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsContentPaddingScreen'));
+      },
+    },
+    {
       name: 'Street view',
       route: 'expo-maps/street-view',
       options: {},
       getComponent() {
         return optionalRequire(() => require('./google/MapsStreetViewScreen'));
+      },
+    },
+    {
+      name: 'Maps map style options',
+      route: 'expo-maps/map-style-options',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsMapStyleOptionsScreen'));
+      },
+    },
+    {
+      name: 'Maps map ID',
+      route: 'expo-maps/map-id',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsMapIdScreen'));
       },
     },
   ],
@@ -221,6 +245,14 @@ export const MapsScreens = Platform.select({
       options: {},
       getComponent() {
         return optionalRequire(() => require('./apple/MapsImageRefIntegrationScreen'));
+      },
+    },
+    {
+      name: 'Points of interest',
+      route: 'expo-maps/points-of-interest',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPointOfInterestScreen'));
       },
     },
   ],

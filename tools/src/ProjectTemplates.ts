@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { TEMPLATES_DIR } from './Constants';
+import { Package } from './Packages';
 
 export type Template = {
   name: string;
@@ -12,24 +13,17 @@ export type Template = {
 
 const DEPENDENCIES_KEYS = ['dependencies', 'devDependencies', 'peerDependencies'];
 
-export async function getAvailableProjectTemplatesAsync(): Promise<Template[]> {
+export async function getAvailableProjectTemplatesAsync(): Promise<Package[]> {
   const templates = (await fs.readdir(TEMPLATES_DIR, { withFileTypes: true }))
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => path.join(TEMPLATES_DIR, dirent.name));
 
-  return Promise.all<Template>(
-    templates.map(async (templatePath) => {
-      const packageJson = await JsonFile.readAsync<Template>(
-        path.join(templatePath, 'package.json')
-      );
+  return templates.map((templatePath) => {
+    const fullPackageJsonPath = path.join(templatePath, 'package.json');
+    const packageJson = require(fullPackageJsonPath);
 
-      return {
-        name: packageJson.name,
-        version: packageJson.version,
-        path: templatePath,
-      };
-    })
-  );
+    return new Package(templatePath, packageJson);
+  });
 }
 
 /**

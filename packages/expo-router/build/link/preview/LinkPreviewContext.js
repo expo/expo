@@ -5,8 +5,9 @@ exports.LinkPreviewContextProvider = LinkPreviewContextProvider;
 const react_1 = require("react");
 const LinkPreviewContext = (0, react_1.createContext)(undefined);
 function LinkPreviewContextProvider({ children }) {
-    const [isPreviewOpen, setIsPreviewOpen] = (0, react_1.useState)(false);
-    return (<LinkPreviewContext.Provider value={{ isPreviewOpen, setIsPreviewOpen }}>
+    const [openPreviewKey, setOpenPreviewKey] = (0, react_1.useState)(undefined);
+    const isStackAnimationDisabled = openPreviewKey !== undefined;
+    return (<LinkPreviewContext.Provider value={{ isStackAnimationDisabled, openPreviewKey, setOpenPreviewKey }}>
       {children}
     </LinkPreviewContext.Provider>);
 }

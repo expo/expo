@@ -1,4 +1,5 @@
-import { ExpoRequest, ExpoResponse } from '@expo/server/build/environment';
+import { type ExpoRequest, type ExpoResponse } from '@expo/server';
+export { type MiddlewareFunction } from '@expo/server';
 
 export type RequestHandler = (
   request: Request,

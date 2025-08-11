@@ -14,13 +14,13 @@ import {
 import {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
-  createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
 import { ComponentProps, useMemo } from 'react';
 import { StackAnimationTypes } from 'react-native-screens';
 
 import { withLayoutContext } from './withLayoutContext';
+import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import { RouterModal } from '../modal/web/ModalStack.web';
 import { SingularOptions, getSingularId } from '../useScreens';
@@ -79,8 +79,11 @@ const RNStack = withLayoutContext<
 type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
 type RNPreloadAction = Extract<CommonNavigationAction, { type: 'PRELOAD' }>;
 type ExpoNavigationAction = Omit<RNNavigationAction, 'payload'> & {
-  payload: RNNavigationAction['payload'] & {
-    previewKey?: string;
+  payload: Omit<RNNavigationAction['payload'], 'params'> & {
+    params: {
+      __internal__expoRouterIsPreviewNavigation?: boolean;
+      params?: Record<string, unknown>;
+    };
   };
 };
 
@@ -98,7 +101,12 @@ function isStackAction(
 }
 
 const isPreviewAction = (action: NavigationAction): action is ExpoNavigationAction =>
-  !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
+  !!action.payload &&
+  'params' in action.payload &&
+  !!action.payload.params &&
+  typeof action.payload === 'object' &&
+  '__internal__expoRouterIsPreviewNavigation' in (action.payload.params as any) &&
+  !!(action.payload.params as any).__internal__expoRouterIsPreviewNavigation;
 
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
@@ -477,13 +485,13 @@ function filterSingular<
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const isWeb = process.env.EXPO_OS === 'web';
-    const { isPreviewOpen } = useLinkPreviewContext();
+    const { isStackAnimationDisabled } = useLinkPreviewContext();
     const screenOptions = useMemo(() => {
-      if (isPreviewOpen) {
+      if (isStackAnimationDisabled) {
         return disableAnimationInScreenOptions(props.screenOptions);
       }
       return props.screenOptions;
-    }, [props.screenOptions, isPreviewOpen]);
+    }, [props.screenOptions, isStackAnimationDisabled]);
 
     if (isWeb) {
       return (

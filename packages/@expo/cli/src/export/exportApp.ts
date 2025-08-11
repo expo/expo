@@ -273,6 +273,7 @@ export async function exportAppAsync(
                 htmlOutputName,
               });
               domComponentAssetsMetadata[platform] = [
+                ...(domComponentAssetsMetadata[platform] || []),
                 ...(await addDomBundleToMetadataAsync(platformDomComponentsBundle)),
                 ...transformDomEntryForMd5Filename({
                   files,

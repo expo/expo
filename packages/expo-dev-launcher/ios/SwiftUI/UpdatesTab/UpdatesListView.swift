@@ -1,4 +1,5 @@
 import SwiftUI
+// swiftlint:disable closure_body_length
 
 struct UpdatesListView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
@@ -40,7 +41,9 @@ struct UpdatesListView: View {
         }
       }
     }
+    #if !os(tvOS)
     .background(Color(.systemGroupedBackground))
+    #endif
     .onChange(of: filterByCompatibility) { _ in
       applyFilters()
     }
@@ -194,3 +197,4 @@ struct UpdatesListView: View {
 #Preview {
   UpdatesListView()
 }
+// swiftlint:enable closure_body_length
