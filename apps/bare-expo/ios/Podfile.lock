@@ -759,7 +759,7 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - lottie-ios (4.5.0)
-  - lottie-react-native (7.3.1):
+  - lottie-react-native (7.2.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3422,7 +3422,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNDateTimePicker (8.4.4):
+  - RNDateTimePicker (8.4.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4529,7 +4529,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
-  lottie-react-native: ee739c59b332297996b1a1a73884ee75d95a7562
+  lottie-react-native: de18e94574402f8687b61b5ead1faa302b09abbf
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
@@ -4602,7 +4602,6 @@ SPEC CHECKSUMS:
   React-RuntimeHermes: 41b97445036fc60f2447c5c69b9f1639de65292b
   React-runtimescheduler: eee88df3c5fb6a30a220e524fd282e44a282a1ca
   React-timing: c6ce3a683af45aecee166b49348cd094170a7e36
-<<<<<<< HEAD
   React-utils: 082cd4a9663f63b4138bc2e068a5a93dc7e0adff
   ReactAppDependencyProvider: 3b7ece00025ce3482570139b0dbe115e639688ca
   ReactCodegen: 79ed1430cec297c1adc17ae6cab59b77944bcfe4
@@ -4617,69 +4616,6 @@ SPEC CHECKSUMS:
   RNScreens: 51d1b1d9ecf9db095abb24525be038da0ef48747
   RNSVG: 6f39605a4c4d200b11435c35bd077553c6b5963a
   RNWorklets: 32ea3225502c57b559c76f684fc2abac865b7728
-||||||| parent of 17d8868bd6 ([sdk-54] Update datetime-picker and lottie)
-  React-utils: 3b356bfa4a83cd7e019b96b1de73e8340cef2bf9
-  ReactAppDependencyProvider: ad094d490c0b69fcd292806df86e007728d02f95
-  ReactCodegen: f08c2da52e7cd8ef345865bce934f85345a92906
-  ReactCommon: 3c95b5086d10c5da3d6d0fc920fc1ce6c984a496
-  RNCAsyncStorage: 302f2fac014fd450046c120567ca364632da682b
-  RNCMaskedView: 63268de1986a098b5f4d1fb5b1bc1e97fade0aee
-  RNCPicker: 6da395ee9db8d67a38c6102d4128b5a0b9ec0e21
-  RNDateTimePicker: 5e3503a3a82a9710b0269fa6617e27f7896509bd
-  RNFlashList: 3b0c6a34ba86318f897ff55ff7482b7e8ae18996
-  RNGestureHandler: 4f7cc97a71d4fe0fcba38c94acdd969f5f17c91c
-  RNReanimated: 3b8ec43aaef0389e702878e7725608128daa2053
-  RNScreens: fc90db67db667de4fa6caf1355d679e04fe4c30f
-  RNSVG: 8d87cff016edf1b6ca409ed39804101836d75e90
-  RNWorklets: f0b4bfd581c55f18a8bea9beae9cef26650c8cda
-=======
-<<<<<<< HEAD
-  React-utils: 3b356bfa4a83cd7e019b96b1de73e8340cef2bf9
-  ReactAppDependencyProvider: ad094d490c0b69fcd292806df86e007728d02f95
-  ReactCodegen: f08c2da52e7cd8ef345865bce934f85345a92906
-  ReactCommon: 3c95b5086d10c5da3d6d0fc920fc1ce6c984a496
-  RNCAsyncStorage: 302f2fac014fd450046c120567ca364632da682b
-  RNCMaskedView: 63268de1986a098b5f4d1fb5b1bc1e97fade0aee
-  RNCPicker: 6da395ee9db8d67a38c6102d4128b5a0b9ec0e21
-  RNDateTimePicker: 5e3503a3a82a9710b0269fa6617e27f7896509bd
-  RNFlashList: 3b0c6a34ba86318f897ff55ff7482b7e8ae18996
-  RNGestureHandler: 4f7cc97a71d4fe0fcba38c94acdd969f5f17c91c
-  RNReanimated: 3b8ec43aaef0389e702878e7725608128daa2053
-  RNScreens: fc90db67db667de4fa6caf1355d679e04fe4c30f
-  RNSVG: 8d87cff016edf1b6ca409ed39804101836d75e90
-  RNWorklets: f0b4bfd581c55f18a8bea9beae9cef26650c8cda
-||||||| parent of 5dbcc4eea9 ([sdk-54] Update datetime-picker and lottie)
-  React-utils: 082cd4a9663f63b4138bc2e068a5a93dc7e0adff
-  ReactAppDependencyProvider: 3b7ece00025ce3482570139b0dbe115e639688ca
-  ReactCodegen: 79ed1430cec297c1adc17ae6cab59b77944bcfe4
-  ReactCommon: 61fd53636b15a5dc300d5e31105a76f773a918fd
-  RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
-  RNCMaskedView: 5ef8c95cbab95334a32763b72896a7b7d07e6299
-  RNCPicker: 66c392786945ecee5275242c148e6a4601221d3a
-  RNDateTimePicker: 510d9822e8a6d02de332ef1f68a8fc53f3d35497
-  RNFlashList: b1f92e77d19aca4f9112bd977ca2ff8a2d61bf69
-  RNGestureHandler: 3a73f098d74712952870e948b3d9cf7b6cae9961
-  RNReanimated: e353576b032a79ac1ec1860df1062e6147d35db0
-  RNScreens: 51d1b1d9ecf9db095abb24525be038da0ef48747
-  RNSVG: 6f39605a4c4d200b11435c35bd077553c6b5963a
-  RNWorklets: 32ea3225502c57b559c76f684fc2abac865b7728
-=======
-  React-utils: 082cd4a9663f63b4138bc2e068a5a93dc7e0adff
-  ReactAppDependencyProvider: 3b7ece00025ce3482570139b0dbe115e639688ca
-  ReactCodegen: 79ed1430cec297c1adc17ae6cab59b77944bcfe4
-  ReactCommon: 61fd53636b15a5dc300d5e31105a76f773a918fd
-  RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
-  RNCMaskedView: 5ef8c95cbab95334a32763b72896a7b7d07e6299
-  RNCPicker: 66c392786945ecee5275242c148e6a4601221d3a
-  RNDateTimePicker: cda4c045beca864cebb3209ef9cc4094f974864c
-  RNFlashList: b1f92e77d19aca4f9112bd977ca2ff8a2d61bf69
-  RNGestureHandler: 3a73f098d74712952870e948b3d9cf7b6cae9961
-  RNReanimated: e353576b032a79ac1ec1860df1062e6147d35db0
-  RNScreens: 51d1b1d9ecf9db095abb24525be038da0ef48747
-  RNSVG: 6f39605a4c4d200b11435c35bd077553c6b5963a
-  RNWorklets: 32ea3225502c57b559c76f684fc2abac865b7728
->>>>>>> 5dbcc4eea9 ([sdk-54] Update datetime-picker and lottie)
->>>>>>> 17d8868bd6 ([sdk-54] Update datetime-picker and lottie)
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
