@@ -24,6 +24,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.ui.button.Button
 import expo.modules.ui.menu.ContextMenu
+import kotlin.collections.emptyMap
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -141,10 +142,23 @@ class ExpoUIModule : Module() {
 //      return@Function ExpoModifier(Modifier.clip(shape))
 //    }
 
-//    Function("clickable") {
-//      return@Function ExpoModifier(Modifier.clickable(
-//        onClick = TODO()))
-//    }
+    Function("clickable") {
+      class ClickListener {
+        var onClick: (() -> Unit)? = null
+      }
+
+      val clickListener = ClickListener()
+
+      val modifier = ExpoModifier(Modifier.clickable(
+        onClick = {
+          clickListener.onClick?.invoke()
+        }
+      ))
+
+      clickListener.onClick = { modifier.emit("onClick") }
+
+      return@Function modifier
+  }
 
 //    Function("enabled") { isEnabled: Boolean ->
 //      return@Function ExpoModifier(if (isEnabled) Modifier else Modifier.disabled())

@@ -1,6 +1,6 @@
 import { Ref } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 /**
  * @hidden Not used anywhere yet.
  */
@@ -71,6 +71,8 @@ export type TextInputProps = {
      * @platform android
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;

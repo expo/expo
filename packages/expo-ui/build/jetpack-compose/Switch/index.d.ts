@@ -1,4 +1,5 @@
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { ExpoModifier } from '../../types';
 /**
  * Only for switch.
  */
@@ -47,6 +48,8 @@ export type SwitchProps = {
      * Picker color. On iOS, it only applies to the `menu` variant.
      */
     color?: string;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 export type SwitchSwitchVariantProps = {
     variant?: 'switch';

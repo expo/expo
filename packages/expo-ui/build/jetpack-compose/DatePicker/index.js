@@ -18,6 +18,8 @@ export function transformDateTimePickerProps(props) {
             props?.onDateSelected?.(new Date(date));
         },
         variant,
+        // @ts-expect-error
+        modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
         style: [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }],
     };
 }

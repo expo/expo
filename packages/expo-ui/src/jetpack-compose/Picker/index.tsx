@@ -53,8 +53,10 @@ export type PickerProps = {
    * Picker color.
    */
   color?: string;
-  modifiers: ExpoModifier[];
-  buttonModifiers: ExpoModifier[];
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
+  /** Modifiers for the individual buttons */
+  buttonModifiers?: ExpoModifier[];
 };
 
 const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
