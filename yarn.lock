@@ -3605,18 +3605,10 @@
     recyclerlistview "4.2.3"
     tslib "2.8.1"
 
-"@shopify/react-native-skia@2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-2.1.1.tgz#87af15ad1d5d0f032667bff423bfffa195f27144"
-  integrity sha512-ZLlehE47YqOw3MmBWX6VgJY6vB39vrJpoN35RQaYK+LvhQqH5GB1qhR+LBCjOSgYgHvdapJ89gC+LrpngnfbYQ==
-  dependencies:
-    canvaskit-wasm "0.40.0"
-    react-reconciler "0.31.0"
-
-"@shopify/react-native-skia@^2.1.1":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-2.2.2.tgz#eb8f762253509b000e7bbb2b8ce2b5508ab7b91f"
-  integrity sha512-5cAmTLdTi/ihH5iyyfBefWD7xhqPhMBBsy/za9+WrF4vXwWpsRXABQJbiz88rDpMsN9GCtEzI4p9pEP3fHRRGQ==
+"@shopify/react-native-skia@2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-2.2.3.tgz#18ba6c12f5e23a851bc3738576ae3bdb53427097"
+  integrity sha512-B2g/V5HVbsGblUDjETDh+Vo91PQoZnqufYcXBFA3zD6GkNG+BNyU4SiDnXye27hpJ+ZvcJopXGwDCc4b2m8dqQ==
   dependencies:
     canvaskit-wasm "0.40.0"
     react-reconciler "0.31.0"
@@ -13634,10 +13626,10 @@ react-native-keyboard-aware-scroll-view@^0.9.5:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
-react-native-keyboard-controller@^1.18.3:
-  version "1.18.3"
-  resolved "https://registry.yarnpkg.com/react-native-keyboard-controller/-/react-native-keyboard-controller-1.18.3.tgz#dc4b5d3e2d846710b44679babd099bf37134a7fb"
-  integrity sha512-Wea4Cq7Cns0kwFVvmW0BosI+j0sXUbRif29M9XkUjOjiJidti9i++80pQvna9wAi+hI0w3SJCrHveeVoY4zNOg==
+react-native-keyboard-controller@^1.18.4:
+  version "1.18.4"
+  resolved "https://registry.yarnpkg.com/react-native-keyboard-controller/-/react-native-keyboard-controller-1.18.4.tgz#18b42f87cb5979ec7e02b07e20682bbf49241b8d"
+  integrity sha512-s5mY3kymUVQ1LGISW4h9Sd9JU7arKQuEvWJVfcA7ZNKJI3ao5JXhHlnCBjuydh1l7vzFppYNSo0s0cixtcDP2Q==
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
 
