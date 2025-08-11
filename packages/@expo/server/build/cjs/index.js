@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoError = void 0;
+exports.ExpoError = exports.getRscMiddleware = void 0;
 exports.createRequestHandler = createRequestHandler;
 const ImmutableRequest_1 = require("./ImmutableRequest");
 const error_1 = require("./error");
 const utils_1 = require("./utils");
+var rsc_1 = require("./middleware/rsc");
+Object.defineProperty(exports, "getRscMiddleware", { enumerable: true, get: function () { return rsc_1.getRscMiddleware; } });
 var error_2 = require("./error");
 Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return error_2.ExpoError; } });
 function noopBeforeResponse(_route, responseInit) {

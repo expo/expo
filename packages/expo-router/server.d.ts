@@ -1,5 +1,5 @@
-import { ExpoRequest, ExpoResponse } from '@expo/server';
-export { MiddlewareFunction } from '@expo/server/build/cjs/types';
+import { type ExpoRequest, type ExpoResponse } from '@expo/server';
+export { type MiddlewareFunction } from '@expo/server';
 
 export type RequestHandler = (
   request: Request,

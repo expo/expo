@@ -12,7 +12,9 @@ type ExpoRequest = Request;
  */
 type ExpoResponse = Request;
 export { ExpoRequest, ExpoResponse };
+export { type RenderRscArgs, getRscMiddleware } from './middleware/rsc';
 export { ExpoError } from './error';
+export { type MiddlewareFunction } from './types';
 type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
     headers: Record<string, string>;
 };
