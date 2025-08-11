@@ -857,7 +857,7 @@ export async function initAsync(
   // enable proguard on Android, and custom init if needed
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    `\nandroid.enableProguardInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
+    `\nandroid.enableMinifyInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
     'utf-8'
   );
 
