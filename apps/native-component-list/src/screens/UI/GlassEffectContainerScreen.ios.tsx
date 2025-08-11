@@ -12,6 +12,7 @@ import {
   offset,
   glassEffectID,
   animation,
+  scaleEffect,
 } from '@expo/ui/swift-ui-primitives';
 import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -19,36 +20,23 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Section } from '../../components/Page';
 
 export default function GlassEffectContainerScreen() {
-  const [spacing, setSpacing] = React.useState(40);
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [scale, setScale] = React.useState(1);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'pink' }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Section title="Basic Glass Effect Container">
           <Host style={{ width: 400, height: 400 }}>
-            <GlassEffectContainer
-              spacing={spacing}
-              observableValues={isExpanded}
-              modifiers={[animation()]}>
-              <HStack spacing={10}>
-                <Image
-                  systemName="scribble.variable"
-                  size={40}
-                  modifiers={[glassEffect(), glassEffectID('scribble')]}
-                />
-                {isExpanded ? (
-                  <Image
-                    systemName="eraser.fill"
-                    size={40}
-                    modifiers={[glassEffect(), glassEffectID('eraser')]}
-                  />
-                ) : null}
-              </HStack>
-            </GlassEffectContainer>
+            <HStack modifiers={[scaleEffect(scale), animation(scale.toString())]}>
+              <Image
+                systemName="scribble.variable"
+                size={40}
+                modifiers={[glassEffect(), glassEffectID('scribble')]}
+              />
+            </HStack>
           </Host>
         </Section>
-        <Button onPress={() => setIsExpanded(!isExpanded)}>Toggle</Button>
+        <Button onPress={() => setScale(scale + 0.1)}>Toggle</Button>
       </ScrollView>
     </View>
   );

@@ -3,6 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
+
 internal typealias ModifierType = [String: Any]
 internal typealias ModifierArray = [ModifierType]
 

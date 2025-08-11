@@ -5,6 +5,7 @@ type GlobalEventPayload = {
 };
 type GlobalEvent = {
   onGlobalEvent: (event: { nativeEvent: GlobalEventPayload }) => void;
+  animatedValue: Record<string, any>;
 };
 
 /**
@@ -12,9 +13,13 @@ type GlobalEvent = {
  */
 export function createViewModifierEventListener(modifiers: ModifierConfig[]): GlobalEvent {
   const eventListeners: Record<string, (args: any) => void> = {};
+  let animatedValue: Record<string, any> = {};
   for (const modifier of modifiers) {
     if (modifier.eventListener) {
       eventListeners[modifier.$type] = modifier.eventListener;
+    }
+    if (modifier.$type === 'animation') {
+      animatedValue = modifier.value;
     }
   }
 
@@ -29,5 +34,6 @@ export function createViewModifierEventListener(modifiers: ModifierConfig[]): Gl
 
   return {
     onGlobalEvent,
+    animatedValue,
   };
 }

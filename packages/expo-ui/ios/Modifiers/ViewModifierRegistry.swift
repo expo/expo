@@ -31,15 +31,15 @@ internal struct AnimationModifier: ViewModifier {
   @Environment(\.animationValue) private var animationValue
 
   func body(content: Content) -> some View {
-    content.animation(.snappy(duration: 0.32), value: animationValue)
+    content.animation(.easeIn(duration: 1), value: animationValue)
   }
 }
 
 private struct AnimationValueKey: EnvironmentKey {
-  static let defaultValue: Bool? = nil
+  static let defaultValue: String? = nil
 }
 extension EnvironmentValues {
-  var animationValue: Bool? {
+  var animationValue: String? {
     get { self[AnimationValueKey.self] }
     set { self[AnimationValueKey.self] = newValue }
   }

@@ -36,6 +36,7 @@ internal final class HStackViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierP
   @Field var backgroundColor: Color?
   @Field var testID: String?
   @Field var modifiers: [[String: Any]]?
+  @Field var animatedValue: String?
   var onTap = EventDispatcher()
 }
 
@@ -51,5 +52,6 @@ internal struct HStackView: ExpoSwiftUI.View {
     .modifier(CommonViewModifiers(props: props))
     .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
     .background(props.backgroundColor)
+    .environment(\.animationValue, props.animatedValue)
   }
 }

@@ -13,8 +13,6 @@ export type GlassEffectContainerProps = {
    * This controls how close elements need to be to start blending together.
    */
   spacing?: number;
-
-  observableValues?: string;
 } & CommonViewModifierProps;
 
 /**

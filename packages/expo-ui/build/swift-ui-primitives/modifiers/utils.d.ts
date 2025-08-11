@@ -6,6 +6,7 @@ type GlobalEvent = {
     onGlobalEvent: (event: {
         nativeEvent: GlobalEventPayload;
     }) => void;
+    animatedValue: Record<string, any>;
 };
 /**
  * Create an event listener for a view modifier.

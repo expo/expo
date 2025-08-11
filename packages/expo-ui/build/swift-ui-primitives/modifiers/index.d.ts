@@ -21,7 +21,7 @@ declare function createModifier(type: string, params?: Record<string, any>): Mod
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
 export declare const background: (color: string) => ModifierConfig;
-export declare const animation: () => ModifierConfig;
+export declare const animation: (value: string) => ModifierConfig;
 export declare const glassEffect: () => ModifierConfig;
 export declare const glassEffectID: (id: string) => ModifierConfig;
 /**

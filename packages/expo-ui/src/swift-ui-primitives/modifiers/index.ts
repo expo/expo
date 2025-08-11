@@ -41,7 +41,7 @@ function createModifierWithEventListener(
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
 export const background = (color: string) => createModifier('background', { color });
-export const animation = () => createModifier('animation');
+export const animation = (value: string) => createModifier('animation', { value });
 
 export const glassEffect = () => createModifier('glassEffect');
 export const glassEffectID = (id: string) =>

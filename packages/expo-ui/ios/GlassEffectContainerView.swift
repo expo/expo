@@ -3,6 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
+
 internal final class GlassEffectContainerViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var fixedSize: Bool?
   
@@ -15,7 +16,7 @@ internal final class GlassEffectContainerViewProps: ExpoSwiftUI.ViewProps, Commo
   @Field var modifiers: ModifierArray?
   
   @Field var spacing: Double?
-  @Field var observableValues: Bool?
+  @Field var animatedValue: String?
 }
 
 internal struct GlassEffectContainerView: ExpoSwiftUI.View {
@@ -30,7 +31,7 @@ internal struct GlassEffectContainerView: ExpoSwiftUI.View {
       }
       .modifier(CommonViewModifiers(props: props))
       .environment(\.glassNamespace, ns)
-      .environment(\.animationValue, props.observableValues)
+      .environment(\.animationValue, props.animatedValue)
     } else {
       Children()
     }

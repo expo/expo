@@ -23,7 +23,7 @@ function createModifierWithEventListener(type, eventListener, params = {}) {
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
 export const background = (color) => createModifier('background', { color });
-export const animation = () => createModifier('animation');
+export const animation = (value) => createModifier('animation', { value });
 export const glassEffect = () => createModifier('glassEffect');
 export const glassEffectID = (id) => createModifier('glassEffectID', {
     id,
