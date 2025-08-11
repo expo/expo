@@ -154,6 +154,7 @@ async function findSharpBinAsync(): Promise<string> {
   }
   if (!semver.satisfies(installedCliVersion, SHARP_REQUIRED_VERSION)) {
     showVersionMismatchWarning(SHARP_REQUIRED_VERSION, installedCliVersion);
+    return '';
   }
 
   // Use the `sharp-cli` reference from PATH
