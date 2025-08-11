@@ -1,7 +1,7 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import { createCalendarNext, ExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import Button from '../components/Button';
@@ -35,32 +35,151 @@ type StackNavigation = StackNavigationProp<{
   EventsNext: { calendar: ExpoCalendar };
 }>;
 
+const CalendarRow = (props: {
+  navigation: StackNavigation;
+  calendar: ExpoCalendar;
+  updateCalendar: (calendar: ExpoCalendar) => void;
+  deleteCalendar: (calendar: ExpoCalendar) => void;
+}) => {
+  const { calendar } = props;
+  const calendarTypeName =
+    calendar.entityType === Calendar.EntityTypes.REMINDER ? 'RemindersNext' : 'EventsNext';
+  return (
+    <View style={styles.calendarRow}>
+      <HeadingText>{calendar.title}</HeadingText>
+      <MonoText>{JSON.stringify(calendar, null, 2)}</MonoText>
+      <ListButton
+        onPress={() => props.navigation.navigate(calendarTypeName, { calendar })}
+        title={`View ${calendarTypeName}`}
+      />
+      <ListButton
+        onPress={() => props.updateCalendar(calendar)}
+        title="Update Calendar"
+        disabled={!calendar.allowsModifications}
+      />
+      <ListButton
+        onPress={() => props.deleteCalendar(calendar)}
+        title="Delete Calendar"
+        disabled={!calendar.allowsModifications}
+      />
+    </View>
+  );
+};
+
 export default function CalendarsNextScreen({ navigation }: { navigation: StackNavigation }) {
-  useEffect(() => {
-    const fetchCalendars = async () => {
-      try {
-        const calendars = await getCalendarsNext();
-        for (const calendar of calendars) {
-          const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-          const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-          const events = await calendar.listEvents(oneWeekAgo, oneWeekFromNow);
-          console.log(
-            'events',
-            events.map((event) => event.title)
-          );
-        }
-      } catch (error) {
-        console.log(error);
+  const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
+  const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
+
+  const [calendars, setCalendars] = useState<ExpoCalendar[]>([]);
+
+  const findCalendars = async () => {
+    try {
+      const calendarGranted = (await askForCalendarPermissions()).granted;
+      const reminderGranted =
+        Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
+      if (calendarGranted && reminderGranted) {
+        const eventCalendars = (await getCalendarsNext(
+          Calendar.EntityTypes.EVENT
+        )) as unknown as any[];
+        const reminderCalendars = (
+          Platform.OS === 'ios' ? getCalendarsNext(Calendar.EntityTypes.REMINDER) : []
+        ) as any[];
+        setCalendars([...eventCalendars, ...reminderCalendars]);
       }
+    } catch (e) {
+      console.log('error', e);
+    }
+  };
+
+  const addCalendar = async () => {
+    const sourceDetails = Platform.select({
+      default: () => ({}),
+      ios: () => ({
+        sourceId: calendars.find((cal) => cal.source && cal.source.name === 'Default')?.source.id,
+      }),
+      android: () => {
+        // TODO: Add source details for Android
+        return {};
+      },
+    })();
+    const newCalendar = {
+      title: 'cool new calendar',
+      entityType: Calendar.EntityTypes.EVENT,
+      color: '#c0ff33',
+      ...sourceDetails,
+      name: 'coolNewCalendar',
+      accessLevel: Calendar.CalendarAccessLevel.OWNER,
     };
-    fetchCalendars();
-  }, []);
+    try {
+      const calendar = createCalendarNext(newCalendar);
+      Alert.alert('Calendar saved successfully with id: ' + calendar.id);
+      findCalendars();
+    } catch (e) {
+      Alert.alert('Calendar not saved successfully', e.message);
+    }
+  };
+
+  const updateCalendar = async (calendar: ExpoCalendar) => {
+    const newCalendar = {
+      title: 'cool updated calendar' + new Date().toISOString(),
+    };
+    try {
+      calendar.update(newCalendar);
+      Alert.alert('Calendar saved successfully');
+      findCalendars();
+    } catch (e) {
+      Alert.alert('Calendar not saved successfully', e.message);
+    }
+  };
+
+  const deleteCalendar = async (calendar: ExpoCalendar) => {
+    Alert.alert(`Are you sure you want to delete ${calendar.title}?`, 'This cannot be undone.', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'OK',
+        async onPress() {
+          try {
+            calendar.delete();
+            Alert.alert('Calendar deleted successfully');
+            findCalendars();
+          } catch (e) {
+            Alert.alert('Calendar not deleted successfully', e.message);
+          }
+        },
+      },
+    ]);
+  };
+
+  if (calendars.length) {
+    return (
+      <ScrollView style={styles.container}>
+        <Button onPress={addCalendar} title="Add New Calendar" />
+        {calendars.map((calendar) => (
+          <CalendarRow
+            calendar={calendar}
+            key={calendar.id}
+            navigation={navigation}
+            updateCalendar={updateCalendar}
+            deleteCalendar={deleteCalendar}
+          />
+        ))}
+      </ScrollView>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <MonoText>{JSON.stringify('ad', null, 2)}</MonoText>
+      <Button onPress={findCalendars} title="Find my Calendars" />
     </View>
   );
 }
+
+CalendarRow.navigationOptions = {
+  title: 'Calendars@next',
+};
 
 CalendarsNextScreen.navigationOptions = {
   title: 'Calendars@next',
