@@ -27,7 +27,7 @@
     "build:cjs": "expo-module build -p tsconfig.json",
     "build:mjs": "expo-module build -p tsconfig.mjs.json",
     "clean": "expo-module clean",
-    "prepare": "yarn run clean && yarn build",
+    "prepare": "run-s clean build",
     "lint": "eslint .",
     "test": "jest"
   },
