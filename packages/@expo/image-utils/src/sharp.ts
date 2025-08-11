@@ -116,7 +116,9 @@ async function findSharpBinAsync(): Promise<string> {
 
     const sharpCliPackage = require(sharpCliPackagePath);
 
-    _sharpInstance = sharpCliPackagePath ? resolveFrom(sharpCliPackagePath, 'sharp') : null;
+    _sharpInstance = sharpCliPackagePath
+      ? require(resolveFrom(sharpCliPackagePath, 'sharp'))
+      : null;
 
     if (
       sharpCliPackagePath &&

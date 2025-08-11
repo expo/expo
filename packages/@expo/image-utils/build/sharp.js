@@ -109,7 +109,9 @@ async function findSharpBinAsync() {
                 paths: require.resolve.paths('sharp-cli') ?? undefined,
             });
         const sharpCliPackage = require(sharpCliPackagePath);
-        _sharpInstance = sharpCliPackagePath ? (0, resolve_from_1.default)(sharpCliPackagePath, 'sharp') : null;
+        _sharpInstance = sharpCliPackagePath
+            ? require((0, resolve_from_1.default)(sharpCliPackagePath, 'sharp'))
+            : null;
         if (sharpCliPackagePath &&
             semver_1.default.satisfies(sharpCliPackage.version, SHARP_REQUIRED_VERSION) &&
             typeof sharpCliPackage.bin.sharp === 'string' &&
