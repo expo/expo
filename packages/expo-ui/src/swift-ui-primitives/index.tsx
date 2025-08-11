@@ -6,6 +6,7 @@ export * from './Image';
 export * from './Spacer';
 export * from './DisclosureGroup';
 export * from './ContentUnavailableView';
+export * from './GlassEffectContainer';
 
 export { BottomSheetPrimitive as BottomSheet } from '../swift-ui/BottomSheet';
 export { ButtonPrimitive as Button } from '../swift-ui/Button';

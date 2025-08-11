@@ -1,0 +1,18 @@
+export type GlassEffectContainerProps = {
+    /**
+     * The children of the `GlassEffectContainer` component.
+     * These should be views with `.glassEffect()` modifiers applied.
+     */
+    children: React.ReactNode;
+    /**
+     * The spacing between glass elements in the container.
+     * This controls how close elements need to be to start blending together.
+     */
+    spacing?: number;
+};
+/**
+ * @hidden
+ */
+export type NativeGlassEffectContainerProps = GlassEffectContainerProps;
+export declare function GlassEffectContainer(props: GlassEffectContainerProps): import("react").JSX.Element;
+//# sourceMappingURL=GlassEffectContainer.d.ts.map

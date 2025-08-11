@@ -115,6 +115,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'GlassEffectContainer component',
+    route: 'ui/glass-effect-container',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GlassEffectContainerScreen'));
+    },
+  },
+  {
     name: 'SwiftUI primitives',
     route: 'ui/swiftui-primitives',
     options: {},

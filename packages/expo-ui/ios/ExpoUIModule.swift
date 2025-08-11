@@ -45,5 +45,6 @@ public final class ExpoUIModule: Module {
     View(GroupView.self)
     View(DisclosureGroupView.self)
     View(ExpoUI.ContentUnavailableView.self)
+    View(GlassEffectContainerView.self)
   }
 }
