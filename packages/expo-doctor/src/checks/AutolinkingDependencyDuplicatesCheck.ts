@@ -44,6 +44,8 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
       })
     );
 
+    console.log(dependenciesPerPlatform);
+
     for (const dependencyForPlatform of dependenciesPerPlatform) {
       for (const dependencyName in dependencyForPlatform) {
         const dependency = dependencyForPlatform[dependencyName];
