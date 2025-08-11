@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.ui.button.Button
@@ -125,7 +126,7 @@ class ExpoUIModule : Module() {
     }
 
     Function("shadow") { elevation: Int ->
-      return@Function ExpoModifier(Modifier.shadow(elevation.dp )) // todo more options
+      return@Function ExpoModifier(Modifier.shadow(elevation.dp)) // todo more options
     }
 
     Function("alpha") { alpha: Float ->
@@ -136,62 +137,24 @@ class ExpoUIModule : Module() {
       return@Function ExpoModifier(Modifier.blur(radius.dp))
     }
 
-
-
-//    Function("clip") { shape: Shape ->
-//      return@Function ExpoModifier(Modifier.clip(shape))
-//    }
-
-    Function("clickable") {
-      class ClickListener {
-        var onClick: (() -> Unit)? = null
-      }
-
-      val clickListener = ClickListener()
-
-      val modifier = ExpoModifier(Modifier.clickable(
+    Function("clickable") { callback: JavaScriptFunction<Unit> ->
+      return@Function ExpoModifier(Modifier.clickable(
         onClick = {
-          clickListener.onClick?.invoke()
+          appContext.executeOnJavaScriptThread {
+            callback.invoke()
+          }
         }
       ))
-
-      clickListener.onClick = { modifier.emit("onClick") }
-
-      return@Function modifier
-  }
-
-//    Function("enabled") { isEnabled: Boolean ->
-//      return@Function ExpoModifier(if (isEnabled) Modifier else Modifier.disabled())
-//    }
-//
-//    Function("draggable") { state: DraggableState, orientation: Orientation ->
-//      return@Function ExpoModifier(Modifier.draggable())
-//    }
-//
-//    Function("graphicsLayer") {
-//      return@Function ExpoModifier(Modifier.graphicsLayer())
-//    }
+    }
 
     Function("rotate") { degrees: Float ->
       return@Function ExpoModifier(Modifier.rotate(degrees))
     }
 
-//    Function("semantics") { drawBehind drawWithContent
-
-//    Function("layoutId") { id: String ->
-//      return@Function ExpoModifier(Modifier.layoutId(id))
-//    }
-
     Function("zIndex") { index: Float ->
       return@Function ExpoModifier(Modifier.zIndex(index))
     }
 
-//    Function("navigationBarsPadding") {
-//      return@Function ExpoModifier(Modifier.navigationBarsPadding())
-//    }
-//
-//    Function("systemBarsPadding") {
-//      return@Function ExpoModifier(Modifier.systemBarsPadding())
-//    }
+    // TODO: Implement semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding
   }
 }
