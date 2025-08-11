@@ -51,7 +51,7 @@ internal final class ExpoCalendar: SharedObject {
     }
   }
 
-  func update(calendarRecord: CalendarRecord) throws {
+  func update(calendarRecord: CalendarRecordNext) throws {
     guard let calendar = self.calendar else {
       throw CalendarNoLongerExistsException()
     }
@@ -64,8 +64,8 @@ internal final class ExpoCalendar: SharedObject {
       calendar.title = title
     }
 
-    if let color = calendarRecord.color {
-      calendar.cgColor = EXUtilities.uiColor(color)?.cgColor
+    if let cgColor = calendarRecord.color?.cgColor {
+      calendar.cgColor = cgColor
     }
 
     try eventStore.saveCalendar(calendar, commit: true)

@@ -54,8 +54,7 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
-        run: yarn install --frozen-lockfile --ignore-engines
+        run: yarn install --frozen-lockfile
       - name: Get the base commit
         id: base-commit
         run: |

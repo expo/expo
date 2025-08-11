@@ -36,8 +36,6 @@ function NativeTabsView(props) {
         const descriptor = descriptors[route.key];
         const isFocused = state.index === index;
         const title = descriptor.options.title ?? route.name;
-        console.log('icon', convertOptionsIconToPropsIcon(descriptor.options.icon));
-        console.log('selectedIcon', convertOptionsIconToPropsIcon(descriptor.options.selectedIcon));
         return (<react_native_screens_1.BottomTabsScreen key={route.key} {...descriptor.options} iconResourceName={descriptor.options.icon?.drawable} icon={convertOptionsIconToPropsIcon(descriptor.options.icon)} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} tabKey={route.key} isFocused={isFocused}>
           {descriptor.render()}
         </react_native_screens_1.BottomTabsScreen>);

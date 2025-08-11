@@ -31,53 +31,50 @@ public final class CalendarNextModule: Module {
     }
 
     Function("getCalendars") { (type: CalendarEntity?) -> [ExpoCalendar] in
-      var calendars: [EKCalendar]
-      if type == nil {
+      let calendars: [EKCalendar]
+      switch type {
+      case nil:
         try checkCalendarPermissions()
         try checkRemindersPermissions()
-
-        let eventCalendars = eventStore.calendars(for: .event)
-        let reminderCalendars = eventStore.calendars(for: .reminder)
-        calendars = eventCalendars + reminderCalendars
-      } else if type == .event {
+        calendars = eventStore.calendars(for: .event) + eventStore.calendars(for: .reminder)
+      case .event:
         try checkCalendarPermissions()
         calendars = eventStore.calendars(for: .event)
-      } else if type == .reminder {
+      case .reminder:
         try checkRemindersPermissions()
         calendars = eventStore.calendars(for: .reminder)
-      } else {
+      default:
         throw InvalidCalendarEntityException(type?.rawValue)
       }
-
       return calendars.map { ExpoCalendar(calendar: $0) }
     }
 
-    Function("createCalendarNext") { (details: CalendarRecord) throws -> ExpoCalendar in
+    Function("createCalendarNext") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
       let calendar: EKCalendar
-      switch details.entityType {
+      switch calendarRecord.entityType {
       case .event:
         calendar = EKCalendar(for: .event, eventStore: eventStore)
       case .reminder:
         calendar = EKCalendar(for: .reminder, eventStore: eventStore)
       case .none:
-        throw EntityNotSupportedException(details.entityType?.rawValue)
+        throw EntityNotSupportedException(calendarRecord.entityType?.rawValue)
       }
 
-      guard let title = details.title else {
+      guard let title = calendarRecord.title else {
         throw MissingParameterException("title")
       }
 
-      if let sourceId = details.sourceId {
+      if let sourceId = calendarRecord.sourceId {
         calendar.source = eventStore.source(withIdentifier: sourceId)
       } else {
         calendar.source =
-        details.entityType == .event
+        calendarRecord.entityType == .event
         ? eventStore.defaultCalendarForNewEvents?.source
         : eventStore.defaultCalendarForNewReminders()?.source
       }
 
       calendar.title = title
-      calendar.cgColor = EXUtilities.uiColor(details.color)?.cgColor
+      calendar.cgColor = calendarRecord.color?.cgColor
 
       try eventStore.saveCalendar(calendar, commit: true)
       return ExpoCalendar(calendar: calendar)
@@ -152,12 +149,12 @@ public final class CalendarNextModule: Module {
         ExpoCalendar(id: id)
       }
 
-      Property("id") { (calendar: ExpoCalendar) in
-        calendar.calendar?.calendarIdentifier
+      Property("id") { (expoCalendar: ExpoCalendar) in
+        expoCalendar.calendar?.calendarIdentifier
       }
 
-      Property("title") { (calendar: ExpoCalendar) in
-        calendar.calendar?.title
+      Property("title") { (expoCalendar: ExpoCalendar) in
+        expoCalendar.calendar?.title
       }
 
       Property("source") { (expoCalendar: ExpoCalendar) -> [String: Any?] in
@@ -202,15 +199,15 @@ public final class CalendarNextModule: Module {
         return calendar.allowsContentModifications
       }
 
-      Property("allowedAvailabilities") { (calendar: ExpoCalendar) -> [String] in
-        guard let calendar = calendar.calendar else {
+      Property("allowedAvailabilities") { (expoCalendar: ExpoCalendar) -> [String] in
+        guard let calendar = expoCalendar.calendar else {
           return []
         }
         return calendarSupportedAvailabilities(
           fromMask: calendar.supportedEventAvailabilities)
       }
 
-      Function("listEvents") { (calendar: ExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) throws in
+      Function("listEvents") { (expoCalendar: ExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) throws in
         try checkCalendarPermissions()
 
         guard let startDate = parse(date: startDateStr),
@@ -219,7 +216,7 @@ public final class CalendarNextModule: Module {
           throw InvalidDateFormatException()
         }
 
-        return try calendar.listEvents(startDate: startDate, endDate: endDate)
+        return try expoCalendar.listEvents(startDate: startDate, endDate: endDate)
       }
 
       // swiftlint:disable closure_parameter_position
@@ -253,7 +250,7 @@ public final class CalendarNextModule: Module {
       }
 
       // swiftlint:enable closure_parameter_position
-      Function("createEvent") { (expoCalendar: ExpoCalendar, eventRecord: Event, options: RecurringEventOptions?) -> ExpoCalendarEvent in
+      Function("createEvent") { (expoCalendar: ExpoCalendar, eventRecord: EventNext, options: RecurringEventOptions?) -> ExpoCalendarEvent in
         try checkCalendarPermissions()
 
         guard let calendar = expoCalendar.calendar else {
@@ -279,19 +276,19 @@ public final class CalendarNextModule: Module {
         return expoCalendarEvent
       }
 
-      Function("createReminder") { (calendar: ExpoCalendar, eventRecord: Reminder, _: RecurringEventOptions?) -> ExpoCalendarReminder in
+      Function("createReminder") { (expoCalendar: ExpoCalendar, reminderRecord: Reminder, _: RecurringEventOptions?) -> ExpoCalendarReminder in
         try checkRemindersPermissions()
 
-        guard let calendarInstance = calendar.calendar else {
+        guard let calendarInstance = expoCalendar.calendar else {
           throw CalendarNoLongerExistsException()
         }
 
-        if eventRecord.title == nil {
+        if reminderRecord.title == nil {
           throw MissingParameterException("title")
         }
 
-        let expoReminder = try ExpoCalendarReminder(calendar: calendarInstance, reminderRecord: eventRecord)
-        try expoReminder.initialize(reminderRecord: eventRecord)
+        let expoReminder = try ExpoCalendarReminder(calendar: calendarInstance, reminderRecord: reminderRecord)
+        try expoReminder.initialize(reminderRecord: reminderRecord)
 
         guard let reminder = expoReminder.reminder else {
           throw Exception()
@@ -301,105 +298,105 @@ public final class CalendarNextModule: Module {
         return expoReminder
       }
 
-      Function("update") { (calendar: ExpoCalendar, calendarRecord: CalendarRecord) throws in
+      Function("update") { (expoCalendar: ExpoCalendar, calendarRecord: CalendarRecordNext) throws in
         try checkCalendarPermissions()
-        try calendar.update(calendarRecord: calendarRecord)
+        try expoCalendar.update(calendarRecord: calendarRecord)
       }
 
-      Function("delete") { (calendar: ExpoCalendar) in
+      Function("delete") { (expoCalendar: ExpoCalendar) in
         try checkCalendarPermissions()
-        try calendar.delete()
+        try expoCalendar.delete()
       }
     }
 
     // swiftlint:disable:next closure_body_length
     Class(ExpoCalendarEvent.self) {
-      Property("id") { (event: ExpoCalendarEvent) in
-        event.event?.calendarItemIdentifier
+      Property("id") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.calendarItemIdentifier
       }
 
-      Property("calendarId") { (event: ExpoCalendarEvent) in
-        event.event?.calendar.calendarIdentifier
+      Property("calendarId") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.calendar.calendarIdentifier
       }
 
-      Property("title") { (event: ExpoCalendarEvent) in
-        event.event?.title
+      Property("title") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.title
       }
 
-      Property("location") { (event: ExpoCalendarEvent) in
-        event.event?.location
+      Property("location") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.location
       }
 
-      Property("creationDate") { (event: ExpoCalendarEvent) in
-        dateFormatter.string(from: event.event?.creationDate ?? Date())
+      Property("creationDate") { (expoEvent: ExpoCalendarEvent) in
+        dateFormatter.string(from: expoEvent.event?.creationDate ?? Date())
       }
 
-      Property("lastModifiedDate") { (event: ExpoCalendarEvent) in
-        dateFormatter.string(from: event.event?.lastModifiedDate ?? Date())
+      Property("lastModifiedDate") { (expoEvent: ExpoCalendarEvent) in
+        dateFormatter.string(from: expoEvent.event?.lastModifiedDate ?? Date())
       }
 
-      Property("timeZone") { (event: ExpoCalendarEvent) in
-        event.event?.timeZone?.localizedName(for: .shortStandard, locale: .current)
+      Property("timeZone") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.timeZone?.localizedName(for: .shortStandard, locale: .current)
       }
 
-      Property("url") { (event: ExpoCalendarEvent) in
-        event.event?.url?.absoluteString.removingPercentEncoding
+      Property("url") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.url?.absoluteString.removingPercentEncoding
       }
 
-      Property("notes") { (event: ExpoCalendarEvent) in
-        event.event?.notes
+      Property("notes") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.notes
       }
 
-      Property("alarms") { (customEvent: ExpoCalendarEvent) -> [[String: Any?]]? in
-        customEvent.serializeAlarms()
+      Property("alarms") { (expoEvent: ExpoCalendarEvent) -> [[String: Any?]]? in
+        expoEvent.serializeAlarms()
       }
 
-      Property("recurrenceRule") { (customEvent: ExpoCalendarEvent) -> [String: Any?]? in
-        customEvent.serializeRecurrenceRule()
+      Property("recurrenceRule") { (expoEvent: ExpoCalendarEvent) -> [String: Any?]? in
+        expoEvent.serializeRecurrenceRule()
       }
 
-      Property("startDate") { (event: ExpoCalendarEvent) -> String? in
-        guard let startDate = event.event?.startDate else {
+      Property("startDate") { (expoEvent: ExpoCalendarEvent) -> String? in
+        guard let startDate = expoEvent.event?.startDate else {
           return nil
         }
         return dateFormatter.string(from: startDate)
       }
 
-      Property("endDate") { (event: ExpoCalendarEvent) -> String? in
-        guard let endDate = event.event?.endDate else {
+      Property("endDate") { (expoEvent: ExpoCalendarEvent) -> String? in
+        guard let endDate = expoEvent.event?.endDate else {
           return nil
         }
         return dateFormatter.string(from: endDate)
       }
 
-      Property("originalStartDate") { (event: ExpoCalendarEvent) -> String? in
-        guard let occurrenceDate = event.event?.occurrenceDate else {
+      Property("originalStartDate") { (expoEvent: ExpoCalendarEvent) -> String? in
+        guard let occurrenceDate = expoEvent.event?.occurrenceDate else {
           return nil
         }
         return dateFormatter.string(from: occurrenceDate)
       }
 
-      Property("isDetached") { (event: ExpoCalendarEvent) in
-        event.event?.isDetached ?? false
+      Property("isDetached") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.isDetached ?? false
       }
 
-      Property("allDay") { (event: ExpoCalendarEvent) in
-        event.event?.isAllDay ?? false
+      Property("allDay") { (expoEvent: ExpoCalendarEvent) in
+        expoEvent.event?.isAllDay ?? false
       }
 
-      Property("availability") { (event: ExpoCalendarEvent) -> String? in
-        guard let availability = event.event?.availability else {
+      Property("availability") { (expoEvent: ExpoCalendarEvent) -> String? in
+        guard let availability = expoEvent.event?.availability else {
           return nil
         }
         return eventAvailabilityToString(availability)
       }
 
-      Property("status") { (event: ExpoCalendarEvent) in
-        eventStatusToString(event.event?.status ?? .none)
+      Property("status") { (expoEvent: ExpoCalendarEvent) in
+        eventStatusToString(expoEvent.event?.status ?? .none)
       }
 
-      Property("organizer") { (event: ExpoCalendarEvent) -> [String: Any?]? in
-        guard let organizer = event.event?.organizer else {
+      Property("organizer") { (expoEvent: ExpoCalendarEvent) -> [String: Any?]? in
+        guard let organizer = expoEvent.event?.organizer else {
           return nil
         }
         return serialize(attendee: organizer)
@@ -441,86 +438,86 @@ public final class CalendarNextModule: Module {
         try presentEventEditViewController(event: event, promise: promise)
       }.runOnQueue(.main)
 
-      Function("getOccurrence") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
+      Function("getOccurrence") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
         try checkCalendarPermissions()
-        guard let ekEvent = try customEvent.getOccurrence(options: options) else {
+        guard let ekEvent = try expoEvent.getOccurrence(options: options) else {
           throw EventNotFoundException(options?.instanceStartDate ?? "")
         }
         return ExpoCalendarEvent(event: ekEvent)
       }
 
-      Function("getAttendees") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
+      Function("getAttendees") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
         try checkCalendarPermissions()
-        return try customEvent.getAttendees(options: options)
+        return try expoEvent.getAttendees(options: options)
       }
 
-      Function("update") { (customEvent: ExpoCalendarEvent, event: Event, options: RecurringEventOptions?, nullableFields: [String]?) throws in
+      Function("update") { (expoEvent: ExpoCalendarEvent, eventRecord: EventNext, options: RecurringEventOptions?, nullableFields: [String]?) throws in
         try checkCalendarPermissions()
-        try customEvent.update(eventRecord: event, options: options, nullableFields: nullableFields)
+        try expoEvent.update(eventRecord: eventRecord, options: options, nullableFields: nullableFields)
       }
 
-      Function("delete") { (customEvent: ExpoCalendarEvent, options: RecurringEventOptions) in
+      Function("delete") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions) in
         try checkCalendarPermissions()
-        try customEvent.delete(options: options)
+        try expoEvent.delete(options: options)
       }
     }
 
     // swiftlint:disable:next closure_body_length
     Class(ExpoCalendarReminder.self) {
-      Property("id") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.calendarItemIdentifier
+      Property("id") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.calendarItemIdentifier
       }
 
-      Property("calendarId") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.calendar.calendarIdentifier
+      Property("calendarId") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.calendar.calendarIdentifier
       }
 
-      Property("title") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.title
+      Property("title") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.title
       }
 
-      Property("location") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.location
+      Property("location") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.location
       }
 
-      Property("creationDate") { (reminder: ExpoCalendarReminder) -> String? in
-        guard let creationDate = reminder.reminder?.creationDate else {
+      Property("creationDate") { (expoReminder: ExpoCalendarReminder) -> String? in
+        guard let creationDate = expoReminder.reminder?.creationDate else {
           return nil
         }
         return dateFormatter.string(from: creationDate)
       }
 
-      Property("lastModifiedDate") { (reminder: ExpoCalendarReminder) -> String? in
-        guard let lastModifiedDate = reminder.reminder?.lastModifiedDate else {
+      Property("lastModifiedDate") { (expoReminder: ExpoCalendarReminder) -> String? in
+        guard let lastModifiedDate = expoReminder.reminder?.lastModifiedDate else {
           return nil
         }
         return dateFormatter.string(from: lastModifiedDate)
       }
 
-      Property("timeZone") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.timeZone?.localizedName(for: .shortStandard, locale: .current)
+      Property("timeZone") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.timeZone?.localizedName(for: .shortStandard, locale: .current)
       }
 
-      Property("url") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.url?.absoluteString.removingPercentEncoding
+      Property("url") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.url?.absoluteString.removingPercentEncoding
       }
 
-      Property("notes") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.notes
+      Property("notes") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.notes
       }
 
-      Property("alarms") { (reminder: ExpoCalendarReminder) -> [[String: Any?]]? in
-        reminder.serializeAlarms()
+      Property("alarms") { (expoReminder: ExpoCalendarReminder) -> [[String: Any?]]? in
+        expoReminder.serializeAlarms()
       }
 
-      Property("recurrenceRule") { (customReminder: ExpoCalendarReminder) -> [String: Any?]? in
-        customReminder.serializeRecurrenceRule()
+      Property("recurrenceRule") { (expoReminder: ExpoCalendarReminder) -> [String: Any?]? in
+        expoReminder.serializeRecurrenceRule()
       }
 
-      Property("startDate") { (customReminder: ExpoCalendarReminder) -> String? in
+      Property("startDate") { (expoReminder: ExpoCalendarReminder) -> String? in
         let currentCalendar = Calendar.current
 
-        guard let startDateComponents = customReminder.reminder?.startDateComponents else {
+        guard let startDateComponents = expoReminder.reminder?.startDateComponents else {
           return nil
         }
 
@@ -531,10 +528,10 @@ public final class CalendarNextModule: Module {
         return dateFormatter.string(from: startDate)
       }
 
-      Property("dueDate") { (customReminder: ExpoCalendarReminder) -> String? in
+      Property("dueDate") { (expoReminder: ExpoCalendarReminder) -> String? in
         let currentCalendar = Calendar.current
 
-        guard let dueDateComponents = customReminder.reminder?.dueDateComponents else {
+        guard let dueDateComponents = expoReminder.reminder?.dueDateComponents else {
           return nil
         }
 
@@ -545,12 +542,12 @@ public final class CalendarNextModule: Module {
         return dateFormatter.string(from: dueDate)
       }
 
-      Property("completed") { (reminder: ExpoCalendarReminder) in
-        reminder.reminder?.isCompleted ?? false
+      Property("completed") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.reminder?.isCompleted ?? false
       }
 
-      Property("completionDate") { (reminder: ExpoCalendarReminder) -> String? in
-        guard let completionDate = reminder.reminder?.completionDate else {
+      Property("completionDate") { (expoReminder: ExpoCalendarReminder) -> String? in
+        guard let completionDate = expoReminder.reminder?.completionDate else {
           return nil
         }
         return dateFormatter.string(from: completionDate)
@@ -561,35 +558,35 @@ public final class CalendarNextModule: Module {
         try expoReminder.update(reminderRecord: reminderRecord, nullableFields: nullableFields)
       }
 
-      Function("delete") { (reminder: ExpoCalendarReminder) in
+      Function("delete") { (expoReminder: ExpoCalendarReminder) in
         try checkRemindersPermissions()
-        try reminder.delete()
+        try expoReminder.delete()
       }
     }
 
     Class(ExpoCalendarAttendee.self) {
-      Property("name") { (attendee: ExpoCalendarAttendee) in
-        attendee.attendee.name
+      Property("name") { (expoAttendee: ExpoCalendarAttendee) in
+        expoAttendee.attendee.name
       }
 
-      Property("isCurrentUser") { (attendee: ExpoCalendarAttendee) in
-        attendee.attendee.isCurrentUser
+      Property("isCurrentUser") { (expoAttendee: ExpoCalendarAttendee) in
+        expoAttendee.attendee.isCurrentUser
       }
 
-      Property("role") { (attendee: ExpoCalendarAttendee) in
-        participantToString(role: attendee.attendee.participantRole)
+      Property("role") { (expoAttendee: ExpoCalendarAttendee) in
+        participantToString(role: expoAttendee.attendee.participantRole)
       }
 
-      Property("status") { (attendee: ExpoCalendarAttendee) in
-        participantStatusToString(status: attendee.attendee.participantStatus)
+      Property("status") { (expoAttendee: ExpoCalendarAttendee) in
+        participantStatusToString(status: expoAttendee.attendee.participantStatus)
       }
 
-      Property("type") { (attendee: ExpoCalendarAttendee) in
-        participantTypeToString(type: attendee.attendee.participantType)
+      Property("type") { (expoAttendee: ExpoCalendarAttendee) in
+        participantTypeToString(type: expoAttendee.attendee.participantType)
       }
 
-      Property("url") { (attendee: ExpoCalendarAttendee) in
-        attendee.attendee.url.absoluteString.removingPercentEncoding
+      Property("url") { (expoAttendee: ExpoCalendarAttendee) in
+        expoAttendee.attendee.url.absoluteString.removingPercentEncoding
       }
     }
   }

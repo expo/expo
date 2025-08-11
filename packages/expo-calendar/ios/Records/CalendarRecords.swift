@@ -9,7 +9,7 @@ struct CalendarRecord: Record {
   @Field
   var id: String?
   @Field
-  var title: String?
+  var title: String
   @Field
   var sourceId: String?
   @Field
@@ -17,7 +17,7 @@ struct CalendarRecord: Record {
   @Field
   var type: String?
   @Field
-  var color: Int?
+  var color: Int
   @Field
   var entityType: CalendarEntity?
   @Field
@@ -43,9 +43,9 @@ struct Event: Record {
   @Field
   var calendarId: String?
   @Field
-  var title: String?
+  var title: String
   @Field
-  var location: String?
+  var location: String
   @Field
   var creationDate: Either<String, Double>?
   @Field
@@ -55,7 +55,7 @@ struct Event: Record {
   @Field
   var url: String?
   @Field
-  var notes: String?
+  var notes: String
   @Field
   var alarms: [Alarm]
   @Field
@@ -71,11 +71,11 @@ struct Event: Record {
   @Field
   var instanceStartDate: Either<String, Double>?
   @Field
-  var allDay: Bool?
+  var allDay: Bool
   @Field
-  var availability: String?
+  var availability: String
   @Field
-  var status: String?
+  var status: String
 }
 
 struct RecurringEventOptions: Record {

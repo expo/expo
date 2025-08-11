@@ -3,8 +3,9 @@ import './install';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { ImmutableRequest } from './ImmutableRequest';
 import { ExpoError } from './error';
-import { Manifest, RawManifest, Route } from './types';
+import { Manifest, Middleware, MiddlewareFunction, RawManifest, Route } from './types';
 import { getRedirectRewriteLocation, isResponse, parseParams } from './utils';
 
 const debug =
@@ -18,6 +19,7 @@ function getProcessedManifest(path: string): Manifest {
 
   const parsed: Manifest = {
     ...routesManifest,
+    middleware: routesManifest.middleware,
     notFoundRoutes: routesManifest.notFoundRoutes.map((value: any) => {
       return { ...value, namedRegex: new RegExp(value.namedRegex) };
     }),
@@ -66,18 +68,15 @@ export function createRequestHandler(
     },
     getApiRoute = async (route) => {
       const filePath = path.join(distFolder, route.file);
-
       debug(`Handling API route: ${route.page}: ${filePath}`);
 
-      // TODO: What's the standard behavior for malformed projects?
-      if (!fs.existsSync(filePath)) {
-        return null;
-      }
+      return loadServerModule(filePath);
+    },
+    getMiddleware = async (middleware) => {
+      const filePath = path.join(distFolder, middleware.file);
+      debug(`Loading middleware: ${middleware.file}: ${filePath}`);
 
-      if (/\.c?js$/.test(filePath)) {
-        return require(filePath);
-      }
-      return import(filePath);
+      return loadServerModule(filePath);
     },
     handleRouteError = async (error: Error) => {
       // In production the server should handle unexpected errors
@@ -87,6 +86,7 @@ export function createRequestHandler(
     getHtml?: (request: Request, route: Route) => Promise<string | Response | null>;
     getRoutesManifest?: (distFolder: string) => Promise<Manifest | null>;
     getApiRoute?: (route: Route) => Promise<any>;
+    getMiddleware?: (route: Middleware) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;
     handleRouteError?: (error: Error) => Promise<Response>;
   } = {}
@@ -114,6 +114,26 @@ export function createRequestHandler(
     let request = incomingRequest;
     let url = new URL(request.url);
     debug('Request', url.pathname);
+
+    if (manifest.middleware && shouldRunMiddleware(request, manifest.middleware)) {
+      try {
+        const middlewareModule = await getMiddleware(manifest.middleware);
+        if (middlewareModule?.default) {
+          const middlewareFn = middlewareModule.default as MiddlewareFunction;
+          const middlewareResponse = await middlewareFn(new ImmutableRequest(request));
+          if (middlewareResponse instanceof Response) {
+            debug('Middleware returned response, short-circuiting');
+            return middlewareResponse;
+          }
+
+          // If middleware returns undefined/void, continue to route matching
+        }
+      } catch (error) {
+        debug('Middleware execution error:', error);
+        // Shows RedBox in development
+        return handleRouteError(error as Error);
+      }
+    }
 
     if (manifest.redirects) {
       for (const route of manifest.redirects) {
@@ -304,4 +324,30 @@ function respondRedirect(url: URL, request: Request, route: Route): Response {
 
   debug('Redirecting', status, target);
   return Response.redirect(target, status);
+}
+
+function loadServerModule(filePath: string) {
+  // TODO: What's the standard behavior for malformed projects?
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  if (/\.c?js$/.test(filePath)) {
+    return require(filePath);
+  }
+  return import(filePath);
+}
+
+/**
+ * Determines whether middleware should run for a given request based on matcher configuration.
+ */
+function shouldRunMiddleware(request: Request, middleware: Middleware): boolean {
+  // TODO(@hassankhan): Implement pattern matching for middleware
+  debug('Middleware pattern matching is not yet implemented');
+  return true;
+
+  // No matcher means middleware runs on all requests
+  // if (!middleware.matcher) {
+  //   return true;
+  // }
 }

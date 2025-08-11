@@ -67,6 +67,7 @@ public class TestPackage implements ReactPackage {
         "cxxModuleCMakeListsModuleName": null,
         "cxxModuleCMakeListsPath": null,
         "cxxModuleHeaderName": null,
+        "isPureCxxDependency": false,
         "packageImportPath": "import com.test.TestPackage;",
         "packageInstance": "new TestPackage()",
         "sourceDir": "/app/node_modules/react-native-test/android",
@@ -106,6 +107,63 @@ public class TestPackage implements ReactPackage {
       undefined
     );
     expect(result).not.toBeNull();
+  });
+
+  it('should return C++-only config without AndroidManifest.xml and gradle file', async () => {
+    // AndroidManifest.xml (missing)
+    mockGlob.mockResolvedValueOnce([]);
+    // build.gradle (missing)
+    mockGlob.mockResolvedValueOnce([]);
+    registerGlobStreamMockOnce([] as any); // parseComponentDescriptorsAsync()
+
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/android/build.gradle': '',
+      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      {
+        cxxModuleCMakeListsModuleName: 'TestMod',
+        cxxModuleCMakeListsPath: 'CMakeLists.txt',
+        cxxModuleHeaderName: 'TestModSpec',
+        sourceDir: 'cpp',
+      }
+    );
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "buildTypes": [],
+        "cmakeListsPath": "/app/node_modules/react-native-test/cpp/build/generated/source/codegen/jni/CMakeLists.txt",
+        "componentDescriptors": [],
+        "cxxModuleCMakeListsModuleName": "TestMod",
+        "cxxModuleCMakeListsPath": "/app/node_modules/react-native-test/cpp/CMakeLists.txt",
+        "cxxModuleHeaderName": "TestModSpec",
+        "isPureCxxDependency": true,
+        "packageImportPath": null,
+        "packageInstance": null,
+        "sourceDir": "/app/node_modules/react-native-test/cpp",
+      }
+    `);
+  });
+
+  it('should not misdetect an Expo module as a C++-only React Native module', async () => {
+    // AndroidManifest.xml (missing)
+    mockGlob.mockResolvedValueOnce([]);
+    // build.gradle (missing)
+    mockGlob.mockResolvedValueOnce([]);
+    registerGlobStreamMockOnce([] as any); // parseComponentDescriptorsAsync()
+
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/android/build.gradle': '',
+      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+      '/app/node_modules/react-native-test/expo-module.config.json': '{}',
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      undefined
+    );
+    expect(result).toBe(null);
   });
 
   it('should return android config from custom sourceDir', async () => {

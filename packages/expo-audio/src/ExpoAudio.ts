@@ -11,6 +11,7 @@ import {
   PitchCorrectionQuality,
   RecorderState,
   RecordingOptions,
+  RecordingStartOptions,
   RecordingStatus,
 } from './Audio.types';
 import {
@@ -45,6 +46,11 @@ const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecord
 AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
   const processedOptions = options ? createRecordingOptions(options) : undefined;
   return prepareToRecordAsync.call(this, processedOptions);
+};
+
+const record = AudioModule.AudioRecorder.prototype.record;
+AudioModule.AudioRecorder.prototype.record = function (options?: RecordingStartOptions) {
+  return record.call(this, options);
 };
 
 /**

@@ -13,7 +13,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     self.event = event
   }
 
-  convenience init(eventRecord: Event) throws {
+  convenience init(eventRecord: EventNext) throws {
     let sharedEventStore = CalendarModule.sharedEventStore
 
     guard let calendarId = eventRecord.calendarId else {
@@ -27,7 +27,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     try self.init(calendar: calendar, eventRecord: eventRecord)
   }
 
-  convenience init(calendar: EKCalendar, eventRecord: Event) throws {
+  convenience init(calendar: EKCalendar, eventRecord: EventNext) throws {
     let sharedEventStore = CalendarModule.sharedEventStore
 
     if calendar.allowedEntityTypes.isDisjoint(with: [.event]) {
@@ -43,7 +43,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     self.init(event: calendarEvent)
   }
 
-  func update(eventRecord: Event, options: RecurringEventOptions?, nullableFields: [String]? = nil) throws {
+  func update(eventRecord: EventNext, options: RecurringEventOptions?, nullableFields: [String]? = nil) throws {
     guard let calendarEvent = self.event else {
       throw ItemNoLongerExistsException()
     }
@@ -56,7 +56,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
   }
 
   func delete(options: RecurringEventOptions) throws {
-    guard let id = self.event?.calendarItemIdentifier else {
+    if self.event?.calendarItemIdentifier == nil {
       throw ItemNoLongerExistsException()
     }
 
@@ -71,7 +71,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     self.event = nil
   }
 
-  func initialize(eventRecord: Event, nullableFields: [String]? = nil) throws {
+  func initialize(eventRecord: EventNext, nullableFields: [String]? = nil) throws {
     guard let event = self.event else {
       throw EventNotFoundException("EKevent not found")
     }
@@ -79,7 +79,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
   }
 
   // swiftlint:disable:next cyclomatic_complexity
-  func initialize(event: EKEvent, eventRecord: Event, nullableFields: [String]? = nil) throws {
+  func initialize(event: EKEvent, eventRecord: EventNext, nullableFields: [String]? = nil) throws {
     let nullableSet = Set(nullableFields ?? [])
 
     if nullableSet.contains("timeZone") {
@@ -94,8 +94,8 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
 
     if nullableSet.contains("alarms") {
       event.alarms = []
-    } else if eventRecord.alarms != nil {
-      event.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
+    } else if let alarms = eventRecord.alarms {
+      event.alarms = createCalendarEventAlarms(alarms: alarms)
     }
 
     if nullableSet.contains("recurrenceRule") {

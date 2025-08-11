@@ -20,6 +20,7 @@
 
 - [Android] RN 0.81.0: patched some reflection issues after kotlin upgrade ([#38451](https://github.com/expo/expo/pull/38451) by [@chrfalch](https://github.com/chrfalch))
 - Fixed release build error on Android. ([#37579](https://github.com/expo/expo/pull/37579) by [@kudo](https://github.com/kudo))
+- Informational message for tvOS on signin page. ([#38518](https://github.com/expo/expo/pull/38518) by [@douglowder](https://github.com/douglowder))
 
 ### ⚠️ Notices
 

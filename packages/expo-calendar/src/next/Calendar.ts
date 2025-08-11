@@ -13,15 +13,120 @@ import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
 import {
   ModifiableEventProperties,
-  ModifableReminderProperties,
-  ModifableCalendarProperties,
+  ModifiableReminderProperties,
+  ModifiableCalendarProperties,
 } from './ExpoCalendar.types';
 
+/**
+ * Represents a calendar attendee object.
+ */
+export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
+
+/**
+ * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
+ */
+export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+  override getOccurrence(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarEvent {
+    return super.getOccurrence(stringifyDateValues(recurringEventOptions));
+  }
+
+  override getAttendees(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarAttendee[] {
+    return super.getAttendees(stringifyDateValues(recurringEventOptions));
+  }
+
+  override update(
+    details: Partial<ModifiableEventProperties>,
+    options: RecurringEventOptions = {}
+  ): void {
+    const nullableDetailsFields = getNullableDetailsFields(details);
+    super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
+  }
+
+  override delete(options: RecurringEventOptions = {}): void {
+    super.delete(stringifyDateValues(options));
+  }
+}
+
+/**
+ * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
+ */
+export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
+  override update(details: Partial<ModifiableReminderProperties>): void {
+    const nullableDetailsFields = getNullableDetailsFields(details);
+    super.update(stringifyDateValues(details), nullableDetailsFields);
+  }
+}
+
+/**
+ * Represents a calendar object that can be accessed and modified using the Expo Calendar Next API.
+ *
+ * This class provides properties and methods for interacting with a specific calendar on the device,
+ * such as retrieving its events, updating its details, and accessing its metadata.
+ */
+export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
+  override createEvent(
+    details: Partial<
+      Omit<
+        Event,
+        | 'creationDate'
+        | 'lastModifiedDate'
+        | 'originalStartDate'
+        | 'isDetached'
+        | 'status'
+        | 'organizer'
+      >
+    >
+  ): ExpoCalendarEvent {
+    const newEvent = super.createEvent(stringifyDateValues(details));
+    Object.setPrototypeOf(newEvent, ExpoCalendarEvent.prototype);
+    return newEvent;
+  }
+
+  override createReminder(details: Partial<Reminder>): ExpoCalendarReminder {
+    const newReminder = super.createReminder(stringifyDateValues(details));
+    Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
+    return newReminder;
+  }
+
+  override listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[] {
+    if (!startDate) {
+      throw new Error('listEvents must be called with a startDate (date) to search for events');
+    }
+    if (!endDate) {
+      throw new Error('listEvents must be called with an endDate (date) to search for events');
+    }
+    return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate)).map((event) => {
+      Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
+      return event;
+    });
+  }
+
+  override async listReminders(
+    startDate: Date | null = null,
+    endDate: Date | null = null,
+    status: ReminderStatus | null = null
+  ): Promise<ExpoCalendarReminder[]> {
+    const reminders = await super.listReminders(
+      startDate ? stringifyIfDate(startDate) : null,
+      endDate ? stringifyIfDate(endDate) : null,
+      status
+    );
+    return reminders.map((reminder) => {
+      Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+      return reminder;
+    });
+  }
+
+  override update(details: Partial<ModifiableCalendarProperties>): void {
+    const color = details.color ? processColor(details.color) : undefined;
+    const newDetails = { ...details, color: color || undefined };
+    super.update(newDetails);
+  }
+}
 
 /**
  * Gets an instance of the default calendar object.
- * @return An [ExpoCalendar](#expocalendar) object that is the user's default calendar.
- * @platform ios
+ * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
 export function getDefaultCalendarNext(): ExpoCalendar {
   if (Platform.OS === 'android') return null;
@@ -34,12 +139,12 @@ export function getDefaultCalendarNext(): ExpoCalendar {
 }
 
 /**
- * Gets an array of [ExpoCalendar](#expocalendar) shared objects with details about the different calendars stored on the device.
+ * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the different calendars stored on the device.
  * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
  * a specific [entity type](#entitytypes). Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
  * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
- * @return An array of [ExpoCalendar](#expocalendar) shared objects matching the provided entity type (if provided).
+ * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
 export async function getCalendarsNext(type?: EntityTypes): Promise<any> {
   if (!InternalExpoCalendar.getCalendars) {
@@ -56,7 +161,7 @@ export async function getCalendarsNext(type?: EntityTypes): Promise<any> {
 /**
  * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
  * @param details A map of details for the calendar to be created.
- * @returns An [ExpoCalendar](#expocalendar) object representing the newly created calendar.
+ * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
 export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalendar {
   if (Platform.OS === 'android') return null;
@@ -72,11 +177,11 @@ export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalenda
 
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
- * > **Note:** If you want to search events in a single calendar, you can use [ExpoCalendar.listEvents](#listeventsstartdate-enddate) instead.
+ * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
  * @param calendarIds An array of calendar IDs to search for events.
  * @param startDate The start date of the time range to search for events.
  * @param endDate The end date of the time range to search for events.
- * @returns An array of [ExpoCalendarEvent](#expocalendarevent) objects representing the events found.
+ * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
 export function listEvents(
   calendarIds: string[],
@@ -115,7 +220,6 @@ export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermi
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
  */
 export const requestRemindersPermissionsAsync =
   InternalExpoCalendar.requestRemindersPermissionsAsync;
@@ -123,16 +227,20 @@ export const requestRemindersPermissionsAsync =
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
  */
 export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
 
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
- * @platform ios
  */
 export const getSources = InternalExpoCalendar.getSources;
+
+export type {
+  ModifiableEventProperties,
+  ModifiableReminderProperties,
+  ModifiableCalendarProperties,
+} from './ExpoCalendar.types';
 
 export type {
   Calendar,

@@ -410,8 +410,8 @@ public class CalendarModule: Module {
     calendarEvent.title = event.title
     calendarEvent.location = event.location
     calendarEvent.notes = event.notes
-    calendarEvent.isAllDay = event.allDay ?? false
-    calendarEvent.availability = getAvailability(availability: event.availability ?? "")
+    calendarEvent.isAllDay = event.allDay
+    calendarEvent.availability = getAvailability(availability: event.availability)
   }
 
   private func initializePermittedEntities() {
@@ -514,11 +514,11 @@ public class CalendarModule: Module {
       guard let calendar = eventStore.calendar(withIdentifier: id) else {
         throw CalendarIdNotFoundException(id)
       }
-      let title = record.title ?? ""
+
       if calendar.isImmutable == true {
-        throw CalendarNotSavedException(title)
+        throw CalendarNotSavedException(record.title)
       }
-      calendar.title = title
+      calendar.title = record.title
       calendar.cgColor = EXUtilities.uiColor(record.color)?.cgColor
       return calendar
     }
@@ -531,10 +531,6 @@ public class CalendarModule: Module {
       throw EntityNotSupportedException(record.entityType?.rawValue)
     }
 
-    guard let title = record.title else {
-      throw MissingParameterException("title")
-    }
-
     if let sourceId = record.sourceId {
       calendar.source = eventStore.source(withIdentifier: sourceId)
     } else {
@@ -543,7 +539,7 @@ public class CalendarModule: Module {
       eventStore.defaultCalendarForNewReminders()?.source
     }
 
-    calendar.title = title
+    calendar.title = record.title
     calendar.cgColor = EXUtilities.uiColor(record.color)?.cgColor
 
     return calendar

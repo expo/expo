@@ -3,18 +3,17 @@ title: Calendar (next)
 description: A library that provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-calendar/next'
 packageName: 'expo-calendar'
-platforms: ['ios']
+platforms: ['ios*']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
-import { SnackInline } from '~/ui/components/Snippet';
 
 > **info** The `next` version of the Calendar API is included in the `expo-calendar` library. It can be used alongside the previous API, and offers a simplified, object oriented way of performing calendar operations.
 
@@ -22,7 +21,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
-Additionally, it provides methods to launch the [system-provided calendar UI](#launching-system-provided-calendar-dialogs) to allow user view or edit events. On Android, these methods start the system calendar app using an Intent. On iOS, they present either [`EKEventViewController`](https://developer.apple.com/documentation/eventkitui/ekeventviewcontroller) or [`EKEventEditViewController`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewcontroller) as a modal.
+Additionally, it provides methods to launch the [system-provided calendar UI](#launching-system-provided-calendar-dialogs) to allow the user to view or edit events. On iOS, they present either [`EKEventViewController`](https://developer.apple.com/documentation/eventkitui/ekeventviewcontroller) or [`EKEventEditViewController`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewcontroller) as a modal.
 
 ## Installation
 
@@ -70,14 +69,7 @@ You can configure `expo-calendar` using its built-in [config plugin](/config-plu
 
 <ConfigReactNative>
 
-If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
-
-- For Android, add `android.permission.READ_CALENDAR` and `android.permission.WRITE_CALENDAR` permissions to your project's **android/app/src/main/AndroidManifest.xml**:
-
-  ```xml
-  <uses-permission android:name="android.permission.READ_CALENDAR" />
-  <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-  ```
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **ios** project manually), then you need to configure following permissions in your native project:
 
 - For iOS, add `NSCalendarsUsageDescription` and `NSRemindersUsageDescription` to your project's **ios/[app]/Info.plist**:
 
@@ -91,8 +83,6 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 </ConfigReactNative>
 
 ## Usage
-
-<SnackInline label='Basic Calendar Next usage' dependencies={['expo-calendar']}>
 
 ```jsx
 import * as Calendar from 'expo-calendar/next';
@@ -138,8 +128,6 @@ const styles = StyleSheet.create({
 });
 ```
 
-</SnackInline>
-
 ## API
 
 ```js
@@ -155,14 +143,6 @@ import * as Calendar from 'expo-calendar/next';
 />
 
 ## Permissions
-
-### Android
-
-If you only intend to use the [system-provided calendar UI](#launching-system-provided-calendar-dialogs), you don't need to request any permissions.
-
-Otherwise, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
-
-<AndroidPermissions permissions={['READ_CALENDAR', 'WRITE_CALENDAR']} />
 
 ### iOS
 

@@ -79,8 +79,11 @@ const RNStack = withLayoutContext<
 type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
 type RNPreloadAction = Extract<CommonNavigationAction, { type: 'PRELOAD' }>;
 type ExpoNavigationAction = Omit<RNNavigationAction, 'payload'> & {
-  payload: RNNavigationAction['payload'] & {
-    previewKey?: string;
+  payload: Omit<RNNavigationAction['payload'], 'params'> & {
+    params: {
+      __internal__expoRouterIsPreviewNavigation?: boolean;
+      params?: Record<string, unknown>;
+    };
   };
 };
 
@@ -98,7 +101,12 @@ function isStackAction(
 }
 
 const isPreviewAction = (action: NavigationAction): action is ExpoNavigationAction =>
-  !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
+  !!action.payload &&
+  'params' in action.payload &&
+  !!action.payload.params &&
+  typeof action.payload === 'object' &&
+  '__internal__expoRouterIsPreviewNavigation' in (action.payload.params as any) &&
+  !!(action.payload.params as any).__internal__expoRouterIsPreviewNavigation;
 
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.

@@ -44,10 +44,10 @@ final internal class InvalidCalendarTypeException: GenericException<(String, Str
 
 final internal class MissingParameterException: GenericException<String?> {
   override var reason: String {
-    if let param = param, !param.isEmpty {
-      return "Missing parameter: \(param)"
+    guard let param else {
+      return "Missing parameter"
     }
-  return "Missing parameter"
+    return "Missing parameter: \(param)"
   }
 }
 
