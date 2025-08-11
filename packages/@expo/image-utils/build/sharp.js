@@ -9,6 +9,7 @@ exports.sharpAsync = sharpAsync;
 exports.findSharpInstanceAsync = findSharpInstanceAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const assert_1 = __importDefault(require("assert"));
+const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const resolve_global_1 = __importDefault(require("resolve-global"));
@@ -139,7 +140,7 @@ async function findSharpBinAsync() {
         installedCliVersion = (await (0, spawn_async_1.default)('sharp', ['--version'])).stdout.toString().trim();
     }
     catch {
-        throw notFoundError(SHARP_REQUIRED_VERSION);
+        return '';
     }
     if (!semver_1.default.satisfies(installedCliVersion, SHARP_REQUIRED_VERSION)) {
         showVersionMismatchWarning(SHARP_REQUIRED_VERSION, installedCliVersion);
@@ -167,23 +168,16 @@ async function findSharpInstanceAsync() {
     }
     return _sharpInstance;
 }
-function notFoundError(requiredCliVersion) {
-    return new Error(`This command requires version ${requiredCliVersion} of \`sharp-cli\`. \n` +
-        `You can install it using \`npm install -g sharp-cli@${requiredCliVersion}\`. \n` +
-        '\n' +
-        'For prerequisites, see: https://sharp.dimens.io/en/stable/install/#prerequisites');
-}
 let versionMismatchWarningShown = false;
 function showVersionMismatchWarning(requiredCliVersion, installedCliVersion) {
     if (versionMismatchWarningShown) {
         return;
     }
-    console.warn(`Warning: This command requires version ${requiredCliVersion} of \`sharp-cli\`. \n` +
-        `Currently installed version: "${installedCliVersion}" \n` +
-        `Required version: "${requiredCliVersion}" \n` +
-        `You can install it using \`npm install -g sharp-cli@${requiredCliVersion}\`. \n` +
-        '\n' +
-        'For prerequisites, see: https://sharp.dimens.io/en/stable/install/#prerequisites');
+    console.warn([
+        chalk_1.default.yellow(`Expo supports version "${requiredCliVersion}" of \`sharp-cli\`, current version: "${installedCliVersion}".`),
+        chalk_1.default.yellow.dim(`If you can remove or upgrade using \`npm (un)install -g sharp-cli@${requiredCliVersion}\`.`),
+        chalk_1.default.yellow.dim(`Or disable \`sharp-cli\` with \`EXPO_IMAGE_UTILS_NO_SHARP=1\`.`),
+    ].join('\n'));
     versionMismatchWarningShown = true;
 }
 //# sourceMappingURL=sharp.js.map
