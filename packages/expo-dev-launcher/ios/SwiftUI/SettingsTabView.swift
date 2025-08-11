@@ -2,16 +2,13 @@
 
 import SwiftUI
 
+private let selectedGesturesInfoMessage = "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools."
+
 struct SettingsTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @State private var showCopiedMessage = false
   @State private var defaultPageSize: Int = 10
   @State private var showCacheClearedMessage = false
-
-  private let selectedGesturesInfoMessage = """
-  Selected gestures will toggle the developer menu while inside a preview.
-  The menu allows you to reload or return to home and exposes developer tools.
-  """
 
   private func createBuildInfoJSON() -> String {
     let buildInfoDict: [String: Any] = [
@@ -30,22 +27,23 @@ struct SettingsTabView: View {
   }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Text("Settings")
-        .font(.title2)
-        .padding(.horizontal, 20)
-      List {
+    ScrollView {
+      VStack(alignment: .leading, spacing: 24) {
+        titleSection
         showMenuAtLaunch
         gestures
 
-        Section {
-          Text(selectedGesturesInfoMessage)
-            .font(.system(size: 13))
-            .foregroundStyle(.secondary)
-        }
+        Text(selectedGesturesInfoMessage)
+          .font(.system(size: 13))
+          .foregroundStyle(.secondary)
 
-        Section {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("system".uppercased())
+            .font(.caption)
+            .foregroundColor(.primary.opacity(0.6))
+          Divider()
           version
+          Divider()
           copyToClipboardButton
         }
 
@@ -54,10 +52,9 @@ struct SettingsTabView: View {
           easUpdateConfig
         }
       }
+      .padding()
     }
-    #if !os(tvOS)
-    .background(Color(.systemGroupedBackground))
-    #endif
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
     .navigationBarHidden(true)
   }
 
@@ -66,24 +63,64 @@ struct SettingsTabView: View {
       Image("show-menu-at-launch", bundle: getDevLauncherBundle())
         .resizable()
         .frame(width: 24, height: 24)
+        .opacity(0.6)
       Toggle("Show menu at launch", isOn: $viewModel.showOnLaunch)
+    }
+    .padding()
+#if !os(tvOS)
+    .background(Color(.systemGroupedBackground))
+#endif
+    .cornerRadius(12)
+  }
+
+  private var titleSection: some View {
+    HStack {
+      Spacer()
+      VStack {
+        Image(systemName: "gearshape")
+          .resizable()
+          .frame(width: 56, height: 56)
+          .foregroundColor(.black.opacity(0.3))
+
+        Text("Settings")
+          .font(.title2)
+          .padding(.horizontal, 20)
+      }
+      Spacer()
     }
   }
 
   private var gestures: some View {
-    Section("Menu Gestures") {
-      HStack {
-        Image("shake-device", bundle: getDevLauncherBundle())
-          .resizable()
-          .frame(width: 24, height: 24)
-        Toggle("Shake Device", isOn: $viewModel.shakeDevice)
+    VStack(alignment: .leading) {
+      Text("Menu Gestures".uppercased())
+        .font(.caption)
+        .foregroundColor(.primary.opacity(0.6))
+
+      VStack {
+        HStack {
+          Image("shake-device", bundle: getDevLauncherBundle())
+            .resizable()
+            .frame(width: 24, height: 24)
+            .opacity(0.6)
+          Toggle("Shake Device", isOn: $viewModel.shakeDevice)
+        }
+        .padding()
+
+        Divider()
+
+        HStack {
+          Image("three-finger-long-press", bundle: getDevLauncherBundle())
+            .resizable()
+            .frame(width: 24, height: 24)
+            .opacity(0.6)
+          Toggle("Three-finger long-press", isOn: $viewModel.threeFingerLongPress)
+        }
+        .padding()
       }
-      HStack {
-        Image("three-finger-long-press", bundle: getDevLauncherBundle())
-          .resizable()
-          .frame(width: 24, height: 24)
-        Toggle("Three-finger long-press", isOn: $viewModel.threeFingerLongPress)
-      }
+#if !os(tvOS)
+      .background(Color(.systemGroupedBackground))
+#endif
+      .cornerRadius(12)
     }
   }
 
@@ -97,21 +134,29 @@ struct SettingsTabView: View {
   }
 
   private var copyToClipboardButton: some View {
-    #if os(tvOS)
-    Button("Clipboard not available on tvOS") {}
-    #else
-    Button(showCopiedMessage ? "Copied to clipboard!" : "Tap to Copy All") {
-      let buildInfoJSON = createBuildInfoJSON()
-      let clipboard = UIPasteboard.general
-      clipboard.string = buildInfoJSON
+    HStack {
+#if os(tvOS)
+      Button("Clipboard not available on tvOS") {}
+#else
+      Button(showCopiedMessage ? "Copied to clipboard!" : "Copy system info") {
+        let buildInfoJSON = createBuildInfoJSON()
+        let clipboard = UIPasteboard.general
+        clipboard.string = buildInfoJSON
 
-      showCopiedMessage = true
+        showCopiedMessage = true
 
-      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-        showCopiedMessage = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+          showCopiedMessage = false
+        }
       }
+      Spacer()
+      Image(systemName: "clipboard")
+        .resizable()
+        .aspectRatio(contentMode: .fit)
+        .frame(width: 16, height: 16)
+        .foregroundColor(.blue)
+#endif
     }
-    #endif
   }
 
   private var isAdminUser: Bool {

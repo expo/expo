@@ -28,7 +28,7 @@ struct DevServersView: View {
     VStack(alignment: .leading, spacing: 12) {
       header
 
-      LazyVStack(alignment: .leading, spacing: 0) {
+      LazyVStack(alignment: .leading, spacing: 6) {
         if viewModel.devServers.isEmpty {
           Text("No development servers found")
             .foregroundColor(.primary)
@@ -40,16 +40,10 @@ struct DevServersView: View {
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }
-            Divider()
           }
         }
-
         enterUrl
       }
-      #if !os(tvOS)
-      .background(Color(.systemBackground))
-      #endif
-      .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .onAppear {
       startServerDiscovery()
@@ -68,11 +62,9 @@ struct DevServersView: View {
       } label: {
         HStack {
           Image(systemName: showingURLInput ? "chevron.down" : "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
-
+            .font(.headline)
           Text("Enter URL manually")
-            .foregroundColor(.primary)
+            .font(.system(size: 14))
           Spacer()
         }
       }
@@ -83,6 +75,7 @@ struct DevServersView: View {
           .disableAutocorrection(true)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
+          .foregroundColor(.black)
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
@@ -96,25 +89,27 @@ struct DevServersView: View {
     }
     .animation(.easeInOut, value: showingURLInput)
     .padding()
+#if !os(tvOS)
+    .background(Color(showingURLInput ? .systemGroupedBackground : .systemBackground))
+#endif
+    .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 
   private var header: some View {
     HStack {
-      Image("terminal-icon", bundle: getDevLauncherBundle())
-        .resizable()
-        .frame(width: 16, height: 16)
-
-      Text("Development servers")
-        .font(.headline)
+      Text("development servers".uppercased())
+        .font(.caption)
+        .foregroundColor(.primary.opacity(0.6))
 
       Spacer()
 
       Button {
         showingInfoDialog = true
       } label: {
-        Image(systemName: "info.circle")
-          .font(.title3)
+        Text("info".uppercased())
+          .font(.system(size: 12))
       }
+      .buttonStyle(.automatic)
     }
   }
 
@@ -166,7 +161,7 @@ struct DevServerRow: View {
       HStack {
         Circle()
           .fill(Color.green)
-          .frame(width: 15, height: 15)
+          .frame(width: 12, height: 12)
 
         Text(server.description)
           .foregroundColor(.primary)
@@ -177,6 +172,10 @@ struct DevServerRow: View {
           .foregroundColor(.secondary)
       }
       .padding()
+#if !os(tvOS)
+      .background(Color(.systemGroupedBackground))
+#endif
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     .buttonStyle(PlainButtonStyle())
   }
