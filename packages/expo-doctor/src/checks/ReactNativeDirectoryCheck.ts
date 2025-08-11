@@ -99,24 +99,43 @@ export class ReactNativeDirectoryCheck implements DoctorCheck {
       };
     }
 
+    let hasCriticalIssues = false;
+
     if (newArchUnsupportedPackages.length > 0) {
+      hasCriticalIssues = true;
       issues.push(
         `${chalk.bold(`  Unsupported on New Architecture:`)} ${newArchUnsupportedPackages.join(', ')}`
       );
     }
 
     if (newArchUntestedPackages.length > 0) {
+      hasCriticalIssues = true;
       issues.push(
         `${chalk.bold(`  Untested on New Architecture:`)} ${newArchUntestedPackages.join(', ')}`
       );
     }
 
     if (unmaintainedPackages.length > 0) {
+      hasCriticalIssues = true;
       issues.push(`${chalk.bold(`  Unmaintained:`)} ${unmaintainedPackages.join(', ')}`);
     }
 
-    if (listUnknownPackagesEnabled && unknownPackages.length > 0) {
+    if (
+      (listUnknownPackagesEnabled === null || listUnknownPackagesEnabled) &&
+      unknownPackages.length > 0
+    ) {
       issues.push(`${chalk.bold(`  No metadata available`)}: ${unknownPackages.join(', ')}`);
+    }
+    
+    if (!hasCriticalIssues && listUnknownPackagesEnabled === null) {
+      // NOTE(@kitten): We shouldn't output just "no metadata available" packages with no other
+      // issues, if the user hasn't explicitly opted-in or opted-out, since it adds to the output
+      // noise of doctor
+      return {
+        isSuccessful: true,
+        issues: [],
+        advice: [],
+      };
     }
 
     if (issues.length) {
