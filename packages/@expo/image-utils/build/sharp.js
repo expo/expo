@@ -8,6 +8,7 @@ exports.isAvailableAsync = isAvailableAsync;
 exports.sharpAsync = sharpAsync;
 exports.findSharpInstanceAsync = findSharpInstanceAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
+const assert_1 = __importDefault(require("assert"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const resolve_global_1 = __importDefault(require("resolve-global"));
@@ -17,12 +18,15 @@ const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
 const SHARP_REQUIRED_VERSION = '^5.2.0';
 async function resizeBufferAsync(buffer, sizes) {
     const sharp = await findSharpInstanceAsync();
+    (0, assert_1.default)(sharp, 'Sharp is being used while its not initialized');
     const metadata = await sharp(buffer).metadata();
     // Create buffer for each size
     const resizedBuffers = await Promise.all(sizes.map((dimension) => {
-        const density = (dimension / Math.max(metadata.width, metadata.height)) * metadata.density;
+        const density = metadata.density != null
+            ? (dimension / Math.max(metadata.width, metadata.height)) * metadata.density
+            : null;
         return sharp(buffer, {
-            density: isNaN(density) ? undefined : Math.ceil(density),
+            density: density == null ? undefined : Math.ceil(density),
         })
             .resize(dimension, dimension, { fit: 'contain', background: 'transparent' })
             .toBuffer();

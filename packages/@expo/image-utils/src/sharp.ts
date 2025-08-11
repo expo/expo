@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import resolveGlobal from 'resolve-global';
@@ -12,14 +13,19 @@ const SHARP_REQUIRED_VERSION = '^5.2.0';
 
 export async function resizeBufferAsync(buffer: Buffer, sizes: number[]): Promise<Buffer[]> {
   const sharp = await findSharpInstanceAsync();
+  assert(sharp, 'Sharp is being used while its not initialized');
 
   const metadata = await sharp(buffer).metadata();
   // Create buffer for each size
   const resizedBuffers = await Promise.all(
     sizes.map((dimension) => {
-      const density = (dimension / Math.max(metadata.width, metadata.height)) * metadata.density;
+      const density =
+        metadata.density != null
+          ? (dimension / Math.max(metadata.width, metadata.height)) * metadata.density
+          : null;
+
       return sharp(buffer, {
-        density: isNaN(density) ? undefined : Math.ceil(density),
+        density: density == null ? undefined : Math.ceil(density),
       })
         .resize(dimension, dimension, { fit: 'contain', background: 'transparent' })
         .toBuffer();
@@ -154,7 +160,7 @@ async function findSharpBinAsync(): Promise<string> {
  * Returns the instance of `sharp` installed by the global `sharp-cli` package.
  * This method will throw errors if the `sharp` instance cannot be found, these errors can be circumvented by ensuring `isAvailableAsync()` resolves to `true`.
  */
-export async function findSharpInstanceAsync(): Promise<any | null> {
+export async function findSharpInstanceAsync(): Promise<typeof import('sharp') | null> {
   if (env.EXPO_IMAGE_UTILS_NO_SHARP) {
     throw new Error(
       'Global instance of sharp-cli cannot be retrieved because sharp-cli has been disabled with the environment variable `EXPO_IMAGE_UTILS_NO_SHARP`'

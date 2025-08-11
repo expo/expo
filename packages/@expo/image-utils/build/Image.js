@@ -122,10 +122,10 @@ async function resizeAsync(imageOptions) {
     }
 }
 async function getSharpAsync() {
-    let sharp;
-    if (await Sharp.isAvailableAsync())
-        sharp = await Sharp.findSharpInstanceAsync();
-    return sharp;
+    if (await Sharp.isAvailableAsync()) {
+        return await Sharp.findSharpInstanceAsync();
+    }
+    return null;
 }
 function getDimensionsId(imageOptions) {
     return imageOptions.width === imageOptions.height
@@ -205,9 +205,11 @@ async function generateImageBackgroundAsync(imageOptions) {
             width,
             height,
             channels: 4,
+            // TODO(cedric): this background color has to be defined for Sharp, but it's optionally typed here
+            // When we rework `@expo/image-utils`, this needs to be taken into account.
             background: backgroundColor,
         },
-    }).keepIccProfile();
+    });
     if (imageOptions.borderRadius) {
         const mask = Buffer.from(`<svg><rect x="0" y="0" width="${width}" height="${height}"
       rx="${borderRadius}" ry="${borderRadius}"

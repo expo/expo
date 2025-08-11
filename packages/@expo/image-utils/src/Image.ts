@@ -22,7 +22,7 @@ async function resizeImagesAsync(buffer: Buffer, sizes: number[]): Promise<Buffe
 }
 
 async function resizeAsync(imageOptions: ImageOptions): Promise<Buffer> {
-  const sharp: any = await getSharpAsync();
+  const sharp = await getSharpAsync();
   const { width, height, backgroundColor, resizeMode } = imageOptions;
   if (!sharp) {
     const inputOptions: any = { input: imageOptions.src, quality: 100 };
@@ -93,10 +93,12 @@ async function resizeAsync(imageOptions: ImageOptions): Promise<Buffer> {
   }
 }
 
-async function getSharpAsync(): Promise<any> {
-  let sharp: any;
-  if (await Sharp.isAvailableAsync()) sharp = await Sharp.findSharpInstanceAsync();
-  return sharp;
+async function getSharpAsync() {
+  if (await Sharp.isAvailableAsync()) {
+    return await Sharp.findSharpInstanceAsync();
+  }
+
+  return null;
 }
 
 function getDimensionsId(imageOptions: Pick<ImageOptions, 'width' | 'height'>): string {
@@ -176,7 +178,7 @@ export async function generateImageBackgroundAsync(
   imageOptions: Omit<ImageOptions, 'src'>
 ): Promise<Buffer> {
   const { width, height, backgroundColor, borderRadius } = imageOptions;
-  const sharp: any = await getSharpAsync();
+  const sharp = await getSharpAsync();
   if (!sharp) {
     const jimp = await Jimp.createSquareAsync({
       size: width,
@@ -195,9 +197,11 @@ export async function generateImageBackgroundAsync(
       width,
       height,
       channels: 4,
-      background: backgroundColor,
+      // TODO(cedric): this background color has to be defined for Sharp, but it's optionally typed here
+      // When we rework `@expo/image-utils`, this needs to be taken into account.
+      background: backgroundColor!,
     },
-  }).keepIccProfile();
+  });
 
   if (imageOptions.borderRadius) {
     const mask = Buffer.from(
@@ -270,7 +274,7 @@ export async function compositeImagesAsync({
   x?: number;
   y?: number;
 }): Promise<Buffer> {
-  const sharp: any = await getSharpAsync();
+  const sharp = await getSharpAsync();
   if (!sharp) {
     const image = (await Jimp.getJimpImageAsync(background)).composite(
       await Jimp.getJimpImageAsync(foreground),
