@@ -1,4 +1,17 @@
 import { Manifest, Middleware, Route } from './types';
+/**
+ * @deprecated Use Fetch API `Request` instead.
+ *
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Request)
+ */
+type ExpoRequest = Request;
+/**
+ * @deprecated Use Fetch API `Response` instead.
+ *
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response)
+ */
+type ExpoResponse = Request;
+export { ExpoRequest, ExpoResponse };
 type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
     headers: Record<string, string>;
 };
@@ -14,4 +27,3 @@ export declare function createRequestHandler({ getRoutesManifest, getHtml, getAp
     beforeHTMLResponse?: BeforeResponseCallback;
     beforeAPIResponse?: BeforeResponseCallback;
 }): (request: Request) => Promise<Response>;
-export {};
