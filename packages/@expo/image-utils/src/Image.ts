@@ -46,6 +46,7 @@ async function resizeAsync(imageOptions: ImageOptions): Promise<Buffer> {
   }
   try {
     let sharpBuffer = sharp(imageOptions.src)
+      .keepIccProfile()
       .ensureAlpha()
       .resize(width, height, { fit: resizeMode, background: 'transparent' });
 
@@ -196,7 +197,7 @@ export async function generateImageBackgroundAsync(
       channels: 4,
       background: backgroundColor,
     },
-  });
+  }).keepIccProfile();
 
   if (imageOptions.borderRadius) {
     const mask = Buffer.from(
@@ -279,6 +280,7 @@ export async function compositeImagesAsync({
     return await image.getBufferAsync(image.getMIME());
   }
   return await sharp(background)
+    .keepIccProfile()
     .composite([{ input: foreground, left: x, top: y }])
     .toBuffer();
 }
