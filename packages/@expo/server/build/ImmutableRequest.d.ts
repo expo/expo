@@ -35,7 +35,7 @@ export declare class ImmutableRequest implements _ImmutableRequest {
     get signal(): AbortSignal;
     get url(): string;
     get bodyUsed(): boolean;
-    get duplex(): "half";
+    get duplex(): "half" | undefined;
     get headers(): ImmutableHeaders;
     /**
      * The request body is not accessible in immutable requests.
@@ -52,4 +52,5 @@ export declare class ImmutableRequest implements _ImmutableRequest {
      */
     clone(): Request;
 }
+export declare function assertRuntimeFetchAPISupport({ Request, Response, Headers, process, }?: any): void;
 export {};

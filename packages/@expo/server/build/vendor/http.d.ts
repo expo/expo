@@ -7,7 +7,7 @@ export type RequestHandler = (req: http.IncomingMessage, res: http.ServerRespons
  */
 export declare function createRequestHandler({ build }: {
     build: string;
-}, setup?: Parameters<typeof createExpoHandler>[1]): RequestHandler;
+}, setup?: Partial<Parameters<typeof createExpoHandler>[0]>): RequestHandler;
 export declare function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request;
 export declare function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers;
 export declare function respond(res: http.ServerResponse, expoRes: Response): Promise<void>;
