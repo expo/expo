@@ -1,13 +1,14 @@
 import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import resolveGlobal from 'resolve-global';
 import semver from 'semver';
 
 import { env } from './env';
 import { Options, SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
 
 const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
-const SHARP_REQUIRED_VERSION = '^2.1.0';
+const SHARP_REQUIRED_VERSION = '^5.2.0';
 
 export async function resizeBufferAsync(buffer: Buffer, sizes: number[]): Promise<Buffer[]> {
   const sharp = await findSharpInstanceAsync();
@@ -104,23 +105,32 @@ let _sharpBin: string | null = null;
 let _sharpInstance: any | null = null;
 
 async function findSharpBinAsync(): Promise<string> {
-  if (_sharpBin) {
-    return _sharpBin;
-  }
+  if (_sharpBin) return _sharpBin;
+
   try {
-    const sharpCliPackage = require('sharp-cli/package.json');
-    const libVipsVersion = require('sharp').versions.vips;
+    const sharpCliPackagePath =
+      resolveGlobal.silent('sharp-cli/package.json') ??
+      require.resolve('sharp-cli/package.json', {
+        paths: require.resolve.paths('sharp-cli') ?? undefined,
+      });
+
+    const sharpCliPackage = require(sharpCliPackagePath);
+
+    _sharpInstance = sharpCliPackagePath ? resolveFrom(sharpCliPackagePath, 'sharp') : null;
+
     if (
-      sharpCliPackage &&
+      sharpCliPackagePath &&
       semver.satisfies(sharpCliPackage.version, SHARP_REQUIRED_VERSION) &&
       typeof sharpCliPackage.bin.sharp === 'string' &&
-      typeof libVipsVersion === 'string'
+      typeof _sharpInstance?.versions?.vips === 'string'
     ) {
-      _sharpBin = require.resolve(`sharp-cli/${sharpCliPackage.bin.sharp}`);
-      return _sharpBin;
+      _sharpBin = path.join(path.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
     }
   } catch {
-    // fall back to global sharp-cli
+    _sharpBin = null;
+    _sharpInstance = null;
+
+    // `sharp-cli` and/or `sharp` modules could not be found, falling back to global binary only
   }
 
   let installedCliVersion;
@@ -129,10 +139,11 @@ async function findSharpBinAsync(): Promise<string> {
   } catch {
     throw notFoundError(SHARP_REQUIRED_VERSION);
   }
-
   if (!semver.satisfies(installedCliVersion, SHARP_REQUIRED_VERSION)) {
     showVersionMismatchWarning(SHARP_REQUIRED_VERSION, installedCliVersion);
   }
+
+  // Use the `sharp-cli` reference from PATH
   _sharpBin = 'sharp';
   return _sharpBin;
 }
@@ -147,52 +158,11 @@ export async function findSharpInstanceAsync(): Promise<any | null> {
       'Global instance of sharp-cli cannot be retrieved because sharp-cli has been disabled with the environment variable `EXPO_IMAGE_UTILS_NO_SHARP`'
     );
   }
-  if (_sharpInstance) {
-    return _sharpInstance;
-  }
-  // Ensure sharp-cli version is correct
+
+  // Return the cached instance
+  if (_sharpInstance) return _sharpInstance;
+  // Resolve `sharp-cli` and `sharp`, this also loads the sharp module if it can be found
   await findSharpBinAsync();
-
-  // Attempt to use local sharp package
-  try {
-    const sharp = require('sharp');
-    _sharpInstance = sharp;
-    return sharp;
-  } catch {}
-
-  // Attempt to resolve the sharp instance used by the global CLI
-  let sharpCliPath;
-  if (process.platform !== 'win32') {
-    try {
-      sharpCliPath = (await spawnAsync('which', ['sharp'])).stdout.toString().trim();
-    } catch {}
-  } else {
-    // On Windows systems, nested dependencies aren't linked to the paths within `require.resolve.paths`.
-    // Yarn installs these modules in a different folder, let's add yarn to the other attempts.
-    // See: https://github.com/expo/expo-cli/issues/2708
-    let yarnGlobalPath = '';
-    try {
-      yarnGlobalPath = path.join(
-        (await spawnAsync('yarn', ['global', 'dir'])).stdout.toString().trim(),
-        'node_modules'
-      );
-    } catch {}
-    try {
-      sharpCliPath = require.resolve('sharp-cli/package.json', {
-        paths: (require.resolve.paths('sharp-cli') || []).concat(yarnGlobalPath),
-      });
-    } catch {}
-  }
-
-  // resolve sharp from the sharp-cli package
-  const sharpPath = resolveFrom.silent(sharpCliPath || '', 'sharp');
-
-  if (sharpPath) {
-    try {
-      // attempt to require the global sharp package
-      _sharpInstance = require(sharpPath);
-    } catch {}
-  }
 
   if (!_sharpInstance) {
     throw new Error(`Failed to find the instance of sharp used by the global sharp-cli package.`);

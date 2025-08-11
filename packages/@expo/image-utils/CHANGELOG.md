@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update to `sharp-cli@5.2.0` to support P3 colors in `sharp@0.34.2`.
+
 ### 💡 Others
 
 ## 0.7.6 - 2025-07-03
