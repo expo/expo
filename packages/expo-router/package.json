@@ -35,6 +35,8 @@
     "html.js",
     "index.d.ts",
     "ios",
+    "unstable-native-tabs.js",
+    "unstable-native-tabs.d.ts",
     "node",
     "plugin",
     "rsc",
