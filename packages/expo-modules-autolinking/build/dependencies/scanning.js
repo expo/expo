@@ -15,6 +15,7 @@ async function resolveDependency(basePath, dependencyName, shouldIncludeDependen
     const packageJson = await (0, utils_1.loadPackageJson)((0, utils_1.fastJoin)(realPath || originPath, 'package.json'));
     if (packageJson) {
         return {
+            source: 1 /* DependencyResolutionSource.SEARCH_PATH */,
             name: packageJson.name,
             version: packageJson.version || '',
             path: realPath || originPath,
@@ -25,6 +26,7 @@ async function resolveDependency(basePath, dependencyName, shouldIncludeDependen
     }
     else if (realPath) {
         return {
+            source: 1 /* DependencyResolutionSource.SEARCH_PATH */,
             name: dependencyName.toLowerCase(),
             version: '',
             path: realPath,
@@ -82,7 +84,12 @@ async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency =
         const resolution = resolvedDependencies[idx];
         const prevEntry = searchResults[resolution.name];
         if (prevEntry != null && resolution.path !== prevEntry.path) {
-            (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push(resolution.path);
+            (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push({
+                name: resolution.name,
+                version: resolution.version,
+                path: resolution.path,
+                originPath: resolution.originPath,
+            });
         }
         else if (prevEntry == null) {
             searchResults[resolution.name] = resolution;

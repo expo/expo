@@ -33,6 +33,7 @@ describe(scanDependenciesFromRNProjectConfig, () => {
           "name": "local-module",
           "originPath": "/fake/project/local-module",
           "path": "/fake/project/local-module",
+          "source": 2,
           "version": "",
         },
       }
