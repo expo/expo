@@ -7,18 +7,15 @@
   "exports": {
     ".": {
       "import": "./build/mjs/index.js",
-      "require": "./build/cjs/index.js",
-      "types": "./build/cjs/index.d.ts"
+      "require": "./build/cjs/index.js"
     },
     "./adapter/*": {
       "import": "./build/mjs/vendor/*.js",
-      "require": "./build/cjs/vendor/*.js",
-      "types": "./build/cjs/vendor/*.d.ts"
+      "require": "./build/cjs/vendor/*.js"
     },
     "./build/*": {
       "import": "./build/mjs/*.js",
-      "require": "./build/cjs/*.js",
-      "types": "./build/cjs/*.d.ts"
+      "require": "./build/cjs/*.js"
     }
   },
   "scripts": {
