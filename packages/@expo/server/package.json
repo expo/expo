@@ -1,10 +1,13 @@
 {
   "name": "@expo/server",
-  "version": "0.6.2",
+  "version": "0.7.2",
   "description": "Server API for Expo Router projects",
-  "main": "build/index.js",
+  "main": "build/cjs/index.js",
+  "module": "build/mjs/index.js",
   "scripts": {
-    "build": "expo-module build",
+    "build": "yarn run build:cjs && yarn run build:mjs",
+    "build:cjs": "expo-module build",
+    "build:mjs": "tsc -p tsconfig.mjs.json",
     "clean": "expo-module clean",
     "prepare": "yarn run clean && yarn build",
     "lint": "eslint .",
