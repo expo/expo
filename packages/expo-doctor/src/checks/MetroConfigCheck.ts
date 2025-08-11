@@ -20,7 +20,7 @@ export class MetroConfigCheck implements DoctorCheck {
         !metroConfig.transformer.hasOwnProperty('_expoRelativeProjectRoot')
       ) {
         issues.push(
-          'It looks like that you are using a custom metro.config.js that does not extend @expo/metro-config. This can lead to unexpected and hard to debug issues. ' +
+          'It looks like that you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
             learnMore('https://docs.expo.dev/guides/customizing-metro/')
         );
       }
@@ -29,7 +29,7 @@ export class MetroConfigCheck implements DoctorCheck {
     return {
       isSuccessful: !issues.length,
       issues,
-      advice: issues.length ? [`Update your metro.config.js to extend @expo/metro-config.`] : [],
+      advice: issues.length ? [`Update your metro.config.js to extend "expo/metro-config".`] : [],
     };
   }
 }
