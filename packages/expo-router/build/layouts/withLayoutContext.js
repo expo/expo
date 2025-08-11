@@ -37,7 +37,7 @@ exports.useFilterScreenChildren = useFilterScreenChildren;
 exports.withLayoutContext = withLayoutContext;
 const react_1 = __importStar(require("react"));
 const Route_1 = require("../Route");
-const TabOptions_1 = require("../native-tabs/NativeBottomTabs/TabOptions");
+const NativeTabTrigger_1 = require("../native-tabs/NativeBottomTabs/NativeTabTrigger");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
@@ -56,14 +56,14 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 }
                 return;
             }
-            if ((0, TabOptions_1.isTab)(child, contextKey)) {
+            if ((0, NativeTabTrigger_1.isNativeTabTrigger)(child, contextKey)) {
                 if (exclude) {
                     protectedScreens.add(child.props.name);
                 }
                 else {
                     screens.push({
                         ...child.props,
-                        options: (0, TabOptions_1.convertTabPropsToOptions)(child.props),
+                        options: (0, NativeTabTrigger_1.convertTabPropsToOptions)(child.props),
                     });
                 }
                 return;
