@@ -328,11 +328,6 @@ PODS:
   - ExpoClipboard/Tests (7.1.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoFileSystem (18.1.10):
-    - ExpoModulesCore
-  - ExpoFileSystem/Tests (18.1.10):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - ExpoImage (2.3.0):
     - ExpoModulesCore
     - libavif/libdav1d
@@ -556,7 +551,7 @@ PODS:
     - FBLazyVector (= 0.81.0-rc.5)
     - RCTRequired (= 0.81.0-rc.5)
     - React-Core (= 0.81.0-rc.5)
-  - ReachabilitySwift (5.0.0)
+  - ReachabilitySwift (5.2.4)
   - React (0.81.0-rc.5):
     - React-Core (= 0.81.0-rc.5)
     - React-Core/DevSupport (= 0.81.0-rc.5)
@@ -2780,8 +2775,6 @@ DEPENDENCIES:
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
-  - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
-  - ExpoFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
@@ -2908,9 +2901,6 @@ EXTERNAL SOURCES:
   ExpoClipboard:
     inhibit_warnings: false
     :path: "../../../packages/expo-clipboard/ios"
-  ExpoFileSystem:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-file-system/ios"
   ExpoImage:
     inhibit_warnings: false
     :path: "../../../packages/expo-image/ios"
@@ -3082,7 +3072,6 @@ SPEC CHECKSUMS:
   expo-dev-menu: a22e83e35c8c902609ff7328142e9c95ed939e03
   expo-dev-menu-interface: e4289a7d41317f5d727949a95e3d94553d3ba056
   ExpoClipboard: 77842a5542aa7ad5dcd9cc03d34442b1b2d857ea
-  ExpoFileSystem: 9cefee1730641f6d132cbd6cb6c43fe2dbba7dfe
   ExpoImage: 736d4bf4e14437d0e0c7dafdd3aa169c17d447a7
   ExpoMediaLibrary: ad61cd80ca07da02be3d676e3d9b04b311a82c2c
   ExpoModulesCore: 9faf069f091ef2dd979ba7b605ffdb07f0819d1a
@@ -3105,7 +3094,7 @@ SPEC CHECKSUMS:
   RCTDeprecation: 3a51da4c0e2a533c893971c2171d164974bc5214
   RCTRequired: d26a2245fa986ca16a6c93d91e41beeeb7a8aa3f
   RCTTypeSafety: e9598921dd4338d6dcb7b4ba0b7b92f84cdcc25e
-  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   React: 713c6b114dfaddd4e58bc0e3804334f2a170b754
   React-callinvoker: 4441303f80922bcab09bd3e401738c1a7f3ffe11
   React-Core: 48eb931b5319893300e3766c6cc38481fa647dfa
