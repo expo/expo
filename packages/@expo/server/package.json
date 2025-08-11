@@ -4,6 +4,23 @@
   "description": "Server API for Expo Router projects",
   "main": "build/cjs/index.js",
   "module": "build/mjs/index.js",
+  "exports": {
+    ".": {
+      "import": "./build/mjs/index.js",
+      "require": "./build/cjs/index.js",
+      "types": "./build/cjs/index.d.ts"
+    },
+    "./adapter/*": {
+      "import": "./build/mjs/vendor/*.js",
+      "require": "./build/cjs/vendor/*.js",
+      "types": "./build/cjs/vendor/*.d.ts"
+    },
+    "./build/*": {
+      "import": "./build/mjs/*.js",
+      "require": "./build/cjs/*.js",
+      "types": "./build/cjs/*.d.ts"
+    }
+  },
   "scripts": {
     "build": "yarn run build:cjs && yarn run build:mjs",
     "build:cjs": "expo-module build",

@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "module": "es2022",
     "target": "es2022",
     "outDir": "./build/mjs",
