@@ -19,6 +19,7 @@
 
 - Bump Express types to `@types/express@5`. ([#37635](https://github.com/expo/expo/pull/37635) by [@byCedric](https://github.com/byCedric))
 - Sync development and self host server behavior with EAS Hosting ([#38465](https://github.com/expo/expo/pull/38465) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Refactor request handler callbacks to only use response and route parameters
 
 ## 0.6.3 - 2025-06-18
 
