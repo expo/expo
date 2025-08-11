@@ -24,9 +24,9 @@
   },
   "scripts": {
     "build": "run-p build:cjs build:mjs",
-    "build:cjs": "expo-module build -p tsconfig.json",
-    "build:mjs": "expo-module build -p tsconfig.mjs.json",
-    "clean": "expo-module clean",
+    "build:cjs": "tsc -p tsconfig.json",
+    "build:mjs": "tsc -p tsconfig.mjs.json",
+    "clean": "rimraf build",
     "prepare": "run-s clean build",
     "lint": "eslint .",
     "test": "jest"
@@ -55,7 +55,8 @@
   "devDependencies": {
     "@netlify/functions": "^1.4.0",
     "@types/express": "^5.0.3",
-    "npm-run-all2": "^8.0.4"
+    "npm-run-all2": "^8.0.4",
+    "rimraf": "^6.0.1"
   },
   "publishConfig": {
     "access": "public"
