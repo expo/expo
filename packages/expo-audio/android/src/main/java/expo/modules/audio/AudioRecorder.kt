@@ -49,7 +49,15 @@ class AudioRecorder(
       return null
     }
 
-    val amplitude: Int = recorder?.maxAmplitude ?: 0
+    val amplitude: Int = try {
+      recorder?.maxAmplitude ?: 0
+    } catch (e: Exception) {
+      // MediaRecorder maxAmplitude can throw various exceptions:
+      // - IllegalStateException: invalid recorder state/race condition
+      // - RuntimeException: getMaxAmplitude failed (hardware/driver issues)
+      // We return 0 (silence) as fallback for any amplitude reading failure
+      0
+    }
     return if (amplitude == 0) {
       -160.0
     } else {

@@ -5,6 +5,11 @@ interface LabelProps {
      * The text to display as the label for the tab.
      */
     children?: string;
+    /**
+     * If true, the label will be hidden.
+     * @default false
+     */
+    hidden?: boolean;
 }
 export declare function Label(props: LabelProps): null;
 interface SourceIconProps {
@@ -53,6 +58,11 @@ interface BadgeProps {
      * If not provided, the badge will not be displayed.
      */
     children?: string;
+    /**
+     * If true, the badge will be hidden.
+     * @default false
+     */
+    hidden?: boolean;
 }
 export declare function Badge(props: BadgeProps): null;
 export {};

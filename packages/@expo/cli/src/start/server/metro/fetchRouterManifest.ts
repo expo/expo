@@ -16,7 +16,17 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
   generated?: boolean;
 };
 
+export type ExpoRouterServerManifestV1Middleware = {
+  /**
+   * Path to the module that contains the middleware function as a default export.
+   *
+   * @example _expo/functions/+middleware.js
+   */
+  file: string;
+};
+
 export type ExpoRouterServerManifestV1<TRegex = string> = {
+  middleware?: ExpoRouterServerManifestV1Middleware;
   apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
@@ -64,6 +74,7 @@ export function inflateManifest(
 ): ExpoRouterServerManifestV1<RegExp> {
   return {
     ...json,
+    middleware: json.middleware,
     htmlRoutes: json.htmlRoutes?.map((value) => {
       return {
         ...value,

@@ -10,12 +10,13 @@
   },
   "dependencies": {
     "expo": "~53.0.9",
-    "expo-camera": "~16.1.6",
+    "expo-clipboard": "7.1.4",
     "expo-dev-client": "~5.1.8",
     "expo-image": "~2.3.0",
+    "expo-media-library": "17.1.6",
     "expo-notifications": "~0.31.2",
     "expo-splash-screen": "~0.30.8",
-    "native-component-list": "*",
+    "expo-updates": "0.28.13",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.0-rc.5"
