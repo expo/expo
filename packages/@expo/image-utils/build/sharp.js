@@ -123,10 +123,13 @@ async function findSharpBinAsync() {
             _sharpBin = path_1.default.join(path_1.default.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
         }
     }
-    catch {
+    catch (error) {
         _sharpBin = null;
         _sharpInstance = null;
         // `sharp-cli` and/or `sharp` modules could not be found, falling back to global binary only
+        if (env_1.env.EXPO_IMAGE_UTILS_DEBUG) {
+            console.warn('Sharp could not be loaded, reason:', error);
+        }
     }
     let installedCliVersion;
     try {
