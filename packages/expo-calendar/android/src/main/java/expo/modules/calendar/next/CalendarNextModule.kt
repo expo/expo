@@ -131,8 +131,64 @@ class CalendarNextModule : Module() {
         expoCalendarEvent.id
       }
 
+      Property("calendarId") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.calendarId
+      }
+
       Property("title") { expoCalendarEvent: ExpoCalendarEvent ->
         expoCalendarEvent.title
+      }
+
+      Property("notes") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.notes
+      }
+
+      Property("startDate") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.startDate
+      }
+
+      Property("endDate") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.endDate
+      }
+
+      Property("allDay") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.allDay
+      }
+
+      Property("location") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.location
+      }
+
+      Property("availability") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.availability
+      }
+
+      Property("organizerEmail") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.organizerEmail
+      }
+
+      Property("timeZone") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.timeZone
+      }
+
+      Property("endTimeZone") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.endTimeZone
+      }
+
+      Property("guestsCanModify") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.guestsCanModify
+      }
+
+      Property("guestsCanInviteOthers") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.guestsCanInviteOthers
+      }
+
+      Property("guestsCanSeeGuests") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.guestsCanSeeGuests
+      }
+
+      Property("originalId") { expoCalendarEvent: ExpoCalendarEvent ->
+        expoCalendarEvent.originalId
       }
     }
 
