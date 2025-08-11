@@ -444,9 +444,6 @@ PODS:
     - ExpoModulesCore
   - ExpoFileSystem (18.1.10):
     - ExpoModulesCore
-  - ExpoFileSystem/Tests (18.1.10):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - ExpoFont (13.3.1):
     - ExpoModulesCore
   - ExpoGL (15.1.5):
@@ -3509,7 +3506,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (4.0.1):
+  - RNReanimated (4.0.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3536,11 +3533,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 4.0.1)
+    - RNReanimated/reanimated (= 4.0.2)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated (4.0.1):
+  - RNReanimated/reanimated (4.0.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3567,11 +3564,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 4.0.1)
+    - RNReanimated/reanimated/apple (= 4.0.2)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (4.0.1):
+  - RNReanimated/reanimated/apple (4.0.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3868,7 +3865,6 @@ DEPENDENCIES:
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
-  - ExpoFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
   - ExpoFont (from `../../../packages/expo-font/ios`)
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
@@ -4480,7 +4476,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 3a4e4dc5cca31c1c731731cf11717dc3f7fff211
   ExpoDocumentPicker: 0b9848ccbb414d27491a478a013ea9d434613d84
   ExpoDomWebView: 290738a4948cf54d58a70191f31aedce6113a9a6
-  ExpoFileSystem: 9cefee1730641f6d132cbd6cb6c43fe2dbba7dfe
+  ExpoFileSystem: 95ecce2f02e751a3c40d082fc605fbc271564038
   ExpoFont: 370a9897880ac279fbd4e478dede18ec4f723d1a
   ExpoGL: 8f7f43291e400621ef9aeb7af347816c2051ddc7
   ExpoHaptics: 581bbb680c566b8afef68fd50f1efb883972b150
@@ -4616,7 +4612,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 5e3503a3a82a9710b0269fa6617e27f7896509bd
   RNFlashList: 3b0c6a34ba86318f897ff55ff7482b7e8ae18996
   RNGestureHandler: 4f7cc97a71d4fe0fcba38c94acdd969f5f17c91c
-  RNReanimated: bc92d92315bde5372395f9f9b96e44bde14ea612
+  RNReanimated: 3b8ec43aaef0389e702878e7725608128daa2053
   RNScreens: fc90db67db667de4fa6caf1355d679e04fe4c30f
   RNSVG: 8d87cff016edf1b6ca409ed39804101836d75e90
   RNWorklets: f0b4bfd581c55f18a8bea9beae9cef26650c8cda

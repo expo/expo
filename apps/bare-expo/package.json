@@ -71,7 +71,7 @@
     "react-native-gesture-handler": "~2.28.0",
     "react-native-keyboard-controller": "^1.18.3",
     "react-native-pager-view": "6.8.1",
-    "react-native-reanimated": "4.0.1",
+    "react-native-reanimated": "4.0.2",
     "react-native-safe-area-context": "5.5.2",
     "react-native-screens": "4.14.0-nightly-20250803-1df3db25a",
     "react-native-svg": "15.12.1",

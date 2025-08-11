@@ -58,3 +58,14 @@ extension View {
     #endif
   }
 }
+
+func getDevLauncherBundle() -> Bundle? {
+  if let bundleURL = Bundle.main.url(forResource: "EXDevLauncher", withExtension: "bundle") {
+    if let bundle = Bundle(url: bundleURL) {
+      return bundle
+    }
+  }
+
+  // fallback to the main bundle
+  return .main
+}

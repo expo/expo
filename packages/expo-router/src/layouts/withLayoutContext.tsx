@@ -12,7 +12,10 @@ import React, {
 } from 'react';
 
 import { useContextKey } from '../Route';
-import { convertTabPropsToOptions, isTab } from '../native-tabs/NativeBottomTabs/TabOptions';
+import {
+  isNativeTabTrigger,
+  convertTabPropsToOptions,
+} from '../native-tabs/NativeBottomTabs/NativeTabTrigger';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
@@ -45,7 +48,7 @@ export function useFilterScreenChildren(
         return;
       }
 
-      if (isTab(child, contextKey)) {
+      if (isNativeTabTrigger(child, contextKey)) {
         if (exclude) {
           protectedScreens.add(child.props.name);
         } else {
