@@ -1,6 +1,6 @@
 {
   "name": "@expo/server",
-  "version": "0.7.2",
+  "version": "0.6.2",
   "description": "Server API for Expo Router projects",
   "main": "build/cjs/index.js",
   "module": "build/mjs/index.js",
@@ -22,9 +22,9 @@
     }
   },
   "scripts": {
-    "build": "yarn run build:cjs && yarn run build:mjs",
-    "build:cjs": "expo-module build",
-    "build:mjs": "tsc -p tsconfig.mjs.json",
+    "build": "run-p build:cjs build:mjs",
+    "build:cjs": "expo-module build -p tsconfig.json",
+    "build:mjs": "expo-module build -p tsconfig.mjs.json",
     "clean": "expo-module clean",
     "prepare": "yarn run clean && yarn build",
     "lint": "eslint .",
@@ -53,7 +53,8 @@
   },
   "devDependencies": {
     "@netlify/functions": "^1.4.0",
-    "@types/express": "^5.0.3"
+    "@types/express": "^5.0.3",
+    "npm-run-all2": "^8.0.4"
   },
   "publishConfig": {
     "access": "public"
