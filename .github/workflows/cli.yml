@@ -337,7 +337,11 @@ jobs:
 
       - name: 🧪 E2E (playwright) Test CLI
         working-directory: packages/@expo/cli
-        run: yarn test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: |
+          yarn test:playwright \
+            --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
+            --grep "^(?!.*(router-e2e with spaces)).*$"
+        # To add more patters use (a|b|c) syntax, a being 'router-e2e with spaces'
 
       - name: 🗄️ Upload playwright report
         uses: actions/upload-artifact@v4
@@ -346,3 +350,19 @@ jobs:
           name: playwright-report
           path: packages/@expo/cli/playwright-report/
           retention-days: 30
+
+      # !WARN: This is temporary solution until we can run all test on Node 20+ on Windows
+      - name: 🏗️ Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 🧪 E2E (playwright) Test CLI only Node 20+ tests
+        working-directory: packages/@expo/cli
+        run: |
+          yarn test:playwright \
+          --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
+          --grep "(router-e2e with spaces)" \
+          --pass-with-no-tests
+        # To add more patters use (a|b|c) syntax, a being 'router-e2e with spaces'
+        # Pass with no test to avoid issues with shards that don't have tests for this pattern
