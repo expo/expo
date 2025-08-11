@@ -34,8 +34,8 @@ data class ProgressProps(
   val progress: MutableState<Float?> = mutableStateOf(null),
   val color: MutableState<Color?> = mutableStateOf(null),
   val elementColors: MutableState<ProgressColors> = mutableStateOf(ProgressColors()),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
-  ) : ComposeProps
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+) : ComposeProps
 
 class ProgressView(context: Context, appContext: AppContext) :
   ExpoComposeView<ProgressProps>(context, appContext, withHostingView = true) {

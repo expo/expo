@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import { ViewStyle } from 'react-native';
+
 import { ExpoModifier } from '../../types';
 
 export type ShapeProps = {

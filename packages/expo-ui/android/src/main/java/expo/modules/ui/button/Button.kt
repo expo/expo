@@ -62,8 +62,8 @@ data class ButtonProps(
   val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
   val systemImage: MutableState<String?> = mutableStateOf(null),
   val disabled: MutableState<Boolean> = mutableStateOf(false),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
-  ) : ComposeProps
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+) : ComposeProps
 
 @Composable
 fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, modifier: Modifier = Modifier, content: @Composable (RowScope.() -> Unit)) {
@@ -79,7 +79,7 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         disabledContentColor = colors.disabledContentColor.compose
       ),
       modifier = modifier
-      )
+    )
 
     ButtonVariant.BORDERLESS -> TextButton(
       onPress,

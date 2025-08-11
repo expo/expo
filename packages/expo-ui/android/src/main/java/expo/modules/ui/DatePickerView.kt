@@ -62,7 +62,7 @@ data class DateTimePickerProps(
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
   val is24Hour: MutableState<Boolean> = mutableStateOf(true),
   val color: MutableState<AndroidColor?> = mutableStateOf(null),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -100,7 +100,7 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
       initialSelectedDateMillis = initialDate?.time ?: Date().time,
       initialDisplayedMonthMillis = initialDate?.time ?: Date().time,
       yearRange = DatePickerDefaults.YearRange,
-      selectableDates = DatePickerDefaults.AllDates,
+      selectableDates = DatePickerDefaults.AllDates
     )
   }
 

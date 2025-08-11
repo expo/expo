@@ -23,8 +23,8 @@ data class AlertDialogProps(
   val confirmButtonText: MutableState<String?> = mutableStateOf(null),
   val dismissButtonText: MutableState<String?> = mutableStateOf(null),
   val visible: MutableState<Boolean> = mutableStateOf(false),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
-  ) : ComposeProps
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+) : ComposeProps
 
 class AlertDialogView(context: Context, appContext: AppContext) :
   ExpoComposeView<AlertDialogProps>(context, appContext, withHostingView = true) {

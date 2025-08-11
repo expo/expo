@@ -45,8 +45,8 @@ data class ShapeProps(
   val radius: MutableState<Float> = mutableFloatStateOf(0.0f),
   val type: MutableState<ShapeType> = mutableStateOf(ShapeType.CIRCLE),
   val color: MutableState<GraphicsColor?> = mutableStateOf(null),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
-  ) : ComposeProps
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+) : ComposeProps
 
 private fun Size.centerX() = this.width / 2
 private fun Size.centerY() = this.height / 2
@@ -59,7 +59,7 @@ private fun createStarPath(size: Size, cornerRounding: Float, smoothing: Float, 
     radius = size.minDimension * 0.5f * radius.coerceAtLeast(0.002f),
     centerX = size.centerX(),
     centerY = size.centerY(),
-    rounding = rounding,
+    rounding = rounding
   ).toPath().asComposePath()
 }
 

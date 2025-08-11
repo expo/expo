@@ -3,7 +3,7 @@ package expo.modules.ui
 import androidx.compose.ui.Modifier
 import expo.modules.kotlin.sharedobjects.SharedRef
 
-class ExpoModifier(ref: Modifier?) : SharedRef<Modifier?>(ref) {}
+class ExpoModifier(ref: Modifier?) : SharedRef<Modifier?>(ref)
 
 fun Modifier.fromExpoModifiers(
   modifiers: List<ExpoModifier>

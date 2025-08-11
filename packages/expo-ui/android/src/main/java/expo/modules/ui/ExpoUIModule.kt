@@ -5,7 +5,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -15,8 +14,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -25,7 +22,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.ui.button.Button
 import expo.modules.ui.menu.ContextMenu
-import kotlin.collections.emptyMap
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -138,13 +134,15 @@ class ExpoUIModule : Module() {
     }
 
     Function("clickable") { callback: JavaScriptFunction<Any?> ->
-      return@Function ExpoModifier(Modifier.clickable(
-        onClick = {
-          appContext.executeOnJavaScriptThread {
-            callback.invoke()
+      return@Function ExpoModifier(
+        Modifier.clickable(
+          onClick = {
+            appContext.executeOnJavaScriptThread {
+              callback.invoke()
+            }
           }
-        }
-      ))
+        )
+      )
     }
 
     Function("rotate") { degrees: Float ->

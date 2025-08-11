@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+
 import { ExpoModifier } from '../../types';
 
 export type ProgressElementColors = {
