@@ -45,7 +45,9 @@ public class BackgroundTaskModule: Module {
         throw BackgroundTasksNotConfigured()
       }
 
-      taskManager.unregisterTask(withName: name, consumerClass: BackgroundTaskConsumer.self)
+      try EXUtilities.catchException {
+        taskManager.unregisterTask(withName: name, consumerClass: BackgroundTaskConsumer.self)
+      }
     }
 
     AsyncFunction("getStatusAsync") {

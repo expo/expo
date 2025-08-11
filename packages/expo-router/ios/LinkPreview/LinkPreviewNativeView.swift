@@ -5,7 +5,16 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   private var trigger: NativeLinkPreviewTrigger?
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
-  private var nextScreenId: String?
+  var nextScreenId: String? {
+    didSet {
+      performUpdateOfPreloadedView()
+    }
+  }
+  var tabPath: TabPathPayload? {
+    didSet {
+      performUpdateOfPreloadedView()
+    }
+  }
   private var actions: [LinkPreviewNativeActionView] = []
 
   private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
@@ -30,9 +39,13 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
 
   // MARK: - Props
 
-  func setNextScreenId(_ screenId: String) {
-    self.nextScreenId = screenId
-    linkPreviewNativeNavigation.updatePreloadedView(screenId: screenId, responder: self)
+  func performUpdateOfPreloadedView() {
+    if nextScreenId == nil || tabPath?.path.isEmpty != false {
+      return
+    }
+      print("Perform update \(nextScreenId) \(tabPath) \(self)")
+    linkPreviewNativeNavigation.updatePreloadedView(
+      screenId: nextScreenId, tabPath: tabPath, responder: self)
   }
 
   // MARK: - Children

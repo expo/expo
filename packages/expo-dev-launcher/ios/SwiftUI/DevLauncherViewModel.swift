@@ -16,7 +16,11 @@ class DevLauncherViewModel: ObservableObject {
   @Published var updatesConfig: [AnyHashable: Any] = [:]
   @Published var devServers: [DevServer] = []
   @Published var currentError: EXDevLauncherAppError?
-  @Published var showingError = false
+  @Published var showingCrashReport = false
+  @Published var showingErrorAlert = false
+  @Published var errorAlertMessage = ""
+  @Published var storedCrashInstance: EXDevLauncherErrorInstance?
+  @Published var hasStoredCrash = false
   @Published var shakeDevice = true {
     didSet {
       saveMenuPreference(key: "EXDevMenuMotionGestureEnabled", value: shakeDevice)
@@ -61,6 +65,7 @@ class DevLauncherViewModel: ObservableObject {
     loadData()
     discoverDevServers()
     checkAuthenticationStatus()
+    checkForStoredCrashes()
   }
 
   private func loadData() {
@@ -96,13 +101,10 @@ class DevLauncherViewModel: ObservableObject {
     EXDevLauncherController.sharedInstance().loadApp(
       bundleUrl,
       onSuccess: nil,
-      onError: { [weak self] error in
-        let appError = EXDevLauncherAppError(
-          message: "Failed to load app from \(url) with error: \(error.localizedDescription)",
-          stack: nil
-        )
+      onError: { [weak self] _ in
+        let message = "Failed to connect to \(url)"
         DispatchQueue.main.async {
-          self?.showError(appError)
+          self?.showErrorAlert(message)
         }
       })
   }
@@ -173,28 +175,31 @@ class DevLauncherViewModel: ObservableObject {
 
   func showError(_ error: EXDevLauncherAppError) {
     currentError = error
-    showingError = true
   }
 
-  func dismissError() {
+  func showErrorAlert(_ message: String) {
+    errorAlertMessage = message
+    showingErrorAlert = true
+  }
+
+  func dismissErrorAlert() {
+    errorAlertMessage = ""
+    showingErrorAlert = false
+  }
+
+  func dismissCrashReport() {
     currentError = nil
-    showingError = false
+    showingCrashReport = false
+    storedCrashInstance = nil
+    hasStoredCrash = false
   }
 
-  func reloadCurrentApp() {
-    guard let appUrl = EXDevLauncherController.sharedInstance().appManifestURLWithFallback() else {
-      dismissError()
-      return
+  func showCrashReport() {
+    if let storedCrashInstance {
+      let error = EXDevLauncherAppError(message: storedCrashInstance.message, stack: nil)
+      currentError = error
+      showingCrashReport = true
     }
-
-    EXDevLauncherController.sharedInstance().loadApp(
-      appUrl,
-      onSuccess: { [weak self] in
-        self?.dismissError()
-      },
-      onError: { [weak self] _ in
-        self?.dismissError()
-      })
   }
 
   private func loadMenuPreferences() {
@@ -376,6 +381,12 @@ class DevLauncherViewModel: ObservableObject {
     return urlTypes.compactMap { urlType in
       (urlType["CFBundleURLSchemes"] as? [String])?.first
     }.first ?? DEV_LAUNCHER_DEFAULT_SCHEME
+  }
+
+  func checkForStoredCrashes() {
+    let registry = EXDevLauncherErrorRegistry()
+    storedCrashInstance = registry.consumeException()
+    hasStoredCrash = storedCrashInstance != nil
   }
 }
 

@@ -4,10 +4,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TabTrigger = TabTrigger;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
 exports.isTab = isTab;
+const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const utils_1 = require("./utils");
+const useSafeLayoutEffect_1 = require("../../views/useSafeLayoutEffect");
 const elements_1 = require("../common/elements");
 function TabTrigger(props) {
+    const route = (0, native_1.useRoute)();
+    const navigation = (0, native_1.useNavigation)();
+    const isFocused = navigation.isFocused();
+    (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
+        // This will cause the tab to update only when it is focused.
+        // As long as all tabs are loaded at the start, we don't need this check.
+        // It is here to ensure similar behavior to stack
+        if (isFocused) {
+            if (navigation.getState()?.type !== 'tab') {
+                throw new Error(`Trigger component can only be used in the tab screen. Current route: ${route.name}`);
+            }
+            const options = convertTabPropsToOptions(props);
+            navigation.setOptions(options);
+        }
+    }, [isFocused, props]);
     return null;
 }
 function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, disableScrollToTop, }) {
@@ -27,9 +44,20 @@ function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, 
             if (child.props.children) {
                 acc.badgeValue = String(child.props.children);
             }
+            else if (!child.props.hidden) {
+                // If no value is provided, we set it to a space to show the badge
+                // Otherwise, the `react-native-screens` will interpret it as a hidden badge
+                // https://github.com/software-mansion/react-native-screens/blob/b4358fd95dd0736fc54df6bb97f210dc89edf24c/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm#L172
+                acc.badgeValue = ' ';
+            }
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Label)) {
-            acc.title = child.props.children;
+            if (child.props.hidden) {
+                acc.title = '';
+            }
+            else {
+                acc.title = child.props.children;
+            }
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Icon)) {
             if ('src' in child.props || 'selectedSrc' in child.props) {

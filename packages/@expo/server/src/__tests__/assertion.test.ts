@@ -1,22 +1,22 @@
-import { _assertNodeFetchSupport } from '../assertion';
+import { assertRuntimeFetchAPISupport } from '../ImmutableRequest';
 
-describe(_assertNodeFetchSupport, () => {
+describe(assertRuntimeFetchAPISupport, () => {
   it(`sets up environment using default global`, () => {
-    _assertNodeFetchSupport();
+    assertRuntimeFetchAPISupport();
   });
   it(`asserts environment is missing Node.js fetch`, () => {
-    expect(() => _assertNodeFetchSupport({})).toThrow(
-      /Node built-in Request\/Response APIs are not available. Ensure that Node Fetch API, first available in Node.js 18, is enabled./
+    expect(() => assertRuntimeFetchAPISupport({})).toThrow(
+      /Runtime built-in Request\/Response\/Headers APIs are not available. If running Node ensure that Node Fetch API, first available in Node.js 18, is enabled./
     );
   });
   it(`asserts environment is missing Node.js fetch`, () => {
-    expect(() => _assertNodeFetchSupport({ process: { version: 'v16.12.2' } })).toThrow(
+    expect(() => assertRuntimeFetchAPISupport({ process: { version: 'v16.12.2' } })).toThrow(
       /Node.js version 16 is not supported. Upgrade to Node.js 20 or newer./
     );
   });
   it(`asserts node fetch is disabled manually by user`, () => {
     expect(() =>
-      _assertNodeFetchSupport({
+      assertRuntimeFetchAPISupport({
         process: {
           env: {
             NODE_OPTIONS: '--no-experimental-fetch',
@@ -25,7 +25,7 @@ describe(_assertNodeFetchSupport, () => {
       })
     ).toThrow(/NODE_OPTIONS/);
     expect(() =>
-      _assertNodeFetchSupport({
+      assertRuntimeFetchAPISupport({
         process: {
           env: {
             NODE_OPTIONS: '--foo --no-experimental-fetch',
@@ -36,7 +36,7 @@ describe(_assertNodeFetchSupport, () => {
   });
   it(`experimental fetch can be disabled with error skipped when globals are polyfilled`, () => {
     expect(() =>
-      _assertNodeFetchSupport({
+      assertRuntimeFetchAPISupport({
         process: {
           env: {
             NODE_OPTIONS: '--no-experimental-fetch',
@@ -44,6 +44,7 @@ describe(_assertNodeFetchSupport, () => {
         },
         Request: {},
         Response: {},
+        Headers: {},
       })
     ).not.toThrow();
   });

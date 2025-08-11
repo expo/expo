@@ -14,8 +14,15 @@ export interface NativeLinkPreviewActionProps {
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
 export type NativeLinkPreviewTriggerProps = ViewProps;
 export declare function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps): import("react").JSX.Element | null;
+export interface TabPath {
+    oldTabKey: string;
+    newTabKey: string;
+}
 export interface NativeLinkPreviewProps extends ViewProps {
     nextScreenId: string | undefined;
+    tabPath: {
+        path: TabPath[];
+    } | undefined;
     onWillPreviewOpen?: () => void;
     onDidPreviewOpen?: () => void;
     onPreviewWillClose?: () => void;
