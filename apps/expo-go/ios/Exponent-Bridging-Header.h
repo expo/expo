@@ -30,5 +30,13 @@
 #import "EXReactAppManager.h"
 #import "EXProgressHUD.h"
 
+<<<<<<< HEAD
 #import "EXScopedNotificationsUtils.h"
 #import "EXScopedNotificationSerializer.h"
+||||||| parent of 6c6230bc80 (migrate expo go)
+#import "EXScopedNotificationsUtils.h"
+#import "EXScopedNotificationSerializer.h"
+#import "EXScopedNotificationCategoryMigrator.h"
+=======
+#import "EXScopedNotificationCategoryMigrator.h"
+>>>>>>> 6c6230bc80 (migrate expo go)

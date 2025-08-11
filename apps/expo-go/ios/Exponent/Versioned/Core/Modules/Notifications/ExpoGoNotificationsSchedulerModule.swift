@@ -43,7 +43,7 @@ public final class ExpoGoNotificationsSchedulerModule: SchedulerModule {
     return try super.buildNotificationRequest(identifier: scopedIdentifier, contentInput: mutableContentInput, triggerInput: triggerInput)
   }
 
-  override public func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [[String: Any]] {
+  override public func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [NotificationRequestRecord] {
     return requests.map {
       EXScopedNotificationSerializer.serializedNotificationRequest($0)
     }

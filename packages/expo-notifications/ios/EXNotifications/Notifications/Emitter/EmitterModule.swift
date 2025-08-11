@@ -46,15 +46,15 @@ open class EmitterModule: Module, NotificationDelegate {
   }
 
   open func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
-    self.sendEvent(onDidReceiveNotification, serializedNotification(notification))
+    self.sendEvent(onDidReceiveNotification, serializedNotification(notification).toDictionary())
     return false
   }
 
-  open func serializedNotification(_ notification: UNNotification) -> [String: Any] {
-    return NotificationSerializer.serializedNotification(notification)
+  open func serializedNotification(_ notification: UNNotification) -> NotificationRecord {
+    return NotificationRecord(from: notification)
   }
 
   open func serializedResponse(_ response: UNNotificationResponse) -> [String: Any] {
-    return NotificationSerializer.serializedNotificationResponse(response)
+    return NotificationResponseRecord(from: response).toDictionary()
   }
 }

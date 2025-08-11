@@ -138,6 +138,8 @@ export async function test(t) {
       });
 
       t.it('calls the `handleNotification` callback of the notification handler', async () => {
+        t.expect(expoPushToken?.length > 1).toBe(true);
+
         await waitUntil(() => !!notificationToHandle);
 
         t.expect(notificationToHandle).not.toBeNull();
@@ -976,8 +978,9 @@ export async function test(t) {
         'triggers a notification which emits an event',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription =
-            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
+          const subscription = Notifications.addNotificationReceivedListener((...args) => {
+            notificationReceivedSpy(...args);
+          });
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notificationContent,
@@ -1003,11 +1006,11 @@ export async function test(t) {
                   sticky: false,
                 }
               : {
-                  launchImageName: '',
-                  categoryIdentifier: '',
+                  launchImageName: null,
+                  categoryIdentifier: null,
                   interruptionLevel: 'active',
                   attachments: [],
-                  threadIdentifier: '',
+                  threadIdentifier: null,
                   targetContentIdentifier: null,
                 };
 
@@ -1165,6 +1168,9 @@ export async function test(t) {
               type: 'calendar',
               class: 'UNCalendarNotificationTrigger',
               repeats: true,
+              payload: null,
+              seconds: null,
+              region: null,
               dateComponents: {
                 ...removeTriggerType(trigger),
                 timeZone: null,
@@ -1209,6 +1215,9 @@ export async function test(t) {
               type: 'calendar',
               class: 'UNCalendarNotificationTrigger',
               repeats: true,
+              payload: null,
+              seconds: null,
+              region: null,
               dateComponents: {
                 ...removeTriggerType(trigger),
                 timeZone: null,
@@ -1252,6 +1261,9 @@ export async function test(t) {
               type: 'calendar',
               class: 'UNCalendarNotificationTrigger',
               repeats: true,
+              payload: null,
+              seconds: null,
+              region: null,
               dateComponents: {
                 ...removeTriggerType(trigger),
                 // iOS uses 1-12 based months
