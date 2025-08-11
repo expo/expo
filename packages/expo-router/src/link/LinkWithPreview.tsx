@@ -5,6 +5,7 @@ import React, {
   isValidElement,
   use,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type FC,
@@ -53,7 +54,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     }
   }, [hrefWithoutQuery]);
 
-  const [nextScreenId, prefetch] = useNextScreenId();
+  const [{ nextScreenId, tabPath }, prefetch] = useNextScreenId();
 
   useEffect(() => {
     if (shouldLinkExternally(String(rest.href))) {
@@ -103,6 +104,13 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
 
   const isPreviewTapped = useRef(false);
 
+  const tabPathValue = useMemo(
+    () => ({
+      path: tabPath,
+    }),
+    [tabPath]
+  );
+
   if (shouldLinkExternally(String(rest.href)) || rest.replace) {
     return <BaseExpoRouterLink children={children} {...rest} />;
   }
@@ -110,6 +118,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   return (
     <NativeLinkPreview
       nextScreenId={nextScreenId}
+      tabPath={tabPathValue}
       onWillPreviewOpen={() => {
         isPreviewTapped.current = false;
         prefetch(rest.href);

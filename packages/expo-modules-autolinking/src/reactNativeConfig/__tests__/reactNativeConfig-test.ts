@@ -289,7 +289,8 @@ describe(_resolveReactNativeModule, () => {
         depth: 0,
       },
       null,
-      'ios'
+      'ios',
+      new Set()
     );
     expect(result).toMatchInlineSnapshot(`
       {
@@ -318,11 +319,13 @@ describe(_resolveReactNativeModule, () => {
         depth: 0,
       },
       null,
-      'ios'
+      'ios',
+      new Set()
     );
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-      undefined
+      undefined,
+      null
     );
   });
 
@@ -349,14 +352,16 @@ describe(_resolveReactNativeModule, () => {
         depth: 0,
       },
       null,
-      'ios'
+      'ios',
+      new Set()
     );
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
       {
         configurations: ['Debug'],
         scriptPhases: [{ name: 'test', path: './test.js' }],
-      }
+      },
+      undefined
     );
   });
 
@@ -392,12 +397,14 @@ describe(_resolveReactNativeModule, () => {
         depth: 0,
       },
       projectConfig,
-      'ios'
+      'ios',
+      new Set()
     );
 
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-      null
+      null,
+      undefined
     );
   });
 
@@ -412,7 +419,8 @@ describe(_resolveReactNativeModule, () => {
         depth: 0,
       },
       null,
-      'ios'
+      'ios',
+      new Set()
     );
     expect(result).toBe(null);
   });

@@ -11,10 +11,13 @@
 - Add `--source-dir` option ([#38218](https://github.com/expo/expo/pull/38218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add `:projectRoot` option to `use_expo_modules!` ([#38210](https://github.com/expo/expo/pull/38210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Support auto-linking C++-only Turbo Modules on Android (as per `@react-native-community/cli-platform-android` changes) ([#38626](https://github.com/expo/expo/pull/38626) by [@kitten](https://github.com/kitten))
+- Respect `expo.autolinking.exclude` option for React Native modules as well ([#38635](https://github.com/expo/expo/pull/38635) by [@kitten](https://github.com/kitten))
+- Add `expo.autolinking.legacy_shallowReactNativeLinking` option to restore legacy behavior that doesn't autolink transitive React Native modules ([#38635](https://github.com/expo/expo/pull/38635) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
 - [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+- Prevent Expo Modules from being detected as C++-only React Native modules ([#38658](https://github.com/expo/expo/pull/38658) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
