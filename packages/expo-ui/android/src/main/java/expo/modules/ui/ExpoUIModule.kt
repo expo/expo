@@ -137,7 +137,7 @@ class ExpoUIModule : Module() {
       return@Function ExpoModifier(Modifier.blur(radius.dp))
     }
 
-    Function("clickable") { callback: JavaScriptFunction<Unit> ->
+    Function("clickable") { callback: JavaScriptFunction<Any?> ->
       return@Function ExpoModifier(Modifier.clickable(
         onClick = {
           appContext.executeOnJavaScriptThread {
