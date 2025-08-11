@@ -17,6 +17,61 @@ internal struct BackgroundModifier: ViewModifier {
   }
 }
 
+internal struct GlassEffectModifier: ViewModifier {
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, *) {
+      content.glassEffect()
+    } else {
+      content
+    }
+  }
+}
+
+internal struct AnimationModifier: ViewModifier {
+  @Environment(\.animationValue) private var animationValue
+
+  func body(content: Content) -> some View {
+    content.animation(.snappy(duration: 0.32), value: animationValue)
+  }
+}
+
+private struct AnimationValueKey: EnvironmentKey {
+  static let defaultValue: Bool? = nil
+}
+extension EnvironmentValues {
+  var animationValue: Bool? {
+    get { self[AnimationValueKey.self] }
+    set { self[AnimationValueKey.self] = newValue }
+  }
+}
+
+private struct GlassNamespaceKey: EnvironmentKey {
+  static let defaultValue: Namespace.ID? = nil
+}
+extension EnvironmentValues {
+  var glassNamespace: Namespace.ID? {
+    get { self[GlassNamespaceKey.self] }
+    set { self[GlassNamespaceKey.self] = newValue }
+  }
+}
+
+internal struct GlassEffectIDModifier: ViewModifier {
+  let id: String
+  @Environment(\.glassNamespace) private var namespace
+
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, *) {
+      if let namespace {
+             content.glassEffectID(id, in: namespace)
+           } else {
+             content
+           }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct CornerRadiusModifier: ViewModifier {
   let radius: CGFloat
 
@@ -441,9 +496,22 @@ extension ViewModifierRegistry {
       return BackgroundModifier(color: color)
     }
 
+    register("animation") { params, _ in
+      return AnimationModifier()
+    }
+
+    register("glassEffect") { _, _ in
+      return GlassEffectModifier()
+    }
+
     register("cornerRadius") { params, _ in
       let radius = params["radius"] as? Double ?? 0
       return CornerRadiusModifier(radius: CGFloat(radius))
+    }
+
+    register("glassEffectID") { params, _ in
+      let id = params["id"] as? String ?? ""
+      return GlassEffectIDModifier(id: id)
     }
 
     register("shadow") { params, _ in

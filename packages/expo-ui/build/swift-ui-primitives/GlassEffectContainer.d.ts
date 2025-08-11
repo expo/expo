@@ -1,3 +1,4 @@
+import { CommonViewModifierProps } from './types';
 export type GlassEffectContainerProps = {
     /**
      * The children of the `GlassEffectContainer` component.
@@ -9,7 +10,8 @@ export type GlassEffectContainerProps = {
      * This controls how close elements need to be to start blending together.
      */
     spacing?: number;
-};
+    observableValues?: string;
+} & CommonViewModifierProps;
 /**
  * @hidden
  */

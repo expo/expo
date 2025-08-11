@@ -7,97 +7,50 @@ import {
   Text,
   HStack,
   VStack,
+  glassEffect,
+  padding,
+  offset,
+  glassEffectID,
+  animation,
 } from '@expo/ui/swift-ui-primitives';
 import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Page, Section } from '../../components/Page';
+import { Section } from '../../components/Page';
 
 export default function GlassEffectContainerScreen() {
   const [spacing, setSpacing] = React.useState(40);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
-    <Page>
+    <View style={{ flex: 1, backgroundColor: 'pink' }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Section title="Basic Glass Effect Container">
-          <Host matchContents>
-            <GlassEffectContainer spacing={spacing}>
-              <HStack spacing={40}>
-                <Image systemName="scribble.variable" />
-                <Image systemName="eraser.fill" />
+          <Host style={{ width: 400, height: 400 }}>
+            <GlassEffectContainer
+              spacing={spacing}
+              observableValues={isExpanded}
+              modifiers={[animation()]}>
+              <HStack spacing={10}>
+                <Image
+                  systemName="scribble.variable"
+                  size={40}
+                  modifiers={[glassEffect(), glassEffectID('scribble')]}
+                />
+                {isExpanded ? (
+                  <Image
+                    systemName="eraser.fill"
+                    size={40}
+                    modifiers={[glassEffect(), glassEffectID('eraser')]}
+                  />
+                ) : null}
               </HStack>
             </GlassEffectContainer>
           </Host>
         </Section>
-
-        <Section title="Interactive Spacing Control">
-          <View style={styles.controls}>
-            <Button onPress={() => setSpacing(0)}>No Spacing</Button>
-            <Button onPress={() => setSpacing(20)}>Small</Button>
-            <Button onPress={() => setSpacing(40)}>Medium</Button>
-            <Button onPress={() => setSpacing(80)}>Large</Button>
-          </View>
-        </Section>
-
-        {/* <Section title="Multiple Glass Elements">
-          <Host matchContents>
-            <GlassEffectContainer spacing={20}>
-              <VStack spacing={20}>
-                <HStack spacing={20}>
-                  <Image systemName="heart.fill" />
-                  <Image systemName="star.fill" />
-                  <Image systemName="bookmark.fill" />
-                </HStack>
-                <HStack spacing={20}>
-                  <Image systemName="folder.fill" />
-                  <Image systemName="trash.fill" />
-                  <Image systemName="gear" />
-                </HStack>
-              </VStack>
-            </GlassEffectContainer>
-          </Host>
-        </Section>
-
-        <Section title="Glass Buttons in Container">
-          <Host matchContents>
-            <GlassEffectContainer spacing={30}>
-              <HStack spacing={30}>
-                <Button variant="glass" style={styles.glassButton} systemImage="play.fill">
-                  Play
-                </Button>
-                <Button variant="glass" style={styles.glassButton} systemImage="pause.fill">
-                  Pause
-                </Button>
-                <Button variant="glass" style={styles.glassButton} systemImage="stop.fill">
-                  Stop
-                </Button>
-              </HStack>
-            </GlassEffectContainer>
-          </Host>
-        </Section>
-
-        <Section title="Custom Glass Elements">
-          <Host matchContents>
-            <GlassEffectContainer spacing={25}>
-              <HStack spacing={25}>
-                <ButtonPrimitive>
-                  <VStack spacing={8}>
-                    <Image systemName="cloud.fill" />
-                    <Text>Weather</Text>
-                  </VStack>
-                </ButtonPrimitive>
-                <ButtonPrimitive>
-                  <VStack spacing={8}>
-                    <Image systemName="message.fill" />
-                    <Text>Messages</Text>
-                  </VStack>
-                </ButtonPrimitive>
-              </HStack>
-            </GlassEffectContainer>
-          </Host>
-        </Section> */}
+        <Button onPress={() => setIsExpanded(!isExpanded)}>Toggle</Button>
       </ScrollView>
-    </Page>
+    </View>
   );
 }
 

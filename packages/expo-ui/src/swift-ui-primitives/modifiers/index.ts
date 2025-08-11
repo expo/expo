@@ -41,6 +41,13 @@ function createModifierWithEventListener(
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
 export const background = (color: string) => createModifier('background', { color });
+export const animation = () => createModifier('animation');
+
+export const glassEffect = () => createModifier('glassEffect');
+export const glassEffectID = (id: string) =>
+  createModifier('glassEffectID', {
+    id,
+  });
 
 /**
  * Applies corner radius to a view.
@@ -334,7 +341,10 @@ export type BuiltInModifier =
   | ReturnType<typeof overlay>
   | ReturnType<typeof backgroundOverlay>
   | ReturnType<typeof aspectRatio>
-  | ReturnType<typeof clipped>;
+  | ReturnType<typeof clipped>
+  | ReturnType<typeof glassEffect>
+  | ReturnType<typeof glassEffectID>
+  | ReturnType<typeof animation>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
