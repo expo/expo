@@ -18,6 +18,8 @@ type ExpoRequest = Request;
 type ExpoResponse = Request;
 
 export { ExpoRequest, ExpoResponse };
+export { ExpoError } from './error';
+export { type MiddlewareFunction } from './types';
 
 type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
   headers: Record<string, string>;

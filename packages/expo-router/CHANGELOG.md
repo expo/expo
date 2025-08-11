@@ -62,6 +62,7 @@
 - Hide standalone Modal export ([#38648](https://github.com/expo/expo/pull/38648) by [@Ubax](https://github.com/Ubax))
 - Refactor link preview to show components in docs ([#38696](https://github.com/expo/expo/pull/38696) by [@Ubax](https://github.com/Ubax))
 - refactor tabs for docs export ([#38684](https://github.com/expo/expo/pull/38684) by [@Ubax](https://github.com/Ubax))
+- Use `@expo/server/private` for RSC Middleware imports ([#38717](https://github.com/expo/expo/pull/38717) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 5.1.4 - 2025-07-18
 
