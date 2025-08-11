@@ -2,7 +2,6 @@ package expo.modules.kotlin.views
 
 import android.view.View
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.PropSetException
@@ -26,6 +25,8 @@ class ComposeViewProp(
       val mutableState = property.getter.call(props)
       if (mutableState is MutableState<*>) {
         (mutableState as MutableState<Any?>).value = type.convert(prop, appContext)
+      } else {
+        logger.warn("⚠️ Property $name is not a MutableState in ${onView::class.java}")
       }
     }
   }
