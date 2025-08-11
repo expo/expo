@@ -32,12 +32,12 @@ export declare function createRequestHandler({ getRoutesManifest, getHtml, getAp
     getApiRoute: (route: Route) => Promise<any>;
     getMiddleware: (route: Middleware) => Promise<any>;
     handleRouteError: (error: Error) => Promise<Response>;
-    /** Before handler response 4XX, not before 5XX and not before user code 4XX */
+    /** Before handler response 4XX, not before unhandled error */
     beforeErrorResponse?: BeforeResponseCallback;
     /** Before handler responses */
     beforeResponse?: BeforeResponseCallback;
-    /** Before handler responses HTML, not before 404 HTML */
+    /** Before handler HTML responses, not before 404 HTML */
     beforeHTMLResponse?: BeforeResponseCallback;
-    /** Before handler responses API (repacks user code response) */
+    /** Before handler API responses */
     beforeAPIResponse?: BeforeResponseCallback;
 }): (request: Request) => Promise<Response>;
