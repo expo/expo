@@ -126,7 +126,7 @@ export class ReactNativeDirectoryCheck implements DoctorCheck {
     ) {
       issues.push(`${chalk.bold(`  No metadata available`)}: ${unknownPackages.join(', ')}`);
     }
-    
+
     if (!hasCriticalIssues && listUnknownPackagesEnabled === null) {
       // NOTE(@kitten): We shouldn't output just "no metadata available" packages with no other
       // issues, if the user hasn't explicitly opted-in or opted-out, since it adds to the output
