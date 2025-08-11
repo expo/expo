@@ -133,6 +133,8 @@ async function findSharpBinAsync(): Promise<string> {
       typeof _sharpInstance?.versions?.vips === 'string'
     ) {
       _sharpBin = path.join(path.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
+    } else {
+      _sharpInstance = null;
     }
   } catch (error) {
     _sharpBin = null;

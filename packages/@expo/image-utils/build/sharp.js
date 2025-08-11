@@ -122,6 +122,9 @@ async function findSharpBinAsync() {
             typeof _sharpInstance?.versions?.vips === 'string') {
             _sharpBin = path_1.default.join(path_1.default.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
         }
+        else {
+            _sharpInstance = null;
+        }
     }
     catch (error) {
         _sharpBin = null;
