@@ -3,6 +3,7 @@ package expo.modules.calendar.next
 import android.Manifest
 import android.database.Cursor
 import android.provider.CalendarContract
+import expo.modules.calendar.CalendarUtils
 import expo.modules.calendar.ModuleDestroyedException
 import expo.modules.calendar.dialogs.CreateEventContract
 import expo.modules.calendar.dialogs.CreateEventIntentResult
@@ -70,6 +71,38 @@ class CalendarNextModule : Module() {
 
       Property("title") { expoCalendar: ExpoCalendar ->
         expoCalendar.title
+      }
+
+      Property("isPrimary") { expoCalendar: ExpoCalendar ->
+        expoCalendar.isPrimary
+      }
+
+      Property("name") { expoCalendar: ExpoCalendar ->
+        expoCalendar.name
+      }
+
+      Property("color") { expoCalendar: ExpoCalendar ->
+        expoCalendar.color
+      }
+
+      Property("ownerAccount") { expoCalendar: ExpoCalendar ->
+        expoCalendar.ownerAccount
+      }
+
+      Property("timeZone") { expoCalendar: ExpoCalendar ->
+        expoCalendar.timeZone
+      }
+
+      Property("isVisible") { expoCalendar: ExpoCalendar ->
+        expoCalendar.isVisible
+      }
+
+      Property("isSynced") { expoCalendar: ExpoCalendar ->
+        expoCalendar.isSynced
+      }
+
+      Property("allowsModifications") { expoCalendar: ExpoCalendar ->
+        expoCalendar.allowsModifications
       }
 
       AsyncFunction("listEvents") { expoCalendar: ExpoCalendar, startDate: Any, endDate: Any, promise: Promise ->

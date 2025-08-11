@@ -770,30 +770,15 @@ class CalendarModule : Module() {
   }
 
   private fun optStringFromCursor(cursor: Cursor, columnName: String): String? {
-    val index = cursor.getColumnIndex(columnName)
-    return if (index == -1) {
-      null
-    } else {
-      cursor.getString(index)
-    }
+    return CalendarUtils.optStringFromCursor(cursor, columnName);
   }
 
   private fun stringFromCursor(cursor: Cursor, columnName: String): String {
-    val index = cursor.getColumnIndex(columnName)
-    if (index == -1) {
-      throw Exception("String not found")
-    } else {
-      return cursor.getString(index)
-    }
+    return CalendarUtils.stringFromCursor(cursor, columnName)
   }
 
   private fun optIntFromCursor(cursor: Cursor, columnName: String): Int {
-    val index = cursor.getColumnIndex(columnName)
-    return if (index == -1) {
-      0
-    } else {
-      cursor.getInt(index)
-    }
+    return CalendarUtils.optIntFromCursor(cursor, columnName);
   }
 
   private fun checkPermissions(promise: Promise): Boolean {
