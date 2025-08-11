@@ -1,7 +1,6 @@
 import { ImmutableRequest } from './ImmutableRequest';
 import { ExpoError } from './error';
 import { getRedirectRewriteLocation, isResponse, parseParams } from './utils';
-export { getRscMiddleware } from './middleware/rsc';
 export { ExpoError } from './error';
 function noopBeforeResponse(_route, responseInit) {
     return responseInit;

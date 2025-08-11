@@ -9,6 +9,10 @@
       "import": "./build/mjs/index.js",
       "require": "./build/cjs/index.js"
     },
+    "./private": {
+      "import": "./build/mjs/private.js",
+      "require": "./build/cjs/private.js"
+    },
     "./adapter/*": {
       "import": "./build/mjs/vendor/*.js",
       "require": "./build/cjs/vendor/*.js"
