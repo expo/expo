@@ -13,8 +13,8 @@ import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
 import {
   ModifiableEventProperties,
-  ModifableReminderProperties,
-  ModifableCalendarProperties,
+  ModifiableReminderProperties,
+  ModifiableCalendarProperties,
 } from './ExpoCalendar.types';
 
 /**
@@ -49,11 +49,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 
 /**
  * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
- *
- * @platform ios
  */
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
-  override update(details: Partial<ModifableReminderProperties>): void {
+  override update(details: Partial<ModifiableReminderProperties>): void {
     const nullableDetailsFields = getNullableDetailsFields(details);
     super.update(stringifyDateValues(details), nullableDetailsFields);
   }
@@ -119,7 +117,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     });
   }
 
-  override update(details: Partial<ModifableCalendarProperties>): void {
+  override update(details: Partial<ModifiableCalendarProperties>): void {
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, color: color || undefined };
     super.update(newDetails);
@@ -129,7 +127,6 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 /**
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
- * @platform ios
  */
 export function getDefaultCalendarNext(): ExpoCalendar {
   if (!InternalExpoCalendar.getDefaultCalendar) {
@@ -219,7 +216,6 @@ export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermi
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
  */
 export const requestRemindersPermissionsAsync =
   InternalExpoCalendar.requestRemindersPermissionsAsync;
@@ -227,16 +223,20 @@ export const requestRemindersPermissionsAsync =
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
  */
 export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
 
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
- * @platform ios
  */
 export const getSources = InternalExpoCalendar.getSources;
+
+export type {
+  ModifiableEventProperties,
+  ModifiableReminderProperties,
+  ModifiableCalendarProperties,
+} from './ExpoCalendar.types';
 
 export type {
   Calendar,

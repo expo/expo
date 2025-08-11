@@ -27,8 +27,6 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 }
 /**
  * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
- *
- * @platform ios
  */
 export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarReminder {
     update(details) {
@@ -81,7 +79,6 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 /**
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
- * @platform ios
  */
 export function getDefaultCalendarNext() {
     if (!InternalExpoCalendar.getDefaultCalendar) {
@@ -157,19 +154,16 @@ export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermi
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
  */
 export const requestRemindersPermissionsAsync = InternalExpoCalendar.requestRemindersPermissionsAsync;
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
- * @platform ios
  */
 export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
- * @platform ios
  */
 export const getSources = InternalExpoCalendar.getSources;
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, } from '../Calendar';

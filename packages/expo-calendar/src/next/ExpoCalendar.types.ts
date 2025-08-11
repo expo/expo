@@ -25,7 +25,7 @@ type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationO
 
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
-export type ModifableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
+export type ModifiableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
 
 export type ModifiableEventProperties = Pick<
   Event,
@@ -42,7 +42,7 @@ export type ModifiableEventProperties = Pick<
   | 'allDay'
 >;
 
-export type ModifableReminderProperties = Pick<
+export type ModifiableReminderProperties = Pick<
   Reminder,
   | 'title'
   | 'location'
@@ -70,7 +70,6 @@ export declare class ExpoCalendar {
   /**
    * ID of the source to be used for the calendar. Likely the same as the source for any other
    * locally stored calendars.
-   * @platform ios
    */
   sourceId?: string;
   /**
@@ -79,7 +78,6 @@ export declare class ExpoCalendar {
   source: Source;
   /**
    * Type of calendar this object represents.
-   * @platform ios
    */
   type?: CalendarType;
   /**
@@ -88,7 +86,6 @@ export declare class ExpoCalendar {
   color: string;
   /**
    * Whether the calendar is used in the Calendar or Reminders OS app.
-   * @platform ios
    */
   entityType?: EntityTypes;
   /**
@@ -113,7 +110,6 @@ export declare class ExpoCalendar {
    * @param endDate End of time period to search for reminders in, or `null` for all completed reminders after `startDate`.
    * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`. If not defined, both completed and incomplete reminders will be returned.
    * @return An array of [`ExpoCalendarReminder`](#expocalendarreminder) objects matching the search criteria.
-   * @platform ios
    */
   listReminders(
     startDate?: Date | string | null,
@@ -132,7 +128,6 @@ export declare class ExpoCalendar {
    * Creates a new reminder in the calendar.
    * @param reminderData A map of details for the reminder to be created.
    * @return An instance of the created reminder.
-   * @platform ios
    */
   createReminder(reminderData: Omit<Partial<Reminder>, 'id' | 'calendarId'>): ExpoCalendarReminder;
 
@@ -141,7 +136,7 @@ export declare class ExpoCalendar {
    * explicitly set it to `null` in `details`.
    * @param details A map of properties to be updated.
    */
-  update(details: Partial<ModifableCalendarProperties>): void;
+  update(details: Partial<ModifiableCalendarProperties>): void;
 
   /**
    * Deletes the calendar.
@@ -169,12 +164,10 @@ export declare class ExpoCalendarEvent {
   location: string | null;
   /**
    * Date when the event record was created.
-   * @platform ios
    */
   creationDate?: string | Date;
   /**
    * Date when the event record was last modified.
-   * @platform ios
    */
   lastModifiedDate?: string | Date;
   /**
@@ -183,7 +176,6 @@ export declare class ExpoCalendarEvent {
   timeZone: string;
   /**
    * URL for the event.
-   * @platform ios
    */
   url?: string;
   /**
@@ -208,12 +200,10 @@ export declare class ExpoCalendarEvent {
   endDate: string | Date;
   /**
    * For recurring events, the start date for the first (original) instance of the event.
-   * @platform ios
    */
   originalStartDate?: string | Date;
   /**
    * Boolean value indicating whether or not the event is a detached (modified) instance of a recurring event.
-   * @platform ios
    */
   isDetached?: boolean;
   /**
@@ -232,8 +222,6 @@ export declare class ExpoCalendarEvent {
    * Organizer of the event.
    * This property is only available on events associated with calendars that are managed by a service such as Google Calendar or iCloud.
    * The organizer is read-only and cannot be set.
-   *
-   * @platform ios
    */
   organizer?: Organizer;
 
@@ -352,8 +340,8 @@ export declare class ExpoCalendarReminder {
   completionDate?: string | Date;
 
   update(
-    details: Partial<ModifableReminderProperties>,
-    nullableFields?: (keyof ModifableReminderProperties)[]
+    details: Partial<ModifiableReminderProperties>,
+    nullableFields?: (keyof ModifiableReminderProperties)[]
   ): void;
 
   /**
@@ -368,7 +356,6 @@ export declare class ExpoCalendarReminder {
 export declare class ExpoCalendarAttendee {
   /**
    * Indicates whether or not this attendee is the current OS user.
-   * @platform ios
    */
   isCurrentUser?: boolean;
   /**
@@ -389,7 +376,6 @@ export declare class ExpoCalendarAttendee {
   type: AttendeeType;
   /**
    * URL for the attendee.
-   * @platform ios
    */
   url?: string;
 }
