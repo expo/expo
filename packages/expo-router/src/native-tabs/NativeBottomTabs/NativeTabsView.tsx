@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   BottomTabs,
   BottomTabsScreen,
@@ -40,12 +40,28 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     focusedIndex = routes.findIndex((route) => shouldTabBeVisible(descriptors[route.key].options));
   }
 
+  // This is flag that is set to true, when the transition is executed by native tab change
+  // In this case we don't need to change the isFocused of the screens, because the transition will happen on native side
+  const isDuringNativeTransition = useRef<boolean>(false);
+  // This is the last index that was not part of a native transition, e.g navigation from link
+  const lastNotNativeTransitionIndex = useRef<number>(focusedIndex);
+
+  // If the flag was set in the onNativeFocusChange handler, it will be still true here
+  // It is set to false, later in this function
+  // Thus if it is false, we know that the transition was not triggered by a native tab change
+  // and we need to reset the lastNotNativeTransitionIndex
+  if (!isDuringNativeTransition.current) {
+    lastNotNativeTransitionIndex.current = focusedIndex;
+  }
+
   const children = routes
     .map((route, index) => ({ route, index }))
     .filter(({ route: { key } }) => shouldTabBeVisible(descriptors[key].options))
     .map(({ route, index }) => {
       const descriptor = descriptors[route.key];
-      const isFocused = state.index === index;
+      // In case of native transition we want to keep the last focused index
+      // Otherwise the lastNotNativeTransitionIndex is set to focusedIndex in the if above this statement
+      const isFocused = index === lastNotNativeTransitionIndex.current;
       const title = descriptor.options.title ?? route.name;
 
       return (
@@ -62,6 +78,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         </BottomTabsScreen>
       );
     });
+
+  // The native render is over, we can reset the flag
+  isDuringNativeTransition.current = false;
 
   return (
     <BottomTabs
@@ -93,6 +112,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
             name: route.name,
           },
         });
+        isDuringNativeTransition.current = true;
       }}>
       {children}
     </BottomTabs>
