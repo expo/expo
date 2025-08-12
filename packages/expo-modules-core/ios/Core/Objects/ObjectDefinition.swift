@@ -10,7 +10,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   let functions: [String: AnyFunctionDefinition]
 
   /**
-   A dictionary of functions defined by the object.
+   A dictionary of static functions defined by the object.
    */
   let staticFunctions: [String: AnyFunctionDefinition]
 
@@ -40,7 +40,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   init(definitions: [AnyDefinition]) {
     self.functions = definitions
       .compactMap { $0 as? AnyFunctionDefinition }
-      .filter { !($0 is AnyStaticFunctionDefinition) } 
+      .filter { !($0 is AnyStaticFunctionDefinition) }
       .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
         dict[function.name] = function
       }

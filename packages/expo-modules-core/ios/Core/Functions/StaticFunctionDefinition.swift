@@ -17,12 +17,12 @@ public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
   var isStatic: Bool {
     get { true }
   }
-  
+
   override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any {
     return try super.call(by: nil, withArguments: args, appContext: appContext)
   }
-  
-  override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+
+  override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
     return super.call(by: nil, withArguments: args, appContext: appContext, callback: callback)
   }
 }
@@ -35,7 +35,7 @@ public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>
     get { true }
   }
 
-  override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
     return super.call(by: nil, withArguments: args, appContext: appContext, callback: callback)
   }
 }
