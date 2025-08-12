@@ -5,6 +5,10 @@ class DateComponentsSerializer {
     serializedComponents["calendar"] = dateComponents.calendar?.identifier ?? NSNull()
     serializedComponents["timeZone"] = dateComponents.timeZone?.identifier ?? NSNull()
     serializedComponents["isLeapMonth"] = dateComponents.isLeapMonth ?? false
+    if #available(iOS 26.0, *) {
+      serializedComponents["isRepeatedDay"] = dateComponents.isRepeatedDay ?? false
+    }
+
 
     let map = calendarUnitsConversionMap()
     for (calendarUnit, keyName) in map {

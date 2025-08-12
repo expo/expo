@@ -84,17 +84,4 @@ public class EXScopedNotificationsUtils {
     return string.replacingOccurrences(of: "\\/", with: "/")
       .replacingOccurrences(of: "\\\\", with: "\\")
   }
-
-  // MARK: Legacy notification category scoping
-
-  static func isLegacyCategoryId(_ scopedCategoryId: String, scopedByScopeKey scopeKey: String) -> Bool {
-    let legacyScopingPrefix = "\(scopeKey)-"
-    return scopedCategoryId.hasPrefix(legacyScopingPrefix)
-  }
-
-  // legacy categories were stored under an unescaped experienceId
-  static func unscopedLegacyCategoryIdentifierWithId(_ scopedCategoryId: String, forScopeKey scopeKey: String) -> String {
-    let legacyScopingPrefix = "\(scopeKey)-"
-    return scopedCategoryId.replacingOccurrences(of: legacyScopingPrefix, with: "", options: .anchored)
-  }
 }

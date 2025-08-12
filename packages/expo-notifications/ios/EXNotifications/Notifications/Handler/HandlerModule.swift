@@ -54,14 +54,14 @@ open class HandlerModule: Module, NotificationDelegate, SingleNotificationHandle
   public func handleNotification(_ notification: UNNotification) {
     sendEvent(onHandleNotification, [
       "id": notification.request.identifier,
-      "notification": NotificationRecord(from: notification).toDictionary()
+      "notification": NotificationRecord(from: notification).toDictionary(appContext: appContext)
     ])
   }
 
   public func handleNotificationTimeout(_ notification: UNNotification) {
     sendEvent(onHandleNotificationTimeout, [
       "id": notification.request.identifier,
-      "notification": NotificationRecord(from: notification).toDictionary()
+      "notification": NotificationRecord(from: notification).toDictionary(appContext: appContext)
     ])
   }
 }

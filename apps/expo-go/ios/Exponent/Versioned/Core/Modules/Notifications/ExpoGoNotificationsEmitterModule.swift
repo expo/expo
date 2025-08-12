@@ -39,7 +39,7 @@ public final class ExpoGoNotificationsEmitterModule: EmitterModule {
     let serializedResponseMutable = NotificationResponseRecord(from: response)
     serializedResponseMutable.notification = serializedNotification(response.notification)
 
-    return serializedResponseMutable.toDictionary()
+    return serializedResponseMutable.toDictionary(appContext: appContext)
   }
 
 }

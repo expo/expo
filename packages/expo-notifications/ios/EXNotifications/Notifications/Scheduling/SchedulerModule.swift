@@ -37,9 +37,9 @@ open class SchedulerModule: Module {
       cancelAllScheduledNotifications()
     }
 
-    AsyncFunction("scheduleNotificationAsync") { (identifier: String, notificationSpec: [String: Any], triggerSpec: [String: Any]?, promise: Promise) in
+    AsyncFunction("scheduleNotificationAsync") { (identifier: String, content: NotificationContentRecord, triggerSpec: [String: Any]?, promise: Promise) in
       do {
-        guard let request = try buildNotificationRequest(identifier: identifier, contentInput: notificationSpec, triggerInput: triggerSpec) else {
+        guard let request = try buildNotificationRequest(identifier: identifier, content: content, triggerInput: triggerSpec) else {
           promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to build notification request")
           return
         }
@@ -84,39 +84,29 @@ open class SchedulerModule: Module {
   }
 
   func triggerFromParams(_ params: [String: Any]?, appContext: AppContext) throws -> UNNotificationTrigger? {
-    guard let params = params else {
+    guard let params = params, let triggerType = params[notificationTriggerTypeKey] as? String else {
       return nil
     }
 
-    guard let triggerType = params[notificationTriggerTypeKey] as? String else {
-      return nil
-    }
-
-    switch triggerType {
+    let record: TriggerRecord? = switch triggerType {
     case timeIntervalNotificationTriggerType:
-      let timeIntervalTrigger = try TimeIntervalTriggerRecord(from: params, appContext: appContext)
-      return try timeIntervalTrigger.toUNNotificationTrigger()
+      try TimeIntervalTriggerRecord(from: params, appContext: appContext)
     case dateNotificationTriggerType:
-      let dateTrigger = try DateTriggerRecord(from: params, appContext: appContext)
-      return try dateTrigger.toUNNotificationTrigger()
+      try DateTriggerRecord(from: params, appContext: appContext)
     case dailyNotificationTriggerType:
-      let dailyTrigger = try DailyTriggerRecord(from: params, appContext: appContext)
-      return try dailyTrigger.toUNNotificationTrigger()
+      try DailyTriggerRecord(from: params, appContext: appContext)
     case weeklyNotificationTriggerType:
-      let weeklyTrigger = try WeeklyTriggerRecord(from: params, appContext: appContext)
-      return try weeklyTrigger.toUNNotificationTrigger()
+      try WeeklyTriggerRecord(from: params, appContext: appContext)
     case monthlyNotificationTriggerType:
-      let monthlyTrigger = try MonthlyTriggerRecord(from: params, appContext: appContext)
-      return try monthlyTrigger.toUNNotificationTrigger()
+      try MonthlyTriggerRecord(from: params, appContext: appContext)
     case yearlyNotificationTriggerType:
-      let yearlyTrigger = try YearlyTriggerRecord(from: params, appContext: appContext)
-      return try yearlyTrigger.toUNNotificationTrigger()
+      try YearlyTriggerRecord(from: params, appContext: appContext)
     case calendarNotificationTriggerType:
-      let calendarTrigger = try CalendarTriggerRecord(from: params, appContext: appContext)
-      return try calendarTrigger.toUNNotificationTrigger()
+      try CalendarTriggerRecord(from: params, appContext: appContext)
     default:
-      return nil
+      nil
     }
+    return try record?.toUNNotificationTrigger()
   }
 
   open func serializedNotificationRequests(_ requests: [UNNotificationRequest]) -> [NotificationRequestRecord] {
@@ -127,16 +117,15 @@ open class SchedulerModule: Module {
 
   open func buildNotificationRequest(
     identifier: String,
-    contentInput: [String: Any],
+    content: NotificationContentRecord,
     triggerInput: [String: Any]?
   ) throws -> UNNotificationRequest? {
     guard let appContext = appContext else {
       return nil
     }
-    let requestContentRecord = try NotificationRequestContentRecord(from: contentInput, appContext: appContext)
     return try UNNotificationRequest(
       identifier: identifier,
-      content: requestContentRecord.toUNMutableNotificationContent(),
+      content: content.toUNMutableNotificationContent(),
       trigger: triggerFromParams(triggerInput, appContext: appContext)
     )
   }

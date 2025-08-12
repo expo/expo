@@ -192,33 +192,33 @@ export async function test(t) {
       });
     });
 
-    t.describe('getPermissionsAsync', () => {
-      t.it('resolves with an object', async () => {
+    t.describe('permissions', () => {
+      t.it('getPermissionsAsync resolves with an object', async () => {
         const permissions = await Notifications.getPermissionsAsync();
         t.expect(permissions).toBeDefined();
         t.expect(typeof permissions).toBe('object');
       });
-    });
 
-    describeWithPermissions('requestPermissionsAsync', () => {
-      t.it('resolves without any arguments', async () => {
-        const permissions = await Notifications.requestPermissionsAsync();
-        t.expect(permissions).toBeDefined();
-        t.expect(typeof permissions).toBe('object');
-      });
-
-      t.it('resolves with specific permissions requested', async () => {
-        const permissions = await Notifications.requestPermissionsAsync({
-          ios: {
-            provideAppNotificationSettings: true,
-            allowAlert: true,
-            allowBadge: true,
-            allowSound: true,
-          },
+      describeWithPermissions('requestPermissionsAsync', () => {
+        t.it('resolves without any arguments', async () => {
+          const permissions = await Notifications.requestPermissionsAsync();
+          t.expect(permissions).toBeDefined();
+          t.expect(typeof permissions).toBe('object');
         });
-        t.expect(permissions).toBeDefined();
-        t.expect(typeof permissions).toBe('object');
-        t.expect(typeof permissions.status).toBe('string');
+
+        t.it('resolves with specific permissions requested', async () => {
+          const permissions = await Notifications.requestPermissionsAsync({
+            ios: {
+              provideAppNotificationSettings: true,
+              allowAlert: true,
+              allowBadge: true,
+              allowSound: true,
+            },
+          });
+          t.expect(permissions).toBeDefined();
+          t.expect(typeof permissions).toBe('object');
+          t.expect(typeof permissions.status).toBe('string');
+        });
       });
     });
 
@@ -781,35 +781,35 @@ export async function test(t) {
       });
     });
 
-    t.describe('getBadgeCountAsync', () => {
-      t.it('resolves with an integer', async () => {
+    t.describe('badge count', () => {
+      t.it('getBadgeCountAsync resolves with an integer', async () => {
         const badgeCount = await Notifications.getBadgeCountAsync();
         t.expect(typeof badgeCount).toBe('number');
       });
-    });
 
-    t.describe('setBadgeCountAsync', () => {
-      t.it('resolves with a boolean', async () => {
-        const randomCounter = Math.ceil(Math.random() * 9) + 1;
-        const result = await Notifications.setBadgeCountAsync(randomCounter);
-        t.expect(typeof result).toBe('boolean');
-      });
+      t.describe('setBadgeCountAsync', () => {
+        t.it('resolves with a boolean', async () => {
+          const randomCounter = Math.ceil(Math.random() * 9) + 1;
+          const result = await Notifications.setBadgeCountAsync(randomCounter);
+          t.expect(typeof result).toBe('boolean');
+        });
 
-      t.it('sets a retrievable counter (if set succeeds)', async () => {
-        const randomCounter = Math.ceil(Math.random() * 9) + 1;
-        if (await Notifications.setBadgeCountAsync(randomCounter)) {
+        t.it('sets a retrievable counter (if set succeeds)', async () => {
+          const randomCounter = Math.ceil(Math.random() * 9) + 1;
+          if (await Notifications.setBadgeCountAsync(randomCounter)) {
+            const badgeCount = await Notifications.getBadgeCountAsync();
+            t.expect(badgeCount).toBe(randomCounter);
+          } else {
+            // TODO: add t.pending() when it starts to work
+          }
+        });
+
+        t.it('clears the counter', async () => {
+          const clearingCounter = 0;
+          await Notifications.setBadgeCountAsync(clearingCounter);
           const badgeCount = await Notifications.getBadgeCountAsync();
-          t.expect(badgeCount).toBe(randomCounter);
-        } else {
-          // TODO: add t.pending() when it starts to work
-        }
-      });
-
-      t.it('clears the counter', async () => {
-        const clearingCounter = 0;
-        await Notifications.setBadgeCountAsync(clearingCounter);
-        const badgeCount = await Notifications.getBadgeCountAsync();
-        t.expect(badgeCount).toBe(clearingCounter);
+          t.expect(badgeCount).toBe(clearingCounter);
+        });
       });
     });
 
@@ -878,591 +878,701 @@ export async function test(t) {
       }
     });
 
-    t.describe('scheduleNotificationAsync() with null trigger', () => {
-      t.it('resolves for a valid notification ID', async () => {
-        const identifier = 'test-id';
-        await Notifications.scheduleNotificationAsync({
-          identifier,
-          content: {
-            title: 'Sample title',
-            subtitle: 'What an event!',
-            body: 'An interesting event has just happened',
-            badge: 1,
-          },
-          trigger: null,
-        });
-        await Notifications.dismissNotificationAsync(identifier);
-      });
-
-      t.it('resolves for an invalid notification ID', async () => {
-        await Notifications.dismissNotificationAsync('no-such-notification-id');
-      });
-    });
-
     t.describe('dismissAllNotificationsAsync()', () => {
       t.it('resolves', async () => {
         await Notifications.dismissAllNotificationsAsync();
       });
     });
 
-    t.describe('getAllScheduledNotificationsAsync', () => {
-      const identifier = 'test-scheduled-notification';
-      const notification = { title: 'Scheduled notification' };
+    t.describe('scheduling', () => {
+      t.describe('getAllScheduledNotificationsAsync', () => {
+        const identifier = 'test-scheduled-notification';
+        const notification = { title: 'Scheduled notification' };
 
-      t.afterEach(async () => {
-        await Notifications.cancelScheduledNotificationAsync(identifier);
-      });
-
-      t.it('resolves with an Array', async () => {
-        const notifications = await Notifications.getAllScheduledNotificationsAsync();
-        t.expect(notifications).toEqual(t.jasmine.arrayContaining([]));
-      });
-
-      t.it('contains a scheduled notification', async () => {
-        const trigger: NotificationTriggerInput = {
-          type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: 10,
-        };
-        await Notifications.scheduleNotificationAsync({
-          identifier,
-          content: notification,
-          trigger,
+        t.afterEach(async () => {
+          await Notifications.cancelScheduledNotificationAsync(identifier);
         });
-        const notifications = await Notifications.getAllScheduledNotificationsAsync();
-        t.expect(notifications).toContain(
-          t.jasmine.objectContaining({
-            identifier,
-            content: t.jasmine.objectContaining(notification),
-            trigger: t.jasmine.objectContaining({
-              repeats: false,
-              seconds: trigger.seconds,
-              type: 'timeInterval',
-            }),
-          })
-        );
-      });
 
-      t.it('does not contain a canceled notification', async () => {
-        const trigger: NotificationTriggerInput = {
-          type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: 10,
-        };
-        await Notifications.scheduleNotificationAsync({
-          identifier,
-          content: notification,
-          trigger,
+        t.it('resolves with an Array', async () => {
+          const notifications = await Notifications.getAllScheduledNotificationsAsync();
+          t.expect(notifications).toEqual(t.jasmine.arrayContaining([]));
         });
-        await Notifications.cancelScheduledNotificationAsync(identifier);
-        const notifications = await Notifications.getAllScheduledNotificationsAsync();
-        t.expect(notifications).not.toContain(t.jasmine.objectContaining({ identifier }));
-      });
-    });
 
-    t.describe('scheduleNotificationAsync', () => {
-      const identifier = 'test-scheduled-notification';
-      const notificationContent: NotificationContentInput = {
-        title: 'Scheduled notification',
-        body: 'below title',
-        data: { key: 'value' },
-        badge: 2,
-        vibrate: [100, 100, 100, 100, 100, 100],
-        color: '#FF0000',
-        sound: 'pop_sound.wav',
-      };
-
-      t.afterEach(async () => {
-        await Notifications.cancelScheduledNotificationAsync(identifier);
-      });
-
-      t.it(
-        'triggers a notification which emits an event',
-        async () => {
-          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription = Notifications.addNotificationReceivedListener((...args) => {
-            notificationReceivedSpy(...args);
-          });
+        t.it('contains a scheduled notification', async () => {
+          const trigger: NotificationTriggerInput = {
+            type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: 10,
+          };
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: notificationContent,
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+            content: notification,
+            trigger,
           });
-
-          await waitFor(6000);
-          const platformTrigger =
-            Platform.OS === 'android'
-              ? {
-                  channelId: null,
-                }
-              : {
-                  class: 'UNTimeIntervalNotificationTrigger',
-                };
-
-          const platformContent =
-            Platform.OS === 'android'
-              ? {
-                  vibrationPattern: [100, 100, 100, 100, 100, 100],
-                  color: '#FFFF0000',
-                  autoDismiss: true,
-                  sticky: false,
-                }
-              : {
-                  launchImageName: null,
-                  categoryIdentifier: null,
-                  interruptionLevel: 'active',
-                  attachments: [],
-                  threadIdentifier: null,
-                  targetContentIdentifier: null,
-                };
-
-          t.expect(notificationReceivedSpy).toHaveBeenCalledWith({
-            date: t.jasmine.any(Number),
-            request: {
-              trigger: t.jasmine.objectContaining({
-                seconds: 5,
-                repeats: false,
-                type: 'timeInterval',
-                ...platformTrigger,
-              }),
-              content: t.jasmine.objectContaining({
-                ...platformContent,
-                sound: 'custom',
-                title: notificationContent.title,
-                body: notificationContent.body,
-                subtitle: null,
-                badge: 2,
-                data: { key: 'value' },
-              }),
-              identifier,
-            },
-          });
-          subscription.remove();
-        },
-        10000
-      );
-
-      t.it(
-        'throws an error if a user defines an invalid trigger (no repeats)',
-        async () => {
-          let error = undefined;
-          try {
-            await Notifications.scheduleNotificationAsync({
-              identifier,
-              content: notificationContent,
-              // @ts-expect-error
-              trigger: { type: SchedulableTriggerInputTypes.YEARLY, hour: 2, seconds: 5 },
-            });
-          } catch (err) {
-            error = err;
-          }
-          t.expect(error).toBeDefined();
-        },
-        10000
-      );
-
-      t.it(
-        'triggers a notification which triggers the handler (`seconds` trigger)',
-        async () => {
-          let notificationFromEvent = undefined;
-          Notifications.setNotificationHandler({
-            handleNotification: async (event) => {
-              notificationFromEvent = event;
-              return behaviorEnableAll;
-            },
-          });
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notificationContent,
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
-          });
-          await waitFor(6000);
-          t.expect(notificationFromEvent).toBeDefined();
-          Notifications.setNotificationHandler(null);
-        },
-        10000
-      );
-
-      t.it(
-        'triggers a notification which triggers the handler (with custom sound set, but not existent)',
-        async () => {
-          let notificationFromEvent = undefined;
-          Notifications.setNotificationHandler({
-            handleNotification: async (event) => {
-              notificationFromEvent = event;
-              return behaviorEnableAll;
-            },
-          });
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: {
-              ...notificationContent,
-              sound: 'no-such-file.wav',
-            },
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
-          });
-          await waitFor(6000);
-          t.expect(notificationFromEvent).toBeDefined();
-          t.expect(notificationFromEvent).toEqual(
+          const notifications = await Notifications.getAllScheduledNotificationsAsync();
+          t.expect(notifications).toContain(
             t.jasmine.objectContaining({
-              request: t.jasmine.objectContaining({
-                content: t.jasmine.objectContaining({
-                  sound: 'custom',
-                }),
+              identifier,
+              content: t.jasmine.objectContaining(notification),
+              trigger: t.jasmine.objectContaining({
+                repeats: false,
+                seconds: trigger.seconds,
+                type: 'timeInterval',
               }),
             })
           );
-          Notifications.setNotificationHandler(null);
-        },
-        10000
-      );
+        });
 
-      t.it(
-        'triggers a notification which triggers the handler (`Date` trigger)',
-        async () => {
-          let notificationFromEvent = undefined;
-          Notifications.setNotificationHandler({
-            handleNotification: async (event) => {
-              notificationFromEvent = event;
-              return behaviorEnableAll;
+        t.it('does not contain a canceled notification', async () => {
+          const trigger: NotificationTriggerInput = {
+            type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: 10,
+          };
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
+          });
+          await Notifications.cancelScheduledNotificationAsync(identifier);
+          const notifications = await Notifications.getAllScheduledNotificationsAsync();
+          t.expect(notifications).not.toContain(t.jasmine.objectContaining({ identifier }));
+        });
+      });
+
+      t.describe('scheduleNotificationAsync() with null trigger', () => {
+        t.it('resolves for a valid notification ID', async () => {
+          const identifier = 'test-id';
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: {
+              title: 'Sample title',
+              subtitle: 'What an event!',
+              body: 'An interesting event has just happened',
+              badge: 1,
             },
+            trigger: null,
           });
-          const trigger: NotificationTriggerInput = {
-            type: SchedulableTriggerInputTypes.DATE,
-            date: new Date(Date.now() + 5 * 1000),
-          };
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notificationContent,
-            trigger,
-          });
-          await waitFor(6000);
-          t.expect(notificationFromEvent).toBeDefined();
-          Notifications.setNotificationHandler(null);
-        },
-        10000
-      );
+          await Notifications.dismissNotificationAsync(identifier);
+        });
 
-      t.it(
-        'schedules a repeating daily notification; only first scheduled event is verified.',
-        async () => {
-          const dateNow = new Date();
-          const trigger: NotificationTriggerInput = {
-            type: SchedulableTriggerInputTypes.DAILY,
-            hour: dateNow.getHours(),
-            minute: (dateNow.getMinutes() + 2) % 60,
-          };
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notificationContent,
-            trigger,
-          });
-          const result = await Notifications.getAllScheduledNotificationsAsync();
+        t.it('resolves for an invalid notification ID', async () => {
+          await Notifications.dismissNotificationAsync('no-such-notification-id');
+        });
+      });
 
-          if (Platform.OS === 'android') {
-            t.expect(result[0].trigger).toEqual({
-              type: 'daily',
-              channelId: null,
-              ...trigger,
-            });
-          } else if (Platform.OS === 'ios') {
-            t.expect(result[0].trigger).toEqual({
-              type: 'calendar',
-              class: 'UNCalendarNotificationTrigger',
-              repeats: true,
-              payload: null,
-              seconds: null,
-              region: null,
-              dateComponents: {
-                ...removeTriggerType(trigger),
-                timeZone: null,
-                isLeapMonth: false,
-                calendar: null,
-              },
-            });
-          } else {
-            throw new Error('Test does not support platform');
-          }
-        },
-        4000
-      );
+      t.describe('scheduleNotificationAsync', () => {
+        const identifier = 'test-scheduled-notification';
+        const notificationContent: NotificationContentInput = {
+          title: 'Scheduled notification',
+          body: 'below title',
+          data: { key: 'value' },
+          badge: 2,
+          vibrate: [100, 100, 100, 100, 100, 100],
+          color: '#FF0000',
+          sound: 'pop_sound.wav',
+        };
 
-      t.it(
-        'schedules a repeating weekly notification; only first scheduled event is verified.',
-        async () => {
-          const dateNow = new Date();
-          const trigger: NotificationTriggerInput = {
-            type: SchedulableTriggerInputTypes.WEEKLY,
-            // JS weekday range equals 0 to 6, Sunday equals 0
-            // Native weekday range equals 1 to 7, Sunday equals 1
-            weekday: dateNow.getDay() + 1,
-            hour: dateNow.getHours(),
-            minute: (dateNow.getMinutes() + 2) % 60,
-          };
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notificationContent,
-            trigger,
-          });
-          const result = await Notifications.getAllScheduledNotificationsAsync();
+        t.afterEach(async () => {
+          await Notifications.cancelScheduledNotificationAsync(identifier);
+        });
 
-          if (Platform.OS === 'android') {
-            t.expect(result[0].trigger).toEqual({
-              type: 'weekly',
-              channelId: null,
-              ...trigger,
-            });
-          } else if (Platform.OS === 'ios') {
-            t.expect(result[0].trigger).toEqual({
-              type: 'calendar',
-              class: 'UNCalendarNotificationTrigger',
-              repeats: true,
-              payload: null,
-              seconds: null,
-              region: null,
-              dateComponents: {
-                ...removeTriggerType(trigger),
-                timeZone: null,
-                isLeapMonth: false,
-                calendar: null,
-              },
-            });
-          } else {
-            throw new Error('Test does not support platform');
-          }
-        },
-        4000
-      );
-
-      t.it(
-        'schedules a repeating yearly notification; only first scheduled event is verified.',
-        async () => {
-          const dateNow = new Date();
-          const trigger: NotificationTriggerInput = {
-            type: SchedulableTriggerInputTypes.YEARLY,
-            day: dateNow.getDate(),
-            month: dateNow.getMonth(), // 0 is January
-            hour: dateNow.getHours(),
-            minute: (dateNow.getMinutes() + 2) % 60,
-          };
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notificationContent,
-            trigger,
-          });
-          const result = await Notifications.getAllScheduledNotificationsAsync();
-
-          if (Platform.OS === 'android') {
-            t.expect(result[0].trigger).toEqual({
-              type: 'yearly',
-              channelId: null,
-              ...trigger,
-            });
-          } else if (Platform.OS === 'ios') {
-            t.expect(result[0].trigger).toEqual({
-              type: 'calendar',
-              class: 'UNCalendarNotificationTrigger',
-              repeats: true,
-              payload: null,
-              seconds: null,
-              region: null,
-              dateComponents: {
-                ...removeTriggerType(trigger),
-                // iOS uses 1-12 based months
-                month: trigger.month + 1,
-                timeZone: null,
-                isLeapMonth: false,
-                calendar: null,
-              },
-            });
-          } else {
-            throw new Error('Test does not support platform');
-          }
-        },
-        4000
-      );
-
-      // iOS rejects with "time interval must be at least 60 if repeating"
-      // and having a test running for more than 60 seconds may be too
-      // time-consuming to maintain
-      if (Platform.OS !== 'ios') {
         t.it(
-          'triggers a repeating notification which emits events',
+          'triggers a notification which emits an event',
           async () => {
-            let timesSpyHasBeenCalled = 0;
-            const subscription = Notifications.addNotificationReceivedListener(() => {
-              timesSpyHasBeenCalled += 1;
+            const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+            const subscription = Notifications.addNotificationReceivedListener((...args) => {
+              notificationReceivedSpy(...args);
             });
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notificationContent,
-              trigger: {
-                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-                seconds: 5,
-                repeats: true,
+              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+            });
+
+            await waitFor(6000);
+            const platformTrigger =
+              Platform.OS === 'android'
+                ? {
+                    channelId: null,
+                  }
+                : {
+                    class: 'UNTimeIntervalNotificationTrigger',
+                  };
+
+            const platformContent =
+              Platform.OS === 'android'
+                ? {
+                    vibrationPattern: [100, 100, 100, 100, 100, 100],
+                    color: '#FFFF0000',
+                    autoDismiss: true,
+                    sticky: false,
+                  }
+                : {
+                    launchImageName: null,
+                    categoryIdentifier: null,
+                    interruptionLevel: 'active',
+                    attachments: [],
+                    threadIdentifier: null,
+                    targetContentIdentifier: null,
+                  };
+
+            t.expect(notificationReceivedSpy).toHaveBeenCalledWith({
+              date: t.jasmine.any(Number),
+              request: {
+                trigger: t.jasmine.objectContaining({
+                  seconds: 5,
+                  repeats: false,
+                  type: 'timeInterval',
+                  ...platformTrigger,
+                }),
+                content: t.jasmine.objectContaining({
+                  ...platformContent,
+                  sound: 'custom',
+                  title: notificationContent.title,
+                  body: notificationContent.body,
+                  subtitle: null,
+                  badge: 2,
+                  data: { key: 'value' },
+                }),
+                identifier,
               },
             });
-            await waitFor(12000);
-            t.expect(timesSpyHasBeenCalled).toBeGreaterThan(1);
             subscription.remove();
           },
-          16000
+          10000
         );
-      }
 
-      if (Platform.OS === 'ios') {
         t.it(
-          'schedules a notification with calendar trigger',
+          'throws an error if a user defines an invalid trigger (no repeats)',
+          async () => {
+            let error = undefined;
+            try {
+              await Notifications.scheduleNotificationAsync({
+                identifier,
+                content: notificationContent,
+                // @ts-expect-error
+                trigger: { type: SchedulableTriggerInputTypes.YEARLY, hour: 2, seconds: 5 },
+              });
+            } catch (err) {
+              error = err;
+            }
+            t.expect(error).toBeDefined();
+          },
+          10000
+        );
+
+        t.it(
+          'triggers a notification which triggers the handler (`seconds` trigger)',
+          async () => {
+            let notificationFromEvent = undefined;
+            Notifications.setNotificationHandler({
+              handleNotification: async (event) => {
+                notificationFromEvent = event;
+                return behaviorEnableAll;
+              },
+            });
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notificationContent,
+              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+            });
+            await waitFor(6000);
+            t.expect(notificationFromEvent).toBeDefined();
+            Notifications.setNotificationHandler(null);
+          },
+          10000
+        );
+
+        t.it(
+          'triggers a notification which triggers the handler (with custom sound set, but not existent)',
+          async () => {
+            let notificationFromEvent = undefined;
+            Notifications.setNotificationHandler({
+              handleNotification: async (event) => {
+                notificationFromEvent = event;
+                return behaviorEnableAll;
+              },
+            });
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: {
+                ...notificationContent,
+                sound: 'no-such-file.wav',
+              },
+              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+            });
+            await waitFor(6000);
+            t.expect(notificationFromEvent).toBeDefined();
+            t.expect(notificationFromEvent).toEqual(
+              t.jasmine.objectContaining({
+                request: t.jasmine.objectContaining({
+                  content: t.jasmine.objectContaining({
+                    sound: 'custom',
+                  }),
+                }),
+              })
+            );
+            Notifications.setNotificationHandler(null);
+          },
+          10000
+        );
+
+        t.describe('sounds', () => {
+          onlyInteractiveDescribe('sound argument variations', () => {
+            t.beforeAll(async () => {
+              Notifications.setNotificationHandler({
+                handleNotification: async () => behaviorEnableAll,
+              });
+            });
+
+            const testSound = async (
+              title: string,
+              body: string,
+              soundValue: string | boolean | undefined,
+              question: string,
+              trigger?: NotificationTriggerInput
+            ) => {
+              const id = await Notifications.scheduleNotificationAsync({
+                content: {
+                  title,
+                  body,
+                  sound: soundValue,
+                },
+                trigger: trigger || null,
+              });
+              const soundWasCorrect = await askUserYesOrNo(question);
+              await Notifications.dismissNotificationAsync(id);
+              await waitFor(2000);
+              t.expect(soundWasCorrect).toBeTruthy();
+            };
+
+            for (const soundValue of [
+              'default',
+              undefined,
+              true,
+              '__nonexistent_option',
+            ] as const) {
+              const soundLabel = String(soundValue);
+
+              t.it(
+                `triggers notification with sound: ${soundLabel} (default sound)`,
+                async () => {
+                  await testSound(
+                    `Sound: ${soundLabel}`,
+                    'Should play default sound',
+                    soundValue,
+                    'Did you hear the default notification sound?'
+                  );
+                },
+                10000
+              );
+            }
+
+            t.it(
+              'triggers notification with no sound (sound: false)',
+              async () => {
+                await testSound(
+                  'Sound: false',
+                  'Should be SILENT (no sound)',
+                  false,
+                  'Was the notification SILENT (no sound)?'
+                );
+              },
+              10000
+            );
+
+            t.it(
+              'triggers notification with custom sound file (pop_sound.wav)',
+              async () => {
+                const randomChannelId = `sound-test-channel-${Math.floor(Math.random() * 1000)}`;
+
+                if (Platform.OS === 'android') {
+                  const spec: NotificationChannelInput = {
+                    name: 'custom sound',
+                    importance: Notifications.AndroidImportance.MAX,
+                    sound: 'pop_sound.wav',
+                  };
+                  // we need to create a new channel every time to have android respect the settings
+                  await Notifications.setNotificationChannelAsync(randomChannelId, spec);
+                }
+
+                await testSound(
+                  "Sound: 'pop_sound.wav'",
+                  'Should play custom pop sound',
+                  'pop_sound.wav',
+                  'Did you hear a custom "pop" sound?',
+                  { channelId: randomChannelId }
+                );
+                await Notifications.deleteNotificationChannelAsync(randomChannelId);
+              },
+              10000
+            );
+
+            if (Platform.OS === 'ios') {
+              t.it(
+                "triggers notification with sound: 'defaultRingtone'",
+                async () => {
+                  await testSound(
+                    "Sound: 'defaultRingtone'",
+                    'Should play default ringtone',
+                    'defaultRingtone',
+                    'Did you hear the default ringtone sound?'
+                  );
+                },
+                10000
+              );
+            }
+          });
+        });
+
+        t.it(
+          'triggers a notification which triggers the handler (`Date` trigger)',
+          async () => {
+            let notificationFromEvent = undefined;
+            Notifications.setNotificationHandler({
+              handleNotification: async (event) => {
+                notificationFromEvent = event;
+                return behaviorEnableAll;
+              },
+            });
+            const trigger: NotificationTriggerInput = {
+              type: SchedulableTriggerInputTypes.DATE,
+              date: new Date(Date.now() + 5 * 1000),
+            };
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notificationContent,
+              trigger,
+            });
+            await waitFor(6000);
+            t.expect(notificationFromEvent).toBeDefined();
+            Notifications.setNotificationHandler(null);
+          },
+          10000
+        );
+
+        t.it(
+          'schedules a repeating daily notification; only first scheduled event is verified.',
+          async () => {
+            const dateNow = new Date();
+            const trigger: NotificationTriggerInput = {
+              type: SchedulableTriggerInputTypes.DAILY,
+              hour: dateNow.getHours(),
+              minute: (dateNow.getMinutes() + 2) % 60,
+            };
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notificationContent,
+              trigger,
+            });
+            const result = await Notifications.getAllScheduledNotificationsAsync();
+
+            if (Platform.OS === 'android') {
+              t.expect(result[0].trigger).toEqual({
+                type: 'daily',
+                channelId: null,
+                ...trigger,
+              });
+            } else if (Platform.OS === 'ios') {
+              t.expect(result[0].trigger).toEqual({
+                type: 'calendar',
+                class: 'UNCalendarNotificationTrigger',
+                repeats: true,
+                payload: undefined,
+                seconds: undefined,
+                region: undefined,
+                dateComponents: {
+                  ...removeTriggerType(trigger),
+                  timeZone: null,
+                  isLeapMonth: false,
+                  calendar: null,
+                },
+              });
+            } else {
+              throw new Error('Test does not support platform');
+            }
+          },
+          4000
+        );
+
+        t.it(
+          'schedules a repeating weekly notification; only first scheduled event is verified.',
+          async () => {
+            const dateNow = new Date();
+            const trigger: NotificationTriggerInput = {
+              type: SchedulableTriggerInputTypes.WEEKLY,
+              // JS weekday range equals 0 to 6, Sunday equals 0
+              // Native weekday range equals 1 to 7, Sunday equals 1
+              weekday: dateNow.getDay() + 1,
+              hour: dateNow.getHours(),
+              minute: (dateNow.getMinutes() + 2) % 60,
+            };
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notificationContent,
+              trigger,
+            });
+            const result = await Notifications.getAllScheduledNotificationsAsync();
+
+            if (Platform.OS === 'android') {
+              t.expect(result[0].trigger).toEqual({
+                type: 'weekly',
+                channelId: null,
+                ...trigger,
+              });
+            } else if (Platform.OS === 'ios') {
+              t.expect(result[0].trigger).toEqual({
+                type: 'calendar',
+                class: 'UNCalendarNotificationTrigger',
+                repeats: true,
+                payload: undefined,
+                seconds: undefined,
+                region: undefined,
+                dateComponents: {
+                  ...removeTriggerType(trigger),
+                  timeZone: null,
+                  isLeapMonth: false,
+                  calendar: null,
+                },
+              });
+            } else {
+              throw new Error('Test does not support platform');
+            }
+          },
+          4000
+        );
+
+        t.it(
+          'schedules a repeating yearly notification; only first scheduled event is verified.',
+          async () => {
+            const dateNow = new Date();
+            const trigger: NotificationTriggerInput = {
+              type: SchedulableTriggerInputTypes.YEARLY,
+              day: dateNow.getDate(),
+              month: dateNow.getMonth(), // 0 is January
+              hour: dateNow.getHours(),
+              minute: (dateNow.getMinutes() + 2) % 60,
+            };
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notificationContent,
+              trigger,
+            });
+            const result = await Notifications.getAllScheduledNotificationsAsync();
+
+            if (Platform.OS === 'android') {
+              t.expect(result[0].trigger).toEqual({
+                type: 'yearly',
+                channelId: null,
+                ...trigger,
+              });
+            } else if (Platform.OS === 'ios') {
+              t.expect(result[0].trigger).toEqual({
+                type: 'calendar',
+                class: 'UNCalendarNotificationTrigger',
+                repeats: true,
+                payload: undefined,
+                seconds: undefined,
+                region: undefined,
+                dateComponents: {
+                  ...removeTriggerType(trigger),
+                  // iOS uses 1-12 based months
+                  month: trigger.month + 1,
+                  timeZone: null,
+                  isLeapMonth: false,
+                  calendar: null,
+                },
+              });
+            } else {
+              throw new Error('Test does not support platform');
+            }
+          },
+          4000
+        );
+
+        // iOS rejects with "time interval must be at least 60 if repeating"
+        // and having a test running for more than 60 seconds may be too
+        // time-consuming to maintain
+        if (Platform.OS !== 'ios') {
+          t.it(
+            'triggers a repeating notification which emits events',
+            async () => {
+              let timesSpyHasBeenCalled = 0;
+              const subscription = Notifications.addNotificationReceivedListener(() => {
+                timesSpyHasBeenCalled += 1;
+              });
+              await Notifications.scheduleNotificationAsync({
+                identifier,
+                content: notificationContent,
+                trigger: {
+                  type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                  seconds: 5,
+                  repeats: true,
+                },
+              });
+              await waitFor(12000);
+              t.expect(timesSpyHasBeenCalled).toBeGreaterThan(1);
+              subscription.remove();
+            },
+            16000
+          );
+        }
+
+        if (Platform.OS === 'ios') {
+          t.it(
+            'schedules a notification with calendar trigger',
+            async () => {
+              const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+              const subscription =
+                Notifications.addNotificationReceivedListener(notificationReceivedSpy);
+              await Notifications.scheduleNotificationAsync({
+                identifier,
+                content: notificationContent,
+                trigger: {
+                  type: SchedulableTriggerInputTypes.CALENDAR,
+                  second: (new Date().getSeconds() + 5) % 60,
+                },
+              });
+              await waitFor(6000);
+              t.expect(notificationReceivedSpy).toHaveBeenCalled();
+              subscription.remove();
+            },
+            16000
+          );
+        }
+      });
+
+      t.describe('getNextTriggerDateAsync', () => {
+        if (Platform.OS === 'ios') {
+          t.it('generates trigger date for a calendar trigger', async () => {
+            const nextDate = await Notifications.getNextTriggerDateAsync({
+              type: SchedulableTriggerInputTypes.CALENDAR,
+              month: 1,
+              hour: 9,
+              repeats: true,
+            });
+            t.expect(nextDate).not.toBeNull();
+          });
+        } else {
+          t.it('fails to generate trigger date for a calendar trigger', async () => {
+            let exception = null;
+            try {
+              await Notifications.getNextTriggerDateAsync({
+                type: SchedulableTriggerInputTypes.CALENDAR,
+                month: 1,
+                hour: 9,
+                repeats: true,
+              });
+            } catch (e) {
+              exception = e;
+            }
+            t.expect(exception).toBeDefined();
+          });
+        }
+
+        t.it('generates trigger date for a daily trigger', async () => {
+          const nextDate = await Notifications.getNextTriggerDateAsync({
+            type: SchedulableTriggerInputTypes.DAILY,
+            hour: 9,
+            minute: 20,
+          });
+          t.expect(nextDate).not.toBeNull();
+          t.expect(new Date(nextDate).getHours()).toBe(9);
+          t.expect(new Date(nextDate).getMinutes()).toBe(20);
+        });
+
+        t.it('generates trigger date for a weekly trigger', async () => {
+          const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
+            type: SchedulableTriggerInputTypes.WEEKLY,
+            weekday: 2,
+            hour: 9,
+            minute: 20,
+          });
+          t.expect(nextDateTimestamp).not.toBeNull();
+          const nextDate = new Date(nextDateTimestamp);
+          // JS has 0 (Sunday) - 6 (Saturday) based week days
+          t.expect(nextDate.getDay()).toBe(1);
+          t.expect(nextDate.getHours()).toBe(9);
+          t.expect(nextDate.getMinutes()).toBe(20);
+        });
+
+        t.it('generates trigger date for a yearly trigger', async () => {
+          const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
+            type: SchedulableTriggerInputTypes.YEARLY,
+            day: 2,
+            month: 6,
+            hour: 9,
+            minute: 20,
+          });
+          t.expect(nextDateTimestamp).not.toBeNull();
+          const nextDate = new Date(nextDateTimestamp);
+          t.expect(nextDate.getDate()).toBe(2);
+          t.expect(nextDate.getMonth()).toBe(6);
+          t.expect(nextDate.getHours()).toBe(9);
+          t.expect(nextDate.getMinutes()).toBe(20);
+        });
+
+        t.it('fails to generate trigger date for the immediate trigger', async () => {
+          let exception = null;
+          try {
+            // @ts-expect-error invalid arg
+            await Notifications.getNextTriggerDateAsync({ channelId: 'test-channel-id' });
+          } catch (e) {
+            exception = e;
+          }
+          t.expect(exception).toBeDefined();
+        });
+      });
+
+      t.describe('cancelScheduledNotificationAsync', () => {
+        const identifier = 'test-scheduled-canceled-notification';
+        const notification = { title: 'Scheduled, canceled notification' };
+
+        t.it(
+          'makes a scheduled notification not trigger',
           async () => {
             const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
             const subscription =
               Notifications.addNotificationReceivedListener(notificationReceivedSpy);
             await Notifications.scheduleNotificationAsync({
               identifier,
-              content: notificationContent,
-              trigger: {
-                type: SchedulableTriggerInputTypes.CALENDAR,
-                second: (new Date().getSeconds() + 5) % 60,
-              },
-            });
-            await waitFor(6000);
-            t.expect(notificationReceivedSpy).toHaveBeenCalled();
-            subscription.remove();
-          },
-          16000
-        );
-      }
-    });
-
-    t.describe('getNextTriggerDateAsync', () => {
-      if (Platform.OS === 'ios') {
-        t.it('generates trigger date for a calendar trigger', async () => {
-          const nextDate = await Notifications.getNextTriggerDateAsync({
-            type: SchedulableTriggerInputTypes.CALENDAR,
-            month: 1,
-            hour: 9,
-            repeats: true,
-          });
-          t.expect(nextDate).not.toBeNull();
-        });
-      } else {
-        t.it('fails to generate trigger date for a calendar trigger', async () => {
-          let exception = null;
-          try {
-            await Notifications.getNextTriggerDateAsync({
-              type: SchedulableTriggerInputTypes.CALENDAR,
-              month: 1,
-              hour: 9,
-              repeats: true,
-            });
-          } catch (e) {
-            exception = e;
-          }
-          t.expect(exception).toBeDefined();
-        });
-      }
-
-      t.it('generates trigger date for a daily trigger', async () => {
-        const nextDate = await Notifications.getNextTriggerDateAsync({
-          type: SchedulableTriggerInputTypes.DAILY,
-          hour: 9,
-          minute: 20,
-        });
-        t.expect(nextDate).not.toBeNull();
-        t.expect(new Date(nextDate).getHours()).toBe(9);
-        t.expect(new Date(nextDate).getMinutes()).toBe(20);
-      });
-
-      t.it('generates trigger date for a weekly trigger', async () => {
-        const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
-          type: SchedulableTriggerInputTypes.WEEKLY,
-          weekday: 2,
-          hour: 9,
-          minute: 20,
-        });
-        t.expect(nextDateTimestamp).not.toBeNull();
-        const nextDate = new Date(nextDateTimestamp);
-        // JS has 0 (Sunday) - 6 (Saturday) based week days
-        t.expect(nextDate.getDay()).toBe(1);
-        t.expect(nextDate.getHours()).toBe(9);
-        t.expect(nextDate.getMinutes()).toBe(20);
-      });
-
-      t.it('generates trigger date for a yearly trigger', async () => {
-        const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
-          type: SchedulableTriggerInputTypes.YEARLY,
-          day: 2,
-          month: 6,
-          hour: 9,
-          minute: 20,
-        });
-        t.expect(nextDateTimestamp).not.toBeNull();
-        const nextDate = new Date(nextDateTimestamp);
-        t.expect(nextDate.getDate()).toBe(2);
-        t.expect(nextDate.getMonth()).toBe(6);
-        t.expect(nextDate.getHours()).toBe(9);
-        t.expect(nextDate.getMinutes()).toBe(20);
-      });
-
-      t.it('fails to generate trigger date for the immediate trigger', async () => {
-        let exception = null;
-        try {
-          // @ts-expect-error invalid arg
-          await Notifications.getNextTriggerDateAsync({ channelId: 'test-channel-id' });
-        } catch (e) {
-          exception = e;
-        }
-        t.expect(exception).toBeDefined();
-      });
-    });
-
-    t.describe('cancelScheduledNotificationAsync', () => {
-      const identifier = 'test-scheduled-canceled-notification';
-      const notification = { title: 'Scheduled, canceled notification' };
-
-      t.it(
-        'makes a scheduled notification not trigger',
-        async () => {
-          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription =
-            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
-          await Notifications.scheduleNotificationAsync({
-            identifier,
-            content: notification,
-            trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
-          });
-          await Notifications.cancelScheduledNotificationAsync(identifier);
-          await waitFor(6000);
-          t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
-          subscription.remove();
-        },
-        10000
-      );
-    });
-
-    t.describe('cancelAllScheduledNotificationsAsync', () => {
-      const notification = { title: 'Scheduled, canceled notification' };
-
-      t.it(
-        'removes all scheduled notifications',
-        async () => {
-          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription =
-            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
-          for (let i = 0; i < 3; i += 1) {
-            await Notifications.scheduleNotificationAsync({
-              identifier: `notification-${i}`,
               content: notification,
               trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
             });
-          }
-          await Notifications.cancelAllScheduledNotificationsAsync();
-          await waitFor(6000);
-          t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
-          subscription.remove();
-          const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-          t.expect(scheduledNotifications.length).toEqual(0);
-        },
-        10000
-      );
+            await Notifications.cancelScheduledNotificationAsync(identifier);
+            await waitFor(6000);
+            t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
+            subscription.remove();
+          },
+          10000
+        );
+      });
+
+      t.describe('cancelAllScheduledNotificationsAsync', () => {
+        const notification = { title: 'Scheduled, canceled notification' };
+
+        t.it(
+          'removes all scheduled notifications',
+          async () => {
+            const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+            const subscription =
+              Notifications.addNotificationReceivedListener(notificationReceivedSpy);
+            for (let i = 0; i < 3; i += 1) {
+              await Notifications.scheduleNotificationAsync({
+                identifier: `notification-${i}`,
+                content: notification,
+                trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+              });
+            }
+            await Notifications.cancelAllScheduledNotificationsAsync();
+            await waitFor(6000);
+            t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
+            subscription.remove();
+            const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+            t.expect(scheduledNotifications.length).toEqual(0);
+          },
+          10000
+        );
+      });
     });
 
     onlyInteractiveDescribe('when the app is in background', () => {
