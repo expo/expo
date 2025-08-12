@@ -630,7 +630,8 @@ jobs:
     type: testflight
     params:
       build_id: ${{ needs.build_ios.outputs.build_id }}
-      changelog: 'Please test the new features and report any issues.'
+      changelog: "${{ github.commit_message || 'Bug fixes' }}"
+      # github.commit_message only available in push & schedule events.
 ```
 
 </Collapsible>
