@@ -118,12 +118,16 @@ async function main(actionId: string | undefined) {
   CUSTOM_ACTIONS[actionId].action();
 }
 
+function getAppName(appVersion: string): string {
+  return `Expo-Go-${appVersion}`;
+}
+
 function getAndroidApkUrl(appVersion: string): string {
-  return `https://github.com/expo/expo-go-releases/releases/download/Exponent-${appVersion}/Exponent-${appVersion}.apk`;
+  return `https://github.com/expo/expo-go-releases/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.apk`;
 }
 
 function getIosSimulatorUrl(appVersion: string): string {
-  return `https://github.com/expo/expo-go-releases/releases/download/Exponent-${appVersion}/Exponent-${appVersion}.tar.gz`;
+  return `https://github.com/expo/expo-go-releases/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.tar.gz`;
 }
 
 async function confirmPromptIfOverridingRemoteFileAsync(
@@ -428,7 +432,7 @@ async function androidApkUploadAsync() {
   const repoOwner = 'expo';
   const repoName = 'expo-go-releases';
 
-  const releaseTag = `Exponent-${appVersion}`;
+  const releaseTag = getAppName(appVersion);
 
   try {
     const release = await getOrCreateReleaseAsync(repoOwner, repoName, releaseTag, appVersion);
@@ -498,7 +502,7 @@ async function iosSimulatorUploadAsync() {
   const repoOwner = 'expo';
   const repoName = 'expo-go-releases';
 
-  const releaseTag = `Exponent-${appVersion}`;
+  const releaseTag = getAppName(appVersion);
 
   try {
     const release = await getOrCreateReleaseAsync(repoOwner, repoName, releaseTag, appVersion);
@@ -670,7 +674,7 @@ async function downloadBuildArtifactAsync(
 
   const archivePath = path.join(
     projectDir,
-    `Exponent-${appVersion}.${platform === 'android' ? 'apk' : 'tar.gz'}`
+    `${getAppName(appVersion)}.${platform === 'android' ? 'apk' : 'tar.gz'}`
   );
 
   logger.info(`Downloading build from: ${buildUrl}`);
