@@ -105,7 +105,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       accessLevel: Calendar.CalendarAccessLevel.OWNER,
     };
     try {
-      const calendar = createCalendarNext(newCalendar);
+      const calendar = await createCalendarNext(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
     } catch (e) {

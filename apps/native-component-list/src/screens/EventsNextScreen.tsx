@@ -75,7 +75,7 @@ const EventsScreen = ({ route }: Props) => {
     yesterday.setDate(yesterday.getDate() - 1);
     const nextYear = new Date();
     nextYear.setFullYear(nextYear.getFullYear() + 1);
-    const events = calendar.listEvents(yesterday, nextYear);
+    const events = await calendar.listEvents(yesterday, nextYear);
     setEvents(events);
   };
 
