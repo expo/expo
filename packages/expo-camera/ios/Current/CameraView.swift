@@ -205,7 +205,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   private func updatePictureSize() {
 #if !targetEnvironment(simulator)
     sessionQueue.async {
-      // Only update session preset for picture size when in picture mode
       if self.mode == .picture {
         let preset = self.pictureSize.toCapturePreset()
         self.sessionManager.updateSessionPreset(preset: preset)

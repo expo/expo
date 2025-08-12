@@ -14,7 +14,7 @@
 - Fix barcode options to correctly handle empty barcodeTypes ([#38100](https://github.com/expo/expo/pull/38100) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
 - [Android] Add dismissScanner to module to prevent undefined error. ([#38129](https://github.com/expo/expo/pull/38129) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
 - [Android] Correctly handle errors when using `launchScanner`. ([#38322](https://github.com/expo/expo/pull/38322) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix `videoQuality` also affecting pictures.
+- [iOS] Fix `videoQuality` and `pictureSize` affecting modes they don't apply too.
 
 ### 💡 Others
 
