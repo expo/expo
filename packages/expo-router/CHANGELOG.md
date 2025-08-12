@@ -48,9 +48,11 @@
 - Fix issues with link preview in heavy views ([#38534](https://github.com/expo/expo/pull/38534) by [@Ubax](https://github.com/Ubax))
 - Fix Link Preview navigation in NativeTabs ([#38283](https://github.com/expo/expo/pull/38283) by [@Ubax](https://github.com/Ubax))
 - add option to hide label and show empty badge ([#38668](https://github.com/expo/expo/pull/38668) by [@Ubax](https://github.com/Ubax))
+- add unstable-native-tabs to files in package.json ([#38742](https://github.com/expo/expo/pull/38742) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
+- Fix web modal code being imported on native. ([#38553](https://github.com/expo/expo/pull/38553) by [@EvanBacon](https://github.com/EvanBacon))
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
 - Add formsheet warning ([#37982](https://github.com/expo/expo/pull/37982) by [@Ubax](https://github.com/Ubax))
 - Extract screen search logic to swift ([#38320](https://github.com/expo/expo/pull/38320) by [@Ubax](https://github.com/Ubax))

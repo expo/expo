@@ -9,7 +9,6 @@
 - Add lint rules for Expo DOM Components and the "use dom" directive. ([#36263](https://github.com/expo/expo/pull/36263) by [@EvanBacon](https://github.com/EvanBacon))
 - Add a rule for "prefer box shadow" to encourage migrating off of old shadow props. ([#38187](https://github.com/expo/expo/pull/38187) by [@kadikraman](https://github.com/kadikraman))
 
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
