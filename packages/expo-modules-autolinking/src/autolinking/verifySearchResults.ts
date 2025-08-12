@@ -124,5 +124,7 @@ export async function verifySearchResults(
       '⚠️  Multiple versions of the same module may introduce some side effects or compatibility issues.\n' +
         `Resolve your dependency issues and deduplicate your dependencies. Learn more: https://expo.fyi/resolving-dependency-issues`
     );
+  } else {
+    console.log('✅ Everything is fine!');
   }
 }
