@@ -1,7 +1,7 @@
 'use client';
 
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
-import { ExpoGlobal } from './ts-declarations/global';
+import type { ExpoGlobal } from './ts-declarations/global';
 
 ensureNativeModulesAreInstalled();
 
