@@ -28,6 +28,9 @@ const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
     ...base,
     slug: 'unversioned-expo-go',
     name: 'Expo Go (unversioned)',
+    ios: {
+      bundleIdentifier: 'host.exp.Exponent',
+    },
     extra: {
       eas: {
         projectId: '09066dbe-ef65-460e-9201-b7aa931abbf4',
