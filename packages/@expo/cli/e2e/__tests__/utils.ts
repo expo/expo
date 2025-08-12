@@ -242,6 +242,10 @@ export async function getPageHtml(output: string, route: string) {
   return htmlParser.parse(await getPage(output, route));
 }
 
+export function getHtml(html: string) {
+  return htmlParser.parse(html);
+}
+
 export function getRouterE2ERoot(): string {
   return path.join(__dirname, '../../../../../apps/router-e2e');
 }
@@ -295,4 +299,8 @@ export function findProjectFiles(projectRoot: string) {
     )
     .filter(Boolean)
     .sort() as string[];
+}
+
+export function stripWhitespace(str: string): string {
+  return str.replace(/\s+/g, '').trim();
 }

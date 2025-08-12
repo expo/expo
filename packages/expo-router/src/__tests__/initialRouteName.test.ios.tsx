@@ -125,7 +125,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -135,7 +135,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+          routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
@@ -215,7 +215,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -225,7 +225,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+          routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),

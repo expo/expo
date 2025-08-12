@@ -5,7 +5,7 @@ import {
   getProjectPackageJsonPathAsync,
   getProjectPackageJsonPathSync,
   mergeLinkingOptionsAsync,
-  resolveSearchPathsAsync,
+  resolveSearchPaths,
 } from './mergeLinkingOptions';
 import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 import type { ModuleDescriptor, SearchOptions } from '../types';
@@ -17,12 +17,18 @@ export {
   mergeLinkingOptionsAsync,
   resolveExtraBuildDependenciesAsync,
   resolveModulesAsync,
-  resolveSearchPathsAsync,
   getConfiguration,
 };
 export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
 export { verifySearchResults } from './verifySearchResults';
 export * from '../types';
+
+export async function resolveSearchPathsAsync(
+  searchPaths: string[] | null,
+  cwd: string
+): Promise<string[]> {
+  return resolveSearchPaths(searchPaths, cwd);
+}
 
 /**
  * Programmatic API to query autolinked modules for a project.

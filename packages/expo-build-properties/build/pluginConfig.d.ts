@@ -19,8 +19,10 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
     /**
-     * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
-     * Enable React Native new architecture for Android platform.
+     * Enable React Native New Architecture for Android platform.
+     *
+     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
+     * app config file instead.
      */
     newArchEnabled?: boolean;
     /**
@@ -44,12 +46,12 @@ export interface PluginConfigTypeAndroid {
      */
     kotlinVersion?: string;
     /**
-     * Enable [Proguard or R8](https://developer.android.com/studio/build/shrink-code) in release builds to obfuscate Java code and reduce app size.
+     * Enable [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) in release builds to obfuscate Java code and reduce app size.
      */
-    enableProguardInReleaseBuilds?: boolean;
+    enableMinifyInReleaseBuilds?: boolean;
     /**
      * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
-     * This property should be used in combination with `enableProguardInReleaseBuilds`.
+     * This property should be used in combination with `enableMinifyInReleaseBuilds`.
      */
     enableShrinkResourcesInReleaseBuilds?: boolean;
     /**
@@ -113,7 +115,8 @@ export interface PluginConfigTypeAndroid {
     /**
      * Indicates whether the app intends to use cleartext network traffic.
      *
-     * @default false
+     * For Android 8 and below, the default platform-specific value is `true`.
+     * For Android 9 and above, the default platform-specific value is `false`.
      *
      * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
      */
@@ -251,8 +254,10 @@ export type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCr
  */
 export interface PluginConfigTypeIos {
     /**
-     * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
-     * Enable React Native new architecture for iOS platform.
+     * Enable React Native New Architecture for iOS platform.
+     *
+     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
+     * app config file instead.
      */
     newArchEnabled?: boolean;
     /**

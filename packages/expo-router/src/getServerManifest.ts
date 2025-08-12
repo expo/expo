@@ -9,6 +9,7 @@
  */
 import type { RouteNode } from './Route';
 import { getContextKey, matchGroupName } from './matchers';
+import type { MiddlewareMatcher } from './routes-manifest';
 import { sortRoutes } from './sortRoutes';
 import { shouldLinkExternally } from './utils/url';
 
@@ -34,9 +35,28 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
   methods?: string[];
 };
 
+export type ExpoRouterServerManifestV1Middleware = {
+  /**
+   * Path to the module that contains the middleware function as a default export.
+   *
+   * @example _expo/functions/+middleware.js
+   */
+  file: string;
+  /**
+   * Optional matcher configuration for conditional middleware execution.
+   * When undefined, middleware runs on all requests.
+   */
+  matcher?: MiddlewareMatcher;
+};
+
 export type ExpoRouterServerManifestV1<TRegex = string> = {
   /**
-   * Rewrites. These occur first
+   * Middleware function that runs before any route matching.
+   * Only allowed at the root level and requires web.output: "server".
+   */
+  middleware?: ExpoRouterServerManifestV1Middleware;
+  /**
+   * Rewrites. After middleware has processed and regular routing resumes, these occur first.
    */
   rewrites: ExpoRouterServerManifestV1Route<TRegex>[];
   /**
@@ -162,13 +182,22 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
   const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
   const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
 
-  return {
+  const manifest: ExpoRouterServerManifestV1 = {
     apiRoutes: getMatchableManifestForPaths(apiRoutes),
     htmlRoutes: getMatchableManifestForPaths(standardRoutes),
     notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes),
     redirects: getMatchableManifestForPaths(redirects),
     rewrites: getMatchableManifestForPaths(rewrites),
   };
+
+  if (route.middleware) {
+    manifest.middleware = {
+      file: route.middleware.contextKey,
+      matcher: route.middleware.loadRoute().unstable_settings?.matcher ?? undefined,
+    };
+  }
+
+  return manifest;
 }
 
 function getMatchableManifestForPaths(

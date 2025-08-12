@@ -127,7 +127,9 @@ class FileDownloaderSpec : ExpoSpec {
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://exp.host/@test/test"),
+          requestHeaders: [:]
         )
         launchedUpdate.failedLaunchCount = 1
 
@@ -143,13 +145,15 @@ class FileDownloaderSpec : ExpoSpec {
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://exp.host/@test/test"),
+          requestHeaders: [:]
         )
         embeddedUpdate.failedLaunchCount = 1
 
         db.databaseQueue.sync {
-          try! db.addUpdate(launchedUpdate)
-          try! db.addUpdate(embeddedUpdate)
+          try! db.addUpdate(launchedUpdate, config: config)
+          try! db.addUpdate(embeddedUpdate, config: config)
 
           try! db.setExtraParam(key: "hello", value: "world", withScopeKey: config.scopeKey)
           try! db.setExtraParam(key: "what", value: "123", withScopeKey: config.scopeKey)

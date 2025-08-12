@@ -275,11 +275,13 @@ export const general = [
     makeGroup('Reference', [
       makePage('router/error-handling.mdx'),
       makePage('router/reference/url-parameters.mdx'),
+      makePage('router/reference/middleware.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/link-preview.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),

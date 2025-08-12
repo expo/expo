@@ -13,6 +13,7 @@ import {
   ScrollView,
   StyleProp,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -39,6 +40,8 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   const [recorderOptions, setRecorderOptions] = React.useState<RecordingOptions>(
     RecordingPresets.HIGH_QUALITY
   );
+  const [useAtTime, setUseAtTime] = React.useState(false);
+  const [useForDuration, setUseForDuration] = React.useState(false);
 
   useEffect(() => {
     (async () => {
@@ -51,13 +54,28 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
   const audioRecorder = useAudioRecorder(recorderOptions, (status) => {
     setState(status);
+
+    // Handle automatic recording completion (from forDuration or atTime+forDuration)
+    if (status.isFinished && !status.hasError && status.url && onDone) {
+      onDone(status.url);
+    }
   });
 
   const recorderState = useAudioRecorderState(audioRecorder);
 
   const record = () => {
     try {
-      audioRecorder.record();
+      const options: { atTime?: number; forDuration?: number } = {};
+
+      if (useAtTime) {
+        options.atTime = 3; // Wait 3 seconds before starting
+      }
+
+      if (useForDuration) {
+        options.forDuration = 5; // Record for 5 seconds
+      }
+
+      audioRecorder.record(Object.keys(options).length > 0 ? options : undefined);
     } catch (error) {
       Alert.alert('Error', error.message);
     }
@@ -155,6 +173,27 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
         {renderOptionsButton('Low Quality', RecordingPresets.LOW_QUALITY)}
       </View>
+
+      {/* Recording Options */}
+      <View style={styles.optionsContainer}>
+        <View style={styles.optionRow}>
+          <Text style={styles.optionText}>Record at Time (3s delay - iOS only)</Text>
+          <Switch value={useAtTime} onValueChange={setUseAtTime} />
+        </View>
+        <View style={styles.optionRow}>
+          <Text style={styles.optionText}>Record for Duration (5s)</Text>
+          <Switch value={useForDuration} onValueChange={setUseForDuration} />
+        </View>
+        {(useAtTime || useForDuration) && (
+          <Text style={styles.optionsStatus}>
+            {useAtTime && useForDuration
+              ? 'iOS: Wait 3s, then record for 5s | Android/Web: Record for 5s immediately'
+              : useAtTime
+                ? 'iOS: Wait 3s before recording | Android/Web: Record immediately'
+                : 'Will record for 5s'}
+          </Text>
+        )}
+      </View>
       <View style={styles.centerer}>
         <Button
           onPress={async () => {
@@ -201,6 +240,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     justifyContent: 'center',
+  },
+  optionsContainer: {
+    marginVertical: 10,
+    paddingHorizontal: 20,
+  },
+  optionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  optionText: {
+    fontSize: 16,
+  },
+  optionsStatus: {
+    fontSize: 14,
+    color: Colors.tintColor,
+    textAlign: 'center',
+    marginTop: 10,
+    fontStyle: 'italic',
   },
   centerer: {
     alignItems: 'center',

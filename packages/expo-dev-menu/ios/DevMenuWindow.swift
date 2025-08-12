@@ -49,6 +49,14 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
       return
     }
 
+    guard let rootVC = self.rootViewController, rootVC.presentedViewController == nil else {
+      return
+    }
+
+    guard rootVC.isViewLoaded && rootVC.view.window != nil else {
+      return
+    }
+
     isPresenting = true
     #if os(tvOS)
     devMenuViewController.modalPresentationStyle = .automatic
@@ -78,8 +86,8 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
     }
     #endif
 
-    self.rootViewController?.present(devMenuViewController, animated: true) {
-      self.isPresenting = false
+    rootVC.present(devMenuViewController, animated: true) { [weak self] in
+      self?.isPresenting = false
     }
   }
 

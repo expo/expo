@@ -21,7 +21,10 @@ export type MockContextConfig =
     };
 
 export function getMockConfig(context: MockContextConfig, metaOnly: boolean = true) {
-  return getNavigationConfig(getExactRoutes(getMockContext(context))!, metaOnly);
+  return getNavigationConfig(getExactRoutes(getMockContext(context))!, metaOnly, {
+    sitemap: true,
+    notFound: true,
+  });
 }
 
 export function getMockContext(context: MockContextConfig) {

@@ -254,10 +254,23 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     get isRecording() {
         return this.mediaRecorder?.state === 'recording';
     }
-    record() {
+    record(options) {
         if (this.mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
+        // Clear any existing timeouts
+        this.clearTimeouts();
+        // Note: atTime is not supported on Web (no native equivalent), so we ignore it entirely
+        // Only forDuration is implemented using setTimeout
+        const { forDuration } = options || {};
+        this.startActualRecording();
+        if (forDuration !== undefined) {
+            this.timeoutIds.push(setTimeout(() => {
+                this.stop();
+            }, forDuration * 1000));
+        }
+    }
+    startActualRecording() {
         if (this.mediaRecorder?.state === 'paused') {
             this.mediaRecorder.resume();
         }
@@ -294,16 +307,11 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         this.mediaRecorder?.pause();
     }
     recordForDuration(seconds) {
-        this.record();
-        this.timeoutIds.push(setTimeout(() => {
-            this.stop();
-        }, seconds * 1000));
+        this.record({ forDuration: seconds });
     }
     setInput(input) { }
     startRecordingAtTime(seconds) {
-        this.timeoutIds.push(setTimeout(() => {
-            this.record();
-        }, seconds * 1000));
+        this.record({ atTime: seconds });
     }
     async stop() {
         if (this.mediaRecorder === null) {

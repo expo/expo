@@ -82,6 +82,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
   func currentStatus() -> [String: Any] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
+    let rate = isPlaying ? ref.rate : currentRate
     return [
       "id": id,
       "currentTime": currentTime,
@@ -94,7 +95,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "loop": isLooping,
       "didJustFinish": false,
       "isLoaded": isLoaded,
-      "playbackRate": ref.rate,
+      "playbackRate": rate,
       "shouldCorrectPitch": shouldCorrectPitch,
       "isBuffering": isBuffering
     ]

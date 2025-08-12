@@ -2,16 +2,32 @@
   "name": "@expo/server",
   "version": "0.6.2",
   "description": "Server API for Expo Router projects",
-  "main": "build/index.js",
-  "sideEffects": [
-    "./install.js",
-    "./build/install.js",
-    "./build/assertion.js"
-  ],
+  "main": "build/cjs/index.js",
+  "module": "build/mjs/index.js",
+  "exports": {
+    ".": {
+      "import": "./build/mjs/index.js",
+      "require": "./build/cjs/index.js"
+    },
+    "./private": {
+      "import": "./build/mjs/private.js",
+      "require": "./build/cjs/private.js"
+    },
+    "./adapter/*": {
+      "import": "./build/mjs/vendor/*.js",
+      "require": "./build/cjs/vendor/*.js"
+    },
+    "./build/*": {
+      "import": "./build/mjs/*.js",
+      "require": "./build/cjs/*.js"
+    }
+  },
   "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "prepare": "yarn run clean && yarn build",
+    "build": "run-p build:cjs build:mjs",
+    "build:cjs": "tsc -p tsconfig.json",
+    "build:mjs": "tsc -p tsconfig.mjs.json",
+    "clean": "rimraf build",
+    "prepare": "run-s clean build",
     "lint": "eslint .",
     "test": "jest"
   },
@@ -30,21 +46,22 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/server#readme",
   "files": [
     "build",
-    "adapter",
-    "install.d.ts",
-    "install.js"
+    "adapter"
   ],
   "dependencies": {
     "abort-controller": "^3.0.0",
-    "debug": "^4.3.4",
-    "source-map-support": "~0.5.21",
-    "undici": "^6.18.2 || ^7.0.0"
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@netlify/functions": "^1.4.0",
-    "@types/express": "^5.0.3"
+    "@types/express": "^5.0.3",
+    "npm-run-all2": "^8.0.4",
+    "rimraf": "^6.0.1"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=20.16.0"
   }
 }

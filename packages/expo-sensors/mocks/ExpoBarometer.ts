@@ -7,4 +7,4 @@
 
 export async function isAvailableAsync(): Promise<any> {}
 
-export async function setUpdateInterval(): Promise<any> {}
+export async function setUpdateInterval(_: number): Promise<any> {}

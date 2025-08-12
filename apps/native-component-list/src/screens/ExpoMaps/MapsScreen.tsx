@@ -247,6 +247,14 @@ export const MapsScreens = Platform.select({
         return optionalRequire(() => require('./apple/MapsImageRefIntegrationScreen'));
       },
     },
+    {
+      name: 'Points of interest',
+      route: 'expo-maps/points-of-interest',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPointOfInterestScreen'));
+      },
+    },
   ],
   default: [],
 });

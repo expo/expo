@@ -119,7 +119,7 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 describe('getReactNativeDirectoryCheckListUnknownPackagesEnabled', () => {
   it('returns true if the config is empty', () => {
     expect(getReactNativeDirectoryCheckListUnknownPackagesEnabled({ expo: { doctor: {} } })).toBe(
-      true
+      null
     );
   });
 

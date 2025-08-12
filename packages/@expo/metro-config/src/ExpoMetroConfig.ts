@@ -27,7 +27,6 @@ import { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
-import { importMetroConfig } from './traveling/metro-config';
 import { toPosixPath } from './utils/filePath';
 import { setOnReadonly } from './utils/setOnReadonly';
 
@@ -188,7 +187,10 @@ export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ): InputConfigT {
-  const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
+  const {
+    getDefaultConfig: getDefaultMetroConfig,
+    mergeConfig,
+  }: typeof import('@expo/metro/metro-config') = require('@expo/metro/metro-config');
 
   if (isCSSEnabled) {
     patchMetroGraphToSupportUncachedModules();

@@ -19,6 +19,7 @@
     "expo-asset": "~11.1.5",
     "expo-av": "~15.1.4",
     "expo-background-fetch": "~13.1.5",
+    "expo-blob": "~0.1.0",
     "expo-brightness": "~13.1.4",
     "expo-calendar": "~14.1.4",
     "expo-camera": "~16.1.6",
@@ -50,8 +51,8 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
     "react": "19.1.0",
-    "react-native": "0.81.0-rc.3",
-    "react-native-gesture-handler": "~2.26.0",
+    "react-native": "0.81.0-rc.5",
+    "react-native-gesture-handler": "~2.28.0",
     "sinon": "^7.1.1"
   },
   "browserslist": [

@@ -7,8 +7,13 @@
 ### 🎉 New features
 
 - Add Bun adapter to expo server runtime. ([#38240](https://github.com/expo/expo/pull/38240) by [@daavidaviid](https://github.com/daavidaviid))
+- Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
+- Add `workerd` adapter. ([#38531](https://github.com/expo/expo/pull/38531) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Add `mjs` build files. ([#38717](https://github.com/expo/expo/pull/38717) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 🐛 Bug fixes
+
+- Fix Vercel adapter POST requests timeouts. Revert `Readable.toWeb` conversion back to `createReadableStreamFromReadable` from `remix-run/node`. ([#38603](https://github.com/expo/expo/pull/38603) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
