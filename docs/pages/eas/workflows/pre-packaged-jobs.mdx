@@ -617,25 +617,6 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="External groups without Beta App Review">
-
-This workflow distributes to external groups but skips Beta App Review by setting `submit_beta_review` to false.
-
-```yaml .eas/workflows/testflight-no-review.yml
-name: TestFlight External No Review
-
-jobs:
-  testflight:
-    name: Distribute without Beta Review
-    type: testflight
-    params:
-      build_id: ${{ needs.build_ios.outputs.build_id }}
-      external_groups: ['Beta Testers']
-      submit_beta_review: false
-```
-
-</Collapsible>
-
 <Collapsible summary="Upload with changelog only">
 
 This workflow uploads a build with changelog but without specifying any groups to explicitly ådd the build to. The build will only get added to internal groups with "auto-distribute" enabled
