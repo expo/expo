@@ -807,7 +807,10 @@ export async function test(t) {
             endDate: newEndDate,
           });
 
-          const fetchedEvents = await calendar.listEvents(new Date(2023, 2, 2), new Date(2023, 2, 5));
+          const fetchedEvents = await calendar.listEvents(
+            new Date(2023, 2, 2),
+            new Date(2023, 2, 5)
+          );
           t.expect(fetchedEvents.length).toBe(1);
           t.expect(fetchedEvents[0].id).toBe(event.id);
           t.expect(fetchedEvents[0].title).toBe(newTitle);
@@ -1067,7 +1070,10 @@ export async function test(t) {
             futureEvents: true,
           });
 
-          const eventsAfterDelete = await calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
+          const eventsAfterDelete = await calendar.listEvents(
+            new Date(2019, 3, 4),
+            new Date(2019, 3, 8)
+          );
 
           t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
           t.expect(eventsAfterDelete.length).toBe(0);
@@ -1091,7 +1097,10 @@ export async function test(t) {
             instanceStartDate: new Date(2019, 3, 5, 9),
           });
 
-          const eventsAfterDelete = await calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
+          const eventsAfterDelete = await calendar.listEvents(
+            new Date(2019, 3, 4),
+            new Date(2019, 3, 8)
+          );
 
           t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
           t.expect(eventsAfterDelete.length).toBe(3);
