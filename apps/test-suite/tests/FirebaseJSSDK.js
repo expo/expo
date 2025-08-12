@@ -3,7 +3,6 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { initializeApp, getApp } from 'firebase/app';
 import {
   initializeAuth,
-  getAuth,
   signInWithEmailAndPassword,
   signInWithPhoneNumber,
   PhoneAuthProvider,
