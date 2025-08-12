@@ -208,6 +208,14 @@ export interface PluginConfigTypeAndroid {
    * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
    */
   exclusiveMavenMirror?: string;
+
+  /**
+   * The React Native release level to use for the project.
+   * This can be used to enable different sets of internal React Native feature flags.
+   *
+   * @default 'stable'
+   */
+  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 // @docsMissing
@@ -699,6 +707,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
         exclusiveMavenMirror: { type: 'string', nullable: true },
+        reactNativeReleaseLevel: {
+          type: 'string',
+          enum: ['stable', 'canary', 'experimental'],
+          nullable: true,
+        },
       },
       nullable: true,
     },

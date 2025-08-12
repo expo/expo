@@ -149,7 +149,7 @@ describe('server-output', () => {
       expect(res.status).toEqual(200);
       expect(await res.text()).toMatch(/Post: <!-- -->abc/);
 
-      if (prepareDist) {
+      if (name !== EXPO_DEV_SERVER) {
         // Behaves like a dynamic route in development, but is pre-rendered in production.
 
         // This route is not pre-rendered and should show the default value for the dynamic parameter.
@@ -328,6 +328,111 @@ describe('server-output', () => {
       it('supports using Node.js externals to read local files', async () => {
         await expect(serverFetchAsync('/api/externals').then((r) => r.text())).resolves.toMatchPath(
           'a/b/c'
+        );
+      });
+    }
+
+    if (name !== EXPO_DEV_SERVER) {
+      // NOTE(@krystofwoldrich): There is no API to adds the server callbacks in the dev server as the moment.
+      ['POST', 'GET', 'PUT', 'DELETE'].map(async (method) => {
+        it(`\`beforeAPIResponse\` and \`beforeResponse\` are executed for ${method}`, async () => {
+          const headers = await serverFetchAsync('/api/abc').then((r) =>
+            Object.fromEntries(r.headers.entries())
+          );
+          expect(headers).toEqual(
+            expect.objectContaining({
+              'custom-api-type': 'api',
+              'custom-api-route': '/api/[dynamic]',
+              'custom-all-type': 'api',
+              'custom-all-route': '/api/[dynamic]',
+            })
+          );
+          expect(headers).toEqual(
+            expect.not.objectContaining({
+              'custom-html-type': expect.anything(),
+              'custom-html-route': expect.anything(),
+              'custom-error-type': expect.anything(),
+              'custom-error-route': expect.anything(),
+            })
+          );
+        });
+      });
+
+      it('`beforeHTMLResponse` and `beforeResponse` are executed for index page', async () => {
+        const headers = await serverFetchAsync('/').then((r) =>
+          Object.fromEntries(r.headers.entries())
+        );
+        expect(headers).toEqual(
+          expect.objectContaining({
+            'custom-html-type': 'html',
+            'custom-html-route': '/index',
+            'custom-all-type': 'html',
+            'custom-all-route': '/index',
+          })
+        );
+        expect(headers).toEqual(
+          expect.not.objectContaining({
+            'custom-api-type': expect.anything(),
+            'custom-api-route': expect.anything(),
+            'custom-error-type': expect.anything(),
+            'custom-error-route': expect.anything(),
+          })
+        );
+      });
+
+      it('`beforeErrorResponse` and `beforeResponse` are executed for missing page', async () => {
+        const headers = await serverFetchAsync('/missing').then((r) =>
+          Object.fromEntries(r.headers.entries())
+        );
+        expect(headers).toEqual(
+          expect.objectContaining({
+            'custom-error-type': 'notFoundHtml',
+            'custom-error-route': '/+not-found',
+            'custom-all-type': 'notFoundHtml',
+            'custom-all-route': '/+not-found',
+          })
+        );
+        expect(headers).toEqual(
+          expect.not.objectContaining({
+            'custom-html-type': expect.anything(), // is only for actual HTML pages, not 404s
+            'custom-html-route': expect.anything(), // is only for actual HTML pages, not 404s
+            'custom-api-type': expect.anything(),
+            'custom-api-route': expect.anything(),
+          })
+        );
+      });
+
+      it('no callbacks are executed for unhandled api errors', async () => {
+        await expect(
+          serverFetchAsync('/api/problematic').then((r) => Object.fromEntries(r.headers.entries()))
+        ).resolves.toEqual(
+          expect.not.objectContaining({
+            'custom-html-type': expect.anything(),
+            'custom-html-route': expect.anything(),
+            'custom-api-type': expect.anything(),
+            'custom-api-route': expect.anything(),
+            'custom-error-type': expect.anything(),
+            'custom-error-route': expect.anything(),
+            'custom-all-type': expect.anything(),
+            'custom-all-route': expect.anything(),
+          })
+        );
+      });
+
+      it('no callbacks are executed for error responses from user code', async () => {
+        await expect(
+          serverFetchAsync('/api/error').then((r) => Object.fromEntries(r.headers.entries()))
+        ).resolves.toEqual(
+          expect.not.objectContaining({
+            'custom-html-type': expect.anything(),
+            'custom-html-route': expect.anything(),
+            'custom-api-type': expect.anything(),
+            'custom-api-route': expect.anything(),
+            'custom-error-type': expect.anything(),
+            'custom-error-route': expect.anything(),
+            'custom-all-type': expect.anything(),
+            'custom-all-route': expect.anything(),
+          })
         );
       });
     }

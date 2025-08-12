@@ -86,6 +86,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
     },
     {
+      propName: 'reactNativeReleaseLevel',
+      propValueGetter: (config) => config.android?.reactNativeReleaseLevel,
+    },
+    {
       propName: 'expo.useLegacyPackaging',
       propValueGetter: (config) => config.android?.useLegacyPackaging?.toString(),
     },
