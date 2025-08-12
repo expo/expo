@@ -2319,7 +2319,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Generated (1.24.13):
+  - react-native-maps/Generated (1.25.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2347,7 +2347,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Google (1.24.13):
+  - react-native-maps/Google (1.25.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2379,7 +2379,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Maps (1.24.13):
+  - react-native-maps/Maps (1.25.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4409,7 +4409,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: f0c91e870f86a23ccf80ab9527d95f37e834e24e
   React-microtasksnativemodule: be6fa55f64e8de5a53f3e9d01feb91d6682af78d
   react-native-keyboard-controller: 2d559e821da2dbcfb2781646f5f443e846e3f05b
-  react-native-maps: 05e86963c50aef9fe5736dcf163e0e16055a2a52
+  react-native-maps: 3c38079016e522c62d3d47fae32601ec704649d0
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-pager-view: a0516effb17ca5120ac2113bfd21b91130ad5748
   react-native-safe-area-context: a72764e0eb5d6b79b7450e5d0ae919eb1a4567b4
