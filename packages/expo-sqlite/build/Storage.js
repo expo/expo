@@ -1,5 +1,5 @@
 import AwaitLock from 'await-lock';
-import { installGlobal as install } from 'expo/src/winter/installGlobal';
+import { installGlobal as install } from 'expo/internal/install-global';
 import { openDatabaseAsync, openDatabaseSync } from './index';
 const DATABASE_VERSION = 1;
 const STATEMENT_GET = 'SELECT value FROM storage WHERE key = ?;';
@@ -387,11 +387,11 @@ export const Storage = AsyncStorage;
 /**
  * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
  */
-export const LocalStorage = new WebStorageWrapper(AsyncStorage);
+export const localStorage = new WebStorageWrapper(Storage);
 /**
  * Install the `localStorage` to the `globalThis` object.
  */
 export function installGlobal() {
-    install('localStorage', () => LocalStorage);
+    install('localStorage', () => localStorage);
 }
 //# sourceMappingURL=Storage.js.map

@@ -1,7 +1,7 @@
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 
-import { SQLiteStorage, LocalStorage } from '../Storage';
+import { SQLiteStorage, localStorage } from '../Storage';
 
 jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
@@ -263,8 +263,6 @@ describe('react-native-async-storage API compatibility', () => {
 });
 
 describe('Web Storage API compatibility', () => {
-  const localStorage = LocalStorage;
-
   afterAll(async () => {
     await fs.unlink('ExpoSQLiteStorage').catch(() => {});
   });

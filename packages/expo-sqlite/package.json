@@ -4,7 +4,9 @@
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
+  "sideEffects": [
+    "./localStorage/install.js"
+  ],
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -12,11 +14,11 @@
       "types": "./build/index.d.ts"
     },
     "./kv-store": {
-      "default": "./kv-store/index.js",
-      "types": "./kv-store/index.d.ts"
+      "default": "./kv-store.js",
+      "types": "./kv-store.d.ts"
     },
-    "./kv-store/installGlobal": {
-      "default": "./kv-store/installGlobal.js"
+    "./localStorage/install": {
+      "default": "./localStorage/install.js"
     },
     "./app.plugin.js": "./app.plugin.js"
   },

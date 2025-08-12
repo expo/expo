@@ -140,7 +140,7 @@ export declare const Storage: SQLiteStorage;
 /**
  * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
  */
-export declare const LocalStorage: WebStorageWrapper;
+export declare const localStorage: WebStorageWrapper;
 /**
  * Install the `localStorage` to the `globalThis` object.
  */

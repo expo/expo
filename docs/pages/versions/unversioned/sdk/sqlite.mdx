@@ -485,10 +485,10 @@ If you're currently using `@react-native-async-storage/async-storage` in your pr
 
 ### The `localStorage` API
 
-The `expo-sqlite/kv-store` library provides a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) API. This is useful if you're currently using `localStorage` in your project. To use it, you just need to import the `expo-sqlite/kv-store/installGlobal` module:
+The `expo-sqlite/localStorage/install` library provides a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) API. This is useful if you're currently using `localStorage` in your project. To use it, you just need to import the `expo-sqlite/localStorage/install` module:
 
 ```ts Install globalThis.localStorage
-import 'expo-sqlite/kv-store/installGlobal';
+import 'expo-sqlite/localStorage/install';
 
 globalThis.localStorage.setItem('key', 'value');
 console.log(globalThis.localStorage.getItem('key')); // 'value'
