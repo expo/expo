@@ -45,7 +45,10 @@ export async function isAvailableAsync(): Promise<boolean> {
     return false;
   }
   try {
-    return !!(await findSharpBinAsync());
+    // Attempt to find Sharp
+    await findSharpInstanceAsync();
+    // Only mark as available when both CLI and module are found
+    return !!_sharpBin && !!_sharpInstance;
   } catch {
     return false;
   }
