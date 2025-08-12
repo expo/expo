@@ -60,6 +60,9 @@
 		"EAS_BUILD_DISABLE_NPM_CACHE": "1",
 		"EAS_BUILD_DISABLE_COCOAPODS_CACHE": "1"
       },
+	  "cache": {
+		"disabled": true
+	  },
       "android": {
         "gradleCommand": ":app:assembleMobileDebug",
         "withoutCredentials": true

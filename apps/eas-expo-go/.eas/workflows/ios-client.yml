@@ -46,7 +46,7 @@ jobs:
     params:
       platform: ios
       profile: unversioned-client
-      message: ${{ github.event.pull_request.title }}
+      message: ${{ github.commit_message }}
 
 #  send_slack_notification:
 #    type: slack
