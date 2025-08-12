@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [android] Deprecate `enableProguardInReleaseBuilds` in favor of `enableMinifyInReleaseBuilds` ([#38627](https://github.com/expo/expo/pull/38627) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ## 0.14.8 - 2025-07-01
 
 ### 💡 Others

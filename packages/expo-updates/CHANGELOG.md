@@ -11,6 +11,7 @@
 - Add `downloadProgress` state to the `useUpdates` hook to support listening to overall asset download progress. ([#38307](https://github.com/expo/expo/pull/38307)) by [@nishan](https://github.com/intergalacticspacehighway)
 - [iOS] dev-client support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
 - Added reload support to `setUpdateURLAndRequestHeadersOverride`. ([#38167](https://github.com/expo/expo/pull/38167), [#38180](https://github.com/expo/expo/pull/38180) by [@kudo](https://github.com/kudo))
+- Added `setUpdateRequestHeadersOverride` to allow runtime `requestHeaders` override. ([#38623](https://github.com/expo/expo/pull/38623), [#38628](https://github.com/expo/expo/pull/38628), [#38624](https://github.com/expo/expo/pull/38624) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

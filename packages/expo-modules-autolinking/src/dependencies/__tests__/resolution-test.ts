@@ -9,6 +9,7 @@ function mockedNodeModule(
   options?: {
     pkgVersion?: string;
     pkgDependencies?: Record<string, string>;
+    pkgExtra?: Record<string, unknown>;
   }
 ): NestedDirectoryJSON {
   return {
@@ -16,6 +17,7 @@ function mockedNodeModule(
       name,
       version: options?.pkgVersion ?? '0.0.1',
       dependencies: options?.pkgDependencies ?? {},
+      ...options?.pkgExtra,
     }),
   };
 }
@@ -57,6 +59,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
           "version": "0.0.1",
         },
       }
@@ -95,6 +98,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/react-native-third-party/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/react-native-third-party/node_modules/react-native-dependency",
+          "source": 0,
           "version": "0.0.1",
         },
         "react-native-third-party": {
@@ -103,6 +107,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
           "version": "0.0.1",
         },
       }
@@ -135,6 +140,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/react-native-dependency",
+          "source": 0,
           "version": "0.0.1",
         },
         "react-native-third-party": {
@@ -143,6 +149,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
           "version": "0.0.1",
         },
       }
@@ -188,6 +195,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/.pnpm/react-native-dependency@x.x.x/node_modules/react-native-dependency",
+          "source": 0,
           "version": "0.0.1",
         },
         "react-native-third-party": {
@@ -196,6 +204,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party",
+          "source": 0,
           "version": "0.0.1",
         },
       }
@@ -226,6 +235,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
           "version": "0.0.1",
         },
       }
@@ -258,6 +268,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "included",
           "originPath": "/fake/project/node_modules/included",
           "path": "/fake/project/node_modules/included",
+          "source": 0,
           "version": "0.0.1",
         },
       }
@@ -302,6 +313,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "parent-a",
           "originPath": "/fake/project/node_modules/parent-a",
           "path": "/fake/project/node_modules/parent-a",
+          "source": 0,
           "version": "0.0.1",
         },
         "parent-b": {
@@ -310,16 +322,23 @@ describe(scanDependenciesRecursively, () => {
           "name": "parent-b",
           "originPath": "/fake/project/node_modules/parent-b",
           "path": "/fake/project/node_modules/parent-b",
+          "source": 0,
           "version": "0.0.1",
         },
         "react-native-dependency": {
           "depth": 1,
           "duplicates": [
-            "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
+            {
+              "name": "react-native-dependency",
+              "originPath": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
+              "path": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
+              "version": "",
+            },
           ],
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/parent-a/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/parent-a/node_modules/react-native-dependency",
+          "source": 0,
           "version": "0.0.1",
         },
       }
@@ -358,7 +377,98 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
           "version": "",
+        },
+      }
+    `);
+  });
+
+  it('discovers transitive peer dependencies', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedNodeModule('root', {
+          pkgDependencies: {
+            'react-native-third-party': '*',
+          },
+        }),
+        node_modules: {
+          'react-native-third-party': mockedNodeModule('react-native-third-party', {
+            pkgExtra: {
+              peerDependencies: {
+                'react-native-dependency': '*',
+              },
+            },
+          }),
+          'react-native-dependency': mockedNodeModule('react-native-dependency'),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesRecursively(projectRoot);
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-dependency": {
+          "depth": 1,
+          "duplicates": null,
+          "name": "react-native-dependency",
+          "originPath": "/fake/project/node_modules/react-native-dependency",
+          "path": "/fake/project/node_modules/react-native-dependency",
+          "source": 0,
+          "version": "0.0.1",
+        },
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
+          "version": "0.0.1",
+        },
+      }
+    `);
+  });
+
+  it('ignores transitive optional peer dependencies', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedNodeModule('root', {
+          pkgDependencies: { 'react-native-third-party': '*' },
+        }),
+        node_modules: {
+          'react-native-third-party': mockedNodeModule('react-native-third-party', {
+            pkgExtra: {
+              peerDependencies: {
+                'react-native-third-party': '*',
+              },
+              peerDependenciesMeta: {
+                'react-native-third-party': {
+                  optional: true,
+                },
+              },
+            },
+          }),
+          'react-native-dependency': mockedNodeModule('react-native-dependency'),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesRecursively(projectRoot);
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
+          "version": "0.0.1",
         },
       }
     `);

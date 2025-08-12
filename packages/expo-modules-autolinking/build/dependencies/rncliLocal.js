@@ -22,6 +22,7 @@ async function scanDependenciesFromRNProjectConfig(rawPath, projectConfig, { sho
             const realPath = await (0, utils_1.maybeRealpath)(originPath);
             if (realPath) {
                 searchResults[dependencyName] = {
+                    source: 2 /* DependencyResolutionSource.RN_CLI_LOCAL */,
                     name: dependencyName,
                     version: '',
                     path: realPath,

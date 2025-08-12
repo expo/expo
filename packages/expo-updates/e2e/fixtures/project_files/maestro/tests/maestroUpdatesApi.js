@@ -3,8 +3,11 @@
  */
 const serverBaseUrl = 'http://localhost:' + MAESTRO_UPDATES_SERVER_PORT;
 
-function serveManifest(name, platform) {
+function serveManifest(name, platform, channel) {
   var requestString = `${serverBaseUrl}/serve-manifest?name=${name}&platform=${platform}`;
+  if (channel) {
+    requestString += `&channel=${encodeURIComponent(channel)}`;
+  }
   const response = http.get(requestString);
   return response.body;
 }

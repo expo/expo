@@ -41,7 +41,7 @@ export function createRouteHandlerMiddleware(
   }
 
   const { createRequestHandler } =
-    require('@expo/server/build/vendor/http') as typeof import('@expo/server/build/vendor/http');
+    require('@expo/server/adapter/http') as typeof import('@expo/server/adapter/http');
 
   return createRequestHandler(
     { build: '' },
@@ -110,9 +110,7 @@ export function createRouteHandlerMiddleware(
         }
       },
       async handleRouteError(error) {
-        const { ExpoError } =
-          // TODO: Import from `@expo/server` after side effects are removed.
-          require('@expo/server/build/error') as typeof import('@expo/server/build/error');
+        const { ExpoError } = require('@expo/server') as typeof import('@expo/server');
 
         if (ExpoError.isExpoError(error)) {
           // TODO(@krystofwoldrich): Can we show code snippet of the handler?

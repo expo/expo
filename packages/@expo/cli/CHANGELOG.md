@@ -18,6 +18,7 @@
 - Add `EXPO_UNSTABLE_LIVE_BINDINGS` to allow developer to disable live binding in `experimentalImportSupport`. ([#38135](https://github.com/expo/expo/pull/38135) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add `location.origin`, Expo SDK version and Hermes version to sitemap UI ([#38201](https://github.com/expo/expo/pull/38201) by [@hassankhan](https://github.com/hassankhan))
 - Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
+- Create `metro-runtime` and `common` chunks when bundle splitting is enabled ([#38339](https://github.com/expo/expo/pull/38339) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 🐛 Bug fixes
 
@@ -34,6 +35,7 @@
 - Run prebuild only for the platforms specified in app config (if listed). ([#31752](https://github.com/expo/expo/pull/31752) by [@prathameshmm02](https://github.com/prathameshmm02))
 - Improve API Routes development errors (remove duplicates and misleading stack traces) ([#38465](https://github.com/expo/expo/pull/38465) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Resolve extensionless routes as HTML in static server ([#38610](https://github.com/expo/expo/pull/38610) by [@hassankhan](https://github.com/hassankhan))
+- Factor in no :hermes_enabled in Podfile ([#38664](https://github.com/expo/expo/pull/38664) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 

@@ -1,6 +1,10 @@
 import Module from 'node:module';
 
-import type { ResolutionResult, DependencyResolution } from './types';
+import {
+  type ResolutionResult,
+  type DependencyResolution,
+  DependencyResolutionSource,
+} from './types';
 import {
   type PackageJson,
   defaultShouldIncludeDependency,
@@ -60,6 +64,7 @@ async function resolveDependencies(
       const nodeModulePath = await maybeRealpath(originPath);
       if (nodeModulePath != null) {
         modules.push({
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
           name: dependencyName,
           version: '',
           path: nodeModulePath,
@@ -73,8 +78,18 @@ async function resolveDependencies(
   }
 
   if (packageJson.peerDependencies != null && typeof packageJson.peerDependencies === 'object') {
+    const peerDependenciesMeta =
+      packageJson.peerDependenciesMeta != null &&
+      typeof packageJson.peerDependenciesMeta === 'object'
+        ? (packageJson.peerDependenciesMeta as Record<string, unknown>)
+        : undefined;
     for (const dependencyName in packageJson.peerDependencies) {
       if (dependencyName in dependencies || !shouldIncludeDependency(dependencyName)) {
+        continue;
+      } else if (isOptionalPeerDependencyMeta(peerDependenciesMeta, dependencyName)) {
+        // NOTE(@kitten): We only check peer dependencies because some package managers auto-install them
+        // which would mean they'd have no reference in any dependencies. However, optional peer dependencies
+        // don't auto-install and we can skip them
         continue;
       }
       for (let idx = 0; idx < nodeModulePaths.length; idx++) {
@@ -82,6 +97,7 @@ async function resolveDependencies(
         const nodeModulePath = await maybeRealpath(originPath);
         if (nodeModulePath != null) {
           modules.push({
+            source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
             name: dependencyName,
             version: '',
             path: nodeModulePath,
@@ -114,6 +130,7 @@ export async function scanDependenciesRecursively(
 
   const modulePathsQueue: DependencyResolution[] = [
     {
+      source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
       name: '',
       version: '',
       path: rootPath,
@@ -170,3 +187,16 @@ export async function scanDependenciesRecursively(
 
   return searchResults;
 }
+
+const isOptionalPeerDependencyMeta = (
+  peerDependenciesMeta: Record<string, unknown> | undefined,
+  packageName: string
+) => {
+  return (
+    peerDependenciesMeta &&
+    peerDependenciesMeta[packageName] != null &&
+    typeof peerDependenciesMeta[packageName] === 'object' &&
+    'optional' in peerDependenciesMeta[packageName] &&
+    !!peerDependenciesMeta[packageName].optional
+  );
+};

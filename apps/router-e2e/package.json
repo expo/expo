@@ -45,16 +45,18 @@
     "jose": "^5",
     "react": "19.1.0",
     "react-native": "0.81.0-rc.5",
-    "react-native-safe-area-context": "5.5.2",
+    "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "4.14.0-nightly-20250803-1df3db25a",
     "react-native-webview": "13.13.5"
   },
   "devDependencies": {
     "compression": "^1.8.0",
+    "esbuild": "^0.25.8",
     "express": "^5.1.0",
     "morgan": "^1.10.0",
     "tailwindcss": "^3.3.5",
-    "tiny": "^0.0.10"
+    "tiny": "^0.0.10",
+    "workerd": "^1.20250807.0"
   },
   "private": true
 }

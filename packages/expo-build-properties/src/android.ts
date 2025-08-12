@@ -70,8 +70,8 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.packagingOptions?.doNotStrip?.join(','),
     },
     {
-      propName: 'android.enableProguardInReleaseBuilds',
-      propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
+      propName: 'android.enableMinifyInReleaseBuilds',
+      propValueGetter: (config) => config.android?.enableMinifyInReleaseBuilds?.toString(),
     },
     {
       propName: 'android.enableShrinkResourcesInReleaseBuilds',
@@ -168,7 +168,7 @@ export const withAndroidPurgeProguardRulesOnce: ConfigPlugin = (config) => {
        * });
        * config = withBuildProperties(config as ExpoConfig, {
        *   android: {
-       *     enableProguardInReleaseBuilds: true,
+       *     enableMinifyInReleaseBuilds: true,
        *     extraProguardRules: "-keep class com.mycompany.** { *; }",
        *   },
        * });
