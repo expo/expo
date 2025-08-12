@@ -29,7 +29,7 @@ export const getApiRoute = (dist) => async (route) => {
 };
 export const getMiddleware = (dist) => async (middleware) => {
     const filePath = `${dist}/${middleware.file}`;
-    return await import(filePath);
+    return (await import(filePath)).default;
 };
 const _importCache = new Map();
 async function importCached(target) {

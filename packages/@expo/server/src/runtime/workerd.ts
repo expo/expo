@@ -42,7 +42,7 @@ export const getMiddleware =
   (dist: string) =>
   async (middleware: Middleware): Promise<any> => {
     const filePath = `${dist}/${middleware.file}`;
-    return await import(filePath);
+    return (await import(filePath)).default;
   };
 
 const _importCache = new Map();
