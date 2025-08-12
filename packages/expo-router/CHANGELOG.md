@@ -49,6 +49,7 @@
 - Fix Link Preview navigation in NativeTabs ([#38283](https://github.com/expo/expo/pull/38283) by [@Ubax](https://github.com/Ubax))
 - add option to hide label and show empty badge ([#38668](https://github.com/expo/expo/pull/38668) by [@Ubax](https://github.com/Ubax))
 - add unstable-native-tabs to files in package.json ([#38742](https://github.com/expo/expo/pull/38742) by [@Ubax](https://github.com/Ubax))
+- fix native tabs transitions with heavy views ([#38761](https://github.com/expo/expo/pull/38761) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
