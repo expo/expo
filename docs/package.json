@@ -39,6 +39,7 @@
     "@radix-ui/react-select": "^2.2.2",
     "@radix-ui/react-tooltip": "^1.2.3",
     "@reach/tabs": "^0.18.0",
+    "@sentry/nextjs": "^8.47.0",
     "@sentry/react": "^8.47.0",
     "@xyflow/react": "^12.6.4",
     "clipboard-copy": "^4.0.1",

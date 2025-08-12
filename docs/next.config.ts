@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 import { event, error } from 'next/dist/build/output/log.js';
 import { join } from 'node:path';
@@ -157,4 +158,16 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const nextConfigWithSentry = withSentryConfig(nextConfig, {
+  org: 'expoio',
+  project: 'docs',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  sourcemaps: {
+    disable: false, // Set `true` to kill sourcemaps upload
+    assets: ['**/*.js', '**/*.js.map'], // Specify which files to upload
+    ignore: ['**/node_modules/**'], // Files to exclude
+    deleteSourcemapsAfterUpload: true, // Delete source maps after upload to avoid publicly exposing them
+  },
+});
+
+export default nextConfigWithSentry;
