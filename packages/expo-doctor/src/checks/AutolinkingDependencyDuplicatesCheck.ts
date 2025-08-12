@@ -7,7 +7,10 @@ import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
-import { importAutolinkingExportsFromProject } from '../utils/autolinkingExportsLoader';
+import {
+  ExpoExportMissingError,
+  importAutolinkingExportsFromProject,
+} from '../utils/autolinkingExportsLoader';
 import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
 
 const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
@@ -18,13 +21,23 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
   sdkVersionRange = '>=54.0.0';
 
   async runAsync({ projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
-    const autolinking = importAutolinkingExportsFromProject(projectRoot);
-    if (!autolinking) {
-      return {
-        isSuccessful: true,
-        issues: [],
-        advice: [],
-      };
+    let autolinking: ReturnType<typeof importAutolinkingExportsFromProject>;
+    try {
+      autolinking = importAutolinkingExportsFromProject(projectRoot);
+    } catch (error) {
+      if (error instanceof ExpoExportMissingError) {
+        return {
+          isSuccessful: false,
+          issues: [error.message],
+          advice: ["Reinstall your dependencies and check that they're not in a corrupted state."],
+        };
+      } else {
+        return {
+          isSuccessful: true,
+          issues: [],
+          advice: [],
+        };
+      }
     }
 
     const bundledNativeModules = await getVersionedNativeModuleNamesAsync(
@@ -43,8 +56,6 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
         );
       })
     );
-
-    console.log(dependenciesPerPlatform);
 
     for (const dependencyForPlatform of dependenciesPerPlatform) {
       for (const dependencyName in dependencyForPlatform) {

@@ -1,6 +1,9 @@
 import { type ResolutionResult } from 'expo/internal/unstable-autolinking-exports';
 
-import { importAutolinkingExportsFromProject } from '../../utils/autolinkingExportsLoader';
+import {
+  ExpoExportMissingError,
+  importAutolinkingExportsFromProject,
+} from '../../utils/autolinkingExportsLoader';
 import { getVersionedNativeModuleNamesAsync } from '../../utils/versionedNativeModules';
 import { AutolinkingDependencyDuplicatesCheck } from '../AutolinkingDependencyDuplicatesCheck';
 
@@ -21,10 +24,35 @@ jest.mock('../../utils/versionedNativeModules', () => ({
 }));
 
 jest.mock('../../utils/autolinkingExportsLoader', () => ({
+  ...jest.requireActual('../../utils/autolinkingExportsLoader'),
   importAutolinkingExportsFromProject: jest.fn(() => ({})),
 }));
 
 describe('AutolinkingDependencyDuplicatesCheck', () => {
+  it('outputs an error if the export is unavailable', async () => {
+    jest.mocked(importAutolinkingExportsFromProject).mockImplementationOnce(() => {
+      throw new ExpoExportMissingError('Test message');
+    });
+
+    const check = new AutolinkingDependencyDuplicatesCheck();
+    const result = await check.runAsync({
+      pkg: {},
+      ...additionalProjectProps,
+    });
+
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toMatchInlineSnapshot(`
+      [
+        "Test message",
+      ]
+    `);
+    expect(result.advice).toMatchInlineSnapshot(`
+      [
+        "Reinstall your dependencies and check that they're not in a corrupted state.",
+      ]
+    `);
+  });
+
   it('returns successful result when no dependencies exist', async () => {
     const dependencies: ResolutionResult = {
       react: {
