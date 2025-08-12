@@ -136,6 +136,11 @@ export interface ExpoConfig {
          * Specifies the background color of the navigation bar.
          */
         backgroundColor?: string;
+        /**
+         * Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content.
+         * Defaults to true.
+         */
+        enforceContrast?: boolean;
     };
     /**
      * Settings that apply specifically to running this app in a development client
