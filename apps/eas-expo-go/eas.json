@@ -56,7 +56,9 @@
     "unversioned-client": {
       "extends": "base",
       "env": {
-        "EAS_BUILD_PROFILE": "unversioned-client"
+        "EAS_BUILD_PROFILE": "unversioned-client",
+		"EAS_BUILD_DISABLE_NPM_CACHE": "1",
+		"EAS_BUILD_DISABLE_COCOAPODS_CACHE": "1"
       },
       "android": {
         "gradleCommand": ":app:assembleMobileDebug",
