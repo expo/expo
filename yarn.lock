@@ -3315,10 +3315,10 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-community/datetimepicker@8.4.3", "@react-native-community/datetimepicker@^8.4.3":
-  version "8.4.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-8.4.3.tgz#a69fd05d73b57e5f2a8f908635f6961a0119e64d"
-  integrity sha512-i5jpbJSoiDMdmle1kJlsW0EowTYQQKJCUIXH/KEZuqzWyBu+rm3v3MduPIEzyRWBaPpY0pv3MvGkJltg26WnWw==
+"@react-native-community/datetimepicker@8.4.4", "@react-native-community/datetimepicker@^8.4.4":
+  version "8.4.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-8.4.4.tgz#2160a808b596e85240cee2415be2eb2bd80d2e92"
+  integrity sha512-bc4ZixEHxZC9/qf5gbdYvIJiLZ5CLmEsC3j+Yhe1D1KC/3QhaIfGDVdUcid0PdlSoGOSEq4VlB93AWyetEyBSQ==
   dependencies:
     invariant "^2.2.4"
 
@@ -11268,10 +11268,10 @@ loose-envify@^1.0.0, loose-envify@^1.4.0:
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
-lottie-react-native@^7.2.5:
-  version "7.2.5"
-  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-7.2.5.tgz#bb3b99fa335c6a1daf67bf5dbc395308848d62cd"
-  integrity sha512-S90gdsQ71PCG9r2OW01guA2mlHAiWDrYQ0acLa6mzf4q8y8RTlug3cL/eFHKxkmSgyy+unEBdPUcii+3YNWktA==
+lottie-react-native@^7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-7.3.1.tgz#f365f6505dc9dd148edbff052909c09204998701"
+  integrity sha512-VW0gtiP1i3Jv6+PaVaNg6QDIqAXwAqmxVp1UOJFqsB6FeBN0zc8M/XR8DE8YiayZzd149nlqGOgmwoV7FbRGDw==
 
 lottie-web@^5.12.2:
   version "5.12.2"
