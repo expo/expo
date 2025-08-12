@@ -214,7 +214,7 @@ data class UpdatesConfiguration(
         if (isValidRequestHeadersOverride(context, overrideMap, it) || disableAntiBrickingMeasures) {
           return it
         } else {
-          Log.w(TAG, "Invalid update requestHeaders override, fallback to embedded requestHeaders - override requestHeaders: $it")
+          Log.w(TAG, "Invalid update requestHeaders override, falling back to embedded requestHeaders - override requestHeaders: $it")
         }
       }
       return getOriginalEmbeddedRequestHeaders(context, overrideMap)
@@ -228,14 +228,14 @@ data class UpdatesConfiguration(
 
       val originalEmbeddedKeys = originalEmbeddedRequestHeaders
         .keys
-        .map(String::lowercase)
+        .map { it.lowercase().trim() }
         .toSet()
 
       // disallow `Host` override to prevent malicious request rewrite
       val disallowHeaderKeys = setOf("host")
 
       val overrideKeys = overrideHeaders.keys
-        .map(String::lowercase)
+        .map { it.lowercase().trim() }
 
       // ensure none are disallowed AND all are in the original set
       return overrideKeys.none { it in disallowHeaderKeys } && overrideKeys.all { it in originalEmbeddedKeys }

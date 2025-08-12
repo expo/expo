@@ -87,4 +87,22 @@ class UpdatesConfigurationTest {
       )
     ).isFalse()
   }
+
+  @Test
+  fun `isValidRequestHeadersOverride should handle Host override header normalization`() {
+    val originalEmbeddedRequestHeaders = mapOf(
+      "expo-channel-name" to "default",
+      " Host " to "example.org"
+    )
+    val requestHeadersOverride = mapOf(
+      "Expo-Channel-Name" to "preview",
+      " Host " to "override.org"
+    )
+    Truth.assertThat(
+      UpdatesConfiguration.isValidRequestHeadersOverride(
+        originalEmbeddedRequestHeaders = originalEmbeddedRequestHeaders,
+        requestHeadersOverride = requestHeadersOverride
+      )
+    ).isFalse()
+  }
 }
