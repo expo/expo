@@ -21,7 +21,7 @@ private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue
 /**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
-public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition, @unchecked Sendable {
+public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition, @unchecked Sendable {
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**

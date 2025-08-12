@@ -10,6 +10,11 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   let functions: [String: AnyFunctionDefinition]
 
   /**
+   A dictionary of functions defined by the object.
+   */
+  let staticFunctions: [String: AnyFunctionDefinition]
+
+  /**
    An array of constants definitions.
    */
   let legacyConstants: [ConstantsDefinition]
@@ -35,6 +40,13 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   init(definitions: [AnyDefinition]) {
     self.functions = definitions
       .compactMap { $0 as? AnyFunctionDefinition }
+      .filter { !($0 is AnyStaticFunctionDefinition) } 
+      .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
+        dict[function.name] = function
+      }
+
+    self.staticFunctions = definitions
+      .compactMap { $0 as? AnyStaticFunctionDefinition }
       .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
         dict[function.name] = function
       }
@@ -100,6 +112,12 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
   internal func decorateWithFunctions(object: JavaScriptObject, appContext: AppContext) throws {
     for fn in functions.values {
+      object.setProperty(fn.name, value: try fn.build(appContext: appContext))
+    }
+  }
+
+  internal func decorateWithStaticFunctions(object: JavaScriptObject, appContext: AppContext) throws {
+    for fn in staticFunctions.values {
       object.setProperty(fn.name, value: try fn.build(appContext: appContext))
     }
   }
