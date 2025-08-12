@@ -112,7 +112,7 @@ function getCommandOptions(commands: SharpCommandOptions[]): string[] {
 }
 
 let _sharpBin: string | null = null;
-let _sharpInstance: any | null = null;
+let _sharpInstance: typeof import('sharp') | null = null;
 
 async function findSharpBinAsync(): Promise<string> {
   if (_sharpBin) return _sharpBin;
@@ -125,8 +125,7 @@ async function findSharpBinAsync(): Promise<string> {
       });
 
     const sharpCliPackage = require(sharpCliPackagePath);
-
-    _sharpInstance = sharpCliPackagePath
+    const sharpInstance = sharpCliPackagePath
       ? require(resolveFrom(sharpCliPackagePath, 'sharp'))
       : null;
 
@@ -137,8 +136,9 @@ async function findSharpBinAsync(): Promise<string> {
       typeof _sharpInstance?.versions?.vips === 'string'
     ) {
       _sharpBin = path.join(path.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
-    } else {
-      _sharpInstance = null;
+      _sharpInstance = sharpInstance;
+
+      return _sharpBin;
     }
   } catch (error) {
     _sharpBin = null;

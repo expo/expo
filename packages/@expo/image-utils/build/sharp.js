@@ -117,7 +117,7 @@ async function findSharpBinAsync() {
                 paths: require.resolve.paths('sharp-cli') ?? undefined,
             });
         const sharpCliPackage = require(sharpCliPackagePath);
-        _sharpInstance = sharpCliPackagePath
+        const sharpInstance = sharpCliPackagePath
             ? require((0, resolve_from_1.default)(sharpCliPackagePath, 'sharp'))
             : null;
         if (sharpCliPackagePath &&
@@ -125,9 +125,8 @@ async function findSharpBinAsync() {
             typeof sharpCliPackage.bin.sharp === 'string' &&
             typeof _sharpInstance?.versions?.vips === 'string') {
             _sharpBin = path_1.default.join(path_1.default.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
-        }
-        else {
-            _sharpInstance = null;
+            _sharpInstance = sharpInstance;
+            return _sharpBin;
         }
     }
     catch (error) {
