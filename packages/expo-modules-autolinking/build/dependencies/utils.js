@@ -80,12 +80,14 @@ function mergeWithDuplicate(a, b) {
         duplicate = b;
     }
     const duplicates = target.duplicates || (target.duplicates = []);
-    duplicates.push({
-        name: duplicate.name,
-        version: duplicate.version,
-        path: duplicate.path,
-        originPath: duplicate.originPath,
-    });
+    if (target.path !== duplicate.path) {
+        duplicates.push({
+            name: duplicate.name,
+            version: duplicate.version,
+            path: duplicate.path,
+            originPath: duplicate.originPath,
+        });
+    }
     if (duplicate.duplicates?.length) {
         duplicates.push(...duplicate.duplicates.filter((child) => duplicates.every((parent) => parent.path !== child.path)));
     }

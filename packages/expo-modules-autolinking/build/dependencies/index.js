@@ -25,4 +25,5 @@ var utils_1 = require("./utils");
 Object.defineProperty(exports, "filterMapResolutionResult", { enumerable: true, get: function () { return utils_1.filterMapResolutionResult; } });
 Object.defineProperty(exports, "mergeResolutionResults", { enumerable: true, get: function () { return utils_1.mergeResolutionResults; } });
 __exportStar(require("./CachedDependenciesLinker"), exports);
+__exportStar(require("./types"), exports);
 //# sourceMappingURL=index.js.map
