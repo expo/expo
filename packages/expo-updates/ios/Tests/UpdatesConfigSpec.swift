@@ -117,6 +117,22 @@ class UpdatesConfigSpec : ExpoSpec {
         )
         expect(result) == false
       }
+
+      it("should handle Host override header normalization") {
+        let originalHeaders = [
+          "expo-channel-name": "default",
+          " Host ": "example.org"
+        ]
+        let requestHeadersOverride = [
+          "Expo-Channel-Name": "preview",
+          " Host ": "override.org"
+        ]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == false
+      }
     }
   }
 }

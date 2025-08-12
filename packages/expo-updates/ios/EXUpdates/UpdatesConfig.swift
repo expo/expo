@@ -409,7 +409,7 @@ public final class UpdatesConfig: NSObject {
         return requestHeaders
       }
 
-      NSLog("Invalid update requestHeaders override, fallback to embedded requestHeaders - override requestHeaders: %@", requestHeaders)
+      NSLog("Invalid update requestHeaders override, falling back to embedded requestHeaders - override requestHeaders: %@", requestHeaders)
     }
     return getOriginalEmbeddedRequestHeaders(fromDictionary: config)
   }
@@ -426,12 +426,12 @@ public final class UpdatesConfig: NSObject {
       return true
     }
 
-    let originalEmbeddedKeys = Set(originalEmbeddedRequestHeaders.keys.map { $0.lowercased() })
+    let originalEmbeddedKeys = Set(originalEmbeddedRequestHeaders.keys.map { $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) })
 
     // disallow `Host` override to prevent malicious request rewrite
     let disallowHeaderKeys: Set<String> = ["host"]
 
-    let overrideKeys = overrideHeaders.keys.map { $0.lowercased() }
+    let overrideKeys = overrideHeaders.keys.map { $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }
 
     // ensure none are disallowed AND all are in the original set
     return overrideKeys.allSatisfy { !disallowHeaderKeys.contains($0) } &&
