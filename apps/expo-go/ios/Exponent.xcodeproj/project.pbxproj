@@ -141,9 +141,6 @@
 		F1F7433E24ABECD500EA5023 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F7433D24ABECD500EA5023 /* AppDelegate.swift */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		FB4B49E32E5D99D79400A124 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */; };
-		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
-		FCB4099525C6207C00326AC8 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
-		FCB4079725C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB4079625C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m */; };
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -433,10 +430,6 @@
 		F1F7433D24ABECD500EA5023 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FACEDA38C6E33F74459F0298 /* Pods-Expo Go (main)-Expo Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.debug.xcconfig"; sourceTree = "<group>"; };
-		FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSerializer.m; sourceTree = "<group>"; };
-		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
-		FCB4079525C5EF3800326AC8 /* EXScopedNotificationCategoryMigrator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoryMigrator.h; sourceTree = "<group>"; };
-		FCB4079625C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoryMigrator.m; sourceTree = "<group>"; };
 		FCB407C525C61D4700326AC8 /* ExpoNotificationServiceExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ExpoNotificationServiceExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -532,7 +525,6 @@
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
-				B2B492142462F5B7001576D8 /* EXNotifications */,
 				31361A5E2261C64100662769 /* Permissions */,
 				B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */,
 				B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */,
@@ -663,19 +655,6 @@
 				265F3243A214713066396657 /* Pods-Expo Go (main)-Tests.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		B2B492142462F5B7001576D8 /* EXNotifications */ = {
-			isa = PBXGroup;
-			children = (
-				FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */,
-				FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */,
-				B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */,
-				B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */,
-				FCB4079525C5EF3800326AC8 /* EXScopedNotificationCategoryMigrator.h */,
-				FCB4079625C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m */,
-			);
-			path = EXNotifications;
 			sourceTree = "<group>";
 		};
 		B505BA0F20CAF77A0046ACFB /* Tests */ = {
@@ -1392,9 +1371,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1424,9 +1407,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1464,9 +1451,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1550,9 +1541,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1823,10 +1818,7 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -1889,10 +1881,7 @@
 				LD = "";
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
