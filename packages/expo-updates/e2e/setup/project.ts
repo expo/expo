@@ -524,6 +524,9 @@ function transformAppJsonForE2E(
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
         assetPatternsToBeBundled: ['includedAssets/*'],
         useNativeDebug: true,
+        requestHeaders: {
+          'expo-channel-name': 'default',
+        },
       },
       extra: {
         eas: {
@@ -857,7 +860,7 @@ export async function initAsync(
   // enable proguard on Android, and custom init if needed
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    `\nandroid.enableProguardInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
+    `\nandroid.enableMinifyInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
     'utf-8'
   );
 

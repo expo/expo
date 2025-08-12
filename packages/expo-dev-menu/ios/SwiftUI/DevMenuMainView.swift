@@ -15,17 +15,17 @@ struct DevMenuMainView: View {
             )
           }
 
-          if !viewModel.registeredCallbacks.isEmpty {
-            CustomItems(
-              callbacks: viewModel.registeredCallbacks,
-              onFireCallback: viewModel.fireCallback
-            )
-          }
-
           DevMenuActions(
             isDevLauncherInstalled: viewModel.isDevLauncherInstalled,
             onReload: viewModel.reload,
             onGoHome: viewModel.goHome
+          )
+        }
+
+        if !viewModel.registeredCallbacks.isEmpty {
+          CustomItems(
+            callbacks: viewModel.registeredCallbacks,
+            onFireCallback: viewModel.fireCallback
           )
         }
 

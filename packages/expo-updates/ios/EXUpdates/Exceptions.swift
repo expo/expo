@@ -78,4 +78,21 @@ internal final class NotAllowedAntiBrickingMeasuresException: Exception {
   }
 }
 
+internal final class InvalidRequestHeadersOverrideException: Exception {
+  private let requestHeaders: [String: String]?
+
+  internal init(_ requestHeaders: [String: String]?, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.requestHeaders = requestHeaders
+    super.init(file: file, line: line, function: function)
+  }
+
+  override var code: String {
+    "ERR_UPDATES_RUNTIME_OVERRIDE"
+  }
+
+  override var reason: String {
+    "Invalid update requestHeaders override: \(String(describing: requestHeaders))"
+  }
+}
+
 // swiftlint:enable line_length

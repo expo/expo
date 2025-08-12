@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// This provides a better error message when ImmutableRequest is used in a non-standard JS runtime.
+assertRuntimeFetchAPISupport();
+
 /**
  * An immutable version of the Fetch API's [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object which prevents mutations.
  */
@@ -147,5 +150,45 @@ export class ImmutableRequest implements _ImmutableRequest {
    */
   clone(): Request {
     return this.#request.clone();
+  }
+}
+
+// Add assertions to improve usage in non-standard environments.
+export function assertRuntimeFetchAPISupport({
+  Request,
+  Response,
+  Headers,
+  process,
+}: any = globalThis) {
+  // Check if Request and Response are available.
+  if (
+    typeof Request === 'undefined' ||
+    typeof Response === 'undefined' ||
+    typeof Headers === 'undefined'
+  ) {
+    // Detect if `--no-experimental-fetch` flag is enabled and warn that it must be disabled.
+    if (typeof process !== 'undefined' && process.env && process.env.NODE_OPTIONS) {
+      const nodeOptions = process.env.NODE_OPTIONS;
+      if (nodeOptions.includes('--no-experimental-fetch')) {
+        throw new Error(
+          'NODE_OPTIONS="--no-experimental-fetch" is not supported with Expo server. Node.js built-in Request/Response APIs are required to continue.'
+        );
+      }
+    }
+    // If Node.js is <18, throw an error.
+    if (typeof process !== 'undefined' && process.version) {
+      const version = process.version;
+      const majorVersion = parseInt(version.replace(/v/g, '').split('.')[0], 10);
+      if (majorVersion < 18) {
+        throw new Error(
+          `Node.js version ${majorVersion} is not supported. Upgrade to Node.js 20 or newer.`
+        );
+      }
+    }
+
+    // Default error event for missing APIs.
+    throw new Error(
+      'Runtime built-in Request/Response/Headers APIs are not available. If running Node ensure that Node Fetch API, first available in Node.js 18, is enabled.'
+    );
   }
 }

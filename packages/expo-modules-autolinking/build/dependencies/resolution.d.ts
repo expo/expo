@@ -1,4 +1,4 @@
-import type { ResolutionResult } from './types';
+import { type ResolutionResult } from './types';
 declare module 'node:module' {
     function _nodeModulePaths(base: string): readonly string[];
 }

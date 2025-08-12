@@ -42,16 +42,22 @@ describe('export web-modal example', () => {
 
   it('injects correct scripts', async () => {
     expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['entry', '_layout', 'index'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index'].map(expectChunkPathMatching)
     );
     expect(await getScriptTagsAsync('modal.html')).toEqual(
-      ['entry', '_layout', 'index', 'modal'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal'].map(
+        expectChunkPathMatching
+      )
     );
     expect(await getScriptTagsAsync('modal-multi.html')).toEqual(
-      ['entry', '_layout', 'index', 'modal-multi'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal-multi'].map(
+        expectChunkPathMatching
+      )
     );
     expect(await getScriptTagsAsync('modal-scroll.html')).toEqual(
-      ['entry', '_layout', 'index', 'modal-scroll'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal-scroll'].map(
+        expectChunkPathMatching
+      )
     );
   });
 });

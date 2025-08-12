@@ -281,6 +281,7 @@ export const general = [
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/link-preview.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),

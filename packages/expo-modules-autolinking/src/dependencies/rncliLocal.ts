@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { ResolutionResult } from './types';
+import { DependencyResolutionSource, type ResolutionResult } from './types';
 import { defaultShouldIncludeDependency, maybeRealpath } from './utils';
 import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 
@@ -29,6 +29,7 @@ export async function scanDependenciesFromRNProjectConfig(
       const realPath = await maybeRealpath(originPath);
       if (realPath) {
         searchResults[dependencyName] = {
+          source: DependencyResolutionSource.RN_CLI_LOCAL,
           name: dependencyName,
           version: '',
           path: realPath,

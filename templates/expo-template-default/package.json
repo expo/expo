@@ -34,7 +34,7 @@
     "react-native": "0.81.0-rc.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-worklets": "~0.4.1",
-    "react-native-reanimated": "~4.0.1",
+    "react-native-reanimated": "~4.0.2",
     "react-native-safe-area-context": "5.5.2",
     "react-native-screens": "~4.11.1",
     "react-native-web": "~0.21.0",

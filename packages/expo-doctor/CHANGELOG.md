@@ -5,14 +5,17 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
 
+- Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
+- Add check that detects duplicated native modules ([#38683](https://github.com/expo/expo/pull/38683) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
+- Add missing packages to `DirectPackageInstallCheck` ([#38701](https://github.com/expo/expo/pull/38701) by [@kitten](https://github.com/kitten))
+- Hide "no metadata available" for React Native Directory output if it's the only reported issue ([#38728](https://github.com/expo/expo/pull/38728) by [@kitten](https://github.com/kitten))
 
 ## 1.13.5 - 2025-07-03
 

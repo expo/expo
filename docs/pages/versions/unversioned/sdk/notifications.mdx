@@ -53,6 +53,16 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 Then proceed to [configuration](#configuration) to set up the [config plugin](#app-config) and
 obtain the [credentials](#credentials) for push notifications.
 
+### Known issues <PlatformTags platforms={['android']} />
+
+When launching the app from a push notification in **Android development builds**, the splash screen may fail to display correctly about 70% of the time. The icon and fade animation may not appear as expected.
+
+- Icon may be missing
+- Fade animation may not run
+- Only the background color may flash briefly
+
+This issue only affects debug builds and does not occur in release builds. To workaround it, test notification launches in release mode (`npx expo run:android --variant release`) for accurate behavior.
+
 ## Usage
 
 Check out the example Snack below to see Notifications in action, make sure to use a physical device to test it. Push notifications don't work on emulators/simulators.

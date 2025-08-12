@@ -68,6 +68,30 @@ describe(validateConfig, () => {
     ).toThrow();
   });
 
+  it('should use `enableShrinkResourcesInReleaseBuilds` with `enableMinifyInReleaseBuilds`', () => {
+    expect(() =>
+      validateConfig({ android: { enableShrinkResourcesInReleaseBuilds: true } })
+    ).toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableMinifyInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableMinifyInReleaseBuilds: false,
+        },
+      })
+    ).toThrow();
+  });
+
   it('should validate android.enablePngCrunchInReleaseBuilds', () => {
     expect(() =>
       validateConfig({

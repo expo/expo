@@ -291,6 +291,18 @@ class EnabledUpdatesController(
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    val isValidRequestHeaders = UpdatesConfiguration.isValidRequestHeadersOverride(
+      updatesConfiguration.originalEmbeddedRequestHeaders,
+      requestHeaders
+    )
+    if (!isValidRequestHeaders) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Invalid update requestHeaders override: $requestHeaders", null)
+    }
+    val configOverride = UpdatesConfigurationOverride.saveRequestHeaders(context, requestHeaders)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
+  }
+
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName
   }

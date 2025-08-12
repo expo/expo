@@ -22,7 +22,6 @@ import { StackAnimationTypes } from 'react-native-screens';
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
-import { RouterModal } from '../modal/web/ModalStack.web';
 import { SingularOptions, getSingularId } from '../useScreens';
 import { Protected } from '../views/Protected';
 
@@ -484,7 +483,6 @@ function filterSingular<
 
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
-    const isWeb = process.env.EXPO_OS === 'web';
     const { isStackAnimationDisabled } = useLinkPreviewContext();
     const screenOptions = useMemo(() => {
       if (isStackAnimationDisabled) {
@@ -493,19 +491,9 @@ const Stack = Object.assign(
       return props.screenOptions;
     }, [props.screenOptions, isStackAnimationDisabled]);
 
-    if (isWeb) {
-      return (
-        <RouterModal
-          {...props}
-          screenOptions={screenOptions}
-          UNSTABLE_router={stackRouterOverride}
-        />
-      );
-    } else {
-      return (
-        <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
-      );
-    }
+    return (
+      <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+    );
   },
   {
     Screen: RNStack.Screen as (

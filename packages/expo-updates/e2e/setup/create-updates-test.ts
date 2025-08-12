@@ -21,7 +21,7 @@ function transformAppJson(appJson: any, projectName: string, runtimeVersion: str
       updates: {
         ...appJson.expo.updates,
         requestHeaders: {
-          'expo-channel-name': 'main',
+          'expo-channel-name': 'default',
         },
         assetPatternsToBeBundled: ['assetsInUpdates/*'],
       },

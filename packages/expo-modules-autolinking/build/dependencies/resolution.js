@@ -44,6 +44,7 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
             const nodeModulePath = await (0, utils_1.maybeRealpath)(originPath);
             if (nodeModulePath != null) {
                 modules.push({
+                    source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
                     name: dependencyName,
                     version: '',
                     path: nodeModulePath,
@@ -56,8 +57,18 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
         }
     }
     if (packageJson.peerDependencies != null && typeof packageJson.peerDependencies === 'object') {
+        const peerDependenciesMeta = packageJson.peerDependenciesMeta != null &&
+            typeof packageJson.peerDependenciesMeta === 'object'
+            ? packageJson.peerDependenciesMeta
+            : undefined;
         for (const dependencyName in packageJson.peerDependencies) {
             if (dependencyName in dependencies || !shouldIncludeDependency(dependencyName)) {
+                continue;
+            }
+            else if (isOptionalPeerDependencyMeta(peerDependenciesMeta, dependencyName)) {
+                // NOTE(@kitten): We only check peer dependencies because some package managers auto-install them
+                // which would mean they'd have no reference in any dependencies. However, optional peer dependencies
+                // don't auto-install and we can skip them
                 continue;
             }
             for (let idx = 0; idx < nodeModulePaths.length; idx++) {
@@ -65,6 +76,7 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
                 const nodeModulePath = await (0, utils_1.maybeRealpath)(originPath);
                 if (nodeModulePath != null) {
                     modules.push({
+                        source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
                         name: dependencyName,
                         version: '',
                         path: nodeModulePath,
@@ -86,6 +98,7 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
     }
     const modulePathsQueue = [
         {
+            source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
             name: '',
             version: '',
             path: rootPath,
@@ -132,4 +145,11 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
     }
     return searchResults;
 }
+const isOptionalPeerDependencyMeta = (peerDependenciesMeta, packageName) => {
+    return (peerDependenciesMeta &&
+        peerDependenciesMeta[packageName] != null &&
+        typeof peerDependenciesMeta[packageName] === 'object' &&
+        'optional' in peerDependenciesMeta[packageName] &&
+        !!peerDependenciesMeta[packageName].optional);
+};
 //# sourceMappingURL=resolution.js.map

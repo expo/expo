@@ -20,26 +20,25 @@ struct HomeTabView: View {
           DevServersView(showingInfoDialog: $showingInfoDialog)
 
           if !viewModel.recentlyOpenedApps.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 0) {
               HStack {
-                Text("Recently opened")
-                  .font(.headline)
+                Text("recently opened".uppercased())
+                  .font(.caption)
+                  .foregroundColor(.primary.opacity(0.6))
                 Spacer()
-                Button("Reset") {
+                Button("reset".uppercased()) {
                   viewModel.clearRecentlyOpenedApps()
                 }
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 12))
               }
 
-              LazyVStack(spacing: 0) {
+              LazyVStack(spacing: 6) {
                 ForEach(viewModel.recentlyOpenedApps) { app in
                   RecentlyOpenedAppRow(app: app) {
                     viewModel.openApp(url: app.url)
                   }
-                  Divider()
                 }
               }
-              .clipShape(RoundedRectangle(cornerRadius: 8))
               .padding(.top)
             }
           }
@@ -47,7 +46,6 @@ struct HomeTabView: View {
         .padding()
       }
     }
-    .systemGroupedBackground()
     .overlay(
       DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
     )
