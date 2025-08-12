@@ -34,9 +34,11 @@ jobs:
       - uses: eas/checkout
       - name: checkout the react-native submodule
         run: |
-            echo 'pwd:'
+            echo 'pwd:' $(pwd)
+            git config --global url."https://github.com/".insteadOf "git@github.com:" # to avoid SSH issues
             git submodule update --init --recursive
   build:
+    needs: [prepare]
     name: iOS Client Build
     type: build
     env:
