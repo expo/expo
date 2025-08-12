@@ -3,7 +3,6 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { initializeApp, getApp } from 'firebase/app';
 import {
   initializeAuth,
-  getAuth,
   signInWithEmailAndPassword,
   signInWithPhoneNumber,
   PhoneAuthProvider,
@@ -35,29 +34,29 @@ const FIREBASE_CONFIG = {
   measurementId: 'G-498KQSTM5G',
 };
 
-export async function test({ describe, it, expect, beforeAll }) {
-  // Firebase can't reinitialize parts of their SDK, let's try and silently ignore if it fails.
-  beforeAll(() => {
-    try {
-      initializeApp(FIREBASE_CONFIG);
-    } catch {}
+let auth = null;
 
-    try {
-      // We need to use `@react-native-async-storage/async-storage` instead of `react-native`.
-      // See: https://github.com/firebase/firebase-js-sdk/issues/1847
-      initializeAuth(getApp(), { persistence: getReactNativePersistence(AsyncStorage) });
-    } catch {}
-  });
+export async function test({ describe, it, expect }) {
+  // Firebase can't reinitialize parts of their SDK, let's try and silently ignore if it fails.
+  try {
+    initializeApp(FIREBASE_CONFIG);
+  } catch {}
+
+  try {
+    // We need to use `@react-native-async-storage/async-storage` instead of `react-native`.
+    // See: https://github.com/firebase/firebase-js-sdk/issues/1847
+    auth = initializeAuth(getApp(), { persistence: getReactNativePersistence(AsyncStorage) });
+  } catch {}
 
   describe('FirebaseJSSDK', async () => {
     describe('auth', async () => {
       it(`calls getAuth() succesfully`, () => {
-        expect(getAuth()).not.toBeNull();
+        expect(auth).not.toBeNull();
       });
 
       it(`returns correct sign-in error`, async () => {
         const error = await expectMethodToThrowAsync(() =>
-          signInWithEmailAndPassword(getAuth(), 'testuser@invaliddomain.com', '0')
+          signInWithEmailAndPassword(auth, 'testuser@invaliddomain.com', '0')
         );
         expect(error.code).toBe('auth/operation-not-allowed');
       });
