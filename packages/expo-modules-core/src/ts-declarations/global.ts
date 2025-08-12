@@ -31,10 +31,10 @@ export interface ExpoProcess {
   [key: string]: any;
 }
 
-  /**
-   * Global object containing all the native bindings installed by Expo.
-   * This object is not available in projects without the `expo` package installed.
-   */
+/**
+ * Global object containing all the native bindings installed by Expo.
+ * This object is not available in projects without the `expo` package installed.
+ */
 declare namespace ExpoGlobal {
   /** Host object that is used to access native Expo modules. */
   export let modules: Record<string, any>;

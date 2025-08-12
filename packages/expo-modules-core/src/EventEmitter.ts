@@ -1,6 +1,7 @@
 'use client';
 
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
+import { EventsMap } from './ts-declarations/EventEmitter';
 import type { ExpoGlobal } from './ts-declarations/global';
 
 ensureNativeModulesAreInstalled();
@@ -16,5 +17,6 @@ export interface EventSubscription {
   remove(): void;
 }
 
-export type EventEmitter = typeof ExpoGlobal.EventEmitter;
+export type EventEmitter<TEventsMap extends EventsMap = Record<never, never>> =
+  typeof ExpoGlobal.EventEmitter<TEventsMap>;
 export const EventEmitter: typeof ExpoGlobal.EventEmitter = globalThis.expo.EventEmitter;
