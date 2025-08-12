@@ -28,8 +28,6 @@ const defaultCalendarData = {
     name: 'expo',
     type: 'local',
   },
-  ownerAccount: 'expo',
-  accessLevel: Calendar.CalendarAccessLevel.OWNER,
 } satisfies Partial<ExpoCalendar>;
 
 async function createTestCalendarAsync(patch: Partial<ExpoCalendar> = {}) {
@@ -87,8 +85,8 @@ function createTestReminder(
   return calendar.createReminder(reminderData);
 }
 
-function getReminderCalendar() {
-  const calendars = getCalendarsNext();
+async function getReminderCalendar() {
+  const calendars = await getCalendarsNext();
   return calendars.find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
 }
 
@@ -249,7 +247,7 @@ export async function test(t) {
         });
 
         t.it('returns an array of calendars with correct shape', async () => {
-          const calendars = getCalendarsNext();
+          const calendars = await getCalendarsNext();
 
           t.expect(Array.isArray(calendars)).toBeTruthy();
 
@@ -260,7 +258,7 @@ export async function test(t) {
 
         if (Platform.OS === 'ios') {
           t.it('returns an array of calendars for reminders', async () => {
-            const calendars = getCalendarsNext(Calendar.EntityTypes.REMINDER);
+            const calendars = await getCalendarsNext(Calendar.EntityTypes.REMINDER);
 
             t.expect(Array.isArray(calendars)).toBeTruthy();
 
@@ -285,7 +283,7 @@ export async function test(t) {
         });
 
         t.it('returns an array of events', async () => {
-          const events = listEvents(
+          const events = await listEvents(
             [calendar1.id, calendar2.id],
             new Date(2019, 3, 1),
             new Date(2019, 3, 29)
@@ -295,7 +293,7 @@ export async function test(t) {
 
           const event1 = await createTestEvent(calendar1);
           const event2 = await createTestEvent(calendar2);
-          const updatedEvents = listEvents(
+          const updatedEvents = await listEvents(
             [calendar1.id, calendar2.id],
             new Date(2019, 3, 1),
             new Date(2019, 3, 29)
@@ -303,7 +301,7 @@ export async function test(t) {
           t.expect(updatedEvents.length).toBe(2);
           t.expect(updatedEvents.map((e) => e.id)).toEqual([event1.id, event2.id]);
 
-          const singleCalendarEvents = listEvents(
+          const singleCalendarEvents = await listEvents(
             [calendar1.id],
             new Date(2019, 3, 1),
             new Date(2019, 3, 29)
@@ -451,7 +449,7 @@ export async function test(t) {
         t.it('deletes a calendar', async () => {
           calendar.delete();
 
-          const calendars = getCalendarsNext();
+          const calendars = await getCalendarsNext();
           t.expect(calendars.findIndex((c) => c.id === calendar.id)).toBe(-1);
         });
 
@@ -537,7 +535,7 @@ export async function test(t) {
 
           t.beforeEach(async () => {
             eventCalendar = await createTestCalendarAsync();
-            reminderCalendar = getReminderCalendar();
+            reminderCalendar = await getReminderCalendar();
           });
 
           t.it('fails to create a reminder in the event calendar', async () => {
@@ -584,7 +582,7 @@ export async function test(t) {
           let reminder: ExpoCalendarReminder;
 
           t.beforeEach(async () => {
-            reminderCalendar = getReminderCalendar();
+            reminderCalendar = await getReminderCalendar();
             reminder = await createTestReminder(reminderCalendar, {
               startDate: new Date(2025, 0, 2, 6),
               dueDate: new Date(2025, 0, 2, 9),
@@ -673,7 +671,7 @@ export async function test(t) {
 
         t.it('resolves to an array with an event of the correct shape', async () => {
           const event = await createTestEvent(calendar);
-          const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
+          const events = await calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
 
           t.expect(Array.isArray(events)).toBe(true);
           t.expect(events.length).toBe(1);
@@ -683,7 +681,7 @@ export async function test(t) {
 
         t.it('returns a list of events', async () => {
           const event = await createTestEvent(calendar);
-          const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
+          const events = await calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
           t.expect(Array.isArray(events)).toBe(true);
           t.expect(events.length).toBe(1);
           t.expect(events[0].id).toBe(event.id);
@@ -692,7 +690,7 @@ export async function test(t) {
 
         t.it('modifies a listed event', async () => {
           await createTestEvent(calendar);
-          const events = calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
+          const events = await calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
           const newTitle = 'New title + ' + new Date().toISOString();
           const startDate = new Date(2019, 3, 2);
           const endDate = new Date(2019, 3, 3);
@@ -713,7 +711,7 @@ export async function test(t) {
           });
 
           // Get daily events on 4 days: 4th, 5th, 6th, 7th.
-          const events = calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
+          const events = await calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
           t.expect(Array.isArray(events)).toBe(true);
           t.expect(events.length).toBe(4);
         });
@@ -797,7 +795,7 @@ export async function test(t) {
           const newStartDate = new Date(2023, 2, 3);
           const newEndDate = new Date(2023, 2, 4);
 
-          const initialFetchedEvents = calendar.listEvents(
+          const initialFetchedEvents = await calendar.listEvents(
             new Date(2023, 2, 2),
             new Date(2023, 2, 5)
           );
@@ -809,7 +807,7 @@ export async function test(t) {
             endDate: newEndDate,
           });
 
-          const fetchedEvents = calendar.listEvents(new Date(2023, 2, 2), new Date(2023, 2, 5));
+          const fetchedEvents = await calendar.listEvents(new Date(2023, 2, 2), new Date(2023, 2, 5));
           t.expect(fetchedEvents.length).toBe(1);
           t.expect(fetchedEvents[0].id).toBe(event.id);
           t.expect(fetchedEvents[0].title).toBe(newTitle);
@@ -1058,7 +1056,7 @@ export async function test(t) {
             },
           });
 
-          const eventsBeforeDelete = calendar.listEvents(
+          const eventsBeforeDelete = await calendar.listEvents(
             new Date(2019, 3, 4),
             new Date(2019, 3, 8)
           );
@@ -1069,7 +1067,7 @@ export async function test(t) {
             futureEvents: true,
           });
 
-          const eventsAfterDelete = calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
+          const eventsAfterDelete = await calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
 
           t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
           t.expect(eventsAfterDelete.length).toBe(0);
@@ -1082,7 +1080,7 @@ export async function test(t) {
             },
           });
 
-          const eventsBeforeDelete = calendar.listEvents(
+          const eventsBeforeDelete = await calendar.listEvents(
             new Date(2019, 3, 4),
             new Date(2019, 3, 8)
           );
@@ -1093,7 +1091,7 @@ export async function test(t) {
             instanceStartDate: new Date(2019, 3, 5, 9),
           });
 
-          const eventsAfterDelete = calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
+          const eventsAfterDelete = await calendar.listEvents(new Date(2019, 3, 4), new Date(2019, 3, 8));
 
           t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
           t.expect(eventsAfterDelete.length).toBe(3);
@@ -1114,7 +1112,7 @@ export async function test(t) {
               },
             });
 
-            const eventsBeforeDelete = calendar.listEvents(
+            const eventsBeforeDelete = await calendar.listEvents(
               new Date(2019, 3, 4),
               new Date(2019, 3, 8)
             );
@@ -1128,7 +1126,7 @@ export async function test(t) {
               futureEvents: false,
             });
 
-            const eventsAfterDelete = calendar.listEvents(
+            const eventsAfterDelete = await calendar.listEvents(
               new Date(2019, 3, 4),
               new Date(2019, 3, 8)
             );
@@ -1153,7 +1151,7 @@ export async function test(t) {
               },
             });
 
-            const eventsBeforeDelete = calendar.listEvents(
+            const eventsBeforeDelete = await calendar.listEvents(
               new Date(2019, 3, 4),
               new Date(2019, 3, 8)
             );
@@ -1167,7 +1165,7 @@ export async function test(t) {
               futureEvents: true,
             });
 
-            const eventsAfterDelete = calendar.listEvents(
+            const eventsAfterDelete = await calendar.listEvents(
               new Date(2019, 3, 4),
               new Date(2019, 3, 8)
             );
@@ -1206,8 +1204,8 @@ export async function test(t) {
           event = await createTestEvent(calendar);
         });
 
-        t.it('lists attendees', () => {
-          const attendees = event.getAttendees();
+        t.it('lists attendees', async () => {
+          const attendees = await event.getAttendees();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);
         });
@@ -1218,7 +1216,7 @@ export async function test(t) {
               frequency: Calendar.Frequency.DAILY,
             },
           });
-          const attendees = recurringEvent.getAttendees({
+          const attendees = await recurringEvent.getAttendees({
             instanceStartDate: new Date(2024, 0, 1, 9),
           });
           t.expect(Array.isArray(attendees)).toBe(true);
@@ -1240,7 +1238,7 @@ export async function test(t) {
 
           t.beforeEach(async () => {
             eventCalendar = await createTestCalendarAsync();
-            reminderCalendar = getReminderCalendar();
+            reminderCalendar = await getReminderCalendar();
           });
 
           t.it('updates a reminder', async () => {
@@ -1443,7 +1441,7 @@ export async function test(t) {
           let reminder: ExpoCalendarReminder;
 
           t.beforeAll(async () => {
-            reminderCalendar = getReminderCalendar();
+            reminderCalendar = await getReminderCalendar();
           });
 
           t.it('deletes a reminder', async () => {

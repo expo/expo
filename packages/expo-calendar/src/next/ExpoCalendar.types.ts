@@ -100,7 +100,7 @@ export declare class ExpoCalendar {
   /**
    * Returns a calendar event list for the given date range.
    */
-  listEvents(startDate: Date | string, endDate: Date | string): ExpoCalendarEvent[];
+  listEvents(startDate: Date | string, endDate: Date | string): Promise<ExpoCalendarEvent[]>;
 
   /**
    * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
@@ -232,7 +232,7 @@ export declare class ExpoCalendarEvent {
    */
   openInCalendarAsync(
     params: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
-  ): void;
+  ): Promise<void>;
 
   /**
    * Launches the calendar UI provided by the OS to edit or delete an event.
@@ -255,7 +255,7 @@ export declare class ExpoCalendarEvent {
    * @param recurringEventOptions A map of options for recurring events.
    * @return An array of [`Attendee`](#attendee) associated with the specified event.
    */
-  getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
+  getAttendees(recurringEventOptions?: RecurringEventOptions): Promise<ExpoCalendarAttendee[]>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,

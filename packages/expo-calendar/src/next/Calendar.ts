@@ -30,7 +30,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     return super.getOccurrence(stringifyDateValues(recurringEventOptions));
   }
 
-  override getAttendees(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarAttendee[] {
+  override async getAttendees(
+    recurringEventOptions: RecurringEventOptions = {}
+  ): Promise<ExpoCalendarAttendee[]> {
     return super.getAttendees(stringifyDateValues(recurringEventOptions));
   }
 
@@ -88,14 +90,15 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     return newReminder;
   }
 
-  override listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[] {
+  override async listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]> {
     if (!startDate) {
       throw new Error('listEvents must be called with a startDate (date) to search for events');
     }
     if (!endDate) {
       throw new Error('listEvents must be called with an endDate (date) to search for events');
     }
-    return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate)).map((event) => {
+    const events = await super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+    return events.map((event) => {
       Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
       return event;
     });
@@ -145,11 +148,11 @@ export function getDefaultCalendarNext(): ExpoCalendar {
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export function getCalendarsNext(type?: EntityTypes): ExpoCalendar[] {
+export async function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalendar[]> {
   if (!InternalExpoCalendar.getCalendars) {
     throw new UnavailabilityError('Calendar', 'getCalendars');
   }
-  const calendars = InternalExpoCalendar.getCalendars(type);
+  const calendars = await InternalExpoCalendar.getCalendars(type);
   return calendars.map((calendar) => {
     Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
     return calendar;
@@ -161,13 +164,13 @@ export function getCalendarsNext(type?: EntityTypes): ExpoCalendar[] {
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalendar {
+export async function createCalendarNext(details: Partial<Calendar> = {}): Promise<ExpoCalendar> {
   if (!InternalExpoCalendar.createCalendarNext) {
     throw new UnavailabilityError('Calendar', 'createCalendarNext');
   }
   const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color: color || undefined };
-  const createdCalendar = InternalExpoCalendar.createCalendarNext(newDetails);
+  const createdCalendar = await InternalExpoCalendar.createCalendarNext(newDetails);
   Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
   return createdCalendar;
 }
@@ -180,11 +183,11 @@ export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalenda
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export function listEvents(
+export async function listEvents(
   calendarIds: string[],
   startDate: Date,
   endDate: Date
-): ExpoCalendarEvent[] {
+): Promise<ExpoCalendarEvent[]> {
   if (!InternalExpoCalendar.listEvents) {
     throw new UnavailabilityError('Calendar', 'listEvents');
   }

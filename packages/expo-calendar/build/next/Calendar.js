@@ -14,7 +14,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions = {}) {
         return super.getOccurrence(stringifyDateValues(recurringEventOptions));
     }
-    getAttendees(recurringEventOptions = {}) {
+    async getAttendees(recurringEventOptions = {}) {
         return super.getAttendees(stringifyDateValues(recurringEventOptions));
     }
     update(details, options = {}) {
@@ -51,14 +51,15 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         Object.setPrototypeOf(newReminder, ExpoCalendarReminder.prototype);
         return newReminder;
     }
-    listEvents(startDate, endDate) {
+    async listEvents(startDate, endDate) {
         if (!startDate) {
             throw new Error('listEvents must be called with a startDate (date) to search for events');
         }
         if (!endDate) {
             throw new Error('listEvents must be called with an endDate (date) to search for events');
         }
-        return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate)).map((event) => {
+        const events = await super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+        return events.map((event) => {
             Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
             return event;
         });
@@ -96,11 +97,11 @@ export function getDefaultCalendarNext() {
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export function getCalendarsNext(type) {
+export async function getCalendarsNext(type) {
     if (!InternalExpoCalendar.getCalendars) {
         throw new UnavailabilityError('Calendar', 'getCalendars');
     }
-    const calendars = InternalExpoCalendar.getCalendars(type);
+    const calendars = await InternalExpoCalendar.getCalendars(type);
     return calendars.map((calendar) => {
         Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
         return calendar;
@@ -111,13 +112,13 @@ export function getCalendarsNext(type) {
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export function createCalendarNext(details = {}) {
+export async function createCalendarNext(details = {}) {
     if (!InternalExpoCalendar.createCalendarNext) {
         throw new UnavailabilityError('Calendar', 'createCalendarNext');
     }
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, id: undefined, color: color || undefined };
-    const createdCalendar = InternalExpoCalendar.createCalendarNext(newDetails);
+    const createdCalendar = await InternalExpoCalendar.createCalendarNext(newDetails);
     Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
     return createdCalendar;
 }
@@ -129,7 +130,7 @@ export function createCalendarNext(details = {}) {
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export function listEvents(calendarIds, startDate, endDate) {
+export async function listEvents(calendarIds, startDate, endDate) {
     if (!InternalExpoCalendar.listEvents) {
         throw new UnavailabilityError('Calendar', 'listEvents');
     }
