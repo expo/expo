@@ -23,33 +23,50 @@ If you are looking to install a specific version of Expo Go, visit [expo.dev/go]
 Install the new version of the Expo package:
 
 <Tabs>
-<Tab label="npm">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ npx expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ npx expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ yarn expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ yarn expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
+  <Tab label="npm">
+    <Terminal
+      cmd={[
+        '# Install latest',
+        '$ npm install --save expo@latest',
+        '',
+        '# or, install a specific SDK version (for example, SDK 53)',
+        '$ npm install --save expo@^53.0.0',
+      ]}
+    />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal
+      cmd={[
+        '# Install latest',
+        '$ yarn add expo@latest',
+        '',
+        '# or, install a specific SDK version (for example, SDK 53)',
+        '$ yarn add expo@^53.0.0',
+      ]}
+    />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal
+      cmd={[
+        '# Install latest',
+        '$ pnpm add expo@latest',
+        '',
+        '# or, install a specific SDK version (for example, SDK 53)',
+        '$ pnpm add expo@^53.0.0',
+      ]}
+    />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal
+      cmd={[
+        '# Install latest',
+        '$ bun add expo@latest',
+        '',
+        '# or, install a specific SDK version (for example, SDK 53)',
+        '$ bun add expo@^53.0.0',
+      ]}
+    />
+  </Tab>
 </Tabs>
 
 </Step>
@@ -58,9 +75,9 @@ Install the new version of the Expo package:
 
 ### Upgrade dependencies
 
-Upgrade all dependencies to match the installed SDK version.
+Upgrade all dependencies to match the installed SDK version. It's also advisable to run [`expo-doctor`](/develop/tools/#expo-doctor) to check for common problems after upgrading.
 
-<Terminal cmd={['$ npx expo install --fix']} />
+<Terminal cmd={['$ npx expo install --fix', '$ npx expo-doctor']} />
 
 </Step>
 
