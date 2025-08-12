@@ -77,5 +77,62 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(UpdatesConfig.normalizedURLOrigin(url: urlOtherPort)) == "https://exp.host:47"
       }
     }
+
+    describe("isValidRequestHeadersOverride") {
+      it("should return true for headers matched with embedded headers") {
+        let originalHeaders = ["expo-channel-name": "default"]
+        let requestHeadersOverride = ["Expo-Channel-Name": "preview"]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == true
+      }
+
+      it("should return false for headers unmatched with embedded headers") {
+        let originalHeaders = ["expo-channel-name": "default"]
+        let requestHeadersOverride = [
+          "Expo-Channel-Name": "preview",
+          "X-Custom": "custom"
+        ]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == false
+      }
+
+      it("should return false for Host override header") {
+        let originalHeaders = [
+          "expo-channel-name": "default",
+          "Host": "example.org"
+        ]
+        let requestHeadersOverride = [
+          "Expo-Channel-Name": "preview",
+          "Host": "override.org"
+        ]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == false
+      }
+
+      it("should handle Host override header normalization") {
+        let originalHeaders = [
+          "expo-channel-name": "default",
+          " Host ": "example.org"
+        ]
+        let requestHeadersOverride = [
+          "Expo-Channel-Name": "preview",
+          " Host ": "override.org"
+        ]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == false
+      }
+    }
   }
 }
