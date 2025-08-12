@@ -14,7 +14,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions = {}) {
         return super.getOccurrence(stringifyDateValues(recurringEventOptions));
     }
-    getAttendees(recurringEventOptions = {}) {
+    async getAttendees(recurringEventOptions = {}) {
         return super.getAttendees(stringifyDateValues(recurringEventOptions));
     }
     update(details, options = {}) {
@@ -112,13 +112,13 @@ export async function getCalendarsNext(type) {
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export function createCalendarNext(details = {}) {
+export async function createCalendarNext(details = {}) {
     if (Platform.OS === 'android' || !InternalExpoCalendar.createCalendarNext) {
         throw new UnavailabilityError('Calendar', 'createCalendarNext');
     }
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, id: undefined, color: color || undefined };
-    const createdCalendar = InternalExpoCalendar.createCalendarNext(newDetails);
+    const createdCalendar = await InternalExpoCalendar.createCalendarNext(newDetails);
     Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
     return createdCalendar;
 }
@@ -130,7 +130,7 @@ export function createCalendarNext(details = {}) {
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export function listEvents(calendarIds, startDate, endDate) {
+export async function listEvents(calendarIds, startDate, endDate) {
     if (Platform.OS === 'android')
         return [];
     if (!InternalExpoCalendar.listEvents) {

@@ -30,7 +30,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     return super.getOccurrence(stringifyDateValues(recurringEventOptions));
   }
 
-  override getAttendees(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarAttendee[] {
+  override async getAttendees(
+    recurringEventOptions: RecurringEventOptions = {}
+  ): Promise<ExpoCalendarAttendee[]> {
     return super.getAttendees(stringifyDateValues(recurringEventOptions));
   }
 
@@ -162,13 +164,13 @@ export async function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalendar
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalendar {
-  if (Platform.OS === 'android' || !InternalExpoCalendar.createCalendarNext) {
+export async function createCalendarNext(details: Partial<Calendar> = {}): Promise<ExpoCalendar> {
+    if (Platform.OS === 'android' || !InternalExpoCalendar.createCalendarNext) {
     throw new UnavailabilityError('Calendar', 'createCalendarNext');
   }
   const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color: color || undefined };
-  const createdCalendar = InternalExpoCalendar.createCalendarNext(newDetails);
+  const createdCalendar = await InternalExpoCalendar.createCalendarNext(newDetails);
   Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
   return createdCalendar;
 }
@@ -181,11 +183,11 @@ export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalenda
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export function listEvents(
+export async function listEvents(
   calendarIds: string[],
   startDate: Date,
   endDate: Date
-): ExpoCalendarEvent[] {
+): Promise<ExpoCalendarEvent[]> {
   if (Platform.OS === 'android') return [];
   if (!InternalExpoCalendar.listEvents) {
     throw new UnavailabilityError('Calendar', 'listEvents');

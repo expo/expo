@@ -154,9 +154,9 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
   }
 
   func getAttendees(options: RecurringEventOptions?) throws -> [ExpoCalendarAttendee]? {
-    let occurence = try getOccurrence(options: options)
+    let occurrence = try getOccurrence(options: options)
 
-    guard let occurence, let attendees = occurence.attendees else {
+    guard let occurrence, let attendees = occurrence.attendees else {
       return []
     }
 

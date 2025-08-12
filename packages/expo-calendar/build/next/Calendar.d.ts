@@ -11,7 +11,7 @@ export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalen
  */
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
-    getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
+    getAttendees(recurringEventOptions?: RecurringEventOptions): Promise<ExpoCalendarAttendee[]>;
     update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): void;
     delete(options?: RecurringEventOptions): void;
 }
@@ -53,7 +53,7 @@ export declare function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalend
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export declare function createCalendarNext(details?: Partial<Calendar>): ExpoCalendar;
+export declare function createCalendarNext(details?: Partial<Calendar>): Promise<ExpoCalendar>;
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
@@ -62,7 +62,7 @@ export declare function createCalendarNext(details?: Partial<Calendar>): ExpoCal
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export declare function listEvents(calendarIds: string[], startDate: Date, endDate: Date): ExpoCalendarEvent[];
+export declare function listEvents(calendarIds: string[], startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
 /**
  * Asks the user to grant permissions for accessing user's calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
