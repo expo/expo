@@ -98,7 +98,16 @@ android {
       def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
       firebaseCrashlytics {
         nativeSymbolUploadEnabled shouldUploadCrashlytics
-        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib")
+      }
+    }
+  }
+
+  applicationVariants.all { variant ->
+    if (variant.buildType.name == 'release') {
+      def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
+      variant.buildType.firebaseCrashlytics {
+        nativeSymbolUploadEnabled shouldUploadCrashlytics
+        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/${variant.name}/merge${variant.name.capitalize()}NativeLibs/out/lib")
       }
     }
   }
@@ -273,7 +282,9 @@ apply plugin: 'com.google.gms.google-services'
 
 def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
   doLast {
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib"))
+    // Create directories for all release variants
+    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/mobileRelease/mergeMobileReleaseNativeLibs/out/lib"))
+    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/questRelease/mergeQuestReleaseNativeLibs/out/lib"))
   }
 }
 preBuild.dependsOn(ensureCrashlyticsDir)
