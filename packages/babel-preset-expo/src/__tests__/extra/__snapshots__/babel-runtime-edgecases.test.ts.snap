@@ -1,0 +1,1925 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`does not skip inner async function generator 1`] = `
+"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.__toESM = exports.__commonJS = exports.Unpromise = void 0;exports.createDeferred = createDeferred;exports.getRequestInfo = getRequestInfo;exports.isAbortError = isAbortError;exports.isPromise = isPromise;exports.iteratorResource = iteratorResource;exports.jsonlStreamConsumer = jsonlStreamConsumer;exports.jsonlStreamProducer = jsonlStreamProducer;exports.makeAsyncResource = makeAsyncResource;exports.makeResource = makeResource;exports.parseConnectionParamsFromString = parseConnectionParamsFromString;exports.parseConnectionParamsFromUnknown = parseConnectionParamsFromUnknown;exports.require_usingCtx = void 0;exports.resolveResponse = resolveResponse;exports.sseHeaders = void 0;exports.sseStreamConsumer = sseStreamConsumer;exports.sseStreamProducer = sseStreamProducer;exports.takeWithGrace = takeWithGrace;exports.throwAbortError = throwAbortError;exports.withMaxDuration = withMaxDuration;var _toArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toArray"));var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _wrapNativeSuper2 = _interopRequireDefault(require("@babel/runtime/helpers/wrapNativeSuper"));var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));var _asyncGeneratorDelegate2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncGeneratorDelegate"));var _awaitAsyncGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/awaitAsyncGenerator"));var _wrapAsyncGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/wrapAsyncGenerator"));var _getErrorShapeDyYil4aT = require("./getErrorShape-DyYil4aT.mjs");
+var _trackedGEWPoL0C = require("./tracked-GEWPoL0C.mjs");
+var _utilsBHZJcBRv = require("./utils-BHZJcBRv.mjs");
+var _observableB1orLHHI = require("./observable-B1orLHHI.mjs");var _Symbol$dispose, _Symbol$asyncDispose;function _callSuper(t, o, e) {return o = (0, _getPrototypeOf2.default)(o), (0, _possibleConstructorReturn2.default)(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0, _getPrototypeOf2.default)(t).constructor) : o.apply(t, e));}function _isNativeReflectConstruct() {try {var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));} catch (t) {}return (_isNativeReflectConstruct = function _isNativeReflectConstruct() {return !!t;})();}function _asyncIterator(r) {var n,t,o,e = 2;for ("undefined" != typeof Symbol && (t = Symbol.asyncIterator, o = Symbol.iterator); e--;) {if (t && null != (n = r[t])) return n.call(r);if (o && null != (n = r[o])) return new AsyncFromSyncIterator(n.call(r));t = "@@asyncIterator", o = "@@iterator";}throw new TypeError("Object is not async iterable");}function AsyncFromSyncIterator(r) {function AsyncFromSyncIteratorContinuation(r) {if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object."));var n = r.done;return Promise.resolve(r.value).then(function (r) {return { value: r, done: n };});}return AsyncFromSyncIterator = function AsyncFromSyncIterator(r) {this.s = r, this.n = r.next;}, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() {return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments));}, return: function _return(r) {var n = this.s.return;return void 0 === n ? Promise.resolve({ value: r, done: !0 }) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments));}, throw: function _throw(r) {var n = this.s.return;return void 0 === n ? Promise.reject(r) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments));} }, new AsyncFromSyncIterator(r);}_c = AsyncFromSyncIterator;
+
+//#region rolldown:runtime
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __commonJS = exports.__commonJS = function __commonJS(cb, mod) {return function () {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };};
+var __copyProps = function __copyProps(to, from, except, desc) {
+  if (from && typeof from === "object" || typeof from === "function") for (var keys = __getOwnPropNames(from), i = 0, n = keys.length, key; i < n; i++) {
+    key = keys[i];
+    if (!__hasOwnProp.call(to, key) && key !== except) __defProp(to, key, {
+      get: function (k) {return from[k];}.bind(null, key),
+      enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable
+    });
+  }
+  return to;
+};
+var __toESM = exports.__toESM = function __toESM(mod, isNodeMode, target) {return target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", {
+    value: mod,
+    enumerable: true
+  }) : target, mod);};
+
+//#endregion
+//#region src/unstable-core-do-not-import/http/parseConnectionParams.ts
+function parseConnectionParamsFromUnknown(parsed) {
+  try {
+    if (parsed === null) return null;
+    if (!(0, _utilsBHZJcBRv.isObject)(parsed)) throw new Error("Expected object");
+    var nonStringValues = Object.entries(parsed).filter(function (_ref8) {var _ref9 = (0, _slicedToArray2.default)(_ref8, 2),_key = _ref9[0],value = _ref9[1];return typeof value !== "string";});
+    if (nonStringValues.length > 0) throw new Error(\`Expected connectionParams to be string values. Got \${nonStringValues.map(function (_ref0) {var _ref1 = (0, _slicedToArray2.default)(_ref0, 2),key = _ref1[0],value = _ref1[1];return \`\${key}: \${typeof value}\`;}).join(", ")}\`);
+    return parsed;
+  } catch (cause) {
+    throw new _trackedGEWPoL0C.TRPCError({
+      code: "PARSE_ERROR",
+      message: "Invalid connection params shape",
+      cause: cause
+    });
+  }
+}
+function parseConnectionParamsFromString(str) {
+  var parsed;
+  try {
+    parsed = JSON.parse(str);
+  } catch (cause) {
+    throw new _trackedGEWPoL0C.TRPCError({
+      code: "PARSE_ERROR",
+      message: "Not JSON-parsable query params",
+      cause: cause
+    });
+  }
+  return parseConnectionParamsFromUnknown(parsed);
+}
+
+//#endregion
+//#region src/unstable-core-do-not-import/http/contentType.ts
+/**
+* Memoize a function that takes no arguments
+* @internal
+*/
+function memo(fn) {
+  var promise = null;
+  var sym = Symbol.for("@trpc/server/http/memo");
+  var value = sym;
+  return {
+    read: function () {var _read = (0, _asyncToGenerator2.default)(function* () {
+        if (value !== sym) return value;
+        promise != null ? promise : promise = fn().catch(function (cause) {
+          if (cause instanceof _trackedGEWPoL0C.TRPCError) throw cause;
+          throw new _trackedGEWPoL0C.TRPCError({
+            code: "BAD_REQUEST",
+            message: cause instanceof Error ? cause.message : "Invalid input",
+            cause: cause
+          });
+        });
+        value = yield promise;
+        promise = null;
+        return value;
+      });function read() {return _read.apply(this, arguments);}return read;}(),
+    result: function result() {
+      return value !== sym ? value : void 0;
+    }
+  };
+}
+var jsonContentTypeHandler = {
+  isMatch: function isMatch(req) {var _req$headers$get;
+    return !!((_req$headers$get = req.headers.get("content-type")) != null && _req$headers$get.startsWith("application/json"));
+  },
+  parse: function () {var _parse = (0, _asyncToGenerator2.default)(function* (opts) {var _types$values$next$va;
+      var req = opts.req;
+      var isBatchCall = opts.searchParams.get("batch") === "1";
+      var paths = isBatchCall ? opts.path.split(",") : [opts.path];
+      var getInputs = memo(/*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {
+        var inputs = void 0;
+        if (req.method === "GET") {
+          var queryInput = opts.searchParams.get("input");
+          if (queryInput) inputs = JSON.parse(queryInput);
+        } else inputs = yield req.json();
+        if (inputs === void 0) return {};
+        if (!isBatchCall) return { 0: opts.router._def._config.transformer.input.deserialize(inputs) };
+        if (!(0, _utilsBHZJcBRv.isObject)(inputs)) throw new _trackedGEWPoL0C.TRPCError({
+          code: "BAD_REQUEST",
+          message: "\\"input\\" needs to be an object when doing a batch call"
+        });
+        var acc = {};
+        for (var index of paths.keys()) {
+          var input = inputs[index];
+          if (input !== void 0) acc[index] = opts.router._def._config.transformer.input.deserialize(input);
+        }
+        return acc;
+      }));
+      var calls = yield Promise.all(paths.map(/*#__PURE__*/function () {var _ref11 = (0, _asyncToGenerator2.default)(function* (path, index) {
+          var procedure = yield (0, _trackedGEWPoL0C.getProcedureAtPath)(opts.router, path);
+          return {
+            path: path,
+            procedure: procedure,
+            getRawInput: function () {var _getRawInput = (0, _asyncToGenerator2.default)(function* () {
+                var inputs = yield getInputs.read();
+                var input = inputs[index];
+                if ((procedure == null ? void 0 : procedure._def.type) === "subscription") {var _ref12, _opts$headers$get;
+                  var lastEventId = (_ref12 = (_opts$headers$get = opts.headers.get("last-event-id")) != null ? _opts$headers$get : opts.searchParams.get("lastEventId")) != null ? _ref12 : opts.searchParams.get("Last-Event-Id");
+                  if (lastEventId) if ((0, _utilsBHZJcBRv.isObject)(input)) input = Object.assign({},
+                  input, {
+                    lastEventId: lastEventId });else
+
+                  input != null ? input : input = { lastEventId: lastEventId };
+                }
+                return input;
+              });function getRawInput() {return _getRawInput.apply(this, arguments);}return getRawInput;}(),
+            result: function result() {var _getInputs$result;
+              return (_getInputs$result = getInputs.result()) == null ? void 0 : _getInputs$result[index];
+            }
+          };
+        });return function (_x9, _x0) {return _ref11.apply(this, arguments);};}()));
+      var types = new Set(calls.map(function (call) {var _call$procedure;return (_call$procedure = call.procedure) == null ? void 0 : _call$procedure._def.type;}).filter(Boolean));
+      /* istanbul ignore if -- @preserve */
+      if (types.size > 1) throw new _trackedGEWPoL0C.TRPCError({
+        code: "BAD_REQUEST",
+        message: \`Cannot mix procedure types in call: \${Array.from(types).join(", ")}\`
+      });
+      var type = (_types$values$next$va = types.values().next().value) != null ? _types$values$next$va : "unknown";
+      var connectionParamsStr = opts.searchParams.get("connectionParams");
+      var info = {
+        isBatchCall: isBatchCall,
+        accept: req.headers.get("trpc-accept"),
+        calls: calls,
+        type: type,
+        connectionParams: connectionParamsStr === null ? null : parseConnectionParamsFromString(connectionParamsStr),
+        signal: req.signal,
+        url: opts.url
+      };
+      return info;
+    });function parse(_x8) {return _parse.apply(this, arguments);}return parse;}()
+};
+var formDataContentTypeHandler = {
+  isMatch: function isMatch(req) {var _req$headers$get2;
+    return !!((_req$headers$get2 = req.headers.get("content-type")) != null && _req$headers$get2.startsWith("multipart/form-data"));
+  },
+  parse: function () {var _parse2 = (0, _asyncToGenerator2.default)(function* (opts) {
+      var req = opts.req;
+      if (req.method !== "POST") throw new _trackedGEWPoL0C.TRPCError({
+        code: "METHOD_NOT_SUPPORTED",
+        message: "Only POST requests are supported for multipart/form-data requests"
+      });
+      var getInputs = memo(/*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {
+        var fd = yield req.formData();
+        return fd;
+      }));
+      var procedure = yield (0, _trackedGEWPoL0C.getProcedureAtPath)(opts.router, opts.path);
+      return {
+        accept: null,
+        calls: [{
+          path: opts.path,
+          getRawInput: getInputs.read,
+          result: getInputs.result,
+          procedure: procedure
+        }],
+        isBatchCall: false,
+        type: "mutation",
+        connectionParams: null,
+        signal: req.signal,
+        url: opts.url
+      };
+    });function parse(_x1) {return _parse2.apply(this, arguments);}return parse;}()
+};
+var octetStreamContentTypeHandler = {
+  isMatch: function isMatch(req) {var _req$headers$get3;
+    return !!((_req$headers$get3 = req.headers.get("content-type")) != null && _req$headers$get3.startsWith("application/octet-stream"));
+  },
+  parse: function () {var _parse3 = (0, _asyncToGenerator2.default)(function* (opts) {
+      var req = opts.req;
+      if (req.method !== "POST") throw new _trackedGEWPoL0C.TRPCError({
+        code: "METHOD_NOT_SUPPORTED",
+        message: "Only POST requests are supported for application/octet-stream requests"
+      });
+      var getInputs = memo(/*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {
+        return req.body;
+      }));
+      return {
+        calls: [{
+          path: opts.path,
+          getRawInput: getInputs.read,
+          result: getInputs.result,
+          procedure: yield (0, _trackedGEWPoL0C.getProcedureAtPath)(opts.router, opts.path)
+        }],
+        isBatchCall: false,
+        accept: null,
+        type: "mutation",
+        connectionParams: null,
+        signal: req.signal,
+        url: opts.url
+      };
+    });function parse(_x10) {return _parse3.apply(this, arguments);}return parse;}()
+};
+var handlers = [
+jsonContentTypeHandler,
+formDataContentTypeHandler,
+octetStreamContentTypeHandler];
+
+function getContentTypeHandler(req) {
+  var handler = handlers.find(function (handler$1) {return handler$1.isMatch(req);});
+  if (handler) return handler;
+  if (!handler && req.method === "GET") return jsonContentTypeHandler;
+  throw new _trackedGEWPoL0C.TRPCError({
+    code: "UNSUPPORTED_MEDIA_TYPE",
+    message: req.headers.has("content-type") ? \`Unsupported content-type "\${req.headers.get("content-type")}\` : "Missing content-type header"
+  });
+}function
+getRequestInfo(_x11) {return _getRequestInfo.apply(this, arguments);}
+
+
+
+
+//#endregion
+//#region src/unstable-core-do-not-import/http/abortError.ts
+function _getRequestInfo() {_getRequestInfo = (0, _asyncToGenerator2.default)(function* (opts) {var handler = getContentTypeHandler(opts.req);return yield handler.parse(opts);});return _getRequestInfo.apply(this, arguments);}function isAbortError(error) {
+  return (0, _utilsBHZJcBRv.isObject)(error) && error["name"] === "AbortError";
+}
+function throwAbortError() {var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "AbortError";
+  throw new DOMException(message, "AbortError");
+}
+
+//#endregion
+//#region src/vendor/unpromise/unpromise.ts
+/** Memory safe (weakmapped) cache of the ProxyPromise for each Promise,
+* which is retained for the lifetime of the original Promise.
+*/
+var subscribableCache = /* @__PURE__ */new WeakMap();
+/** A NOOP function allowing a consistent interface for settled
+* SubscribedPromises (settled promises are not subscribed - they resolve
+* immediately). */
+var NOOP = function NOOP() {};
+/**
+* Every \`Promise<T>\` can be shadowed by a single \`ProxyPromise<T>\`. It is
+* created once, cached and reused throughout the lifetime of the Promise. Get a
+* Promise's ProxyPromise using \`Unpromise.proxy(promise)\`.
+*
+* The \`ProxyPromise<T>\` attaches handlers to the original \`Promise<T>\`
+* \`.then()\` and \`.catch()\` just once. Promises derived from it use a
+* subscription- (and unsubscription-) based mechanism that monitors these
+* handlers.
+*
+* Every time you call \`.subscribe()\`, \`.then()\` \`.catch()\` or \`.finally()\` on a
+* \`ProxyPromise<T>\` it returns a \`SubscribedPromise<T>\` having an additional
+* \`unsubscribe()\` method. Calling \`unsubscribe()\` detaches reference chains
+* from the original, potentially long-lived Promise, eliminating memory leaks.
+*
+* This approach can eliminate the memory leaks that otherwise come about from
+* repeated \`race()\` or \`any()\` calls invoking \`.then()\` and \`.catch()\` multiple
+* times on the same long-lived native Promise (subscriptions which can never be
+* cleaned up).
+*
+* \`Unpromise.race(promises)\` is a reference implementation of \`Promise.race\`
+* avoiding memory leaks when using long-lived unsettled Promises.
+*
+* \`Unpromise.any(promises)\` is a reference implementation of \`Promise.any\`
+* avoiding memory leaks when using long-lived unsettled Promises.
+*
+* \`Unpromise.resolve(promise)\` returns an ephemeral \`SubscribedPromise<T>\` for
+* any given \`Promise<T>\` facilitating arbitrary async/await patterns. Behind
+* the scenes, \`resolve\` is implemented simply as
+* \`Unpromise.proxy(promise).subscribe()\`. Don't forget to call \`.unsubscribe()\`
+* to tidy up!
+*
+*/_c2 = NOOP;
+var Unpromise = exports.Unpromise = /*#__PURE__*/function () {
+
+
+
+
+
+
+
+
+
+
+  function Unpromise(arg) {var _this = this;(0, _classCallCheck2.default)(this, Unpromise); /** INSTANCE IMPLEMENTATION */ /** The promise shadowed by this Unpromise<T>  */ /** Promises expecting eventual settlement (unless unsubscribed first). This list is deleted
+    * after the original promise settles - no further notifications will be issued. */this.subscribers = []; /** The Promise's settlement (recorded when it fulfils or rejects). This is consulted when
+    * calling .subscribe() .then() .catch() .finally() to see if an immediately-resolving Promise
+    * can be returned, and therefore subscription can be bypassed. */this.settlement = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /** TOSTRING SUPPORT */this[
+    Symbol.toStringTag] = "Unpromise";if (typeof arg === "function") this.promise = new Promise(arg);else this.promise = arg;var thenReturn = this.promise.then(function (value) {var subscribers = _this.subscribers;_this.subscribers = null;_this.settlement = { status: "fulfilled", value: value };subscribers == null || subscribers.forEach(function (_ref15) {var resolve = _ref15.resolve;resolve(value);});});if ("catch" in thenReturn) thenReturn.catch(function (reason) {var subscribers = _this.subscribers;_this.subscribers = null;_this.settlement = { status: "rejected", reason: reason };subscribers == null || subscribers.forEach(function (_ref16) {var reject = _ref16.reject;reject(reason);});});} /** Create a promise that mitigates uncontrolled subscription to a long-lived
+  * Promise via .then() and .catch() - otherwise a source of memory leaks.
+  *
+  * The returned promise has an \`unsubscribe()\` method which can be called when
+  * the Promise is no longer being tracked by application logic, and which
+  * ensures that there is no reference chain from the original promise to the
+  * new one, and therefore no memory leak.
+  *
+  * If original promise has not yet settled, this adds a new unique promise
+  * that listens to then/catch events, along with an \`unsubscribe()\` method to
+  * detach it.
+  *
+  * If original promise has settled, then creates a new Promise.resolve() or
+  * Promise.reject() and provided unsubscribe is a noop.
+  *
+  * If you call \`unsubscribe()\` before the returned Promise has settled, it
+  * will never settle.
+  */return (0, _createClass2.default)(Unpromise, [{ key: "subscribe", value: function subscribe() {var _this2 = this;var promise;var unsubscribe;var settlement = this.settlement;if (settlement === null) {if (this.subscribers === null) throw new Error("Unpromise settled but still has subscribers");var subscriber = withResolvers();this.subscribers = listWithMember(this.subscribers, subscriber);promise = subscriber.promise;unsubscribe = function unsubscribe() {if (_this2.subscribers !== null) _this2.subscribers = listWithoutMember(_this2.subscribers, subscriber);};} else {var status = settlement.status;if (status === "fulfilled") promise = Promise.resolve(settlement.value);else promise = Promise.reject(settlement.reason);unsubscribe = NOOP;}return Object.assign(promise, { unsubscribe: unsubscribe });} /** STANDARD PROMISE METHODS (but returning a SubscribedPromise) */ }, { key: "then", value: function then(onfulfilled, onrejected) {var subscribed = this.subscribe();var unsubscribe = subscribed.unsubscribe;return Object.assign(subscribed.then(onfulfilled, onrejected), { unsubscribe: unsubscribe });} }, { key: "catch", value: function _catch(onrejected) {var subscribed = this.subscribe();var unsubscribe = subscribed.unsubscribe;return Object.assign(subscribed.catch(onrejected), { unsubscribe: unsubscribe });} }, { key: "finally", value: function _finally(onfinally) {var subscribed = this.subscribe();var unsubscribe = subscribed.unsubscribe;return Object.assign(subscribed.finally(onfinally), { unsubscribe: unsubscribe });} }], [{ key: "proxy", value: /** Unpromise STATIC METHODS */ /** Create or Retrieve the proxy Unpromise (a re-used Unpromise for the VM lifetime
+    * of the provided Promise reference) */function proxy(promise) {var cached = Unpromise.getSubscribablePromise(promise);return typeof cached !== "undefined" ? cached : Unpromise.createSubscribablePromise(promise);} /** Create and store an Unpromise keyed by an original Promise. */ }, { key: "createSubscribablePromise", value: function createSubscribablePromise(promise) {var created = new Unpromise(promise);subscribableCache.set(promise, created);subscribableCache.set(created, created);return created;} /** Retrieve a previously-created Unpromise keyed by an original Promise. */ }, { key: "getSubscribablePromise", value: function getSubscribablePromise(promise) {return subscribableCache.get(promise);}
+    /** Promise STATIC METHODS */
+    /** Lookup the Unpromise for this promise, and derive a SubscribedPromise from
+    * it (that can be later unsubscribed to eliminate Memory leaks) */ }, { key: "resolve", value:
+    function resolve(value) {
+      var promise = typeof value === "object" && value !== null && "then" in value && typeof value.then === "function" ? value : Promise.resolve(value);
+      return Unpromise.proxy(promise).subscribe();
+    } }, { key: "any", value: function () {var _any = (0, _asyncToGenerator2.default)(
+        function* (values) {
+          var valuesArray = Array.isArray(values) ? values : (0, _toConsumableArray2.default)(values);
+          var subscribedPromises = valuesArray.map(Unpromise.resolve);
+          try {
+            return yield Promise.any(subscribedPromises);
+          } finally {
+            subscribedPromises.forEach(function (_ref17) {var unsubscribe = _ref17.unsubscribe;
+              unsubscribe();
+            });
+          }
+        });function any(_x12) {return _any.apply(this, arguments);}return any;}() }, { key: "race", value: function () {var _race = (0, _asyncToGenerator2.default)(
+        function* (values) {
+          var valuesArray = Array.isArray(values) ? values : (0, _toConsumableArray2.default)(values);
+          var subscribedPromises = valuesArray.map(Unpromise.resolve);
+          try {
+            return yield Promise.race(subscribedPromises);
+          } finally {
+            subscribedPromises.forEach(function (_ref18) {var unsubscribe = _ref18.unsubscribe;
+              unsubscribe();
+            });
+          }
+        });function race(_x13) {return _race.apply(this, arguments);}return race;}()
+    /** Create a race of SubscribedPromises that will fulfil to a single winning
+    * Promise (in a 1-Tuple). Eliminates memory leaks from long-lived promises
+    * accumulating .then() and .catch() subscribers. Allows simple logic to
+    * consume the result, like...
+    * \`\`\`ts
+    * const [ winner ] = await Unpromise.race([ promiseA, promiseB ]);
+    * if(winner === promiseB){
+    *   const result = await promiseB;
+    *   // do the thing
+    * }
+    * \`\`\`
+    * */ }, { key: "raceReferences", value: (function () {var _raceReferences = (0, _asyncToGenerator2.default)(
+        function* (promises) {
+          var selfPromises = promises.map(resolveSelfTuple);
+          try {
+            return yield Promise.race(selfPromises);
+          } finally {
+            for (var promise of selfPromises) promise.unsubscribe();
+          }
+        });function raceReferences(_x14) {return _raceReferences.apply(this, arguments);}return raceReferences;}()) }]);}();
+
+/** Promises a 1-tuple containing the original promise when it resolves. Allows
+* awaiting the eventual Promise ***reference*** (easy to destructure and
+* exactly compare with ===). Avoids resolving to the Promise ***value*** (which
+* may be ambiguous and therefore hard to identify as the winner of a race).
+* You can call unsubscribe on the Promise to mitigate memory leaks.
+* */
+function resolveSelfTuple(promise) {
+  return Unpromise.proxy(promise).then(function () {return [promise];});
+}
+/** VENDORED (Future) PROMISE UTILITIES */
+/** Reference implementation of https://github.com/tc39/proposal-promise-with-resolvers */
+function withResolvers() {
+  var resolve;
+  var reject;
+  var promise = new Promise(function (_resolve, _reject) {
+    resolve = _resolve;
+    reject = _reject;
+  });
+  return {
+    promise: promise,
+    resolve: resolve,
+    reject: reject
+  };
+}
+/** IMMUTABLE LIST OPERATIONS */
+function listWithMember(arr, member) {
+  return [].concat((0, _toConsumableArray2.default)(arr), [member]);
+}
+function listWithoutIndex(arr, index) {
+  return [].concat((0, _toConsumableArray2.default)(arr.slice(0, index)), (0, _toConsumableArray2.default)(arr.slice(index + 1)));
+}
+function listWithoutMember(arr, member) {
+  var index = arr.indexOf(member);
+  if (index !== -1) return listWithoutIndex(arr, index);
+  return arr;
+}
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/utils/disposable.ts
+(_Symbol$dispose = Symbol.dispose) != null ? _Symbol$dispose : Symbol.dispose = Symbol();
+(_Symbol$asyncDispose = Symbol.asyncDispose) != null ? _Symbol$asyncDispose : Symbol.asyncDispose = Symbol();
+/**
+* Takes a value and a dispose function and returns a new object that implements the Disposable interface.
+* The returned object is the original value augmented with a Symbol.dispose method.
+* @param thing The value to make disposable
+* @param dispose Function to call when disposing the resource
+* @returns The original value with Symbol.dispose method added
+*/
+function makeResource(thing, dispose) {
+  var it = thing;
+  var existing = it[Symbol.dispose];
+  it[Symbol.dispose] = function () {
+    dispose();
+    existing == null || existing();
+  };
+  return it;
+}
+/**
+* Takes a value and an async dispose function and returns a new object that implements the AsyncDisposable interface.
+* The returned object is the original value augmented with a Symbol.asyncDispose method.
+* @param thing The value to make async disposable
+* @param dispose Async function to call when disposing the resource
+* @returns The original value with Symbol.asyncDispose method added
+*/
+function makeAsyncResource(thing, dispose) {
+  var it = thing;
+  var existing = it[Symbol.asyncDispose];
+  it[Symbol.asyncDispose] = /*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {
+    yield dispose();
+    yield existing == null ? void 0 : existing();
+  });
+  return it;
+}
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/utils/timerResource.ts
+var disposablePromiseTimerResult = Symbol();
+function timerResource(ms) {
+  var timer = null;
+  return makeResource({ start: function start() {
+      if (timer) throw new Error("Timer already started");
+      var promise = new Promise(function (resolve) {
+        timer = setTimeout(function () {return resolve(disposablePromiseTimerResult);}, ms);
+      });
+      return promise;
+    } }, function () {
+    if (timer) clearTimeout(timer);
+  });
+}
+
+//#endregion
+//#region ../../node_modules/.pnpm/@oxc-project+runtime@0.72.2/node_modules/@oxc-project/runtime/src/helpers/usingCtx.js
+var require_usingCtx = exports.require_usingCtx = __commonJS({ "../../node_modules/.pnpm/@oxc-project+runtime@0.72.2/node_modules/@oxc-project/runtime/src/helpers/usingCtx.js": function __node_modules_Pnpm_OxcProjectRuntime0722_node_modules_OxcProject_runtime_src_helpers_usingCtxJs(exports, module) {
+    function _usingCtx() {
+      var r = "function" == typeof SuppressedError ? SuppressedError : function (r$1, e$1) {
+          var n$1 = Error();
+          return n$1.name = "SuppressedError", n$1.error = r$1, n$1.suppressed = e$1, n$1;
+        },e = {},n = [];
+      function using(r$1, e$1) {
+        if (null != e$1) {
+          if (Object(e$1) !== e$1) throw new TypeError("using declarations can only be used with objects, functions, null, or undefined.");
+          if (r$1) var o = e$1[Symbol.asyncDispose || Symbol["for"]("Symbol.asyncDispose")];
+          if (void 0 === o && (o = e$1[Symbol.dispose || Symbol["for"]("Symbol.dispose")], r$1)) var t = o;
+          if ("function" != typeof o) throw new TypeError("Object is not disposable.");
+          t && (o = function o$1() {
+            try {
+              t.call(e$1);
+            } catch (r$2) {
+              return Promise.reject(r$2);
+            }
+          }), n.push({
+            v: e$1,
+            d: o,
+            a: r$1
+          });
+        } else r$1 && n.push({
+          d: e$1,
+          a: r$1
+        });
+        return e$1;
+      }
+      return {
+        e: e,
+        u: using.bind(null, !1),
+        a: using.bind(null, !0),
+        d: function d() {
+          var o,t = this.e,s = 0;
+          function next() {
+            for (; o = n.pop();) try {
+              if (!o.a && 1 === s) return s = 0, n.push(o), Promise.resolve().then(next);
+              if (o.d) {
+                var r$1 = o.d.call(o.v);
+                if (o.a) return s |= 2, Promise.resolve(r$1).then(next, err);
+              } else s |= 1;
+            } catch (r$2) {
+              return err(r$2);
+            }
+            if (1 === s) return t !== e ? Promise.reject(t) : Promise.resolve();
+            if (t !== e) throw t;
+          }
+          function err(n$1) {
+            return t = t !== e ? new r(n$1, t) : n$1, next();
+          }
+          return next();
+        }
+      };
+    }
+    module.exports = _usingCtx, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  } });
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/utils/asyncIterable.ts
+var import_usingCtx$4 = __toESM(require_usingCtx(), 1);
+function iteratorResource(iterable) {
+  var iterator = iterable[Symbol.asyncIterator]();
+  if (iterator[Symbol.asyncDispose]) return iterator;
+  return makeAsyncResource(iterator, /*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {
+    yield iterator.return == null ? void 0 : iterator.return();
+  }));
+}
+/**
+* Derives a new {@link AsyncGenerator} based on {@link iterable}, that automatically aborts after the specified duration.
+*/function
+withMaxDuration(_x, _x2) {return _withMaxDuration.apply(this, arguments);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+* Derives a new {@link AsyncGenerator} based of {@link iterable}, that yields its first
+* {@link count} values. Then, a grace period of {@link gracePeriodMs} is started in which further
+* values may still come through. After this period, the generator aborts.
+*/function _withMaxDuration() {_withMaxDuration = (0, _wrapAsyncGenerator2.default)(function* (iterable, opts) {try {var _usingCtx$1 = (0, import_usingCtx$4.default)();var iterator = _usingCtx$1.a(iteratorResource(iterable));var timer = _usingCtx$1.u(timerResource(opts.maxDurationMs));var timerPromise = timer.start();var result;while (true) {result = yield (0, _awaitAsyncGenerator2.default)(Unpromise.race([iterator.next(), timerPromise]));if (result === disposablePromiseTimerResult) throwAbortError();if (result.done) return result;yield result.value;result = null;}} catch (_) {_usingCtx$1.e = _;} finally {yield (0, _awaitAsyncGenerator2.default)(_usingCtx$1.d());}});return _withMaxDuration.apply(this, arguments);}function
+takeWithGrace(_x3, _x4) {return _takeWithGrace.apply(this, arguments);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/utils/createDeferred.ts
+function _takeWithGrace() {_takeWithGrace = (0, _wrapAsyncGenerator2.default)(function* (iterable, opts) {try {var _usingCtx3 = (0, import_usingCtx$4.default)();var iterator = _usingCtx3.a(iteratorResource(iterable));var result;var timer = _usingCtx3.u(timerResource(opts.gracePeriodMs));var count = opts.count;var timerPromise = new Promise(function () {});while (true) {result = yield (0, _awaitAsyncGenerator2.default)(Unpromise.race([iterator.next(), timerPromise]));if (result === disposablePromiseTimerResult) throwAbortError();if (result.done) return result.value;yield result.value;if (--count === 0) timerPromise = timer.start();result = null;}} catch (_) {_usingCtx3.e = _;} finally {yield (0, _awaitAsyncGenerator2.default)(_usingCtx3.d());}});return _takeWithGrace.apply(this, arguments);}function createDeferred() {
+  var resolve;
+  var reject;
+  var promise = new Promise(function (res, rej) {
+    resolve = res;
+    reject = rej;
+  });
+  return {
+    promise: promise,
+    resolve: resolve,
+    reject: reject
+  };
+}
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/utils/mergeAsyncIterables.ts
+var import_usingCtx$3 = __toESM(require_usingCtx(), 1);
+function createManagedIterator(iterable, onResult) {
+  var iterator = iterable[Symbol.asyncIterator]();
+  var state = "idle";
+  function cleanup() {
+    state = "done";
+    onResult = function onResult() {};
+  }
+  function pull() {
+    if (state !== "idle") return;
+    state = "pending";
+    var next = iterator.next();
+    next.then(function (result) {
+      if (result.done) {
+        state = "done";
+        onResult({
+          status: "return",
+          value: result.value
+        });
+        cleanup();
+        return;
+      }
+      state = "idle";
+      onResult({
+        status: "yield",
+        value: result.value
+      });
+    }).catch(function (cause) {
+      onResult({
+        status: "error",
+        error: cause
+      });
+      cleanup();
+    });
+  }
+  return {
+    pull: pull,
+    destroy: function () {var _destroy = (0, _asyncToGenerator2.default)(function* () {
+        cleanup();
+        yield iterator.return == null ? void 0 : iterator.return();
+      });function destroy() {return _destroy.apply(this, arguments);}return destroy;}()
+  };
+}
+/**
+* Creates a new async iterable that merges multiple async iterables into a single stream.
+* Values from the input iterables are yielded in the order they resolve, similar to Promise.race().
+*
+* New iterables can be added dynamically using the returned {@link MergedAsyncIterables.add} method, even after iteration has started.
+*
+* If any of the input iterables throws an error, that error will be propagated through the merged stream.
+* Other iterables will not continue to be processed.
+*
+* @template TYield The type of values yielded by the input iterables
+*/
+function mergeAsyncIterables() {
+  var state = "idle";
+  var flushSignal = createDeferred();
+  /**
+  * used while {@link state} is \`idle\`
+  */
+  var iterables = [];
+  /**
+  * used while {@link state} is \`pending\`
+  */
+  var iterators = /* @__PURE__ */new Set();
+  var buffer = [];
+  function initIterable(iterable) {
+    if (state !== "pending") return;
+    var iterator = createManagedIterator(iterable, function (result) {
+      if (state !== "pending") return;
+      switch (result.status) {
+        case "yield":
+          buffer.push([iterator, result]);
+          break;
+        case "return":
+          iterators.delete(iterator);
+          break;
+        case "error":
+          buffer.push([iterator, result]);
+          iterators.delete(iterator);
+          break;
+      }
+      flushSignal.resolve();
+    });
+    iterators.add(iterator);
+    iterator.pull();
+  }
+  return (0, _defineProperty2.default)({
+    add: function add(iterable) {
+      switch (state) {
+        case "idle":
+          iterables.push(iterable);
+          break;
+        case "pending":
+          initIterable(iterable);
+          break;
+        case "done":break;
+      }
+    } },
+  Symbol.asyncIterator, function () {return (0, _wrapAsyncGenerator2.default)(function* () {
+      try {
+        var _usingCtx$1 = (0, import_usingCtx$3.default)();
+        if (state !== "idle") throw new Error("Cannot iterate twice");
+        state = "pending";
+        var _finally = _usingCtx$1.a(makeAsyncResource({}, /*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {
+          state = "done";
+          var errors = [];
+          yield Promise.all(Array.from(iterators.values()).map(/*#__PURE__*/function () {var _ref22 = (0, _asyncToGenerator2.default)(function* (it) {
+              try {
+                yield it.destroy();
+              } catch (cause) {
+                errors.push(cause);
+              }
+            });return function (_x15) {return _ref22.apply(this, arguments);};}()));
+          buffer.length = 0;
+          iterators.clear();
+          flushSignal.resolve();
+          if (errors.length > 0) throw new AggregateError(errors);
+        })));
+        while (iterables.length > 0) initIterable(iterables.shift());
+        while (iterators.size > 0) {
+          yield (0, _awaitAsyncGenerator2.default)(flushSignal.promise);
+          while (buffer.length > 0) {
+            var _buffer$shift = buffer.shift(),_buffer$shift2 = (0, _slicedToArray2.default)(_buffer$shift, 2),iterator = _buffer$shift2[0],result = _buffer$shift2[1];
+            switch (result.status) {
+              case "yield":
+                yield result.value;
+                iterator.pull();
+                break;
+              case "error":throw result.error;
+            }
+          }
+          flushSignal = createDeferred();
+        }
+      } catch (_) {
+        _usingCtx$1.e = _;
+      } finally {
+        yield (0, _awaitAsyncGenerator2.default)(_usingCtx$1.d());
+      }})();
+  });
+
+}
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/utils/readableStreamFrom.ts
+/**
+* Creates a ReadableStream from an AsyncIterable.
+*
+* @param iterable - The source AsyncIterable to stream from
+* @returns A ReadableStream that yields values from the AsyncIterable
+*/
+function readableStreamFrom(iterable) {
+  var iterator = iterable[Symbol.asyncIterator]();
+  return new ReadableStream({
+    cancel: function () {var _cancel = (0, _asyncToGenerator2.default)(function* () {
+        yield iterator.return == null ? void 0 : iterator.return();
+      });function cancel() {return _cancel.apply(this, arguments);}return cancel;}(),
+    pull: function () {var _pull = (0, _asyncToGenerator2.default)(function* (controller) {
+        var result = yield iterator.next();
+        if (result.done) {
+          controller.close();
+          return;
+        }
+        controller.enqueue(result.value);
+      });function pull(_x16) {return _pull.apply(this, arguments);}return pull;}()
+  });
+}
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/utils/withPing.ts
+var import_usingCtx$2 = __toESM(require_usingCtx(), 1);
+var PING_SYM = Symbol("ping");
+/**
+* Derives a new {@link AsyncGenerator} based of {@link iterable}, that yields {@link PING_SYM}
+* whenever no value has been yielded for {@link pingIntervalMs}.
+*/function
+withPing(_x5, _x6) {return _withPing.apply(this, arguments);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/jsonl.ts
+function _withPing() {_withPing = (0, _wrapAsyncGenerator2.default)(function* (iterable, pingIntervalMs) {try {var _usingCtx$1 = (0, import_usingCtx$2.default)();var iterator = _usingCtx$1.a(iteratorResource(iterable));var result;var nextPromise = iterator.next();while (true) try {var _usingCtx3 = (0, import_usingCtx$2.default)();var pingPromise = _usingCtx3.u(timerResource(pingIntervalMs));result = yield (0, _awaitAsyncGenerator2.default)(Unpromise.race([nextPromise, pingPromise.start()]));if (result === disposablePromiseTimerResult) {yield PING_SYM;continue;}if (result.done) return result.value;nextPromise = iterator.next();yield result.value;result = null;} catch (_) {_usingCtx3.e = _;} finally {_usingCtx3.d();}} catch (_) {_usingCtx$1.e = _;} finally {yield (0, _awaitAsyncGenerator2.default)(_usingCtx$1.d());}});return _withPing.apply(this, arguments);}var import_usingCtx$1 = __toESM(require_usingCtx(), 1);
+function isPlainObject(value) {
+  return Object.prototype.toString.call(value) === "[object Object]";
+}
+var CHUNK_VALUE_TYPE_PROMISE = 0;
+var CHUNK_VALUE_TYPE_ASYNC_ITERABLE = 1;
+var PROMISE_STATUS_FULFILLED = 0;
+var PROMISE_STATUS_REJECTED = 1;
+var ASYNC_ITERABLE_STATUS_RETURN = 0;
+var ASYNC_ITERABLE_STATUS_YIELD = 1;
+var ASYNC_ITERABLE_STATUS_ERROR = 2;
+function isPromise(value) {
+  return ((0, _utilsBHZJcBRv.isObject)(value) || (0, _utilsBHZJcBRv.isFunction)(value)) && typeof (value == null ? void 0 : value["then"]) === "function" && typeof (value == null ? void 0 : value["catch"]) === "function";
+}
+var MaxDepthError = /*#__PURE__*/function (_Error) {
+  function MaxDepthError(path) {var _this3;(0, _classCallCheck2.default)(this, MaxDepthError);
+    _this3 = _callSuper(this, MaxDepthError, ["Max depth reached at path: " + path.join(".")]);
+    _this3.path = path;return _this3;
+  }(0, _inherits2.default)(MaxDepthError, _Error);return (0, _createClass2.default)(MaxDepthError);}(/*#__PURE__*/(0, _wrapNativeSuper2.default)(Error));function
+
+createBatchStreamProducer(_x7) {return _createBatchStreamProducer.apply(this, arguments);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+* JSON Lines stream producer
+* @see https://jsonlines.org/
+*/function _createBatchStreamProducer() {_createBatchStreamProducer = (0, _wrapAsyncGenerator2.default)(function* (opts) {var data = opts.data;var counter = 0;var placeholder = 0;var mergedIterables = mergeAsyncIterables();function registerAsync(callback) {var idx = counter++;var iterable$1 = callback(idx);mergedIterables.add(iterable$1);return idx;}function encodePromise(promise, path) {return registerAsync(async function* (idx) {var error = checkMaxDepth(path);if (error) {promise.catch(function (cause) {opts.onError == null || opts.onError({ error: cause, path: path });});promise = Promise.reject(error);}try {var next = await promise;yield [idx, PROMISE_STATUS_FULFILLED, encode(next, path)];} catch (cause) {opts.onError == null || opts.onError({ error: cause, path: path });yield [idx, PROMISE_STATUS_REJECTED, opts.formatError == null ? void 0 : opts.formatError({ error: cause, path: path })];}});}function encodeAsyncIterable(iterable$1, path) {return registerAsync(async function* (idx) {try {var _usingCtx$1 = (0, import_usingCtx$1.default)();var error = checkMaxDepth(path);if (error) throw error;var iterator = _usingCtx$1.a(iteratorResource(iterable$1));try {while (true) {var next = await iterator.next();if (next.done) {yield [idx, ASYNC_ITERABLE_STATUS_RETURN, encode(next.value, path)];break;}yield [idx, ASYNC_ITERABLE_STATUS_YIELD, encode(next.value, path)];}} catch (cause) {opts.onError == null || opts.onError({ error: cause, path: path });yield [idx, ASYNC_ITERABLE_STATUS_ERROR, opts.formatError == null ? void 0 : opts.formatError({ error: cause, path: path })];}} catch (_) {_usingCtx$1.e = _;} finally {await _usingCtx$1.d();}});}function checkMaxDepth(path) {if (opts.maxDepth && path.length > opts.maxDepth) return new MaxDepthError(path);return null;}function encodeAsync(value, path) {if (isPromise(value)) return [CHUNK_VALUE_TYPE_PROMISE, encodePromise(value, path)];if ((0, _utilsBHZJcBRv.isAsyncIterable)(value)) {if (opts.maxDepth && path.length >= opts.maxDepth) throw new Error("Max depth reached");return [CHUNK_VALUE_TYPE_ASYNC_ITERABLE, encodeAsyncIterable(value, path)];}return null;}function encode(value, path) {if (value === void 0) return [[]];var reg = encodeAsync(value, path);if (reg) return [[placeholder], [null].concat((0, _toConsumableArray2.default)(reg))];if (!isPlainObject(value)) return [[value]];var newObj = {};var asyncValues = [];for (var _ref4 of Object.entries(value)) {var _ref5 = (0, _slicedToArray2.default)(_ref4, 2);var key = _ref5[0];var item = _ref5[1];var transformed = encodeAsync(item, [].concat((0, _toConsumableArray2.default)(path), [key]));if (!transformed) {newObj[key] = item;continue;}newObj[key] = placeholder;asyncValues.push([key].concat((0, _toConsumableArray2.default)(transformed)));}return [[newObj]].concat(asyncValues);}var newHead = {};for (var _ref6 of Object.entries(data)) {var _ref7 = (0, _slicedToArray2.default)(_ref6, 2);var key = _ref7[0];var item = _ref7[1];newHead[key] = encode(item, [key]);}yield newHead;var iterable = mergedIterables;if (opts.pingMs) iterable = withPing(mergedIterables, opts.pingMs);var _iteratorAbruptCompletion = false;var _didIteratorError = false;var _iteratorError;try {for (var _iterator = _asyncIterator(iterable), _step; _iteratorAbruptCompletion = !(_step = yield (0, _awaitAsyncGenerator2.default)(_iterator.next())).done; _iteratorAbruptCompletion = false) {var value = _step.value;{yield value;}}} catch (err) {_didIteratorError = true;_iteratorError = err;} finally {try {if (_iteratorAbruptCompletion && _iterator.return != null) {yield (0, _awaitAsyncGenerator2.default)(_iterator.return());}} finally {if (_didIteratorError) {throw _iteratorError;}}}});return _createBatchStreamProducer.apply(this, arguments);}
+function jsonlStreamProducer(opts) {
+  var stream = readableStreamFrom(createBatchStreamProducer(opts));
+  var serialize = opts.serialize;
+  if (serialize) stream = stream.pipeThrough(new TransformStream({ transform: function transform(chunk, controller) {
+      if (chunk === PING_SYM) controller.enqueue(PING_SYM);else
+      controller.enqueue(serialize(chunk));
+    } }));
+  return stream.pipeThrough(new TransformStream({ transform: function transform(chunk, controller) {
+      if (chunk === PING_SYM) controller.enqueue(" ");else
+      controller.enqueue(JSON.stringify(chunk) + "\\n");
+    } })).pipeThrough(new TextEncoderStream());
+}
+var AsyncError = /*#__PURE__*/function (_Error2) {
+  function AsyncError(data) {var _this4;(0, _classCallCheck2.default)(this, AsyncError);
+    _this4 = _callSuper(this, AsyncError, ["Received error from server"]);
+    _this4.data = data;return _this4;
+  }(0, _inherits2.default)(AsyncError, _Error2);return (0, _createClass2.default)(AsyncError);}(/*#__PURE__*/(0, _wrapNativeSuper2.default)(Error));
+
+var nodeJsStreamToReaderEsque = function nodeJsStreamToReaderEsque(source) {
+  return { getReader: function getReader() {
+      var stream = new ReadableStream({ start: function start(controller) {
+          source.on("data", function (chunk) {
+            controller.enqueue(chunk);
+          });
+          source.on("end", function () {
+            controller.close();
+          });
+          source.on("error", function (error) {
+            controller.error(error);
+          });
+        } });
+      return stream.getReader();
+    } };
+};
+function createLineAccumulator(from) {
+  var reader = "getReader" in from ? from.getReader() : nodeJsStreamToReaderEsque(from).getReader();
+  var lineAggregate = "";
+  return new ReadableStream({
+    pull: function () {var _pull2 = (0, _asyncToGenerator2.default)(function* (controller) {
+        var _yield$reader$read = yield reader.read(),done = _yield$reader$read.done,value = _yield$reader$read.value;
+        if (done) controller.close();else
+        controller.enqueue(value);
+      });function pull(_x17) {return _pull2.apply(this, arguments);}return pull;}(),
+    cancel: function cancel() {
+      return reader.cancel();
+    }
+  }).pipeThrough(new TextDecoderStream()).pipeThrough(new TransformStream({ transform: function transform(chunk, controller) {var _parts$pop;
+      lineAggregate += chunk;
+      var parts = lineAggregate.split("\\n");
+      lineAggregate = (_parts$pop = parts.pop()) != null ? _parts$pop : "";
+      for (var part of parts) controller.enqueue(part);
+    } }));
+}
+function createConsumerStream(from) {
+  var stream = createLineAccumulator(from);
+  var sentHead = false;
+  return stream.pipeThrough(new TransformStream({ transform: function transform(line, controller) {
+      if (!sentHead) {
+        var head = JSON.parse(line);
+        controller.enqueue(head);
+        sentHead = true;
+      } else {
+        var chunk = JSON.parse(line);
+        controller.enqueue(chunk);
+      }
+    } }));
+}
+/**
+* Creates a handler for managing stream controllers and their lifecycle
+*/
+function createStreamsManager(abortController) {
+  var controllerMap = /* @__PURE__ */new Map();
+  /**
+  * Checks if there are no pending controllers or deferred promises
+  */
+  function isEmpty() {
+    return Array.from(controllerMap.values()).every(function (c) {return c.closed;});
+  }
+  /**
+  * Creates a stream controller
+  */
+  function createStreamController() {
+    var originalController;
+    var stream = new ReadableStream({ start: function start(controller) {
+        originalController = controller;
+      } });
+    var streamController = {
+      enqueue: function enqueue(v) {return originalController.enqueue(v);},
+      close: function close() {
+        originalController.close();
+        clear();
+        if (isEmpty()) abortController.abort();
+      },
+      closed: false,
+      getReaderResource: function getReaderResource() {
+        var reader = stream.getReader();
+        return makeResource(reader, function () {
+          reader.releaseLock();
+          streamController.close();
+        });
+      },
+      error: function error(reason) {
+        originalController.error(reason);
+        clear();
+      }
+    };
+    function clear() {
+      Object.assign(streamController, {
+        closed: true,
+        close: function close() {},
+        enqueue: function enqueue() {},
+        getReaderResource: null,
+        error: function error() {}
+      });
+    }
+    return streamController;
+  }
+  /**
+  * Gets or creates a stream controller
+  */
+  function getOrCreate(chunkId) {
+    var c = controllerMap.get(chunkId);
+    if (!c) {
+      c = createStreamController();
+      controllerMap.set(chunkId, c);
+    }
+    return c;
+  }
+  /**
+  * Cancels all pending controllers and rejects deferred promises
+  */
+  function cancelAll(reason) {
+    for (var controller of controllerMap.values()) controller.error(reason);
+  }
+  return {
+    getOrCreate: getOrCreate,
+    isEmpty: isEmpty,
+    cancelAll: cancelAll
+  };
+}
+/**
+* JSON Lines stream consumer
+* @see https://jsonlines.org/
+*/function
+jsonlStreamConsumer(_x18) {return _jsonlStreamConsumer.apply(this, arguments);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#endregion
+//#region src/unstable-core-do-not-import/stream/sse.ts
+function _jsonlStreamConsumer() {_jsonlStreamConsumer = (0, _asyncToGenerator2.default)(function* (opts) {var _opts$deserialize2 = opts.deserialize,deserialize = _opts$deserialize2 === void 0 ? function (v) {return v;} : _opts$deserialize2;var source = createConsumerStream(opts.from);if (deserialize) source = source.pipeThrough(new TransformStream({ transform: function transform(chunk, controller) {controller.enqueue(deserialize(chunk));} }));var headDeferred = createDeferred();var streamManager = createStreamsManager(opts.abortController);function decodeChunkDefinition(value) {var _value2 = (0, _slicedToArray2.default)(value, 3),_path = _value2[0],type = _value2[1],chunkId = _value2[2];var controller = streamManager.getOrCreate(chunkId);switch (type) {case CHUNK_VALUE_TYPE_PROMISE:return (0, _utilsBHZJcBRv.run)(/*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {var _opts$formatError2;try {var _usingCtx3 = (0, import_usingCtx$1.default)();var reader = _usingCtx3.u(controller.getReaderResource());var _yield$reader$read2 = yield reader.read(),value$1 = _yield$reader$read2.value;var _value$ = (0, _slicedToArray2.default)(value$1, 3),_chunkId = _value$[0],status = _value$[1],data = _value$[2];switch (status) {case PROMISE_STATUS_FULFILLED:return decode(data);case PROMISE_STATUS_REJECTED:throw (_opts$formatError2 = opts.formatError == null ? void 0 : opts.formatError({ error: data })) != null ? _opts$formatError2 : new AsyncError(data);}} catch (_) {_usingCtx3.e = _;} finally {_usingCtx3.d();}}));case CHUNK_VALUE_TYPE_ASYNC_ITERABLE:return (0, _utilsBHZJcBRv.run)(/*#__PURE__*/(0, _wrapAsyncGenerator2.default)(function* () {var _opts$formatError3;try {var _usingCtx4 = (0, import_usingCtx$1.default)();var reader = _usingCtx4.u(controller.getReaderResource());while (true) {var _yield$_awaitAsyncGen = yield (0, _awaitAsyncGenerator2.default)(reader.read()),value$1 = _yield$_awaitAsyncGen.value;var _value$2 = (0, _slicedToArray2.default)(value$1, 3),_chunkId = _value$2[0],status = _value$2[1],data = _value$2[2];switch (status) {case ASYNC_ITERABLE_STATUS_YIELD:yield decode(data);break;case ASYNC_ITERABLE_STATUS_RETURN:return decode(data);case ASYNC_ITERABLE_STATUS_ERROR:throw (_opts$formatError3 = opts.formatError == null ? void 0 : opts.formatError({ error: data })) != null ? _opts$formatError3 : new AsyncError(data);}}} catch (_) {_usingCtx4.e = _;} finally {_usingCtx4.d();}}));}}function decode(value) {var _value3 = (0, _toArray2.default)(value),_value3$ = (0, _slicedToArray2.default)(_value3[0], 1),data = _value3$[0],asyncProps = _value3.slice(1);for (var value$1 of asyncProps) {var _value$3 = (0, _slicedToArray2.default)(value$1, 1),key = _value$3[0];var decoded = decodeChunkDefinition(value$1);if (key === null) return decoded;data[key] = decoded;}return data;}var closeOrAbort = function closeOrAbort(reason) {var _headDeferred;(_headDeferred = headDeferred) == null || _headDeferred.reject(reason);streamManager.cancelAll(reason);};source.pipeTo(new WritableStream({ write: function write(chunkOrHead) {if (headDeferred) {var head = chunkOrHead;for (var _ref29 of Object.entries(chunkOrHead)) {var _ref30 = (0, _slicedToArray2.default)(_ref29, 2);var key = _ref30[0];var value = _ref30[1];var parsed = decode(value);head[key] = parsed;}headDeferred.resolve(head);headDeferred = null;return;}var chunk = chunkOrHead;var _chunk = (0, _slicedToArray2.default)(chunk, 1),idx = _chunk[0];var controller = streamManager.getOrCreate(idx);controller.enqueue(chunk);}, close: function close() {return closeOrAbort(new Error("Stream closed"));}, abort: closeOrAbort }), { signal: opts.abortController.signal }).catch(function (error) {opts.onError == null || opts.onError({ error: error });closeOrAbort(error);});return [yield headDeferred.promise, streamManager];});return _jsonlStreamConsumer.apply(this, arguments);}var import_usingCtx = __toESM(require_usingCtx(), 1);
+var PING_EVENT = "ping";
+var SERIALIZED_ERROR_EVENT = "serialized-error";
+var CONNECTED_EVENT = "connected";
+var RETURN_EVENT = "return";
+/**
+*
+* @see https://html.spec.whatwg.org/multipage/server-sent-events.html
+*/
+function sseStreamProducer(opts) {var _opts$ping$enabled, _opts$ping, _opts$ping$intervalMs, _opts$ping2, _opts$client;
+  var _opts$serialize = opts.serialize,serialize = _opts$serialize === void 0 ? _utilsBHZJcBRv.identity : _opts$serialize;
+  var ping = {
+    enabled: (_opts$ping$enabled = (_opts$ping = opts.ping) == null ? void 0 : _opts$ping.enabled) != null ? _opts$ping$enabled : false,
+    intervalMs: (_opts$ping$intervalMs = (_opts$ping2 = opts.ping) == null ? void 0 : _opts$ping2.intervalMs) != null ? _opts$ping$intervalMs : 1e3
+  };
+  var client = (_opts$client = opts.client) != null ? _opts$client : {};
+  if (ping.enabled && client.reconnectAfterInactivityMs && ping.intervalMs > client.reconnectAfterInactivityMs) throw new Error(\`Ping interval must be less than client reconnect interval to prevent unnecessary reconnection - ping.intervalMs: \${ping.intervalMs} client.reconnectAfterInactivityMs: \${client.reconnectAfterInactivityMs}\`);function
+  generator() {return _generator.apply(this, arguments);}function _generator() {_generator = (0, _wrapAsyncGenerator2.default)(function* () {
+      yield {
+        event: CONNECTED_EVENT,
+        data: JSON.stringify(client)
+      };
+      var iterable = opts.data;
+      if (opts.emitAndEndImmediately) iterable = takeWithGrace(iterable, {
+        count: 1,
+        gracePeriodMs: 1
+      });
+      if (opts.maxDurationMs && opts.maxDurationMs > 0 && opts.maxDurationMs !== Infinity) iterable = withMaxDuration(iterable, { maxDurationMs: opts.maxDurationMs });
+      if (ping.enabled && ping.intervalMs !== Infinity && ping.intervalMs > 0) iterable = withPing(iterable, ping.intervalMs);
+      var value;
+      var chunk;var _iteratorAbruptCompletion2 = false;var _didIteratorError2 = false;var _iteratorError2;try {
+        for (var _iterator2 = _asyncIterator(iterable), _step2; _iteratorAbruptCompletion2 = !(_step2 = yield (0, _awaitAsyncGenerator2.default)(_iterator2.next())).done; _iteratorAbruptCompletion2 = false) {value = _step2.value;{
+            if (value === PING_SYM) {
+              yield {
+                event: PING_EVENT,
+                data: ""
+              };
+              continue;
+            }
+            chunk = (0, _trackedGEWPoL0C.isTrackedEnvelope)(value) ? {
+              id: value[0],
+              data: value[1]
+            } : { data: value };
+            chunk.data = JSON.stringify(serialize(chunk.data));
+            yield chunk;
+            value = null;
+            chunk = null;}
+        }} catch (err) {_didIteratorError2 = true;_iteratorError2 = err;} finally {try {if (_iteratorAbruptCompletion2 && _iterator2.return != null) {yield (0, _awaitAsyncGenerator2.default)(_iterator2.return());}} finally {if (_didIteratorError2) {throw _iteratorError2;}}}
+    });return _generator.apply(this, arguments);}function
+  generatorWithErrorHandling() {return _generatorWithErrorHandling.apply(this, arguments);}function _generatorWithErrorHandling() {_generatorWithErrorHandling = (0, _wrapAsyncGenerator2.default)(function* () {
+      try {
+        yield* (0, _asyncGeneratorDelegate2.default)(_asyncIterator(generator()), _awaitAsyncGenerator2.default);
+        yield {
+          event: RETURN_EVENT,
+          data: ""
+        };
+      } catch (cause) {var _opts$formatError;
+        if (isAbortError(cause)) return;
+        var error = (0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(cause);
+        var data = (_opts$formatError = opts.formatError == null ? void 0 : opts.formatError({ error: error })) != null ? _opts$formatError : null;
+        yield {
+          event: SERIALIZED_ERROR_EVENT,
+          data: JSON.stringify(serialize(data))
+        };
+      }
+    });return _generatorWithErrorHandling.apply(this, arguments);}
+  var stream = readableStreamFrom(generatorWithErrorHandling());
+  return stream.pipeThrough(new TransformStream({ transform: function transform(chunk, controller) {
+      if ("event" in chunk) controller.enqueue(\`event: \${chunk.event}\\n\`);
+      if ("data" in chunk) controller.enqueue(\`data: \${chunk.data}\\n\`);
+      if ("id" in chunk) controller.enqueue(\`id: \${chunk.id}\\n\`);
+      if ("comment" in chunk) controller.enqueue(\`: \${chunk.comment}\\n\`);
+      controller.enqueue("\\n\\n");
+    } })).pipeThrough(new TextEncoderStream());
+}function
+withTimeout(_x19) {return _withTimeout.apply(this, arguments);}
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+* @see https://html.spec.whatwg.org/multipage/server-sent-events.html
+*/function _withTimeout() {_withTimeout = (0, _asyncToGenerator2.default)(function* (opts) {try {var _usingCtx$1 = (0, import_usingCtx.default)();var timeoutPromise = _usingCtx$1.u(timerResource(opts.timeoutMs));var res = yield Unpromise.race([opts.promise, timeoutPromise.start()]);if (res === disposablePromiseTimerResult) return yield opts.onTimeout();return res;} catch (_) {_usingCtx$1.e = _;} finally {_usingCtx$1.d();}});return _withTimeout.apply(this, arguments);}
+function sseStreamConsumer(opts) {
+  var _opts$deserialize = opts.deserialize,deserialize = _opts$deserialize === void 0 ? function (v) {return v;} : _opts$deserialize;
+  var clientOptions = {};
+  var signal = opts.signal;
+  var _es = null;
+  var createStream = function createStream() {return new ReadableStream({
+      start: function () {var _start = (0, _asyncToGenerator2.default)(function* (controller) {
+          var _yield$Promise$all = yield Promise.all([opts.url(), opts.init()]),_yield$Promise$all2 = (0, _slicedToArray2.default)(_yield$Promise$all, 2),url = _yield$Promise$all2[0],init = _yield$Promise$all2[1];
+          var eventSource = _es = new opts.EventSource(url, init);
+          controller.enqueue({
+            type: "connecting",
+            eventSource: _es,
+            event: null
+          });
+          eventSource.addEventListener(CONNECTED_EVENT, function (_msg) {
+            var msg = _msg;
+            var options = JSON.parse(msg.data);
+            clientOptions = options;
+            controller.enqueue({
+              type: "connected",
+              options: options,
+              eventSource: eventSource
+            });
+          });
+          eventSource.addEventListener(SERIALIZED_ERROR_EVENT, function (_msg) {
+            var msg = _msg;
+            controller.enqueue({
+              type: "serialized-error",
+              error: deserialize(JSON.parse(msg.data)),
+              eventSource: eventSource
+            });
+          });
+          eventSource.addEventListener(PING_EVENT, function () {
+            controller.enqueue({
+              type: "ping",
+              eventSource: eventSource
+            });
+          });
+          eventSource.addEventListener(RETURN_EVENT, function () {
+            eventSource.close();
+            controller.close();
+            _es = null;
+          });
+          eventSource.addEventListener("error", function (event) {
+            if (eventSource.readyState === eventSource.CLOSED) controller.error(event);else
+            controller.enqueue({
+              type: "connecting",
+              eventSource: eventSource,
+              event: event
+            });
+          });
+          eventSource.addEventListener("message", function (_msg) {
+            var msg = _msg;
+            var chunk = deserialize(JSON.parse(msg.data));
+            var def = { data: chunk };
+            if (msg.lastEventId) def.id = msg.lastEventId;
+            controller.enqueue({
+              type: "data",
+              data: def,
+              eventSource: eventSource
+            });
+          });
+          var onAbort = function onAbort() {
+            try {
+              eventSource.close();
+              controller.close();
+            } catch (_unused) {}
+          };
+          if (signal.aborted) onAbort();else
+          signal.addEventListener("abort", onAbort);
+        });function start(_x20) {return _start.apply(this, arguments);}return start;}(),
+      cancel: function cancel() {var _es2;
+        (_es2 = _es) == null || _es2.close();
+      }
+    });};
+  var getStreamResource = function getStreamResource() {
+    var stream = createStream();
+    var reader = stream.getReader();function
+    dispose() {return _dispose.apply(this, arguments);}function _dispose() {_dispose = (0, _asyncToGenerator2.default)(function* () {
+        yield reader.cancel();
+        _es = null;
+      });return _dispose.apply(this, arguments);}
+    return makeAsyncResource({
+      read: function read() {
+        return reader.read();
+      },
+      recreate: function () {var _recreate = (0, _asyncToGenerator2.default)(function* () {
+          yield dispose();
+          stream = createStream();
+          reader = stream.getReader();
+        });function recreate() {return _recreate.apply(this, arguments);}return recreate;}()
+    }, dispose);
+  };
+  return (0, _utilsBHZJcBRv.run)(/*#__PURE__*/(0, _wrapAsyncGenerator2.default)(function* () {
+    try {
+      var _usingCtx3 = (0, import_usingCtx.default)();
+      var stream = _usingCtx3.a(getStreamResource());var _loop = function* _loop()
+        {
+          var promise = stream.read();
+          var timeoutMs = clientOptions.reconnectAfterInactivityMs;
+          if (timeoutMs) promise = withTimeout({
+            promise: promise,
+            timeoutMs: timeoutMs,
+            onTimeout: function () {var _onTimeout = (0, _asyncToGenerator2.default)(function* () {
+                var res = {
+                  value: {
+                    type: "timeout",
+                    ms: timeoutMs,
+                    eventSource: _es
+                  },
+                  done: false
+                };
+                yield stream.recreate();
+                return res;
+              });function onTimeout() {return _onTimeout.apply(this, arguments);}return onTimeout;}()
+          });
+          var result = yield (0, _awaitAsyncGenerator2.default)(promise);
+          if (result.done) return { v: result.value };
+          yield result.value;
+        },_ret;while (true) {_ret = yield* _loop();if (_ret) return _ret.v;}
+    } catch (_) {
+      _usingCtx3.e = _;
+    } finally {
+      yield (0, _awaitAsyncGenerator2.default)(_usingCtx3.d());
+    }
+  }));
+}
+var sseHeaders = exports.sseHeaders = {
+  "Content-Type": "text/event-stream",
+  "Cache-Control": "no-cache, no-transform",
+  "X-Accel-Buffering": "no",
+  Connection: "keep-alive"
+};
+
+//#endregion
+//#region src/unstable-core-do-not-import/http/resolveResponse.ts
+function errorToAsyncIterable(err) {
+  return (0, _utilsBHZJcBRv.run)(/*#__PURE__*/(0, _wrapAsyncGenerator2.default)(function* () {
+    throw err;
+  }));
+}
+var TYPE_ACCEPTED_METHOD_MAP = {
+  mutation: ["POST"],
+  query: ["GET"],
+  subscription: ["GET"]
+};
+var TYPE_ACCEPTED_METHOD_MAP_WITH_METHOD_OVERRIDE = {
+  mutation: ["POST"],
+  query: ["GET", "POST"],
+  subscription: ["GET", "POST"]
+};
+function initResponse(initOpts) {var _responseMeta, _info$calls$find$proc, _info$calls$find;
+  var ctx = initOpts.ctx,info = initOpts.info,responseMeta = initOpts.responseMeta,untransformedJSON = initOpts.untransformedJSON,_initOpts$errors = initOpts.errors,errors = _initOpts$errors === void 0 ? [] : _initOpts$errors,headers = initOpts.headers;
+  var status = untransformedJSON ? (0, _getErrorShapeDyYil4aT.getHTTPStatusCode)(untransformedJSON) : 200;
+  var eagerGeneration = !untransformedJSON;
+  var data = eagerGeneration ? [] : Array.isArray(untransformedJSON) ? untransformedJSON : [untransformedJSON];
+  var meta = (_responseMeta = responseMeta == null ? void 0 : responseMeta({
+    ctx: ctx,
+    info: info,
+    paths: info == null ? void 0 : info.calls.map(function (call) {return call.path;}),
+    data: data,
+    errors: errors,
+    eagerGeneration: eagerGeneration,
+    type: (_info$calls$find$proc = info == null || (_info$calls$find = info.calls.find(function (call) {var _call$procedure2;return (_call$procedure2 = call.procedure) == null ? void 0 : _call$procedure2._def.type;})) == null || (_info$calls$find = _info$calls$find.procedure) == null ? void 0 : _info$calls$find._def.type) != null ? _info$calls$find$proc : "unknown"
+  })) != null ? _responseMeta : {};
+  if (meta.headers) {
+    if (meta.headers instanceof Headers) for (var _ref24 of meta.headers.entries()) {var _ref25 = (0, _slicedToArray2.default)(_ref24, 2);var key = _ref25[0];var value = _ref25[1];headers.append(key, value);} else
+
+      /**
+      	* @deprecated, delete in v12
+      	*/
+      for (var _ref26 of Object.entries(meta.headers)) {var _ref27 = (0, _slicedToArray2.default)(_ref26, 2);var _key2 = _ref27[0];var _value = _ref27[1];if (Array.isArray(_value)) for (var v of _value) headers.append(_key2, v);else
+        if (typeof _value === "string") headers.set(_key2, _value);}
+  }
+  if (meta.status) status = meta.status;
+  return { status: status };
+}
+function caughtErrorToData(cause, errorOpts) {
+  var _errorOpts$opts = errorOpts.opts,router = _errorOpts$opts.router,req = _errorOpts$opts.req,onError = _errorOpts$opts.onError;
+  var error = (0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(cause);
+  onError == null || onError({
+    error: error,
+    path: errorOpts.path,
+    input: errorOpts.input,
+    ctx: errorOpts.ctx,
+    type: errorOpts.type,
+    req: req
+  });
+  var untransformedJSON = { error: (0, _getErrorShapeDyYil4aT.getErrorShape)({
+      config: router._def._config,
+      error: error,
+      type: errorOpts.type,
+      path: errorOpts.path,
+      input: errorOpts.input,
+      ctx: errorOpts.ctx
+    }) };
+  var transformedJSON = (0, _trackedGEWPoL0C.transformTRPCResponse)(router._def._config, untransformedJSON);
+  var body = JSON.stringify(transformedJSON);
+  return {
+    error: error,
+    untransformedJSON: untransformedJSON,
+    body: body
+  };
+}
+/**
+* Check if a value is a stream-like object
+* - if it's an async iterable
+* - if it's an object with async iterables or promises
+*/
+function isDataStream(v) {
+  if (!(0, _utilsBHZJcBRv.isObject)(v)) return false;
+  if ((0, _utilsBHZJcBRv.isAsyncIterable)(v)) return true;
+  return Object.values(v).some(isPromise) || Object.values(v).some(_utilsBHZJcBRv.isAsyncIterable);
+}function
+resolveResponse(_x21) {return _resolveResponse.apply(this, arguments);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#endregion
+function _resolveResponse() {_resolveResponse = (0, _asyncToGenerator2.default)(function* (opts) {var _ref31, _opts$allowBatching, _opts$batching, _opts$allowMethodOver, _config$sse$enabled, _config$sse;var router = opts.router,req = opts.req;var headers = new Headers([["vary", "trpc-accept"]]);var config = router._def._config;var url = new URL(req.url);if (req.method === "HEAD") return new Response(null, { status: 204 });var allowBatching = (_ref31 = (_opts$allowBatching = opts.allowBatching) != null ? _opts$allowBatching : (_opts$batching = opts.batching) == null ? void 0 : _opts$batching.enabled) != null ? _ref31 : true;var allowMethodOverride = ((_opts$allowMethodOver = opts.allowMethodOverride) != null ? _opts$allowMethodOver : false) && req.method === "POST";var infoTuple = yield (0, _utilsBHZJcBRv.run)(/*#__PURE__*/(0, _asyncToGenerator2.default)(function* () {try {return [void 0, yield getRequestInfo({ req: req, path: decodeURIComponent(opts.path), router: router, searchParams: url.searchParams, headers: opts.req.headers, url: url })];} catch (cause) {return [(0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(cause), void 0];}}));var ctxManager = (0, _utilsBHZJcBRv.run)(function () {var result = void 0;return { valueOrUndefined: function valueOrUndefined() {if (!result) return void 0;return result[1];}, value: function value() {var _result = result,_result2 = (0, _slicedToArray2.default)(_result, 2),err = _result2[0],ctx = _result2[1];if (err) throw err;return ctx;}, create: function () {var _create = (0, _asyncToGenerator2.default)(function* (info) {if (result) throw new Error("This should only be called once - report a bug in tRPC");try {var ctx = yield opts.createContext({ info: info });result = [void 0, ctx];} catch (cause) {result = [(0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(cause), void 0];}});function create(_x22) {return _create.apply(this, arguments);}return create;}() };});var methodMapper = allowMethodOverride ? TYPE_ACCEPTED_METHOD_MAP_WITH_METHOD_OVERRIDE : TYPE_ACCEPTED_METHOD_MAP; /**
+      * @deprecated
+      */var isStreamCall = req.headers.get("trpc-accept") === "application/jsonl";var experimentalSSE = (_config$sse$enabled = (_config$sse = config.sse) == null ? void 0 : _config$sse.enabled) != null ? _config$sse$enabled : true;try {var _infoTuple = (0, _slicedToArray2.default)(infoTuple, 2),infoError = _infoTuple[0],info = _infoTuple[1];if (infoError) throw infoError;if (info.isBatchCall && !allowBatching) throw new _trackedGEWPoL0C.TRPCError({ code: "BAD_REQUEST", message: \`Batching is not enabled on the server\` }); /* istanbul ignore if -- @preserve */if (isStreamCall && !info.isBatchCall) throw new _trackedGEWPoL0C.TRPCError({ message: \`Streaming requests must be batched (you can do a batch of 1)\`, code: "BAD_REQUEST" });yield ctxManager.create(info);var rpcCalls = info.calls.map(/*#__PURE__*/function () {var _ref33 = (0, _asyncToGenerator2.default)(function* (call) {var proc = call.procedure;try {if (opts.error) throw opts.error;if (!proc) throw new _trackedGEWPoL0C.TRPCError({ code: "NOT_FOUND", message: \`No procedure found on path "\${call.path}"\` });if (!methodMapper[proc._def.type].includes(req.method)) throw new _trackedGEWPoL0C.TRPCError({ code: "METHOD_NOT_SUPPORTED", message: \`Unsupported \${req.method}-request to \${proc._def.type} procedure at path "\${call.path}"\` });if (proc._def.type === "subscription") {/* istanbul ignore if -- @preserve */if (info.isBatchCall) throw new _trackedGEWPoL0C.TRPCError({ code: "BAD_REQUEST", message: \`Cannot batch subscription calls\` });}var data = yield proc({ path: call.path, getRawInput: call.getRawInput, ctx: ctxManager.value(), type: proc._def.type, signal: opts.req.signal });return [void 0, { data: data }];} catch (cause) {var _call$procedure$_def$, _call$procedure3;var error = (0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(cause);var input = call.result();opts.onError == null || opts.onError({ error: error, path: call.path, input: input, ctx: ctxManager.valueOrUndefined(), type: (_call$procedure$_def$ = (_call$procedure3 = call.procedure) == null ? void 0 : _call$procedure3._def.type) != null ? _call$procedure$_def$ : "unknown", req: opts.req });return [error, void 0];}});return function (_x23) {return _ref33.apply(this, arguments);};}());if (!info.isBatchCall) {var _info$calls = (0, _slicedToArray2.default)(info.calls, 1),call = _info$calls[0];var _yield$rpcCalls$ = yield rpcCalls[0],_yield$rpcCalls$2 = (0, _slicedToArray2.default)(_yield$rpcCalls$, 2),error = _yield$rpcCalls$2[0],result = _yield$rpcCalls$2[1];switch (info.type) {case "unknown":case "mutation":case "query":{headers.set("content-type", "application/json");if (isDataStream(result == null ? void 0 : result.data)) throw new _trackedGEWPoL0C.TRPCError({ code: "UNSUPPORTED_MEDIA_TYPE", message: "Cannot use stream-like response in non-streaming request - use httpBatchStreamLink" });var res = error ? { error: (0, _getErrorShapeDyYil4aT.getErrorShape)({ config: config, ctx: ctxManager.valueOrUndefined(), error: error, input: call.result(), path: call.path, type: info.type }) } : { result: { data: result.data } };var headResponse$1 = initResponse({ ctx: ctxManager.valueOrUndefined(), info: info, responseMeta: opts.responseMeta, errors: error ? [error] : [], headers: headers, untransformedJSON: [res] });return new Response(JSON.stringify((0, _trackedGEWPoL0C.transformTRPCResponse)(config, res)), { status: headResponse$1.status, headers: headers });}case "subscription":{var iterable = (0, _utilsBHZJcBRv.run)(function () {if (error) return errorToAsyncIterable(error);if (!experimentalSSE) return errorToAsyncIterable(new _trackedGEWPoL0C.TRPCError({ code: "METHOD_NOT_SUPPORTED", message: "Missing experimental flag \\"sseSubscriptions\\"" }));if (!(0, _observableB1orLHHI.isObservable)(result.data) && !(0, _utilsBHZJcBRv.isAsyncIterable)(result.data)) return errorToAsyncIterable(new _trackedGEWPoL0C.TRPCError({ message: \`Subscription \${call.path} did not return an observable or a AsyncGenerator\`, code: "INTERNAL_SERVER_ERROR" }));var dataAsIterable = (0, _observableB1orLHHI.isObservable)(result.data) ? (0, _observableB1orLHHI.observableToAsyncIterable)(result.data, opts.req.signal) : result.data;return dataAsIterable;});var stream = sseStreamProducer(Object.assign({}, config.sse, { data: iterable, serialize: function serialize(v) {return config.transformer.output.serialize(v);}, formatError: function formatError(errorOpts) {var _call$procedure$_def$2, _call$procedure4;var error$1 = (0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(errorOpts.error);var input = call == null ? void 0 : call.result();var path = call == null ? void 0 : call.path;var type = (_call$procedure$_def$2 = call == null || (_call$procedure4 = call.procedure) == null ? void 0 : _call$procedure4._def.type) != null ? _call$procedure$_def$2 : "unknown";opts.onError == null || opts.onError({ error: error$1, path: path, input: input, ctx: ctxManager.valueOrUndefined(), req: opts.req, type: type });var shape = (0, _getErrorShapeDyYil4aT.getErrorShape)({ config: config, ctx: ctxManager.valueOrUndefined(), error: error$1, input: input, path: path, type: type });return shape;} }));for (var _ref34 of Object.entries(sseHeaders)) {var _ref35 = (0, _slicedToArray2.default)(_ref34, 2);var key = _ref35[0];var value = _ref35[1];headers.set(key, value);}var _headResponse$ = initResponse({ ctx: ctxManager.valueOrUndefined(), info: info, responseMeta: opts.responseMeta, errors: [], headers: headers, untransformedJSON: null });return new Response(stream, { headers: headers, status: _headResponse$.status });}}}if (info.accept === "application/jsonl") {headers.set("content-type", "application/json");headers.set("transfer-encoding", "chunked");var _headResponse$2 = initResponse({ ctx: ctxManager.valueOrUndefined(), info: info, responseMeta: opts.responseMeta, errors: [], headers: headers, untransformedJSON: null });var _stream = jsonlStreamProducer(Object.assign({}, config.jsonl, { maxDepth: Infinity, data: rpcCalls.map(/*#__PURE__*/function () {var _ref36 = (0, _asyncToGenerator2.default)(function* (res) {var _call$procedure$_def$3, _call$procedure5;var _yield$res = yield res,_yield$res2 = (0, _slicedToArray2.default)(_yield$res, 2),error = _yield$res2[0],result = _yield$res2[1];var call = info.calls[0];if (error) return { error: (0, _getErrorShapeDyYil4aT.getErrorShape)({ config: config, ctx: ctxManager.valueOrUndefined(), error: error, input: call.result(), path: call.path, type: (_call$procedure$_def$3 = (_call$procedure5 = call.procedure) == null ? void 0 : _call$procedure5._def.type) != null ? _call$procedure$_def$3 : "unknown" }) }; /**
+                  * Not very pretty, but we need to wrap nested data in promises
+                  * Our stream producer will only resolve top-level async values or async values that are directly nested in another async value
+                  */var iterable = (0, _observableB1orLHHI.isObservable)(result.data) ? (0, _observableB1orLHHI.observableToAsyncIterable)(result.data, opts.req.signal) : Promise.resolve(result.data);return { result: Promise.resolve({ data: iterable }) };});return function (_x24) {return _ref36.apply(this, arguments);};}()), serialize: config.transformer.output.serialize, onError: function onError(cause) {var _info$type;opts.onError == null || opts.onError({ error: (0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(cause), path: void 0, input: void 0, ctx: ctxManager.valueOrUndefined(), req: opts.req, type: (_info$type = info == null ? void 0 : info.type) != null ? _info$type : "unknown" });}, formatError: function formatError(errorOpts) {var _call$procedure$_def$4, _call$procedure6;var call = info == null ? void 0 : info.calls[errorOpts.path[0]];var error = (0, _trackedGEWPoL0C.getTRPCErrorFromUnknown)(errorOpts.error);var input = call == null ? void 0 : call.result();var path = call == null ? void 0 : call.path;var type = (_call$procedure$_def$4 = call == null || (_call$procedure6 = call.procedure) == null ? void 0 : _call$procedure6._def.type) != null ? _call$procedure$_def$4 : "unknown";var shape = (0, _getErrorShapeDyYil4aT.getErrorShape)({ config: config, ctx: ctxManager.valueOrUndefined(), error: error, input: input, path: path, type: type });return shape;} }));return new Response(_stream, { headers: headers, status: _headResponse$2.status });} /**
+        * Non-streaming response:
+        * - await all responses in parallel, blocking on the slowest one
+        * - create headers with known response body
+        * - return a complete HTTPResponse
+        */headers.set("content-type", "application/json");var results = (yield Promise.all(rpcCalls)).map(function (res) {var _res = (0, _slicedToArray2.default)(res, 2),error = _res[0],result = _res[1];if (error) return res;if (isDataStream(result.data)) return [new _trackedGEWPoL0C.TRPCError({ code: "UNSUPPORTED_MEDIA_TYPE", message: "Cannot use stream-like response in non-streaming request - use httpBatchStreamLink" }), void 0];return res;});var resultAsRPCResponse = results.map(function (_ref37, index) {var _call$procedure$_def$5, _call$procedure7;var _ref38 = (0, _slicedToArray2.default)(_ref37, 2),error = _ref38[0],result = _ref38[1];var call = info.calls[index];if (error) return { error: (0, _getErrorShapeDyYil4aT.getErrorShape)({ config: config, ctx: ctxManager.valueOrUndefined(), error: error, input: call.result(), path: call.path, type: (_call$procedure$_def$5 = (_call$procedure7 = call.procedure) == null ? void 0 : _call$procedure7._def.type) != null ? _call$procedure$_def$5 : "unknown" }) };return { result: { data: result.data } };});var errors = results.map(function (_ref39) {var _ref40 = (0, _slicedToArray2.default)(_ref39, 1),error = _ref40[0];return error;}).filter(Boolean);var headResponse = initResponse({ ctx: ctxManager.valueOrUndefined(), info: info, responseMeta: opts.responseMeta, untransformedJSON: resultAsRPCResponse, errors: errors, headers: headers });return new Response(JSON.stringify((0, _trackedGEWPoL0C.transformTRPCResponse)(config, resultAsRPCResponse)), { status: headResponse.status, headers: headers });} catch (cause) {var _info$type2;var _infoTuple2 = (0, _slicedToArray2.default)(infoTuple, 2),_infoError = _infoTuple2[0],_info = _infoTuple2[1];var ctx = ctxManager.valueOrUndefined();var _caughtErrorToData = caughtErrorToData(cause, { opts: opts, ctx: ctxManager.valueOrUndefined(), type: (_info$type2 = _info == null ? void 0 : _info.type) != null ? _info$type2 : "unknown" }),_error = _caughtErrorToData.error,untransformedJSON = _caughtErrorToData.untransformedJSON,body = _caughtErrorToData.body;var _headResponse = initResponse({ ctx: ctx, info: _info, responseMeta: opts.responseMeta, untransformedJSON: untransformedJSON, errors: [_error], headers: headers });return new Response(body, { status: _headResponse.status, headers: headers });}});return _resolveResponse.apply(this, arguments);}var _c, _c2;$RefreshReg$(_c, "AsyncFromSyncIterator");$RefreshReg$(_c2, "NOOP");"
+`;
