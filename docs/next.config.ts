@@ -165,7 +165,7 @@ const nextConfigWithSentry = withSentryConfig(nextConfig, {
   debug: true, // Set to `true` to enable debug logging if having issues with missing source maps
   sourcemaps: {
     disable: false, // Set `true` to kill sourcemaps upload
-    assets: ['out/**/*.js', 'out/**/*.js.map'], // Specify which files to upload
+    assets: ['out/**/*.js', 'out/**/*.js.map', '.next/**/*.js', '.next/**/*.js.map'], // Specify which files to upload
     ignore: ['**/node_modules/**'], // Files to exclude
     deleteSourcemapsAfterUpload: true, // Delete source maps after upload to avoid publicly exposing them
   },
