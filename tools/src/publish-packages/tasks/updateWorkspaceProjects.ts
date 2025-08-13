@@ -4,11 +4,11 @@ import path from 'path';
 
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
+import { DependencyKind } from '../../Packages';
 import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { DependencyKind } from '../../Packages';
 
 const { green, yellow, cyan } = chalk;
 
