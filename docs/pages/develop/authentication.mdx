@@ -44,9 +44,9 @@ If you're using an older version of Expo Router, you can use [redirects](/router
 
 If you're using React Navigation, they offer a helpful [authentication flow guide](https://reactnavigation.org/docs/auth-flow/) that explains how to structure your navigation logic. It includes examples for both [static](https://reactnavigation.org/docs/auth-flow/?config=static#how-it-will-work) and [dynamic](https://reactnavigation.org/docs/auth-flow/?config=dynamic#how-it-will-work) approaches based on the user's authentication state.
 
-Both Expo Router and React Navigation give you flexible tools to implement protected navigation based on whether the user is logged in.
-
 </Collapsible>
+
+Both Expo Router and React Navigation give you flexible tools to implement protected navigation based on whether the user is logged in.
 
 ## Email and password
 
@@ -90,9 +90,9 @@ There's no deep linking involved here. The user stays in control of the flow and
 
 Fortunately, newer versions of Android and iOS automatically detect passcodes in incoming messages. This enables autofill suggestions above the keyboard, allowing users to enter the code with a single tap. When this works, the experience is seamless.
 
-> **info** Magic links and passcodes are both valid authentication methods for Google Play Store and Apple App Store reviews. You can submit your app with either of these methods as the only option and get approved, even before adding social or OAuth login options.
-
 </Collapsible>
+
+> **info** Magic links and passcodes are both valid authentication methods for Google Play Store and Apple App Store reviews. You can submit your app with either of these methods as the only option and get approved, even before adding social or OAuth login options.
 
 ## OAuth 2.0
 
@@ -104,13 +104,14 @@ To let your users log in using their existing accounts from services like Google
 
 If you are looking for full control or want to understand how OAuth works under the hood, the following sections show how to implement a complete OAuth flow yourself using Expo.
 
-### How OAuth Works
+### How OAuth works
 
 OAuth works by introducing an authorization server that acts as a secure middleman. Instead of giving your app their password, users log in through this server and approve access to specific data (like their name or email). The server then issues a temporary code, which your app can exchange for a secure access token.
 
-<ContentSpotlight src="/static/images/develop/authentication/oauth-flow.png" />
-
-> **info** In the above diagram, the term "client" does not imply any particular implementation characteristics (for example, whether the application executes on a server, a desktop, mobile app, or other devices).
+<ContentSpotlight
+  src="/static/images/develop/authentication/oauth-flow.png"
+  caption="In this diagram, 'client' simply refers to the application and does not imply any specific implementation details, such as whether it runs on a server, desktop, mobile device, or other platform."
+/>
 
 Once you understand this pattern, you can apply it to any provider. The setup for Google, Apple, or GitHub will follow the same general steps.
 
@@ -219,25 +220,35 @@ All of this is covered in the video tutorials linked above, including:
 
 If you prefer not to build a full authentication system from scratch, several services offer built-in solutions with first-class support for Expo. Here are some of the most popular options:
 
-### Better Auth
+<Collapsible summary="Better Auth">
 
 [BetterAuth](https://www.better-auth.com/docs/integrations/expo) is a modern, open-source authentication provider built for developers. It integrates smoothly with Expo, and they offer a guide that shows how to use it with [Expo API Routes](https://www.better-auth.com/docs/integrations/expo) for full control. It works well with any provider and deploys easily with EAS Hosting.
 
-### Clerk
+</Collapsible>
+
+<Collapsible summary="Clerk">
 
 [Clerk](https://clerk.com/expo-authentication) is a powerful, full-featured authentication service with excellent Expo support. It includes email/password, passcodes, magic links, OAuth providers, and even passkeys. They also offer a native Expo module that handles much of the integration for you.
 
-### Supabase
+</Collapsible>
+
+<Collapsible summary="Supabase">
 
 [Supabase](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native) provides a full backend platform, including a built-in authentication service that works with any OAuth provider. It integrates well with Expo apps and also includes support for email, magic links, and more.
 
-### Cognito
+</Collapsible>
+
+<Collapsible summary="Cognito">
 
 [AWS Cognito](https://medium.com/@juliuscecilia33/aws-cognito-and-react-native-bf23ef7fea23) is Amazon's solution for managing user pools and identity. It connects seamlessly with other AWS services and can be integrated into Expo apps using AWS Amplify. It does require more configuration, but it's robust and scalable.
 
-### Firebase Auth
+</Collapsible>
+
+<Collapsible summary="Firebase Auth">
 
 [Firebase Authentication](https://rnfirebase.io/auth/usage) is Google's auth platform and supports email, magic links, and OAuth providers. It works with React Native through [`react-native-firebase`](https://github.com/invertase/react-native-firebase), which is compatible with Expo development builds.
+
+</Collapsible>
 
 ## Modern methods
 
@@ -273,17 +284,3 @@ That said, if you're building an app where you expect high traffic from day one 
 Modern solutions like OAuth, biometrics, and passkeys are not required, but they can be excellent additions once your core system is in place.
 
 The key is to build authentication that fits your current needs, while staying flexible enough to grow with your product.
-
-<BoxLink
-  title="Authentication with OAuth or OpenID providers"
-  description="Learn how to utilize the expo-auth-session library to implement authentication with OAuth or OpenID providers."
-  href="/guides/authentication"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Google Sign-In with Expo Router API Routes"
-  description="Learn how to implement Google Sign-In with Expo Router API Routes"
-  href="/guides/google-authentication"
-  Icon={BookOpen02Icon}
-/>
