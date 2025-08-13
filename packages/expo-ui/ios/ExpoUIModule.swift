@@ -7,6 +7,7 @@ public final class ExpoUIModule: Module {
     Name("ExpoUI")
 
     View(Button.self)
+    View(ChartView.self)
     View(PickerView.self)
     View(SwitchView.self)
     View(SectionView.self)
