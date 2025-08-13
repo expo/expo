@@ -187,7 +187,7 @@ fun SettingsScreen(
     Spacer(NewAppTheme.spacing.`3`)
 
     NewText(
-      "Selected gestures will toggle the developer menu while inside a preview. The menu allwos you to reload or return to home and exposes developer tools.",
+      "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools.",
       style = NewAppTheme.font.md.merge(
         lineHeight = 21.sp
       ),
