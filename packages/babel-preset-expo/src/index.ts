@@ -26,9 +26,12 @@ import { reactServerActionsPlugin } from './server-actions-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 // NOTE(@kitten): This shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
-// (the lowest version constraint we have). In theory, we should pass an absolute runtime path
+// (the lowest version constraint we have).
+// TODO(@kitten): This is a hotfix! In theory, we should pass an absolute runtime path
 // and skip the internal resolution, which would mean we'd be able to guarantee a version here,
 // but for now, we don't
+// WARN: This does not reproduce in the expo/expo monorepo and we're not sure why. If you're changing this, run `expo export -p android` against this reproduction:
+// - https://github.com/kitten/expo-bug-nested-async-generator-function-repro
 const BABEL_RUNTIME_RANGE = '^7.20.0';
 
 type BabelPresetExpoPlatformOptions = {
