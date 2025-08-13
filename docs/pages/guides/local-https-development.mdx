@@ -1,5 +1,6 @@
 ---
 title: Using local HTTPS development
+navigation: Local HTTPS development
 description: Learn how to set up local HTTPS for Expo web apps.
 ---
 
@@ -53,11 +54,11 @@ Your app will be running on `http://localhost:8081`. Keep this terminal open.
 
 <Step label="3">
 
+> **info** **Tip**: Ensure that after installing `mkcert`, you run `mkcert -install` to install the local certificate authority (CA).
+
 Use `mkcert` to generate a certificate for localhost. Run the following command in a new terminal window from your project's root directory:
 
 <Terminal cmd={['$ mkcert localhost']} />
-
-> **info** **Tip**: Ensure that after installing `mkcert`, you run `mkcert -install` to trust the local certificate authority (CA).
 
 This will generate two signed certifcate files: `localhost.pem` (certificate) and `localhost-key.pem` (private key), inside your project's root directory.
 

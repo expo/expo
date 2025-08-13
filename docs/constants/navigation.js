@@ -203,6 +203,7 @@ export const general = [
         makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('guides/tailwind.mdx'),
+        makePage('guides/local-https-development.mdx'),
       ],
       { expanded: false }
     ),
