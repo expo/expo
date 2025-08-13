@@ -23,11 +23,11 @@ export {
 export type {
   /** @deprecated Move to `SharedRef` with a type-only import instead */
   SharedRef as SharedRefType,
-  /** @deprecated Move to `SharedRef` with a type-only import instead */
+  /** @deprecated Move to `EventEmitter` with a type-only import instead */
   EventEmitter as EventEmitterType,
-  /** @deprecated Move to `SharedRef` with a type-only import instead */
+  /** @deprecated Move to `NativeModule` with a type-only import instead */
   NativeModule as NativeModuleType,
-  /** @deprecated Move to `SharedRef` with a type-only import instead */
+  /** @deprecated Move to `SharedObject` with a type-only import instead */
   SharedObject as SharedObjectType,
 } from 'expo-modules-core/types';
 
