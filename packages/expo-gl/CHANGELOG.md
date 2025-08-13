@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 16.0.0 — 2025-08-13
+
+### 💡 Others
+
 - Use pointerEvents style instead of prop for components on web. ([#38023](https://github.com/expo/expo/pull/38023) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing optional `react-dom` and `react-native-reanimated` peer dependencies ([#38569](https://github.com/expo/expo/pull/38569) by [@kitten](https://github.com/kitten))
 
