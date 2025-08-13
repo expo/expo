@@ -4,13 +4,13 @@ import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
-export default function NotFoundScreen() {
+export default function InfoRoute() {
   return (
     <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
+      {/* <Stack.Screen options={{ title: 'Info' }} /> */}
       <ThemedView style={styles.container}>
-        <ThemedText type="title">This screen does not exist.</ThemedText>
-        <Link href="/" style={styles.link}>
+        <ThemedText type="title">This is a modal</ThemedText>
+        <Link href="/" dismissTo style={styles.link}>
           <ThemedText type="link">Go to home screen!</ThemedText>
         </Link>
       </ThemedView>

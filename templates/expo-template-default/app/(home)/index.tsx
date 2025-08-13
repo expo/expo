@@ -1,25 +1,36 @@
-import { Image } from 'expo-image';
 import { Platform, StyleSheet } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { BodyScrollView } from '@/components/ui/body-scroll-view';
+import { Link } from 'expo-router';
 
-export default function HomeScreen() {
+export default function HomeRoute() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
+    <BodyScrollView
+      contentContainerStyle={{
+        padding: 20,
+        gap: 8,
+      }}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
+
+      <Link href="/info">
+        <Link.Trigger>
+          <ThemedText>{`Open Modal${process.env.EXPO_OS === 'ios' ? ' (long press for preview)' : ''}`}</ThemedText>
+        </Link.Trigger>
+        <Link.Preview />
+        <Link.Menu>
+          <Link.MenuAction title="Action 1" onPress={() => alert('Action 1 pressed')} />
+          <Link.Menu title="Nested" icon="info.circle.fill">
+            <Link.MenuAction title="Action 2" onPress={() => alert('Action 1 pressed')} />
+          </Link.Menu>
+        </Link.Menu>
+      </Link>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
@@ -51,7 +62,7 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
-    </ParallaxScrollView>
+    </BodyScrollView>
   );
 }
 
