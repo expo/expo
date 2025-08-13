@@ -18,6 +18,13 @@ export class Paths extends PathUtilities {
   }
 
   /**
+   * A property containing the bundle directory (which contains assets bundled in the app during build-time).
+   */
+  static get bundle() {
+    return new Directory(ExpoFileSystem.bundleDirectory);
+  }
+
+  /**
    * A property containing the document directory – a place to store files that are safe from being deleted by the system.
    */
   static get document() {

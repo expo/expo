@@ -135,8 +135,14 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Allows reading files from assets', () => {
       const dir = new Directory(Paths.bundle);
-      expect(dir.list().map((i) => i.name)).toContain('Info.plist');
-      expect(new File(Paths.bundle, 'Info.plist').size > 2000).toBe(true);
+
+      if (Platform.OS === 'ios') {
+        expect(dir.list().map((i) => i.name)).toContain('Info.plist');
+        expect(new File(Paths.bundle, 'Info.plist').size > 2000).toBe(true);
+      } else {
+        expect(dir.list().map((i) => i.name)).toContain('expo-root.pem');
+        expect(new File(Paths.bundle, 'expo-root.pem').size > 1000).toBe(true);
+      }
     });
 
     describe('Works with %, # and space characters in names', () => {
