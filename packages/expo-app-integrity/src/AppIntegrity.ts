@@ -23,9 +23,9 @@ export async function generateKey() {
 
 /**
  * Asks Apple to attest to the validity of a generated cryptographic key.
- * @param keyId - The identifier you received by calling the `generateKey` function.
- * @param challenge - A challenge string from your server.
- * @return A `Promise` that is fulfilled with a string that contains the attestation data. A statement from Apple about the validity of the key associated with keyId. Send this to your server for processing.
+ * @param keyId The identifier you received by calling the `generateKey` function.
+ * @param challenge A challenge string from your server.
+ * @return A Promise that is fulfilled with a string that contains the attestation data. A statement from Apple about the validity of the key associated with keyId. Send this to your server for processing.
  * @platform ios
  */
 export async function attestKey(keyId: string, challenge: string) {
