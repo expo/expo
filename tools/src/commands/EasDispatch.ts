@@ -149,7 +149,7 @@ async function confirmPromptIfOverridingRemoteFileAsync(
         type: 'confirm',
         name: 'selection',
         default: false,
-        message: `${appVersion} version of a client was already uploaded to S3. Do you want to override it?`,
+        message: `${appVersion} version of a client was already uploaded to GitHub. Do you want to override it?`,
       },
     ]);
     if (!selection) {
