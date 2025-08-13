@@ -7,6 +7,8 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
+> **important** Web modals are available in SDK 54 and above.
+
 Modern web apps require a flexible modal experience that adapts to different content sizes and user interactions. Expo Router provides various modal presentation patterns for modern web experiences. These patterns leverage `presentation` with `modal`, `formSheet`, `transparentModal`, or `containedTransparentModal` to present either a modal based on different screen widths, and provide customizable styling props using `webModalStyle`.
 
 ## Get started
@@ -181,8 +183,7 @@ Expo Router uses custom CSS properties to style modals, which you can override g
 When you use `webModalStyle` to override any of the sizing variables, Expo Router automatically sets these CSS variables to the values you provide:
 
 ```tsx
-
-// This webModalStyle configuration...
+// This webModalStyle configuration
 webModalStyle: {
   width: 800,
   height: 600,
