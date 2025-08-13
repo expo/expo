@@ -25,6 +25,12 @@ import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plu
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
+// NOTE(@kitten): This shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
+// (the lowest version constraint we have). In theory, we should pass an absolute runtime path
+// and skip the internal resolution, which would mean we'd be able to guarantee a version here,
+// but for now, we don't
+const BABEL_RUNTIME_RANGE = '^7.20.0';
+
 type BabelPresetExpoPlatformOptions = {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
   decorators?: false | { legacy?: boolean; version?: number };
@@ -359,7 +365,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
           // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-          enableBabelRuntime: platformOptions.enableBabelRuntime,
+          enableBabelRuntime:
+            !platformOptions.enableBabelRuntime ||
+            typeof platformOptions.enableBabelRuntime === 'string'
+              ? platformOptions.enableBabelRuntime
+              : BABEL_RUNTIME_RANGE,
           // This reduces the amount of transforms required, as Hermes supports many modern language features.
           unstable_transformProfile: platformOptions.unstable_transformProfile,
           // Set true to disable `@babel/plugin-transform-react-jsx` and
