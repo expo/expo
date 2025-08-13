@@ -8,6 +8,10 @@ public class IntegrityModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoAppIntegrity")
 
+    Constant("isSupported") {
+      return service.isSupported
+    }
+
     AsyncFunction("generateKey") {
       do {
         return try await service.generateKey()
