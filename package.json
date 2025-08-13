@@ -39,6 +39,9 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
+    "@babel/helpers": "^7.28.2",
+    "@babel/plugin-transform-async-generator-functions": "^7.28.0",
+    "@babel/runtime": "^7.28.2",
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
