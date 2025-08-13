@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `@vercel/ncc` build ([#38801](https://github.com/expo/expo/pull/38801) by [@kitten](https://github.com/kitten))
+
 ## 29.0.0 — 2025-08-13
 
 ### 🎉 New features
