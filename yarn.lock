@@ -13842,10 +13842,10 @@ react-native-keyboard-controller@^1.18.4:
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
 
-react-native-maps@1.25.3:
-  version "1.25.3"
-  resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-1.25.3.tgz#33f7914cec76d7b765d68266b63b2615183b5eda"
-  integrity sha512-Mi/uPvBBWqEJYj/wNIM40bIf7tnVWm8dM52X6LWiiN7cajozXtydKoVeuShHpK07cvi565maY+3QiB5yTxmb0w==
+react-native-maps@1.24.13:
+  version "1.24.13"
+  resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-1.24.13.tgz#dc1c2025f663fbc6e5eab80d910de3c9919d694f"
+  integrity sha512-Otj+HTQTmwdpKHtRmigpfIm2yg2t+MfuDxMq8RwPVruCLuqhvoYJgBJpLsgBOKCF/1rFRbeoiY0Q0ou7b4mSMw==
   dependencies:
     "@types/geojson" "^7946.0.13"
 
