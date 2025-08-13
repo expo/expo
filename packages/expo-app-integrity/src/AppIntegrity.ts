@@ -37,9 +37,9 @@ export async function attestKey(keyId: string, challenge: string) {
 
 /**
  * Creates a block of data that demonstrates the legitimacy of an instance of your app running on a device.
- * @param keyId - The identifier you received by calling the `generateKey` function.
- * @param challenge - A string to be signed with the attested private key.
- * @return A `Promise` that is fulfilled with a string that contains the assertion object. A data structure that you send to your server for processing.
+ * @param keyId The identifier you received by calling the `generateKey` function.
+ * @param challenge A string to be signed with the attested private key.
+ * @return A Promise that is fulfilled with a string that contains the assertion object. A data structure that you send to your server for processing.
  * @platform ios
  */
 export async function generateAssertion(keyId: string, challenge: string) {
