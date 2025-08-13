@@ -61,7 +61,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       const descriptor = descriptors[route.key];
       // In case of native transition we want to keep the last focused index
       // Otherwise the lastNotNativeTransitionIndex is set to focusedIndex in the if above this statement
-      const isFocused = index === lastNotNativeTransitionIndex.current;
+      const isFocused = index === focusedIndex;
+      // TODO: Find a proper fix, that allows for proper JS navigation
+      //lastNotNativeTransitionIndex.current;
       const title = descriptor.options.title ?? route.name;
 
       return (

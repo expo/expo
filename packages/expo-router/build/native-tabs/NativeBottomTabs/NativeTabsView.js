@@ -78,7 +78,9 @@ function NativeTabsView(props) {
         const descriptor = descriptors[route.key];
         // In case of native transition we want to keep the last focused index
         // Otherwise the lastNotNativeTransitionIndex is set to focusedIndex in the if above this statement
-        const isFocused = index === lastNotNativeTransitionIndex.current;
+        const isFocused = index === focusedIndex;
+        // TODO: Find a proper fix, that allows for proper JS navigation
+        //lastNotNativeTransitionIndex.current;
         const title = descriptor.options.title ?? route.name;
         return (<react_native_screens_1.BottomTabsScreen key={route.key} {...descriptor.options} iconResourceName={descriptor.options.icon?.drawable} icon={convertOptionsIconToPropsIcon(descriptor.options.icon)} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} tabKey={route.key} isFocused={isFocused}>
           {descriptor.render()}
