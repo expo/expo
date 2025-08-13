@@ -48,7 +48,7 @@ export const promotePackages = new Task<TaskArgs>(
             stdio: requiresOTP ? 'inherit' : undefined,
           });
         }
-        if (pkg.packageName === 'expo-template-bare-minimum') {
+        if (pkg.isTemplate()) {
           const sdkTag = `sdk-${semver.major(pkg.packageVersion)}`;
           batch.log(
             '    ',
