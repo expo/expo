@@ -31,6 +31,7 @@
 - Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
 - NativeTabs dynamic options ([#38581](https://github.com/expo/expo/pull/38581) by [@Ubax](https://github.com/Ubax))
 - add option to set border radius of highlight ([#38779](https://github.com/expo/expo/pull/38779) by [@Ubax](https://github.com/Ubax))
+- remove highlightBorderRadius prop ([#38796](https://github.com/expo/expo/pull/38796) by [@Ubax](https://github.com/Ubax)
 
 ### 🐛 Bug fixes
 

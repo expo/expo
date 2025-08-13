@@ -87,7 +87,8 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     () => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>,
     [triggerElement, children]
   );
-  const highlightBorderRadius = triggerElement?.props.highlightBorderRadius;
+  const highlightBorderRadius =
+    rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
 
   const preview = React.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
 
