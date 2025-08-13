@@ -162,10 +162,10 @@ const nextConfigWithSentry = withSentryConfig(nextConfig, {
   org: 'expoio',
   project: 'docs',
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  debug: false, // Set to `true` to enable debug logging if having issues with missing source maps
+  debug: true, // Set to `true` to enable debug logging if having issues with missing source maps
   sourcemaps: {
     disable: false, // Set `true` to kill sourcemaps upload
-    assets: ['**/*.js', '**/*.js.map'], // Specify which files to upload
+    assets: ['out/**/*.js', 'out/**/*.js.map'], // Specify which files to upload
     ignore: ['**/node_modules/**'], // Files to exclude
     deleteSourcemapsAfterUpload: true, // Delete source maps after upload to avoid publicly exposing them
   },
