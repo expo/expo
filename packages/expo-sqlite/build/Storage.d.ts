@@ -38,6 +38,14 @@ export declare class SQLiteStorage {
      */
     closeAsync(): Promise<void>;
     /**
+     * Retrieves the number of key-value pairs stored in the storage asynchronously.
+     */
+    getLengthAsync(): Promise<number>;
+    /**
+     * Retrieves the key at the given index asynchronously.
+     */
+    getKeyByIndexAsync(index: number): Promise<string | null>;
+    /**
      * Retrieves the value associated with the given key synchronously.
      */
     getItemSync(key: string): string | null;
@@ -62,6 +70,14 @@ export declare class SQLiteStorage {
      * Closes the database connection synchronously.
      */
     closeSync(): void;
+    /**
+     * Retrieves the number of key-value pairs stored in the storage synchronously.
+     */
+    getLengthSync(): number;
+    /**
+     * Retrieves the key at the given index synchronously.
+     */
+    getKeyByIndexSync(index: number): string | null;
     /**
      * Alias for [`getItemAsync()`](#getitemasynckey) method.
      */
@@ -138,11 +154,11 @@ export default AsyncStorage;
  */
 export declare const Storage: SQLiteStorage;
 /**
- * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
+ * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
  */
-export declare const localStorage: WebStorageWrapper;
+export declare const localStorage: WebStorageWrapper & Record<string, string | undefined>;
 /**
- * Install the `localStorage` to the `globalThis` object.
+ * Install the `localStorage` on the `globalThis` object.
  */
 export declare function installGlobal(): void;
 //# sourceMappingURL=Storage.d.ts.map

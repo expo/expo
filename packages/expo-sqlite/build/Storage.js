@@ -7,6 +7,8 @@ const STATEMENT_SET = 'INSERT INTO storage (key, value) VALUES (?, ?) ON CONFLIC
 const STATEMENT_REMOVE = 'DELETE FROM storage WHERE key = ?;';
 const STATEMENT_GET_ALL_KEYS = 'SELECT key FROM storage;';
 const STATEMENT_CLEAR = 'DELETE FROM storage;';
+const STATEMENT_LENGTH = 'SELECT COUNT(*) as count FROM storage;';
+const STATEMENT_GET_KEY_BY_INDEX = 'SELECT key FROM storage LIMIT 1 OFFSET ?;';
 const MIGRATION_STATEMENT_0 = 'CREATE TABLE IF NOT EXISTS storage (key TEXT PRIMARY KEY NOT NULL, value TEXT);';
 /**
  * Key-value store backed by SQLite. This class accepts a `databaseName` parameter in its constructor, which is the name of the database file to use for the storage.
@@ -87,6 +89,22 @@ export class SQLiteStorage {
             this.awaitLock.release();
         }
     }
+    /**
+     * Retrieves the number of key-value pairs stored in the storage asynchronously.
+     */
+    async getLengthAsync() {
+        const db = await this.getDbAsync();
+        const result = await db.getFirstAsync(STATEMENT_LENGTH);
+        return result?.count ?? 0;
+    }
+    /**
+     * Retrieves the key at the given index asynchronously.
+     */
+    async getKeyByIndexAsync(index) {
+        const db = await this.getDbAsync();
+        const result = await db.getFirstAsync(STATEMENT_GET_KEY_BY_INDEX, index);
+        return result?.key ?? null;
+    }
     //#endregion
     //#region Synchronous API
     /**
@@ -150,6 +168,22 @@ export class SQLiteStorage {
             this.db.closeSync();
             this.db = null;
         }
+    }
+    /**
+     * Retrieves the number of key-value pairs stored in the storage synchronously.
+     */
+    getLengthSync() {
+        const db = this.getDbSync();
+        const result = db.getFirstSync(STATEMENT_LENGTH);
+        return result?.count ?? 0;
+    }
+    /**
+     * Retrieves the key at the given index synchronously.
+     */
+    getKeyByIndexSync(index) {
+        const db = this.getDbSync();
+        const result = db.getFirstSync(STATEMENT_GET_KEY_BY_INDEX, index);
+        return result?.key ?? null;
     }
     //#endregion
     //#region react-native-async-storage compatible API
@@ -361,8 +395,7 @@ class WebStorageWrapper {
         return this.storage.getItemSync(key);
     }
     key(index) {
-        const keys = this.storage.getAllKeysSync();
-        return keys[index] ?? null;
+        return this.storage.getKeyByIndexSync(index);
     }
     removeItem(key) {
         this.storage.removeItemSync(key);
@@ -371,8 +404,46 @@ class WebStorageWrapper {
         this.storage.setItemSync(key, value);
     }
     get length() {
-        return this.storage.getAllKeysSync().length;
+        return this.storage.getLengthSync();
     }
+}
+/**
+ * A Proxy wrapper that allows property accessors to be used on the `WebStorageWrapper` object.
+ */
+function withPropertyAccessors(obj) {
+    if (typeof Proxy !== 'function') {
+        return obj;
+    }
+    const builtin = new Set(Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).concat(Object.getOwnPropertyNames(obj)));
+    return new Proxy(obj, {
+        get(target, prop, receiver) {
+            if (typeof prop !== 'string' || builtin.has(prop)) {
+                return Reflect.get(target, prop, receiver);
+            }
+            const value = target.getItem(prop);
+            return value === null ? undefined : value;
+        },
+        set(target, prop, value, receiver) {
+            if (typeof prop !== 'string' || builtin.has(prop)) {
+                return Reflect.set(target, prop, value, receiver);
+            }
+            target.setItem(prop, String(value));
+            return true;
+        },
+        deleteProperty(target, prop) {
+            if (typeof prop !== 'string' || builtin.has(prop)) {
+                return Reflect.deleteProperty(target, prop);
+            }
+            target.removeItem(prop);
+            return true;
+        },
+        has(target, prop) {
+            if (typeof prop !== 'string' || builtin.has(prop)) {
+                return Reflect.has(target, prop);
+            }
+            return target.getItem(prop) !== null;
+        },
+    });
 }
 //#endregion
 /**
@@ -385,11 +456,11 @@ export default AsyncStorage;
  */
 export const Storage = AsyncStorage;
 /**
- * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
+ * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
  */
-export const localStorage = new WebStorageWrapper(Storage);
+export const localStorage = withPropertyAccessors(new WebStorageWrapper(Storage));
 /**
- * Install the `localStorage` to the `globalThis` object.
+ * Install the `localStorage` on the `globalThis` object.
  */
 export function installGlobal() {
     install('localStorage', () => localStorage);

@@ -17,6 +17,8 @@ const STATEMENT_SET =
 const STATEMENT_REMOVE = 'DELETE FROM storage WHERE key = ?;';
 const STATEMENT_GET_ALL_KEYS = 'SELECT key FROM storage;';
 const STATEMENT_CLEAR = 'DELETE FROM storage;';
+const STATEMENT_LENGTH = 'SELECT COUNT(*) as count FROM storage;';
+const STATEMENT_GET_KEY_BY_INDEX = 'SELECT key FROM storage LIMIT 1 OFFSET ?;';
 
 const MIGRATION_STATEMENT_0 =
   'CREATE TABLE IF NOT EXISTS storage (key TEXT PRIMARY KEY NOT NULL, value TEXT);';
@@ -110,6 +112,24 @@ export class SQLiteStorage {
     }
   }
 
+  /**
+   * Retrieves the number of key-value pairs stored in the storage asynchronously.
+   */
+  async getLengthAsync(): Promise<number> {
+    const db = await this.getDbAsync();
+    const result = await db.getFirstAsync<{ count: number }>(STATEMENT_LENGTH);
+    return result?.count ?? 0;
+  }
+
+  /**
+   * Retrieves the key at the given index asynchronously.
+   */
+  async getKeyByIndexAsync(index: number): Promise<string | null> {
+    const db = await this.getDbAsync();
+    const result = await db.getFirstAsync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, index);
+    return result?.key ?? null;
+  }
+
   //#endregion
 
   //#region Synchronous API
@@ -182,6 +202,24 @@ export class SQLiteStorage {
       this.db.closeSync();
       this.db = null;
     }
+  }
+
+  /**
+   * Retrieves the number of key-value pairs stored in the storage synchronously.
+   */
+  getLengthSync(): number {
+    const db = this.getDbSync();
+    const result = db.getFirstSync<{ count: number }>(STATEMENT_LENGTH);
+    return result?.count ?? 0;
+  }
+
+  /**
+   * Retrieves the key at the given index synchronously.
+   */
+  getKeyByIndexSync(index: number): string | null {
+    const db = this.getDbSync();
+    const result = db.getFirstSync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, index);
+    return result?.key ?? null;
   }
 
   //#endregion
@@ -427,8 +465,7 @@ class WebStorageWrapper {
   }
 
   key(index: number): string | null {
-    const keys = this.storage.getAllKeysSync();
-    return keys[index] ?? null;
+    return this.storage.getKeyByIndexSync(index);
   }
 
   removeItem(key: string) {
@@ -440,8 +477,53 @@ class WebStorageWrapper {
   }
 
   get length(): number {
-    return this.storage.getAllKeysSync().length;
+    return this.storage.getLengthSync();
   }
+}
+
+/**
+ * A Proxy wrapper that allows property accessors to be used on the `WebStorageWrapper` object.
+ */
+function withPropertyAccessors(
+  obj: WebStorageWrapper
+): WebStorageWrapper & Record<string, string | undefined> {
+  if (typeof Proxy !== 'function') {
+    return obj as WebStorageWrapper & Record<string, string | undefined>;
+  }
+
+  const builtin = new Set(
+    Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).concat(Object.getOwnPropertyNames(obj))
+  );
+
+  return new Proxy(obj as WebStorageWrapper & Record<string, string | undefined>, {
+    get(target, prop, receiver) {
+      if (typeof prop !== 'string' || builtin.has(prop)) {
+        return Reflect.get(target, prop, receiver);
+      }
+      const value = target.getItem(prop);
+      return value === null ? undefined : value;
+    },
+    set(target, prop, value, receiver) {
+      if (typeof prop !== 'string' || builtin.has(prop)) {
+        return Reflect.set(target, prop, value, receiver);
+      }
+      target.setItem(prop, String(value));
+      return true;
+    },
+    deleteProperty(target, prop) {
+      if (typeof prop !== 'string' || builtin.has(prop)) {
+        return Reflect.deleteProperty(target, prop);
+      }
+      target.removeItem(prop);
+      return true;
+    },
+    has(target, prop) {
+      if (typeof prop !== 'string' || builtin.has(prop)) {
+        return Reflect.has(target, prop);
+      }
+      return target.getItem(prop) !== null;
+    },
+  });
 }
 
 //#endregion
@@ -461,7 +543,7 @@ export const Storage = AsyncStorage;
 /**
  * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
  */
-export const localStorage = new WebStorageWrapper(Storage);
+export const localStorage = withPropertyAccessors(new WebStorageWrapper(Storage));
 
 /**
  * Install the `localStorage` on the `globalThis` object.

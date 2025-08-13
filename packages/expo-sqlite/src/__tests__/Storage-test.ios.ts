@@ -60,6 +60,13 @@ describe('SQLiteStorage asynchronous', () => {
     const keys = await storage.getAllKeysAsync();
     expect(keys).toHaveLength(0);
   });
+
+  it('should get length', async () => {
+    await storage.setItemAsync('key1', 'value1');
+    await storage.setItemAsync('key2', 'value2');
+    const length = await storage.getLengthAsync();
+    expect(length).toBe(2);
+  });
 });
 
 describe('SQLiteStorage synchronous', () => {
@@ -112,6 +119,13 @@ describe('SQLiteStorage synchronous', () => {
     expect(cleared).toBe(true);
     const keys = storage.getAllKeysSync();
     expect(keys).toHaveLength(0);
+  });
+
+  it('should get length', () => {
+    storage.setItemSync('key1', 'value1');
+    storage.setItemSync('key2', 'value2');
+    const length = storage.getLengthSync();
+    expect(length).toBe(2);
   });
 });
 
@@ -263,6 +277,10 @@ describe('react-native-async-storage API compatibility', () => {
 });
 
 describe('Web Storage API compatibility', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   afterAll(async () => {
     await fs.unlink('ExpoSQLiteStorage').catch(() => {});
   });
@@ -277,17 +295,46 @@ describe('Web Storage API compatibility', () => {
   });
 
   it('should support CRUD operations', () => {
-    localStorage.setItem('test', 'test');
-    expect(localStorage.getItem('test')).toBe('test');
+    localStorage.setItem('test', 'testValue');
+    expect(localStorage.getItem('test')).toBe('testValue');
     expect(localStorage.length).toBe(1);
     localStorage.removeItem('test');
     expect(localStorage.getItem('test')).toBeNull();
-    localStorage.setItem('test', 'test');
+    localStorage.setItem('test', 'testValue2');
     localStorage.clear();
     expect(localStorage.getItem('test')).toBeNull();
     expect(localStorage.length).toBe(0);
-    localStorage.setItem('test', 'test');
+    localStorage.setItem('test', 'testValue3');
     expect(localStorage.key(0)).toBe('test');
     localStorage.clear();
+  });
+
+  it('should support property accessor', () => {
+    localStorage.test = 'testValue';
+    expect(localStorage['test']).toBe('testValue');
+    expect(localStorage.getItem('test')).toBe('testValue');
+    expect('test' in localStorage).toBe(true);
+    expect(localStorage.length).toBe(1);
+    delete localStorage['test'];
+    expect(localStorage.test).toBeUndefined();
+  });
+
+  it('should handle method overrides in property accessors', () => {
+    localStorage.test = 'testValue';
+    expect(localStorage.getItem('test')).toBe('testValue');
+
+    // override getItem
+    localStorage.getItem = () => 'override';
+    expect(localStorage.getItem('test')).toBe('override');
+
+    // delete overridden getItem should then keep the original getItem
+    // @ts-ignore - 'The operand of a 'delete' operator must be optional.'
+    delete localStorage.getItem;
+    expect(localStorage.test).toBe('testValue');
+
+    // delete built-in getItem is not allowed
+    // @ts-ignore - 'The operand of a 'delete' operator must be optional.'
+    delete localStorage.getItem;
+    expect(localStorage.test).toBe('testValue');
   });
 });
