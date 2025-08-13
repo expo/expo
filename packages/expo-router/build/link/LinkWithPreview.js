@@ -91,6 +91,7 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
+    const highlightBorderRadius = triggerElement?.props.highlightBorderRadius;
     const preview = react_1.default.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
@@ -115,7 +116,7 @@ function LinkWithPreview({ children, ...rest }) {
             router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }}>
       <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <native_1.NativeLinkPreviewTrigger>
+        <native_1.NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>
           <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
         </native_1.NativeLinkPreviewTrigger>
         {preview}

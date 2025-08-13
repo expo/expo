@@ -84,6 +84,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     () => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>,
     [triggerElement, children]
   );
+  const highlightBorderRadius = triggerElement?.props.highlightBorderRadius;
 
   const preview = React.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
 
@@ -122,7 +123,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
       }}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <NativeLinkPreviewTrigger>
+        <NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>
           <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
         </NativeLinkPreviewTrigger>
         {preview}

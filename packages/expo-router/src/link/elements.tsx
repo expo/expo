@@ -213,7 +213,15 @@ export function LinkPreview(props: LinkPreviewProps) {
   );
 }
 
-export type LinkTriggerProps = PropsWithChildren;
+export interface LinkTriggerProps extends PropsWithChildren {
+  /**
+   * Sets the corner radius of the highlight — the element that appears during a long press,
+   * before the preview shows, and beside the context menu if no preview is displayed.
+   *
+   * @platform ios
+   */
+  highlightBorderRadius?: number;
+}
 
 /**
  * Serves as the trigger for a link.
