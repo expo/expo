@@ -1,8 +1,8 @@
 ---
-title: Authentication in Expo and React Native Apps
+title: Authentication in Expo and React Native apps
 description: Learn about setting up authentication in your Expo project.
 sidebar_title: Authentication
-hideTOC: false
+hasVideoLink: true
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -14,7 +14,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Authentication is a critical part of 90 to 95 percent of modern apps. This guide explains common methods, patterns, and solutions to help you implement authentication in your Expo app.
 
-> **info** **TL;DR -** Auth is hard. If you want to skip the complexity, jump to the [Auth solutions](/#auth-solutions) section for ready-made solutions. Otherwise, keep reading.
+> **info** **TL;DR**: Auth is hard. If you want to skip the complexity, jump to the [Auth solutions](/#auth-solutions) section for ready-made solutions. Otherwise, keep reading.
 
 Implementing authentication involves more than writing client-side code. You'll need to manage server requests, password flows, third-party providers like Google or Apple, email handling, and OAuth standards. It can get complex quickly.
 
@@ -42,7 +42,7 @@ If you're using an older version of Expo Router, you can use [redirects](/router
 
 <Collapsible summary="Using React Navigation">
 
-If you're using React Navigation, they offer a helpful [authentication flow guide](https://reactnavigation.org/docs/auth-flow/) that explains how to structure your navigation logic. It includes examples for both [static](https://reactnavigation.org/docs/auth-flow/?config=static#how-it-will-work) and [dynamic](https://reactnavigation.org/docs/auth-flow/?config=static#how-it-will-work) approaches based on the user's authentication state.
+If you're using React Navigation, they offer a helpful [authentication flow guide](https://reactnavigation.org/docs/auth-flow/) that explains how to structure your navigation logic. It includes examples for both [static](https://reactnavigation.org/docs/auth-flow/?config=static#how-it-will-work) and [dynamic](https://reactnavigation.org/docs/auth-flow/?config=dynamic#how-it-will-work) approaches based on the user's authentication state.
 
 Both Expo Router and React Navigation give you flexible tools to implement protected navigation based on whether the user is logged in.
 
@@ -56,9 +56,9 @@ To make this flow user-friendly, you also need to implement forgot password and 
 
 If you want a quicker solution, several services offer built-in email and password authentication, including [Clerk](/#clerk), [Supabase](/#supabase), [Cognito](/#cognito), [Firebase](/#firebase-auth), and [Better Auth](/#better-auth). Most of these have generous free tiers, but it is a good idea to evaluate pricing if your app grows quickly.
 
-The biggest advantage of these services is how easy they are to integrate. They usually offer clear documentation, starter kits, and prebuilt components that save you time.
+The biggest advantage of these services is their ease of integration. They usually offer clear documentation, starter kits, and prebuilt components that save you time.
 
-<Collapsible summary="Security checklist (OWASP) & store-review gotchas">
+<Collapsible summary="Security checklist (OWASP) and store-review gotchas">
 
 If you're building this flow yourself, be sure to review the [Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#authentication-cheat-sheet) by OWASP. It outlines best practices for password length, encryption, recovery, secure storage, and more.
 
@@ -78,7 +78,7 @@ A key detail here is [deep linking](/linking/into-your-app). Since users leave t
 
 If you're using Expo Router deep linking is handled automatically (for most cases). You usually don't need to configure anything extra to make magic links work properly, which makes this approach even easier to adopt. See [Linking into your app](/linking/into-your-app) to learn more.
 
-[React Navigation](https://reactnavigation.org/) also supports deep linking, but you will need to configure it manually. See their [Deep Linking guide](https://reactnavigation.org/docs/deep-linking/) for more details.
+[React Navigation](https://reactnavigation.org/) also supports deep linking, but you will need to configure it manually. See its [Deep Linking guide](https://reactnavigation.org/docs/deep-linking/) for more details.
 
 </Collapsible>
 
@@ -90,7 +90,7 @@ There's no deep linking involved here. The user stays in control of the flow and
 
 Fortunately, newer versions of Android and iOS automatically detect passcodes in incoming messages. This enables autofill suggestions above the keyboard, allowing users to enter the code with a single tap. When this works, the experience is seamless.
 
-> **info** Magic links and passcodes are both valid authentication methods for App Store and Play Store review. You can submit your app with either of these methods as the only option and get approved, even before adding social or OAuth login options.
+> **info** Magic links and passcodes are both valid authentication methods for Google Play Store and Apple App Store reviews. You can submit your app with either of these methods as the only option and get approved, even before adding social or OAuth login options.
 
 </Collapsible>
 
@@ -98,11 +98,11 @@ Fortunately, newer versions of Android and iOS automatically detect passcodes in
 
 To let your users log in using their existing accounts from services like Google, Apple, GitHub, and more, you can use OAuth 2.0.
 
-[OAuth 2.0](https://oauth.net/2) is a widely used, secure protocol that allows your app to access user information from another service, without needing to handle passwords. It allows your users to to log in with a single tap, which saves time, builds trust, and removes the need to manage passwords.
+[OAuth 2.0](https://oauth.net/2) is a widely used, secure protocol that allows your app to access user information from another service, without needing to handle passwords. It allows your users to log in with a single tap, which saves time, builds trust, and removes the need to manage passwords.
 
-> **info** OAuth flows can be complex. If you're looking for a simple integration, most providers offer SDKs and services that handle everything for you. You can learn more about these in the [Auth Solutions](#auth-solutions) section.
+> **info** OAuth flows can be complex. If you're looking for a simple integration, most providers offer SDKs and services that handle everything for you. You can learn more about these in the [Auth solutions](#auth-solutions) section.
 
-If you are looking for full control or want to understand how OAuth works under the hood, keep reading. This section shows how to implement a complete OAuth flow yourself using Expo.
+If you are looking for full control or want to understand how OAuth works under the hood, the following sections show how to implement a complete OAuth flow yourself using Expo.
 
 ### How OAuth Works
 
@@ -130,9 +130,9 @@ Expo lets you implement the entire OAuth flow directly in your app using:
 
 <BoxLink title="Expo AuthSession" href="/versions/latest/sdk/auth-session" Icon={BookOpen02Icon} />
 
-Some providers offer native APIs to handle the sign-in flow directly within the app. Google offers a native Sign in with Google experience on Android. If you're looking for a native implementation, see the [Google Authentication guide](/guides/google-authentication). Apple provides Sign in with Apple, which uses a native bottom sheet and Face ID on iOS. See [Expo Apple Authentication](/versions/latest/sdk/apple-authentication) to learn more.
+Some providers offer native APIs to handle the sign-in flow directly within the app. Google offers a native Sign in with Google experience on Android. If you're looking for a native implementation, see the [Google authentication guide](/guides/google-authentication). Apple provides Sign in with Apple, which uses a native bottom sheet and Face ID on iOS. See [`expo-apple-authentication`](/versions/latest/sdk/apple-authentication) reference.
 
-This setup gives you full control over the login experience across Android, iOS, and Web.
+The following setup gives you full control over the login experience across Android, iOS, and web.
 
 <Collapsible summary="What are Expo API Routes?">
 
@@ -140,7 +140,7 @@ This setup gives you full control over the login experience across Android, iOS,
 
 This makes it easy to securely handle sensitive parts of the auth flow, like the [authorization code exchange](https://www.oauth.com/oauth2-servers/pkce/authorization-code-exchange), directly within your app. Since these routes run on the server, you can safely manage secrets, issue JWTs, and validate tokens.
 
-> **info** You're essentially building a lightweight custom auth server scoped to your own application, all using just your Expo project.
+> **info** You're essentially building a lightweight custom auth server scoped to your own application, all using your Expo project.
 
 </Collapsible>
 
@@ -148,7 +148,7 @@ This makes it easy to securely handle sensitive parts of the auth flow, like the
 
 [Expo AuthSession](/versions/latest/sdk/auth-session) is a client-side package that helps you open a web browser or native modal to start the OAuth login flow. It handles redirection, parses the authorization response, and brings the user back into your app.
 
-It's the tool that kicks off the flow and talks to your API Route once the user has authorized access. See [Authentication with OAuth or OpenID providers](https://docs.expo.dev/guides/authentication/) for more info.
+It's the tool that kicks off the flow and talks to your API Route after the user authorizes access. See [Authentication with OAuth or OpenID providers](/guides/authentication/) for more information.
 
 </Collapsible>
 
@@ -162,7 +162,7 @@ This setup lets you:
 - Store sessions using cookies (Web) or JWTs (Native)
 - Deploy instantly using EAS Hosting (free to start)
 
-The following tutorials cover implementing OAuth on Android, iOS and Web, including how to create and verify custom JWTs, manage sessions, and protect API routes. If you're new to this flow, we recommend starting with the Google tutorial.
+The following tutorials cover implementing OAuth on Android, iOS, and web, including how to create and verify custom JWTs, manage sessions, and protect API routes. If you're new to this flow, we recommend starting with the Google tutorial.
 
 <VideoBoxLink
   videoId="V2YdhR1hVNw"
@@ -178,7 +178,7 @@ The following tutorials cover implementing OAuth on Android, iOS and Web, includ
 
 <br />
 
-<Collapsible summary="Managing Sessions After OAuth">
+<Collapsible summary="Managing sessions after OAuth">
 
 Handling the OAuth flow securely is just the beginning. Once the user is authenticated, you need to think about how to store, restore, and validate their session.
 
@@ -190,7 +190,7 @@ This includes:
 
 Traditionally, [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#what_cookies_are_used_for) are used to store sessions on the web, while [JSON Web Tokens (JWTs)](https://en.wikipedia.org/wiki/JSON_Web_Token) are common in native applications.
 
-In our tutorials, we demonstrate exactly how to handle this. After receiving the ID token from a provider like Google or Apple, we generate a custom JWT on the server using Expo API Routes.
+The above tutorials demonstrate exactly how to handle this. After receiving the ID token from a provider like Google or Apple, you generate a custom JWT on the server using Expo API Routes.
 
 This gives you full control over the session, including:
 
@@ -200,20 +200,21 @@ This gives you full control over the session, including:
 
 Once the token is created:
 
-- For native apps, you can store it securely using [Expo Secure Store](/versions/latest/sdk/secure-store)
+- For Android and iOS apps, you can store it securely using [`expo-secure-store`](/versions/latest/sdk/securestore/)
 - For web apps, you can set it as a secure cookie to maintain the session
 
 On every request, the token is sent back to your server, where you verify the signature and check the expiration. If everything checks out, you continue processing the request.
 
 This session model keeps your backend stateless, scalable, and secure, and works consistently across platforms.
 
-We cover all of this in the video tutorials linked above, including:
+All of this is covered in the video tutorials linked above, including:
 
 - Generating and verifying custom JWTs
 - Handling session storage with Secure Store and cookies
 - Protecting API routes with authentication logic
 
 </Collapsible>
+
 ## Auth solutions
 
 If you prefer not to build a full authentication system from scratch, several services offer built-in solutions with first-class support for Expo. Here are some of the most popular options:
@@ -236,7 +237,7 @@ If you prefer not to build a full authentication system from scratch, several se
 
 ### Firebase Auth
 
-[Firebase Authentication](https://rnfirebase.io/auth/usage) is Google's auth platform and supports email, magic links, and OAuth providers. It works with React Native through [react-native-firebase](https://github.com/invertase/react-native-firebase), which is compatible with Expo development builds.
+[Firebase Authentication](https://rnfirebase.io/auth/usage) is Google's auth platform and supports email, magic links, and OAuth providers. It works with React Native through [`react-native-firebase`](https://github.com/invertase/react-native-firebase), which is compatible with Expo development builds.
 
 ## Modern methods
 
@@ -246,7 +247,7 @@ Once you have a working authentication system in place, you can improve the user
 
 Biometrics like Face ID and Touch ID can be used to unlock the app or confirm identity after a valid session is established. These are not authentication methods on their own, but act as a local gate that makes re-authentication faster and more secure.
 
-React Native provides access to biometric APIs through libraries like [expo-local-authentication](/versions/latest/sdk/local-authentication) or [react-native-biometrics](https://github.com/SelfLender/react-native-biometrics).
+React Native provides access to biometric APIs through libraries like [`expo-local-authentication`](/versions/latest/sdk/local-authentication) or [`react-native-biometrics`](https://github.com/SelfLender/react-native-biometrics).
 
 </Collapsible>
 
@@ -256,7 +257,7 @@ React Native provides access to biometric APIs through libraries like [expo-loca
 
 Passkeys offer a seamless and secure experience, but they require a user to already be authenticated before registering one. They also require extra configuration if you're not using a provider that handles them for you.
 
-- React Native passkey support: [react-native-passkeys](https://github.com/peterferguson/react-native-passkeys)
+- React Native passkey support: [`react-native-passkeys`](https://github.com/peterferguson/react-native-passkeys)
 - Native passkey support with Clerk: [Clerk Passkeys for Expo](https://clerk.com/docs/references/expo/passkeys)
 
 </Collapsible>
@@ -269,9 +270,9 @@ In many cases, starting simple is the best approach. Shipping your app with some
 
 That said, if you're building an app where you expect high traffic from day one or need to support sign-in across platforms with minimal friction, investing in a more complete authentication flow early on can make a big difference. It can help improve user onboarding, trust, and retention right from the start.
 
-Modern solutions like OAuth, biometrics, and passkeys are not required, but they can be excellent additions once your core system is in place. The key is to build authentication that fits your current needs, while staying flexible enough to grow with your product.
+Modern solutions like OAuth, biometrics, and passkeys are not required, but they can be excellent additions once your core system is in place.
 
-It's perfectly okay to start with a third-party service and refine your approach as your app matures.
+The key is to build authentication that fits your current needs, while staying flexible enough to grow with your product.
 
 <BoxLink
   title="Authentication with OAuth or OpenID providers"
