@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
+private val IsRunningInPreview = Build.DEVICE == "layoutlib"
+
 @Composable
 fun AppIcon(
   size: Dp = 44.dp
@@ -36,6 +38,10 @@ fun AppIcon(
         .size(size)
         .background(NewAppTheme.colors.background.element)
     ) {
+      if (IsRunningInPreview) {
+        return@Box
+      }
+
       val image = remember {
         val sizePx = with(density) { size.toPx() }.toInt()
         val icon = context.packageManager.getApplicationIcon(context.applicationInfo)
