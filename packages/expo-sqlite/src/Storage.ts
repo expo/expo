@@ -459,12 +459,12 @@ export default AsyncStorage;
 export const Storage = AsyncStorage;
 
 /**
- * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
+ * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
  */
 export const localStorage = new WebStorageWrapper(Storage);
 
 /**
- * Install the `localStorage` to the `globalThis` object.
+ * Install the `localStorage` on the `globalThis` object.
  */
 export function installGlobal() {
   install('localStorage', () => localStorage);
