@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import ExpoAppIntegrity from './ExpoAppIntegrity';
 
 /**
- * A boolean value that indicates whether a particular device provides the App Attest service.
+ * A boolean value that indicates whether a particular device provides the [App Attest](https://developer.apple.com/documentation/devicecheck/establishing-your-app-s-integrity) service.
  * Not all device types support the App Attest service, so check for support before using the service.
  * @platform ios
  */
