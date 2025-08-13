@@ -89,6 +89,14 @@ export declare class Directory {
    * A size of the directory in bytes. Null if the directory does not exist, or it cannot be read.
    */
   size: number | null;
+
+  /**
+   * @platform android
+   * A static method that opens a file picker to select a directory.
+   * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
+   * @returns a `Directory` instance. The underlying uri will be a content uri on Android.
+   */
+  static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
 
 export type DownloadOptions = {
@@ -222,6 +230,15 @@ export declare class File {
     destination: Directory | File,
     options?: DownloadOptions
   ): Promise<File>;
+
+  /**
+   * @platform android
+   * A static method that opens a file picker to select a single file of specified type.
+   * @param initialUri An optional uri pointing to an initial folder on which the file picker is opened.
+   * @param mimeType A mime type that is used to filter out files that can be picked out.
+   * @returns a `File` instance.
+   */
+  static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
 
   /**
    * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
