@@ -16,6 +16,7 @@
 - [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fix caching resized images from Photo Library. ([#38105](https://github.com/expo/expo/pull/38105) by [@jakex7](https://github.com/jakex7))
 - [iOS] Fix `generatePlaceholder` method syntax error by removing unwanted trailing comma. ([#38318](https://github.com/expo/expo/pull/38318) by [@bortolilucas](https://github.com/bortolilucas))
+- [iOS] Fix images not displaying in Material Top Tabs navigator. ([#38798](https://github.com/expo/expo/pull/38798) by [@vicprz](https://github.com/vicprz))
 
 ### 💡 Others
 
