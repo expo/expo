@@ -8,6 +8,7 @@ import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { DependencyKind } from '../../Packages';
 
 const { green, yellow, cyan } = chalk;
 
@@ -29,7 +30,9 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
     templates.forEach((template) => {
       workspaceInfo[template.packageName] = {
         location: template.path.replace(EXPO_DIR, ''),
-        workspaceDependencies: template.getDependencies().map((dep) => dep.name),
+        workspaceDependencies: template
+          .getDependencies([DependencyKind.Normal, DependencyKind.Dev])
+          .map((dep) => dep.name),
         mismatchedWorkspaceDependencies: [],
         workspacePeerDependencies: [],
         workspaceOptionalDependencies: [],
