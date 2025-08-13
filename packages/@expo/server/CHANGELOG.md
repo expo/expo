@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Fix Vercel adapter POST requests timeouts. Revert `Readable.toWeb` conversion back to `createReadableStreamFromReadable` from `remix-run/node`. ([#38603](https://github.com/expo/expo/pull/38603) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix loading server `middleware` in `workerd` runtimes ([#38753](https://github.com/expo/expo/pull/38753) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
