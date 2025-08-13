@@ -54,6 +54,7 @@
 - remove clip to bounds for Link.Preview ([#38763](https://github.com/expo/expo/pull/38763) by [@Ubax](https://github.com/Ubax))
 - fix preloading of protected routes ([#38789](https://github.com/expo/expo/pull/38789) by [@Ubax](https://github.com/Ubax))
 - fix link preview native navigation without tabs ([#38787](https://github.com/expo/expo/pull/38787) by [@Ubax](https://github.com/Ubax))
+- fix link preview on iPad ([#38791](https://github.com/expo/expo/pull/38791) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
