@@ -64,4 +64,10 @@ public struct Exceptions {
       "Permissions module not found"
     }
   }
+
+  public final class PermissionsNotGranted: Exception {
+    override public var reason: String {
+      "Required permissions are not granted for this function call"
+    }
+  }
 }
