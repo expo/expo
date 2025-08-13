@@ -1,0 +1,494 @@
+// App.js
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  SafeAreaView,
+  TextInput,
+  Modal,
+  FlatList,
+} from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
+
+// ====================================================================
+// Datos Estáticos y Simulación de Backend
+// ====================================================================
+
+// --- SIMULACIÓN: Configuración de Firebase ---
+// NOTA: Debes reemplazar estos valores con las credenciales de tu proyecto de Firebase.
+const firebaseConfig = {
+  apiKey: "AIzaSyC_xxxxxxxxxxxx_xxxxxxxxxxxx_xxxxxxx",
+  authDomain: "tu-proyecto.firebaseapp.com",
+  projectId: "tu-proyecto",
+  storageBucket: "tu-proyecto.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:xxxxxxxxxxxxxxxxx"
+};
+
+// --- SIMULACIÓN: Datos de usuarios ---
+const USERS = [
+  { id: 'u1', name: 'Albedo', bio: 'La luz de mi oscuridad reside en cada pixel de este mundo.', avatar: 'https://placehold.co/80x80/F5F5F5/000000?text=A' },
+  { id: 'u2', name: 'Lumen', bio: 'Caminando entre las sombras y el resplandor.', avatar: 'https://placehold.co/80x80/000000/FFFFFF?text=L' },
+  { id: 'u3', name: 'Noctis', bio: 'Capturando la belleza de la noche.', avatar: 'https://placehold.co/80x80/606060/FFFFFF?text=N' },
+];
+
+// --- SIMULACIÓN: Datos de publicaciones con likes dinámicos ---
+const POSTS = [
+  { id: 'p1', user: USERS[0], image: 'https://placehold.co/400x400/90EE90/000000?text=Post+1', initialLikes: 124 },
+  { id: 'p2', user: USERS[1], image: 'https://placehold.co/400x400/F08080/FFFFFF?text=Post+2', initialLikes: 256 },
+  { id: 'p3', user: USERS[2], image: 'https://placehold.co/400x400/87CEFA/000000?text=Post+3', initialLikes: 58 },
+  { id: 'p4', user: USERS[0], image: 'https://placehold.co/400x400/FFD700/000000?text=Post+4', initialLikes: 310 },
+  { id: 'p5', user: USERS[1], image: 'https://placehold.co/400x400/FFA07A/FFFFFF?text=Post+5', initialLikes: 78 },
+  { id: 'p6', user: USERS[2], image: 'https://placehold.co/400x400/4682B4/FFFFFF?text=Post+6', initialLikes: 200 },
+];
+
+// --- Frases para la Mini IA ---
+const AI_PHRASES = [
+  "Incluso en la oscuridad, la luz de una sola vela puede ser infinita.",
+  "La dualidad entre la luz y la oscuridad reside en cada uno de nosotros.",
+  "Acepta la oscuridad para que puedas entender el brillo de tu propia luz.",
+  "La sombra es solo el reflejo de la luz que te ilumina."
+];
+
+// ====================================================================
+// Componentes Reutilizables
+// ====================================================================
+
+// Componente para una publicación individual con likes dinámicos
+const Post = ({ post }) => {
+  const [likes, setLikes] = useState(post.initialLikes);
+
+  // Función para simular el "me gusta"
+  const handleLike = () => {
+    // Aquí se debería actualizar el campo 'likes' en Firestore.
+    // Ejemplo de cómo se vería la lógica:
+    // const postRef = doc(db, 'posts', post.id);
+    // await updateDoc(postRef, { likes: likes + 1 });
+    setLikes(likes + 1);
+  };
+
+  return (
+    <View style={styles.postContainer}>
+      <View style={styles.postHeader}>
+        <Image source={{ uri: post.user.avatar }} style={styles.profilePic} />
+        <Text style={styles.userName}>{post.user.name}</Text>
+      </View>
+      <Image source={{ uri: post.image }} style={styles.postImage} />
+      <View style={styles.postActions}>
+        <View style={styles.actionIcons}>
+          <TouchableOpacity onPress={handleLike}>
+            <Ionicons name="heart-outline" size={24} style={styles.icon} />
+          </TouchableOpacity>
+          <Ionicons name="chatbubble-outline" size={24} style={styles.icon} />
+          <Ionicons name="share-outline" size={24} />
+        </View>
+        <Text style={styles.likesText}>{likes} Me gusta</Text>
+      </View>
+    </View>
+  );
+};
+
+// Componente de la barra de navegación superior
+const TopNavigationBar = ({ onAnonymousPress }) => {
+  const navigation = useNavigation();
+  return (
+    <View style={styles.topBar}>
+      <Text style={styles.logoText}>The Light of Darkness</Text>
+      <View style={styles.searchBar}>
+        <Ionicons name="search" size={20} color="#888" />
+        <TextInput style={styles.searchText} placeholder="Buscar..." />
+      </View>
+      <View style={styles.rightIcons}>
+        <TouchableOpacity onPress={onAnonymousPress} style={styles.iconButton}>
+          <Ionicons name="person-circle-outline" size={30} color="#333" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
+          <Ionicons name="paper-plane-outline" size={24} color="#333" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+// Componente del modal de interacción anónima (extraído para reutilización)
+const AnonymousModal = ({ isVisible, onClose, onChat, onCall }) => (
+  <Modal
+    animationType="slide"
+    transparent={true}
+    visible={isVisible}
+    onRequestClose={onClose}
+  >
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <Text style={styles.modalTitle}>Interacción Anónima</Text>
+        <TouchableOpacity onPress={onChat} style={styles.modalOption}>
+          <Text style={styles.modalOptionText}>Chat Anónimo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onCall} style={styles.modalOption}>
+          <Text style={styles.modalOptionText}>Llamada Anónima</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onClose} style={styles.modalCancel}>
+          <Text style={styles.modalCancelText}>Cancelar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
+);
+
+// Componente de la Mini IA
+const MiniAIAgent = () => {
+  const [phrase, setPhrase] = useState('');
+
+  useEffect(() => {
+    // Al montar el componente, se elige una frase aleatoria
+    const randomPhrase = AI_PHRASES[Math.floor(Math.random() * AI_PHRASES.length)];
+    setPhrase(randomPhrase);
+    // No hay necesidad de limpiar un temporizador ya que no se usa ninguno
+  }, []);
+
+  return (
+    <View style={styles.miniAIContainer}>
+      <Ionicons name="bulb-outline" size={24} color="#FFD700" />
+      <Text style={styles.miniAIText}>"{phrase}"</Text>
+    </View>
+  );
+};
+
+// ====================================================================
+// Pantallas de la Aplicación
+// ====================================================================
+
+const AuthScreen = ({ navigation }) => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+
+  const handleAuth = () => {
+    // --- SIMULACIÓN: Lógica de autenticación con Firebase ---
+    // En un proyecto real, se usaría `signInWithEmailAndPassword` o `createUserWithEmailAndPassword`.
+    // Si es registro, se guardaría el nombre de usuario en Firestore.
+    // Ejemplo de lo que se haría en un proyecto real:
+    // if (!isLogin) {
+    //   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    //   await setDoc(doc(db, 'users', userCredential.user.uid), {
+    //     username: username,
+    //     email: email
+    //   });
+    // }
+    // --- FIN DE LA SIMULACIÓN ---
+    navigation.navigate('MainTabs');
+  };
+
+  return (
+    <View style={styles.authContainer}>
+      <Text style={styles.authTitle}>The Light of Darkness</Text>
+      <Text style={styles.authSubtitle}>{isLogin ? 'Iniciar Sesión' : 'Registrarse'}</Text>
+      <TextInput
+        style={styles.authInput}
+        placeholder="Correo Electrónico"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.authInput}
+        placeholder="Contraseña"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+      {!isLogin && (
+        <TextInput
+          style={styles.authInput}
+          placeholder="Nombre de Usuario"
+          value={username}
+          onChangeText={setUsername}
+        />
+      )}
+      <TouchableOpacity style={styles.authButton} onPress={handleAuth}>
+        <Text style={styles.authButtonText}>{isLogin ? 'Entrar' : 'Registrarse'}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+        <Text style={styles.authLink}>
+          {isLogin ? '¿No tienes una cuenta? Regístrate' : '¿Ya tienes una cuenta? Iniciar Sesión'}
+        </Text>
+      </TouchableOpacity>
+      <View style={styles.socialButtonsContainer}>
+        <TouchableOpacity style={[styles.socialButton, { backgroundColor: '#db4437' }]} onPress={() => alert('Autenticación con Google')}>
+          <Ionicons name="logo-google" size={24} color="#fff" />
+          <Text style={styles.socialButtonText}>Google</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.socialButton, { backgroundColor: '#4267B2' }]} onPress={() => alert('Autenticación con Facebook')}>
+          <Ionicons name="logo-facebook" size={24} color="#fff" />
+          <Text style={styles.socialButtonText}>Facebook</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const FeedScreen = () => {
+  const navigation = useNavigation();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => setModalVisible(!isModalVisible);
+
+  const handleAnonymousChat = () => {
+    toggleModal();
+    navigation.navigate('AnonymousChat');
+  };
+
+  const handleAnonymousCall = () => {
+    toggleModal();
+    navigation.navigate('AnonymousCall');
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <TopNavigationBar onAnonymousPress={toggleModal} />
+      <ScrollView contentContainerStyle={styles.feedContainer}>
+        <MiniAIAgent />
+        {POSTS.map(post => <Post key={post.id} post={post} />)}
+      </ScrollView>
+      <AnonymousModal
+        isVisible={isModalVisible}
+        onClose={toggleModal}
+        onChat={handleAnonymousChat}
+        onCall={handleAnonymousCall}
+      />
+    </SafeAreaView>
+  );
+};
+
+const ExploreScreen = () => (
+  <View style={styles.centeredScreen}>
+    <Ionicons name="search-circle-outline" size={100} color="#888" />
+    <Text style={styles.screenText}>Explora nuevas publicaciones</Text>
+  </View>
+);
+
+const CreatePostScreen = () => {
+  // --- SIMULACIÓN: Obtener nombre de usuario para la publicación ---
+  // useEffect(() => {
+  //   const fetchUserName = async () => {
+  //     // Buscar en Firestore el nombre del usuario logueado
+  //   };
+  //   fetchUserName();
+  // }, []);
+
+  // const handlePost = async () => {
+  //   // Guardar la publicación en Firestore, usando el nombre de usuario
+  //   await addDoc(collection(db, 'posts'), {
+  //     user: userName,
+  //     caption: caption,
+  //     imageUrl: imageUrl,
+  //     createdAt: serverTimestamp(),
+  //   });
+  // };
+
+  return (
+    <View style={styles.centeredScreen}>
+      <Ionicons name="add-circle-outline" size={100} color="#888" />
+      <Text style={styles.screenText}>Crea una nueva publicación</Text>
+    </View>
+  );
+};
+
+const NotificationsScreen = () => (
+  <View style={styles.centeredScreen}>
+    <Ionicons name="heart-circle-outline" size={100} color="#888" />
+    <Text style={styles.screenText}>Tus notificaciones</Text>
+  </View>
+);
+
+const ProfileScreen = () => {
+  const user = USERS[0];
+  const userPosts = POSTS.filter(p => p.user.id === user.id);
+  const [editMode, setEditMode] = useState(false);
+  const [name, setName] = useState(user.name);
+  const [bio, setBio] = useState(user.bio);
+
+  const handleSave = () => {
+    setEditMode(false);
+    // Aquí se enviaría el nombre y la biografía al backend para actualizar el perfil
+  };
+
+  return (
+    <View style={styles.profileContainer}>
+      <View style={styles.profileHeader}>
+        <Image source={{ uri: user.avatar }} style={styles.profileAvatar} />
+        {editMode ? (
+          <View style={styles.profileInfo}>
+            <TextInput style={styles.profileNameInput} value={name} onChangeText={setName} />
+            <TextInput style={styles.profileBioInput} value={bio} onChangeText={setBio} multiline />
+          </View>
+        ) : (
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>{name}</Text>
+            <Text style={styles.profileBio}>{bio}</Text>
+          </View>
+        )}
+      </View>
+      <TouchableOpacity style={styles.editButton} onPress={() => editMode ? handleSave() : setEditMode(true)}>
+        <Text style={styles.editButtonText}>{editMode ? 'Guardar' : 'Editar Perfil'}</Text>
+      </TouchableOpacity>
+      <Text style={styles.gridTitle}>Mis Publicaciones</Text>
+      <FlatList
+        data={userPosts}
+        renderItem={({ item }) => (
+          <Image source={{ uri: item.image }} style={styles.postGridItem} />
+        )}
+        keyExtractor={item => item.id}
+        numColumns={3}
+      />
+    </View>
+  );
+};
+
+const AnonymousChatScreen = () => (
+  <View style={styles.anonymousScreen}>
+    <Ionicons name="chatbubbles-outline" size={100} color="#888" />
+    <Text style={styles.anonymousText}>Buscando un compañero anónimo...</Text>
+  </View>
+);
+
+const AnonymousCallScreen = () => (
+  <View style={styles.anonymousScreen}>
+    <Ionicons name="call-outline" size={100} color="#888" />
+    <Text style={styles.anonymousText}>Buscando una llamada anónima...</Text>
+  </View>
+);
+
+// ====================================================================
+// Navegación Principal y Autenticación
+// ====================================================================
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+const MainTabs = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+        if (route.name === 'Inicio') {
+          iconName = focused ? 'home' : 'home-outline';
+        } else if (route.name === 'Explorar') {
+          iconName = focused ? 'search' : 'search-outline';
+        } else if (route.name === 'Publicar') {
+          iconName = focused ? 'add-circle' : 'add-circle-outline';
+        } else if (route.name === 'Notificaciones') {
+          iconName = focused ? 'heart' : 'heart-outline';
+        } else if (route.name === 'Perfil') {
+          iconName = focused ? 'person' : 'person-outline';
+        }
+        return <Ionicons name={iconName} size={size} color={color} />;
+      },
+      tabBarActiveTintColor: '#000',
+      tabBarInactiveTintColor: '#888',
+      headerShown: false,
+    })}
+  >
+    <Tab.Screen name="Inicio" component={FeedScreen} />
+    <Tab.Screen name="Explorar" component={ExploreScreen} />
+    <Tab.Screen name="Publicar" component={CreatePostScreen} />
+    <Tab.Screen name="Notificaciones" component={NotificationsScreen} />
+    <Tab.Screen name="Perfil" component={ProfileScreen} />
+  </Tab.Navigator>
+);
+
+const App = () => {
+  // Cambia este estado a `true` para probar el feed principal sin necesidad de iniciar sesión
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!isAuthenticated ? (
+          <Stack.Screen name="Auth" component={AuthScreen} />
+        ) : (
+          <>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="AnonymousChat" component={AnonymousChatScreen} />
+            <Stack.Screen name="AnonymousCall" component={AnonymousCallScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+// ====================================================================
+// Estilos
+// ====================================================================
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  logoText: { fontSize: 18, fontWeight: 'bold' },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  searchText: { flex: 1, marginLeft: 8, color: '#888' },
+  rightIcons: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: { marginLeft: 10 },
+  feedContainer: { paddingBottom: 20 },
+  postContainer: { marginBottom: 20 },
+  postHeader: { flexDirection: 'row', alignItems: 'center', padding: 10 },
+  profilePic: { width: 40, height: 40, borderRadius: 20, marginRight: 10 },
+  userName: { fontWeight: 'bold' },
+  postImage: { width: '100%', height: 400, resizeMode: 'cover' },
+  postActions: { padding: 10 },
+  actionIcons: { flexDirection: 'row' },
+  icon: { marginRight: 15 },
+  likesText: { fontWeight: 'bold', marginTop: 5 },
+  modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+  modalContent: { backgroundColor: '#fff', padding: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20, alignItems: 'center' },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
+  modalOption: { width: '100%', padding: 15, backgroundColor: '#f0f0f0', borderRadius: 10, marginBottom: 10, alignItems: 'center' },
+  modalOptionText: { fontSize: 18, color: '#333' },
+  modalCancel: { width: '100%', padding: 15, backgroundColor: '#ddd', borderRadius: 10, alignItems: 'center', marginTop: 10 },
+  modalCancelText: { fontSize: 18, color: '#000', fontWeight: 'bold' },
+  centeredScreen: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  anonymousScreen: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5', padding: 20 },
+  anonymousText: { fontSize: 24, fontWeight: 'bold', color: '#333', marginTop: 20, textAlign: 'center' },
+  screenText: { fontSize: 18, color: '#666', marginTop: 10 },
+  authContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#fff' },
+  authTitle: { fontSize: 36, fontWeight: 'bold', marginBottom: 10 },
+  authSubtitle: { fontSize: 24, marginBottom: 30 },
+  authInput: { width: '100%', height: 50, backgroundColor: '#f0f0f0', borderRadius: 10, paddingHorizontal: 15, marginBottom: 15, borderWidth: 1, borderColor: '#ddd' },
+  authButton: { width: '100%', height: 50, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', borderRadius: 10, marginBottom: 15 },
+  authButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  authLink: { color: '#000', marginTop: 10 },
+  socialButtonsContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 20 },
+  socialButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '48%', height: 50, borderRadius: 10 },
+  socialButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginLeft: 10 },
+  miniAIContainer: { padding: 15, margin: 10, backgroundColor: '#fff8e1', borderRadius: 10, flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3.84, elevation: 5, },
+  miniAIText: { flex: 1, marginLeft: 10, fontSize: 16, fontStyle: 'italic', color: '#333', },
+  profileContainer: { flex: 1, backgroundColor: '#fff', padding: 15 },
+  profileHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  profileAvatar: { width: 80, height: 80, borderRadius: 40, marginRight: 20 },
+  profileInfo: { flex: 1 },
+  profileName: { fontSize: 24, fontWeight: 'bold' },
+  profileBio: { fontSize: 16
