@@ -1,12 +1,11 @@
 ---
 title: Using local HTTPS development
-navigation: Local HTTPS development
+sidebar_title: Local HTTPS development
 description: Learn how to set up local HTTPS for Expo web apps.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Collapsible } from '~/ui/components/Collapsible';
 
 When developing Expo web applications locally, you may need to use HTTPS with your local development for testing secure browser APIs. This guide shows you how to set up local HTTPS for Expo web apps.
 
@@ -16,14 +15,14 @@ This guide requires the following tool installed on your machine:
 
 - `mkcert`: A tool for creating development certificates. For installation instructions, see the [`mkcert` GitHub repository](https://github.com/FiloSottile/mkcert#installation).
 
-## Benefits of local-ssl-proxy
+## Benefits
 
 - **Team scalability**: Same setup works for everyone
 - **Authentication support**: HTTP-Only Cookies and secure contexts
 - **Production parity**: Match your production HTTPS environment
 - **Easy sharing**: Consistent development URLs across the team
 
-## Setup
+## Set up your project
 
 <Step label="1">
 
@@ -48,17 +47,17 @@ Start your Expo development server:
 
 <Terminal cmd={['$ npx expo start --web']} />
 
-Your app will be running on `http://localhost:8081`. Keep this terminal open.
+Your app will be running on `http://localhost:8081`. Keep this terminal window open.
 
 </Step>
 
 <Step label="3">
 
-> **info** **Tip**: Ensure that after installing `mkcert`, you run `mkcert -install` to install the local certificate authority (CA).
-
 Use `mkcert` to generate a certificate for localhost. Run the following command in a new terminal window from your project's root directory:
 
 <Terminal cmd={['$ mkcert localhost']} />
+
+> **info** **Tip**: Ensure that after installing `mkcert`, you run `mkcert -install` to install the local certificate authority (CA).
 
 This will generate two signed certifcate files: `localhost.pem` (certificate) and `localhost-key.pem` (private key), inside your project's root directory.
 
@@ -70,8 +69,10 @@ Inside your project's root directory, run the following command to start the pro
 
 <Terminal
   cmd={[
-    '$ npx local-ssl-proxy --source 443 --target 8081 \\',
-    '  --cert localhost.pem --key localhost-key.pem',
+    '$ npx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+  ]}
+  cmdCopy={[
+    '$ npx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
   ]}
 />
 
@@ -83,8 +84,6 @@ This creates a proxy that forwards HTTPS traffic from port 443 to your Expo dev 
 
 <Step label="5">
 
-Open `https://localhost` in your browser to access your app. Your Expo app is now running with HTTPS!
+Open `https://localhost` in your browser to access your app. Your Expo app is now running with HTTPS.
 
 </Step>
-
-The setup enables your entire team to develop with HTTPS using the same simple configuration, eliminating the individual setup requirements of the deprecated tunnel feature.
