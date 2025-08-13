@@ -64,8 +64,8 @@ export async function prepareIntegrityTokenProvider(cloudProjectNumber: string) 
 
 /**
  * Requests an integrity verdict for the given request hash from Google Play.
- * @param requestHash - A string representing the request hash.
- * @return A `Promise` that is fulfilled with a string that contains the integrity check result.
+ * @param requestHash A string representing the request hash.
+ * @return A Promise that is fulfilled with a string that contains the integrity check result.
  * @platform android
  */
 export async function requestIntegrityCheck(requestHash: string) {
