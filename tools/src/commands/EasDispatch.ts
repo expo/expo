@@ -441,7 +441,13 @@ async function androidApkUploadAsync() {
   const releaseTag = getAppName(appVersion);
 
   try {
-    const release = await getOrCreateReleaseAsync(repoOwner, repoName, releaseTag, appVersion);
+    const release = await getOrCreateReleaseAsync(
+      repoOwner,
+      repoName,
+      releaseTag,
+      appVersion,
+      sdkVersion
+    );
 
     logger.info(`Release on GitHub: ${release.data.html_url}`);
 
@@ -500,7 +506,13 @@ async function iosSimulatorUploadAsync() {
   const releaseTag = getAppName(appVersion);
 
   try {
-    const release = await getOrCreateReleaseAsync(repoOwner, repoName, releaseTag, appVersion);
+    const release = await getOrCreateReleaseAsync(
+      repoOwner,
+      repoName,
+      releaseTag,
+      appVersion,
+      sdkVersion
+    );
 
     logger.info(`Release on GitHub: ${release.data.html_url}`);
 
