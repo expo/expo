@@ -51,6 +51,7 @@
 - add unstable-native-tabs to files in package.json ([#38742](https://github.com/expo/expo/pull/38742) by [@Ubax](https://github.com/Ubax))
 - fix native tabs transitions with heavy views ([#38761](https://github.com/expo/expo/pull/38761) by [@Ubax](https://github.com/Ubax))
 - remove clip to bounds for Link.Preview ([#38763](https://github.com/expo/expo/pull/38763) by [@Ubax](https://github.com/Ubax))
+- fix preloading of protected routes ([#38789](https://github.com/expo/expo/pull/38789) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
