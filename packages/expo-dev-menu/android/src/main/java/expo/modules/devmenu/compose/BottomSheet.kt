@@ -1,12 +1,17 @@
 package expo.modules.devmenu.compose
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import com.composables.core.ModalBottomSheet
 import com.composables.core.ModalBottomSheetState
 import com.composables.core.Scrim
@@ -14,9 +19,8 @@ import com.composables.core.Sheet
 import com.composables.core.SheetDetent
 import com.composables.core.SheetDetent.Companion.Hidden
 import com.composables.core.rememberModalBottomSheetState
-import expo.modules.devmenu.compose.primitives.Divider
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Surface
-import expo.modules.devmenu.compose.theme.Theme
 
 val Peek = SheetDetent(identifier = "peek") { containerHeight, sheetHeight ->
   containerHeight * 0.6f
@@ -47,25 +51,33 @@ fun BottomSheet(
   ) {
     Scrim()
     Sheet(
-      modifier = Modifier.fillMaxWidth()
+      modifier = Modifier
+        .fillMaxWidth()
+        .clip(
+          RoundedCornerShape(
+            topStart = NewAppTheme.borderRadius.xxxl,
+            topEnd = NewAppTheme.borderRadius.xxxl
+          )
+        )
+        .background(NewAppTheme.colors.background.default)
     ) {
       Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
-        Divider()
-
-        header()
-
-        Divider()
+        Box(modifier = Modifier.padding(NewAppTheme.spacing.`4`)) {
+          header()
+        }
 
         Surface(
-          color = Theme.colors.background.secondary,
+          color = NewAppTheme.colors.background.default,
           modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(scrollState)
         ) {
-          content()
+          Box(modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)) {
+            content()
+          }
         }
       }
     }
