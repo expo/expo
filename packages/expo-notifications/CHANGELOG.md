@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- remove deprecated function exports ([#38782](https://github.com/expo/expo/pull/38782) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
