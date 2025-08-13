@@ -11,7 +11,7 @@ export const isSupported = Platform.OS === 'ios' ? ExpoAppIntegrity.isSupported 
 
 /**
  * Creates a new cryptographic key for use with the App Attest service.
- * @return A `Promise` that is fulfilled with a string that contains the key identifier. The key itself is stored securely in the Secure Enclave.
+ * @return A Promise that is fulfilled with a string that contains the key identifier. The key itself is stored securely in the Secure Enclave.
  * @platform ios
  */
 export async function generateKey() {
