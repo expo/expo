@@ -460,18 +460,16 @@ jobs:
     params:
       build_id: string # required
       profile: string # optional, default: production
-      groups: string[] # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| build_id  | string   | Required. The ID of the build to submit.                                                                                                                                                                                                                                                                                                                                                                                     |
-| profile   | string   | Optional. The submit profile to use. Defaults to `production`.                                                                                                                                                                                                                                                                                                                                                               |
-| groups    | string[] | Optional. An array of TestFlight internal group names to add the build to (only affects iOS submissions; for Android, this parameter is ignored). Overrides `groups` in the [submit profile](/eas/json/#ios-specific-options-1). Note: On top of the groups you provide here, the build will be automatically added to the groups that have been created with the "Enable automatic distribution" App Store Connect setting. |
+| Parameter | Type   | Description                                                    |
+| --------- | ------ | -------------------------------------------------------------- |
+| build_id  | string | Required. The ID of the build to submit.                       |
+| profile   | string | Optional. The submit profile to use. Defaults to `production`. |
 
 #### Outputs
 
@@ -535,6 +533,105 @@ jobs:
     params:
       build_id: ${{ needs.build_android.outputs.build_id }}
       profile: production
+```
+
+</Collapsible>
+
+## TestFlight
+
+Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
+
+### Prerequisites
+
+TestFlight jobs require an iOS build created with `distribution: store`. You'll need to have your Apple Developer account configured. See the [TestFlight submission guide](/submit/ios/#submitting-your-app-using-cicd-services) for more information.
+
+### Syntax
+
+```yaml
+jobs:
+  testflight_distribution:
+    type: testflight
+    params:
+      build_id: string # required
+      profile: string # optional, default: production
+      internal_groups: string[] # optional
+      external_groups: string[] # optional
+      changelog: string # optional
+      submit_beta_review: boolean # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter          | Type     | Description                                                                                                                                 |
+| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id           | string   | Required. The ID of the iOS build to distribute.                                                                                            |
+| profile            | string   | Optional. The submit profile to use. Defaults to `production`.                                                                              |
+| internal_groups    | string[] | Optional. An array of TestFlight internal group names to add the build to. Only include groups without automatic distribution enabled.      |
+| external_groups    | string[] | Optional. An array of TestFlight external group names to add the build to.                                                                  |
+| changelog          | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                               |
+| submit_beta_review | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when external_groups are provided, `false` otherwise. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                       |
+| --------------------- | ------ | ------------------------------------------------- |
+| apple_app_id          | string | The Apple App ID of the submitted build.          |
+| ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
+
+### Examples
+
+Here are some practical examples of using the TestFlight job:
+
+<Collapsible summary="Full distribution with internal and external groups">
+
+This workflow distributes to both internal and external TestFlight groups with a changelog.
+
+```yaml .eas/workflows/testflight-full.yml
+name: TestFlight Distribution
+
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      internal_groups: ['QA Team']
+      external_groups: ['Public Beta']
+      changelog: |
+        What's new in this release:
+        - New features
+        - Bug fixes
+```
+
+</Collapsible>
+
+<Collapsible summary="Upload with changelog only">
+
+This workflow uploads a build with a changelog but without specifying any groups to explicitly add the build to. The build will only get added to internal groups with "auto-distribute" enabled.
+
+```yaml .eas/workflows/testflight-changelog.yml
+name: TestFlight with Changelog
+
+jobs:
+  testflight:
+    name: Upload with Changelog
+    type: testflight
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      changelog: "${{ github.commit_message || 'Bug fixes' }}"
+      # github.commit_message only available in push & schedule events.
 ```
 
 </Collapsible>
