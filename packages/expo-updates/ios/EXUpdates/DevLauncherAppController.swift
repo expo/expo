@@ -100,8 +100,12 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     self.updatesDirectory = updatesDirectory
     self.database = updatesDatabase
     self.directoryDatabaseException = directoryDatabaseException
-    self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1"
+    self.defaultSelectionPolicy = SelectionPolicy(
+      launcherSelectionPolicy: LauncherSelectionPolicyDevelopmentClient(
+        runtimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersion } ?? "1",
+        config: self.config),
+      loaderSelectionPolicy: LoaderSelectionPolicyDevelopmentClient(config: self.config),
+      reaperSelectionPolicy: ReaperSelectionPolicyDevelopmentClient()
     )
 
     super.init()
@@ -350,6 +354,10 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   public func setUpdateURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
     throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
+  }
+
+  public func setUpdateRequestHeadersOverride(_ requestHeaders: [String: String]?) throws {
+    throw NotAvailableInDevClientException("Updates.setUpdateRequestHeadersOverride() is not supported in development builds.")
   }
 }
 

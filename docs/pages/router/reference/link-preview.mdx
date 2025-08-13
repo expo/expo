@@ -1,0 +1,200 @@
+---
+title: Link preview
+description: Learn how to add a preview to your link on iOS when using Expo Router.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+<ContentSpotlight
+  alt="A video presenting the link preview feature in Expo Router."
+  file="expo-router/link-preview.mp4"
+/>
+
+Link preview (also known as "Peek and Pop") is a feature commonly used on iOS to show users a preview popup of the screen for a link.
+This guide will show you how to add and customize a link preview for your app on iOS.
+
+If you have a link in your app, you can add a link preview to it by replacing the link's content with a [`Link.Trigger`](/versions/unversioned/sdk/router/#linktrigger) and adding the [`Link.Preview`](/versions/unversioned/sdk/router/#linkpreview) component to it. This will create a preview of the page that the link points to.
+
+```tsx
+import { Link } from 'expo-router';
+
+export default function Page() {
+  return (
+    <Link href="/about">
+      <Link.Trigger>About</Link.Trigger>
+      <Link.Preview />
+    </Link>
+  );
+}
+```
+
+## Customizing the link preview
+
+By default, the link preview is rendered as a full-sized page snapshot. There are several ways to customize this behavior.
+
+### Custom size
+
+You can use the `width` and `height` props to suggest a preferred preview size. The system will consider these preferences but may override them based on available space or platform behavior.
+
+```tsx
+<Link href="...">
+  <Link.Trigger>Content</Link.Trigger>
+  <Link.Preview height={300} />
+</Link>
+```
+
+The following example shows a custom link preview size on iOS:
+
+<ContentSpotlight
+  alt="A screenshot of a custom link preview size."
+  src="/static/images/expo-router/link-preview-custom-size.png"
+  className="max-h-[400px]"
+/>
+
+### Custom preview
+
+If you don't want to show the default preview, you can pass custom content to the `Link.Preview` component via children. This custom content will replace the default preview of the link target.
+
+```tsx
+export default function Page() {
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const { width } = useWindowDimensions();
+  const previewHeight = (width / imageSize.width) * imageSize.height;
+
+  return (
+    <Link href="/about">
+      <Link.Trigger>About</Link.Trigger>
+      <Link.Trigger>Content</Link.Trigger>
+      <Link.Preview width={screenWidth} height={previewHeight}>
+        <Image
+          onLoad={e => setImageSize(e.nativeEvent.source)}
+          source={source}
+          style={{ width: '100%', height: '100%' }}
+        />
+      </Link.Preview>
+    </Link>
+  );
+}
+```
+
+The following example shows a custom link preview on iOS:
+
+<ContentSpotlight
+  alt="A screenshot of a custom link preview."
+  src="/static/images/expo-router/link-preview-custom-content.png"
+  className="max-h-[400px]"
+/>
+
+## Menu
+
+To render a context menu next to the preview, add a [`Link.Menu`](/versions/unversioned/sdk/router/#linkmenu) with [`Link.MenuAction`](/versions/unversioned/sdk/router/#linkmenuaction) children.
+
+```tsx
+<Link href="/about">
+  <Link.Trigger>About</Link.Trigger>
+  <Link.Menu>
+    <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={handleSharePress} />
+    <Link.MenuAction title="Block" icon="nosign" destructive onPress={handleBlockPress} />
+  </Link.Menu>
+</Link>
+```
+
+The following example shows a custom link preview on iOS:
+
+<ContentSpotlight
+  alt="A screenshot of an iOS context menu."
+  src="/static/images/expo-router/link-preview-menu.png"
+  className="max-h-[400px]"
+/>
+
+### Icons
+
+You can specify an icon for each menu action using [SF Symbols](https://developer.apple.com/sf-symbols/).
+
+```tsx
+<Link href="/about">
+  <Link.Trigger>About</Link.Trigger>
+  <Link.Menu>
+    <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={handleSharePress} />
+    <Link.MenuAction title="Block" icon="nosign" onPress={handleBlockPress} />
+    <Link.MenuAction
+      title="Follow"
+      icon="person.crop.circle.badge.plus"
+      onPress={handleFollowPress}
+    />
+    <Link.MenuAction title="Copy" icon="doc.on.doc" onPress={handleCopyPress} />
+  </Link.Menu>
+</Link>
+```
+
+The following example shows a context menu with four elements, each using a different icon on iOS:
+
+<ContentSpotlight
+  alt="A screenshot of context menu with four elements."
+  src="/static/images/expo-router/link-preview-icons.png"
+  className="max-h-[400px]"
+/>
+
+### Nested menus
+
+You can nest menus by placing a [`Link.Menu`]() inside another menu:
+
+```jsx
+<Link href="...">
+  <Link.Trigger>About</Link.Trigger>
+  <Link.Menu>
+    <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => {}} />
+    <Link.Menu title="More" icon="ellipsis">
+      <Link.MenuAction title="Copy" icon="doc.on.doc" onPress={() => {}} />
+      <Link.MenuAction title="Delete" icon="trash" destructive onPress={() => {}} />
+    </Link.Menu>
+  </Link.Menu>
+</Link>
+```
+
+The following example shows a nested context menu on iOS:
+
+<ContentSpotlight
+  alt="A screenshot of a nested context menu."
+  src="/static/images/expo-router/link-preview-nested-menu.png"
+  className="max-h-[400px]"
+/>
+
+### More customization options
+
+To explore all available customization options, see the API documentation for [`Link.MenuAction`](/versions/unversioned/sdk/router/#linkmenuaction).
+
+## Detecting if component is in preview
+
+If you're building a component that might be rendered inside a preview, you can use the [`useIsPreview()`](/versions/unversioned/sdk/router/#useispreview) hook to adjust its behavior accordingly:
+
+```jsx
+function MyComponent() {
+  // This will be true if component/screen is being rendered inside a preview
+  const isInsidePreview = useIsPreview();
+
+  return isInsidePreview ? <Text>From within preview</Text> : <Text>I am outside of preview</Text>;
+}
+```
+
+## Known limitations
+
+### `replace` not supported
+
+Using link previews with [`replace`](/versions/latest/sdk/router/#replace) mode is currently **not supported**. Previews can only be used with the default [`push`](/versions/latest/sdk/router/#push) navigation mode.
+
+### JavaScript tabs and slots
+
+When navigating within JavaScript tabs (rather than native tabs) or [`Slot`s](/versions/latest/sdk/router/#slot), preview transition animations may appear clunky. This is due to React's delayed rendering while the native preview animation begins immediately. To prevent this issues use, native tabs and stack navigators.
+
+### Missing `Link.Trigger`
+
+If you render a `Link` with a preview or context menu, but without a `Link.Trigger`, an exception will be thrown. The same applies if you place any non-`Link.*` component directly inside `Link` when using preview mode.
+
+### Multiple `Link.Trigger` children with `asChild` prop
+
+When using `Link` with `asChild`, you may only specify **one** child for `Link.Trigger`. The `onPress` event will be forwarded to that child only.
+
+### Changing href while preview is open
+
+Changing `href` prop's path dynamically while the preview is open is **not supported**. You may only modify the query parameters dynamically.

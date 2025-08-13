@@ -36,6 +36,8 @@ function getExpoDependencyChunks({
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],
+    ['unimodules-app-loader'],
+    ['expo-task-manager'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
@@ -61,21 +63,28 @@ function getExpoDependencyChunks({
     ...(includeTV
       ? [
           [
+            'expo-app-integrity',
             'expo-audio',
             'expo-av',
+            'expo-background-task',
             'expo-blur',
             'expo-crypto',
             'expo-image',
+            'expo-image-loader',
+            'expo-image-manipulator',
+            'expo-insights',
             'expo-linear-gradient',
             'expo-linking',
             'expo-localization',
             'expo-media-library',
             'expo-network',
             'expo-secure-store',
+            'expo-sqlite',
             'expo-symbols',
             'expo-system-ui',
             'expo-ui',
             'expo-video',
+            'expo-video-thumbnails',
           ],
         ]
       : []),
@@ -308,6 +317,7 @@ async function preparePackageJson(
   const extraScripts = configureE2E
     ? {
         start: 'expo start --private-key-path ./keys/private-key.pem',
+        'ios:pod-install-old-arch': 'npx pod-install',
         'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':
@@ -514,6 +524,9 @@ function transformAppJsonForE2E(
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
         assetPatternsToBeBundled: ['includedAssets/*'],
         useNativeDebug: true,
+        requestHeaders: {
+          'expo-channel-name': 'default',
+        },
       },
       extra: {
         eas: {
@@ -847,7 +860,7 @@ export async function initAsync(
   // enable proguard on Android, and custom init if needed
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    `\nandroid.enableProguardInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
+    `\nandroid.enableMinifyInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
     'utf-8'
   );
 

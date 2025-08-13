@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20, 22]
+        node: [20, 22]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -54,8 +54,7 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
-        run: yarn install --frozen-lockfile --ignore-engines
+        run: yarn install --frozen-lockfile
       - name: 🛠 Build create-expo
         run: yarn prepare
         working-directory: packages/create-expo

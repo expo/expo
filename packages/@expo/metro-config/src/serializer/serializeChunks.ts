@@ -89,10 +89,10 @@ export async function graphToSerialAssetsAsync(
     gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false, true)
   );
 
-  // Get the common modules and extract them into a separate chunk.
   const entryChunk = [...chunks.values()].find(
     (chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile)
   );
+
   if (entryChunk) {
     for (const chunk of chunks.values()) {
       if (!chunk.isEntry && chunk.isAsync) {
@@ -125,31 +125,28 @@ export async function graphToSerialAssetsAsync(
       }
     }
 
-    // If common dependencies were found, extract them to the entry chunk.
-    // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
+    let commonChunk: Chunk | undefined;
+    // If common dependencies were found, extract them to the shared chunk.
     if (commonDependencies.length) {
-      for (const dep of commonDependencies) {
-        entryChunk.deps.add(dep);
-      }
-      // const commonDependenciesUnique = [...new Set(commonDependencies)];
-      // const commonChunk = new Chunk(
-      //   chunkIdForModules(commonDependenciesUnique),
-      //   commonDependenciesUnique,
-      //   graph,
-      //   options,
-      //   false,
-      //   true
-      // );
-      // entryChunk.requiredChunks.add(commonChunk);
-      // chunks.add(commonChunk);
+      const commonDependenciesUnique = [...new Set(commonDependencies)];
+      commonChunk = new Chunk(
+        '/__common.js',
+        commonDependenciesUnique,
+        graph,
+        options,
+        false,
+        true
+      );
+      entryChunk.requiredChunks.add(commonChunk);
+      chunks.add(commonChunk);
     }
 
     // TODO: Optimize this pass more.
     // Remove all dependencies from async chunks that are already in the common chunk.
     for (const chunk of [...chunks.values()]) {
-      if (!chunk.isEntry) {
+      if (!chunk.isEntry && chunk !== commonChunk) {
         for (const dep of chunk.deps) {
-          if (entryChunk.deps.has(dep)) {
+          if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
             chunk.deps.delete(dep);
           }
         }
@@ -161,6 +158,23 @@ export async function graphToSerialAssetsAsync(
       if (!chunk.isEntry && chunk.deps.size === 0) {
         chunks.delete(chunk);
       }
+    }
+
+    // Create runtime chunk
+    if (commonChunk) {
+      const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
+
+      // All premodules (including metro-runtime) should load first
+      for (const preModule of entryChunk.preModules) {
+        runtimeChunk.preModules.add(preModule);
+      }
+      entryChunk.preModules = new Set();
+
+      for (const chunk of chunks) {
+        // Runtime chunk has to load before any other a.k.a all chunks require it.
+        chunk.requiredChunks.add(runtimeChunk);
+      }
+      chunks.add(runtimeChunk);
     }
   }
 
@@ -174,8 +188,11 @@ export async function graphToSerialAssetsAsync(
   const isExporting = true;
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
   const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+  const platform = getPlatformOption(graph, options) ?? 'web';
+  const isHosted =
+    platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
   const publicPath = isExporting
-    ? graph.transformOptions.platform === 'web'
+    ? isHosted
       ? `/assets?export_path=${assetPublicUrl}`
       : assetPublicUrl
     : '/assets/?unstable_path=.';
@@ -185,9 +202,10 @@ export async function graphToSerialAssetsAsync(
   const metroAssets = (await getMetroAssets(graph.dependencies, {
     processModuleFilter: options.processModuleFilter,
     assetPlugins: config.transformer?.assetPlugins ?? [],
-    platform: getPlatformOption(graph, options) ?? 'web',
+    platform,
     projectRoot: options.projectRoot, // this._getServerRootDir(),
     publicPath,
+    isHosted,
   })) as AssetData[];
 
   return {
@@ -568,6 +586,7 @@ export class Chunk {
 
       // TODO: Generate hbc for each chunk
       const hermesBundleOutput = await buildHermesBundleAsync({
+        projectRoot: this.options.projectRoot,
         filename: this.name,
         code: adjustedSource,
         map: assets[1] ? assets[1].source : null,

@@ -214,18 +214,20 @@ describe(withBuildProperties, () => {
     });
   });
 
-  it('generates the ios.buildFromSource property', async () => {
+  it('generates the ios.buildReactNativeFromSource property', async () => {
     const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
       {},
       {
         plugin: withBuildProperties,
-        pluginProps: { ios: { buildFromSource: true } },
+        pluginProps: { ios: { buildReactNativeFromSource: true } },
         mod: withPodfileProperties,
         modResults: {},
       }
     );
     expect(iosModResultsEnabled).toMatchObject({
-      'ios.buildFromSource': 'true',
+      'ios.buildReactNativeFromSource': 'true',
+      EX_DEV_CLIENT_NETWORK_INSPECTOR: 'true',
+      'apple.privacyManifestAggregationEnabled': 'true',
     });
   });
 
@@ -274,6 +276,30 @@ describe(withBuildProperties, () => {
       type: 'property',
       key: 'exclusiveEnterpriseRepository',
       value: 'https://my.internal.proxy.net/',
+    });
+  });
+
+  it('generates the android.reactNativeReleaseLevel property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { reactNativeReleaseLevel: 'canary' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'reactNativeReleaseLevel',
+      value: 'canary',
     });
   });
 });

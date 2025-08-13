@@ -18,6 +18,15 @@ export type LoadedRoute = {
   }) => Record<string, string | string[]>[];
 };
 
+export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'>;
+
+export type MiddlewareNode = {
+  /** Context Module ID. Used to resolve the middleware module */
+  contextKey: string;
+  /** Loads middleware into memory. Returns the exports from +middleware.ts */
+  loadRoute: () => Partial<LoadedMiddleware>;
+};
+
 export type RouteNode = {
   /** The type of RouteNode */
   type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
@@ -45,6 +54,8 @@ export type RouteNode = {
   entryPoints?: string[];
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
   methods?: string[];
+  /** Middleware function for server-side request processing. Only present on the root route node. */
+  middleware?: MiddlewareNode;
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);

@@ -15,6 +15,7 @@
 - Change the `global.expo` polyfill to work with package exports and be more explicit. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
 - add experimental link preview ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
 - Add ExpoFont to ignorelist. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+- Update mocks for SDK54. ([#38679](https://github.com/expo/expo/pull/38679) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 53.0.9 - 2025-07-03
 

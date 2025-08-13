@@ -8,6 +8,7 @@ import {
 import { env } from './env';
 import { Log } from './log';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
+import { AutolinkingDependencyDuplicatesCheck } from '../checks/AutolinkingDependencyDuplicatesCheck';
 import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
@@ -18,6 +19,7 @@ import { MetroConfigCheck } from '../checks/MetroConfigCheck';
 import { NativeToolingVersionCheck } from '../checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from '../checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from '../checks/PackageManagerVersionCheck';
+import { PeerDependencyChecks } from '../checks/PeerDependencyChecks';
 import { ProjectSetupCheck } from '../checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
@@ -45,6 +47,8 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new IllegalPackageCheck(),
     new GlobalPackageInstalledLocallyCheck(),
     new DirectPackageInstallCheck(),
+    new PeerDependencyChecks(),
+    new AutolinkingDependencyDuplicatesCheck(),
 
     // Version Checks
     new SupportPackageVersionCheck(),

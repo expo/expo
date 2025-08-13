@@ -4,7 +4,8 @@ import Constants from 'expo-constants';
 import React, { Children, isValidElement } from 'react';
 
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
-import { LinkMenu, LinkPreview, LinkWithPreview } from './LinkWithPreview';
+import { LinkWithPreview } from './LinkWithPreview';
+import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { LinkProps } from './useLinkHooks';
 
@@ -31,6 +32,6 @@ export function ExpoLink(props: LinkProps) {
 
 function isLinkWithPreview(props: LinkProps): boolean {
   return Children.toArray(props.children).some(
-    (child) => isValidElement(child) && child.type === LinkPreview
+    (child) => isValidElement(child) && (child.type === LinkPreview || child.type === LinkMenu)
   );
 }

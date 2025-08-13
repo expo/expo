@@ -5,7 +5,7 @@ import { Button, Platform, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
-import { renderRouter, screen } from '../../testing-library';
+import { renderRouter, screen, waitFor } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
 import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';
@@ -25,17 +25,9 @@ jest.mock('../preview/native', () => {
   const handlerMap: Record<string, Function | undefined> = {};
   return {
     NativeLinkPreview: jest.fn(
-      ({
-        children,
-        onWillPreviewOpen,
-        onPreviewTapped,
-        onDidPreviewOpen,
-        onActionSelected,
-      }: NativeLinkPreviewProps) => {
+      ({ children, onWillPreviewOpen, onPreviewTapped }: NativeLinkPreviewProps) => {
         handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen();
         handlerMap['link-onPreviewTapped'] = onPreviewTapped;
-        handlerMap['link-onDidPreviewOpen'] = onDidPreviewOpen;
-        handlerMap['link-onActionSelected'] = onActionSelected;
         return <View testID="link-preview-native-view">{children}</View>;
       }
     ),
@@ -45,8 +37,10 @@ jest.mock('../preview/native', () => {
     NativeLinkPreviewTrigger: jest.fn(({ children }: NativeLinkPreviewTriggerProps) => (
       <View testID="link-preview-native-trigger-view" children={children} />
     )),
-    NativeLinkPreviewAction: jest.fn(({ children }: NativeLinkPreviewActionProps) => (
-      <View testID="link-preview-native-action-view">{children}</View>
+    NativeLinkPreviewAction: jest.fn(({ children, onSelected }: NativeLinkPreviewActionProps) => (
+      <View testID="link-preview-native-action-view" onPress={onSelected}>
+        {children}
+      </View>
     )),
     __EVENTS__: handlerMap,
   };
@@ -282,7 +276,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -294,7 +288,7 @@ describe('singular', () => {
             index: 3,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -345,7 +339,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -357,7 +351,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -413,7 +407,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -425,7 +419,7 @@ test('can dynamically route using singular function', () => {
           index: 4,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -487,7 +481,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -499,7 +493,7 @@ test('can dynamically route using singular function', () => {
           index: 3,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -559,7 +553,7 @@ describe('prefetch', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -575,7 +569,98 @@ describe('prefetch', () => {
                 params: {},
               },
             ],
-            routeNames: ['index', 'test', '_sitemap', '+not-found'],
+            routeNames: ['index', 'test'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+
+  it('does not throw an exception when prefetching a protected route with guard false', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    // There was no state update, because prefetch of protected route didn't make any state changes, so we received the initial state
+    // This is stale state created by router
+    expect(screen).toHaveRouterState({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: true,
+    });
+  });
+
+  it('does not throw an exception when prefetching a protected route with guard true', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
+            ],
+            routeNames: ['test', 'index'],
             routes: [
               {
                 key: expect.any(String),
@@ -728,72 +813,18 @@ describe('Preview', () => {
       expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
       expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
       expect(NativeLinkPreviewAction.mock.calls[0][0]).toMatchObject({
-        id: 'undefined-0',
         title: '',
         children: [expect.any(Object), expect.any(Object)],
+        onSelected: expect.any(Function),
       });
       expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
-        id: 'undefined-0Test Item-0',
         title: 'Test Item',
-        children: [],
+        onSelected: expect.any(Function),
       });
       expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
-        id: 'undefined-0Second actions-1',
         title: 'Second actions',
-        children: [],
+        onSelected: expect.any(Function),
       });
-    });
-    it('when onActionSelected is called, correct press handler is called', () => {
-      const indexIos = require('../preview/native');
-      const NativeLinkPreviewAction = indexIos.NativeLinkPreviewAction;
-      const emitters = indexIos.__EVENTS__;
-      const action1OnPress = jest.fn();
-      const action2OnPress = jest.fn();
-      const emitOnActionSelected = (id: string) =>
-        (emitters['link-onActionSelected'] as NativeLinkPreviewProps['onActionSelected'])({
-          nativeEvent: { id },
-        });
-
-      renderRouter({
-        index: () => {
-          return (
-            <Link prefetch href="/test">
-              <Link.Preview />
-              <Link.Trigger>Trigger</Link.Trigger>
-              <Link.Menu>
-                <Link.MenuAction title="Action 1" onPress={action1OnPress} />
-                <Text>Text child</Text>
-                <Link.MenuAction title="Action 2" onPress={action2OnPress} />
-              </Link.Menu>
-            </Link>
-          );
-        },
-        test: () => <View testID="test-view" />,
-      });
-      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-      expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
-      expect(NativeLinkPreviewAction).toHaveBeenCalledTimes(3);
-      expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-        id: 'undefined-0',
-        title: '',
-        children: [expect.any(Object), expect.any(Object)],
-      });
-      expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
-        id: 'undefined-0Action 1-0',
-        title: 'Action 1',
-        children: [],
-      });
-      expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
-        id: 'undefined-0Action 2-1',
-        title: 'Action 2',
-        children: [],
-      });
-      act(() => emitOnActionSelected('undefined-0Action 1-0'));
-      expect(action1OnPress).toHaveBeenCalledTimes(1);
-      expect(action2OnPress).not.toHaveBeenCalled();
-      act(() => emitOnActionSelected('undefined-0Action 2-1'));
-      expect(action1OnPress).toHaveBeenCalledTimes(1);
-      expect(action2OnPress).toHaveBeenCalledTimes(1);
     });
     describe('multiple Link.Menus in single Link', () => {
       it('when there are multiple Link.Menus, only the first one is rendered', () => {
@@ -821,90 +852,28 @@ describe('Preview', () => {
         expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
         expect(NativeLinkPreviewAction).toHaveBeenCalledTimes(3);
         expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-          id: 'undefined-0',
           title: '',
           children: [expect.any(Object), expect.any(Object)],
+          onSelected: expect.any(Function),
         });
         expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
-          id: 'undefined-0Menu-1-1-0',
           title: 'Menu-1-1',
-          children: [],
+          onSelected: expect.any(Function),
         });
         expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
-          id: 'undefined-0Menu-1-2-1',
           title: 'Menu-1-2',
-          children: [],
+          onSelected: expect.any(Function),
         });
-      });
-      it('when onActionSelected is called, correct press handler is called', () => {
-        const indexIos = require('../preview/native');
-        const NativeLinkPreviewAction = indexIos.NativeLinkPreviewAction;
-        const emitters = indexIos.__EVENTS__;
-        const action1OnPress = jest.fn();
-        const action2OnPress = jest.fn();
-        const emitOnActionSelected = (id: string) =>
-          (emitters['link-onActionSelected'] as NativeLinkPreviewProps['onActionSelected'])({
-            nativeEvent: { id },
-          });
-
-        renderRouter({
-          index: () => {
-            return (
-              <View>
-                <Link prefetch href="/test">
-                  <Link.Preview />
-                  <Link.Trigger>Trigger</Link.Trigger>
-                  <Link.Menu>
-                    <Link.MenuAction title="Action 1" onPress={action1OnPress} />
-                    <Link.MenuAction title="Action 2" onPress={action2OnPress} />
-                  </Link.Menu>
-                  <Link.Menu>
-                    <Link.MenuAction title="Action 3" onPress={action1OnPress} />
-                    <Link.MenuAction title="Action 4" onPress={action2OnPress} />
-                  </Link.Menu>
-                </Link>
-              </View>
-            );
-          },
-          test: () => <View testID="test-view" />,
-        });
-        expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
-        expect(NativeLinkPreviewAction).toHaveBeenCalledTimes(3);
-        expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-          id: 'undefined-0',
-          title: '',
-          children: [expect.any(Object), expect.any(Object)],
-        });
-        expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
-          id: 'undefined-0Action 1-0',
-          title: 'Action 1',
-          children: [],
-        });
-        expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
-          id: 'undefined-0Action 2-1',
-          title: 'Action 2',
-          children: [],
-        });
-        act(() => emitOnActionSelected('undefined-0Action 1-0'));
-        expect(action1OnPress).toHaveBeenCalledTimes(1);
-        expect(action2OnPress).not.toHaveBeenCalled();
-        act(() => emitOnActionSelected('undefined-0Action 2-1'));
-        expect(action1OnPress).toHaveBeenCalledTimes(1);
-        expect(action2OnPress).toHaveBeenCalledTimes(1);
       });
     });
     describe('nested Link.Menus', () => {
       it('correctly creates nested menu actions', () => {
         const indexIos = require('../preview/native');
         const NativeLinkPreviewAction = indexIos.NativeLinkPreviewAction;
-        const emitters = indexIos.__EVENTS__;
-        const action1OnPress = jest.fn();
-        const action2OnPress = jest.fn();
-        const emitOnActionSelected = (id: string) =>
-          (emitters['link-onActionSelected'] as NativeLinkPreviewProps['onActionSelected'])({
-            nativeEvent: { id },
-          });
+
+        const action1OnPress = () => {};
+        const action2OnPress = () => {};
+
         renderRouter({
           index: () => {
             return (
@@ -929,36 +898,22 @@ describe('Preview', () => {
         expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(4);
 
         expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-          id: 'base menu-0',
           title: 'base menu',
           children: [expect.any(Object), expect.any(Object)],
+          onSelected: expect.any(Function),
         });
         expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
-          id: 'base menu-0Action 1-0',
           title: 'Action 1',
-          children: [],
+          onSelected: action1OnPress,
         });
         expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
-          id: 'base menu-0Nested Menu-1',
           title: 'Nested Menu',
           children: [expect.any(Object)],
         });
         expect(NativeLinkPreviewAction.mock.calls[3][0]).toMatchObject({
-          id: 'base menu-0Nested Menu-1Action 2-0',
           title: 'Action 2',
-          children: [],
+          onSelected: action2OnPress,
         });
-
-        act(() => emitOnActionSelected('base menu-0Action 1-0'));
-        expect(action1OnPress).toHaveBeenCalledTimes(1);
-        expect(action2OnPress).not.toHaveBeenCalled();
-        act(() => emitOnActionSelected('base menu-0Nested Menu-1Action 2-0'));
-        expect(action1OnPress).toHaveBeenCalledTimes(1);
-        expect(action2OnPress).toHaveBeenCalledTimes(1);
-        act(() => emitOnActionSelected('base menu-0'));
-        act(() => emitOnActionSelected('base menu-0Nested Menu-1'));
-        expect(action1OnPress).toHaveBeenCalledTimes(1);
-        expect(action2OnPress).toHaveBeenCalledTimes(1);
       });
     });
   });
@@ -1089,7 +1044,7 @@ describe('Preview', () => {
     };
   });
   describe('multiple preloaded paths with the same name', () => {
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1123,15 +1078,12 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByTestId('index')));
       act(() => fireEvent.press(screen.getByText('Preload A and C')));
       act(() => emitters['link-onWillPreviewOpen']());
-      act(() => emitters['link-onDidPreviewOpen']());
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen and onDidPreviewOpen
-      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
-      expect(
-        NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB-\w+/);
+      // Initial render, onWillPreviewOpen, setTimeout from prefetch
+      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
+      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
     });
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1169,14 +1121,13 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByTestId('index')));
       act(() => fireEvent.press(screen.getByText('Preload Other Routes')));
       act(() => emitters['link-onWillPreviewOpen']());
-      act(() => emitters['link-onDidPreviewOpen']());
 
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen and onDidPreviewOpen
-      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
+      // Initial render, onWillPreviewOpen, setTimeout from prefetch
+      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(
         NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB\/\[xyz\]-\w+/);
+      ).toMatch(/slotB\/\[xyz\]-[-\w]+/);
     });
   });
 });
