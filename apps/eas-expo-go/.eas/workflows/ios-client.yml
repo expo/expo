@@ -34,9 +34,9 @@ jobs:
       - uses: eas/checkout
       - name: checkout the react-native submodule
         run: |
-            echo 'pwd:' $(pwd)
-            git config --global url."https://github.com/".insteadOf "git@github.com:" # to avoid SSH issues
-            git submodule update --init --recursive
+          echo 'pwd:' $(pwd)
+          git config --global url."https://github.com/".insteadOf "git@github.com:" # to avoid SSH issues
+          git submodule update --init --recursive
   build:
     needs: [prepare]
     name: iOS Client Build
@@ -46,13 +46,11 @@ jobs:
     params:
       platform: ios
       profile: unversioned-client
-      message: ${{ github.commit_message }}
-
 #  send_slack_notification:
 #    type: slack
 #    params:
 #      webhook_url: string # required
-#      message: string # required if payload is not provided
+#      message: string # required if payload is not provided ${{ github.commit_message }}
 #      payload: object # required if message is not provided
 
 #  notify_failure:

@@ -29,7 +29,7 @@ const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
     slug: 'unversioned-expo-go',
     name: 'Expo Go (unversioned)',
     ios: {
-      bundleIdentifier: 'host.exp.Exponent',
+      bundleIdentifier: 'ignored-but-required',
     },
     extra: {
       eas: {

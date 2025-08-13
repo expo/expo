@@ -56,13 +56,8 @@
     "unversioned-client": {
       "extends": "base",
       "env": {
-        "EAS_BUILD_PROFILE": "unversioned-client",
-		"EAS_BUILD_DISABLE_NPM_CACHE": "1",
-		"EAS_BUILD_DISABLE_COCOAPODS_CACHE": "1"
+        "EAS_BUILD_PROFILE": "unversioned-client"
       },
-	  "cache": {
-		"disabled": true
-	  },
       "android": {
         "gradleCommand": ":app:assembleMobileDebug",
         "withoutCredentials": true
@@ -70,7 +65,10 @@
       "ios": {
         "scheme": "Expo Go",
         "simulator": true,
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+				"cache": {
+					"disabled": true
+				}
       }
     },
     "release-client": {
