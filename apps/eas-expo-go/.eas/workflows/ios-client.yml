@@ -31,13 +31,17 @@ concurrency:
 jobs:
   prepare:
     steps:
-      - uses: eas/checkout
-      - name: checkout the react-native submodule
+#      - uses: eas/checkout
+      - name: pwd
         run: |
           echo 'pwd:' $(pwd)
-          git config --global url."https://github.com/".insteadOf "git@github.com:" # to avoid SSH issues
-          git submodule update --init --recursive
-  build:
+
+#      - name: checkout the react-native submodule
+#        run: |
+#          echo 'pwd:' $(pwd)
+#          git config --global url."https://github.com/".insteadOf "git@github.com:" # to avoid SSH issues
+#          git submodule update --init --recursive
+  build-ios:
     needs: [prepare]
     name: iOS Client Build
     type: build
@@ -45,6 +49,15 @@ jobs:
       EAS_BUILD_PROFILE: unversioned-client
     params:
       platform: ios
+      profile: unversioned-client
+  build-android:
+    needs: [prepare]
+    name: Android Client Build
+    type: build
+    env:
+      EAS_BUILD_PROFILE: unversioned-client
+    params:
+      platform: android
       profile: unversioned-client
 #  send_slack_notification:
 #    type: slack
