@@ -57,6 +57,7 @@
 
 ### 💡 Others
 
+- Clean up sitemap and add static hermes info. ([#38494](https://github.com/expo/expo/pull/38494) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix web modal code being imported on native. ([#38553](https://github.com/expo/expo/pull/38553) by [@EvanBacon](https://github.com/EvanBacon))
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
 - Add formsheet warning ([#37982](https://github.com/expo/expo/pull/37982) by [@Ubax](https://github.com/Ubax))
