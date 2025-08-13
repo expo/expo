@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Define default `@babel/runtime` minimum version as `^7.20.0` by default ([#38790](https://github.com/expo/expo/pull/38790) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Upgrade react-compiler to `19.1.0-rc.2`. ([#38309](https://github.com/expo/expo/pull/38309) by [@EvanBacon](https://github.com/EvanBacon))
