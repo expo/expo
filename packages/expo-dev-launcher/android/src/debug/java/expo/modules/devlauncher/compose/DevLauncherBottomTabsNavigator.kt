@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,7 +26,7 @@ import expo.modules.devlauncher.compose.routes.UpdatesRoute
 import expo.modules.devlauncher.compose.ui.BottomTabBar
 import expo.modules.devlauncher.compose.ui.Full
 import expo.modules.devlauncher.compose.ui.rememberBottomSheetState
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -35,7 +36,8 @@ fun DefaultScreenContainer(
   Box(
     modifier = Modifier
       .fillMaxSize()
-      .background(Theme.colors.background.secondary)
+      .background(NewAppTheme.colors.background.default)
+      .statusBarsPadding()
   ) {
     content()
   }
