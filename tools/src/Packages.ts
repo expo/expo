@@ -207,6 +207,10 @@ export class Package {
     return !!this.expoModuleConfig;
   }
 
+  isTemplate() {
+    return !!this.path.startsWith(TEMPLATES_DIR);
+  }
+
   containsPodspecFile() {
     return [
       ...fs.readdirSync(this.path),
