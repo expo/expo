@@ -123,7 +123,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
 
       let parameters = UIPreviewParameters()
       parameters.backgroundColor = .clear
-      parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: 10)
+        parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: trigger.triggerBorderRadius)
 
       return UITargetedPreview(view: trigger, parameters: parameters, target: target)
     }
