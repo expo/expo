@@ -51,8 +51,8 @@ export async function generateAssertion(keyId: string, challenge: string) {
 
 /**
  * Prepares the integrity token provider for the given cloud project number.
- * @param cloudProjectNumber - The cloud project number.
- * @return A `Promise` that is fulfilled if the integrity token provider is prepared successfully.
+ * @param cloudProjectNumber The cloud project number.
+ * @return A Promise that is fulfilled if the integrity token provider is prepared successfully.
  * @platform android
  */
 export async function prepareIntegrityTokenProvider(cloudProjectNumber: string) {
