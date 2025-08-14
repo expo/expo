@@ -70,6 +70,22 @@ public struct DevLauncherRootView: View {
 struct RecentlyOpenedAppRow: View {
   let app: RecentlyOpenedApp
   let onTap: () -> Void
+  @EnvironmentObject var viewModel: DevLauncherViewModel
+
+  private var isServerActive: Bool {
+    guard let url = URL(string: app.url),
+    let port = url.port else {
+      return false
+    }
+
+    return viewModel.devServers.contains { server in
+      guard let serverURL = URL(string: server.url),
+        let serverPort = serverURL.port else {
+        return false
+      }
+      return serverPort == port
+    }
+  }
 
   var body: some View {
     Button {
@@ -77,7 +93,7 @@ struct RecentlyOpenedAppRow: View {
     } label: {
       HStack(alignment: .center) {
         Circle()
-          .fill(Color.green)
+          .fill(isServerActive ? Color.green : Color.gray)
           .frame(width: 12, height: 12)
         VStack(alignment: .leading) {
           Text(app.name)
