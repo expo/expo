@@ -31,13 +31,20 @@ public final class FileSystemModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystem")
 
-    Constants {
-      return [
-        "documentDirectory": documentDirectory?.absoluteString,
-        "cacheDirectory": cacheDirectory?.absoluteString,
-        "bundleDirectory": Bundle.main.bundlePath,
-        "appleSharedContainers": getAppleSharedContainers()
-      ]
+    Constant("documentDirectory") {
+      return documentDirectory?.absoluteString
+    }
+
+    Constant("cacheDirectory") {
+      return cacheDirectory?.absoluteString
+    }
+
+    Constant("bundleDirectory") {
+      return Bundle.main.bundlePath
+    }
+
+    Constant("appleSharedContainers") {
+      return getAppleSharedContainers()
     }
 
     Property("totalDiskSpace") {
