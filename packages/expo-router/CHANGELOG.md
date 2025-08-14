@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add web tabs ([#38435](https://github.com/expo/expo/pull/38435) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - [iOS] Suppress native link preview for Apple TV. ([#38814](https://github.com/expo/expo/pull/38814) by [@douglowder](https://github.com/douglowder))
