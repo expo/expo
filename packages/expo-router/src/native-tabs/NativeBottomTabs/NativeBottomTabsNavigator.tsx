@@ -65,6 +65,4 @@ export const NativeTabsNavigatorWithContext = withLayoutContext<
   typeof NativeTabsNavigator,
   NavigationState,
   EventMapBase
->(createNativeTabNavigator().Navigator, (screens) => {
-  return screens;
-});
+>(createNativeTabNavigator().Navigator, undefined, true);
