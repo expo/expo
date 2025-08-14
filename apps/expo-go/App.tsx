@@ -27,6 +27,7 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* @ts-expect-error - TODO(cedric): upgrade Redux, we are still using Redux v4 in this app which was built around React 17 time */}
       <ReduxProvider store={Store}>
         <ApolloProvider client={ApolloClient}>
           <InitialDataProvider>
