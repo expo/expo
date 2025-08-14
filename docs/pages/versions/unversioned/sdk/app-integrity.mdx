@@ -110,7 +110,7 @@ const keyId = await AppIntegrity.generateKey();
 
 On success, the method returns a key identifier (`keyId`) that you use later to access the key. Record the identifier in persistent storage because there's no way to use the key without the identifier and no way to get the identifier later. The device automatically stores the associated private key in the Secure Enclave, from where the App Attest service can use it to create signatures, but from where no process can ever directly read or modify it, ensuring its security.
 
-> **info** If you create a key pair in an App Clip, use the same key pair in the corresponding app. To support this, be sure to store the identifier in a shared container accessible from your full app.
+> **info** If you create a key pair in an App Clip, use the same key pair in the corresponding app. To support this, be sure to store the identifier in a shared container accessible from your full app. See Expo’s guide on sharing a database between apps/extensions using [expo-sqlite](https://docs.expo.dev/versions/latest/sdk/sqlite/#sharing-a-database-between-appsextensions-ios), or use React Native MMKV's [App Groups / extensions](https://github.com/mrousavy/react-native-mmkv?tab=readme-ov-file#app-groups-or-extensions) shared storage to persist the identifier across both targets.
 
 Don't reuse a key among multiple users on a device because this weakens security protections. In particular, it becomes hard to detect an attack that uses a single compromised device to serve multiple remote users running a compromised version of your app. For more information, see [Assessing fraud risk](https://developer.apple.com/documentation/devicecheck/assessing-fraud-risk).
 
