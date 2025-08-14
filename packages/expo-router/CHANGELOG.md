@@ -12,9 +12,12 @@
 
 - [iOS] Suppress native link preview for Apple TV. ([#38814](https://github.com/expo/expo/pull/38814) by [@douglowder](https://github.com/douglowder))
 - fix navigation to hidden tabs ([#38829](https://github.com/expo/expo/pull/38829) by [@Ubax](https://github.com/Ubax))
-- Fix useFocusEffect being called twice when tapping a tab or going back in a stack.
+- add missing fields and checks to tabs API ([#38845](https://github.com/expo/expo/pull/38845) by [@Ubax](https://github.com/Ubax))
+- Fix useFocusEffect being called twice when tapping a tab or going back in a stack. ([#38856](https://github.com/expo/expo/pull/38856) by [@desii101](https://github.com/desii101))
 
 ### 💡 Others
+
+- remove global enableFreeze(false) ([#38837](https://github.com/expo/expo/pull/38837) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.0-beta.0 — 2025-08-13
 
