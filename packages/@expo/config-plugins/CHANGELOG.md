@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add `locales` support for `Localizable.strings`.
+- [iOS] Add `locales` support for `Localizable.strings`. ([#38843](https://github.com/expo/expo/pull/38843) by [@desii101](https://github.com/desii101))
 
 ### 🐛 Bug fixes
 
