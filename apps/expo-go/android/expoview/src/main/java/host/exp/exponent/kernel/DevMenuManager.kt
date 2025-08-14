@@ -26,6 +26,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import java.util.*
 import javax.inject.Inject
@@ -43,6 +45,7 @@ class DevMenuManager {
   private var reactSurface: ReactSurface? = null
   private var orientationBeforeShowingDevMenu: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
   private val devMenuModulesRegistry = WeakHashMap<ExperienceActivity, DevMenuModuleInterface>()
+  private val devMenuMutex = Mutex()
 
   private val managerScope = CoroutineScope(Dispatchers.Main)
 
@@ -135,10 +138,14 @@ class DevMenuManager {
    * Toggles dev menu visibility in given experience activity.
    */
   fun toggleInActivity(activity: ExperienceActivity) {
-    if (isDevMenuVisible() && reactSurface != null && activity.hasReactView(reactSurface?.view!!)) {
-      requestToClose(activity)
-    } else {
-      showInActivity(activity)
+    managerScope.launch {
+      devMenuMutex.withLock {
+        if (isDevMenuVisible()) {
+          requestToClose(activity)
+        } else {
+          showInActivity(activity)
+        }
+      }
     }
   }
 
@@ -297,12 +304,16 @@ class DevMenuManager {
   }
 
   /**
-   * If this is the first time when we're going to show the dev menu, it creates a new react root view
-   * that will render the other endpoint of home app whose name is described by [DEV_MENU_JS_MODULE_NAME] constant.
+   * Creates or reuses a react surface for the dev menu.
+   * The surface renders the endpoint described by [DEV_MENU_JS_MODULE_NAME] constant.
    * Also sets initialProps, layout settings and initial animation values.
    */
   @Throws(Exception::class)
   private fun prepareSurface(initialProps: Bundle): ReactSurface {
+    reactSurface?.let {
+      return it
+    }
+
     val surface = ReactSurfaceImpl.createWithView(kernel.applicationContext, DEV_MENU_JS_MODULE_NAME, initialProps)
     val reactHost = kernel.reactHost as? ReactHostImpl
     reactHost?.let {
@@ -349,8 +360,8 @@ class DevMenuManager {
   private fun onShakeGesture() {
     val currentActivity = ExperienceActivity.currentActivity
 
-    if (currentActivity != null) {
-      toggleInActivity(currentActivity)
+    currentActivity?.let {
+      toggleInActivity(it)
     }
   }
 

@@ -216,6 +216,12 @@ const stackRouterOverride = (original) => {
                     // END FORK
                 }
                 case 'PRELOAD': {
+                    // START FORK
+                    // This will be the case for example for protected route
+                    if (!state.routeNames.includes(action.payload.name)) {
+                        return null;
+                    }
+                    // END FORK
                     const getId = options.routeGetIdList[action.payload.name];
                     const id = getId?.({ params: action.payload.params });
                     let route;

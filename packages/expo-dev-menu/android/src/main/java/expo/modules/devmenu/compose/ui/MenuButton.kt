@@ -1,8 +1,13 @@
 package expo.modules.devmenu.compose.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -10,10 +15,55 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composeunstyled.Button
 import expo.modules.devmenu.R
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.DayNighIcon
+import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.RowLayout
+import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
+
+typealias NewMenuButtonComposable = (@Composable () -> Unit)
+
+@Composable
+fun NewMenuButton(
+  modifier: Modifier = Modifier,
+  icon: NewMenuButtonComposable? = null,
+  content: NewMenuButtonComposable? = null,
+  rightComponent: NewMenuButtonComposable? = null,
+  withSurface: Boolean = true,
+  onClick: () -> Unit = {}
+) {
+  val contentComponent = @Composable {
+    Button(onClick = onClick) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+        modifier = Modifier
+          .background(NewAppTheme.colors.background.subtle)
+          .padding(NewAppTheme.spacing.`3`)
+      ) {
+        icon?.invoke()
+        content?.invoke()
+        Spacer(modifier = Modifier.weight(1f))
+        rightComponent?.invoke()
+      }
+    }
+  }
+
+  if (withSurface) {
+    RoundedSurface(
+      borderRadius = NewAppTheme.borderRadius.xl,
+      modifier = modifier
+    ) {
+      contentComponent()
+    }
+  } else {
+    Box(modifier = modifier) {
+      contentComponent()
+    }
+  }
+}
 
 @Composable
 fun MenuButton(

@@ -769,6 +769,7 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "android:allowBackup": "true",
+                  "android:enableOnBackInvokedCallback": "false",
                   "android:icon": "@mipmap/ic_launcher",
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
@@ -1722,6 +1723,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "android:allowBackup": "true",
+                  "android:enableOnBackInvokedCallback": "false",
                   "android:icon": "@mipmap/ic_launcher",
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",

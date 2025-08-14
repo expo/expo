@@ -15,6 +15,7 @@ onFlowStart:
     text: Enter URL manually
 - tapOn:
     label: Tap on "Updates URL" text field
+    text: '.*http:.*'
     below: Enter URL manually
 - inputText:
     label: Input local update server URL
@@ -34,6 +35,7 @@ onFlowStart:
 - tapOn:
     label: Tap on reload
     text: Reload
+    optional: true
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

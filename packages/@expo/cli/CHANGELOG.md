@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.25.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
 - Remove flipper hack support ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
 - Use template tarball from expo package. ([#37334](https://github.com/expo/expo/pull/37334) by [@jakex7](https://github.com/jakex7))
 - CLI returns non-zero return code on Abort and Silent Errors ([#38365](https://github.com/expo/expo/pull/38365) by [@krystofwoldrich](https://github.com/krystofwoldrich))

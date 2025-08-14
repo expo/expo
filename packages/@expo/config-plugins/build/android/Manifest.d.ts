@@ -73,6 +73,7 @@ type ManifestApplicationAttributes = {
     'android:requestLegacyExternalStorage'?: StringBoolean;
     'android:supportsPictureInPicture'?: StringBoolean;
     'android:usesCleartextTraffic'?: StringBoolean;
+    'android:enableOnBackInvokedCallback'?: StringBoolean;
     [key: string]: string | undefined;
 };
 export type ManifestActivity = {

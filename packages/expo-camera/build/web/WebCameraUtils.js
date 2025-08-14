@@ -287,6 +287,7 @@ function convertNormalizedSetting(range, value) {
     if (!value) {
         return;
     }
+    // TODO(@kitten): Handle undefined values / normalize explicitly
     // convert the normalized incoming setting to the native camera zoom range
     const converted = convertRange(value, [range.min, range.max]);
     // clamp value so we don't get an error

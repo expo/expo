@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import { Ref } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 
 /**
  * @hidden Not used anywhere yet.
@@ -83,6 +83,9 @@ export type TextInputProps = {
    * @platform android
    */
   autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
+
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<
@@ -105,6 +108,8 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

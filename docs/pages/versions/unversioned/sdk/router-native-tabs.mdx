@@ -1,0 +1,65 @@
+---
+title: Router native tabs
+description: An Expo Router submodule that provides native tabs layout.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-router'
+packageName: 'expo-router'
+platforms: ['android', 'ios', 'tvos', 'web']
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import APISection from '~/components/plugins/APISection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ConfigPluginExample } from '~/ui/components/ConfigSection';
+
+> **important** Native tabs are an experimental feature available in SDK 54 and above, and their API is subject to change.
+
+`expo-router/unstable-native-tabs` is a submodule of `expo-router` and exports components to build tab layouts using platform-native system tabs.
+
+> See the [Expo Router](./router) reference for more information about the file-based routing library for native and web app.
+
+## Installation
+
+To use `expo-router/unstable-native-tabs` in your project, you need to install `expo-router` in your project. Follow the instructions from Expo Router's installation guide:
+
+<BoxLink
+  title="Install Expo Router"
+  description="Learn how to install Expo Router in your project."
+  href="/router/installation/"
+  Icon={BookOpen02Icon}
+/>
+
+## Configuration in app config
+
+If you are using the [default](/more/create-expo/#--template) template to create a new project, `expo-router`'s [config plugin](/config-plugins/introduction/) is already configured in your app config.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-router"]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+## Usage
+
+To learn how to use native tabs, with Expo Router, read the native tabs guide:
+
+<BoxLink
+  title="Native tabs"
+  Icon={BookOpen02Icon}
+  href="/router/advanced/native-tabs/"
+  description="Learn how to use native tabs in your Expo Router app."
+/>
+
+## API
+
+```js
+import { NativeTabs, Icon, Label, Badge } from 'expo-router/unstable-native-tabs';
+```
+
+<APISection packageName="expo-router-native-tabs" apiName="Native tabs" />

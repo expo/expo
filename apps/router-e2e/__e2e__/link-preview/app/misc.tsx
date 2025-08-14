@@ -71,6 +71,11 @@ const HomeIndex = () => {
         <Link.Preview />
       </Link>
       <Spacer />
+      <Link href="/protected">
+        <Link.Trigger>/protected</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Spacer />
       {/* @ts-expect-error */}
       <Link href="/404">
         <Link.Trigger>Link.Preview: Unmatched Route</Link.Trigger>

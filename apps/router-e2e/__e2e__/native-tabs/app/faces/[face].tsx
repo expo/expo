@@ -26,9 +26,9 @@ export default function Index() {
 
 function heavyComputation() {
   // Simulate a heavy computation
-  // let x = 0;
-  // for (let i = 0; i < 1e8; i++) {
-  //   x += i / 10;
-  // }
-  // return x;
+  let x = 0;
+  for (let i = 0; i < 1e8; i++) {
+    x += i / 10;
+  }
+  return x;
 }

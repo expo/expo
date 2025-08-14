@@ -10,6 +10,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
@@ -94,16 +95,18 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       items.putBundle("dev-remote-debug", debuggerMap)
     }
 
-    if (devSettings != null && devSupportManager.devSupportEnabled) {
-      val label = if (devSettings.isFloatingActionButtonEnabled) {
-        getString(R.string.devmenu_hide_fab)
-      } else {
-        getString(R.string.devmenu_show_fab)
+    if (VRUtilities.isQuest()) {
+      if (devSettings != null && devSupportManager.devSupportEnabled) {
+        val label = if (devSettings.isFloatingActionButtonEnabled) {
+          getString(R.string.devmenu_hide_fab)
+        } else {
+          getString(R.string.devmenu_show_fab)
+        }
+        fabMap.putString("label", label)
+        fabMap.putBoolean("isEnabled", true)
       }
-      fabMap.putString("label", label)
-      fabMap.putBoolean("isEnabled", true)
+      items.putBundle("dev-fab", fabMap)
     }
-    items.putBundle("dev-fab", fabMap)
 
     if (devSettings != null && devSupportManager.devSupportEnabled && devSettings is DevInternalSettings) {
       hmrMap.putString("label", getString(if (devSettings.isHotModuleReplacementEnabled) R.string.devmenu_disable_fast_refresh else R.string.devmenu_enable_fast_refresh))

@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
+import { ExpoModifier } from '../../types';
+
 export type ProgressElementColors = {
   /**
    * Track color.
@@ -28,6 +30,8 @@ export type CircularProgressProps = {
    * @platform android
    */
   elementColors?: ProgressElementColors;
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 export type LinearProgressProps = {
@@ -48,6 +52,8 @@ export type LinearProgressProps = {
    * @platform android
    */
   elementColors?: ProgressElementColors;
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 type NativeProgressProps =
@@ -65,12 +71,24 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
  * Renders a `CircularProgress` component.
  */
 export function CircularProgress(props: CircularProgressProps) {
-  return <NativeProgressView {...props} variant="circular" />;
+  return (
+    <NativeProgressView
+      {...props} // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      variant="circular"
+    />
+  );
 }
 
 /**
  * Renders a `LinearProgress` component.
  */
 export function LinearProgress(props: LinearProgressProps) {
-  return <NativeProgressView {...props} variant="linear" />;
+  return (
+    <NativeProgressView
+      {...props} // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      variant="linear"
+    />
+  );
 }
