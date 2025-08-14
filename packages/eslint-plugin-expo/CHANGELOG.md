@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+- Allow accessing env vars with bracket notation.
 
 ## 1.0.0 — 2025-08-13
 

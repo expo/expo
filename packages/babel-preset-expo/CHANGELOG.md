@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support inlining environment variables with bracket notation.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
