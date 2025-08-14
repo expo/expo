@@ -6,7 +6,11 @@ public class LinkPreviewNativeModule: Module {
 
     View(NativeLinkPreviewView.self) {
       Prop("nextScreenId") { (view: NativeLinkPreviewView, nextScreenId: String) in
-        view.setNextScreenId(nextScreenId)
+        view.nextScreenId = nextScreenId
+      }
+
+      Prop("tabPath") { (view: NativeLinkPreviewView, tabPath: TabPathPayload) in
+        view.tabPath = tabPath
       }
 
       Events(
@@ -68,6 +72,21 @@ public class LinkPreviewNativeModule: Module {
       Events("onSelected")
     }
 
-    View(NativeLinkPreviewTrigger.self) {}
+    View(NativeLinkPreviewTrigger.self) {
+      Prop("borderRadius") { (view, borderRadius: Double?) in
+        if let borderRadius = borderRadius {
+          view.triggerBorderRadius = borderRadius
+        }
+      }
+    }
   }
+}
+
+struct TabPathPayload: Record {
+  @Field var path: [TabStatePath]
+}
+
+struct TabStatePath: Record {
+  @Field var oldTabKey: String
+  @Field var newTabKey: String
 }

@@ -37,9 +37,7 @@ function Item(item: ItemType) {
 }
 
 export default function FlastListScreen() {
-  return (
-    <FlashList data={DATA} renderItem={({ item }) => <Item {...item} />} estimatedItemSize={80} />
-  );
+  return <FlashList data={DATA} renderItem={({ item }) => <Item {...item} />} />;
 }
 
 const styles = StyleSheet.create({

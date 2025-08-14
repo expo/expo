@@ -20,6 +20,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+      - name: 🔨 Switch to Xcode 16.4
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby

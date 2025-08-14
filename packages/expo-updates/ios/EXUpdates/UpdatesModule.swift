@@ -146,6 +146,10 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       try AppController.sharedInstance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigOverride())
     }
 
+    Function("setUpdateRequestHeadersOverride") { (requestHeaders: [String: String]?) in
+      try AppController.sharedInstance.setUpdateRequestHeadersOverride(requestHeaders)
+    }
+
     AsyncFunction("showReloadScreen") { (options: ReloadScreenOptions?) in
 #if DEBUG
       if let reloadScreenManager = AppController.sharedInstance.reloadScreenManager {

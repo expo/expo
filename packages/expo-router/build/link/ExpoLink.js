@@ -42,6 +42,7 @@ const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importStar(require("react"));
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const LinkWithPreview_1 = require("./LinkWithPreview");
+const elements_1 = require("./elements");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
 function ExpoLink(props) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
@@ -53,12 +54,12 @@ function ExpoLink(props) {
     }
     let children = props.children;
     if (react_1.default.Children.count(props.children) > 1) {
-        const arrayChildren = react_1.default.Children.toArray(props.children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== LinkWithPreview_1.LinkPreview && child.type !== LinkWithPreview_1.LinkMenu));
+        const arrayChildren = react_1.default.Children.toArray(props.children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== elements_1.LinkPreview && child.type !== elements_1.LinkMenu));
         children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
     }
     return <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} children={children}/>;
 }
 function isLinkWithPreview(props) {
-    return react_1.Children.toArray(props.children).some((child) => (0, react_1.isValidElement)(child) && (child.type === LinkWithPreview_1.LinkPreview || child.type === LinkWithPreview_1.LinkMenu));
+    return react_1.Children.toArray(props.children).some((child) => (0, react_1.isValidElement)(child) && (child.type === elements_1.LinkPreview || child.type === elements_1.LinkMenu));
 }
 //# sourceMappingURL=ExpoLink.js.map

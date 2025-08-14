@@ -18,18 +18,20 @@ class BindingView(context: Context, lazyViewModel: Lazy<DevMenuViewModel>) : Lin
     addView(
       ComposeView(context).apply {
         setContent {
-          AppTheme {
-            DevMenuScreen(viewModel.state, viewModel::onAction)
-            MovableFloatingActionButton(
-              state = viewModel.state,
-              onRefreshPress = {
-                lazyViewModel.value.onAction(DevMenuAction.Reload)
-              },
-              onOpenMenuPress = {
-                // TODO: @behenate For some reason doing onAction(DevMenuAction.Open) only works after a first refresh / opening the menu for the first time
-                DevMenuManager.openMenu(context as Activity)
-              }
-            )
+          expo.modules.devmenu.compose.newtheme.AppTheme {
+            AppTheme {
+              DevMenuScreen(viewModel.state, viewModel::onAction)
+              MovableFloatingActionButton(
+                state = viewModel.state,
+                onRefreshPress = {
+                  lazyViewModel.value.onAction(DevMenuAction.Reload)
+                },
+                onOpenMenuPress = {
+                  // TODO: @behenate For some reason doing onAction(DevMenuAction.Open) only works after a first refresh / opening the menu for the first time
+                  DevMenuManager.openMenu(context as Activity)
+                }
+              )
+            }
           }
         }
       }

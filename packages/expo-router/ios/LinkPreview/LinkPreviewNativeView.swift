@@ -5,7 +5,16 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   private var trigger: NativeLinkPreviewTrigger?
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
-  private var nextScreenId: String?
+  var nextScreenId: String? {
+    didSet {
+      performUpdateOfPreloadedView()
+    }
+  }
+  var tabPath: TabPathPayload? {
+    didSet {
+      performUpdateOfPreloadedView()
+    }
+  }
   private var actions: [LinkPreviewNativeActionView] = []
 
   private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
@@ -30,9 +39,14 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
 
   // MARK: - Props
 
-  func setNextScreenId(_ screenId: String) {
-    self.nextScreenId = screenId
-    linkPreviewNativeNavigation.updatePreloadedView(screenId: screenId, responder: self)
+  func performUpdateOfPreloadedView() {
+    if nextScreenId == nil && tabPath?.path.isEmpty != false {
+      // If we have no tab to change and no screen to push, then we can't update the preloaded view
+      return
+    }
+    // However if one these is defined then we can perform the native update
+    linkPreviewNativeNavigation.updatePreloadedView(
+      screenId: nextScreenId, tabPath: tabPath, responder: self)
   }
 
   // MARK: - Children
@@ -110,7 +124,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
 
       let parameters = UIPreviewParameters()
       parameters.backgroundColor = .clear
-      parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: 10)
+        parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: trigger.triggerBorderRadius)
 
       return UITargetedPreview(view: trigger, parameters: parameters, target: target)
     }

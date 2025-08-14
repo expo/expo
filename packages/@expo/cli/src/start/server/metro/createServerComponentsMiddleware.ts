@@ -6,7 +6,7 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
+import { getRscMiddleware } from '@expo/server/private';
 import assert from 'assert';
 import type { EntriesDev } from 'expo-router/build/rsc/server';
 import path from 'path';

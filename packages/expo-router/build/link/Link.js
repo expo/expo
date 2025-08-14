@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Redirect = exports.Link = void 0;
 const ExpoLink_1 = require("./ExpoLink");
-const LinkWithPreview_1 = require("./LinkWithPreview");
+const elements_1 = require("./elements");
 const href_1 = require("./href");
 exports.Link = Object.assign(
 /**
@@ -36,75 +36,10 @@ function Link(props) {
     return <ExpoLink_1.ExpoLink {...props}/>;
 }, {
     resolveHref: href_1.resolveHref,
-    /**
-     * A component used to group context menu actions for a link.
-     *
-     * If multiple `Link.Menu` components are used within a single `Link`, only the first one will be rendered.
-     * Only `Link.MenuAction` components are allowed as children of `Link.Menu`.
-     *
-     * @example
-     * ```tsx
-     * <Link.Menu>
-     *   <Link.MenuAction title="Action 1" onPress={()=>{}} />
-     *   <Link.MenuAction title="Action 2" onPress={()=>{}} />
-     * </Link.Menu>
-     * ```
-     *
-     * @platform ios
-     */
-    Menu: LinkWithPreview_1.LinkMenu,
-    /**
-     * A component used as a link trigger. The content of this component will be rendered in the base link.
-     *
-     * If multiple `Link.Trigger` components are used within a single `Link`, only the first one will be rendered.
-     *
-     * @example
-     * ```tsx
-     * <Link href="/about">
-     *   <Link.Trigger>
-     *     Trigger
-     *   </Link.Trigger>
-     * </Link>
-     * ```
-     *
-     * @platform ios
-     */
-    Trigger: LinkWithPreview_1.LinkTrigger,
-    /**
-     * A component used to render and customize the link preview.
-     *
-     * If `Link.Preview` is used without any props, it will render a preview of the `href` passed to the `Link`.
-     *
-     * If multiple `Link.Preview` components are used within a single `Link`, only the first one will be rendered.
-     *
-     * To customize the preview, you can pass custom content as children.
-     *
-     * @example
-     * ```tsx
-     * <Link href="/about">
-     *   <Link.Preview>
-     *     <Text>Custom Preview Content</Text>
-     *   </Link.Trigger>
-     * </Link>
-     * ```
-     *
-     * @example
-     * ```tsx
-     * <Link href="/about">
-     *   <Link.Preview />
-     * </Link>
-     * ```
-     *
-     * @platform ios
-     */
-    Preview: LinkWithPreview_1.LinkPreview,
-    /**
-     * A component used to render a context menu action for a link.
-     * This component should only be used as a child of `Link.Menu`.
-     *
-     * @platform ios
-     */
-    MenuAction: LinkWithPreview_1.LinkMenuAction,
+    Menu: elements_1.LinkMenu,
+    Trigger: elements_1.LinkTrigger,
+    Preview: elements_1.LinkPreview,
+    MenuAction: elements_1.LinkMenuAction,
 });
 var Redirect_1 = require("./Redirect");
 Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Redirect_1.Redirect; } });

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] added `useApplicationAudioSession` option ([#37487](https://github.com/expo/expo/pull/37487) by [@vonovak](https://github.com/vonovak))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 14.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [iOS] added `useApplicationAudioSession` option ([#37487](https://github.com/expo/expo/pull/37487) by [@vonovak](https://github.com/vonovak))
 
 ## 13.1.7 — 2025-05-06
 

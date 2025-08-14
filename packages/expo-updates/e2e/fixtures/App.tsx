@@ -124,6 +124,16 @@ export default function App() {
     });
   });
 
+  const handleToggleUpdateRequestHeadersOverride = runBlockAsync(async () => {
+    if (currentlyRunning.channel !== 'preview') {
+      Updates.setUpdateRequestHeadersOverride({
+        'expo-channel-name': 'preview',
+      });
+    } else {
+      Updates.setUpdateRequestHeadersOverride(null);
+    }
+  });
+
   const handleReadAssetFiles = runBlockAsync(async () => {
     const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
@@ -218,6 +228,7 @@ export default function App() {
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
       <TestValue testID="isReloading" value={`${isReloading}`} />
       <TestValue testID="startTime" value={`${startTime}`} />
+      <TestValue testID="channel" value={`${currentlyRunning.channel}`} />
 
       <TestValue
         testID="wasIsStartupProcedureRunningEverTrue"
@@ -285,6 +296,10 @@ export default function App() {
           <TestButton
             testID="setUpdateURLAndRequestHeadersOverride"
             onPress={handleSetUpdateURLAndRequestHeadersOverride}
+          />
+          <TestButton
+            testID="toggleUpdateRequestHeadersOverride"
+            onPress={handleToggleUpdateRequestHeadersOverride}
           />
         </View>
       </View>

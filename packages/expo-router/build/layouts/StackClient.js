@@ -8,7 +8,6 @@ const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
 const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
-const ModalStack_web_1 = require("../modal/web/ModalStack.web");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
@@ -21,7 +20,12 @@ function isStackAction(action) {
         action.type === 'REPLACE' ||
         action.type === 'PRELOAD');
 }
-const isPreviewAction = (action) => !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
+const isPreviewAction = (action) => !!action.payload &&
+    'params' in action.payload &&
+    !!action.payload.params &&
+    typeof action.payload === 'object' &&
+    '__internal__expoRouterIsPreviewNavigation' in action.payload.params &&
+    !!action.payload.params.__internal__expoRouterIsPreviewNavigation;
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -212,6 +216,12 @@ const stackRouterOverride = (original) => {
                     // END FORK
                 }
                 case 'PRELOAD': {
+                    // START FORK
+                    // This will be the case for example for protected route
+                    if (!state.routeNames.includes(action.payload.name)) {
+                        return null;
+                    }
+                    // END FORK
                     const getId = options.routeGetIdList[action.payload.name];
                     const id = getId?.({ params: action.payload.params });
                     let route;
@@ -332,7 +342,6 @@ function filterSingular(state, getId) {
     };
 }
 const Stack = Object.assign((props) => {
-    const isWeb = process.env.EXPO_OS === 'web';
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptions = (0, react_1.useMemo)(() => {
         if (isStackAnimationDisabled) {
@@ -340,12 +349,7 @@ const Stack = Object.assign((props) => {
         }
         return props.screenOptions;
     }, [props.screenOptions, isStackAnimationDisabled]);
-    if (isWeb) {
-        return (<ModalStack_web_1.RouterModal {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
-    }
-    else {
-        return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
-    }
+    return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,

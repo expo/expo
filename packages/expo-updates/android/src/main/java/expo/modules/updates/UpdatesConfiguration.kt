@@ -210,12 +210,42 @@ data class UpdatesConfiguration(
       disableAntiBrickingMeasures: Boolean,
       configOverride: UpdatesConfigurationOverride?
     ): Map<String, String> {
-      if (disableAntiBrickingMeasures) {
-        configOverride?.let {
-          return it.requestHeaders
+      configOverride?.requestHeaders?.let {
+        if (isValidRequestHeadersOverride(context, overrideMap, it) || disableAntiBrickingMeasures) {
+          return it
+        } else {
+          Log.w(TAG, "Invalid update requestHeaders override, falling back to embedded requestHeaders - override requestHeaders: $it")
         }
       }
       return getOriginalEmbeddedRequestHeaders(context, overrideMap)
+    }
+
+    internal fun isValidRequestHeadersOverride(
+      originalEmbeddedRequestHeaders: Map<String, String>,
+      requestHeadersOverride: Map<String, String>?
+    ): Boolean {
+      val overrideHeaders = requestHeadersOverride ?: return true
+
+      val originalEmbeddedKeys = originalEmbeddedRequestHeaders
+        .keys
+        .map { it.lowercase().trim() }
+        .toSet()
+
+      // disallow `Host` override to prevent malicious request rewrite
+      val disallowHeaderKeys = setOf("host")
+
+      val overrideKeys = overrideHeaders.keys
+        .map { it.lowercase().trim() }
+
+      // ensure none are disallowed AND all are in the original set
+      return overrideKeys.none { it in disallowHeaderKeys } && overrideKeys.all { it in originalEmbeddedKeys }
+    }
+
+    private fun isValidRequestHeadersOverride(context: Context?, overrideMap: Map<String, Any>?, requestHeadersOverride: Map<String, String>?): Boolean {
+      return isValidRequestHeadersOverride(
+        getOriginalEmbeddedRequestHeaders(context, overrideMap),
+        requestHeadersOverride
+      )
     }
 
     private fun getOriginalEmbeddedRequestHeaders(context: Context?, overrideMap: Map<String, Any>?) =

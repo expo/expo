@@ -1,9 +1,10 @@
 'use client';
 
 import { requireNativeView } from 'expo';
-import { StyleSheet, type ViewProps } from 'react-native';
+import { Platform, StyleSheet, type ViewProps } from 'react-native';
 
-const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && global.RN$Bridgeless === true;
+const areNativeViewsAvailable =
+  process.env.EXPO_OS === 'ios' && !Platform.isTV && global.RN$Bridgeless === true;
 
 // #region Action View
 export interface NativeLinkPreviewActionProps {
@@ -52,8 +53,17 @@ export function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps) {
 // #endregion
 
 // #region Preview View
+export interface TabPath {
+  oldTabKey: string;
+  newTabKey: string;
+}
 export interface NativeLinkPreviewProps extends ViewProps {
   nextScreenId: string | undefined;
+  tabPath:
+    | {
+        path: TabPath[];
+      }
+    | undefined;
   onWillPreviewOpen?: () => void;
   onDidPreviewOpen?: () => void;
   onPreviewWillClose?: () => void;

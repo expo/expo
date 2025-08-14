@@ -33,12 +33,4 @@ export type PushTokenListener = (token: DevicePushToken) => void;
  * ```
  */
 export declare function addPushTokenListener(listener: PushTokenListener): EventSubscription;
-/**
- * @deprecated call `remove()` on the subscription object instead.
- *
- * Removes a push token subscription returned by an `addPushTokenListener` call.
- * @param subscription A subscription returned by `addPushTokenListener` method.
- * @header fetch
- */
-export declare function removePushTokenSubscription(subscription: EventSubscription): void;
 //# sourceMappingURL=TokenEmitter.d.ts.map

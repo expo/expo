@@ -111,7 +111,6 @@ export default function VideoFlatListScreen() {
           extraData={visibleIndex}
           decelerationRate={0.8}
           showsVerticalScrollIndicator={false}
-          estimatedItemSize={viewSize.height}
           drawDistance={viewSize.height * 2}
         />
       )}

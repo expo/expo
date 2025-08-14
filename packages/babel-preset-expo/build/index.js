@@ -11,6 +11,14 @@ const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
+// NOTE(@kitten): This shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
+// (the lowest version constraint we have).
+// TODO(@kitten): This is a hotfix! In theory, we should pass an absolute runtime path
+// and skip the internal resolution, which would mean we'd be able to guarantee a version here,
+// but for now, we don't
+// WARN: This does not reproduce in the expo/expo monorepo and we're not sure why. If you're changing this, run `expo export -p android` against this reproduction:
+// - https://github.com/kitten/expo-bug-nested-async-generator-function-repro
+const BABEL_RUNTIME_RANGE = '^7.20.0';
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
     return {
@@ -200,7 +208,10 @@ function babelPresetExpo(api, options = {}) {
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
                     // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-                    enableBabelRuntime: platformOptions.enableBabelRuntime,
+                    // Passed on unchanged in most cases, except when `true` where we pass `BABEL_RUNTIME_RANGE` to avoid the 7.0.0-beta.0 default
+                    enableBabelRuntime: platformOptions.enableBabelRuntime === true
+                        ? BABEL_RUNTIME_RANGE
+                        : platformOptions.enableBabelRuntime,
                     // This reduces the amount of transforms required, as Hermes supports many modern language features.
                     unstable_transformProfile: platformOptions.unstable_transformProfile,
                     // Set true to disable `@babel/plugin-transform-react-jsx` and

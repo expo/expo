@@ -66,3 +66,9 @@ internal final class DestinationAlreadyExistsException: Exception {
     "Destination already exists"
   }
 }
+
+internal final class MissingPermissionException: GenericException<String> {
+  override var reason: String {
+    "Missing permission for uri: \(param)"
+  }
+}
