@@ -45,35 +45,18 @@ function NativeTabsView(props) {
     const { builder, style, minimizeBehavior, disableIndicator, focusedIndex } = props;
     const { state, descriptors, navigation } = builder;
     const { routes } = state;
-    // This is flag that is set to true, when the transition is executed by native tab change
-    // In this case we don't need to change the isFocused of the screens, because the transition will happen on native side
-    const isDuringNativeTransition = (0, react_1.useRef)(false);
-    // This is the last index that was not part of a native transition, e.g navigation from link
-    const lastNotNativeTransitionIndex = (0, react_1.useRef)(focusedIndex);
-    // If the flag was set in the onNativeFocusChange handler, it will be still true here
-    // It is set to false, later in this function
-    // Thus if it is false, we know that the transition was not triggered by a native tab change
-    // and we need to reset the lastNotNativeTransitionIndex
-    if (!isDuringNativeTransition.current) {
-        lastNotNativeTransitionIndex.current = focusedIndex;
-    }
+    const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     const children = routes
         .map((route, index) => ({ route, index }))
         .filter(({ route: { key } }) => (0, utils_1.shouldTabBeVisible)(descriptors[key].options))
         .map(({ route, index }) => {
         const descriptor = descriptors[route.key];
-        // In case of native transition we want to keep the last focused index
-        // Otherwise the lastNotNativeTransitionIndex is set to focusedIndex in the if above this statement
-        const isFocused = index === focusedIndex;
-        // TODO: Find a proper fix, that allows for proper JS navigation
-        //lastNotNativeTransitionIndex.current;
+        const isFocused = index === deferredFocusedIndex;
         const title = descriptor.options.title ?? route.name;
         return (<react_native_screens_1.BottomTabsScreen key={route.key} {...descriptor.options} tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor} tabBarItemBadgeTextColor={style?.badgeTextColor} tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment} iconResourceName={descriptor.options.icon?.drawable} icon={convertOptionsIconToPropsIcon(descriptor.options.icon)} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={route.key} isFocused={isFocused}>
           {descriptor.render()}
         </react_native_screens_1.BottomTabsScreen>);
     });
-    // The native render is over, we can reset the flag
-    isDuringNativeTransition.current = false;
     return (<BottomTabsWrapper tabBarItemTitleFontColor={style?.color} tabBarItemTitleFontFamily={style?.fontFamily} tabBarItemTitleFontSize={style?.fontSize} 
     // Only string values are accepted by screens
     tabBarItemTitleFontWeight={style?.fontWeight
@@ -88,7 +71,6 @@ function NativeTabsView(props) {
                     name: route.name,
                 },
             });
-            isDuringNativeTransition.current = true;
         }}>
       {children}
     </BottomTabsWrapper>);
