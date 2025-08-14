@@ -30,14 +30,13 @@ concurrency:
 
 # note that there are also hooks in the `scripts` directory that run at different moments of the build process such as checking out the react-native submodule
 jobs:
-  build-ios:
-    # TODO vonovak: the original GH action ran conditionally https://github.com/expo/expo/pull/25607 - not able to express that with EAS Workflows as of 8/25
-    name: iOS Client Build
+  build-android:
+    name: Android Client Build
     type: build
     env:
       EAS_BUILD_PROFILE: unversioned-client
     params:
-      platform: ios
+      platform: android
       profile: unversioned-client
 # TODO vonovak: the following conditional probably isn't supported in workflows
 #  notify_failure:
