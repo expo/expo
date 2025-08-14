@@ -47,6 +47,7 @@
   "dependencies": {
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
+    "pretty-format": "^29.7.0",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
