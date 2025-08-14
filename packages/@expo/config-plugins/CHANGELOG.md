@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `locales` support for `Localizable.strings`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
