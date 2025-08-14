@@ -395,6 +395,14 @@ export interface PluginConfigTypeIos {
    * @deprecated Use `buildReactNativeFromSource` instead.
    */
   buildFromSource?: boolean;
+
+  /**
+   * The React Native release level to use for the project.
+   * This can be used to enable different sets of internal React Native feature flags.
+   *
+   * @default 'stable'
+   */
+  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 /**
@@ -750,6 +758,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
         },
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
+        reactNativeReleaseLevel: {
+          type: 'string',
+          enum: ['stable', 'canary', 'experimental'],
+          nullable: true,
+        },
       },
       nullable: true,
     },

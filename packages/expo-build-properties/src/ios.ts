@@ -1,9 +1,10 @@
 import {
-  IOSConfig,
   ConfigPlugin,
-  withXcodeProject,
-  XcodeProject,
+  IOSConfig,
   WarningAggregator,
+  XcodeProject,
+  withInfoPlist,
+  withXcodeProject,
 } from 'expo/config-plugins';
 
 import type { PluginConfigType } from './pluginConfig';
@@ -18,8 +19,8 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
         if (config.ios?.newArchEnabled !== undefined) {
           WarningAggregator.addWarningIOS(
             'withIosBuildProperties',
-            'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
-            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
+            'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.\n' +
+              'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
           );
         }
         return config.ios?.newArchEnabled?.toString();
@@ -70,6 +71,24 @@ export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, 
   config = withIosDeploymentTargetPodfile(config, props);
 
   return config;
+};
+
+export const withIosInfoPlist: ConfigPlugin<PluginConfigType> = (config, props) => {
+  const reactNativeReleaseLevel = props.ios?.reactNativeReleaseLevel;
+  if (reactNativeReleaseLevel) {
+    config = withIosReactNativeReleaseLevel(config, { reactNativeReleaseLevel });
+  }
+
+  return config;
+};
+
+const withIosReactNativeReleaseLevel: ConfigPlugin<{
+  reactNativeReleaseLevel: 'stable' | 'canary' | 'experimental';
+}> = (config, { reactNativeReleaseLevel }) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults['ReactNativeReleaseLevel'] = reactNativeReleaseLevel;
+    return config;
+  });
 };
 
 const withIosDeploymentTargetXcodeProject: ConfigPlugin<{ deploymentTarget: string }> = (
