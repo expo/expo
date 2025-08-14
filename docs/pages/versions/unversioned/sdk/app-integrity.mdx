@@ -10,10 +10,6 @@ isAlpha: true
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { Terminal } from '~/ui/components/Snippet';
-import { CODE } from '~/ui/components/Text';
-import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 `@expo/app-integrity` provides APIs to help ensure your backend resources are accessed only by legitimate installations of your app running on genuine devices. It uses Apple's [App Attest service](https://developer.apple.com/documentation/devicecheck/establishing-your-app-s-integrity) on iOS and Google's [Play Integrity APIs](https://developer.android.com/google/play/integrity) on Android to verify app authenticity, helping prevent unauthorized clients, modified apps, or automated scripts from making requests to your server.
 
@@ -54,15 +50,14 @@ if (AppIntegrity.isSupported) {
 
 > **Note** App Attest is not supported on simulator.
 
-> **important**  Most app extensions don’t support App Attest. Generally, when executing code in these extensions, bypass key generation and attestation, even if the `isSupported` method property is `true`. The only app extensions that support App Attest are watchOS extensions in watchOS 9 or later. For these extensions, you can use the results from `isSupported` to indicate whether your WatchKit extension bypasses attestation.
-
+> **important** Most app extensions don’t support App Attest. Generally, when executing code in these extensions, bypass key generation and attestation, even if the `isSupported` method property is `true`. The only app extensions that support App Attest are watchOS extensions in watchOS 9 or later. For these extensions, you can use the results from `isSupported` to indicate whether your WatchKit extension bypasses attestation.
 
 ### Create a key pair
 
 For each user account on each device running your app, generate a unique, hardware-based, cryptographic key pair by calling the `generateKey` method.
 
 ```js
-const keyId = await AppIntegrity.generateKey()
+const keyId = await AppIntegrity.generateKey();
 ```
 
 On success, the method returns a key identifier (`keyId`) that you use later to access the key. Record the identifier in persistent storage because there’s no way to use the key without the identifier, and no way to get the identifier later. The device automatically stores the associated private key in the Secure Enclave, from where the App Attest service can use it to create signatures, but from where no process can ever directly read or modify it, ensuring its security.
@@ -80,8 +75,9 @@ Request a unique, one-time challenge from your server. This challenge will be em
 Pass the `keyId` alongwith the challenge from your server created in the previous steps in `attestKey` method as shown below:
 
 ```js
-const attestationObject = await AppIntegrity.attestKey(keyId, challenge)
+const attestationObject = await AppIntegrity.attestKey(keyId, challenge);
 ```
+
 On success, send the received `attestationObject` and the `keyId` to your server for verification.
 
 If the method returns Service unavailable error, try attestation again later with the same key. For any other error, discard the key identifier and create a new key when you want to try again.
@@ -90,25 +86,23 @@ If the method returns Service unavailable error, try attestation again later wit
 
 Your server deems the app instance to be valid if it can successfully verify the attestation object. In this case, be sure to persistently store the key identifier — not the attestation object — in your app for future use in signing server requests.
 
-  
 ### Generate assertions on sensitive requests
 
 After successfully verifying a key’s attestation, your server can require the app to assert its legitimacy for any or all future server requests. The app does this by signing the request. In the app, first obtain a unique, one-time challenge from the server. You use a challenge here, like for attestation, to avoid replay attacks.
 
 ```js
-const challenge = "A string from your server"
+const challenge = 'A string from your server';
 const request = {
-  "action": "getGameLevel",
-  "levelId": "1234",
-  "challenge": challenge
-}
-const assertion = await AppIntegrity.generateAssertion(keyId, JSON.stringify(request))
+  action: 'getGameLevel',
+  levelId: '1234',
+  challenge: challenge,
+};
+const assertion = await AppIntegrity.generateAssertion(keyId, JSON.stringify(request));
 ```
 
 On success, pass the assertion object, along with the client data, to the server. If the assertion object fails verification, it’s your responsibility to decide how to handle the request.
 
 There’s no restriction on the number of assertions that you can make with a key. Nevertheless, you typically reserve assertions for requests made at sensitive moments in your app’s life cycle, like when the app downloads premium content.
-
 
 ### Start over on reinstallation
 
@@ -124,7 +118,6 @@ The keys that you generate remain valid through regular app updates, but don’t
 
 - [Preparing to use the app attest service](https://developer.apple.com/documentation/devicecheck/preparing-to-use-the-app-attest-service) - Test your implementation in a development environment and onboard users gradually.
 
-
 ## Usage on Android
 
 `@expo/app-integrity` uses Play Integrity's [Standard request flow](https://developer.android.com/google/play/integrity/standard) for integrity checks.
@@ -138,10 +131,10 @@ Refer to the [Play Integrity setup guide](https://developer.android.com/google/p
 You need to prepare the integrity token provider before you make integrity check requests. You can do this when your app launches or in the background before the integrity check is needed.
 
 ```js
-import * as AppIntegrity from "@expo/app-integrity"
+import * as AppIntegrity from '@expo/app-integrity';
 
-const cloudProjectNumber = "your-cloud-project-number"
-await AppIntegrity.prepareIntegrityTokenProvider(cloudProjectNumber)
+const cloudProjectNumber = 'your-cloud-project-number';
+await AppIntegrity.prepareIntegrityTokenProvider(cloudProjectNumber);
 ```
 
 ### Request an integrity token (on demand)
@@ -174,8 +167,6 @@ Refer [Play Integrity's guide](https://developer.android.com/google/play/integri
 - [About Integrity verdicts](https://developer.android.com/google/play/integrity/verdicts) - The integrity verdict communicates information about the validity of devices, apps, and accounts. Your app's server can use the resulting payload in a decrypted, verified verdict to determine how best to proceed with a particular action or request in your app.
 
 - [Handling error codes](https://developer.android.com/google/play/integrity/reference/com/google/android/play/core/integrity/model/StandardIntegrityErrorCode) - If your app makes a Play Integrity API request and the call fails, your app receives an error code. These errors can happen for various reasons, such as environmental issues like a poor network connection, problems with your API integration, or malicious activity and active attacks.
-
-
 
 ## API
 
