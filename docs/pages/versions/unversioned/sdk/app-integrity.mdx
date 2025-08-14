@@ -46,16 +46,16 @@ await AppIntegrity.prepareIntegrityTokenProvider(cloudProjectNumber);
 
 Whenever your app makes a server request that you want to check is genuine, you request an integrity token and send it to your app's backend server for decryption and verification. Then, your backend server can determine how to act.
 
-```js
-// Make sure the call to `prepareIntegrityTokenProvider` succeeds before making `requestIntegrityCheck` calls
-
-// Request integrity token by providing a user action request hash. Can be called
-// several times for different user actions.
+```js 
 const requestHash = '2cp24z...';
 const result = await AppIntegrity.requestIntegrityCheck(requestHash);
-
-// Send the result to your server for verification
 ```
+
+Before calling [requestIntegrityCheck](#appintegrityrequestintegritycheckrequesthash), ensure that [prepareIntegrityTokenProvider](#appintegrityprepareintegritytokenprovidercloudprojectnumber) was called successfully.
+
+In this example, `requestHash` is a hash unique to the specific user action being verified. You can call [requestIntegrityCheck](#appintegrityprepareintegritytokenprovidercloudprojectnumber) multiple times with different hashes for different user actions.
+
+On success, send the result to your server for verification.
 
 > **Note**: If your app uses the same token provider for too long, the token provider can expire which results in the `INTEGRITY_TOKEN_PROVIDER_INVALID` error on the next token request. You should handle this error by requesting a new provider by calling `prepareIntegrityTokenProvider` again.
 
