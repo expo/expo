@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Web] Remove `findDOMNode` usage. ([#38800](https://github.com/expo/expo/pull/38800) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 16.0.0 — 2025-08-13
 
 ### 💡 Others
