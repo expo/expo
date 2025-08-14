@@ -48,6 +48,7 @@
 - Add missing peer dependencies for `react` and `react-native` ([#38528](https://github.com/expo/expo/pull/38528) by [@kitten](https://github.com/kitten))
 - Deprecate `Constants` in favor of `Constant` and `Property`. ([#38748](https://github.com/expo/expo/pull/38748) by [@jakex7](https://github.com/jakex7))
 - Refactor typings to replace `ExpoGlobal` with namespace and to preserve type+value overlay on re-exported core globals ([#38649](https://github.com/expo/expo/pull/38649) by [@kitten](https://github.com/kitten))
+- Fixed internal `JavaScriptValue` and added `props.globalEventDispatcher` for expo-ui. ([#38542](https://github.com/expo/expo/pull/38542) by [@kudo](https://github.com/kudo))
 
 ## 2.5.0 - 2025-07-17
 
