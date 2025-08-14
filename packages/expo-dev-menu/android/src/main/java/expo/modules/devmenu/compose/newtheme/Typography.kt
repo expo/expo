@@ -15,6 +15,7 @@ object Typography {
   )
 
   val mono = FontFamily(
+    Font(R.font.jetbrains_mono_light, FontWeight.Light),
     Font(R.font.jetbrains_mono_regular, FontWeight.Normal),
     Font(R.font.jetbrains_mono_medium, FontWeight.Medium)
   )
@@ -27,5 +28,11 @@ object Typography {
   )
   val lg = TextStyle(
     fontSize = 16.sp
+  )
+  val xl = TextStyle(
+    fontSize = 18.sp
+  )
+  val xxl = TextStyle(
+    fontSize = 20.sp
   )
 }
