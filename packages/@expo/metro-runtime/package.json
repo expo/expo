@@ -33,9 +33,6 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "devDependencies": {
-    "@types/react-dom": "~19.1.0"
-  },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
