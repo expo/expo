@@ -15,6 +15,8 @@ import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabsView } from './NativeTabsView';
 import { withLayoutContext } from '../..';
 import type { NativeTabOptions, NativeTabsProps } from './types';
+import { shouldTabBeVisible } from './utils';
+import { getPathFromState } from '../../link/linking';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
@@ -35,7 +37,25 @@ export function NativeTabsNavigator({
     backBehavior,
   });
 
-  return <NativeTabsView builder={builder} {...rest} />;
+  const { state, descriptors } = builder;
+  const { routes } = state;
+  let focusedIndex = state.index;
+  const isAnyRouteFocused =
+    routes[focusedIndex].key &&
+    descriptors[routes[focusedIndex].key] &&
+    shouldTabBeVisible(descriptors[routes[focusedIndex].key].options);
+
+  if (!isAnyRouteFocused) {
+    if (process.env.NODE_ENV !== 'production') {
+      throw new Error(
+        `The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${getPathFromState(state)}"`
+      );
+    }
+    // Set focusedIndex to the first visible tab
+    focusedIndex = routes.findIndex((route) => shouldTabBeVisible(descriptors[route.key].options));
+  }
+
+  return <NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex} />;
 }
 
 const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
@@ -45,6 +65,4 @@ export const NativeTabsNavigatorWithContext = withLayoutContext<
   typeof NativeTabsNavigator,
   NavigationState,
   EventMapBase
->(createNativeTabNavigator().Navigator, (screens) => {
-  return screens;
-});
+>(createNativeTabNavigator().Navigator, undefined, true);

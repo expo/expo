@@ -128,10 +128,7 @@ fun DevMenuContent(
           },
           content = {
             NewText(
-              text = "Performance monitor",
-              style = NewAppTheme.font.lg.merge(
-                fontWeight = FontWeight.Normal
-              )
+              text = "Performance monitor"
             )
           },
           onClick = {

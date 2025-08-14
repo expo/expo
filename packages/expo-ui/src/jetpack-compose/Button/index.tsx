@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { MaterialIcon } from './types';
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 
 /**
  * The built-in button styles available on Android.
@@ -56,6 +56,9 @@ export type ButtonProps = {
    * Disabled state of the button.
    */
   disabled?: boolean;
+
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 /**
@@ -85,6 +88,8 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
     text: children ?? '',
     systemImage,
     onButtonPressed: onPress,
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
     elementColors: props.elementColors
       ? props.elementColors
       : props.color

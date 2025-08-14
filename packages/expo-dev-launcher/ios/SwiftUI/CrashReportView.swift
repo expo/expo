@@ -1,4 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+// swiftlint:disable closure_body_length
 
 import SwiftUI
 import React
@@ -35,7 +36,9 @@ struct CrashReportView: View {
       }
       .padding()
     }
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
     .navigationBarHidden(true)
   }
 
@@ -108,9 +111,9 @@ struct CrashReportView: View {
               .font(.system(.caption, design: .monospaced))
               .foregroundColor(.primary)
               .fixedSize(horizontal: true, vertical: false)
-#if !os(tvOS)
+              #if !os(tvOS)
               .textSelection(.enabled)
-#endif
+              #endif
           } else if let stack = error.stack, !stack.isEmpty {
             ForEach(Array(stack.enumerated()), id: \.offset) { _, frame in
               StackFrameView(frame: frame)
@@ -128,7 +131,9 @@ struct CrashReportView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
       .frame(maxHeight: 200)
+      #if !os(tvOS)
       .background(Color(.secondarySystemGroupedBackground))
+      #endif
       .cornerRadius(8)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -146,7 +151,9 @@ struct CrashReportView: View {
           return nil
         }
         let file = frame.file ?? "Unknown file"
-        return "\tat \(methodName) (\(file):\(frame.lineNumber):\(frame.column))"}.joined(separator: "\n")
+        return "\tat \(methodName) (\(file):\(frame.lineNumber):\(frame.column))"
+      }
+      .joined(separator: "\n")
       stackTrace = "\(stackString)"
     } else {
       stackTrace = "No stack trace available"
@@ -173,3 +180,4 @@ struct CrashReportView: View {
     return Date()
   }
 }
+// swiftlint:enable closure_body_length

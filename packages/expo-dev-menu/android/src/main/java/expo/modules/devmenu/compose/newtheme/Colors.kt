@@ -28,6 +28,7 @@ class Colors(private val pallet: RadixPallet<Color>) {
     val element = pallet.gray.`3`
 
     val warning = pallet.yellow.`3`
+    val info = pallet.blue.`3`
   }
 
   inner class Icon {
@@ -37,6 +38,7 @@ class Colors(private val pallet: RadixPallet<Color>) {
     val quaternary = pallet.gray.`8`
 
     val warning = pallet.yellow.`11`
+    val info = pallet.blue.`10`
   }
 
   inner class Border {

@@ -40,10 +40,11 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   // MARK: - Props
 
   func performUpdateOfPreloadedView() {
-    if nextScreenId == nil || tabPath?.path.isEmpty != false {
+    if nextScreenId == nil && tabPath?.path.isEmpty != false {
+      // If we have no tab to change and no screen to push, then we can't update the preloaded view
       return
     }
-      print("Perform update \(nextScreenId) \(tabPath) \(self)")
+    // However if one these is defined then we can perform the native update
     linkPreviewNativeNavigation.updatePreloadedView(
       screenId: nextScreenId, tabPath: tabPath, responder: self)
   }
@@ -123,7 +124,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
 
       let parameters = UIPreviewParameters()
       parameters.backgroundColor = .clear
-      parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: 10)
+        parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: trigger.triggerBorderRadius)
 
       return UITargetedPreview(view: trigger, parameters: parameters, target: target)
     }
