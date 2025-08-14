@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- remove global enableFreeze(false) ([#38837](https://github.com/expo/expo/pull/38837) by [@Ubax](https://github.com/Ubax))
+
 ## 6.0.0-beta.0 — 2025-08-13
 
 ### 🎉 New features
