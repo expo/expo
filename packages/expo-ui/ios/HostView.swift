@@ -23,7 +23,7 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps {
   var onLayoutContent = EventDispatcher()
 }
 
-internal struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   @ObservedObject var props: HostViewProps
 
   var body: some View {
