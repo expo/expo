@@ -108,12 +108,21 @@ export function parseInstallCheckOutput(stdout: string, issues: string[]): void 
           (r) =>
             `- ${r.name} → https://github.com/expo/expo/blob/main/packages/${r.name}/CHANGELOG.md`
         );
-      const body = [
-        formatSection('Major version mismatches', major, chalk.red, '❗'),
+      const sections = [
+        formatSection('Major version mismatches', major, chalk.yellow, '❗'),
         formatSection('Minor version mismatches', minor, chalk.yellow, '⚠️'),
         formatSection('Patch version mismatches', patch, chalk.yellow, '🔧'),
         formatSection('Other/prerelease mismatches', unknown, chalk.magenta, '➿'),
-      ].join('\n');
+      ].filter(Boolean);
+
+      const body = sections
+        .map((section, index) => {
+          if (index === 0) {
+            return '\n' + section;
+          }
+          return section;
+        })
+        .join('\n');
 
       const changelogs = changelogLines.length
         ? chalk.bold('Changelogs:\n') + chalk.dim.blue(changelogLines.join('\n'))
