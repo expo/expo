@@ -14,13 +14,9 @@ onFlowStart:
     label: Tap on "Enter URL manually"
     text: Enter URL manually
 - tapOn:
-    label: Tap on "Updates URL" text field for iOS
-    text: "http://10.0.0.25:8081"
-    optional: true
-- tapOn:
-    label: Tap on "Updates URL" text field for Android
+    label: Tap on "Updates URL" text field
+    text: '.*http:.*'
     below: Enter URL manually
-    optional: true
 - inputText:
     label: Input local update server URL
     text: "http://localhost:4747/update\n"
