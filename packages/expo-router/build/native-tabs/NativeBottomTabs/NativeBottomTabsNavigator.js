@@ -36,7 +36,5 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...
     return <NativeTabsView_1.NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex}/>;
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
-exports.NativeTabsNavigatorWithContext = (0, __1.withLayoutContext)(createNativeTabNavigator().Navigator, (screens) => {
-    return screens;
-});
+exports.NativeTabsNavigatorWithContext = (0, __1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
 //# sourceMappingURL=NativeBottomTabsNavigator.js.map
