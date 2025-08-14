@@ -832,6 +832,10 @@ export interface Android {
    * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to false.
    */
   edgeToEdgeEnabled?: boolean;
+  /**
+   * Enable your app to use the [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) on Android 13 (API level 33) and later. Default to false.
+   */
+  predictiveBackGestureEnabled?: boolean;
 }
 export interface AndroidIntentFiltersData {
   /**
