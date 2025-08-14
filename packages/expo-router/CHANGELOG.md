@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Suppress native link preview for Apple TV. ([#38814](https://github.com/expo/expo/pull/38814) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 6.0.0-beta.0 — 2025-08-13
