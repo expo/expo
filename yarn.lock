@@ -3693,7 +3693,7 @@
     use-latest-callback "^0.2.1"
     use-sync-external-store "^1.2.2"
 
-"@react-navigation/drawer@7.3.9", "@react-navigation/drawer@^7.3.9":
+"@react-navigation/drawer@7.3.9", "@react-navigation/drawer@^7.3.9", "@react-navigation/drawer@^7.5.0":
   version "7.3.9"
   resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.3.9.tgz#debac945f163f649a248e198be11aed4040792ec"
   integrity sha512-BejcvNy/0MgB8UGnQ72PrzDSyyf6e3YTLlVSkgl/SdCvYIhOQQiUBU8A5xD/19gx6dV7SjPgjY3P24dL05UXSQ==
