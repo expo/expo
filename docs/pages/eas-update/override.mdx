@@ -18,13 +18,13 @@ The primary use case for this feature is to **enable switching between update ch
 
 For example, if you have a `default` channel for production updates and a `preview` channel for preview updates, you can override the `expo-channel-name` request header to point to the `preview` channel. This enables you to test preview updates in your current production builds.
 
-Another potential use case is to provide different updates to different users, for example so that a group of internal users (such as employees) receive updates before end-users.
+Another potential use case is to provide different updates to different users, for example, so that a group of internal users (such as employees) receive updates before end-users.
 
 ### How it works
 
-You can override the `expo-channel-name` request header by calling [`Updates.setUpdateRequestHeadersOverride`](/versions/latest/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders). This will override update requests to fetch updates from the specified channel.
+You can override the `expo-channel-name` request header by calling [`Updates.setUpdateRequestHeadersOverride`](/versions/unversioned/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders). This will override update requests to fetch updates from the specified channel.
 
-Somewhere in your app, you would provide a way for users to trigger the change to request headers. This may be in a hidden menu that only trusted users have access to, or some other mechanism depending on your use case. After the parameters are changes, you can call [`fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync) to fetch the update, and then [`reloadAsync()`](/versions/latest/sdk/updates/#updatesreloadasyncoptions) to reload the app. Or you can wait for the next launch, which will automatically fetch and install the update.
+Somewhere in your app, you would provide a way for users to trigger the change to request headers. This may be in a hidden menu that only trusted users have access to, or some other mechanism, depending on your use case. After the parameters are changed, you can call [`fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync) to fetch the update, and then [`reloadAsync()`](/versions/unversioned/sdk/updates/#updatesreloadasyncoptions) to reload the app. Or you can wait for the next launch, which will automatically fetch and install the update.
 
 ```js
 import * as Updates from 'expo-updates';
@@ -43,7 +43,7 @@ await Updates.reloadAsync();
 
 > **warning** The feature described in this section is available in Expo SDK 52 with the `expo-updates` version 0.27.0 and later. Using the `disableAntiBrickingMeasures` option is not recommended for production apps, it is currently primarily intended for preview environments.
 
-Similar to [override request headers](#override-request-headers), if you want to further override the update URL to a specific update, you can use the [`Updates.setUpdateURLAndRequestHeadersOverride`](/versions/latest/sdk/updates/#override-both-update-url-and-request-headers) method. This allows you to load a specific update by ID, even the update is published before the current build is created.
+Similar to [override request headers](#override-request-headers), if you want to further override the update URL to a specific update, you can use the [`Updates.setUpdateURLAndRequestHeadersOverride`](/versions/latest/sdk/updates/#updatessetupdateurlandrequestheadersoverrideconfigoverride) method. This allows you to load a specific update by ID, even if the update is published before the current build is created.
 
 It is important to be familiar with the [security considerations](#security-considerations) before deciding to use this feature in production. In the future, we may add support for a more restricted version of the feature that would be more suitable for this use case.
 
