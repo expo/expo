@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- use relative paths in missing imports errors ([#38853](https://github.com/expo/expo/pull/38853) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.25.0 — 2025-08-13
 
 ### 🛠 Breaking changes
