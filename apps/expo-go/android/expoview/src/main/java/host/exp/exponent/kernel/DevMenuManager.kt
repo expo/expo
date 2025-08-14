@@ -313,7 +313,7 @@ class DevMenuManager {
     reactSurface?.let {
       return it
     }
-    
+
     val surface = ReactSurfaceImpl.createWithView(kernel.applicationContext, DEV_MENU_JS_MODULE_NAME, initialProps)
     val reactHost = kernel.reactHost as? ReactHostImpl
     reactHost?.let {
