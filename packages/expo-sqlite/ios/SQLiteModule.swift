@@ -21,15 +21,15 @@ public final class SQLiteModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
-    Constants {
+    Constant("defaultDatabaseDirectory") {
       #if os(tvOS)
-      let defaultDatabaseDirectory =
-        appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
+      return appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
       #else
-      let defaultDatabaseDirectory =
-        appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+      return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
       #endif
-
+    }
+    
+    Constant("bundledExtensions") {
       var bundledExtensions: [String: [String: String?]] = [:]
       #if WITH_SQLITE_VEC
       bundledExtensions["sqlite-vec"] = [
@@ -37,11 +37,7 @@ public final class SQLiteModule: Module {
         "entryPoint": "sqlite3_vec_init"
       ]
       #endif
-
-      return [
-        "defaultDatabaseDirectory": defaultDatabaseDirectory,
-        "bundledExtensions": bundledExtensions
-      ]
+      return bundledExtensions
     }
 
     Events("onDatabaseChange")
