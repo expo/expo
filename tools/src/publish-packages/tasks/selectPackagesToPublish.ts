@@ -98,8 +98,11 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
       const templateParcel = await createParcelAsync(bareTemplateNode);
 
       // Template don't not have changelog so we need to match Expo's release type.
+      const newExpoVersion = expoParcel.state.releaseVersion || '';
       templateParcel.minReleaseType =
-        semver.patch(expoParcel.state.releaseVersion || '') === 0
+        semver.minor(newExpoVersion) === 0 &&
+        semver.patch(newExpoVersion) === 0 &&
+        !semver.prerelease(newExpoVersion)
           ? ReleaseType.MAJOR
           : ReleaseType.PATCH;
       const { releaseVersion } = await resolveReleaseTypeAndVersion(templateParcel, options);
