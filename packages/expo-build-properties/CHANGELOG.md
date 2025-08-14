@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.reactNativeReleaseLevel` option ([#38840](https://github.com/expo/expo/pull/38840) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
