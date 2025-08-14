@@ -1,4 +1,4 @@
-import ExceptionsManager from 'react-native/Libraries/Core/ExceptionsManager';
+import ExceptionsManager from './error-overlay/modules/ExceptionsManager';
 
 type GlobalThis = {
   HermesInternal:
@@ -46,11 +46,21 @@ export function enablePromiseRejectionTracking() {
         }
       }
 
-      ExceptionsManager.handleException(
-        new Error(`Uncaught (in promise, id: ${id})${message ? `: "${message}"` : ''}`, {
-          cause: rejection,
-        })
-      );
+      const rejectionPrefix = `Uncaught (in promise, id: ${id})`;
+      // This is not an Expo error, but
+      // an uncaught promise rejection in the app.
+      const rejectionError = new Error(`${rejectionPrefix} ${message ?? ''}`, {
+        cause: rejection,
+      });
+      if (typeof rejection === 'object' && 'stack' in rejection) {
+        // If original rejection stack exists, use it
+        rejectionError.stack = `${rejectionPrefix} ${rejection.stack ?? ''}`;
+      } else {
+        // Deleting the stack property would trigger exception handler to collect the current stack
+        // Stack of the error created here won't be any useful to the user
+        rejectionError.stack = `${rejectionPrefix} ${message ?? ''}`;
+      }
+      ExceptionsManager.handleException(rejectionError);
     },
     onHandled: (id) => {
       const warning =
