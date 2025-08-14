@@ -1,4 +1,5 @@
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ExpoModifier } from '../../types';
 export type ProgressElementColors = {
     /**
      * Track color.
@@ -25,6 +26,8 @@ export type CircularProgressProps = {
      * @platform android
      */
     elementColors?: ProgressElementColors;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 export type LinearProgressProps = {
     /**
@@ -44,6 +47,8 @@ export type LinearProgressProps = {
      * @platform android
      */
     elementColors?: ProgressElementColors;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 /**
  * Renders a `CircularProgress` component.

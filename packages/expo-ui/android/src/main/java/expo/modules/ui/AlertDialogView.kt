@@ -22,7 +22,8 @@ data class AlertDialogProps(
   val text: MutableState<String?> = mutableStateOf(null),
   val confirmButtonText: MutableState<String?> = mutableStateOf(null),
   val dismissButtonText: MutableState<String?> = mutableStateOf(null),
-  val visible: MutableState<Boolean> = mutableStateOf(false)
+  val visible: MutableState<Boolean> = mutableStateOf(false),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 class AlertDialogView(context: Context, appContext: AppContext) :
@@ -44,6 +45,7 @@ class AlertDialogView(context: Context, appContext: AppContext) :
     }
 
     AlertDialog(
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value),
       confirmButton = {
         confirmButtonText?.let {
           TextButton(onClick = { onConfirmPressed.invoke(AlertDialogButtonPressedEvent()) }) {
