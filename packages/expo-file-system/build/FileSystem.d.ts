@@ -44,10 +44,10 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
      * File name. Includes the extension.
      */
     get name(): string;
-    readableStream(): ReadableStream<Uint8Array<ArrayBufferLike>>;
+    readableStream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     writableStream(): WritableStream<Uint8Array<ArrayBufferLike>>;
     arrayBuffer(): Promise<ArrayBuffer>;
-    stream(): ReadableStream<Uint8Array>;
+    stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
 }
 /**
