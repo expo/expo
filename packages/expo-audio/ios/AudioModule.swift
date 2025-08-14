@@ -21,9 +21,9 @@ public class AudioModule: Module {
       self.appContext?.permissions?.register([
         AudioRecordingRequester()
       ])
+      #endif
 
       setupInterruptionHandling()
-      #endif
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
