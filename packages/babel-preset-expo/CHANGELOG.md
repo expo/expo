@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support inlining environment variables with bracket notation.
+- Support inlining environment variables with bracket notation. ([#38826](https://github.com/expo/expo/pull/38826) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
