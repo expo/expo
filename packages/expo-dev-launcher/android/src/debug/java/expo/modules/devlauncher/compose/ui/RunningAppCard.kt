@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
@@ -23,7 +24,6 @@ import expo.modules.devmenu.compose.fromHex
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
-import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.pulseEffect
 import expo.modules.devmenu.compose.theme.Theme
 
@@ -65,10 +65,13 @@ fun RunningAppCard(
         )
 
         Column(
-          verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+          verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
+          modifier = Modifier.weight(1f)
         ) {
           NewText(
             label,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = NewAppTheme.font.lg.merge(
               fontWeight = if (appName != null) {
                 FontWeight.SemiBold
@@ -81,13 +84,13 @@ fun RunningAppCard(
           if (description != null) {
             NewText(
               description,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
               style = NewAppTheme.font.sm,
               color = NewAppTheme.colors.text.tertiary
             )
           }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         Icon(
           painter = painterResource(R.drawable.chevron_right),

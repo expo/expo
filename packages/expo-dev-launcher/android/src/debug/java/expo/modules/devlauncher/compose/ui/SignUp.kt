@@ -1,44 +1,37 @@
 package expo.modules.devlauncher.compose.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import expo.modules.devmenu.compose.primitives.RoundedSurface
-import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
 @Composable
 fun SignUp(
   onLogIn: () -> Unit = {},
   onSignUp: () -> Unit = {}
 ) {
-  RoundedSurface {
-    Column(modifier = Modifier.padding(Theme.spacing.small)) {
-      Text(
-        "Log in or create an account to view local development servers and more.",
-        color = Theme.colors.text.secondary,
-        fontSize = Theme.typography.small
-      )
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+  ) {
+    ActionButton(
+      "Login",
+      foreground = Color.White,
+      background = Color.Black,
+      modifier = Modifier.padding(NewAppTheme.spacing.`3`),
+      onClick = onLogIn
+    )
 
-      Spacer(Theme.spacing.small)
-
-      ActionButton(
-        "Log In",
-        style = Theme.colors.button.tertiary,
-        onClick = onLogIn
-      )
-
-      Spacer(Theme.spacing.small)
-
-      ActionButton(
-        "Sign Up",
-        style = Theme.colors.button.secondary,
-        onClick = onSignUp
-      )
-    }
+    ActionButton(
+      "Sign Up",
+      foreground = NewAppTheme.colors.text.secondary,
+      background = NewAppTheme.colors.background.element,
+      modifier = Modifier.padding(NewAppTheme.spacing.`3`),
+      onClick = onSignUp
+    )
   }
 }
 

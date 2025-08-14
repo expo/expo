@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.ToggleSwitch
-import expo.modules.devmenu.compose.fromHex
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
@@ -25,9 +25,13 @@ fun ToggleSwitch(
 ) {
   val animatedBackgroundColor by animateColorAsState(
     if (isToggled) {
-      Color.fromHex("#34C759")
+      Color(0xFF34C759)
     } else {
-      Color.fromHex("#E9E9EB")
+      if (NewAppTheme.isDarkTheme) {
+        Color(0xFF464646)
+      } else {
+        Color(0xFFE9E9EB)
+      }
     }
   )
 

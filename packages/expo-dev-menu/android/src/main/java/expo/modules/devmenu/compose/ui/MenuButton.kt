@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.composeunstyled.Button
 import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -32,13 +33,15 @@ fun NewMenuButton(
   content: NewMenuButtonComposable? = null,
   rightComponent: NewMenuButtonComposable? = null,
   withSurface: Boolean = true,
+  enabled: Boolean = true,
+  spacedBy: Dp = NewAppTheme.spacing.`2`,
   onClick: () -> Unit = {}
 ) {
   val contentComponent = @Composable {
-    Button(onClick = onClick) {
+    Button(onClick = onClick, enabled = enabled) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+        horizontalArrangement = Arrangement.spacedBy(spacedBy),
         modifier = Modifier
           .background(NewAppTheme.colors.background.subtle)
           .padding(NewAppTheme.spacing.`3`)
