@@ -94,7 +94,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
     }
-    
+
     if (VRUtilities.isQuest()) {
       if (devSettings != null && devSupportManager.devSupportEnabled) {
         val label = if (devSettings.isFloatingActionButtonEnabled) {
