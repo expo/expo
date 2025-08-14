@@ -8,10 +8,13 @@ import expo.modules.devlauncher.compose.Update
 import expo.modules.devlauncher.services.ApolloClientService
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.ApplicationInfo
+import expo.modules.devlauncher.services.SessionService
+import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -22,12 +25,14 @@ sealed interface BranchesAction {
 
 data class BranchesState(
   val branches: List<Branch> = emptyList(),
-  val isLoading: Boolean = false
+  val isLoading: Boolean = false,
+  val needToSignIn: Boolean = false
 )
 
 class BranchesViewModel : ViewModel() {
   private val apolloClientService = inject<ApolloClientService>()
   private val appService = inject<AppService>()
+  private val sessionService = inject<SessionService>()
 
   private val hasMore = mutableStateOf(true)
 
@@ -36,20 +41,60 @@ class BranchesViewModel : ViewModel() {
   private var _state = MutableStateFlow(
     BranchesState(
       branches = emptyList(),
-      isLoading = areUpdatesConfigured
+      isLoading = areUpdatesConfigured,
+      needToSignIn = sessionService.user.value == UserState.LoggedOut
     )
   )
 
-  val state = _state.onStart {
-    if (areUpdatesConfigured) {
-      hasMore.value = true
-      loadMoreBranches()
+  private val _sessionState = sessionService.user.onEach { newUser ->
+    when (newUser) {
+      UserState.LoggedOut -> {
+        hasMore.value = false
+        _state.value = _state.value.copy(
+          branches = emptyList(),
+          isLoading = false
+        )
+      }
+
+      is UserState.LoggedIn -> {
+        if (areUpdatesConfigured) {
+          hasMore.value = true
+          _state.value.copy(branches = emptyList(), isLoading = true)
+          viewModelScope.launch {
+            loadMoreBranches()
+          }
+        }
+      }
+
+      is UserState.Fetching -> {
+        _state.value = _state.value.copy(
+          isLoading = true,
+          branches = emptyList()
+        )
+      }
     }
-  }.stateIn(
-    scope = viewModelScope,
-    started = WhileSubscribed(5_000),
-    initialValue = _state.value
-  )
+  }
+
+  val state = _state
+    .combine(_sessionState) { branchState, newUser ->
+      when (newUser) {
+        UserState.Fetching -> {
+          branchState.copy(needToSignIn = false)
+        }
+
+        UserState.LoggedOut -> {
+          branchState.copy(needToSignIn = true)
+        }
+
+        is UserState.LoggedIn -> {
+          branchState.copy(needToSignIn = false)
+        }
+      }
+    }.stateIn(
+      scope = viewModelScope,
+      started = WhileSubscribed(5_000),
+      initialValue = _state.value
+    )
 
   private suspend fun loadMoreBranches() {
     val updateConfiguration = appService.applicationInfo as? ApplicationInfo.Updates
@@ -97,7 +142,6 @@ class BranchesViewModel : ViewModel() {
     } ?: emptyList()
 
     hasMore.value = branches.size == limit
-
     _state.value = _state.value.copy(
       isLoading = false,
       branches = _state.value.branches + branches

@@ -1,10 +1,13 @@
 package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,50 +20,62 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import expo.modules.devlauncher.R
+import expo.modules.devlauncher.compose.DefaultScreenContainer
 import expo.modules.devlauncher.compose.ui.AppHeader
-import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
-import expo.modules.devmenu.compose.primitives.RoundedSurface
-import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
 
 @Composable
 fun NoUpdatesScreen(onProfileClick: () -> Unit = {}) {
-  Column(modifier = Modifier.fillMaxSize()) {
-    ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
-      AppHeader(
-        onProfileClick = onProfileClick
-      )
+  Column(
+    modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)
+  ) {
+    Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`4`)) {
+      AppHeader(onProfileClick = onProfileClick)
     }
 
-    Row(modifier = Modifier.padding(Theme.spacing.medium)) {
-      RoundedSurface {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(Theme.spacing.small)) {
-          Image(
-            painter = painterResource(R.drawable.extensions_icon),
-            contentDescription = "Updates Screen"
-          )
+    Box(
+      contentAlignment = Alignment.Center,
+      modifier = Modifier.fillMaxSize()
+    ) {
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`4`),
+        modifier = Modifier.fillMaxWidth()
+      ) {
+        Image(
+          painter = painterResource(R.drawable.extensions_icon),
+          contentDescription = "Updates Screen",
+          modifier = Modifier.size(48.dp)
+        )
 
-          Spacer(Theme.spacing.small)
-
-          val annotatedString = buildAnnotatedString {
-            append("Extensions allow you to customize your development build with additional capabilities. ")
-            withLink(
-              LinkAnnotation.Url(
-                "https://docs.expo.dev/develop/development-builds/development-workflows/",
-                TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline))
+        val annotatedString = buildAnnotatedString {
+          append("Extensions allow you to customize your development build\nwith additional capabilities. ")
+          withLink(
+            LinkAnnotation.Url(
+              "https://docs.expo.dev/develop/development-builds/development-workflows/",
+              TextLinkStyles(
+                style = SpanStyle(
+                  textDecoration = TextDecoration.Underline,
+                  color = NewAppTheme.colors.text.link
+                )
               )
-            ) {
-              append("Learn more.")
-            }
+            )
+          ) {
+            append("Learn more.")
           }
-          Text(
-            annotatedString,
-            fontSize = Theme.typography.small,
-            textAlign = TextAlign.Center
-          )
         }
+
+        NewText(
+          annotatedString,
+          style = NewAppTheme.font.sm.merge(
+            color = NewAppTheme.colors.text.secondary,
+            textAlign = TextAlign.Center
+          ),
+          color = NewAppTheme.colors.text.secondary
+        )
       }
     }
   }
@@ -69,5 +84,7 @@ fun NoUpdatesScreen(onProfileClick: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun NoUpdatesScreenPreview() {
-  NoUpdatesScreen()
+  DefaultScreenContainer {
+    NoUpdatesScreen()
+  }
 }
