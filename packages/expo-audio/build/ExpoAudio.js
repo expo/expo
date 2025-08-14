@@ -13,11 +13,13 @@ const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source) {
     return replace.call(this, resolveSource(source));
 };
-const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
-AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
-    const processedOptions = options ? createRecordingOptions(options) : undefined;
-    return prepareToRecordAsync.call(this, processedOptions);
-};
+if (!Platform.isTV || Platform.OS !== 'ios') {
+    const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
+    AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
+        const processedOptions = options ? createRecordingOptions(options) : undefined;
+        return prepareToRecordAsync.call(this, processedOptions);
+    };
+}
 // @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);

@@ -26,11 +26,13 @@ AudioModule.AudioPlayer.prototype.replace = function (source: AudioSource) {
   return replace.call(this, resolveSource(source));
 };
 
-const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
-AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
-  const processedOptions = options ? createRecordingOptions(options) : undefined;
-  return prepareToRecordAsync.call(this, processedOptions);
-};
+if (!Platform.isTV || Platform.OS !== 'ios') {
+  const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
+  AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
+    const processedOptions = options ? createRecordingOptions(options) : undefined;
+    return prepareToRecordAsync.call(this, processedOptions);
+  };
+}
 
 // @docsMissing
 export function useAudioPlayer(
