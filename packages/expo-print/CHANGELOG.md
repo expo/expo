@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Change Constants to Constant/Property.
+
 ## 15.0.4 — 2025-08-26
 
 ### 🐛 Bug fixes
