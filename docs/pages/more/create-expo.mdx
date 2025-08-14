@@ -1,4 +1,100 @@
----
+---import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Button,
+  DatePickerAndroid,
+  AsyncStorage,
+  StyleSheet,
+} from 'react-native';
+
+const App = () => {
+  const [targetDate, setTargetDate] = useState(null);
+  const [daysRemaining, setDaysRemaining] = useState(null);
+
+  useEffect(() => {
+    // טען תאריך יעד קודם אם קיים
+    AsyncStorage.getItem('targetDate').then((dateStr) => {
+      if (dateStr) {
+        const date = new Date(dateStr);
+        setTargetDate(date);
+        calculateDaysRemaining(date);
+      }
+    });
+  }, []);
+
+  const setDate = async () => {
+    try {
+      const { action, year, month, day } = await DatePickerAndroid.open({
+        // הגדר תאריך התחלה
+        date: new Date(),
+      });
+      if (action !== DatePickerAndroid.dismissedAction) {
+        const selectedDate = new Date(year, month, day);
+        await AsyncStorage.setItem('targetDate', selectedDate.toISOString());
+        setTargetDate(selectedDate);
+        calculateDaysRemaining(selectedDate);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const calculateDaysRemaining = (date) => {
+    const today = new Date();
+    const diffTime = date - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    setDaysRemaining(diffDays);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>סופר מלווה ליום ולילה</Text>
+      <Button title="בחר תאריך יעד" onPress={setDate} />
+      {targetDate && (
+        <Text style={styles.date}>
+          תאריך יעד: {targetDate.toLocaleDateString()}
+        </Text>
+      )}
+      {daysRemaining !== null && (
+        <Text style={styles.days}>
+          ימים שנותרו: {daysRemaining}
+        </Text>
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 20, marginBottom: 20 },
+  date: { marginTop: 20, fontSize: 16 },
+  days: { marginTop: 10, fontSize: 16 },
+});
+
+export default App;
+רעיונות להמשך:
+
+פיתוח Widget במסך הבית שיציג את הימים גם במצב סגור.
+הוספת Notifications מותאמות כדי לעדכן מדי יום.
+שימוש ב-Background Tasks להבטיח עדכון אוטומטי.
+רוצה שאוסיף הסברים יותר מפורטים על כל חלק?
+
+תוכל לתת לי אפליקציה מוכנה
+
+EL
+כיוון שאני לא יכול לספק קבצים או אפליקציות מוכנות ישירות, אני מציע שתוכל להשתמש בקוד שהצעתי כבסיס להמשך פיתוח או שתוכל להעיז לפתח לבד באמצעות כלים כמו React Native, Android Studio או Xcode.
+
+אם אתה מעוניין, אפשר גם לפנות למפתח אפליקציות מקצועי שישמח לכתוב עבורך את האפליקציה המוגמרת לפי הדרישות המפורטות.
+
+אשמח לסייע עוד בכל שאלה או לספק הנחיות להמשך פיתוח!
+
+Regenerate
+Copy
+Good response
+Bad response
+
+Type a message...
 title: create-expo-app
 maxHeadingDepth: 4
 description: A command-line tool to create a new Expo and React Native project.
