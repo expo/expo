@@ -12,6 +12,7 @@
 
 - [iOS] Suppress native link preview for Apple TV. ([#38814](https://github.com/expo/expo/pull/38814) by [@douglowder](https://github.com/douglowder))
 - fix navigation to hidden tabs ([#38829](https://github.com/expo/expo/pull/38829) by [@Ubax](https://github.com/Ubax))
+- Fix useFocusEffect being called twice when tapping a tab or going back in a stack.
 
 ### 💡 Others
 
