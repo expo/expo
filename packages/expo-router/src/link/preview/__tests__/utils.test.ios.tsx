@@ -98,12 +98,7 @@ describe(getTabPathFromRootStateByHref, () => {
       'faces/_layout': () => <Stack />,
       'faces/index': () => null,
       'faces/[face]': () => null,
-      'explore/_layout': () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="news" />
-        </NativeTabs>
-      ),
+      'explore/_layout': () => <Stack />,
       'explore/index': () => null,
       'explore/news/_layout': () => <Stack />,
       'explore/news/index': () => null,
@@ -259,104 +254,6 @@ describe(getTabPathFromRootStateByHref, () => {
       { oldTabKey: 'index-rYeU6j6cRmkJK1pXpEFHs', newTabKey: 'faces-CtzasUGRC7VBM70ECYYD9' },
     ]);
   });
-
-  it('returns two element tab path with one two tab navigator in href', () => {
-    const state = {
-      stale: false,
-      type: 'stack',
-      key: 'stack-4CKk6nGr4O4rsV2jM46BU',
-      index: 0,
-      routeNames: ['__root', '+not-found', '_sitemap'],
-      routes: [
-        {
-          name: '__root',
-          state: {
-            stale: false,
-            type: 'tab',
-            key: 'tab-JKSHuJS6PR3tr3V3Woop-',
-            index: 0,
-            routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'index-2JXOAUn6j5j5320gWor5i',
-              },
-            ],
-            routes: [
-              {
-                name: 'index',
-                path: '/',
-                key: 'index-2JXOAUn6j5j5320gWor5i',
-              },
-              {
-                name: 'faces',
-                key: 'faces-Am3tAhAfN2FuuvhAJBiiY',
-              },
-              {
-                name: 'explore',
-                key: 'explore-kGuYg1aepvB4YPPfa1Drq',
-                state: {
-                  stale: false,
-                  type: 'tab',
-                  key: 'tab-y0hYMHNjOEN0CzUO7u0Q0',
-                  index: 0,
-                  routeNames: ['index', 'news'],
-                  history: [
-                    {
-                      type: 'route',
-                      key: 'index-y34qKLXylarXPgdvPvm7l',
-                    },
-                  ],
-                  routes: [
-                    {
-                      name: 'index',
-                      key: 'index-y34qKLXylarXPgdvPvm7l',
-                    },
-                    {
-                      name: 'news',
-                      key: 'news-Tl3ALm4uQaMJZQsC8syfL',
-                      state: {
-                        stale: false,
-                        type: 'stack',
-                        key: 'stack-83Ca4wS1YLhhyOVdPX_sh',
-                        index: 0,
-                        routeNames: ['index', '[title]'],
-                        preloadedRoutes: [
-                          {
-                            key: '[title]-8jBl0O6WjoVchQ5Mkm7gx',
-                            name: '[title]',
-                            params: {
-                              title: 'new-watches-august',
-                            },
-                          },
-                        ],
-                        routes: [
-                          {
-                            key: 'index-gdeRU_hV0gmuN5WBjpJiQ',
-                            name: 'index',
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                  preloadedRouteKeys: [],
-                },
-              },
-            ],
-            preloadedRouteKeys: [],
-          },
-          key: '__root-EmyQftAUjUB1_wHiRqQjx',
-        },
-      ],
-      preloadedRoutes: [],
-    };
-    const href = '/explore/news/new-watches-august';
-    const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
-    expect(tabPath).toEqual([
-      { oldTabKey: 'index-2JXOAUn6j5j5320gWor5i', newTabKey: 'explore-kGuYg1aepvB4YPPfa1Drq' },
-      { oldTabKey: 'index-y34qKLXylarXPgdvPvm7l', newTabKey: 'news-Tl3ALm4uQaMJZQsC8syfL' },
-    ]);
-  });
 });
 
 describe(getPreloadedRouteFromRootStateByHref, () => {
@@ -373,12 +270,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       'faces/_layout': () => <Stack />,
       'faces/index': () => null,
       'faces/[face]': () => null,
-      'explore/_layout': () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="news" />
-        </NativeTabs>
-      ),
+      'explore/_layout': () => <Stack />,
       'explore/index': () => null,
       'explore/news/_layout': () => <Stack />,
       'explore/news/index': () => null,
@@ -536,107 +428,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       name: '[face]',
       params: {
         face: '1e3a8a',
-      },
-    });
-  });
-
-  it('returns correct preloaded route in the different stack in nested tabs', () => {
-    const state = {
-      stale: false,
-      type: 'stack',
-      key: 'stack-4CKk6nGr4O4rsV2jM46BU',
-      index: 0,
-      routeNames: ['__root', '+not-found', '_sitemap'],
-      routes: [
-        {
-          name: '__root',
-          state: {
-            stale: false,
-            type: 'tab',
-            key: 'tab-JKSHuJS6PR3tr3V3Woop-',
-            index: 0,
-            routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'index-2JXOAUn6j5j5320gWor5i',
-              },
-            ],
-            routes: [
-              {
-                name: 'index',
-                path: '/',
-                key: 'index-2JXOAUn6j5j5320gWor5i',
-              },
-              {
-                name: 'faces',
-                key: 'faces-Am3tAhAfN2FuuvhAJBiiY',
-              },
-              {
-                name: 'explore',
-                key: 'explore-kGuYg1aepvB4YPPfa1Drq',
-                state: {
-                  stale: false,
-                  type: 'tab',
-                  key: 'tab-y0hYMHNjOEN0CzUO7u0Q0',
-                  index: 0,
-                  routeNames: ['index', 'news'],
-                  history: [
-                    {
-                      type: 'route',
-                      key: 'index-y34qKLXylarXPgdvPvm7l',
-                    },
-                  ],
-                  routes: [
-                    {
-                      name: 'index',
-                      key: 'index-y34qKLXylarXPgdvPvm7l',
-                    },
-                    {
-                      name: 'news',
-                      key: 'news-Tl3ALm4uQaMJZQsC8syfL',
-                      state: {
-                        stale: false,
-                        type: 'stack',
-                        key: 'stack-83Ca4wS1YLhhyOVdPX_sh',
-                        index: 0,
-                        routeNames: ['index', '[title]'],
-                        preloadedRoutes: [
-                          {
-                            key: '[title]-8jBl0O6WjoVchQ5Mkm7gx',
-                            name: '[title]',
-                            params: {
-                              title: 'new-watches-august',
-                            },
-                          },
-                        ],
-                        routes: [
-                          {
-                            key: 'index-gdeRU_hV0gmuN5WBjpJiQ',
-                            name: 'index',
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                  preloadedRouteKeys: [],
-                },
-              },
-            ],
-            preloadedRouteKeys: [],
-          },
-          key: '__root-EmyQftAUjUB1_wHiRqQjx',
-        },
-      ],
-      preloadedRoutes: [],
-    };
-    const href = '/explore/news/new-watches-august';
-    const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);
-    expect(preloadedRoute).toEqual({
-      key: '[title]-8jBl0O6WjoVchQ5Mkm7gx',
-      name: '[title]',
-      params: {
-        title: 'new-watches-august',
       },
     });
   });

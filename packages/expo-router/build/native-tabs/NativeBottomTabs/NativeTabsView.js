@@ -43,7 +43,6 @@ const linking_1 = require("../../link/linking");
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 // TODO: ENG-16896: Enable freeze globally and disable only for NativeTabsView
 (0, react_native_screens_1.enableFreeze)(false);
-// TODO: Add support for dynamic params inside a route
 function NativeTabsView(props) {
     const { builder, style, minimizeBehavior, disableIndicator } = props;
     const { state, descriptors, navigation } = builder;

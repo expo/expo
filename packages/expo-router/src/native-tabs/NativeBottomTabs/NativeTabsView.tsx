@@ -18,7 +18,6 @@ featureFlags.experiment.controlledBottomTabs = false;
 // TODO: ENG-16896: Enable freeze globally and disable only for NativeTabsView
 enableFreeze(false);
 
-// TODO: Add support for dynamic params inside a route
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { builder, style, minimizeBehavior, disableIndicator } = props;
   const { state, descriptors, navigation } = builder;
