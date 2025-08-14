@@ -1,7 +1,5 @@
 import JsonFile from '@expo/json-file';
-import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import fs from 'fs-extra';
 import path from 'path';
 
 import { PACKAGES_DIR } from '../../Constants';
@@ -65,28 +63,6 @@ async function updateTemplateAsync(parcel: Parcel, modulesToUpdate: Record<strin
 }
 
 /**
- * Removes template's `yarn.lock` and runs `yarn`.
- *
- * @param templatePath Root path of the template.
- */
-async function yarnTemplateAsync(templatePath: string): Promise<void> {
-  logger.log('    >', 'Yarning...');
-
-  const yarnLockPath = path.join(templatePath, 'yarn.lock');
-
-  if (await fs.pathExists(yarnLockPath)) {
-    // We do want to always install the newest possible versions that match bundledNativeModules versions,
-    // so let's remove yarn.lock before updating re-yarning dependencies.
-    await fs.remove(yarnLockPath);
-  }
-  await spawnAsync('yarn', [], {
-    stdio: 'ignore',
-    cwd: templatePath,
-    env: process.env,
-  });
-}
-
-/**
  * Updates project templates to use a versions specified in the `BundledNativeModules`.
  */
 export const updateProjectTemplates = new Task<TaskArgs>(
@@ -105,7 +81,6 @@ export const updateProjectTemplates = new Task<TaskArgs>(
         continue;
       }
       await updateTemplateAsync(parcel, bundledNativeModules);
-      await yarnTemplateAsync(parcel.pkg.path);
     }
   }
 );
