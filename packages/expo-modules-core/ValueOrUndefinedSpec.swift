@@ -9,22 +9,22 @@ final class ValueOrUndefinedSpec: ExpoSpec {
     describe("operators") {
       it("==") {
         expect(
-          ValueOrUndefined<Int>.undefinded == ValueOrUndefined<Int>.undefinded
+          ValueOrUndefined<Int>.undefined == ValueOrUndefined<Int>.undefined
         ).to(beTrue())
         expect(
           ValueOrUndefined<Int>.value(unwrapped: 10) == ValueOrUndefined<Int>.value(unwrapped: 10)
         ).to(beTrue())
         expect(
-          ValueOrUndefined<Int>.value(unwrapped: 10) == ValueOrUndefined<Int>.undefinded
+          ValueOrUndefined<Int>.value(unwrapped: 10) == ValueOrUndefined<Int>.undefined
         ).to(beFalse())
         expect(
-          ValueOrUndefined<Int>.undefinded == ValueOrUndefined<Int>.value(unwrapped: 10)
+          ValueOrUndefined<Int>.undefined == ValueOrUndefined<Int>.value(unwrapped: 10)
         ).to(beFalse())
       }
       
       it("<") {
         expect(
-          ValueOrUndefined<Int>.undefinded < ValueOrUndefined<Int>.undefinded
+          ValueOrUndefined<Int>.undefined < ValueOrUndefined<Int>.undefined
         ).to(beFalse())
         expect(
           ValueOrUndefined<Int>.value(unwrapped: 10) < ValueOrUndefined<Int>.value(unwrapped: 10)
@@ -33,10 +33,10 @@ final class ValueOrUndefinedSpec: ExpoSpec {
           ValueOrUndefined<Int>.value(unwrapped: 10) < ValueOrUndefined<Int>.value(unwrapped: 20)
         ).to(beTrue())
         expect(
-          ValueOrUndefined<Int>.value(unwrapped: 10) < ValueOrUndefined<Int>.undefinded
+          ValueOrUndefined<Int>.value(unwrapped: 10) < ValueOrUndefined<Int>.undefined
         ).to(beFalse())
         expect(
-          ValueOrUndefined<Int>.undefinded == ValueOrUndefined<Int>.value(unwrapped: 10)
+          ValueOrUndefined<Int>.undefined == ValueOrUndefined<Int>.value(unwrapped: 10)
         ).to(beFalse())
       }
     }

@@ -14,7 +14,7 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.isUndefined() {
-      return ValueOrUndefined<InnerType>.undefinded
+      return ValueOrUndefined<InnerType>.undefined
     }
 
     return try dynamicInnerType.cast(jsValue: jsValue, appContext: appContext)
