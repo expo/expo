@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add web tabs ([#38435](https://github.com/expo/expo/pull/38435) by [@Ubax](https://github.com/Ubax))
+- use deffered value to fix performance for heavy tabs ([#38841](https://github.com/expo/expo/pull/38841) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
