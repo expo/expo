@@ -77,7 +77,7 @@ struct RecentlyOpenedAppRow: View {
     let port = url.port else {
       return false
     }
-    
+
     return viewModel.devServers.contains { server in
       guard let serverURL = URL(string: server.url),
         let serverPort = serverURL.port else {
