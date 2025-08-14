@@ -83,7 +83,7 @@ In Xcode, go to **Signing & Capabilities**, click **+ Capability**, add **App At
 
 For verification logic on your server, see [Validating apps that connect to your server](https://developer.apple.com/documentation/devicecheck/validating-apps-that-connect-to-your-server).
 
-### Check if the device supports App Attestation
+### Check if the device supports app attestation
 
 Not all devices can use the App Attest service, so it's important to have your app run a compatibility check before accessing the service. If the user's app doesn't pass the compatibility check, gracefully bypass the service. You can check for availability by reading the `isSupported` property.
 
@@ -98,7 +98,7 @@ if (AppIntegrity.isSupported) {
 
 > **Note**: App Attest is not supported on iOS Simulator.
 
-> **info** Most app extensions don’t support App Attest. Generally, when executing code in these extensions, bypass key generation and attestation, even if the `isSupported` method property is `true`. The only app extensions that support App Attest are watchOS extensions in watchOS 9 or later. For these extensions, you can use the results from `isSupported` to indicate whether your WatchKit extension bypasses attestation.
+> **info** Most app extensions don't support App Attest. Generally, when executing code in these extensions, bypass key generation and attestation, even if the `isSupported` method property is `true`. The only app extensions that support App Attest are watchOS extensions in watchOS 9 or later. For these extensions, you can use the results from `isSupported` to indicate whether your WatchKit extension bypasses attestation.
 
 ### Create a key pair
 
