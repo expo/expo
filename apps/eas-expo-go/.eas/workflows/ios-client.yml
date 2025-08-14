@@ -28,21 +28,9 @@ concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
   cancel_in_progress: true
 
+# note that there are also hooks in the `scripts` directory that run at different moments of the build process
 jobs:
-  prepare:
-    steps:
-#      - uses: eas/checkout
-      - name: pwd
-        run: |
-          echo 'pwd:' $(pwd)
-
-#      - name: checkout the react-native submodule
-#        run: |
-#          echo 'pwd:' $(pwd)
-#          git config --global url."https://github.com/".insteadOf "git@github.com:" # to avoid SSH issues
-#          git submodule update --init --recursive
   build-ios:
-    needs: [prepare]
     name: iOS Client Build
     type: build
     env:
@@ -51,7 +39,6 @@ jobs:
       platform: ios
       profile: unversioned-client
   build-android:
-    needs: [prepare]
     name: Android Client Build
     type: build
     env:
