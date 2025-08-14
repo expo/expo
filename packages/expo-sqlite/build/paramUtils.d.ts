@@ -15,4 +15,10 @@ export declare function composeRow<T>(columnNames: SQLiteColumnNames, columnValu
  * @hidden
  */
 export declare function composeRows<T>(columnNames: SQLiteColumnNames, columnValuesList: SQLiteColumnValues[]): T[];
+/**
+ * Normalize the index for the Storage.getKeyByIndexSync and Storage.getKeyByIndexAsync methods.
+ * @returns The normalized index or `null` if the index is out of bounds.
+ * @hidden
+ */
+export declare function normalizeStorageIndex(index: any): number | null;
 //# sourceMappingURL=paramUtils.d.ts.map

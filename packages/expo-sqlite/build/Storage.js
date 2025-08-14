@@ -1,6 +1,6 @@
 import AwaitLock from 'await-lock';
-import { installGlobal as install } from 'expo/internal/install-global';
 import { openDatabaseAsync, openDatabaseSync } from './index';
+import { normalizeStorageIndex } from './paramUtils';
 const DATABASE_VERSION = 1;
 const STATEMENT_GET = 'SELECT value FROM storage WHERE key = ?;';
 const STATEMENT_SET = 'INSERT INTO storage (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value;';
@@ -102,7 +102,8 @@ export class SQLiteStorage {
      */
     async getKeyByIndexAsync(index) {
         const db = await this.getDbAsync();
-        const result = await db.getFirstAsync(STATEMENT_GET_KEY_BY_INDEX, index);
+        const offset = normalizeStorageIndex(index) ?? 0;
+        const result = await db.getFirstAsync(STATEMENT_GET_KEY_BY_INDEX, offset);
         return result?.key ?? null;
     }
     //#endregion
@@ -182,7 +183,8 @@ export class SQLiteStorage {
      */
     getKeyByIndexSync(index) {
         const db = this.getDbSync();
-        const result = db.getFirstSync(STATEMENT_GET_KEY_BY_INDEX, index);
+        const offset = normalizeStorageIndex(index) ?? 0;
+        const result = db.getFirstSync(STATEMENT_GET_KEY_BY_INDEX, offset);
         return result?.key ?? null;
     }
     //#endregion
@@ -382,70 +384,6 @@ export class SQLiteStorage {
         }
     }
 }
-//#region Web Storage compatible API
-class WebStorageWrapper {
-    storage;
-    constructor(storage) {
-        this.storage = storage;
-    }
-    clear() {
-        this.storage.clearSync();
-    }
-    getItem(key) {
-        return this.storage.getItemSync(key);
-    }
-    key(index) {
-        return this.storage.getKeyByIndexSync(index);
-    }
-    removeItem(key) {
-        this.storage.removeItemSync(key);
-    }
-    setItem(key, value) {
-        this.storage.setItemSync(key, value);
-    }
-    get length() {
-        return this.storage.getLengthSync();
-    }
-}
-/**
- * A Proxy wrapper that allows property accessors to be used on the `WebStorageWrapper` object.
- */
-function withPropertyAccessors(obj) {
-    if (typeof Proxy !== 'function') {
-        return obj;
-    }
-    const builtin = new Set(Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).concat(Object.getOwnPropertyNames(obj)));
-    return new Proxy(obj, {
-        get(target, prop, receiver) {
-            if (typeof prop !== 'string' || builtin.has(prop)) {
-                return Reflect.get(target, prop, receiver);
-            }
-            const value = target.getItem(prop);
-            return value === null ? undefined : value;
-        },
-        set(target, prop, value, receiver) {
-            if (typeof prop !== 'string' || builtin.has(prop)) {
-                return Reflect.set(target, prop, value, receiver);
-            }
-            target.setItem(prop, String(value));
-            return true;
-        },
-        deleteProperty(target, prop) {
-            if (typeof prop !== 'string' || builtin.has(prop)) {
-                return Reflect.deleteProperty(target, prop);
-            }
-            target.removeItem(prop);
-            return true;
-        },
-        has(target, prop) {
-            if (typeof prop !== 'string' || builtin.has(prop)) {
-                return Reflect.has(target, prop);
-            }
-            return target.getItem(prop) !== null;
-        },
-    });
-}
-//#endregion
 /**
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).
  */
@@ -455,14 +393,4 @@ export default AsyncStorage;
  * Alias for [`AsyncStorage`](#sqliteasyncstorage), given the storage not only offers asynchronous methods.
  */
 export const Storage = AsyncStorage;
-/**
- * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
- */
-export const localStorage = withPropertyAccessors(new WebStorageWrapper(Storage));
-/**
- * Install the `localStorage` on the `globalThis` object.
- */
-export function installGlobal() {
-    install('localStorage', () => localStorage);
-}
 //# sourceMappingURL=Storage.js.map

@@ -1,7 +1,7 @@
 import AwaitLock from 'await-lock';
-import { installGlobal as install } from 'expo/internal/install-global';
 
 import { openDatabaseAsync, openDatabaseSync, type SQLiteDatabase } from './index';
+import { normalizeStorageIndex } from './paramUtils';
 
 /**
  * Update function for the [`setItemAsync()`](#setitemasynckey-value) or [`setItemSync()`](#setitemsynckey-value) method. It computes the new value based on the previous value. The function returns the new value to set for the key.
@@ -126,7 +126,8 @@ export class SQLiteStorage {
    */
   async getKeyByIndexAsync(index: number): Promise<string | null> {
     const db = await this.getDbAsync();
-    const result = await db.getFirstAsync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, index);
+    const offset = normalizeStorageIndex(index) ?? 0;
+    const result = await db.getFirstAsync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, offset);
     return result?.key ?? null;
   }
 
@@ -218,7 +219,8 @@ export class SQLiteStorage {
    */
   getKeyByIndexSync(index: number): string | null {
     const db = this.getDbSync();
-    const result = db.getFirstSync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, index);
+    const offset = normalizeStorageIndex(index) ?? 0;
+    const result = db.getFirstSync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, offset);
     return result?.key ?? null;
   }
 
@@ -447,86 +449,8 @@ export class SQLiteStorage {
       );
     }
   }
-
   //#endregion
 }
-
-//#region Web Storage compatible API
-
-class WebStorageWrapper {
-  constructor(private readonly storage: SQLiteStorage) {}
-
-  clear() {
-    this.storage.clearSync();
-  }
-
-  getItem(key: string): string | null {
-    return this.storage.getItemSync(key);
-  }
-
-  key(index: number): string | null {
-    return this.storage.getKeyByIndexSync(index);
-  }
-
-  removeItem(key: string) {
-    this.storage.removeItemSync(key);
-  }
-
-  setItem(key: string, value: string) {
-    this.storage.setItemSync(key, value);
-  }
-
-  get length(): number {
-    return this.storage.getLengthSync();
-  }
-}
-
-/**
- * A Proxy wrapper that allows property accessors to be used on the `WebStorageWrapper` object.
- */
-function withPropertyAccessors(
-  obj: WebStorageWrapper
-): WebStorageWrapper & Record<string, string | undefined> {
-  if (typeof Proxy !== 'function') {
-    return obj as WebStorageWrapper & Record<string, string | undefined>;
-  }
-
-  const builtin = new Set(
-    Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).concat(Object.getOwnPropertyNames(obj))
-  );
-
-  return new Proxy(obj as WebStorageWrapper & Record<string, string | undefined>, {
-    get(target, prop, receiver) {
-      if (typeof prop !== 'string' || builtin.has(prop)) {
-        return Reflect.get(target, prop, receiver);
-      }
-      const value = target.getItem(prop);
-      return value === null ? undefined : value;
-    },
-    set(target, prop, value, receiver) {
-      if (typeof prop !== 'string' || builtin.has(prop)) {
-        return Reflect.set(target, prop, value, receiver);
-      }
-      target.setItem(prop, String(value));
-      return true;
-    },
-    deleteProperty(target, prop) {
-      if (typeof prop !== 'string' || builtin.has(prop)) {
-        return Reflect.deleteProperty(target, prop);
-      }
-      target.removeItem(prop);
-      return true;
-    },
-    has(target, prop) {
-      if (typeof prop !== 'string' || builtin.has(prop)) {
-        return Reflect.has(target, prop);
-      }
-      return target.getItem(prop) !== null;
-    },
-  });
-}
-
-//#endregion
 
 /**
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).
@@ -539,15 +463,3 @@ export default AsyncStorage;
  * Alias for [`AsyncStorage`](#sqliteasyncstorage), given the storage not only offers asynchronous methods.
  */
 export const Storage = AsyncStorage;
-
-/**
- * The default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) object from the Web.
- */
-export const localStorage = withPropertyAccessors(new WebStorageWrapper(Storage));
-
-/**
- * Install the `localStorage` on the `globalThis` object.
- */
-export function installGlobal() {
-  install('localStorage', () => localStorage);
-}
