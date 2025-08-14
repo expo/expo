@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
-    "@vercel/ncc": "^0.38.0",
+    "@vercel/ncc": "^0.38.3",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "^5.0.0",
