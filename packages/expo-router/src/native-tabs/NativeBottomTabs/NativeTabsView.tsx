@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import {
   BottomTabs,
   BottomTabsScreen,
-  enableFreeze,
   featureFlags,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
@@ -14,10 +13,6 @@ import { shouldTabBeVisible } from './utils';
 // Otherwise user may see glitches when switching between tabs.
 featureFlags.experiment.controlledBottomTabs = false;
 
-// TODO: ENG-16896: Enable freeze globally and disable only for NativeTabsView
-enableFreeze(false);
-
-// TODO: Add support for dynamic params inside a route
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { builder, style, minimizeBehavior, disableIndicator, focusedIndex } = props;
   const { state, descriptors, navigation } = builder;
@@ -57,6 +52,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
           icon={convertOptionsIconToPropsIcon(descriptor.options.icon)}
           selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
           title={title}
+          freezeContents={false}
           tabKey={route.key}
           isFocused={isFocused}>
           {descriptor.render()}

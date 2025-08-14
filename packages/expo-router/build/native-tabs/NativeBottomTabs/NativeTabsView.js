@@ -40,9 +40,6 @@ const utils_1 = require("./utils");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
-// TODO: ENG-16896: Enable freeze globally and disable only for NativeTabsView
-(0, react_native_screens_1.enableFreeze)(false);
-// TODO: Add support for dynamic params inside a route
 function NativeTabsView(props) {
     const { builder, style, minimizeBehavior, disableIndicator, focusedIndex } = props;
     const { state, descriptors, navigation } = builder;
@@ -70,7 +67,7 @@ function NativeTabsView(props) {
         // TODO: Find a proper fix, that allows for proper JS navigation
         //lastNotNativeTransitionIndex.current;
         const title = descriptor.options.title ?? route.name;
-        return (<react_native_screens_1.BottomTabsScreen key={route.key} {...descriptor.options} iconResourceName={descriptor.options.icon?.drawable} icon={convertOptionsIconToPropsIcon(descriptor.options.icon)} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} tabKey={route.key} isFocused={isFocused}>
+        return (<react_native_screens_1.BottomTabsScreen key={route.key} {...descriptor.options} iconResourceName={descriptor.options.icon?.drawable} icon={convertOptionsIconToPropsIcon(descriptor.options.icon)} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={route.key} isFocused={isFocused}>
           {descriptor.render()}
         </react_native_screens_1.BottomTabsScreen>);
     });
