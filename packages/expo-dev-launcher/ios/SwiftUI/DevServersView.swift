@@ -90,7 +90,7 @@ struct DevServersView: View {
     .animation(.easeInOut, value: showingURLInput)
     .padding()
 #if !os(tvOS)
-    .background(Color(showingURLInput ? .systemGroupedBackground : .systemBackground))
+    .background(Color(showingURLInput ? .secondarySystemBackground : .systemBackground))
 #endif
     .clipShape(RoundedRectangle(cornerRadius: 12))
   }
@@ -173,7 +173,7 @@ struct DevServerRow: View {
       }
       .padding()
 #if !os(tvOS)
-      .background(Color(.systemGroupedBackground))
+      .background(Color(.secondarySystemBackground))
 #endif
       .clipShape(RoundedRectangle(cornerRadius: 12))
     }
