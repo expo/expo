@@ -46,7 +46,7 @@ await AppIntegrity.prepareIntegrityTokenProvider(cloudProjectNumber);
 
 Whenever your app makes a server request that you want to check is genuine, you request an integrity token and send it to your app's backend server for decryption and verification. Then, your backend server can determine how to act.
 
-```js 
+```js
 const requestHash = '2cp24z...';
 const result = await AppIntegrity.requestIntegrityCheck(requestHash);
 ```
