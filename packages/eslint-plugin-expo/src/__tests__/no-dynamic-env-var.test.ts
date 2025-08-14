@@ -13,19 +13,13 @@ const ruleTester = new RuleTester({
 });
 
 ruleTester.run('noDynamicEnvVar', noDynamicEnvVar, {
-  valid: [{ code: 'const myVar = process.env.MY_VAR;' }],
+  valid: [
+    { code: 'const myVar = process.env.MY_VAR;' },
+    { code: 'const myVar = process.env["MY_VAR"];' },
+    { code: "const myVar = process.env['MY_VAR'];" },
+    { code: 'const myVar = process.env[`MY_VAR`];' },
+  ],
   invalid: [
-    {
-      code: 'const myVar = process.env["MY_VAR"]',
-      errors: [
-        {
-          messageId: 'unexpectedDynamicAccess',
-          data: {
-            value: 'MY_VAR',
-          },
-        },
-      ],
-    },
     {
       code: 'const dynamicVar = "MY_VAR"; const myVar = process.env[dynamicVar];',
       errors: [
@@ -33,6 +27,17 @@ ruleTester.run('noDynamicEnvVar', noDynamicEnvVar, {
           messageId: 'unexpectedDynamicAccess',
           data: {
             value: 'dynamicVar',
+          },
+        },
+      ],
+    },
+    {
+      code: 'const myVar = process.env[`MY_${VAR}`];',
+      errors: [
+        {
+          messageId: 'unexpectedDynamicAccess',
+          data: {
+            value: '',
           },
         },
       ],
