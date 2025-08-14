@@ -44,7 +44,7 @@
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",
     "ts-jest": "~29.0.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0"
