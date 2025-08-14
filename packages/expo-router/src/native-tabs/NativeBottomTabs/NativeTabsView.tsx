@@ -48,6 +48,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         <BottomTabsScreen
           key={route.key}
           {...descriptor.options}
+          tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor}
+          tabBarItemBadgeTextColor={style?.badgeTextColor}
+          tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment}
           iconResourceName={descriptor.options.icon?.drawable}
           icon={convertOptionsIconToPropsIcon(descriptor.options.icon)}
           selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
@@ -68,7 +71,12 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       tabBarItemTitleFontColor={style?.color}
       tabBarItemTitleFontFamily={style?.fontFamily}
       tabBarItemTitleFontSize={style?.fontSize}
-      tabBarItemTitleFontWeight={style?.fontWeight}
+      // Only string values are accepted by screens
+      tabBarItemTitleFontWeight={
+        style?.fontWeight
+          ? (String(style.fontWeight) as `${NonNullable<(typeof style)['fontWeight']>}`)
+          : undefined
+      }
       tabBarItemTitleFontStyle={style?.fontStyle}
       tabBarBackgroundColor={style?.backgroundColor}
       tabBarBlurEffect={style?.blurEffect}

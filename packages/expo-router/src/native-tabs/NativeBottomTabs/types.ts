@@ -73,25 +73,43 @@ export interface ExtendedNativeTabOptions extends NativeTabOptions {
   specialEffects?: BottomTabsScreenProps['specialEffects'];
 }
 
+type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+
 export interface NativeTabsStyleType {
   fontFamily?: TextStyle['fontFamily'];
   fontSize?: TextStyle['fontSize'];
-  fontWeight?: TextStyle['fontWeight'];
+  fontWeight?: NumericFontWeight | `${NumericFontWeight}`;
   fontStyle?: TextStyle['fontStyle'];
   color?: TextStyle['color'];
   /**
    * @platform android
    * @platform iOS
+   * @platform tvOS
    */
   iconColor?: ColorValue;
   backgroundColor?: ColorValue;
   /**
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
+   *
+   * @platform iOS
+   */
+  titlePositionAdjustment?: {
+    horizontal?: number;
+    vertical?: number;
+  };
+  /**
    * @platform iOS
    */
   blurEffect?: BottomTabsScreenProps['tabBarBlurEffect'];
+  /**
+   * @platform android
+   * @platform iOS
+   * @platform web
+   */
   tintColor?: ColorValue;
   badgeBackgroundColor?: ColorValue;
   /**
+   * @platform android
    * @platform web
    */
   badgeTextColor?: ColorValue;
