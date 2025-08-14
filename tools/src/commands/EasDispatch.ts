@@ -431,7 +431,12 @@ async function androidApkUploadAsync() {
   const appVersion = await androidAppVersionAsync();
   await confirmPromptIfOverridingRemoteFileAsync(getAndroidApkUrl(appVersion), appVersion);
   const projectDir = EAS_EXPO_GO_PROJECT_DIR;
-  const archivePath = await downloadBuildArtifactAsync(projectDir, 'android', appVersion);
+  const archivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'android',
+    appVersion,
+    sdkVersion
+  );
 
   logger.info(`Build archive downloaded to: ${archivePath}`);
 
@@ -499,7 +504,12 @@ async function iosSimulatorUploadAsync() {
   const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
   await confirmPromptIfOverridingRemoteFileAsync(getIosSimulatorUrl(appVersion), appVersion);
   const projectDir = EAS_EXPO_GO_PROJECT_DIR;
-  const tempArchivePath = await downloadBuildArtifactAsync(projectDir, 'ios', appVersion);
+  const tempArchivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'ios',
+    appVersion,
+    sdkVersion
+  );
   const archivePath = await processIosTarArchiveAsync(tempArchivePath, projectDir);
 
   const repoOwner = REPO_OWNER;
@@ -573,7 +583,8 @@ export async function iosSimulatorBuildAsync() {
 async function downloadBuildArtifactAsync(
   projectDir: string,
   platform: 'ios' | 'android',
-  appVersion: string
+  appVersion: string,
+  sdkVersion: string
 ) {
   const buildInfo = await spawnAsync(
     'eas',
@@ -589,6 +600,8 @@ async function downloadBuildArtifactAsync(
       'finished',
       '--profile',
       PUBLISH_CLIENT_BUILD_PROFILE,
+      '--sdk-version',
+      sdkVersion,
     ],
     {
       cwd: projectDir,
