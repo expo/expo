@@ -2,6 +2,7 @@
 
 import SwiftUI
 
+// swiftlint:disable:next line_length
 private let selectedGesturesInfoMessage = "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools."
 
 struct SettingsTabView: View {

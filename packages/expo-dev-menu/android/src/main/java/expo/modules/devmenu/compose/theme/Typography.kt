@@ -62,10 +62,12 @@ object Typography {
 
   val inter = FontFamily(
     Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_medium, FontWeight.Medium),
     Font(R.font.inter_semibold, FontWeight.SemiBold)
   )
 
   val mono = FontFamily(
-    Font(R.font.robotomono_medium, FontWeight.Medium)
+    Font(R.font.jetbrains_mono_regular, FontWeight.Normal),
+    Font(R.font.jetbrains_mono_medium, FontWeight.Medium)
   )
 }

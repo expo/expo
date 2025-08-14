@@ -19,7 +19,6 @@ function useNextScreenId() {
             if (currentHref.current && state) {
                 const preloadedRoute = (0, utils_1.getPreloadedRouteFromRootStateByHref)(currentHref.current, state);
                 const routeKey = preloadedRoute?.key;
-                console.log('routeKey', routeKey);
                 const tabPathFromRootState = (0, utils_1.getTabPathFromRootStateByHref)(currentHref.current, state);
                 // Without this timeout react-native does not have enough time to mount the new screen
                 // and thus it will not be found on the native side

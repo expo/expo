@@ -14,6 +14,7 @@ internal final class TextViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPro
   @Field var lineLimit: Int?
   @Field var color: Color?
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
 }
 
 internal struct TextView: ExpoSwiftUI.View {

@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '5.1.0'
+version = '6.0.0'
 
 android {
   namespace "expo.modules.imageloader"
   defaultConfig {
     versionCode 8
-    versionName "5.1.0"
+    versionName "6.0.0"
   }
 }
 

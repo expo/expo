@@ -6,10 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Bump `@vercel/ncc` build ([#38801](https://github.com/expo/expo/pull/38801) by [@kitten](https://github.com/kitten))
+
+## 1.14.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
 - Add check that detects duplicated native modules ([#38683](https://github.com/expo/expo/pull/38683) by [@kitten](https://github.com/kitten))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

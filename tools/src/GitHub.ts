@@ -347,7 +347,8 @@ export async function getOrCreateReleaseAsync(
   repoOwner: string,
   repoName: string,
   releaseTag: string,
-  appVersion: string
+  appVersion: string,
+  sdkVersion: string
 ) {
   try {
     const existingRelease = await octokit.rest.repos.getReleaseByTag({
@@ -363,8 +364,8 @@ export async function getOrCreateReleaseAsync(
         owner: repoOwner,
         repo: repoName,
         tag_name: releaseTag,
-        name: `Expo Go Simulator ${appVersion}`,
-        body: `Simulator build for Expo Go version ${appVersion}`,
+        name: `Expo Go ${appVersion}`,
+        body: `Expo Go version ${appVersion}\nExpo SDK ${sdkVersion}`,
         draft: false,
         prerelease: false,
         generate_release_notes: false,

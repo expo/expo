@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { createViewModifierEventListener } from './modifiers/utils';
 import { type CommonViewModifierProps } from './types';
 
 export interface TextProps extends CommonViewModifierProps {
@@ -45,8 +46,11 @@ const TextNativeView: React.ComponentType<Omit<TextProps, 'children'> & { text: 
   requireNativeView('ExpoUI', 'TextView');
 
 function transformTextProps(props: TextProps): NativeTextProps {
-  const { children, ...restProps } = props;
+  const { children, modifiers, ...restProps } = props;
+
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     text: children ?? '',
   };

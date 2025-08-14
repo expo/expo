@@ -587,6 +587,97 @@ describe('prefetch', () => {
       type: 'stack',
     });
   });
+
+  it('does not throw an exception when prefetching a protected route with guard false', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    // There was no state update, because prefetch of protected route didn't make any state changes, so we received the initial state
+    // This is stale state created by router
+    expect(screen).toHaveRouterState({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: true,
+    });
+  });
+
+  it('does not throw an exception when prefetching a protected route with guard true', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
+            ],
+            routeNames: ['test', 'index'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
 });
 
 describe('Preview', () => {

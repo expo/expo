@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Move async-require and fast refresh to `expo`. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Move async-require and fast refresh to `expo`. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

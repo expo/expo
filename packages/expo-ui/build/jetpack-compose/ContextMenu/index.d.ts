@@ -1,5 +1,6 @@
 import { ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { ExpoModifier } from '../../types';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
@@ -48,6 +49,8 @@ export type ContextMenuProps = {
      * Optional styles to apply to the `ContextMenu`.
      */
     style?: StyleProp<ViewStyle>;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 /**
  * Props of the `Submenu` component.

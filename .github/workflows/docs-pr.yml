@@ -64,6 +64,8 @@ jobs:
         timeout-minutes: 20
         env:
           AWS_BUCKET: 'docs.expo.dev-pr-${{ github.event.pull_request.number }}'
+          # NOTE(@krystofwoldrich): Missing token won't fail the build
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: 🔗 Lint pages links
         working-directory: docs
         run: yarn lint-links --quiet

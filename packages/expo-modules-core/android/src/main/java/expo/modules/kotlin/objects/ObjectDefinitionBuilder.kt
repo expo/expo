@@ -86,6 +86,7 @@ open class ObjectDefinitionBuilder(
   /**
    * Definition function setting the module's constants to export.
    */
+  @Deprecated("Use `Constant` or `Property` instead")
   fun Constants(legacyConstantsProvider: () -> Map<String, Any?>) {
     this.legacyConstantsProvider = legacyConstantsProvider
   }
@@ -93,6 +94,7 @@ open class ObjectDefinitionBuilder(
   /**
    * Definition of the module's constants to export.
    */
+  @Deprecated("Use `Constant` or `Property` instead")
   fun Constants(vararg constants: Pair<String, Any?>) {
     legacyConstantsProvider = { constants.toMap() }
   }

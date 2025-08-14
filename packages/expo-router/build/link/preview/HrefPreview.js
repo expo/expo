@@ -16,11 +16,29 @@ const linking_1 = require("../linking");
 function HrefPreview({ href }) {
     const hrefState = (0, react_1.useMemo)(() => getHrefState(href), [href]);
     const index = hrefState?.index ?? 0;
+    let isProtected = false;
     if (hrefState?.routes[index]?.name === constants_1.INTERNAL_SLOT_NAME) {
-        return <PreviewForRootHrefState hrefState={hrefState} href={href}/>;
+        let routerState = hrefState;
+        let rnState = router_store_1.store.state;
+        while (routerState && rnState) {
+            const routerRoute = routerState.routes[0];
+            // When the route we want to show is not present in react-navigation state
+            // Then most likely it is a protected route
+            if (rnState.stale === false && !rnState.routeNames?.includes(routerRoute.name)) {
+                isProtected = true;
+                break;
+            }
+            const rnIndex = rnState.routes.findIndex((route) => route.name === routerRoute.name);
+            if (rnIndex === -1) {
+                break;
+            }
+            routerState = routerRoute.state;
+            rnState = rnState.routes[rnIndex]?.state;
+        }
+        if (!isProtected) {
+            return <PreviewForRootHrefState hrefState={hrefState} href={href}/>;
+        }
     }
-    const isInternalRoute = hrefState?.routes[index]?.name === constants_1.NOT_FOUND_ROUTE_NAME ||
-        hrefState?.routes[index]?.name === constants_1.SITEMAP_ROUTE_NAME;
     const pathname = href.toString();
     const segments = pathname.split('/').filter(Boolean);
     return (<PreviewRouteContext_1.PreviewRouteContext.Provider value={{
@@ -28,7 +46,7 @@ function HrefPreview({ href }) {
             pathname,
             segments,
         }}>
-      {isInternalRoute ? <PreviewForInternalRoutes /> : null}
+      <PreviewForInternalRoutes />
     </PreviewRouteContext_1.PreviewRouteContext.Provider>);
 }
 function PreviewForRootHrefState({ hrefState, href }) {

@@ -29,6 +29,7 @@ internal final class VStackViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierP
   @Field var alignment: HorizontalAlignmentOptions?
   @Field var backgroundColor: Color?
   @Field var testID: String?
+  @Field var modifiers: [[String: Any]]?
   var onTap = EventDispatcher()
 }
 

@@ -5,11 +5,17 @@ import assert from 'assert';
 import fs, { mkdirp } from 'fs-extra';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
+import ora from 'ora';
 import path from 'path';
 import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
+import {
+  EAS_EXPO_GO_PROJECT_DIR,
+  EXPO_GO_IOS_DIR,
+  REPO_OWNER,
+  RELEASES_REPO_NAME,
+} from '../Constants';
 import Git from '../Git';
 import { getOrCreateReleaseAsync, uploadReleaseAssetAsync } from '../GitHub';
 import logger from '../Logger';
@@ -123,11 +129,11 @@ function getAppName(appVersion: string): string {
 }
 
 function getAndroidApkUrl(appVersion: string): string {
-  return `https://github.com/expo/expo-go-releases/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.apk`;
+  return `https://github.com/${REPO_OWNER}/${RELEASES_REPO_NAME}/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.apk`;
 }
 
 function getIosSimulatorUrl(appVersion: string): string {
-  return `https://github.com/expo/expo-go-releases/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.tar.gz`;
+  return `https://github.com/${REPO_OWNER}/${RELEASES_REPO_NAME}/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.tar.gz`;
 }
 
 async function confirmPromptIfOverridingRemoteFileAsync(
@@ -143,7 +149,7 @@ async function confirmPromptIfOverridingRemoteFileAsync(
         type: 'confirm',
         name: 'selection',
         default: false,
-        message: `${appVersion} version of a client was already uploaded to S3. Do you want to override it?`,
+        message: `${appVersion} version of a client was already uploaded to GitHub. Do you want to override it?`,
       },
     ]);
     if (!selection) {
@@ -164,7 +170,7 @@ async function enforceRunningOnSdkReleaseBranchAsync(): Promise<string> {
 async function iosBuildAndSubmitAsync() {
   await enforceRunningOnSdkReleaseBranchAsync();
   const isDebug = !!process.env.EXPO_DEBUG;
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
   const credentialsDir = path.join(projectDir, 'credentials');
   const fastlaneMatchBucketCopyPath = path.join(credentialsDir, 'fastlane-match');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
@@ -338,7 +344,7 @@ async function prepareAndroidCredentialsAsync(projectDir: string): Promise<void>
 }
 
 async function androidBuildAndSubmitAsync() {
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
   await enforceRunningOnSdkReleaseBranchAsync();
   await prepareAndroidCredentialsAsync(projectDir);
 
@@ -397,7 +403,7 @@ async function internalRemoveBackgroundPermissionsFromInfoPlistAsync(): Promise<
 }
 
 async function androidApkBuildAsync() {
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
   await enforceRunningOnSdkReleaseBranchAsync();
   await prepareAndroidCredentialsAsync(projectDir);
 
@@ -424,18 +430,29 @@ async function androidApkUploadAsync() {
   const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
   const appVersion = await androidAppVersionAsync();
   await confirmPromptIfOverridingRemoteFileAsync(getAndroidApkUrl(appVersion), appVersion);
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
-  const archivePath = await downloadBuildArtifactAsync(projectDir, 'android', appVersion);
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
+  const archivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'android',
+    appVersion,
+    sdkVersion
+  );
 
   logger.info(`Build archive downloaded to: ${archivePath}`);
 
-  const repoOwner = 'expo';
-  const repoName = 'expo-go-releases';
+  const repoOwner = REPO_OWNER;
+  const repoName = RELEASES_REPO_NAME;
 
   const releaseTag = getAppName(appVersion);
 
   try {
-    const release = await getOrCreateReleaseAsync(repoOwner, repoName, releaseTag, appVersion);
+    const release = await getOrCreateReleaseAsync(
+      repoOwner,
+      repoName,
+      releaseTag,
+      appVersion,
+      sdkVersion
+    );
 
     logger.info(`Release on GitHub: ${release.data.html_url}`);
 
@@ -443,17 +460,9 @@ async function androidApkUploadAsync() {
     const fileStats = fs.statSync(archivePath);
     const totalBytes = fileStats.size;
 
-    logger.info(
-      `📤 Uploading to GitHub: ${artifactName} (${(totalBytes / 1024 / 1024).toFixed(1)} MB)...`
-    );
-
-    const spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-    let spinnerIndex = 0;
-
-    const progressInterval = setInterval(() => {
-      process.stdout.write(`\r${spinner[spinnerIndex]} Uploading...`);
-      spinnerIndex = (spinnerIndex + 1) % spinner.length;
-    }, 100);
+    const spinner = ora(
+      `Uploading to GitHub: ${artifactName} (${(totalBytes / 1024 / 1024).toFixed(1)} MB)...`
+    ).start();
 
     try {
       const artifactContent = await fs.readFile(archivePath);
@@ -467,18 +476,15 @@ async function androidApkUploadAsync() {
       );
 
       const githubArtifactUrl = res.data.browser_download_url;
-      logger.success(`✅ Upload completed successfully! ${githubArtifactUrl}`);
+      spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.androidClientUrl = githubArtifactUrl;
         sdkVersions.androidClientVersion = appVersion;
         return sdkVersions;
       });
     } catch (error) {
-      logger.error('❌ Upload failed!');
+      spinner.fail('Upload failed!');
       throw error;
-    } finally {
-      clearInterval(progressInterval);
-      process.stdout.write('\r'); // clear the spinner
     }
   } catch (error: any) {
     logger.error(`Error creating release: ${error.message}`);
@@ -497,15 +503,28 @@ async function iosSimulatorUploadAsync() {
   const appVersion = await iosAppVersionAsync();
   const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
   await confirmPromptIfOverridingRemoteFileAsync(getIosSimulatorUrl(appVersion), appVersion);
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
-  const archivePath = await downloadBuildArtifactAsync(projectDir, 'ios', appVersion);
-  const repoOwner = 'expo';
-  const repoName = 'expo-go-releases';
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
+  const tempArchivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'ios',
+    appVersion,
+    sdkVersion
+  );
+  const archivePath = await processIosTarArchiveAsync(tempArchivePath, projectDir);
+
+  const repoOwner = REPO_OWNER;
+  const repoName = RELEASES_REPO_NAME;
 
   const releaseTag = getAppName(appVersion);
 
   try {
-    const release = await getOrCreateReleaseAsync(repoOwner, repoName, releaseTag, appVersion);
+    const release = await getOrCreateReleaseAsync(
+      repoOwner,
+      repoName,
+      releaseTag,
+      appVersion,
+      sdkVersion
+    );
 
     logger.info(`Release on GitHub: ${release.data.html_url}`);
 
@@ -513,17 +532,9 @@ async function iosSimulatorUploadAsync() {
     const fileStats = fs.statSync(archivePath);
     const totalBytes = fileStats.size;
 
-    logger.info(
-      `📤 Uploading to GitHub: ${artifactName} (${(totalBytes / 1024 / 1024).toFixed(1)} MB)...`
-    );
-
-    const spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-    let spinnerIndex = 0;
-
-    const progressInterval = setInterval(() => {
-      process.stdout.write(`\r${spinner[spinnerIndex]} Uploading...`);
-      spinnerIndex = (spinnerIndex + 1) % spinner.length;
-    }, 100);
+    const spinner = ora(
+      `Uploading to GitHub: ${artifactName} (${(totalBytes / 1024 / 1024).toFixed(1)} MB)...`
+    ).start();
 
     try {
       const artifactContent = await fs.readFile(archivePath);
@@ -537,18 +548,15 @@ async function iosSimulatorUploadAsync() {
       );
 
       const githubArtifactUrl = res.data.browser_download_url;
-      logger.success(`✅ Upload completed successfully! ${githubArtifactUrl}`);
+      spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.iosClientUrl = githubArtifactUrl;
         sdkVersions.iosClientVersion = appVersion;
         return sdkVersions;
       });
     } catch (error) {
-      logger.error('❌ Upload failed!');
+      spinner.fail('Upload failed!');
       throw error;
-    } finally {
-      clearInterval(progressInterval);
-      process.stdout.write('\r'); // clear the spinner
     }
   } catch (error: any) {
     logger.error(`Error creating release: ${error.message}`);
@@ -559,7 +567,7 @@ async function iosSimulatorUploadAsync() {
 }
 
 export async function iosSimulatorBuildAsync() {
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
   await enforceRunningOnSdkReleaseBranchAsync();
 
   await spawnAsync(
@@ -575,7 +583,8 @@ export async function iosSimulatorBuildAsync() {
 async function downloadBuildArtifactAsync(
   projectDir: string,
   platform: 'ios' | 'android',
-  appVersion: string
+  appVersion: string,
+  sdkVersion: string
 ) {
   const buildInfo = await spawnAsync(
     'eas',
@@ -591,6 +600,8 @@ async function downloadBuildArtifactAsync(
       'finished',
       '--profile',
       PUBLISH_CLIENT_BUILD_PROFILE,
+      '--sdk-version',
+      sdkVersion,
     ],
     {
       cwd: projectDir,
@@ -684,4 +695,43 @@ async function downloadBuildArtifactAsync(
   });
 
   return archivePath;
+}
+
+// Downloaded tar.gz could be of two formats:
+// tar.gz/Expo go.app/[App Contents] or tar.gz/[App Contents]
+async function processIosTarArchiveAsync(archivePath: string, projectDir: string): Promise<string> {
+  const tempExtractDir = path.join(projectDir, 'temp-extract');
+  try {
+    await mkdirp(tempExtractDir);
+    await spawnAsync('tar', ['-xzf', archivePath, '-C', tempExtractDir], {
+      stdio: 'pipe',
+    });
+
+    // delete the original archive and create a new later in the same path
+    fs.removeSync(archivePath);
+
+    const extractedContents = await fs.readdir(tempExtractDir);
+    // if there is a .app bundle, the file is downloaded from EAS, create the tar file from it's contents
+    const appBundle = extractedContents.find((item) => item.endsWith('.app'));
+    if (appBundle) {
+      const appBundlePath = path.join(tempExtractDir, appBundle);
+      await spawnAsync('tar', ['-zcvf', archivePath, '-C', appBundlePath, '.'], {
+        stdio: 'pipe',
+      });
+      logger.info(`Created tar from .app bundle contents: ${archivePath}`);
+    }
+    // If no .app file, check if it's a valid iOS app bundle. tar.gz could be from Cloudfront URL.
+    else if (fs.existsSync(path.join(tempExtractDir, 'Info.plist'))) {
+      await spawnAsync('tar', ['-zcvf', archivePath, '-C', tempExtractDir, '.'], {
+        stdio: 'pipe',
+      });
+      logger.info(`Created tar from extracted contents: ${archivePath}`);
+    } else {
+      throw new Error('Unknown archive format');
+    }
+
+    return archivePath;
+  } finally {
+    await fs.remove(tempExtractDir);
+  }
 }
