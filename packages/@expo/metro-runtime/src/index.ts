@@ -9,12 +9,10 @@ import './location/install';
 
 import '@expo/metro-runtime/rsc/runtime';
 
-import { enablePromiseRejectionTracking } from './promiseRejectionTracking';
-
 if (__DEV__) {
   // TODO: Remove when fixed upstream. Expected in RN 0.82.
   // https://github.com/facebook/react-native/commit/c4082c9ce208a324c2d011823ca2ba432411aafc
-  enablePromiseRejectionTracking();
+  require('./promiseRejectionTracking').enablePromiseRejectionTracking();
 }
 
 if (__DEV__) {
