@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+
 ## 17.0.0 — 2025-08-13
 
 ### 🎉 New features

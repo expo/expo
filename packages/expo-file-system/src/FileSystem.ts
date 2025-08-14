@@ -99,7 +99,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     return bytes.buffer as ArrayBuffer;
   }
 
-  stream(): ReadableStream<Uint8Array> {
+  stream(): ReadableStream<Uint8Array<ArrayBuffer>> {
     return this.readableStream();
   }
 
