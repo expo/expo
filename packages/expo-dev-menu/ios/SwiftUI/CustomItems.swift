@@ -27,7 +27,7 @@ struct CustomItems: View {
             .padding()
           }
           #if !os(tvOS)
-          .background(Color(.systemGroupedBackground))
+          .background(Color(.secondarySystemBackground))
           #endif
           .clipShape(RoundedRectangle(cornerRadius: 12))
         }
