@@ -112,6 +112,6 @@
   "unimodules-image-loader-interface": "~6.1.0",
   "@shopify/react-native-skia": "2.2.3",
   "@shopify/flash-list": "2.0.2",
-  "@sentry/react-native": "~6.14.0",
-  "react-native-bootsplash": "^6.3.7"
+  "@sentry/react-native": "~6.20.0",
+  "react-native-bootsplash": "^6.3.10"
 }
