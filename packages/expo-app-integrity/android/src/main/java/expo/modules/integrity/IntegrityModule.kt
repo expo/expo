@@ -29,7 +29,7 @@ class IntegrityModule : Module() {
       val cloudProjectNumberLong = cloudProjectNumber.toLongOrNull()
 
       if (cloudProjectNumberLong == null) {
-        promise.reject(IntegrityException("Invalid cloud project number: '$cloudProjectNumber'. It must be a valid number.", "ERR_APP_INTEGRITY_INVALID_PROJECT_NUMBER"))
+        promise.reject(IntegrityException("ERR_APP_INTEGRITY_INVALID_PROJECT_NUMBER", "Invalid cloud project number: '$cloudProjectNumber'. It must be a valid number."))
         return@AsyncFunction
       }
 
@@ -48,7 +48,7 @@ class IntegrityModule : Module() {
         promise.reject(handleIntegrityError(it))
       }.addOnCanceledListener {
         promise.reject(
-          IntegrityException("Request cancelled", "ERR_APP_INTEGRITY_CANCELLED")
+          IntegrityException("ERR_APP_INTEGRITY_CANCELLED", "Request cancelled")
         )
       }
     }
@@ -72,7 +72,7 @@ class IntegrityModule : Module() {
           }
           .addOnCanceledListener {
             promise.reject(
-              IntegrityException("Request cancelled", "ERR_APP_INTEGRITY_CANCELLED")
+              IntegrityException("ERR_APP_INTEGRITY_CANCELLED", "Request cancelled")
             )
           }
       } ?: promise.reject(
@@ -80,8 +80,8 @@ class IntegrityModule : Module() {
           handleIntegrityError(integrityTokenException)
         } else {
           IntegrityException(
-            "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME",
-            "ERR_APP_INTEGRITY_PROVIDER_NOT_PREPARED"
+            "ERR_APP_INTEGRITY_PROVIDER_NOT_PREPARED",
+            "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME"
           )
         }
       )
@@ -93,14 +93,14 @@ class IntegrityModule : Module() {
       is StandardIntegrityException -> {
         val errorCode = mapStandardIntegrityErrorCode(exception.errorCode)
         IntegrityException(
-          exception.message ?: "Unknown standard integrity error",
           errorCode,
+          exception.message ?: "Unknown standard integrity error",
           exception
         )
       }
       else -> IntegrityException(
-        exception?.message ?: "Unknown error",
         "ERR_APP_INTEGRITY_UNKNOWN",
+        exception?.message ?: "Unknown error",
         exception
       )
     }
