@@ -39,7 +39,6 @@
     "react-native-webview": "13.15.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
     "@types/react": "~19.1.0",
     "typescript": "~5.9.2",
     "eslint": "^9.25.0",
