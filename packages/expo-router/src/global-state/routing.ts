@@ -3,9 +3,12 @@ import {
   type NavigationState,
   PartialRoute,
   type PartialState,
+  type NavigationContainerRef,
+  ParamListBase,
 } from '@react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
+import { type RefObject } from 'react';
 import { Platform } from 'react-native';
 
 import { store } from './router-store';
@@ -45,25 +48,20 @@ export const routingQueue = {
     return routingQueue.queue;
   },
   add(action: NavigationAction) {
-    // Reset the identity of the queue.
-    if (routingQueue.queue.length === 0) {
-      routingQueue.queue = [];
-    }
-
     routingQueue.queue.push(action);
     for (const callback of routingQueue.subscribers) {
       callback();
     }
   },
-  run() {
-    const queue = routingQueue.queue;
-    if (queue.length === 0 || !store.navigationRef) {
-      return;
-    }
-
+  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
+    // Reset the identity of the queue.
+    const events = routingQueue.queue;
     routingQueue.queue = [];
-    for (const action of queue) {
-      store.navigationRef.dispatch(action);
+    let action: NavigationAction | undefined;
+    while ((action = events.shift())) {
+      if (ref.current) {
+        ref.current.dispatch(action);
+      }
     }
   },
 };

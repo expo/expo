@@ -76,23 +76,20 @@ exports.routingQueue = {
         return exports.routingQueue.queue;
     },
     add(action) {
-        // Reset the identity of the queue.
-        if (exports.routingQueue.queue.length === 0) {
-            exports.routingQueue.queue = [];
-        }
         exports.routingQueue.queue.push(action);
         for (const callback of exports.routingQueue.subscribers) {
             callback();
         }
     },
-    run() {
-        const queue = exports.routingQueue.queue;
-        if (queue.length === 0 || !router_store_1.store.navigationRef) {
-            return;
-        }
+    run(ref) {
+        // Reset the identity of the queue.
+        const events = exports.routingQueue.queue;
         exports.routingQueue.queue = [];
-        for (const action of queue) {
-            router_store_1.store.navigationRef.dispatch(action);
+        let action;
+        while ((action = events.shift())) {
+            if (ref.current) {
+                ref.current.dispatch(action);
+            }
         }
     },
 };
