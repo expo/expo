@@ -42,13 +42,13 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
-    "expo-module-scripts": "^5.0.0",
+    "expo-module-scripts": "^5.0.1",
     "memfs": "^3.2.0"
   },
   "dependencies": {
     "@bacons/xcode": "1.0.0-alpha.24",
     "@expo/config": "~12.0.0",
-    "@expo/config-plugins": "~11.0.0",
+    "@expo/config-plugins": "~11.0.1",
     "@expo/env": "~2.0.0",
     "@expo/spawn-async": "^1.7.2",
     "arg": "5.0.2",

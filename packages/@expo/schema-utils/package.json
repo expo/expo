@@ -28,7 +28,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.0",
+    "expo-module-scripts": "^5.0.1",
     "json-schema-to-typescript": "^14.0.5"
   },
   "publishConfig": {

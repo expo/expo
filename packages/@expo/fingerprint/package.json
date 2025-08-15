@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@types/find-up": "^4.0.0",
-    "expo-module-scripts": "^5.0.0",
+    "expo-module-scripts": "^5.0.1",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"
   }

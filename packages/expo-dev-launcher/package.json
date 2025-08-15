@@ -15,7 +15,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu": "7.0.0",
+    "expo-dev-menu": "7.0.1",
     "expo-manifests": "~1.0.0"
   },
   "peerDependencies": {

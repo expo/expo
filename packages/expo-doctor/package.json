@@ -43,7 +43,7 @@
     "@vercel/ncc": "0.38.3",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^5.0.0",
+    "expo-module-scripts": "^5.0.1",
     "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "ignore": "^5.3.2",
