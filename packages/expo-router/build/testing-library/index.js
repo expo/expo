@@ -28,6 +28,12 @@ const rnTestingLibrary = (() => {
         throw error;
     }
 })();
+Object.assign(exports, rnTestingLibrary);
+Object.defineProperty(exports, 'screen', {
+    get() {
+        return rnTestingLibrary.screen;
+    },
+});
 function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
     jest.useFakeTimers();
     const mockContext = (0, mock_config_1.getMockContext)(context);
@@ -89,7 +95,7 @@ exports.testRouter = {
     setParams(params, path) {
         imperative_api_1.router.setParams(params);
         if (path) {
-            expect(screen).toHavePathnameWithParams(path);
+            expect(exports.screen).toHavePathnameWithParams(path);
         }
     },
     /** If there's history that supports invoking the `back` function. */
