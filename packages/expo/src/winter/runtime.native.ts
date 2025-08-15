@@ -19,6 +19,9 @@ install('URLSearchParams', () => require('./url').URLSearchParams);
 
 install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
 
+// https://html.spec.whatwg.org/multipage/structured-data.html#structuredclone
+install('structuredClone', () => require('@ungap/structured-clone').default);
+
 installFormDataPatch(FormData);
 
 // Polyfill async iterator symbol for Hermes.
