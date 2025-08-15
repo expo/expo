@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Link to changelogs based on the project's SDK version. ([#38877](https://github.com/expo/expo/pull/38877) by [@betomoedano](https://github.com/betomoedano))
+
 ### 💡 Others
 
 - Bump `@vercel/ncc` build ([#38801](https://github.com/expo/expo/pull/38801) by [@kitten](https://github.com/kitten))
