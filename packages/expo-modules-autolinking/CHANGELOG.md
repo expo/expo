@@ -4,7 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
 - Reimplement Turbo Modules and Expo Modules discovery algorithm. Native modules are now discovered according to Node resolution by default, which can be overridden to the old behaviour by specifying `searchPaths` manually. The default behaviour will recursively resolve Node `dependencies` and `peerDependencies` ([#38282](https://github.com/expo/expo/pull/38282) by [@kitten](https://github.com/kitten))
+- Update `verify` command to check React Native modules as well, change `--json` output format, and accept `--verbose` option ([#38766](https://github.com/expo/expo/pull/38766) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
@@ -18,11 +33,13 @@
 
 - [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
 - Prevent Expo Modules from being detected as C++-only React Native modules ([#38658](https://github.com/expo/expo/pull/38658) by [@kitten](https://github.com/kitten))
+- Ignore optional peer dependencies in dependency traversal ([#38713](https://github.com/expo/expo/pull/38713) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
 - [iOS] Add support for user script sandboxing ([#38206](https://github.com/expo/expo/pull/38206) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Refactor JSON loading in `findModules` algorithm path to use plain `fs`. ([#38202](https://github.com/expo/expo/pull/38202) by [@kitten](https://github.com/kitten))
+- Add internal API for dual autolinking dependency resolution ([#38680](https://github.com/expo/expo/pull/38680) by [@kitten](https://github.com/kitten))
 
 ## 2.1.14 - 2025-07-07
 

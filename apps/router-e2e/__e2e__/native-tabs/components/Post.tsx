@@ -10,6 +10,7 @@ export function Post(props: { title: string; href: Href }) {
             flex: 1,
             width: '100%',
             gap: 8,
+            backgroundColor: '#000',
           }}>
           <Text style={{ color: '#fff', fontSize: 18 }}>{props.title}</Text>
           <View

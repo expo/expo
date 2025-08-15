@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2025-08-13
+
+### 💡 Others
+
 - Migrate to package exports ([#37298](https://github.com/expo/expo/pull/37298) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.2.3 — 2025-04-30

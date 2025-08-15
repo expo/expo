@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
-import { Host } from '../Host';
+import { type ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 /**
  * The role of the button.
@@ -76,9 +76,10 @@ export type ButtonProps = {
    * Disabled state of the button.
    */
   disabled?: boolean;
-};
+} & CommonViewModifierProps;
 
 /**
+ * exposed for ContextMenu
  * @hidden
  */
 export type NativeButtonProps = Omit<
@@ -97,14 +98,17 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 );
 
 /**
+ * exposed for ContextMenu
  * @hidden
  */
 export function transformButtonProps(
   props: Omit<ButtonProps, 'children'>,
   text: string | undefined
 ): NativeButtonProps {
-  const { role, onPress, systemImage, ...restProps } = props;
+  const { role, onPress, systemImage, modifiers, ...restProps } = props;
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     text,
     systemImage,
@@ -114,10 +118,9 @@ export function transformButtonProps(
 }
 
 /**
- * `<Button>` component without a host view.
- * You should use this with a `Host` component in ancestor.
+ * Displays a native button component.
  */
-export function ButtonPrimitive(props: ButtonProps) {
+export function Button(props: ButtonProps) {
   const { children, ...restProps } = props;
 
   if (!children && !restProps.systemImage) {
@@ -135,16 +138,4 @@ export function ButtonPrimitive(props: ButtonProps) {
     return <ButtonNativeView {...transformedProps} />;
   }
   return <ButtonNativeView {...transformedProps}>{children}</ButtonNativeView>;
-}
-
-/**
- * Displays a native button component.
- */
-export function Button(props: ButtonProps & { style?: StyleProp<ViewStyle> }) {
-  const useViewportSizeMeasurement = props.style == null;
-  return (
-    <Host style={props.style} matchContents useViewportSizeMeasurement={useViewportSizeMeasurement}>
-      <ButtonPrimitive {...props} />
-    </Host>
-  );
 }

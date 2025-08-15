@@ -28,11 +28,10 @@ public struct DevLauncherRootView: View {
 
         SettingsTabView()
           .tabItem {
-            Image(systemName: "gear")
+            Image(systemName: "gearshape")
             Text("Settings")
           }
       }
-      .accentColor(Color("TabBarTint", bundle: getDevLauncherBundle()))
       .onAppear {
         DevLauncherTabBarManager.shared.setCustomAppearance()
       }
@@ -71,15 +70,31 @@ public struct DevLauncherRootView: View {
 struct RecentlyOpenedAppRow: View {
   let app: RecentlyOpenedApp
   let onTap: () -> Void
+  @EnvironmentObject var viewModel: DevLauncherViewModel
+
+  private var isServerActive: Bool {
+    guard let url = URL(string: app.url),
+    let port = url.port else {
+      return false
+    }
+
+    return viewModel.devServers.contains { server in
+      guard let serverURL = URL(string: server.url),
+        let serverPort = serverURL.port else {
+        return false
+      }
+      return serverPort == port
+    }
+  }
 
   var body: some View {
     Button {
       onTap()
     } label: {
-      HStack(alignment: .firstTextBaseline) {
+      HStack(alignment: .center) {
         Circle()
-          .fill(Color.green)
-          .frame(width: 15, height: 15)
+          .fill(isServerActive ? Color.green : Color.gray)
+          .frame(width: 12, height: 12)
         VStack(alignment: .leading) {
           Text(app.name)
             .font(.headline)
@@ -89,8 +104,6 @@ struct RecentlyOpenedAppRow: View {
             .foregroundColor(.secondary)
             .lineLimit(1)
         }
-        // hack: figure out how to do precise layout
-        .offset(y: -1)
 
         Spacer()
         Image(systemName: "chevron.right")
@@ -98,9 +111,10 @@ struct RecentlyOpenedAppRow: View {
           .foregroundColor(.secondary)
       }
       .padding()
-      #if !os(tvOS)
-      .background(Color(.systemBackground))
-      #endif
+#if !os(tvOS)
+      .background(Color(.secondarySystemBackground))
+#endif
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     .buttonStyle(PlainButtonStyle())
   }

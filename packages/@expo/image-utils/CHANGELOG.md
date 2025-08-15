@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.8.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
+- Update to `sharp-cli@5.2.0` to support P3 colors in `sharp@0.34.2`. ([#38740](https://github.com/expo/expo/pull/38740) by [@byCedric](https://github.com/byCedric))
+
 ## 0.7.6 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

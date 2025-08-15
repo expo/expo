@@ -11,7 +11,7 @@ import {
 } from '../dependencies';
 import { PackageRevision, SearchOptions, SearchResults, SupportedPlatform } from '../types';
 
-async function resolveExpoModule(
+export async function resolveExpoModule(
   resolution: DependencyResolution,
   platform: SupportedPlatform,
   excludeNames: Set<string>
@@ -28,9 +28,9 @@ async function resolveExpoModule(
       config: expoModuleConfig,
       duplicates:
         resolution.duplicates?.map((duplicate) => ({
-          name: resolution.name,
-          path: duplicate,
-          version: '', // NOTE: Are we actually using this?
+          name: duplicate.name,
+          path: duplicate.path,
+          version: duplicate.version,
         })) ?? [],
     };
   } else {

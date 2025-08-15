@@ -6,13 +6,24 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - [iOS] Support Apple TV. ([#38475](https://github.com/expo/expo/pull/38475) by [@douglowder](https://github.com/douglowder))
+- Added `loadExtensionAsync` / `loadExtensionSync` APIs and pre-bundled [sqlite-vec](https://github.com/asg017/sqlite-vec) extension. ([#38693](https://github.com/expo/expo/pull/38693) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ### 📚 3rd party library updates
 

@@ -44,11 +44,13 @@ fun UpdatesRoute(
       composable<Routes.Updates.Branches> {
         val viewModel = viewModel<BranchesViewModel>()
 
+        val state by viewModel.state.collectAsStateWithLifecycle()
+
         if (viewModel.areUpdatesConfigured) {
-          val state by viewModel.state.collectAsStateWithLifecycle()
           BranchesScreen(
             branches = state.branches,
             isLoading = state.isLoading,
+            needToSignIn = state.needToSignIn,
             onProfileClick = onProfileClick,
             onAction = { action ->
               when (action) {

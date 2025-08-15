@@ -22,7 +22,6 @@ import { StackAnimationTypes } from 'react-native-screens';
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
-import { RouterModal } from '../modal/web/ModalStack.web';
 import { SingularOptions, getSingularId } from '../useScreens';
 import { Protected } from '../views/Protected';
 
@@ -335,6 +334,12 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           // END FORK
         }
         case 'PRELOAD': {
+          // START FORK
+          // This will be the case for example for protected route
+          if (!state.routeNames.includes(action.payload.name)) {
+            return null;
+          }
+          // END FORK
           const getId = options.routeGetIdList[action.payload.name];
           const id = getId?.({ params: action.payload.params });
 
@@ -484,7 +489,6 @@ function filterSingular<
 
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
-    const isWeb = process.env.EXPO_OS === 'web';
     const { isStackAnimationDisabled } = useLinkPreviewContext();
     const screenOptions = useMemo(() => {
       if (isStackAnimationDisabled) {
@@ -493,19 +497,9 @@ const Stack = Object.assign(
       return props.screenOptions;
     }, [props.screenOptions, isStackAnimationDisabled]);
 
-    if (isWeb) {
-      return (
-        <RouterModal
-          {...props}
-          screenOptions={screenOptions}
-          UNSTABLE_router={stackRouterOverride}
-        />
-      );
-    } else {
-      return (
-        <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
-      );
-    }
+    return (
+      <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+    );
   },
   {
     Screen: RNStack.Screen as (

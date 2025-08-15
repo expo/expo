@@ -1,6 +1,6 @@
 {
   "name": "@expo/html-elements",
-  "version": "0.12.5",
+  "version": "0.13.1",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
   "main": "src/Elements.tsx",
   "types": "build/Elements.d.ts",
@@ -70,9 +70,10 @@
     }
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.7",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^15.0.7",
-    "@testing-library/react-native": "^13.1.0"
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/react-native": "^13.2.0",
+    "expo-module-scripts": "^5.0.1"
   }
 }

@@ -5,7 +5,9 @@ import { Appearance, Platform } from 'react-native';
 
 import { ActiveTabsContext } from '../utils/active-tabs-context';
 
-Appearance.setColorScheme('dark');
+if (process.env.EXPO_OS !== 'web') {
+  Appearance.setColorScheme('dark');
+}
 
 export default function Layout() {
   const [activeTabs, setActiveTabs] = useState<string[]>([]);
@@ -29,7 +31,7 @@ export default function Layout() {
             color: Platform.OS === 'android' ? '#888' : undefined,
             '&:active': {
               fontSize: 14,
-              indicatorColor: 'black',
+              indicatorColor: Platform.OS === 'android' ? 'black' : undefined,
             },
           }}
           minimizeBehavior="onScrollDown">
@@ -43,11 +45,12 @@ export default function Layout() {
           {activeTabs.map((tab) => (
             <NativeTabs.Trigger key={tab} name={tab}>
               <Icon sf="plus" drawable="ic_search" />
+              <Badge />
             </NativeTabs.Trigger>
           ))}
           <NativeTabs.Trigger name="faces" options={{ title: 'Face Gallery' }}>
             <Icon sf="lock.applewatch" selectedSf="lock.open.applewatch" drawable="ic_lock_open" />
-            <Label>Face Gallery</Label>
+            <Label hidden />
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="explore">
             <Icon
@@ -61,8 +64,8 @@ export default function Layout() {
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="dynamic">
             <Icon sf="figure.disc.sports" drawable="ic_menu" />
-            <Badge>9+</Badge>
-            <Label>Explore</Label>
+            <Badge>9</Badge>
+            <Label>Dynamic</Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       </ActiveTabsContext.Provider>

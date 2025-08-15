@@ -63,12 +63,14 @@ export async function serializeSplitAsync(
   fs: Record<string, string>,
   options: Partial<Parameters<typeof microBundle>[0]['options']> = {},
   processors: SerializerPlugin[] = [],
-  configOptions: SerializerConfigOptions = {}
+  configOptions: SerializerConfigOptions = {},
+  preModulesFs: Record<string, string> = {}
 ) {
   return await serializeTo(
     {
       fs,
       options: { platform: 'web', dev: false, output: 'static', splitChunks: true, ...options },
+      preModulesFs,
     },
     processors,
     configOptions

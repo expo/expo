@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
-- Use modern monospace font for web and iOS. ([#37789](https://github.com/expo/expo/pull/37789) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.13.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2025-08-13
+
+### 🎉 New features
+
+- Use modern monospace font for web and iOS. ([#37789](https://github.com/expo/expo/pull/37789) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

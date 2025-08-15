@@ -163,10 +163,13 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
-   * If undefined, does not use CORS at all.
+   * If `undefined` (default), does not use CORS at all. If set to `'anonymous'`, the video will be loaded with CORS enabled.
+   * Note that some videos may not play if CORS is enabled, depending on the CDN settings.
+   * If you encounter issues, consider adjusting the `crossOrigin` property.
+   *
    *
    * @platform web
-   * @default 'anonymous'
+   * @default undefined
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
 }

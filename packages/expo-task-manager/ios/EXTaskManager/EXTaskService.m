@@ -113,12 +113,14 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   
   if (!task) {
     NSString *reason = [NSString stringWithFormat:@"Task '%@' not found for app ID '%@'.", taskName, appId];
-    @throw [NSException exceptionWithName:@"E_TASK_NOT_FOUND" reason:reason userInfo:nil];
+    NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: reason};
+    @throw [NSException exceptionWithName:@"E_TASK_NOT_FOUND" reason:reason userInfo:errorInfo];
   }
   
   if (consumerClass != nil && ![task.consumer isMemberOfClass:[self _unversionedClassFromClass:consumerClass]]) {
     NSString *reason = [NSString stringWithFormat:@"Invalid task consumer. Cannot unregister task with name '%@' because it is associated with different consumer class.", taskName];
-    @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
+    NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: reason};
+    @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:errorInfo];
   }
   
   NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy];

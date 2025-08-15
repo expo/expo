@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
+import type { RenderRscArgs } from '@expo/server/private';
 type ImportMap = {
     router: () => Promise<typeof import('./router/expo-definedRouter')>;
 };

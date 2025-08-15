@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 1.9.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 1.9.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
 ## 1.8.6 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

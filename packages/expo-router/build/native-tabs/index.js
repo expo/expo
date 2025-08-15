@@ -1,10 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabs = exports.Badge = exports.Icon = exports.Label = void 0;
-var elements_1 = require("./common/elements");
-Object.defineProperty(exports, "Label", { enumerable: true, get: function () { return elements_1.Label; } });
-Object.defineProperty(exports, "Icon", { enumerable: true, get: function () { return elements_1.Icon; } });
-Object.defineProperty(exports, "Badge", { enumerable: true, get: function () { return elements_1.Badge; } });
+exports.NativeTabs = exports.NativeTabTrigger = void 0;
+__exportStar(require("./common/elements"), exports);
+var NativeTabTrigger_1 = require("./NativeBottomTabs/NativeTabTrigger");
+Object.defineProperty(exports, "NativeTabTrigger", { enumerable: true, get: function () { return NativeTabTrigger_1.NativeTabTrigger; } });
 var NativeTabs_1 = require("./NativeBottomTabs/NativeTabs");
 Object.defineProperty(exports, "NativeTabs", { enumerable: true, get: function () { return NativeTabs_1.NativeTabs; } });
 //# sourceMappingURL=index.js.map

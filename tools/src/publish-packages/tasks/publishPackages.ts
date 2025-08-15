@@ -50,7 +50,9 @@ export const publishPackages = new Task<TaskArgs>(
 
       // Update `gitHead` property so it will be available to read using `npm view --json`.
       // Next publish will depend on this to properly get changes made after that.
-      await JsonFile.setAsync(packageJsonPath, 'gitHead', gitHead);
+      if (!pkg.isTemplate()) {
+        await JsonFile.setAsync(packageJsonPath, 'gitHead', gitHead);
+      }
 
       // Publish the package.
       try {

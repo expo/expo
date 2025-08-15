@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/native-tabs/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,IAAI,EAAE,KAAK,EAAE,MAAM,mBAAmB,CAAC;AACvD,OAAO,EAAE,UAAU,EAAE,MAAM,+BAA+B,CAAC"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/native-tabs/index.ts"],"names":[],"mappings":"AAAA,cAAc,mBAAmB,CAAC;AAClC,YAAY,EACV,eAAe,EACf,qBAAqB,EACrB,mBAAmB,EACnB,yBAAyB,EACzB,gBAAgB,EAChB,qBAAqB,GACtB,MAAM,0BAA0B,CAAC;AAClC,OAAO,EAAE,gBAAgB,EAAE,MAAM,qCAAqC,CAAC;AACvE,OAAO,EAAE,UAAU,EAAE,MAAM,+BAA+B,CAAC"}

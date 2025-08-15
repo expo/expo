@@ -6,10 +6,24 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add support for `@babel/plugin-transform-class-static-block` on web and native. ([#37495](https://github.com/expo/expo/pull/37495) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
 
 ### 🐛 Bug fixes
+
+- Define default `@babel/runtime` minimum version as `^7.20.0` by default ([#38790](https://github.com/expo/expo/pull/38790) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

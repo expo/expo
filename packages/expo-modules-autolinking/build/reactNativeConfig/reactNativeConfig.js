@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._resolveReactNativeModule = _resolveReactNativeModule;
+exports.resolveReactNativeModule = resolveReactNativeModule;
 exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
 exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 const fs_1 = __importDefault(require("fs"));
@@ -14,7 +14,7 @@ const iosResolver_1 = require("./iosResolver");
 const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const autolinking_1 = require("../autolinking");
 const dependencies_1 = require("../dependencies");
-async function _resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
+async function resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
     if (excludeNames.has(resolution.name)) {
         return null;
     }
@@ -80,7 +80,7 @@ async function createReactNativeConfigAsync(providedOptions) {
         ...searchPaths.map((searchPath) => (0, dependencies_1.scanDependenciesInSearchPath)(searchPath)),
         (0, dependencies_1.scanDependenciesRecursively)(options.projectRoot, { limitDepth }),
     ]));
-    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => _resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames));
+    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames));
     return {
         root: options.projectRoot,
         reactNativePath: resolutions['react-native']?.path,
