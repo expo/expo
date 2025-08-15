@@ -77,6 +77,11 @@ export default (program: Command) => {
       'Whether to build and publish Android artifacts to the local NPM registry.',
       false
     )
+    .option(
+      '--auto-select-unpublished',
+      'When retrying after a failed publish, auto-select all packages whose current version is not published yet and allow deselecting in a multi-select prompt.',
+      false
+    )
     /* debug options */
     .option(
       '-S, --skip-repo-checks',
