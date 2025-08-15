@@ -28,6 +28,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix React Native's `enableEdgeToEdge` Gradle property being ignored. ([#38734](https://github.com/expo/expo/pull/38734) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
