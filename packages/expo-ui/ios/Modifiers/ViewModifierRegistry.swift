@@ -388,6 +388,7 @@ internal struct GlassEffectModifier: ViewModifier {
   @ViewBuilder
   func body(content: Content) -> some View {
     if #available(iOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
       let glass = parseGlassVariant(glassVariant)
       switch shape {
       case "capsule":
@@ -399,11 +400,15 @@ internal struct GlassEffectModifier: ViewModifier {
       default:
         content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
       }
+      #else
+      content
+      #endif
     } else {
       content
     }
   }
 
+  #if compiler(>=6.2) // Xcode 26
   @available(iOS 26.0, *)
   private func parseGlassVariant(_ glassString: String) -> Glass {
     switch glassString {
@@ -415,6 +420,7 @@ internal struct GlassEffectModifier: ViewModifier {
       return .identity
     }
   }
+  #endif
 }
 
 // MARK: - Registry
