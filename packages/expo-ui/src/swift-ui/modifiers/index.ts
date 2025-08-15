@@ -346,7 +346,8 @@ export type BuiltInModifier =
   | ReturnType<typeof overlay>
   | ReturnType<typeof backgroundOverlay>
   | ReturnType<typeof aspectRatio>
-  | ReturnType<typeof clipped>;
+  | ReturnType<typeof clipped>
+  | ReturnType<typeof glassEffect>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
