@@ -106,6 +106,28 @@ it('should work with basic local refs', () => {
   expect(deref(INPUT)).toEqual(EXPECTED);
 });
 
+it.only('should work with root refs', () => {
+  const INPUT = {
+    description: 'Just a basic schema.',
+    $ref: '#/definitions/root',
+    definitions: {
+      root: {
+        description: 'unique identifier of a the object',
+        type: 'string',
+        minLength: 1,
+      },
+    },
+  };
+
+  const EXPECTED = {
+    description: 'unique identifier of a the object',
+    type: 'string',
+    minLength: 1,
+  };
+
+  expect(deref(INPUT)).toEqual(EXPECTED);
+});
+
 // NOTE(@kitten): File ref support has been removed
 // it.todo('should work with basic file refs and relative baseFolder');
 // it.todo('should work with basic file refs and absolute + relative baseFolder');
