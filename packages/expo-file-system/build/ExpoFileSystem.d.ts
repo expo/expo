@@ -6,6 +6,9 @@ declare class ExpoFileSystemModule extends NativeModule {
     downloadFileAsync(url: string, destination: File | Directory, options?: DownloadOptions): Promise<string>;
     totalDiskSpace: number;
     availableDiskSpace: number;
+    documentDirectory: string;
+    cacheDirectory: string;
+    bundleDirectory: string;
 }
 declare const _default: ExpoFileSystemModule;
 export default _default;

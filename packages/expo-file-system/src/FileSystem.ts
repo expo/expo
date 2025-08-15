@@ -10,6 +10,7 @@ export class Paths extends PathUtilities {
   static get cache() {
     return new Directory(ExpoFileSystem.cacheDirectory);
   }
+
   /**
    * A property containing the bundle directory – the directory where assets bundled with the application are stored.
    */

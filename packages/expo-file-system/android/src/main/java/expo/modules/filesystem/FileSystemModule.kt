@@ -30,7 +30,7 @@ class FileSystemModule : Module() {
     Constants(
       "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
       "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
-      "bundleDirectory" to "asset:///"
+      "bundleDirectory" to "asset://"
     )
 
     Property("totalDiskSpace") {
