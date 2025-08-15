@@ -1,8 +1,9 @@
+import { screen, act, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
-import { screen, renderRouter, act, fireEvent } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { Badge, Icon, Label } from '../../common/elements';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabOptions } from '../NativeTabsView';

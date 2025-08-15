@@ -1,3 +1,4 @@
+import { act, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text, View } from 'react-native';
 
@@ -6,7 +7,7 @@ import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, renderRouter, screen, testRouter } from '../testing-library';
+import { renderRouter, testRouter } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
 it('stacks should always push a new route', () => {

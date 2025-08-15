@@ -1,10 +1,11 @@
+import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
 import { usePathname } from '../../../hooks';
 import { Redirect } from '../../../link/Redirect';
-import { screen, renderRouter, waitFor } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
 
