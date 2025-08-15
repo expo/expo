@@ -17,7 +17,6 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.0-preview.0",
-    "expo-constants": "~18.0.0",
     "expo-haptics": "~15.0.0",
     "expo-image": "~3.0.0",
     "expo-linking": "~8.0.0",
