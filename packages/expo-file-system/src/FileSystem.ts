@@ -107,7 +107,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   stream(): ReadableStream<Uint8Array<ArrayBuffer>> {
-    return this.readableStream() as ReadableStream<Uint8Array<ArrayBuffer>>;
+    return this.readableStream();
   }
 
   slice(start?: number, end?: number, contentType?: string): Blob {
