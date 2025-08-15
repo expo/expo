@@ -5,7 +5,7 @@ import { Storage as KVStorage, type SQLiteStorage } from './Storage';
 class Storage {
   constructor(private readonly storage: SQLiteStorage) {}
 
-  clear() {
+  clear(): void {
     this.storage.clearSync();
   }
 
@@ -17,11 +17,11 @@ class Storage {
     return this.storage.getKeyByIndexSync(index);
   }
 
-  removeItem(key: string) {
+  removeItem(key: string): void {
     this.storage.removeItemSync(key);
   }
 
-  setItem(key: string, value: string) {
+  setItem(key: string, value: string): void {
     this.storage.setItemSync(key, value);
   }
 
@@ -29,7 +29,7 @@ class Storage {
     return this.storage.getLengthSync();
   }
 
-  toString() {
+  toString(): string {
     return '[object Storage]';
   }
 }
@@ -54,6 +54,7 @@ function withPropertyAccessors(obj: Storage): Storage & Record<string, string | 
       if (typeof prop !== 'string' || builtin.has(prop)) {
         return Reflect.get(target, prop, receiver);
       }
+      // Values are always converted to strings so getItem returns null only when there is no value
       const value = target.getItem(prop);
       return value === null ? undefined : value;
     },
