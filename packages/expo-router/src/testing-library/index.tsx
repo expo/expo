@@ -28,6 +28,32 @@ const rnTestingLibrary = ((): typeof import('@testing-library/react-native') => 
 
 export type * from '@testing-library/react-native';
 
+// TODO(@kitten): This is for backwards-compatibility. Consider removing this!
+export declare const {
+  act,
+  cleanup,
+  fireEvent,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+  configure,
+  resetToDefaults,
+  isHiddenFromAccessibility,
+  isInaccessible,
+  getDefaultNormalizer,
+  renderHook,
+  userEvent,
+}: typeof rnTestingLibrary;
+
+export declare let screen: typeof rnTestingLibrary.screen;
+
+Object.assign(exports, rnTestingLibrary);
+Object.defineProperty(exports, 'screen', {
+  get() {
+    return rnTestingLibrary.screen;
+  },
+});
+
 export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] & {
   initialUrl?: any;
   linking?: Partial<ExpoLinkingOptions>;
