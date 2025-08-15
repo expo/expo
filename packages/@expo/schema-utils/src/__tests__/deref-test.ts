@@ -106,7 +106,7 @@ it('should work with basic local refs', () => {
   expect(deref(INPUT)).toEqual(EXPECTED);
 });
 
-it.only('should work with root refs', () => {
+it('should work with root refs', () => {
   const INPUT = {
     description: 'Just a basic schema.',
     $ref: '#/definitions/root',
