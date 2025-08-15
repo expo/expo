@@ -1,26 +1,18 @@
 import { requireNativeView } from 'expo';
-import { Dimensions } from 'react-native';
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const BottomSheetNativeView = requireNativeView('ExpoUI', 'BottomSheetView');
-export function transformBottomSheetProps(props) {
+function transformBottomSheetProps(props) {
+    const { modifiers, ...restProps } = props;
     return {
-        ...props,
+        modifiers,
+        ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+        ...restProps,
         onIsOpenedChange: ({ nativeEvent: { isOpened } }) => {
             props?.onIsOpenedChange?.(isOpened);
         },
     };
 }
-/**
- * `<BottomSheet>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function BottomSheetPrimitive(props) {
-    return <BottomSheetNativeView {...transformBottomSheetProps(props)}/>;
-}
 export function BottomSheet(props) {
-    const { width } = Dimensions.get('window');
-    return (<Host style={{ position: 'absolute', width }}>
-      <BottomSheetPrimitive {...props}/>
-    </Host>);
+    return <BottomSheetNativeView {...transformBottomSheetProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

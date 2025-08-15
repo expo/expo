@@ -21,6 +21,7 @@ struct GaugeView: ExpoSwiftUI.View {
       } maximumValueLabel: {
         optionalLabelFor(props.max)
       }
+      .modifier(CommonViewModifiers(props: props))
       .if(props.type == .default) { $0.gaugeStyle(.automatic) }
       .if(props.type == .circular) { $0.gaugeStyle(.accessoryCircular) }
       .if(props.type == .circularCapacity) { $0.gaugeStyle(.accessoryCircularCapacity) }
