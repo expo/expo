@@ -40,7 +40,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/keep-awake/",
   "dependencies": {},
   "devDependencies": {
-    "@testing-library/react-native": "^13.1.0",
+    "@testing-library/react-native": "^13.2.0",
     "expo-module-scripts": "^5.0.0"
   },
   "peerDependencies": {
