@@ -18,11 +18,9 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
   }
 
   override fun isFile(): Boolean {
-    return try {
-      context.assets.open(path).use {
-        true
-      }
-    } catch (_: Exception) {
+    return runCatching {
+      context.assets.open(path).use { true }
+    }.getOrElse {
       false
     }
   }
@@ -87,17 +85,15 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
   }
 
   override fun length(): Long {
-    try {
+    runCatching {
       context.assets.openFd(path).use { assetFileDescriptor ->
         val length = assetFileDescriptor.length
         if (length > 0) {
           return length
         }
       }
-    } catch (_: Exception) {
     }
-
-    try {
+    runCatching {
       var size: Long = 0
       context.assets.open(path).use { inputStream ->
         val buffer = ByteArray(8192)
@@ -107,7 +103,6 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
         }
       }
       return size
-    } catch (_: Exception) {
     }
     return 0
   }

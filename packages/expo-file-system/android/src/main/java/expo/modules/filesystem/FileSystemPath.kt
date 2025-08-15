@@ -42,7 +42,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
     val newAdapter = if (uri.isContentUri) {
       SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), uri)
-    } else if (uri.scheme == "asset") {
+    } else if (uri.isAssetUri) {
       AssetFile(appContext?.reactContext ?: throw Exception("No context"), uri)
     } else {
       JavaFile(uri)
