@@ -323,14 +323,15 @@ internal struct MaskModifier: ViewModifier {
   let shape: String
   let cornerRadius: CGFloat
 
+  @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
     case "circle":
-      return AnyView(content.mask(Circle()))
+      content.mask(Circle())
     case "roundedRectangle":
-      return AnyView(content.mask(RoundedRectangle(cornerRadius: cornerRadius)))
+      content.mask(RoundedRectangle(cornerRadius: cornerRadius))
     default:
-      return AnyView(content.mask(Rectangle()))
+      content.mask(Rectangle())
     }
   }
 }
