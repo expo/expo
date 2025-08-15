@@ -94,6 +94,9 @@
     "react-server-dom-webpack": ">= 19.0.0"
   },
   "peerDependenciesMeta": {
+    "@testing-library/react-native": {
+      "optional": true
+    },
     "react-dom": {
       "optional": true
     },
