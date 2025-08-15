@@ -96,6 +96,11 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
     ],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
+    // If templates-only and nothing but templates are selected, skip Android/iOS project updates
+    if (options.templatesOnly) {
+      // Filter to templates-only parcels just to be explicit for downstream tasks if used elsewhere
+      parcels = parcels.filter((p) => p.pkg.isTemplate());
+    }
     const packagesCount = parcels.length;
     logger.success(
       `\n✅ Successfully published ${cyan.bold(packagesCount)} package${packagesCount > 1 ? 's' : ''}.\n`

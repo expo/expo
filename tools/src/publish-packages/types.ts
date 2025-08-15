@@ -19,6 +19,8 @@ export type CommandOptions = {
   force: boolean;
   canary: boolean;
   deps: boolean;
+  /** Publish only template packages under `templates/` */
+  templatesOnly: boolean;
   skipAndroidArtifacts: boolean;
   /**
    * When true, automatically selects packages whose current package.json version

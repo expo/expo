@@ -41,7 +41,11 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     }
 
     // A set of parcels to prompt for.
-    const parcelsToSelect = new Set<Parcel>(parcels);
+    const parcelsToSelect = new Set<Parcel>(
+      options.templatesOnly
+        ? parcels.filter((p) => p.pkg.packageName !== 'expo-template-bare-minimum')
+        : parcels
+    );
 
     // A set of parcels selected to publish which will be passed to the next task.
     const parcelsToPublish = new Set<Parcel>();
@@ -119,10 +123,14 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
         .filter((parcel) => parcel.state.isRequested && parcelsToPublish.has(parcel))
         .map((parcel) => parcel.graphNode.getAllDependents())
         .flat()
+        // If templates-only, do not suggest dependents since we are restricting to templates
+        .filter((node) => !options.templatesOnly || node.pkg.isTemplate())
     );
 
     // From the dependents select these that should be published too.
-    const selectedDependentNodes = await promptForDependentNodes([...dependentNodes]);
+    const selectedDependentNodes = options.templatesOnly
+      ? []
+      : await promptForDependentNodes([...dependentNodes]);
 
     logger.log();
 
@@ -155,7 +163,7 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
       [...parcelsToPublish].find(
         (node) => node.pkg.packageName === 'expo-template-bare-minimum'
       ) !== undefined;
-    if (expoParcel && !isBareTemplateSelected) {
+    if (!options.templatesOnly && expoParcel && !isBareTemplateSelected) {
       const bareTemplateNode = [...dependentNodes].find(
         (node) => node.pkg.packageName === 'expo-template-bare-minimum'
       )!;
