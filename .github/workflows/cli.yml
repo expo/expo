@@ -104,7 +104,7 @@ jobs:
         run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-windows:
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -250,7 +250,7 @@ jobs:
           retention-days: 30
 
   playwright-windows:
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
