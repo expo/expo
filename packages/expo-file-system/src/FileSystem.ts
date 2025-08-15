@@ -10,15 +10,9 @@ export class Paths extends PathUtilities {
   static get cache() {
     return new Directory(ExpoFileSystem.cacheDirectory);
   }
-  /**
-   * A property containing the bundle directory – the directory where assets bundled with the application are stored.
-   */
-  static get bundle() {
-    return new Directory(ExpoFileSystem.bundleDirectory);
-  }
 
   /**
-   * A property containing the bundle directory (which contains assets bundled in the app during build-time).
+   * A property containing the bundle directory – the directory where assets bundled with the application are stored.
    */
   static get bundle() {
     return new Directory(ExpoFileSystem.bundleDirectory);
@@ -113,7 +107,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   stream(): ReadableStream<Uint8Array<ArrayBuffer>> {
-    return this.readableStream();
+    return this.readableStream() as ReadableStream<Uint8Array<ArrayBuffer>>;
   }
 
   slice(start?: number, end?: number, contentType?: string): Blob {
