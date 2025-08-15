@@ -72,8 +72,6 @@ function _createJestPreset(basePreset) {
       ],
       ...basePreset.transform,
     },
-    // Add the React 19 workaround
-    setupFiles: [...basePreset.setupFiles, require.resolve('./jest-setup-react-19.js')],
   };
 }
 
