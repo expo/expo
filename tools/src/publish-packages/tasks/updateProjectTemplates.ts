@@ -41,11 +41,12 @@ async function updateTemplateAsync(parcel: Parcel, modulesToUpdate: Record<strin
 
   for (const dependencyKey of DEPENDENCIES_KEYS) {
     const dependencies = packageJson[dependencyKey];
-    if (!dependencies) {
+    if (!dependencies || typeof dependencies !== 'object' || Array.isArray(dependencies)) {
       continue;
     }
-    for (const dependencyName in dependencies) {
-      const currentVersion = dependencies[dependencyName];
+    const deps = dependencies as Record<string, string>;
+    for (const dependencyName of Object.keys(deps)) {
+      const currentVersion = deps[dependencyName];
       const targetVersion = resolveTargetVersionRange(
         modulesToUpdate[dependencyName],
         currentVersion
@@ -57,7 +58,7 @@ async function updateTemplateAsync(parcel: Parcel, modulesToUpdate: Record<strin
         '    >',
         `Updating ${blue(dependencyName)} from ${cyan(currentVersion)} to ${cyan(targetVersion)}...`
       );
-      dependencies[dependencyName] = targetVersion;
+      deps[dependencyName] = targetVersion;
     }
   }
   await JsonFile.writeAsync(packageJsonPath, packageJson);
