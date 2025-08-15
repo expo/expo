@@ -1,6 +1,9 @@
 import { PermissionResponse } from 'expo-modules-core';
+import { ProcessedColorValue } from 'react-native';
 export { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
 /**
+ * Options for specifying a particular instance of a recurring event.
+ * This type is used in various methods that operate on recurring events, such as updating or deleting a single occurrence or a set of future occurrences.
  * @platform ios
  */
 export type RecurringEventOptions = {
@@ -18,7 +21,7 @@ export type RecurringEventOptions = {
      */
     instanceStartDate?: string | Date;
 };
-type Organizer = {
+export type Organizer = {
     isCurrentUser: boolean;
     name?: string;
     role: string;
@@ -57,7 +60,7 @@ export type Calendar = {
     /**
      * Color used to display this calendar's events.
      */
-    color: string;
+    color: string | ProcessedColorValue;
     /**
      * Whether the calendar is used in the Calendar or Reminders OS app.
      * @platform ios

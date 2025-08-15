@@ -1,7 +1,8 @@
 import { PermissionResponse, createPermissionHook, UnavailabilityError } from 'expo-modules-core';
-import { Platform, processColor } from 'react-native';
+import { Platform, processColor, ProcessedColorValue } from 'react-native';
 
 import ExpoCalendar from './ExpoCalendar';
+import { stringifyDateValues, stringifyIfDate } from './utils';
 
 export {
   PermissionResponse,
@@ -12,6 +13,8 @@ export {
 
 // @needsAudit
 /**
+ * Options for specifying a particular instance of a recurring event.
+ * This type is used in various methods that operate on recurring events, such as updating or deleting a single occurrence or a set of future occurrences.
  * @platform ios
  */
 export type RecurringEventOptions = {
@@ -30,7 +33,7 @@ export type RecurringEventOptions = {
   instanceStartDate?: string | Date;
 };
 
-type Organizer = {
+export type Organizer = {
   isCurrentUser: boolean;
   name?: string;
   role: string;
@@ -71,7 +74,7 @@ export type Calendar = {
   /**
    * Color used to display this calendar's events.
    */
-  color: string;
+  color: string | ProcessedColorValue; // TODO: Remove the ProcessedColorValue from the exported type
   /**
    * Whether the calendar is used in the Calendar or Reminders OS app.
    * @platform ios
@@ -637,6 +640,7 @@ export type PresentationOptions = {
    */
   startNewActivityTask?: boolean;
 };
+
 export type OpenEventPresentationOptions = PresentationOptions & {
   /**
    * Whether to allow the user to edit the previewed event.
@@ -1639,27 +1643,4 @@ export enum CalendarAccessLevel {
 export enum ReminderStatus {
   COMPLETED = 'completed',
   INCOMPLETE = 'incomplete',
-}
-
-function stringifyIfDate<T extends Date>(date: Date | T): string | T {
-  return date instanceof Date ? date.toISOString() : date;
-}
-
-type StringifyDates<T extends Record<string, any>> = {
-  [K in keyof T]: T[K] extends Date ? string : T[K];
-};
-
-function stringifyDateValues<T extends Record<string, any>>(obj: T): StringifyDates<T> {
-  if (typeof obj !== 'object' || obj === null) return obj;
-  return Object.keys(obj).reduce((acc, key) => {
-    const value = obj[key];
-    if (value != null && typeof value === 'object' && !(value instanceof Date)) {
-      if (Array.isArray(value)) {
-        return { ...acc, [key]: value.map(stringifyDateValues) };
-      }
-      return { ...acc, [key]: stringifyDateValues(value) };
-    }
-    acc[key as keyof T] = stringifyIfDate(value);
-    return acc;
-  }, {} as StringifyDates<T>);
 }
