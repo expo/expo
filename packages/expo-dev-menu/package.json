@@ -40,7 +40,7 @@
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.2.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "babel-preset-expo": "~14.0.0",
+    "babel-preset-expo": "~14.0.1",
     "expo-dev-client-components": "3.0.1",
     "expo-module-scripts": "^5.0.1",
     "fuse.js": "^6.4.6",

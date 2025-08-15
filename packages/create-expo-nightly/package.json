@@ -37,7 +37,7 @@
     "directory": "packages/create-expo-nightly"
   },
   "dependencies": {
-    "@expo/json-file": "^10.0.0",
+    "@expo/json-file": "^10.0.1",
     "zx": "^8.2.0"
   },
   "devDependencies": {
