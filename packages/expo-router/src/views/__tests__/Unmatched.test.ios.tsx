@@ -1,9 +1,10 @@
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import { Pressable, View } from 'react-native';
 
 import { useRouter } from '../../hooks';
 import Stack from '../../layouts/Stack';
 import { Link } from '../../link/Link';
-import { act, fireEvent, renderRouter, screen } from '../../testing-library';
+import { renderRouter } from '../../testing-library';
 
 describe('Unmatched', () => {
   it('can create a link to the unmatched route', () => {

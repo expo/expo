@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { Text, View } from 'react-native';
 
 import {
@@ -13,7 +14,7 @@ import {
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { act, fireEvent, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('should respect `unstable_settings', () => {
   const render = (options: any = {}) =>

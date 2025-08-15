@@ -1,3 +1,4 @@
+import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -5,7 +6,7 @@ import { Link } from '../exports';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { screen, renderRouter, act } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('prefetch a sibling route', () => {
   renderRouter({
