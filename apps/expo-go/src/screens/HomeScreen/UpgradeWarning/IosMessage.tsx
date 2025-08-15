@@ -1,5 +1,5 @@
 import { Text } from 'expo-dev-client-components';
-import { Linking } from 'react-native';
+import { openBrowserAsync } from 'expo-web-browser';
 
 export function IosMessage() {
   return (
@@ -11,7 +11,9 @@ export function IosMessage() {
           type="InterSemiBold"
           color="link"
           onPress={() =>
-            Linking.openURL('https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build')
+            openBrowserAsync(
+              'https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build'
+            )
           }>
           migrating to a development build
         </Text>
