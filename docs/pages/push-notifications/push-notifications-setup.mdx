@@ -56,6 +56,28 @@ Run the following command to install the `expo-notifications`, `expo-device` and
 
 <Step label="2">
 
+## Add config plugin
+
+Ensure that the `expo-notifications` plugin appears in the `plugins` array of your [app config](/workflow/configuration/):
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    /* @hide ... */ /* @end */
+    "plugins": [
+      /* @hide ... */ /* @end */
+      "expo-notifications"
+      ]
+  }
+}
+```
+
+</Step>
+
+
+<Step label="3">
+
 ## Add a minimal working example
 
 The code below shows a working example of how to register for, send, and receive push notifications in a React Native app. Copy and paste it into your project:
@@ -210,7 +232,7 @@ One advantage of attributing the Expo push token to your project's ID is that it
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 ## Get credentials for development builds
 
@@ -242,14 +264,14 @@ For Android and iOS, there are different requirements to set up your credentials
 
 </Step>
 
-<Step label="4">
+<Step label="5">
 ## Build the app
 
 <Terminal cmd={['$ eas build']} />
 
 </Step>
 
-<Step label="5">
+<Step label="6">
 ## Test using the push notifications tool
 
 After creating and installing the development build, you can use [Expo push notifications tool](https://expo.dev/notifications) to quickly send a test notification to your device.
