@@ -23,34 +23,21 @@ If you are looking to install a specific version of Expo Go, visit [expo.dev/go]
 Install the new version of the Expo package:
 
 <Tabs>
-<Tab label="npm">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ npx expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ npx expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ yarn expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ yarn expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
+  <Tab label="npm">
+    <Terminal cmd={['$ npm install expo@^53.0.0']} />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal cmd={['$ yarn add expo@^53.0.0']} />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal cmd={['$ pnpm add expo@^53.0.0']} />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal cmd={['$ bun install expo@^53.0.0']} />
+  </Tab>
 </Tabs>
+
+Depending on which SDK you're upgrading to, substitute the `expo@^53.0.0` with the version range of the Expo SDK version you're targeting. For example, `expo@^53.0.0` stands for SDK 53.
 
 </Step>
 
@@ -58,9 +45,9 @@ Install the new version of the Expo package:
 
 ### Upgrade dependencies
 
-Upgrade all dependencies to match the installed SDK version.
+Upgrade all dependencies to match the installed SDK version. Then run [`expo-doctor`](/develop/tools/#expo-doctor) command to check for common problems.
 
-<Terminal cmd={['$ npx expo install --fix']} />
+<Terminal cmd={['$ npx expo install --fix', '', '$ npx expo-doctor']} />
 
 </Step>
 
