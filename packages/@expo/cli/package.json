@@ -41,7 +41,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.8",
-    "@babel/runtime": "^7.20.0",
+    "@babel/runtime": "^7.28.3",
     "@expo/code-signing-certificates": "^0.0.5",
     "@expo/config": "~12.0.1",
     "@expo/config-plugins": "~11.0.1",
@@ -101,9 +101,9 @@
     "structured-headers": "^0.4.1",
     "tar": "^7.4.3",
     "terminal-link": "^2.1.1",
-    "undici": "^6.18.2",
+    "undici": "^6.21.2",
     "wrap-ansi": "^7.0.0",
-    "ws": "^8.12.1"
+    "ws": "^8.18.1"
   },
   "taskr": {
     "requires": [

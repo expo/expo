@@ -145,7 +145,7 @@
     "query-string": "^7.1.3",
     "react-fast-compare": "^3.2.2",
     "react-native-is-edge-to-edge": "^1.1.6",
-    "semver": "~7.6.3",
+    "semver": "~7.6.0",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "shallowequal": "^1.1.0",

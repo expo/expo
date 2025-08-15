@@ -35,12 +35,12 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@babel/runtime": "^7.23.8",
+    "@babel/runtime": "^7.28.3",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.2",
     "commander": "^7.2.0",
     "dot": "^2.0.0-beta.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.2.10",
     "temp-dir": "~2.0.0",
     "unique-string": "~2.0.0"
   }
