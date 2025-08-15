@@ -1,3 +1,4 @@
+// swiftlint:disable closure_body_length
 import SwiftUI
 
 class DevLauncherNavigation: ObservableObject {
@@ -129,3 +130,5 @@ struct DevLauncherNavigationHeader: View {
     }
   }
 }
+
+// swiftlint:enable closure_body_length

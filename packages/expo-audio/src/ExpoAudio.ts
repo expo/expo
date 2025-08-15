@@ -42,16 +42,19 @@ AudioModule.AudioPlayer.prototype.setPlaybackRate = function (
   }
 };
 
-const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
-AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
-  const processedOptions = options ? createRecordingOptions(options) : undefined;
-  return prepareToRecordAsync.call(this, processedOptions);
-};
+// Audio recording prototypes should not be shimmed on tvOS, where they do not exist
+if (!Platform.isTV || Platform.OS !== 'ios') {
+  const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
+  AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
+    const processedOptions = options ? createRecordingOptions(options) : undefined;
+    return prepareToRecordAsync.call(this, processedOptions);
+  };
 
-const record = AudioModule.AudioRecorder.prototype.record;
-AudioModule.AudioRecorder.prototype.record = function (options?: RecordingStartOptions) {
-  return record.call(this, options);
-};
+  const record = AudioModule.AudioRecorder.prototype.record;
+  AudioModule.AudioRecorder.prototype.record = function (options?: RecordingStartOptions) {
+    return record.call(this, options);
+  };
+}
 
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.

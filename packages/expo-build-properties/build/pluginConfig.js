@@ -182,6 +182,11 @@ const schema = {
                 },
                 buildReactNativeFromSource: { type: 'boolean', nullable: true },
                 buildFromSource: { type: 'boolean', nullable: true },
+                reactNativeReleaseLevel: {
+                    type: 'string',
+                    enum: ['stable', 'canary', 'experimental'],
+                    nullable: true,
+                },
             },
             nullable: true,
         },

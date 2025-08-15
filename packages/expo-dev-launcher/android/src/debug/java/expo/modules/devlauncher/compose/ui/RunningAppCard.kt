@@ -1,20 +1,30 @@
 package expo.modules.devlauncher.compose.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import com.composables.core.Icon
+import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
+import com.composeunstyled.Icon
 import expo.modules.devlauncher.R
-import expo.modules.devmenu.compose.primitives.RowLayout
-import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
+import expo.modules.devmenu.compose.fromHex
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
+import expo.modules.devmenu.compose.primitives.RoundedSurface
+import expo.modules.devmenu.compose.primitives.pulseEffect
 import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
@@ -30,44 +40,65 @@ fun RunningAppCard(
     null
   }
 
-  Button(
-    onClick = { onClick(appIp) },
-    backgroundColor = Theme.colors.background.default
+  RoundedSurface(
+    borderRadius = NewAppTheme.borderRadius.xl,
+    color = NewAppTheme.colors.background.subtle
   ) {
-    Column(modifier = Modifier.padding(Theme.spacing.medium)) {
-      RowLayout(
-        leftComponent = {
-          val iconColor = Theme.colors.status.success
-
-          Box(
-            modifier = Modifier.size(Theme.spacing.small).drawBehind {
-              drawCircle(iconColor)
-            }
-          )
-        },
-        rightComponent = {
-          Icon(
-            painterResource(R.drawable.chevron_right_icon),
-            contentDescription = "Open app",
-            tint = Theme.colors.icon.default,
-            modifier = Modifier
-              .size(Theme.sizing.icon.extraSmall)
-          )
-        }
+    Button(
+      onClick = { onClick(appIp) }
+    ) {
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(NewAppTheme.spacing.`3`)
       ) {
-        Column {
-          Text(label)
+        val dotColor = Color.fromHex("#34C759")
+        Box(
+          modifier = Modifier
+            .size(Theme.spacing.small)
+            .drawBehind {
+              drawCircle(dotColor)
+            }
+            .pulseEffect(
+              brush = SolidColor(dotColor.copy(alpha = 0.3f))
+            )
+        )
+
+        Column(
+          verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
+          modifier = Modifier.weight(1f)
+        ) {
+          NewText(
+            label,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = NewAppTheme.font.lg.merge(
+              fontWeight = if (appName != null) {
+                FontWeight.SemiBold
+              } else {
+                FontWeight.Normal
+              }
+            )
+          )
 
           if (description != null) {
-            Spacer(Theme.spacing.tiny)
-
-            Text(
-              text = description,
-              fontSize = Theme.typography.small,
-              color = Theme.colors.text.secondary
+            NewText(
+              description,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+              style = NewAppTheme.font.sm,
+              color = NewAppTheme.colors.text.tertiary
             )
           }
         }
+
+        Icon(
+          painter = painterResource(R.drawable.chevron_right),
+          contentDescription = "Open app",
+          tint = NewAppTheme.colors.icon.quaternary,
+          modifier = Modifier
+            .size(20.dp)
+        )
       }
     }
   }

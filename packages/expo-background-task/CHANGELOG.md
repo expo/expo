@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Rethrow obj-c exception as swift error. ([#38714](https://github.com/expo/expo/pull/38714) by [@jakex7](https://github.com/jakex7))
-
 ### 💡 Others
+
+## 1.0.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
+- [iOS] Rethrow obj-c exception as swift error. ([#38714](https://github.com/expo/expo/pull/38714) by [@jakex7](https://github.com/jakex7))
 
 ## 0.2.8 - 2025-07-01
 

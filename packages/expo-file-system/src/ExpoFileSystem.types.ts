@@ -150,7 +150,7 @@ export declare class File {
    * Retrieves byte content of the entire file.
    * @returns A promise that resolves with the contents of the file as a Uint8Array.
    */
-  bytes(): Promise<Uint8Array>;
+  bytes(): Promise<Uint8Array<ArrayBuffer>>;
 
   /**
    * Retrieves byte content of the entire file.
@@ -258,7 +258,7 @@ export declare class FileHandle {
    * Reads the specified amount of bytes from the file at the current offset.
    * @param length The number of bytes to read.
    */
-  readBytes(length: number): Uint8Array;
+  readBytes(length: number): Uint8Array<ArrayBuffer>;
   /*
    * Writes the specified bytes to the file at the current offset.
    * @param bytes A `Uint8Array` array containing bytes to write.

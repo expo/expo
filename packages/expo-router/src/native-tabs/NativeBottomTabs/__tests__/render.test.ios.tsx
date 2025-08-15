@@ -6,6 +6,7 @@ import { usePathname } from '../../../hooks';
 import { Redirect } from '../../../link/Redirect';
 import { screen, renderRouter, waitFor } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
+import { NativeTabsView } from '../NativeTabsView';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -13,6 +14,14 @@ jest.mock('react-native-screens', () => {
     ...(jest.requireActual('react-native-screens') as typeof import('react-native-screens')),
     BottomTabs: jest.fn(({ children }) => <View testID="BottomTabs">{children}</View>),
     BottomTabsScreen: jest.fn(({ children }) => <View testID="BottomTabsScreen">{children}</View>),
+  };
+});
+
+jest.mock('../NativeTabsView', () => {
+  const originalModule = jest.requireActual('../NativeTabsView');
+  return {
+    ...originalModule,
+    NativeTabsView: jest.fn((props) => <originalModule.NativeTabsView {...props} />),
   };
 });
 
@@ -159,8 +168,8 @@ describe('First focused tab', () => {
     expect(BottomTabsScreen.mock.calls[1][0].tabKey).toMatch(/^index-[-\w]+/);
   });
 
-  it('Error is thrown, when index is hidden', () => {
-    expect(() =>
+  describe('First tab is used, when index is hidden', () => {
+    it('by not specifying an index route', () => {
       renderRouter({
         _layout: () => (
           <NativeTabs>
@@ -171,10 +180,45 @@ describe('First focused tab', () => {
         index: () => <View testID="index" />,
         first: () => <View testID="first" />,
         second: () => <View testID="second" />,
-      })
-    ).toThrow(
-      'The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "/index"'
-    );
+      });
+    });
+
+    it('by using hidden: true', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" hidden />
+            <NativeTabs.Trigger name="first" />
+            <NativeTabs.Trigger name="second" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        first: () => <View testID="first" />,
+        second: () => <View testID="second" />,
+      });
+    });
+
+    afterEach(() => {
+      expect(screen.getByTestId('first')).toBeVisible();
+      expect(screen.getByTestId('second')).toBeVisible();
+      expect(screen.queryByTestId('index')).toBeNull();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      expect((NativeTabsView as jest.Mock).mock.calls[0][0].builder.state).toMatchObject({
+        type: 'tab',
+        routeNames: ['first', 'second'],
+        index: 0,
+        routes: [
+          expect.objectContaining({
+            key: expect.any(String),
+            name: 'first',
+          }),
+          expect.objectContaining({
+            key: expect.any(String),
+            name: 'second',
+          }),
+        ],
+      });
+    });
   });
 
   it('404 is shown, when index does not exist', () => {

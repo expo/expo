@@ -203,6 +203,7 @@ export const general = [
         makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('guides/tailwind.mdx'),
+        makePage('guides/local-https-development.mdx'),
       ],
       { expanded: false }
     ),
@@ -257,6 +258,7 @@ export const general = [
     makeGroup('Navigation patterns', [
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
+      makePage('router/advanced/native-tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
       makePage('router/advanced/authentication.mdx'),
       makePage('router/advanced/authentication-rewrites.mdx'),

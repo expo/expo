@@ -8,6 +8,7 @@ import React, {
   useState,
   type ReactElement,
 } from 'react';
+import { Platform } from 'react-native';
 
 import { useRouter } from '../hooks';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
@@ -18,6 +19,8 @@ import { NativeLinkPreview, NativeLinkPreviewTrigger } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
 import { shouldLinkExternally } from '../utils/url';
+
+const isPad = Platform.OS === 'ios' && Platform.isPad;
 
 export function LinkWithPreview({ children, ...rest }: LinkProps) {
   const router = useRouter();
@@ -84,7 +87,8 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     () => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>,
     [triggerElement, children]
   );
-  const highlightBorderRadius = triggerElement?.props.highlightBorderRadius;
+  const highlightBorderRadius =
+    rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
 
   const preview = React.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
 
@@ -103,8 +107,8 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
 
   return (
     <NativeLinkPreview
-      nextScreenId={nextScreenId}
-      tabPath={tabPathValue}
+      nextScreenId={isPad ? undefined : nextScreenId}
+      tabPath={isPad ? undefined : tabPathValue}
       onWillPreviewOpen={() => {
         isPreviewTapped.current = false;
         prefetch(rest.href);
@@ -114,13 +118,20 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         setIsCurrenPreviewOpen(false);
         // When preview was not tapped, then we need to enable the screen stack animation
         // Otherwise this will happen in StackNavigator, when new screen is opened
-        if (!isPreviewTapped.current) {
+        if (!isPreviewTapped.current || isPad) {
           setOpenPreviewKey(undefined);
+        }
+      }}
+      onPreviewDidClose={() => {
+        if (isPreviewTapped.current && isPad) {
+          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
       onPreviewTapped={() => {
         isPreviewTapped.current = true;
-        router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+        if (!isPad) {
+          router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+        }
       }}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
         <NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>

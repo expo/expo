@@ -31,7 +31,7 @@ export function Faces(props: { numberOfFaces: number }) {
           key={face.id}
           href={`/faces/${face.color.split('#')[1]}`}
           style={{ backgroundColor: face.color, width: 100, height: 100, borderRadius: 16 }}>
-          <Link.Trigger highlightBorderRadius={16} />
+          <Link.Trigger />
           <Link.Preview />
         </Link>
       ))}

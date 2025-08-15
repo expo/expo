@@ -6,6 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+
+## 54.0.0-preview.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add `TextDecoderStream` and `TextEncoderStream` APIs to the native runtime. ([#37507](https://github.com/expo/expo/pull/37507) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable async requires by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `redirect` option support to `expo/fetch` ([#38078](https://github.com/expo/expo/pull/38078) by [@andipro123](https://github.com/andipro123))
@@ -17,6 +27,7 @@
 
 ### 💡 Others
 
+- Drop unused dependency on `expo-file-system`. ([#38792](https://github.com/expo/expo/pull/38792) by [@aleqsio](https://github.com/aleqsio))
 - Use `Networking` module and streaming to suppress warning for async bundles on native. ([#38587](https://github.com/expo/expo/pull/38587) by [@EvanBacon](https://github.com/EvanBacon))
 - Fork `react-native/Libraries/Utilities/PolyfillFunctions` to suppress warning. ([#38495](https://github.com/expo/expo/pull/38495) by [@EvanBacon](https://github.com/EvanBacon))
 - Change how FormData is parsed in expo/fetch. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))

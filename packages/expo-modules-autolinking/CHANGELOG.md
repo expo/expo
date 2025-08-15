@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
 - Reimplement Turbo Modules and Expo Modules discovery algorithm. Native modules are now discovered according to Node resolution by default, which can be overridden to the old behaviour by specifying `searchPaths` manually. The default behaviour will recursively resolve Node `dependencies` and `peerDependencies` ([#38282](https://github.com/expo/expo/pull/38282) by [@kitten](https://github.com/kitten))
 - Update `verify` command to check React Native modules as well, change `--json` output format, and accept `--verbose` option ([#38766](https://github.com/expo/expo/pull/38766) by [@kitten](https://github.com/kitten))
 

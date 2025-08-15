@@ -1,4 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+// swiftlint:disable closure_body_length
 
 import SwiftUI
 
@@ -64,7 +65,9 @@ struct HomeTabView: View {
         .padding()
     }
     .buttonStyle(PlainButtonStyle())
+    #if !os(tvOS)
     .background(Color(.secondarySystemGroupedBackground))
+    #endif
     .cornerRadius(18)
   }
 }
@@ -72,3 +75,4 @@ struct HomeTabView: View {
 #Preview {
   HomeTabView()
 }
+// swiftlint:enable closure_body_length

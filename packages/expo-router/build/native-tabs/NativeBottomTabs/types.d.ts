@@ -42,24 +42,45 @@ export interface ExtendedNativeTabOptions extends NativeTabOptions {
     hidden?: boolean;
     specialEffects?: BottomTabsScreenProps['specialEffects'];
 }
+type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 export interface NativeTabsStyleType {
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
-    fontWeight?: TextStyle['fontWeight'];
+    fontWeight?: NumericFontWeight | `${NumericFontWeight}`;
     fontStyle?: TextStyle['fontStyle'];
     color?: TextStyle['color'];
     /**
      * @platform android
      * @platform iOS
+     * @platform tvOS
      */
     iconColor?: ColorValue;
     backgroundColor?: ColorValue;
     /**
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
+     *
+     * @platform iOS
+     */
+    titlePositionAdjustment?: {
+        horizontal?: number;
+        vertical?: number;
+    };
+    /**
      * @platform iOS
      */
     blurEffect?: BottomTabsScreenProps['tabBarBlurEffect'];
+    /**
+     * @platform android
+     * @platform iOS
+     * @platform web
+     */
     tintColor?: ColorValue;
     badgeBackgroundColor?: ColorValue;
+    /**
+     * @platform android
+     * @platform web
+     */
+    badgeTextColor?: ColorValue;
     /**
      * @platform android
      */
@@ -70,16 +91,19 @@ export interface NativeTabsStyleType {
     labelVisibilityMode?: TabBarItemLabelVisibilityMode;
     /**
      * @platform android
+     * @platform web
      */
     '&:active'?: NativeTabsActiveStyleType;
 }
 export interface NativeTabsActiveStyleType {
     /**
      * @platform android
+     * @platform web
      */
     color?: ColorValue;
     /**
      * @platform android
+     * @platform web
      */
     fontSize?: TextStyle['fontSize'];
     /**
@@ -88,6 +112,7 @@ export interface NativeTabsActiveStyleType {
     iconColor?: ColorValue;
     /**
      * @platform android
+     * @platform web
      */
     indicatorColor?: ColorValue;
 }
@@ -121,6 +146,7 @@ export interface NativeTabsProps extends PropsWithChildren {
     backBehavior?: 'none' | 'initialRoute' | 'history';
 }
 export interface NativeTabsViewProps extends NativeTabsProps {
+    focusedIndex: number;
     builder: ReturnType<typeof useNavigationBuilder<TabNavigationState<ParamListBase>, TabRouterOptions, Record<string, (...args: any) => void>, NativeTabOptions, Record<string, any>>>;
 }
 export interface NativeTabTriggerProps {
@@ -163,4 +189,5 @@ export interface NativeTabTriggerProps {
      */
     children?: React.ReactNode;
 }
+export {};
 //# sourceMappingURL=types.d.ts.map

@@ -431,7 +431,12 @@ async function androidApkUploadAsync() {
   const appVersion = await androidAppVersionAsync();
   await confirmPromptIfOverridingRemoteFileAsync(getAndroidApkUrl(appVersion), appVersion);
   const projectDir = EAS_EXPO_GO_PROJECT_DIR;
-  const archivePath = await downloadBuildArtifactAsync(projectDir, 'android', appVersion);
+  const archivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'android',
+    appVersion,
+    sdkVersion
+  );
 
   logger.info(`Build archive downloaded to: ${archivePath}`);
 
@@ -499,7 +504,14 @@ async function iosSimulatorUploadAsync() {
   const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
   await confirmPromptIfOverridingRemoteFileAsync(getIosSimulatorUrl(appVersion), appVersion);
   const projectDir = EAS_EXPO_GO_PROJECT_DIR;
-  const archivePath = await downloadBuildArtifactAsync(projectDir, 'ios', appVersion);
+  const tempArchivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'ios',
+    appVersion,
+    sdkVersion
+  );
+  const archivePath = await processIosTarArchiveAsync(tempArchivePath, projectDir);
+
   const repoOwner = REPO_OWNER;
   const repoName = RELEASES_REPO_NAME;
 
@@ -571,7 +583,8 @@ export async function iosSimulatorBuildAsync() {
 async function downloadBuildArtifactAsync(
   projectDir: string,
   platform: 'ios' | 'android',
-  appVersion: string
+  appVersion: string,
+  sdkVersion: string
 ) {
   const buildInfo = await spawnAsync(
     'eas',
@@ -587,6 +600,8 @@ async function downloadBuildArtifactAsync(
       'finished',
       '--profile',
       PUBLISH_CLIENT_BUILD_PROFILE,
+      '--sdk-version',
+      sdkVersion,
     ],
     {
       cwd: projectDir,
@@ -680,4 +695,43 @@ async function downloadBuildArtifactAsync(
   });
 
   return archivePath;
+}
+
+// Downloaded tar.gz could be of two formats:
+// tar.gz/Expo go.app/[App Contents] or tar.gz/[App Contents]
+async function processIosTarArchiveAsync(archivePath: string, projectDir: string): Promise<string> {
+  const tempExtractDir = path.join(projectDir, 'temp-extract');
+  try {
+    await mkdirp(tempExtractDir);
+    await spawnAsync('tar', ['-xzf', archivePath, '-C', tempExtractDir], {
+      stdio: 'pipe',
+    });
+
+    // delete the original archive and create a new later in the same path
+    fs.removeSync(archivePath);
+
+    const extractedContents = await fs.readdir(tempExtractDir);
+    // if there is a .app bundle, the file is downloaded from EAS, create the tar file from it's contents
+    const appBundle = extractedContents.find((item) => item.endsWith('.app'));
+    if (appBundle) {
+      const appBundlePath = path.join(tempExtractDir, appBundle);
+      await spawnAsync('tar', ['-zcvf', archivePath, '-C', appBundlePath, '.'], {
+        stdio: 'pipe',
+      });
+      logger.info(`Created tar from .app bundle contents: ${archivePath}`);
+    }
+    // If no .app file, check if it's a valid iOS app bundle. tar.gz could be from Cloudfront URL.
+    else if (fs.existsSync(path.join(tempExtractDir, 'Info.plist'))) {
+      await spawnAsync('tar', ['-zcvf', archivePath, '-C', tempExtractDir, '.'], {
+        stdio: 'pipe',
+      });
+      logger.info(`Created tar from extracted contents: ${archivePath}`);
+    } else {
+      throw new Error('Unknown archive format');
+    }
+
+    return archivePath;
+  } finally {
+    await fs.remove(tempExtractDir);
+  }
 }

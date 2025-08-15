@@ -142,15 +142,7 @@ export interface LinkPreviewProps {
  * @platform ios
  */
 export declare function LinkPreview(props: LinkPreviewProps): React.JSX.Element | null;
-export interface LinkTriggerProps extends PropsWithChildren {
-    /**
-     * Sets the corner radius of the highlight — the element that appears during a long press,
-     * before the preview shows, and beside the context menu if no preview is displayed.
-     *
-     * @platform ios
-     */
-    highlightBorderRadius?: number;
-}
+export type LinkTriggerProps = PropsWithChildren;
 /**
  * Serves as the trigger for a link.
  * The content inside this component will be rendered as part of the base link.
