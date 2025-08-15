@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Prevent hard crash when we cannot access the event emitter.
+
 ### 💡 Others
 
 ## 8.0.0 — 2025-08-13
