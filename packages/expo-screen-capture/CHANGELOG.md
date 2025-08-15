@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Prevent hard crash when we cannot access the event emitter.
+- [Android] Prevent hard crash when we cannot access the event emitter. ([#38869](https://github.com/expo/expo/pull/38869) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
