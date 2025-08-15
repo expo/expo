@@ -13,13 +13,13 @@ import {
   type SourceMapGeneratorOptions,
 } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
 import type {
-  Module,
   DeltaResult,
+  Module,
   TransformInputOptions,
 } from '@expo/metro/metro/DeltaBundler/types.flow';
 import type {
-  default as MetroHmrServer,
   Client as MetroHmrClient,
+  default as MetroHmrServer,
 } from '@expo/metro/metro/HmrServer';
 import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
 import type MetroServer from '@expo/metro/metro/Server';
@@ -38,7 +38,7 @@ import {
   fileURLToFilePath,
 } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
+import { ExpoRouterServerManifestV1, fetchManifest, inflateManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import {
   attachImportStackToRootMessage,
@@ -78,14 +78,15 @@ import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddle
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { LoaderModuleMiddleware } from '../middleware/LoaderModuleMiddleware';
 import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   convertPathToModuleSpecifier,
+  createBundleOsPath,
   createBundleUrlPath,
   ExpoMetroOptions,
-  createBundleOsPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
@@ -365,7 +366,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     return {
-      serverManifest: await getBuildTimeServerManifestAsync({ ...exp.extra?.router }),
+      serverManifest: await getBuildTimeServerManifestAsync({
+        ...exp.extra?.router,
+        // Pass build context for path resolution
+        isExporting: this.instanceMetroOptions.isExporting,
+        projectRoot: this.projectRoot,
+        routerRoot: exp.extra?.router?.root || this.instanceMetroOptions.routerRoot || 'app',
+      }),
       htmlManifest: await getManifest({ ...exp.extra?.router }),
     };
   }
@@ -373,9 +380,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
     manifest: ExpoRouterRuntimeManifest;
-    renderAsync: (path: string) => Promise<string>;
+    renderAsync: (path: string, opts?: { loaderData?: any }) => Promise<string>;
+    executeLoaderAsync: (path: string) => Promise<any>;
   }> {
     const url = this.getDevServerUrlOrAssert();
+    const { exp } = getConfig(this.projectRoot);
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
@@ -387,17 +396,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       );
 
-    const { exp } = getConfig(this.projectRoot);
-
     return {
       serverManifest: await getBuildTimeServerManifestAsync({
         ...exp.extra?.router,
       }),
       // Get routes from Expo Router.
       manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
-      // Get route generating function
-      async renderAsync(path: string) {
-        return await getStaticContent(new URL(path, url));
+      renderAsync: async (pathname: string, opts?: { loaderData?: any }) => {
+        const location = new URL(pathname, url);
+        return await getStaticContent(location, opts);
+      },
+      executeLoaderAsync: async (pathname: string) => {
+        const location = new URL(pathname, url);
+        return await this.executeRouteLoaderAsync(location);
       },
     };
   }
@@ -489,7 +500,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
       const location = new URL(pathname, this.getDevServerUrlOrAssert());
-      return await getStaticContent(location);
+
+      const { exp } = getConfig(this.projectRoot);
+      const loaderData = exp.extra?.router?.unstable_useServerDataLoaders
+        ? await this.executeRouteLoaderAsync(location)
+        : undefined;
+
+      return await getStaticContent(location, { loaderData });
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
@@ -1112,6 +1129,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
+        if (exp.extra?.router?.unstable_useServerDataLoaders) {
+          const loaderModuleMiddleware = new LoaderModuleMiddleware(
+            this.projectRoot,
+            this.executeRouteLoaderAsync.bind(this),
+            () => this.getDevServerUrlOrAssert()
+          );
+          // This MUST be before ServeStaticMiddleware so it doesn't treat the loader files as static assets
+          middleware.use(loaderModuleMiddleware.getHandler());
+        }
+
         // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
         middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
@@ -1487,6 +1514,83 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
+  }
+
+  /**
+   * Execute a route's loader function. Used during SSR/SSG to fetch data required by routes.
+   *
+   * @experimental
+   */
+  private async executeRouteLoaderAsync(location: URL): Promise<Record<string, any> | undefined> {
+    const { exp } = getConfig(this.projectRoot);
+    const { unstable_useServerDataLoaders } = exp.extra?.router;
+
+    if (!unstable_useServerDataLoaders) {
+      throw new CommandError(
+        'LOADERS_NOT_ENABLED',
+        'Server data loaders are not enabled. This is a programming error.'
+      );
+    }
+
+    const { routerRoot } = this.instanceMetroOptions;
+    let loaderData: Record<string, any> | undefined;
+
+    try {
+      const { serverManifest } = await this.getServerManifestAsync();
+      const inflatedManifest = inflateManifest(
+        serverManifest as ExpoRouterServerManifestV1<string>
+      );
+
+      const matchingRoute = inflatedManifest.htmlRoutes.find((route) => {
+        return route.namedRegex.test(location.pathname);
+      });
+
+      if (!matchingRoute?.loader) {
+        // TODO(@hassankhan): If a route doesn't have a loader, should we be throwing a `CommandError` instead?
+        debug(`No loader found for route: ${location.pathname}`);
+        return;
+      }
+
+      debug('Matched route loader: ', matchingRoute.loader, ' to file: ', matchingRoute.file);
+
+      // Extract route parameters
+      const params: Record<string, string | string[]> = {};
+      const match = matchingRoute.namedRegex.exec(location.pathname);
+      if (match?.groups) {
+        for (const [key, value] of Object.entries(match.groups)) {
+          const namedKey = matchingRoute.routeKeys[key];
+          params[namedKey] = value;
+        }
+      }
+
+      let modulePath = matchingRoute.loader;
+      if (!this.instanceMetroOptions.isExporting) {
+        const appDir = path.join(this.projectRoot, routerRoot!);
+        modulePath = path.isAbsolute(modulePath) ? modulePath : path.join(appDir, modulePath);
+        modulePath = modulePath.replace(/\.(js|ts)x?$/, '');
+      }
+
+      debug('Using loader module path: ', modulePath);
+
+      const routeModule = await this.ssrLoadModule<any>(modulePath, {
+        environment: 'node',
+      });
+
+      if (routeModule.loader) {
+        loaderData = await routeModule.loader({
+          params,
+          request: null, // No request object for SSG
+        });
+      }
+    } catch (error: any) {
+      throw new CommandError(
+        'LOADER_EXECUTION_FAILED',
+        `Failed to execute loader for route "${location.pathname}": ${error.message}`
+      );
+    }
+
+    debug('Loader data:', loaderData, ' for location:', location.pathname);
+    return loaderData;
   }
 
   // Ensure the global is available for SSR CSS modules to inject client updates.

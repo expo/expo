@@ -9,6 +9,7 @@
  */
 import type { RouteNode } from './Route';
 import type { MiddlewareMatcher } from './routes-manifest';
+import { type LoaderResolutionOptions } from './utils/resolveLoaderPath';
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     file: string;
     page: string;
@@ -28,6 +29,8 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     permanent?: boolean;
     /** If a redirect, which methods are allowed. Undefined represents all methods */
     methods?: string[];
+    /** If this route exports a loader function, this is the contextKey */
+    loader?: string;
 };
 export type ExpoRouterServerManifestV1Middleware = {
     /**
@@ -77,7 +80,7 @@ export interface RouteRegex {
     groups: Record<string, Group>;
     re: RegExp;
 }
-export declare function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1;
+export declare function getServerManifest(route: RouteNode, options?: LoaderResolutionOptions): ExpoRouterServerManifestV1;
 export declare function parseParameter(param: string): {
     name: string;
     repeat: boolean;

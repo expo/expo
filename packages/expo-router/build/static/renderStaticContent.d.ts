@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-export declare function getStaticContent(location: URL): Promise<string>;
+export declare function getStaticContent(location: URL, options?: {
+    loaderData?: any;
+}): Promise<string>;
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';
 //# sourceMappingURL=renderStaticContent.d.ts.map

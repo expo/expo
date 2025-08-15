@@ -8,14 +8,15 @@ import { type ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
+type Params = Record<string, string | string[]>;
+
 export type LoadedRoute = {
   ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
   default?: ComponentType<any>;
   unstable_settings?: Record<string, any>;
   getNavOptions?: (args: any) => any;
-  generateStaticParams?: (props: {
-    params?: Record<string, string | string[]>;
-  }) => Record<string, string | string[]>[];
+  generateStaticParams?: (props: { params?: Params }) => Params[];
+  loader?: (args: { params: Params; request?: Request }) => Promise<any>;
 };
 
 export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'>;
@@ -44,6 +45,8 @@ export type RouteNode = {
   contextKey: string;
   /** Redirect Context Module ID, used for matching children. */
   destinationContextKey?: string;
+  /** Loader Context Module ID, used for matching a loader to its route. */
+  loaderContextKey?: string;
   /** Is the redirect permanent. */
   permanent?: boolean;
   /** Added in-memory */

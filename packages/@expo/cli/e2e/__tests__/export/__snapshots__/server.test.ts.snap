@@ -120,6 +120,7 @@ exports[`server-output express server requests has expected routes manifest entr
     },
     {
       "file": "./blog-ssg/abc.tsx",
+      "generated": true,
       "namedRegex": "^/blog\\-ssg/abc(?:/)?$",
       "page": "/blog-ssg/abc",
       "routeKeys": {},
@@ -282,6 +283,7 @@ exports[`server-output workerd server requests has expected routes manifest entr
     },
     {
       "file": "./blog-ssg/abc.tsx",
+      "generated": true,
       "namedRegex": "^/blog\\-ssg/abc(?:/)?$",
       "page": "/blog-ssg/abc",
       "routeKeys": {},

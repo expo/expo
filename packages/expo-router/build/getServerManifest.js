@@ -4,7 +4,11 @@ exports.getServerManifest = getServerManifest;
 exports.parseParameter = parseParameter;
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
+const resolveLoaderPath_1 = require("./utils/resolveLoaderPath");
 const url_1 = require("./utils/url");
+const debug = require('debug')('expo:getServerManifest');
+// Map to store resolved loader paths by contextKey for reuse by generated routes
+const resolvedLoaderPaths = new Map();
 function isNotFoundRoute(route) {
     return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
@@ -20,22 +24,36 @@ function uniqueBy(arr, key) {
     });
 }
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-function getServerManifest(route) {
+function getServerManifest(route, options) {
+    // Clear the map for each manifest generation to avoid stale data
+    resolvedLoaderPaths.clear();
     function getFlatNodes(route, parentRoute = '') {
         // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
         const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
         if (route.children.length) {
             return route.children.map((child) => getFlatNodes(child, absoluteRoute)).flat();
         }
+        // Check HTML routes for an exported loader property.
+        // NOTE(@hassankhan): In SSR, the `loaderContextKey` should point to a bundle created by `expo export`
+        if (!route.loaderContextKey && route.type === 'route') {
+            const routeModule = route.loadRoute();
+            if (routeModule?.loader && typeof routeModule.loader === 'function') {
+                const resolvedPath = options?.isExporting
+                    ? (0, resolveLoaderPath_1.resolveLoaderModulePath)(route.contextKey, options)
+                    : route.contextKey;
+                route.loaderContextKey = resolvedPath;
+                resolvedLoaderPaths.set(route.contextKey, resolvedPath);
+            }
+        }
         // API Routes are handled differently to HTML routes because they have no nested behavior.
         // An HTML route can be different based on parent segments due to layout routes, therefore multiple
         // copies should be rendered. However, an API route is always the same regardless of parent segments.
         let key;
         if (route.type.includes('api')) {
-            key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
+            key = getNormalizedContextKey(route.contextKey);
         }
         else {
-            key = (0, matchers_1.getContextKey)(absoluteRoute).replace(/\/index$/, '') ?? '/';
+            key = getNormalizedContextKey(absoluteRoute);
         }
         return [[key, '/' + absoluteRoute, route]];
     }
@@ -88,7 +106,15 @@ function getServerManifest(route) {
 }
 function getMatchableManifestForPaths(paths) {
     return paths.map(([normalizedRoutePath, absoluteRoute, node]) => {
-        const matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.contextKey);
+        let matcher;
+        // For routes created by `generateStaticParams()`, use the original dynamic route's namedRegex and routeKeys
+        debug({ normalizedRoutePath, absoluteRoute, loaderContextKey: node.loaderContextKey });
+        if (node.generated && node.loaderContextKey) {
+            matcher = getNamedRouteRegex(getNormalizedContextKey(node.loaderContextKey), absoluteRoute, node.loaderContextKey);
+        }
+        else {
+            matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.contextKey);
+        }
         if (node.generated) {
             matcher.generated = true;
         }
@@ -97,6 +123,14 @@ function getMatchableManifestForPaths(paths) {
         }
         if (node.methods) {
             matcher.methods = node.methods;
+        }
+        if (node.loaderContextKey) {
+            if (node.generated && resolvedLoaderPaths.has(node.loaderContextKey)) {
+                matcher.loader = resolvedLoaderPaths.get(node.loaderContextKey);
+            }
+            else {
+                matcher.loader = node.loaderContextKey;
+            }
         }
         return matcher;
     });
@@ -229,5 +263,8 @@ function parseParameter(param) {
         name = name.slice(3);
     }
     return { name, repeat, optional };
+}
+function getNormalizedContextKey(contextKey) {
+    return (0, matchers_1.getContextKey)(contextKey).replace(/\/index$/, '') ?? '/';
 }
 //# sourceMappingURL=getServerManifest.js.map

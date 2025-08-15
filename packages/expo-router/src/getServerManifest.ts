@@ -11,7 +11,13 @@ import type { RouteNode } from './Route';
 import { getContextKey, matchGroupName } from './matchers';
 import type { MiddlewareMatcher } from './routes-manifest';
 import { sortRoutes } from './sortRoutes';
+import { resolveLoaderModulePath, type LoaderResolutionOptions } from './utils/resolveLoaderPath';
 import { shouldLinkExternally } from './utils/url';
+
+const debug = require('debug')('expo:getServerManifest') as typeof console.log;
+
+// Map to store resolved loader paths by contextKey for reuse by generated routes
+const resolvedLoaderPaths = new Map<string, string>();
 
 // TODO: Share these types across cli, server, router, etc.
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
@@ -33,6 +39,8 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
   permanent?: boolean;
   /** If a redirect, which methods are allowed. Undefined represents all methods */
   methods?: string[];
+  /** If this route exports a loader function, this is the contextKey */
+  loader?: string;
 };
 
 export type ExpoRouterServerManifestV1Middleware = {
@@ -107,7 +115,13 @@ function uniqueBy<T>(arr: T[], key: (item: T) => string): T[] {
 type FlatNodeTuple = [contextKey: string, absoluteRoute: string, node: RouteNode];
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 {
+export function getServerManifest(
+  route: RouteNode,
+  options?: LoaderResolutionOptions
+): ExpoRouterServerManifestV1 {
+  // Clear the map for each manifest generation to avoid stale data
+  resolvedLoaderPaths.clear();
+
   function getFlatNodes(route: RouteNode, parentRoute: string = ''): FlatNodeTuple[] {
     // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
     const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
@@ -116,14 +130,28 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
       return route.children.map((child) => getFlatNodes(child, absoluteRoute)).flat();
     }
 
+    // Check HTML routes for an exported loader property.
+    // NOTE(@hassankhan): In SSR, the `loaderContextKey` should point to a bundle created by `expo export`
+    if (!route.loaderContextKey && route.type === 'route') {
+      const routeModule = route.loadRoute();
+      if (routeModule?.loader && typeof routeModule.loader === 'function') {
+        const resolvedPath = options?.isExporting
+          ? resolveLoaderModulePath(route.contextKey, options)
+          : route.contextKey;
+
+        route.loaderContextKey = resolvedPath;
+        resolvedLoaderPaths.set(route.contextKey, resolvedPath);
+      }
+    }
+
     // API Routes are handled differently to HTML routes because they have no nested behavior.
     // An HTML route can be different based on parent segments due to layout routes, therefore multiple
     // copies should be rendered. However, an API route is always the same regardless of parent segments.
     let key: string;
     if (route.type.includes('api')) {
-      key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
+      key = getNormalizedContextKey(route.contextKey);
     } else {
-      key = getContextKey(absoluteRoute).replace(/\/index$/, '') ?? '/';
+      key = getNormalizedContextKey(absoluteRoute);
     }
     return [[key, '/' + absoluteRoute, route]];
   }
@@ -200,15 +228,22 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
   return manifest;
 }
 
-function getMatchableManifestForPaths(
-  paths: [string, string, RouteNode][]
-): ExpoRouterServerManifestV1Route[] {
+function getMatchableManifestForPaths(paths: FlatNodeTuple[]): ExpoRouterServerManifestV1Route[] {
   return paths.map(([normalizedRoutePath, absoluteRoute, node]) => {
-    const matcher: ExpoRouterServerManifestV1Route = getNamedRouteRegex(
-      normalizedRoutePath,
-      absoluteRoute,
-      node.contextKey
-    );
+    let matcher: ExpoRouterServerManifestV1Route;
+
+    // For routes created by `generateStaticParams()`, use the original dynamic route's namedRegex and routeKeys
+    debug({ normalizedRoutePath, absoluteRoute, loaderContextKey: node.loaderContextKey });
+    if (node.generated && node.loaderContextKey) {
+      matcher = getNamedRouteRegex(
+        getNormalizedContextKey(node.loaderContextKey),
+        absoluteRoute,
+        node.loaderContextKey
+      );
+    } else {
+      matcher = getNamedRouteRegex(normalizedRoutePath, absoluteRoute, node.contextKey);
+    }
+
     if (node.generated) {
       matcher.generated = true;
     }
@@ -219,6 +254,14 @@ function getMatchableManifestForPaths(
 
     if (node.methods) {
       matcher.methods = node.methods;
+    }
+
+    if (node.loaderContextKey) {
+      if (node.generated && resolvedLoaderPaths.has(node.loaderContextKey)) {
+        matcher.loader = resolvedLoaderPaths.get(node.loaderContextKey)!;
+      } else {
+        matcher.loader = node.loaderContextKey;
+      }
     }
 
     return matcher;
@@ -370,4 +413,8 @@ export function parseParameter(param: string) {
   }
 
   return { name, repeat, optional };
+}
+
+function getNormalizedContextKey(contextKey: string): string {
+  return getContextKey(contextKey).replace(/\/index$/, '') ?? '/';
 }

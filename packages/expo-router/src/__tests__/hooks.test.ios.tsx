@@ -11,9 +11,11 @@ import {
   usePathname,
   useSegments,
   useRootNavigationState,
+  useLoader,
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { LoaderContext } from '../loaders/context';
 import { act, renderRouter } from '../testing-library';
 import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
@@ -692,5 +694,73 @@ describe(useRootNavigationState, () => {
       stale: false,
       type: 'stack',
     });
+  });
+});
+
+describe(useLoader, () => {
+  const mockLoader = async () => ({ data: 'test' });
+  const originalWindow = global.window;
+  const originalConsoleError = console.error;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Mock console.error to reduce noise in tests
+    // console.error = jest.fn();
+    global.window = {
+      location: { origin: 'http://localhost:8081' },
+      __EXPO_ROUTER_LOADER_DATA__: {},
+    } as any;
+  });
+
+  afterEach(() => {
+    // console.error = originalConsoleError;
+    global.window = originalWindow;
+  });
+
+  afterAll(() => {
+    global.window = originalWindow;
+  });
+
+  it('throws an error when the feature is disabled', () => {
+    global.window = {} as any;
+
+    expect(() => {
+      renderHookOnce(() => useLoader(mockLoader), ['test'], { initialUrl: '/test' });
+    }).toThrow('Server data loaders are not enabled');
+  });
+
+  it('retrieves data from window.__EXPO_ROUTER_LOADER_DATA__', () => {
+    global.window = {
+      ...originalWindow,
+      __EXPO_ROUTER_LOADER_DATA__: {
+        '/': { window: 'data' },
+      },
+    } as any;
+
+    const { result } = renderHook(() => useLoader(mockLoader), ['index'], {
+      initialUrl: '/',
+    });
+
+    expect(result.current).toEqual({ window: 'data' });
+  });
+
+  it(`uses the loader function's return types`, () => {
+    const asyncLoader = async () => {
+      return { user: { id: 1, name: 'async user' }, timestamp: Date.now() };
+    };
+
+    global.window = {
+      ...global.window,
+      __EXPO_ROUTER_LOADER_DATA__: {
+        '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+      },
+    } as any;
+
+    type AsyncResult = Awaited<ReturnType<typeof asyncLoader>>;
+    const result = renderHookOnce(() => useLoader<AsyncResult>(asyncLoader), ['index'], {
+      initialUrl: '/',
+    });
+
+    expectType<{ user: { id: number; name: string }; timestamp: number }>(result);
   });
 });

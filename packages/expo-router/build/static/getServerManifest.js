@@ -30,7 +30,11 @@ async function getBuildTimeServerManifestAsync(options = {}) {
     }
     // Evaluate all static params
     await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
-    return (0, getServerManifest_1.getServerManifest)(routeTree);
+    return (0, getServerManifest_1.getServerManifest)(routeTree, {
+        isExporting: options.isExporting,
+        projectRoot: options.projectRoot,
+        routerRoot: options.routerRoot,
+    });
 }
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options = {}) {

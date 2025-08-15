@@ -10,6 +10,7 @@ import { getReactNavigationConfig } from '../getReactNavigationConfig';
 import { getRoutes, Options } from '../getRoutes';
 import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
+import { LoaderResolutionOptions } from '../utils/resolveLoaderPath';
 
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
@@ -19,7 +20,7 @@ import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 export async function getBuildTimeServerManifestAsync(
-  options: Options = {}
+  options: Options & Partial<LoaderResolutionOptions> = {}
 ): Promise<ExpoRouterServerManifestV1> {
   const routeTree = getRoutes(ctx, {
     platform: 'web',
@@ -33,7 +34,11 @@ export async function getBuildTimeServerManifestAsync(
   // Evaluate all static params
   await loadStaticParamsAsync(routeTree);
 
-  return getServerManifest(routeTree);
+  return getServerManifest(routeTree, {
+    isExporting: options.isExporting,
+    projectRoot: options.projectRoot,
+    routerRoot: options.routerRoot,
+  });
 }
 
 /** Get the linking manifest from a Node.js process. */

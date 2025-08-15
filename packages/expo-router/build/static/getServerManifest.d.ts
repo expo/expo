@@ -6,6 +6,7 @@
  */
 import { Options } from '../getRoutes';
 import { ExpoRouterServerManifestV1 } from '../getServerManifest';
+import { LoaderResolutionOptions } from '../utils/resolveLoaderPath';
 /**
  * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
  * Unlike the `expo-router/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
@@ -13,7 +14,7 @@ import { ExpoRouterServerManifestV1 } from '../getServerManifest';
  *
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
-export declare function getBuildTimeServerManifestAsync(options?: Options): Promise<ExpoRouterServerManifestV1>;
+export declare function getBuildTimeServerManifestAsync(options?: Options & Partial<LoaderResolutionOptions>): Promise<ExpoRouterServerManifestV1>;
 /** Get the linking manifest from a Node.js process. */
 export declare function getManifest(options?: Options): Promise<{
     initialRouteName: undefined;

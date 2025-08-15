@@ -483,3 +483,56 @@ describe('middleware', () => {
     process.env.NODE_ENV = originalEnv;
   });
 });
+
+describe('loaders', () => {
+  it('should include routes with loaders', async () => {
+    // TODO(@hassankhan): Investigate why inMemoryContext does not work with loaders
+    const mockContext = Object.assign(
+      function (id: string) {
+        return {
+          default: () => null,
+          loader: () => Promise.resolve({ data: 'Loader for index' }),
+        };
+      },
+      {
+        keys: () => ['./(app)/index.js'],
+        resolve: (key: string) => key,
+        id: '0',
+      }
+    );
+    const routes = getRoutes(mockContext, { skipGenerated: true });
+
+    const indexRoute = routes.children.find((route) => route.route === '(app)/index');
+    expect(indexRoute).toBeDefined();
+    const loadedIndexRoute = indexRoute.loadRoute();
+    expect(await loadedIndexRoute.loader({ params: {} })).toEqual({ data: 'Loader for index' });
+  });
+
+  it('should validate loader is a function in development mode', () => {
+    process.env.NODE_ENV = 'development';
+
+    // TODO(@hassankhan): Investigate why inMemoryContext does not work with loaders
+    const mockContext = Object.assign(
+      function (id: string) {
+        // This is called by loadRoute()
+        return {
+          default: () => null,
+          loader: 'not a function', // Invalid loader
+        };
+      },
+      {
+        keys: () => ['./(app)/index.js'],
+        resolve: (key: string) => key,
+        id: '0',
+      }
+    );
+
+    expect(() => {
+      getRoutes(mockContext, {
+        skipGenerated: true,
+        importMode: 'sync',
+        ignoreRequireErrors: false,
+      });
+    }).toThrow('Route "./(app)/index.js" exports a loader that is not a function.');
+  });
+});
