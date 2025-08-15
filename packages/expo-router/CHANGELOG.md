@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- For `expo-router/testing-library`, `@testing-library/react-native` must now be installed separately and it's an optional peer dependency
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
