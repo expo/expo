@@ -383,26 +383,26 @@ internal struct GlassEffectModifier: ViewModifier {
   let interactive: Bool
   let tint: Color?
   let shape: String
-  
+
   @ViewBuilder
   func body(content: Content) -> some View {
     if #available(iOS 26.0, *) {
       let glass = parseGlassVariant(glassVariant)
       switch shape {
       case "capsule":
-          content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
       case "circle":
-          content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
       case "ellipse":
-          content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
       default:
-          content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
       }
     } else {
       content
     }
   }
-  
+
   @available(iOS 26.0, *)
   private func parseGlassVariant(_ glassString: String) -> Glass {
     switch glassString {
