@@ -1,0 +1,1 @@
+{"version":3,"file":"MediaLibrary.js","sourceRoot":"","sources":["../../src/next/MediaLibrary.ts"],"names":[],"mappings":"AAAA,OAAO,oBAAoB,MAAM,wBAAwB,CAAC;AAE1D,MAAM,OAAO,KAAM,SAAQ,oBAAoB,CAAC,KAAK;CAAG","sourcesContent":["import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';\n\nexport class Asset extends ExpoMediaLibraryNext.Asset {}\n"]}
