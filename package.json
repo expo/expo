@@ -28,7 +28,7 @@
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",
     "@types/babel__traverse": "^7.20.7",
-    "@react-navigation/bottom-tabs": "7.4.0",
+    "@react-navigation/bottom-tabs": "7.4.6",
     "@react-navigation/core": "7.12.4",
     "@react-navigation/drawer": "7.5.0",
     "@react-navigation/elements": "2.6.3",
