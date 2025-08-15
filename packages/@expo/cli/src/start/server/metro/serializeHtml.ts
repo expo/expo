@@ -88,11 +88,11 @@ function htmlFromSerialAssets(
     })
     .join('');
 
-  const jsAssets = assets.filter((asset) => asset.type === 'js');
+  const orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
   const scripts = bundleUrl
     ? `<script src="${bundleUrl}" defer></script>`
-    : jsAssets
+    : orderedJsAssets
         .map(({ filename, metadata }) => {
           // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
           if (metadata.isAsync) {
@@ -131,4 +131,47 @@ function htmlFromSerialAssets(
   return template
     .replace('</head>', `${styleString}</head>`)
     .replace('</body>', `${scripts}\n</body>`);
+}
+
+/**
+ * Sorts assets based on the requires tree. DFS order.
+ */
+export function assetsRequiresSort(assets: SerialAsset[]): SerialAsset[] {
+  const lookup = new Map<string, SerialAsset>();
+  const visited = new Set();
+  const visiting = new Set();
+  const result: SerialAsset[] = [];
+
+  assets.forEach((a) => {
+    lookup.set(a.filename, a);
+  });
+
+  function visit(name: string) {
+    if (visited.has(name)) return;
+    if (visiting.has(name))
+      throw new Error(
+        `Circular dependencies in assets are not allowed. Found cycle: ${[...visiting, name].join(' -> ')}`
+      );
+
+    visiting.add(name);
+
+    const module = lookup.get(name);
+    if (!module) throw new Error(`Asset not found: ${name}`);
+
+    module.metadata.requires?.forEach((dependency) => {
+      visit(dependency);
+    });
+
+    visiting.delete(name);
+    visited.add(name);
+    result.push(module);
+  }
+
+  assets.forEach((a) => {
+    if (!visited.has(a.filename)) {
+      visit(a.filename);
+    }
+  });
+
+  return result;
 }

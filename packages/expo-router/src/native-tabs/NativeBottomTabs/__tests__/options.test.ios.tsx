@@ -1,8 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
-import { screen, renderRouter } from '../../../testing-library';
+import { screen, renderRouter, act, fireEvent } from '../../../testing-library';
 import { Badge, Icon, Label } from '../../common/elements';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabOptions } from '../NativeTabsView';
@@ -82,23 +82,16 @@ it('when no options are passed, default ones are used', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-  expect(Object.keys(BottomTabsScreen.mock.calls[0][0])).toEqual([
-    'hidden',
-    'specialEffects',
-    'iconResourceName',
-    'icon',
-    'selectedIcon',
-    'title',
-    'tabKey',
-    'isFocused',
-    'children',
-  ]);
   expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
     tabKey: expect.stringMatching(/^index-[-\w]+/),
     isFocused: true,
     children: expect.objectContaining({}),
+    iconResourceName: undefined,
+    icon: undefined,
+    selectedIcon: undefined,
+    freezeContents: false,
   } as NativeTabOptions);
 });
 
@@ -317,7 +310,7 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).not.toHaveProperty('badge');
+    expect(BottomTabsScreen.mock.calls[0][0]).not.toHaveProperty('badgeValue');
   });
 
   it('uses last Badge value when multiple are provided', () => {
@@ -339,6 +332,40 @@ describe('Badge', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       badgeValue: '3',
     } as NativeTabOptions);
+  });
+
+  it('when empty Badge is used, passes space to badgeValue', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Badge />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0].badgeValue).toBe(' '); // Space is used to show empty badge
+  });
+
+  it('when empty Badge is used with hidden, passes undefined to badgeValue', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Badge hidden />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0].badgeValue).toBeUndefined();
   });
 });
 
@@ -400,6 +427,40 @@ describe('Title', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Last Title',
     } as NativeTabOptions);
+  });
+
+  it('when empty Label is used, passes route name to title', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0].title).toBe('index'); // Route name is used as title when Label is empty
+  });
+
+  it('when Label with hidden is used, passes empty string to title', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label hidden />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0].title).toBe(''); // Route name is used as title when Label is empty
   });
 });
 
@@ -524,5 +585,220 @@ describe('Tab options', () => {
         },
       } as NativeTabOptions);
     });
+  });
+});
+
+describe('Dynamic options', () => {
+  it('updates options dynamically', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger name="index" options={{ title: 'Updated Title' }} />
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      children: expect.objectContaining({}),
+      freezeContents: false,
+      icon: undefined,
+      selectedIcon: undefined,
+      iconResourceName: undefined,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      children: expect.objectContaining({}),
+      freezeContents: false,
+      icon: undefined,
+      selectedIcon: undefined,
+      iconResourceName: undefined,
+    } as NativeTabOptions);
+  });
+
+  it('can use components as children', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger name="index">
+            <Label>Updated Title</Label>
+            <Badge>5</Badge>
+            <Icon sf="homepod.2.fill" />
+          </NativeTabs.Trigger>
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      iconResourceName: undefined,
+      icon: undefined,
+      selectedIcon: undefined,
+      freezeContents: false,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      badgeValue: '5',
+      icon: {
+        sfSymbolName: 'homepod.2.fill',
+      },
+      selectedIcon: undefined,
+      freezeContents: false,
+    } as NativeTabOptions);
+  });
+
+  it('can override component children from _layout with options', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+            <Badge>3</Badge>
+            <Icon sf="0.circle" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger
+            name="index"
+            options={{
+              title: 'Updated Title',
+              badgeValue: '5',
+              icon: { sf: 'homepod.2.fill' },
+            }}
+          />
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      badgeValue: '3',
+      icon: { sfSymbolName: '0.circle' },
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      badgeValue: '5',
+      icon: {
+        sfSymbolName: 'homepod.2.fill',
+      },
+    } as NativeTabOptions);
+  });
+
+  it('can override component children from _layout with dynamic children', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+            <Badge>3</Badge>
+            <Icon sf="0.circle" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger name="index">
+            <Label>Updated Title</Label>
+            <Badge>5</Badge>
+            <Icon sf="homepod.2.fill" />
+          </NativeTabs.Trigger>
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      badgeValue: '3',
+      icon: { sfSymbolName: '0.circle' },
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Updated Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      badgeValue: '5',
+      icon: {
+        sfSymbolName: 'homepod.2.fill',
+      },
+    } as NativeTabOptions);
+  });
+
+  it('can dynamically update options with state update', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Label>Initial Title</Label>
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: function Index() {
+        const [value, setValue] = React.useState(0);
+        const label = `Updated Title ${value}`;
+        return (
+          <View testID="index">
+            <NativeTabs.Trigger name="index">
+              <Label>{label}</Label>
+            </NativeTabs.Trigger>
+            <Button title="Update" testID="update-button" onPress={() => setValue((v) => v + 1)} />
+          </View>
+        );
+      },
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0].title).toBe('Initial Title');
+    expect(BottomTabsScreen.mock.calls[1][0].title).toBe('Updated Title 0');
+    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(3);
+    expect(BottomTabsScreen.mock.calls[2][0].title).toBe('Updated Title 1');
+    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(4);
+    expect(BottomTabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
   });
 });

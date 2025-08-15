@@ -259,6 +259,18 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     if !config.disableAntiBrickingMeasures {
       throw NotAllowedAntiBrickingMeasuresException()
     }
-    UpdatesConfigOverride.save(configOverride)
+    UpdatesConfigOverride.save(configOverride: configOverride)
     self.config = try UpdatesConfig.config(fromConfig: self.config, configOverride: configOverride)
-  }}
+  }
+
+  public func setUpdateRequestHeadersOverride(_ requestHeaders: [String: String]?) throws {
+    if !UpdatesConfig.isValidRequestHeadersOverride(
+      originalEmbeddedRequestHeaders: config.originalEmbeddedRequestHeaders,
+      requestHeadersOverride: requestHeaders
+    ) {
+      throw InvalidRequestHeadersOverrideException(requestHeaders)
+    }
+    let configOverride = UpdatesConfigOverride.save(requestHeaders: requestHeaders)
+    self.config = try UpdatesConfig.config(fromConfig: self.config, configOverride: configOverride)
+  }
+}

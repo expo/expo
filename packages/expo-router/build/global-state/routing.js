@@ -76,23 +76,20 @@ exports.routingQueue = {
         return exports.routingQueue.queue;
     },
     add(action) {
-        // Reset the identity of the queue.
-        if (exports.routingQueue.queue.length === 0) {
-            exports.routingQueue.queue = [];
-        }
         exports.routingQueue.queue.push(action);
         for (const callback of exports.routingQueue.subscribers) {
             callback();
         }
     },
-    run() {
-        const queue = exports.routingQueue.queue;
-        if (queue.length === 0 || !router_store_1.store.navigationRef) {
-            return;
-        }
+    run(ref) {
+        // Reset the identity of the queue.
+        const events = exports.routingQueue.queue;
         exports.routingQueue.queue = [];
-        for (const action of queue) {
-            router_store_1.store.navigationRef.dispatch(action);
+        let action;
+        while ((action = events.shift())) {
+            if (ref.current) {
+                ref.current.dispatch(action);
+            }
         }
     },
 };
@@ -208,9 +205,9 @@ function linkTo(originalHref, options = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular, options.__internal__PreviewKey));
+    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey));
 }
-function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', withAnchor, singular, previewKey) {
+function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', withAnchor, singular, isPreviewNavigation) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -225,7 +222,7 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
      *
      * Other parameters such as search params and hash are not evaluated.
      */
-    const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState);
+    const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState, type === 'PRELOAD');
     /*
      * We found the target navigator, but the payload is in the incorrect format
      * We need to convert the action state to a payload that can be dispatched
@@ -257,15 +254,18 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
          */
         rootPayload.params.initial = !withAnchor;
     }
+    const previewKeyParams = isPreviewNavigation
+        ? { __internal__expoRouterIsPreviewNavigation: isPreviewNavigation }
+        : {};
+    const params = { ...rootPayload.params, ...previewKeyParams };
     return {
         type,
         target: navigationState.key,
         payload: {
             // key: rootPayload.key,
             name: rootPayload.screen,
-            params: rootPayload.params,
+            params,
             singular,
-            previewKey,
         },
     };
 }
@@ -297,13 +297,22 @@ function getPayloadFromStateRoute(_actionStateRoute) {
 /*
  * Traverse the state tree comparing the current state and the action state until we find where they diverge
  */
-function findDivergentState(_actionState, _navigationState) {
+function findDivergentState(_actionState, _navigationState, 
+// If true, look through all tabs to find the target state, rather then just the current tab
+lookThroughAllTabs = false) {
     let actionState = _actionState;
     let navigationState = _navigationState;
     let actionStateRoute;
+    const navigationRoutes = [];
     while (actionState && navigationState) {
         actionStateRoute = actionState.routes[actionState.routes.length - 1];
-        const stateRoute = navigationState.routes[navigationState.index ?? 0];
+        const stateRoute = (() => {
+            if (navigationState.type === 'tab' && lookThroughAllTabs) {
+                return (navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
+                    navigationState.routes[navigationState.index ?? 0]);
+            }
+            return navigationState.routes[navigationState.index ?? 0];
+        })();
         const childState = actionStateRoute.state;
         const nextNavigationState = stateRoute.state;
         const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
@@ -316,6 +325,7 @@ function findDivergentState(_actionState, _navigationState) {
         if (didActionAndCurrentStateDiverge) {
             break;
         }
+        navigationRoutes.push(stateRoute);
         actionState = childState;
         navigationState = nextNavigationState;
     }
@@ -323,6 +333,7 @@ function findDivergentState(_actionState, _navigationState) {
         actionState,
         navigationState,
         actionStateRoute,
+        navigationRoutes,
     };
 }
 //# sourceMappingURL=routing.js.map

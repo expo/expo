@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Bump to `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+
+## 5.0.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
 ## 4.1.9 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

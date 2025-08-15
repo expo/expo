@@ -1,19 +1,36 @@
 import type MetroConfig from '@expo/metro/metro-config';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
-// TODO(@kitten): This should be removed and we need to rely on `@expo/metro/metro-config`
-// Same for `@expo/metro-config/src/traveling/metro-config.ts` which should also be removed
 function importMetroConfigFromProject(projectDir: string): typeof MetroConfig {
-  const resolvedPath = resolveFrom.silent(projectDir, 'metro-config');
-  if (!resolvedPath) {
-    throw new MetroConfigPackageMissingError(
-      'Missing package "metro-config" in the project. ' +
-        'This usually means `react-native` is not installed. ' +
-        'Verify that dependencies in package.json include "react-native" ' +
+  const notFoundError = (basePackage: string): Error =>
+    new MetroConfigPackageMissingError(
+      `Missing package "${basePackage}" in the project. ` +
+        `This usually means "${basePackage}" is not installed correctly. ` +
+        `Verify that dependencies in package.json include "${basePackage}" ` +
         'and run `yarn` or `npm install`.'
     );
+
+  const expoResolved = resolveFrom.silent(projectDir, 'expo/package.json');
+  if (!expoResolved) {
+    throw notFoundError('expo');
   }
-  return require(resolvedPath);
+  try {
+    // NOTE(@kitten): We need to use the version of metro-config that Expo uses
+    // Luckily, we can import `@expo/metro` via `expo` to get to the same version
+    const expoMetro = require.resolve('@expo/metro/metro-config', {
+      paths: [path.dirname(expoResolved)],
+    });
+    return require(expoMetro);
+  } catch {
+    // NOTE(@kitten): Older versions of expo will not have `@expo/metro`. Let's try to
+    // require `metro-config` directly
+    const metroConfig = resolveFrom.silent(projectDir, 'metro-config');
+    if (!metroConfig) {
+      throw notFoundError('react-native');
+    }
+    return require(metroConfig);
+  }
 }
 
 export async function configExistsAsync(projectRoot: string): Promise<boolean> {

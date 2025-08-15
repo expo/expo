@@ -6,8 +6,8 @@ import { View } from 'react-native';
 import { ModalComponent } from './ModalComponent';
 import type { ModalConfig, ModalsRendererProps } from './types';
 import { getStackAnimationType, getStackPresentationType } from './utils';
-import { ModalStackRouteDrawer } from './web/ModalStackRouteDrawer.web';
-import { TransparentModalStackRouteDrawer } from './web/TransparentModalStackRouteDrawer.web';
+import { ModalStackRouteDrawer } from './web/ModalStackRouteDrawer';
+import { TransparentModalStackRouteDrawer } from './web/TransparentModalStackRouteDrawer';
 import { isTransparentModalPresentation } from './web/utils';
 
 export const ModalsRenderer = ({

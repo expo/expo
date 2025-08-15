@@ -1,175 +1,35 @@
-import {
-  DefaultRouterOptions,
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
-import React from 'react';
-import { type ColorValue, type ImageSourcePropType, type TextStyle } from 'react-native';
+import React, { useRef } from 'react';
 import {
   BottomTabs,
   BottomTabsScreen,
-  enableFreeze,
   featureFlags,
-  type BottomTabsProps,
   type BottomTabsScreenProps,
-  type TabBarItemLabelVisibilityMode,
 } from 'react-native-screens';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import { shouldTabBeVisible } from './utils';
-import { getPathFromState } from '../../link/linking';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 featureFlags.experiment.controlledBottomTabs = false;
 
-// TODO: ENG-16896: Enable freeze globally and disable only for NativeTabsView
-enableFreeze(false);
-
-type BaseNativeTabOptions = Omit<
-  BottomTabsScreenProps,
-  | 'children'
-  | 'placeholder'
-  | 'onWillAppear'
-  | 'onDidAppear'
-  | 'onWillDisappear'
-  | 'onDidDisappear'
-  | 'isFocused'
-  | 'tabKey'
-  | 'icon'
-  | 'selectedIcon'
-  | 'iconResourceName'
-> &
-  DefaultRouterOptions;
-
-type SfSymbolOrImageSource =
-  | {
-      /**
-       * The name of the SF Symbol to use as an icon.
-       * @platform iOS
-       */
-      sf?: SFSymbol;
-    }
-  | {
-      /**
-       * The image source to use as an icon.
-       * @platform iOS
-       */
-      src?: ImageSourcePropType;
-    };
-export interface NativeTabOptions extends BaseNativeTabOptions {
-  /**
-   * If true, the tab will be hidden from the tab bar.
-   */
-  hidden?: boolean;
-  /**
-   * The icon to display in the tab bar.
-   */
-  icon?: SfSymbolOrImageSource & {
-    /**
-     * The name of the drawable resource to use as an icon.
-     * @platform android
-     */
-    drawable?: string;
-  };
-  /**
-   * The icon to display when the tab is selected.
-   */
-  selectedIcon?: SfSymbolOrImageSource;
-}
-
-export interface NativeTabsViewProps {
-  style?: {
-    fontFamily?: TextStyle['fontFamily'];
-    fontSize?: TextStyle['fontSize'];
-    fontWeight?: TextStyle['fontWeight'];
-    fontStyle?: TextStyle['fontStyle'];
-    color?: TextStyle['color'];
-    iconColor?: ColorValue;
-    backgroundColor?: ColorValue;
-    blurEffect?: BottomTabsScreenProps['tabBarBlurEffect'];
-    tintColor?: ColorValue;
-    badgeBackgroundColor?: ColorValue;
-    /**
-     * @platform android
-     */
-    rippleColor?: ColorValue;
-    /**
-     * @platform android
-     */
-    labelVisibilityMode?: TabBarItemLabelVisibilityMode;
-    '&:active'?: {
-      /**
-       * @platform android
-       */
-      color?: ColorValue;
-      /**
-       * @platform android
-       */
-      fontSize?: TextStyle['fontSize'];
-      /**
-       * @platform android
-       */
-      iconColor?: ColorValue;
-      /**
-       * @platform android
-       */
-      indicatorColor?: ColorValue;
-    };
-  };
-  /**
-   * https://developer.apple.com/documentation/uikit/uitabbarcontroller/tabbarminimizebehavior
-   *
-   * Supported values:
-   * - `none` - The tab bar does not minimize.
-   * - `onScrollUp` - The tab bar minimizes when scrolling up, and expands when scrolling back down. Recommended if the scroll view content is aligned to the bottom.
-   * - `onScrollDown` - The tab bar minimizes when scrolling down, and expands when scrolling back up.
-   * - `automatic` - Resolves to the system default minimize behavior.
-   *
-   * @default automatic
-   *
-   * @platform iOS 26
-   */
-  minimizeBehavior?: BottomTabsProps['tabBarMinimizeBehavior'];
-  /**
-   * Disables the active indicator for the tab bar.
-   *
-   * @platform android
-   */
-  disableIndicator?: boolean;
-  builder: ReturnType<
-    typeof useNavigationBuilder<
-      TabNavigationState<ParamListBase>,
-      TabRouterOptions,
-      Record<string, (...args: any) => void>,
-      NativeTabOptions,
-      Record<string, any>
-    >
-  >;
-}
-
-// TODO: Add support for dynamic params inside a route
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { builder, style, minimizeBehavior, disableIndicator } = props;
+  const { builder, style, minimizeBehavior, disableIndicator, focusedIndex } = props;
   const { state, descriptors, navigation } = builder;
   const { routes } = state;
 
-  let focusedIndex = state.index;
-  const isAnyRouteFocused =
-    routes[focusedIndex].key &&
-    descriptors[routes[focusedIndex].key] &&
-    shouldTabBeVisible(descriptors[routes[focusedIndex].key].options);
+  // This is flag that is set to true, when the transition is executed by native tab change
+  // In this case we don't need to change the isFocused of the screens, because the transition will happen on native side
+  const isDuringNativeTransition = useRef<boolean>(false);
+  // This is the last index that was not part of a native transition, e.g navigation from link
+  const lastNotNativeTransitionIndex = useRef<number>(focusedIndex);
 
-  if (!isAnyRouteFocused) {
-    if (process.env.NODE_ENV !== 'production') {
-      throw new Error(
-        `The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${getPathFromState(state)}"`
-      );
-    }
-    // Set focusedIndex to the first visible tab
-    focusedIndex = routes.findIndex((route) => shouldTabBeVisible(descriptors[route.key].options));
+  // If the flag was set in the onNativeFocusChange handler, it will be still true here
+  // It is set to false, later in this function
+  // Thus if it is false, we know that the transition was not triggered by a native tab change
+  // and we need to reset the lastNotNativeTransitionIndex
+  if (!isDuringNativeTransition.current) {
+    lastNotNativeTransitionIndex.current = focusedIndex;
   }
 
   const children = routes
@@ -177,20 +37,25 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     .filter(({ route: { key } }) => shouldTabBeVisible(descriptors[key].options))
     .map(({ route, index }) => {
       const descriptor = descriptors[route.key];
-      const isFocused = state.index === index;
+      // In case of native transition we want to keep the last focused index
+      // Otherwise the lastNotNativeTransitionIndex is set to focusedIndex in the if above this statement
+      const isFocused = index === focusedIndex;
+      // TODO: Find a proper fix, that allows for proper JS navigation
+      //lastNotNativeTransitionIndex.current;
       const title = descriptor.options.title ?? route.name;
-
-      console.log('icon', convertOptionsIconToPropsIcon(descriptor.options.icon));
-      console.log('selectedIcon', convertOptionsIconToPropsIcon(descriptor.options.selectedIcon));
 
       return (
         <BottomTabsScreen
           key={route.key}
           {...descriptor.options}
+          tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor}
+          tabBarItemBadgeTextColor={style?.badgeTextColor}
+          tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment}
           iconResourceName={descriptor.options.icon?.drawable}
           icon={convertOptionsIconToPropsIcon(descriptor.options.icon)}
           selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
           title={title}
+          freezeContents={false}
           tabKey={route.key}
           isFocused={isFocused}>
           {descriptor.render()}
@@ -198,12 +63,20 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       );
     });
 
+  // The native render is over, we can reset the flag
+  isDuringNativeTransition.current = false;
+
   return (
     <BottomTabs
       tabBarItemTitleFontColor={style?.color}
       tabBarItemTitleFontFamily={style?.fontFamily}
       tabBarItemTitleFontSize={style?.fontSize}
-      tabBarItemTitleFontWeight={style?.fontWeight}
+      // Only string values are accepted by screens
+      tabBarItemTitleFontWeight={
+        style?.fontWeight
+          ? (String(style.fontWeight) as `${NonNullable<(typeof style)['fontWeight']>}`)
+          : undefined
+      }
       tabBarItemTitleFontStyle={style?.fontStyle}
       tabBarBackgroundColor={style?.backgroundColor}
       tabBarBlurEffect={style?.blurEffect}
@@ -228,6 +101,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
             name: route.name,
           },
         });
+        isDuringNativeTransition.current = true;
       }}>
       {children}
     </BottomTabs>
@@ -243,7 +117,7 @@ function convertOptionsIconToPropsIcon(
   if ('sf' in icon && icon.sf) {
     return { sfSymbolName: icon.sf };
   } else if ('src' in icon && icon.src) {
-    return { imageSource: icon.src };
+    return { templateSource: icon.src };
   }
   return undefined;
 }

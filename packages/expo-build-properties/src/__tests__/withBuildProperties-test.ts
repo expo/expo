@@ -278,4 +278,28 @@ describe(withBuildProperties, () => {
       value: 'https://my.internal.proxy.net/',
     });
   });
+
+  it('generates the android.reactNativeReleaseLevel property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { reactNativeReleaseLevel: 'canary' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'reactNativeReleaseLevel',
+      value: 'canary',
+    });
+  });
 });

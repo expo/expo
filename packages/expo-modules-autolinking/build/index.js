@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
 const path_1 = __importDefault(require("path"));
 const autolinking_1 = require("./autolinking");
+const dependencies_1 = require("./dependencies");
 const reactNativeConfig_1 = require("./reactNativeConfig");
 function hasCoreFeatures(module) {
     return module.coreFeatures !== undefined;
@@ -74,6 +75,27 @@ function registerReactNativeConfigCommand() {
         }
     });
 }
+/**
+ Register the `verify` command.
+ */
+function registerVerifyCommand() {
+    return commander_1.default
+        .command('verify')
+        .option('-p, --platform [platform]', 'The platform to validate native modules for. Available options: "android", "ios", "both"', 'both')
+        .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
+        .option('-v, --verbose', 'Output all results instead of just warnings.', () => true, false)
+        .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+        .action(async (providedOptions) => {
+        const platforms = providedOptions.platform === 'both' ? ['android', 'ios'] : [providedOptions.platform];
+        const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: providedOptions.projectRoot });
+        const results = (0, dependencies_1.mergeResolutionResults)(await Promise.all(platforms.map((platform) => (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, platform))));
+        await (0, autolinking_1.verifySearchResults)(results, {
+            projectRoot: providedOptions.projectRoot,
+            verbose: providedOptions.verbose,
+            json: providedOptions.json,
+        });
+    });
+}
 module.exports = async function (args) {
     // Searches for available expo modules.
     registerSearchCommand('search', async (results, options) => {
@@ -85,12 +107,7 @@ module.exports = async function (args) {
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Checks whether there are no resolving issues in the current setup.
-    registerSearchCommand('verify', (results, options) => {
-        const numberOfDuplicates = (0, autolinking_1.verifySearchResults)(results, options);
-        if (!numberOfDuplicates) {
-            console.log('✅ Everything is fine!');
-        }
-    });
+    registerVerifyCommand();
     // Searches for available expo modules and resolves the results for given platform.
     registerResolveCommand('resolve', async (results, options) => {
         const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);

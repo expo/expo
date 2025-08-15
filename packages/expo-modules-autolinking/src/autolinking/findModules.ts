@@ -1,8 +1,7 @@
 import fs from 'fs';
-import path from 'path';
 
 import { mergeLinkingOptionsAsync } from './mergeLinkingOptions';
-import { ExpoModuleConfig, loadExpoModuleConfigAsync } from '../ExpoModuleConfig';
+import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
 import {
   type DependencyResolution,
   scanDependenciesRecursively,
@@ -12,10 +11,7 @@ import {
 } from '../dependencies';
 import { PackageRevision, SearchOptions, SearchResults, SupportedPlatform } from '../types';
 
-/** Names of Expo Module config files (highest to lowest priority) */
-const EXPO_MODULE_CONFIG_FILENAMES = ['expo-module.config.json', 'unimodule.json'];
-
-async function resolveExpoModule(
+export async function resolveExpoModule(
   resolution: DependencyResolution,
   platform: SupportedPlatform,
   excludeNames: Set<string>
@@ -23,17 +19,7 @@ async function resolveExpoModule(
   if (excludeNames.has(resolution.name)) {
     return null;
   }
-  let expoModuleConfig: ExpoModuleConfig | null = null;
-  for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
-    try {
-      expoModuleConfig = await loadExpoModuleConfigAsync(
-        path.join(resolution.path, EXPO_MODULE_CONFIG_FILENAMES[idx])
-      );
-      break;
-    } catch {
-      // try the next file
-    }
-  }
+  const expoModuleConfig = await discoverExpoModuleConfigAsync(resolution.path);
   if (expoModuleConfig && expoModuleConfig.supportsPlatform(platform)) {
     return {
       name: resolution.name,
@@ -42,9 +28,9 @@ async function resolveExpoModule(
       config: expoModuleConfig,
       duplicates:
         resolution.duplicates?.map((duplicate) => ({
-          name: resolution.name,
-          path: duplicate,
-          version: '', // NOTE: Are we actually using this?
+          name: duplicate.name,
+          path: duplicate.path,
+          version: duplicate.version,
         })) ?? [],
     };
   } else {

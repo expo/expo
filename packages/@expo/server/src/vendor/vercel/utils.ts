@@ -84,7 +84,7 @@ class StreamPump {
         const bytes = chunk instanceof Uint8Array ? chunk : Buffer.from(chunk);
 
         const available = (this.controller.desiredSize || 0) - bytes.byteLength;
-        this.controller.enqueue(bytes);
+        this.controller.enqueue(bytes as Uint8Array<ArrayBuffer>);
         if (available <= 0) {
           this.pause();
         }

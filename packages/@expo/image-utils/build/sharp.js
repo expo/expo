@@ -8,20 +8,26 @@ exports.isAvailableAsync = isAvailableAsync;
 exports.sharpAsync = sharpAsync;
 exports.findSharpInstanceAsync = findSharpInstanceAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
+const assert_1 = __importDefault(require("assert"));
+const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const resolve_global_1 = __importDefault(require("resolve-global"));
 const semver_1 = __importDefault(require("semver"));
 const env_1 = require("./env");
 const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
-const SHARP_REQUIRED_VERSION = '^2.1.0';
+const SHARP_REQUIRED_VERSION = '^5.2.0';
 async function resizeBufferAsync(buffer, sizes) {
     const sharp = await findSharpInstanceAsync();
+    (0, assert_1.default)(sharp, 'Sharp is being used while its not initialized');
     const metadata = await sharp(buffer).metadata();
     // Create buffer for each size
     const resizedBuffers = await Promise.all(sizes.map((dimension) => {
-        const density = (dimension / Math.max(metadata.width, metadata.height)) * metadata.density;
+        const density = metadata.density != null
+            ? (dimension / Math.max(metadata.width, metadata.height)) * metadata.density
+            : null;
         return sharp(buffer, {
-            density: isNaN(density) ? undefined : Math.ceil(density),
+            density: density == null ? undefined : Math.ceil(density),
         })
             .resize(dimension, dimension, { fit: 'contain', background: 'transparent' })
             .toBuffer();
@@ -37,7 +43,10 @@ async function isAvailableAsync() {
         return false;
     }
     try {
-        return !!(await findSharpBinAsync());
+        // Attempt to find Sharp
+        await findSharpInstanceAsync();
+        // Only mark as available when both CLI and module are found
+        return !!_sharpBin && !!_sharpInstance;
     }
     catch {
         return false;
@@ -100,33 +109,46 @@ function getCommandOptions(commands) {
 let _sharpBin = null;
 let _sharpInstance = null;
 async function findSharpBinAsync() {
-    if (_sharpBin) {
+    if (_sharpBin)
         return _sharpBin;
-    }
     try {
-        const sharpCliPackage = require('sharp-cli/package.json');
-        const libVipsVersion = require('sharp').versions.vips;
-        if (sharpCliPackage &&
+        const sharpCliPackagePath = resolve_global_1.default.silent('sharp-cli/package.json') ??
+            require.resolve('sharp-cli/package.json', {
+                paths: require.resolve.paths('sharp-cli') ?? undefined,
+            });
+        const sharpCliPackage = require(sharpCliPackagePath);
+        const sharpInstance = sharpCliPackagePath
+            ? require((0, resolve_from_1.default)(sharpCliPackagePath, 'sharp'))
+            : null;
+        if (sharpCliPackagePath &&
             semver_1.default.satisfies(sharpCliPackage.version, SHARP_REQUIRED_VERSION) &&
             typeof sharpCliPackage.bin.sharp === 'string' &&
-            typeof libVipsVersion === 'string') {
-            _sharpBin = require.resolve(`sharp-cli/${sharpCliPackage.bin.sharp}`);
+            typeof _sharpInstance?.versions?.vips === 'string') {
+            _sharpBin = path_1.default.join(path_1.default.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
+            _sharpInstance = sharpInstance;
             return _sharpBin;
         }
     }
-    catch {
-        // fall back to global sharp-cli
+    catch (error) {
+        _sharpBin = null;
+        _sharpInstance = null;
+        // `sharp-cli` and/or `sharp` modules could not be found, falling back to global binary only
+        if (env_1.env.EXPO_IMAGE_UTILS_DEBUG) {
+            console.warn('Sharp could not be loaded, reason:', error);
+        }
     }
     let installedCliVersion;
     try {
         installedCliVersion = (await (0, spawn_async_1.default)('sharp', ['--version'])).stdout.toString().trim();
     }
     catch {
-        throw notFoundError(SHARP_REQUIRED_VERSION);
+        return '';
     }
     if (!semver_1.default.satisfies(installedCliVersion, SHARP_REQUIRED_VERSION)) {
         showVersionMismatchWarning(SHARP_REQUIRED_VERSION, installedCliVersion);
+        return '';
     }
+    // Use the `sharp-cli` reference from PATH
     _sharpBin = 'sharp';
     return _sharpBin;
 }
@@ -138,73 +160,26 @@ async function findSharpInstanceAsync() {
     if (env_1.env.EXPO_IMAGE_UTILS_NO_SHARP) {
         throw new Error('Global instance of sharp-cli cannot be retrieved because sharp-cli has been disabled with the environment variable `EXPO_IMAGE_UTILS_NO_SHARP`');
     }
-    if (_sharpInstance) {
+    // Return the cached instance
+    if (_sharpInstance)
         return _sharpInstance;
-    }
-    // Ensure sharp-cli version is correct
+    // Resolve `sharp-cli` and `sharp`, this also loads the sharp module if it can be found
     await findSharpBinAsync();
-    // Attempt to use local sharp package
-    try {
-        const sharp = require('sharp');
-        _sharpInstance = sharp;
-        return sharp;
-    }
-    catch { }
-    // Attempt to resolve the sharp instance used by the global CLI
-    let sharpCliPath;
-    if (process.platform !== 'win32') {
-        try {
-            sharpCliPath = (await (0, spawn_async_1.default)('which', ['sharp'])).stdout.toString().trim();
-        }
-        catch { }
-    }
-    else {
-        // On Windows systems, nested dependencies aren't linked to the paths within `require.resolve.paths`.
-        // Yarn installs these modules in a different folder, let's add yarn to the other attempts.
-        // See: https://github.com/expo/expo-cli/issues/2708
-        let yarnGlobalPath = '';
-        try {
-            yarnGlobalPath = path_1.default.join((await (0, spawn_async_1.default)('yarn', ['global', 'dir'])).stdout.toString().trim(), 'node_modules');
-        }
-        catch { }
-        try {
-            sharpCliPath = require.resolve('sharp-cli/package.json', {
-                paths: (require.resolve.paths('sharp-cli') || []).concat(yarnGlobalPath),
-            });
-        }
-        catch { }
-    }
-    // resolve sharp from the sharp-cli package
-    const sharpPath = resolve_from_1.default.silent(sharpCliPath || '', 'sharp');
-    if (sharpPath) {
-        try {
-            // attempt to require the global sharp package
-            _sharpInstance = require(sharpPath);
-        }
-        catch { }
-    }
     if (!_sharpInstance) {
         throw new Error(`Failed to find the instance of sharp used by the global sharp-cli package.`);
     }
     return _sharpInstance;
-}
-function notFoundError(requiredCliVersion) {
-    return new Error(`This command requires version ${requiredCliVersion} of \`sharp-cli\`. \n` +
-        `You can install it using \`npm install -g sharp-cli@${requiredCliVersion}\`. \n` +
-        '\n' +
-        'For prerequisites, see: https://sharp.dimens.io/en/stable/install/#prerequisites');
 }
 let versionMismatchWarningShown = false;
 function showVersionMismatchWarning(requiredCliVersion, installedCliVersion) {
     if (versionMismatchWarningShown) {
         return;
     }
-    console.warn(`Warning: This command requires version ${requiredCliVersion} of \`sharp-cli\`. \n` +
-        `Currently installed version: "${installedCliVersion}" \n` +
-        `Required version: "${requiredCliVersion}" \n` +
-        `You can install it using \`npm install -g sharp-cli@${requiredCliVersion}\`. \n` +
-        '\n' +
-        'For prerequisites, see: https://sharp.dimens.io/en/stable/install/#prerequisites');
+    console.warn([
+        chalk_1.default.yellow(`Expo supports version "${requiredCliVersion}" of \`sharp-cli\`, current version: "${installedCliVersion}".`),
+        chalk_1.default.yellow.dim(`If you can remove or upgrade using \`npm (un)install -g sharp-cli@${requiredCliVersion}\`.`),
+        chalk_1.default.yellow.dim(`Or disable \`sharp-cli\` with \`EXPO_IMAGE_UTILS_NO_SHARP=1\`.`),
+    ].join('\n'));
     versionMismatchWarningShown = true;
 }
 //# sourceMappingURL=sharp.js.map

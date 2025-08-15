@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.0.0 — 2025-08-13
+
+### 💡 Others
+
 - Migrate to package exports ([#37298](https://github.com/expo/expo/pull/37298) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 14.1.4 — 2025-04-30

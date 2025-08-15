@@ -35,7 +35,7 @@ export declare class Blob {
    */
   text(): Promise<string>;
   /**
-   * **Note**: The current implementation loads the entire `Blob` into memory before streaming.
+   * > **Note**: The current implementation loads the entire `Blob` into memory before streaming.
    * @returns A `ReadableStream` of the `Blob`'s data.
    */
   stream(): ReadableStream;

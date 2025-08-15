@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "9.0.6",
+  "version": "10.0.0",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
@@ -34,15 +34,15 @@
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^4.1.7"
+    "expo-module-scripts": "^5.0.0"
   },
   "dependencies": {
-    "@expo/config": "~11.0.10",
-    "@expo/config-plugins": "~10.0.2",
-    "@expo/config-types": "^53.0.4",
-    "@expo/image-utils": "^0.7.4",
-    "@expo/json-file": "^9.1.4",
-    "@react-native/normalize-colors": "0.81.0-rc.5",
+    "@expo/config": "~12.0.0",
+    "@expo/config-plugins": "~11.0.0",
+    "@expo/config-types": "^54.0.0",
+    "@expo/image-utils": "^0.8.0",
+    "@expo/json-file": "^10.0.0",
+    "@react-native/normalize-colors": "0.81.0",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0",

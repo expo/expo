@@ -133,6 +133,12 @@ export async function test({ describe, expect, it, ...t }) {
       });
     });
 
+    it('Allows reading files from assets', () => {
+      const dir = new Directory(Paths.bundle);
+      expect(dir.list().map((i) => i.name)).toContain('Info.plist');
+      expect(new File(Paths.bundle, 'Info.plist').size > 2000).toBe(true);
+    });
+
     describe('Works with %, # and space characters in names', () => {
       it('Works with spaces as filename', () => {
         const outputFile = new File(testDirectory, 'my new file.txt');

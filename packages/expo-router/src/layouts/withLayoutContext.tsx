@@ -12,7 +12,10 @@ import React, {
 } from 'react';
 
 import { useContextKey } from '../Route';
-import { convertTabPropsToOptions, isTab } from '../native-tabs/NativeBottomTabs/TabOptions';
+import {
+  isNativeTabTrigger,
+  convertTabPropsToOptions,
+} from '../native-tabs/NativeBottomTabs/NativeTabTrigger';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
@@ -45,14 +48,22 @@ export function useFilterScreenChildren(
         return;
       }
 
-      if (isTab(child, contextKey)) {
+      if (isNativeTabTrigger(child, contextKey)) {
         if (exclude) {
           protectedScreens.add(child.props.name);
         } else {
-          screens.push({
-            ...child.props,
-            options: convertTabPropsToOptions(child.props),
-          });
+          const options = convertTabPropsToOptions(child.props);
+          if (options.hidden === false) {
+            screens.push({
+              ...child.props,
+              options: convertTabPropsToOptions(child.props),
+            });
+          } else {
+            // - hidden = undefined -> then the route was not specified in navigator
+            // - hidden = true -> then the route is hidden
+            // In this cases we should treat the tab as protected
+            protectedScreens.add(child.props.name);
+          }
         }
         return;
       }
@@ -107,6 +118,10 @@ export function useFilterScreenChildren(
  * 
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
+ * @param Nav - The navigator component to wrap.
+ * @param processor - A function that processes the screens before passing them to the navigator.
+ * @param useOnlyUserDefinedScreens - If true, all screens not specified as navigator's children will be ignored.
+ *
  *  @example
  * ```tsx app/_layout.tsx
  * import { ParamListBase, TabNavigationState } from "@react-navigation/native";
@@ -136,7 +151,11 @@ export function withLayoutContext<
   T extends ComponentType<any>,
   TState extends NavigationState,
   TEventMap extends EventMapBase,
->(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]) {
+>(
+  Nav: T,
+  processor?: (options: ScreenProps[]) => ScreenProps[],
+  useOnlyUserDefinedScreens: boolean = false
+) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
@@ -147,7 +166,7 @@ export function withLayoutContext<
 
       const processed = processor ? processor(screens ?? []) : screens;
 
-      const sorted = useSortedScreens(processed ?? [], protectedScreens);
+      const sorted = useSortedScreens(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
 
       // Prevent throwing an error when there are no screens.
       if (!sorted.length) {

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 16.0.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
 ## 15.1.7 - 2025-07-01
 
 ### 🐛 Bug fixes

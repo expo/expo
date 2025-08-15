@@ -7,6 +7,7 @@ export * from '../ts-declarations/global';
 
 export function installExpoGlobalPolyfill() {
   if (globalThis.expo) return;
+
   globalThis.expo = {
     EventEmitter,
     NativeModule,
@@ -21,5 +22,9 @@ export function installExpoGlobalPolyfill() {
     reloadAppAsync: async () => {
       window.location.reload();
     },
+
+    expoModulesCoreVersion: undefined,
+    cacheDir: undefined,
+    documentsDir: undefined,
   };
 }

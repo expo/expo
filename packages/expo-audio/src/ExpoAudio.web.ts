@@ -32,12 +32,12 @@ export function createAudioPlayer(
   source: AudioSource | string | number | null = null,
   options: AudioPlayerOptions = {}
 ): AudioPlayer {
-  const { updateInterval = 500, downloadFirst = false } = options;
+  const { downloadFirst = false } = options;
 
   // If downloadFirst is true, we don't need to resolve the source, because it will be replaced once the source is downloaded.
   // If downloadFirst is false, we resolve the source here.
   const initialSource = downloadFirst ? null : resolveSource(source);
-  const player = new AudioModule.AudioPlayerWeb(initialSource, updateInterval);
+  const player = new AudioModule.AudioPlayerWeb(initialSource, options);
 
   // we call .replace() on the player to replace the source with the downloaded one
   // only relevant if downloadFirst is true and source is not null
@@ -73,7 +73,7 @@ export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
   options: AudioPlayerOptions = {}
 ): AudioModule.AudioPlayerWeb {
-  const { updateInterval = 500, downloadFirst = false } = options;
+  const { downloadFirst = false } = options;
 
   // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
   // If downloadFirst is false, we resolve the source here.
@@ -83,8 +83,8 @@ export function useAudioPlayer(
   }, [JSON.stringify(source), downloadFirst]);
 
   const player = useMemo(
-    () => new AudioModule.AudioPlayerWeb(initialSource, updateInterval),
-    [JSON.stringify(initialSource), updateInterval]
+    () => new AudioModule.AudioPlayerWeb(initialSource, options),
+    [JSON.stringify(initialSource), JSON.stringify(options)]
   );
 
   // Handle async source resolution for downloadFirst

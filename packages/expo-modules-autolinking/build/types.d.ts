@@ -8,6 +8,13 @@ export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 
  * Options that can be passed through `expo.autolinking` config in the package.json file.
  */
 export type AutolinkingOptions = {
+    /** Only scan direct "dependencies" of a project for React Native modules, rather than including transitive dependencies.
+     * @remarks
+     * Before SDK 54, React Native modules would only be linked if they were listed as dependencies
+     * of a project. However, in SDK 54+ transitive React Native modules dependencies are also
+     * auto-linked, unless this flag is enabled.
+     */
+    legacy_shallowReactNativeLinking?: boolean;
     searchPaths?: string[] | null;
     ignorePaths?: string[] | null;
     exclude?: string[] | null;
@@ -219,6 +226,7 @@ export type RawAndroidProjectConfig = {
      * Prebuilded AAR projects.
      */
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+    gradlePath?: string;
 };
 export type RawAndroidConfig = {
     projects?: WithRequired<RawAndroidProjectConfig, 'name' | 'path'>[];

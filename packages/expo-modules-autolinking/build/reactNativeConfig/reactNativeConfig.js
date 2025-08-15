@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._resolveReactNativeModule = _resolveReactNativeModule;
+exports.resolveReactNativeModule = resolveReactNativeModule;
 exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
 exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 const fs_1 = __importDefault(require("fs"));
@@ -11,9 +11,13 @@ const path_1 = __importDefault(require("path"));
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const autolinking_1 = require("../autolinking");
 const dependencies_1 = require("../dependencies");
-async function _resolveReactNativeModule(resolution, projectConfig, platform) {
+async function resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
+    if (excludeNames.has(resolution.name)) {
+        return null;
+    }
     const libraryConfig = await (0, config_1.loadConfigAsync)(resolution.path);
     const reactNativeConfig = {
         ...libraryConfig?.dependency,
@@ -30,12 +34,26 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform) {
         // Therefore, we need to manually filter it out.
         return null;
     }
+    let maybeExpoModuleConfig;
+    if (!libraryConfig) {
+        // NOTE(@kitten): If we don't have an explicit react-native.config.{js,ts} file,
+        // we should pass the Expo Module config (if it exists) to the resolvers below,
+        // which can then decide if the React Native inferred config and Expo Module
+        // configs conflict
+        try {
+            maybeExpoModuleConfig = await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(resolution.path);
+        }
+        catch {
+            // We ignore invalid Expo Modules for the purpose of auto-linking and
+            // pretend the config doesn't exist, if it isn't valid JSON
+        }
+    }
     let platformData = null;
     if (platform === 'android') {
-        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(resolution.path, reactNativeConfig.platforms?.android);
+        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(resolution.path, reactNativeConfig.platforms?.android, maybeExpoModuleConfig);
     }
     else if (platform === 'ios') {
-        platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios);
+        platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios, maybeExpoModuleConfig);
     }
     return (platformData && {
         root: resolution.path,
@@ -50,17 +68,19 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform) {
  */
 async function createReactNativeConfigAsync(providedOptions) {
     const options = await (0, autolinking_1.mergeLinkingOptionsAsync)(providedOptions);
+    const excludeNames = new Set(options.exclude);
     const projectConfig = await (0, config_1.loadConfigAsync)(options.projectRoot);
     // custom native modules should be resolved first so that they can override other modules
     const searchPaths = options.nativeModulesDir && fs_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
         : (options.searchPaths ?? []);
+    const limitDepth = options.legacy_shallowReactNativeLinking ? 1 : undefined;
     const resolutions = (0, dependencies_1.mergeResolutionResults)(await Promise.all([
         (0, dependencies_1.scanDependenciesFromRNProjectConfig)(options.projectRoot, projectConfig),
         ...searchPaths.map((searchPath) => (0, dependencies_1.scanDependenciesInSearchPath)(searchPath)),
-        (0, dependencies_1.scanDependenciesRecursively)(options.projectRoot),
+        (0, dependencies_1.scanDependenciesRecursively)(options.projectRoot, { limitDepth }),
     ]));
-    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => _resolveReactNativeModule(resolution, projectConfig, options.platform));
+    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames));
     return {
         root: options.projectRoot,
         reactNativePath: resolutions['react-native']?.path,

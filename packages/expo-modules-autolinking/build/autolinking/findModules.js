@@ -3,28 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveExpoModule = resolveExpoModule;
 exports.findModulesAsync = findModulesAsync;
 const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
 const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const dependencies_1 = require("../dependencies");
-/** Names of Expo Module config files (highest to lowest priority) */
-const EXPO_MODULE_CONFIG_FILENAMES = ['expo-module.config.json', 'unimodule.json'];
 async function resolveExpoModule(resolution, platform, excludeNames) {
     if (excludeNames.has(resolution.name)) {
         return null;
     }
-    let expoModuleConfig = null;
-    for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
-        try {
-            expoModuleConfig = await (0, ExpoModuleConfig_1.loadExpoModuleConfigAsync)(path_1.default.join(resolution.path, EXPO_MODULE_CONFIG_FILENAMES[idx]));
-            break;
-        }
-        catch {
-            // try the next file
-        }
-    }
+    const expoModuleConfig = await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(resolution.path);
     if (expoModuleConfig && expoModuleConfig.supportsPlatform(platform)) {
         return {
             name: resolution.name,
@@ -32,9 +21,9 @@ async function resolveExpoModule(resolution, platform, excludeNames) {
             version: resolution.version,
             config: expoModuleConfig,
             duplicates: resolution.duplicates?.map((duplicate) => ({
-                name: resolution.name,
-                path: duplicate,
-                version: '', // NOTE: Are we actually using this?
+                name: duplicate.name,
+                path: duplicate.path,
+                version: duplicate.version,
             })) ?? [],
         };
     }

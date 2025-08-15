@@ -1,4 +1,4 @@
-import { createRequestHandler } from '@expo/server/build/vendor/http';
+import { createRequestHandler } from '@expo/server/adapter/http';
 import chalk from 'chalk';
 import connect from 'connect';
 import http from 'http';

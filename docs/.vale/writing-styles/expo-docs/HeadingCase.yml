@@ -142,6 +142,7 @@ exceptions:
   - '.*New Architecture.*'
   - '.*Notification Message.*'
   - '.*npm.*'
+  - '.*OAuth.*'
   - '.*OTA.*'
   - '.*OTF.*'
   - '.*PostCSS.*'

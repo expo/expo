@@ -146,6 +146,26 @@ public class TestPackage implements ReactPackage {
     `);
   });
 
+  it('should not misdetect an Expo module as a C++-only React Native module', async () => {
+    // AndroidManifest.xml (missing)
+    mockGlob.mockResolvedValueOnce([]);
+    // build.gradle (missing)
+    mockGlob.mockResolvedValueOnce([]);
+    registerGlobStreamMockOnce([] as any); // parseComponentDescriptorsAsync()
+
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/android/build.gradle': '',
+      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+      '/app/node_modules/react-native-test/expo-module.config.json': '{}',
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      undefined
+    );
+    expect(result).toBe(null);
+  });
+
   it('should return android config from custom sourceDir', async () => {
     // AndroidManifest.xml
     mockGlob.mockResolvedValueOnce([]);

@@ -6,28 +6,28 @@ struct DevMenuActions: View {
   let onGoHome: () -> Void
 
   var body: some View {
-    VStack(spacing: 0) {
+    HStack {
       DevMenuActionButton(
         title: "Reload",
         icon: "arrow.clockwise",
         action: onReload
       )
+      #if !os(tvOS)
+      .background(Color(.secondarySystemBackground))
+      #endif
+      .cornerRadius(18)
 
       if isDevLauncherInstalled {
-        Divider()
-
         DevMenuActionButton(
           title: "Go home",
           icon: "house.fill",
           action: onGoHome
         )
+        #if !os(tvOS)
+        .background(Color(.secondarySystemBackground))
+        #endif
+        .cornerRadius(18)
       }
     }
-    #if !os(tvOS)
-    .background(Color(.systemBackground))
-    #endif
-    .cornerRadius(12)
-    .padding(.horizontal)
-    .padding(.vertical, 8)
   }
 }
