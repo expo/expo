@@ -1,0 +1,144 @@
+---
+title: Deploy to production with EAS Workflows
+sidebar_title: Deploy to production
+description: Learn how to deploy to production with EAS Workflows.
+hideTOC: true
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+When you're ready to deliver changes to your users, you can build and submit to the app stores or you can send an over-the-air update. The following workflow detects if you need new builds, and if so, it sends them to the app stores. If new builds are not required, it will send an over-the-air update.
+
+<ContentSpotlight
+  alt="Graph showing the deploy to production workflow."
+  src="/static/images/eas-workflows/deploy-to-production.png"
+/>
+
+<VideoBoxLink
+  className="mb-4"
+  videoId="o-peODF6E2o"
+  title="Expo Golden Workflow: Deploy your app to production with an automated workflow"
+/>
+
+## Get started
+
+<Prerequisites numberOfRequirements={3}>
+  <Requirement number={1} title="Set up EAS Build">
+    To set up EAS Build, follow this guide:
+
+    <BoxLink
+      title="EAS Build prerequisites"
+      description="Get your project ready for EAS Build."
+      href="/build/setup/"
+      Icon={BookOpen02Icon}
+    />
+
+  </Requirement>
+
+  <Requirement number={2} title="Set up EAS Submit">
+    To set up EAS Submit, follow the Google Play Store and Apple App Store submissions guides:
+
+    <BoxLink
+      title="Google Play Store CI/CD submission guide"
+      description="Get your project ready for Google Play Store submissions."
+      href="/submit/android/#submitting-your-app-using-cicd-services"
+      Icon={BookOpen02Icon}
+    />
+    <BoxLink
+      title="Apple App Store CI/CD submission guide"
+      description="Get your project ready for Apple App Store submissions."
+      href="/submit/ios/#submitting-your-app-using-cicd-services"
+      Icon={BookOpen02Icon}
+    />
+
+  </Requirement>
+  <Requirement number={3} title="Set up EAS Update">
+  And finally, you'll need to set up EAS Update, which you can do with:
+
+<Terminal cmd={['$ eas update:configure']} />
+  </Requirement>
+</Prerequisites>
+
+The following workflow runs on each push to the `main` branch and performs the following:
+
+- Takes a hash of the native characteristics of the project using [Expo Fingerprint](/versions/latest/sdk/fingerprint/).
+- Checks if a build already exists for the fingerprint.
+- If a build does not exist, it will build the project and submit it to the app stores.
+- If a build exists, it will send an over-the-air update.
+
+```yaml .eas/workflows/deploy-to-production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+  get_android_build:
+    name: Check for existing android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production
+  get_ios_build:
+    name: Check for existing ios build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: production
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: production
+  submit_android_build:
+    name: Submit Android Build
+    needs: [build_android]
+    type: submit
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+  submit_ios_build:
+    name: Submit iOS Build
+    needs: [build_ios]
+    type: submit
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+  publish_android_update:
+    name: Publish Android update
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: android
+  publish_ios_update:
+    name: Publish iOS update
+    needs: [get_ios_build]
+    if: ${{ needs.get_ios_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: ios
+```

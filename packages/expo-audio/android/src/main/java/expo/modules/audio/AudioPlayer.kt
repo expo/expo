@@ -48,6 +48,7 @@ class AudioPlayer(
   var isPaused = false
   var isMuted = false
   var previousVolume = 1f
+  var onPlaybackStateChange: ((Boolean) -> Unit)? = null
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
@@ -105,6 +106,7 @@ class AudioPlayer(
       playerScope.launch {
         sendPlayerUpdate(mapOf("playing" to isPlaying))
       }
+      onPlaybackStateChange?.invoke(isPlaying)
     }
 
     override fun onIsLoadingChanged(isLoading: Boolean) {
@@ -140,6 +142,13 @@ class AudioPlayer(
     } else {
       visualizer?.release()
       visualizer = null
+    }
+  }
+
+  fun seekTo(seekTime: Double) {
+    ref.seekTo((seekTime * 1000L).toLong())
+    playerScope.launch {
+      sendPlayerUpdate()
     }
   }
 

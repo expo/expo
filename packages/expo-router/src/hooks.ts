@@ -28,9 +28,16 @@ export { useRouteInfo };
  * ```
  */
 export function useRootNavigationState() {
-  return useNavigation<NavigationProp<object, never, string>>()
-    .getParent(INTERNAL_SLOT_NAME)!
-    .getState();
+  const parent =
+    // We assume that this is called from routes in __root
+    // Users cannot customize the generated Sitemap or NotFound routes, so we should be safe
+    useNavigation<NavigationProp<object, never, string>>().getParent(INTERNAL_SLOT_NAME);
+  if (!parent) {
+    throw new Error(
+      'useRootNavigationState was called from a generated route. This is likely a bug in Expo Router.'
+    );
+  }
+  return parent.getState();
 }
 
 /**
@@ -173,7 +180,7 @@ export function useSegments() {
  *   // pathname = "/profile/baconbrix"
  *   const pathname = usePathname();
  *
- *   return <Text>User: {user}</Text>;
+ *   return <Text>Pathname: {pathname}</Text>;
  * }
  * ```
  */

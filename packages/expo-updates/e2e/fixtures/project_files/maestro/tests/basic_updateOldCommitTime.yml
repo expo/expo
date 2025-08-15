@@ -1,0 +1,33 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# does not download any assets for an older update
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-with-older-commit-time', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve an old update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- assertTrue:
+    condition:  ${output.api.staticFileCount() == 0}
+    label: Assert that no static files were requested
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- stopApp

@@ -3,14 +3,17 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal protocol CommonViewModifierProps {
+internal protocol CommonViewModifierProps: ObservableObject {
   var fixedSize: Bool? { get }
   var frame: FrameOptions? { get }
   var padding: PaddingOptions? { get }
+  var testID: String? { get }
+  var modifiers: ModifierArray? { get }
+  var globalEventDispatcher: EventDispatcher { get }
 }
 
-internal struct CommonViewModifiers: ViewModifier {
-  let props: CommonViewModifierProps
+internal struct CommonViewModifiers<Props: CommonViewModifierProps>: ViewModifier {
+  @ObservedObject var props: Props
   var defaultFrameAlignment = Alignment.center
 
   func body(content: Content) -> some View {
@@ -18,5 +21,7 @@ internal struct CommonViewModifiers: ViewModifier {
       .applyFixedSize(props.fixedSize)
       .applyFrame(props.frame, defaultAlignment: defaultFrameAlignment)
       .applyPadding(props.padding)
+      .applyAccessibilityIdentifier(props.testID)
+      .applyModifiers(props.modifiers, globalEventDispatcher: props.globalEventDispatcher)
   }
 }

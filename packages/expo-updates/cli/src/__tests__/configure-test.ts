@@ -4,7 +4,7 @@ import {
   generateKeyPair,
   generateSelfSignedCodeSigningCertificate,
 } from '@expo/code-signing-certificates';
-import { getConfig } from '@expo/config';
+import { getConfig } from 'expo/config';
 import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';

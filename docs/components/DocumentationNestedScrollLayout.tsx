@@ -11,6 +11,7 @@ import {
 import { ScrollContainer } from '~/components/ScrollContainer';
 import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
+import { TableOfContentsProps } from '~/ui/components/TableOfContents';
 
 type Props = PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
@@ -20,7 +21,7 @@ type Props = PropsWithChildren<{
   sidebarScrollPosition: number;
   sidebar: ReactNode;
   sidebarActiveGroup: string;
-  sidebarRight: ReactElement;
+  sidebarRight: ReactElement<TableOfContentsProps>;
 }>;
 
 export default class DocumentationNestedScrollLayout extends Component<Props> {

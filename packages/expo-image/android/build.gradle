@@ -8,7 +8,7 @@ android {
   namespace "expo.modules.image"
   defaultConfig {
     versionCode 1
-    versionName "2.1.7"
+    versionName "3.0.0"
     consumerProguardFiles("proguard-rules.pro")
 
     buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))
@@ -31,9 +31,7 @@ dependencies {
   implementation 'com.facebook.react:react-android'
 
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
-  if (!expoModule.safeExtGet("excludeAppGlideModule", false)) {
-      kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
-  }
+  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
 
   implementation "com.github.penfeizhou.android.animation:glide-plugin:3.0.5"

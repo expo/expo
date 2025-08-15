@@ -1,7 +1,6 @@
 package expo.modules.mailcomposer
 
 import android.content.Intent
-import android.content.pm.LabeledIntent
 import android.net.Uri
 import android.os.Bundle
 import expo.modules.kotlin.Promise
@@ -49,13 +48,7 @@ class MailComposerModule : Module() {
           .putSubject(Intent.EXTRA_SUBJECT)
           .putBody(Intent.EXTRA_TEXT, options.isHtml == true)
           .putAttachments(Intent.EXTRA_STREAM, application)
-
-        LabeledIntent(
-          mailIntentBuilder.build(),
-          info.activityInfo.packageName,
-          info.loadLabel(context.packageManager),
-          info.icon
-        )
+        mailIntentBuilder.build()
       }.toMutableList()
 
       val primaryIntent = mailIntents.removeAt(mailIntents.size - 1)

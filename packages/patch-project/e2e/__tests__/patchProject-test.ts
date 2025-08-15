@@ -1,11 +1,15 @@
-/* eslint-env jest */
 import spawnAsync from '@expo/spawn-async';
+import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
-import { addLinkedPackagesAsync, packBareTemplateTarballAsync } from './localPackages';
+import {
+  addLinkedPackagesAsync,
+  packBareTemplateTarballAsync,
+  packBlankTemplateTarballAsync,
+} from './localPackages';
 const localExpoCli = path.join(__dirname, '../../../@expo/cli/build/bin/cli');
+const localPatchProjectCli = path.join(__dirname, '../../bin/cli.js');
 
 const originalCI = process.env.CI;
 
@@ -14,12 +18,16 @@ describe('patch-project', () => {
   const tmpDir = require('temp-dir');
   const projectName = 'patch-project-test';
   const projectRoot = path.join(tmpDir, projectName);
-  let templateTarball;
+  let blankTemplateTarball: string;
+  let templateTarball: string;
 
   beforeAll(async () => {
     process.env.CI = '1';
-    rimraf.sync(projectRoot);
-    await await spawnAsync('bunx', ['create-expo-app', '-t', 'blank', projectName], {
+    await fs.rm(projectRoot, { recursive: true, force: true });
+    await fs.mkdir(projectRoot, { recursive: true });
+
+    blankTemplateTarball = await packBlankTemplateTarballAsync(tmpDir);
+    await spawnAsync('bunx', ['create-expo-app', '-t', blankTemplateTarball, projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
       env: {
@@ -50,14 +58,15 @@ describe('patch-project', () => {
 
   afterAll(async () => {
     process.env.CI = originalCI;
-    rimraf.sync(projectRoot);
+    await fs.rm(blankTemplateTarball, { force: true });
+    await fs.rm(projectRoot, { recursive: true, force: true });
   });
 
   it('runs `patch-project` should convert a project to CNG patches`', async () => {
     await fs.rm(path.join(projectRoot, 'cng-patches'), { recursive: true, force: true });
 
     await spawnAsync(
-      'node',
+      'bun',
       [
         localExpoCli,
         'prebuild',
@@ -76,12 +85,13 @@ describe('patch-project', () => {
     // Do some manual changes
     const appGradlePath = path.join(projectRoot, 'android', 'app', 'build.gradle');
     let contents = await fs.readFile(appGradlePath, 'utf8');
-    contents = contents.replace('org.webkit:android-jsc:+', 'org.webkit:android-jsc-intl:+');
+    const maunalChange = `# Some maunual changes ${crypto.randomUUID()}`;
+    contents = contents.replace(/^(def enableMinifyInReleaseBuilds.*)$/m, `$1\n\n${maunalChange}`);
     await fs.writeFile(appGradlePath, contents, 'utf8');
 
     await spawnAsync(
-      'bunx',
-      ['patch-project', '--clean', '--platform', 'android', '--template', templateTarball],
+      'bun',
+      [localPatchProjectCli, '--clean', '--platform', 'android', '--template', templateTarball],
       {
         cwd: projectRoot,
       }
@@ -102,16 +112,14 @@ describe('patch-project', () => {
       path.join(projectRoot, 'cng-patches', patchFiles[0]),
       'utf8'
     );
-    expect(patchContents).toMatch(`\
--def jscFlavor = 'org.webkit:android-jsc:+'
-+def jscFlavor = 'org.webkit:android-jsc-intl:+'`);
+    expect(patchContents).toMatch(`+${maunalChange}`);
   });
 
   it('runs `patch-project` should convert a project to CNG patches` and `npx expo prebuild` should apply the patches', async () => {
     await fs.rm(path.join(projectRoot, 'cng-patches'), { recursive: true, force: true });
 
     await spawnAsync(
-      'node',
+      'bun',
       [
         localExpoCli,
         'prebuild',
@@ -130,15 +138,16 @@ describe('patch-project', () => {
     // Do some manual changes
     const appGradlePath = path.join(projectRoot, 'android', 'app', 'build.gradle');
     const contents = await fs.readFile(appGradlePath, 'utf8');
+    const maunalChange = `# Some maunual changes ${crypto.randomUUID()}`;
     const patchedContents = contents.replace(
-      'org.webkit:android-jsc:+',
-      'org.webkit:android-jsc-intl:+'
+      /^(def enableMinifyInReleaseBuilds.*)$/m,
+      `$1\n\n${maunalChange}`
     );
     await fs.writeFile(appGradlePath, patchedContents, 'utf8');
 
     await spawnAsync(
-      'bunx',
-      ['patch-project', '--clean', '--platform', 'android', '--template', templateTarball],
+      'bun',
+      [localPatchProjectCli, '--clean', '--platform', 'android', '--template', templateTarball],
       {
         cwd: projectRoot,
       }
@@ -152,7 +161,7 @@ describe('patch-project', () => {
     await fs.writeFile(path.join(projectRoot, 'app.json'), appConfigContents, 'utf8');
 
     await spawnAsync(
-      'node',
+      'bun',
       [
         localExpoCli,
         'prebuild',

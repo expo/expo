@@ -129,10 +129,15 @@ the Expo config needs to be modified in one of two ways:
 
 - **Recommended**: Add the `expo-notifications` library to your app, and ensure that its plugin appears in the `plugins` array of your [app config](/workflow/configuration/):
 
+{/* prettier-ignore */}
 ```json app.json
 {
   "expo": {
-    /* @hide ... */ /* @end */ "plugins": [/* @hide ... */ /* @end */ "expo-notifications"]
+    /* @hide ... */ /* @end */
+    "plugins": [
+      /* @hide ... */ /* @end */
+      "expo-notifications"
+      ]
   }
 }
 ```

@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-# Runs `npx` through Yarn if necessary so that the environment variables are set up similarly across
-# Yarn and npm.
+# Runs `npx` through Yarn or pnpm if necessary so that the environment variables are set up similarly across
+# Yarn, pnpm and npm.
 
 # shellcheck disable=SC2154
-if [[ ! "$npm_config_user_agent" =~ yarn ]] && [ -x "$(command -v yarn)" ]; then
+if [[ "$npm_config_user_agent" =~ yarn ]] && [ -x "$(command -v yarn)" ]; then
   yarn exec -- npx "$@"
+elif [[ "$npm_config_user_agent" =~ pnpm ]] && [ -x "$(command -v pnpm)" ]; then
+  pnpm exec -- npx "$@"
 else
   npx "$@"
 fi

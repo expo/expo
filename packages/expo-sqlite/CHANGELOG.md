@@ -8,10 +8,34 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
-- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 16.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [iOS] Support Apple TV. ([#38475](https://github.com/expo/expo/pull/38475) by [@douglowder](https://github.com/douglowder))
+- Added `loadExtensionAsync` / `loadExtensionSync` APIs and pre-bundled [sqlite-vec](https://github.com/asg017/sqlite-vec) extension. ([#38693](https://github.com/expo/expo/pull/38693) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
+
+### 📚 3rd party library updates
+
+- Updated SQLite to 3.50.3. ([#38200](https://github.com/expo/expo/pull/38200) by [@kudo](https://github.com/kudo))
+
+## 15.2.14 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed unnecessary database reopen from `SQLiteProvider` with same options. ([#37872](https://github.com/expo/expo/pull/37872) by [@kudo](https://github.com/kudo))
+
+## 15.2.13 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

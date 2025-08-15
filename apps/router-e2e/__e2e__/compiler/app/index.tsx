@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
+import { useBananas } from './hooks/useFruit';
+
 export default function Page() {
+  useBananas();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {

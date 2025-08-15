@@ -94,18 +94,18 @@ data class LayoutProps(
   val verticalArrangement: MutableState<VerticalArrangement> = mutableStateOf(VerticalArrangement.TOP),
   val horizontalAlignment: MutableState<HorizontalAlignment> = mutableStateOf(HorizontalAlignment.START),
   val verticalAlignment: MutableState<VerticalAlignment> = mutableStateOf(VerticalAlignment.TOP),
-  val modifier: MutableState<Modifier> = mutableStateOf(Modifier)
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 class RowView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
   override val props = LayoutProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     Row(
       horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
       verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = props.modifier.value
+      modifier = modifier.then(Modifier.fromExpoModifiers(props.modifiers.value))
     ) {
       Children()
     }
@@ -116,11 +116,11 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
   override val props = LayoutProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     Column(
       verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
       horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = props.modifier.value
+      modifier = modifier.then(Modifier.fromExpoModifiers(props.modifiers.value))
     ) {
       Children()
     }
@@ -162,22 +162,22 @@ data class TextProps(
   val color: MutableState<AndroidColor?> = mutableStateOf(null),
   val fontSize: MutableState<Float> = mutableFloatStateOf(16f),
   val fontWeight: MutableState<TextFontWeight> = mutableStateOf(TextFontWeight.NORMAL),
-  val modifier: MutableState<Modifier> = mutableStateOf(Modifier)
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextProps>(context, appContext) {
   override val props = TextProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     Text(
       text = props.text.value,
+      modifier = modifier.then(Modifier.fromExpoModifiers(props.modifiers.value)),
       color = colorToComposeColor(props.color.value),
       style = TextStyle(
         fontSize = props.fontSize.value.sp,
         fontWeight = props.fontWeight.value.toComposeFontWeight()
-      ),
-      modifier = props.modifier.value
+      )
     )
   }
 }
@@ -185,10 +185,10 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
 class ContainerView(context: Context, appContext: AppContext) :
   ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content()
+      child.Content(modifier = modifier)
     }
   }
 }

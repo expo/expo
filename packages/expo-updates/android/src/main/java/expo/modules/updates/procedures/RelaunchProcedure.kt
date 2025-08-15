@@ -16,15 +16,13 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.reloadscreen.ReloadScreenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 class RelaunchProcedure(
   private val context: Context,
@@ -38,6 +36,7 @@ class RelaunchProcedure(
   private val getCurrentLauncher: () -> Launcher,
   private val setCurrentLauncher: (launcher: Launcher) -> Unit,
   private val shouldRunReaper: Boolean,
+  private val reloadScreenManager: ReloadScreenManager?,
   private val callback: Launcher.LauncherCallback,
   private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : StateMachineProcedure() {
@@ -59,7 +58,8 @@ class RelaunchProcedure(
       updatesDirectory,
       fileDownloader,
       selectionPolicy,
-      logger
+      logger,
+      procedureScope
     )
     try {
       launchWith(newLauncher)
@@ -83,6 +83,7 @@ class RelaunchProcedure(
 
     procedureScope.launch {
       withContext(Dispatchers.Main) {
+        reloadScreenManager?.show(weakActivity?.get())
         reactApplication.restart(weakActivity?.get(), "Restart from RelaunchProcedure")
       }
     }
@@ -110,25 +111,9 @@ class RelaunchProcedure(
     }
   }
 
-  private suspend fun launchWith(newLauncher: DatabaseLauncher) =
-    suspendCancellableCoroutine { continuation ->
-      newLauncher.launch(
-        databaseHolder.database,
-        object : Launcher.LauncherCallback {
-          override fun onFailure(e: Exception) {
-            if (continuation.isActive) {
-              continuation.resumeWithException(e)
-            }
-          }
-
-          override fun onSuccess() {
-            if (continuation.isActive) {
-              continuation.resume(Unit)
-            }
-          }
-        }
-      )
-    }
+  private suspend fun launchWith(newLauncher: DatabaseLauncher) {
+    newLauncher.launch(databaseHolder.database)
+  }
 
   /**
    * For bridgeless mode, the restarting will pull the new [JSBundleLoader]

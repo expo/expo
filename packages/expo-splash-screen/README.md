@@ -384,10 +384,6 @@ The newly created `SplashScreen.storyboard` needs to be marked as the `Launch Sc
 
 ##### Provide different background colors
 
-Depending on what iOS version your application is targeting, you have to adjust your native project differently to a obtain working per-appearance splash screen view.
-
-##### I'm targeting iOS 11+
-
 You can take advantage of [`named colors`](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/WhatsNewXcode/xcode_9/xcode_9.html) in your Xcode project.
 
 1. Create a new `Color Set` and customize its values for different color modes:
@@ -409,19 +405,6 @@ You can take advantage of [`named colors`](https://developer.apple.com/library/a
  <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-selectNamedColor.png" height="350" />
 </details>
-
-##### I'm targeting iOS version < 11
-
-You cannot use [`named colors`](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/WhatsNewXcode/xcode_9/xcode_9.html) feature in your Xcode project.
-Instead you have to create an additional image set that contains small 1x1px images, each with the desired background color. Then, you'll use this additional image resource as a background in the splash screen view.
-
-You can use this online generator to obtain 1x1px `.png` images with desired colors: http://www.1x1px.me.
-
-1. Create `SplashScreenBackground` `Image Set` with desired background colors for each mode in your `Images.xcassets` directory:
-   - open your `.xcassets` directory with images,
-   - in the content panel add `New image set` and name it `SplashScreenBackground`,
-   - convert this `Image set` to support `Dark Appearance` by navigating to `Attributes Inspector` in the right panel and changing `Appearance` to `Any, Dark`,
-   - provide images with colors for every mode (you can generate color 1x1px images using http://www.1x1px.me).
 
 <details>
  <summary>Show image with details</summary>
@@ -473,11 +456,6 @@ You might want to add a separate image for `dark` mode. If the system is switche
  <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-addDarkImagesXcassets.png" height="280" />
 </details>
-
-###### Background color when you want to support iOS < 11
-
-If you're targeting a version of iOS < 11 then you cannot use `named color` feature and instead you need to generate images with desired background colors that are going to be used as the background for splash screen view.
-There is this awesome 1x1px png online generator: http://www.1x1px.me (use it to generate two 1x1px images with desired background colors for different color modes).
 
 #### 🛠 (<em>optional</em>) Customize StatusBar
 
@@ -742,7 +720,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 
 ### iOS caching
 
-Splash Screens on iOS apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However, the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
+Splash Screens on iOS apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However, the caching sometimes can persist for a day or two, so be patient if the aforementioned steps were unable to resolve the issue.
 
 ### `NATIVE` mode pushes splash image up a little bit
 

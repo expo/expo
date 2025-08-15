@@ -5,6 +5,8 @@ package expo.modules.image
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Base64
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
@@ -19,6 +21,7 @@ import com.bumptech.glide.request.target.Target
 import com.github.penfeizhou.animation.apng.APNGDrawable
 import com.github.penfeizhou.animation.gif.GifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
+import expo.modules.image.blurhash.BlurhashEncoder
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
@@ -28,6 +31,7 @@ import expo.modules.image.records.DecodedSource
 import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
+import expo.modules.image.thumbhash.ThumbhashEncoder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
@@ -36,8 +40,12 @@ import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.URL
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -110,6 +118,37 @@ class ExpoImageModule : Module() {
 
     AsyncFunction("loadAsync") Coroutine { source: SourceMap, options: ImageLoadOptions? ->
       ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
+    }
+
+    suspend fun generatePlaceholder(
+      source: Either<URL, Image>,
+      encoder: (Bitmap) -> String
+    ): String {
+      val image = source.let {
+        if (it.`is`(Image::class)) {
+          it.get(Image::class)
+        } else {
+          ImageLoadTask(appContext, SourceMap(uri = it.get(URL::class).toString()), ImageLoadOptions()).load()
+        }
+      }
+      return withContext(Dispatchers.Default) {
+        encoder(image.ref.toBitmap())
+      }
+    }
+
+    AsyncFunction("generateBlurhashAsync") Coroutine { source: Either<URL, Image>, numberOfComponents: Pair<Int, Int> ->
+      generatePlaceholder(source) { bitmap ->
+        BlurhashEncoder.encode(bitmap, numberOfComponents)
+      }
+    }
+
+    AsyncFunction("generateThumbhashAsync") Coroutine { source: Either<URL, Image> ->
+      generatePlaceholder(source) { bitmap ->
+        Base64.encodeToString(
+          ThumbhashEncoder.encode(bitmap),
+          Base64.NO_WRAP
+        )
+      }
     }
 
     Class(Image::class) {

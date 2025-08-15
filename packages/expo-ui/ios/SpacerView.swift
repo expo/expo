@@ -7,6 +7,9 @@ internal final class SpacerViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierP
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var minLength: Double?
 }
 

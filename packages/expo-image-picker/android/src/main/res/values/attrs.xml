@@ -1,0 +1,7 @@
+<resources>
+    <attr name="expoCropToolbarColor" format="color"/>
+    <attr name="expoCropToolbarIconColor" format="color"/>
+    <attr name="expoCropToolbarActionTextColor" format="color"/>
+    <attr name="expoCropBackButtonIconColor" format="color"/>
+    <attr name="expoCropBackgroundColor" format="color"/>
+</resources>

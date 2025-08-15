@@ -1,5 +1,5 @@
 import { BranchIcon, iconSize, spacing } from '@expo/styleguide-native';
-import { Row, useExpoTheme, View, Text, Spacer } from 'expo-dev-client-components';
+import { Row, useExpoTheme, Text, Spacer, padding } from 'expo-dev-client-components';
 import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BranchDetailsQuery } from 'src/graphql/types';
@@ -7,6 +7,8 @@ import {
   isUpdateCompatibleWithThisExpoGo,
   openUpdateManifestPermalink,
 } from 'src/utils/UpdateUtils';
+
+import { CappedWidthContainerView } from '../../components/Views';
 
 type Props = {
   name: string;
@@ -36,12 +38,16 @@ export function BranchHeader(props: Props) {
     ) : null;
 
   return (
-    <View
-      bg="default"
-      padding="medium"
+    <CappedWidthContainerView
       style={{
+        flex: 0,
+      }}
+      wrapperStyle={{
+        flex: 0,
+        backgroundColor: theme.background.default,
         borderColor: theme.border.default,
         borderBottomWidth: 1,
+        ...padding.padding.medium,
       }}>
       <Row align="center" justify="between">
         <Row align="center">
@@ -53,6 +59,6 @@ export function BranchHeader(props: Props) {
         </Row>
         {openButton}
       </Row>
-    </View>
+    </CappedWidthContainerView>
   );
 }

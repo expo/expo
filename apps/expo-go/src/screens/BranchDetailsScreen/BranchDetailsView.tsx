@@ -10,6 +10,7 @@ import { BranchHeader } from './BranchHeader';
 import { EmptySection } from './EmptySection';
 import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
+import { CappedWidthContainerView } from '../../components/Views';
 import { BranchDetailsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useThrottle } from '../../utils/useThrottle';
@@ -58,23 +59,25 @@ export function BranchDetailsView({ error, data, refetch, branchName, networkSta
   return (
     <View style={{ flex: 1, backgroundColor: theme.background.screen }}>
       <BranchHeader name={branchName} latestUpdate={data.app.byId.updateBranchByName.updates[0]} />
-      <FlatList
-        data={data.app.byId.updateBranchByName.updates}
-        refreshControl={<RefreshControl onRefresh={refetch} refreshing={refetching} />}
-        ListHeaderComponent={<SectionHeader header="Updates" style={{ paddingTop: 0 }} />}
-        keyExtractor={(update) => update.id}
-        contentContainerStyle={{ padding: spacing[4] }}
-        ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-        ListEmptyComponent={() => <EmptySection />}
-        renderItem={({ item: update, index }) => (
-          <UpdateListItem
-            key={update.id}
-            update={update}
-            first={index === 0}
-            last={index === (data.app.byId.updateBranchByName?.updates ?? []).length - 1}
-          />
-        )}
-      />
+      <CappedWidthContainerView>
+        <FlatList
+          data={data.app.byId.updateBranchByName.updates}
+          refreshControl={<RefreshControl onRefresh={refetch} refreshing={refetching} />}
+          ListHeaderComponent={<SectionHeader header="Updates" style={{ paddingTop: 0 }} />}
+          keyExtractor={(update) => update.id}
+          contentContainerStyle={{ padding: spacing[4] }}
+          ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
+          ListEmptyComponent={() => <EmptySection />}
+          renderItem={({ item: update, index }) => (
+            <UpdateListItem
+              key={update.id}
+              update={update}
+              first={index === 0}
+              last={index === (data.app.byId.updateBranchByName?.updates ?? []).length - 1}
+            />
+          )}
+        />
+      </CappedWidthContainerView>
     </View>
   );
 }

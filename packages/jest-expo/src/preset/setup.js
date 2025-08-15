@@ -4,9 +4,8 @@
  */
 'use strict';
 
-const merge = require('lodash/merge');
-
 const findUp = require('find-up');
+const merge = require('lodash/merge');
 const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
@@ -128,6 +127,9 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
   }
 );
 
+// Mock Expo's default async require messaging sockets when running tests
+jest.mock('expo/src/async-require/messageSocket', () => undefined);
+
 try {
   jest.mock('expo-file-system', () => ({
     downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
@@ -217,88 +219,76 @@ function attemptLookup(moduleName) {
   }
 }
 
-try {
-  jest.doMock('expo-modules-core', () => {
-    const ExpoModulesCore = jest.requireActual('expo-modules-core');
-    const uuid = jest.requireActual('expo-modules-core/src/uuid/uuid.web');
+jest.doMock('expo-modules-core', () => {
+  const ExpoModulesCore = jest.requireActual('expo-modules-core');
 
-    const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
+  const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
-    // support old hard-coded mocks TODO: remove this
-    const { NativeModulesProxy } = ExpoModulesCore;
+  // support old hard-coded mocks TODO: remove this
+  const { NativeModulesProxy } = ExpoModulesCore;
 
-    // Mock the `uuid` object with the implementation for web.
-    ExpoModulesCore.uuid.v4 = uuid.default.v4;
-    ExpoModulesCore.uuid.v5 = uuid.default.v5;
+  // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
+  // into the native proxy module. We're not really interested in checking whether the underlying
+  // method is called, just that the proxy method is called, since we have unit tests for the
+  // adapter and believe it works correctly.
+  //
+  // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
+  // This means the mock functions will not throw validation errors the way they would in an app.
 
-    // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
-    // into the native proxy module. We're not really interested in checking whether the underlying
-    // method is called, just that the proxy method is called, since we have unit tests for the
-    // adapter and believe it works correctly.
-    //
-    // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
-    // This means the mock functions will not throw validation errors the way they would in an app.
-
-    for (const moduleName of Object.keys(NativeModulesProxy)) {
-      const nativeModule = NativeModulesProxy[moduleName];
-      for (const propertyName of Object.keys(nativeModule)) {
-        if (typeof nativeModule[propertyName] === 'function') {
-          nativeModule[propertyName] = jest.fn(async () => {});
-        }
+  for (const moduleName of Object.keys(NativeModulesProxy)) {
+    const nativeModule = NativeModulesProxy[moduleName];
+    for (const propertyName of Object.keys(nativeModule)) {
+      if (typeof nativeModule[propertyName] === 'function') {
+        nativeModule[propertyName] = jest.fn(async () => {});
       }
     }
-
-    function requireMockModule(name) {
-      // Support auto-mocking of expo-modules that:
-      // 1. have a mock in the `mocks` directory
-      // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
-      const nativeModuleMock =
-        attemptLookup(name) ?? ExpoModulesCore.requireOptionalNativeModule(name);
-      if (!nativeModuleMock) {
-        return null;
-      }
-
-      const nativeModule = new NativeModule();
-      for (const [key, value] of Object.entries(nativeModuleMock)) {
-        nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
-      }
-      return nativeModule;
-    }
-
-    return {
-      ...ExpoModulesCore,
-
-      // Use web implementations for the common classes written natively
-      EventEmitter,
-      NativeModule,
-      SharedObject,
-
-      requireOptionalNativeModule: requireMockModule,
-      requireNativeModule(moduleName) {
-        const module = requireMockModule(moduleName);
-        if (!module) {
-          throw new Error(`Cannot find native module '${moduleName}'`);
-        }
-        return module;
-      },
-      requireNativeViewManager: (name) => {
-        const nativeModuleMock = attemptLookup(name);
-        if (!nativeModuleMock || !nativeModuleMock.View) {
-          return ExpoModulesCore.requireNativeViewManager(name);
-        }
-        return nativeModuleMock.View;
-      },
-    };
-  });
-} catch (error) {
-  // Allow this module to be optional for bare-workflow
-  if (error.code !== 'MODULE_NOT_FOUND') {
-    throw error;
   }
-}
 
-// Installs web implementations of global things that are normally installed through JSI.
-require('expo-modules-core/src/web/index.web');
+  function requireMockModule(name) {
+    // Support auto-mocking of expo-modules that:
+    // 1. have a mock in the `mocks` directory
+    // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
+    const nativeModuleMock =
+      attemptLookup(name) ?? ExpoModulesCore.requireOptionalNativeModule(name);
+    if (!nativeModuleMock) {
+      return null;
+    }
+
+    const nativeModule = new NativeModule();
+    for (const [key, value] of Object.entries(nativeModuleMock)) {
+      nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
+    }
+    return nativeModule;
+  }
+
+  return {
+    ...ExpoModulesCore,
+
+    // Use web implementations for the common classes written natively
+    EventEmitter,
+    NativeModule,
+    SharedObject,
+
+    requireOptionalNativeModule: requireMockModule,
+    requireNativeModule(moduleName) {
+      const module = requireMockModule(moduleName);
+      if (!module) {
+        throw new Error(`Cannot find native module '${moduleName}'`);
+      }
+      return module;
+    },
+    requireNativeViewManager: (name) => {
+      const nativeModuleMock = attemptLookup(name);
+      if (!nativeModuleMock || !nativeModuleMock.View) {
+        return ExpoModulesCore.requireNativeViewManager(name);
+      }
+      return nativeModuleMock.View;
+    },
+  };
+});
+
+// Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
+require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
 
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,

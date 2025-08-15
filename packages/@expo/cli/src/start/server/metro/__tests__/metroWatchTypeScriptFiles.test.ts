@@ -1,3 +1,5 @@
+import type MetroServer from '@expo/metro/metro/Server';
+
 import { ServerLike } from '../../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metroWatchTypeScriptFiles';
 
@@ -28,7 +30,7 @@ function createRunner() {
         addListener: jest.fn(),
       },
     } as any as {
-      metro: import('metro').Server;
+      metro: MetroServer;
       server: ServerLike;
     },
   };

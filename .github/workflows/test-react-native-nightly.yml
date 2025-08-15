@@ -115,7 +115,7 @@ jobs:
       fail-fast: true
       matrix:
         build-type: [debug, release]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -149,6 +149,10 @@ jobs:
       - name: ⭐️ Create test-nightlies Project (New Architecture)
         run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }} --enable-new-architecture true
         working-directory: packages/create-expo-nightly
+      - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
+        run: |
+          cd android && ./gradlew preBuild
+        working-directory: ${{ runner.temp }}/test-nightlies
       - name: 🤖 Build Android project (New Architecture)
         run: |
           cd android && ./gradlew ":app:assemble$VARIANT"

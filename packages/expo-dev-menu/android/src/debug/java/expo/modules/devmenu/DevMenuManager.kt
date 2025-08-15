@@ -3,7 +3,6 @@ package expo.modules.devmenu
 import android.app.Activity
 import android.content.Context
 import android.hardware.SensorManager
-import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -26,8 +25,6 @@ import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import expo.modules.devmenu.modules.DevMenuPreferences
-import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
@@ -35,6 +32,8 @@ import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
+
+const val DEV_MENU_TAG = "ExpoDevMenu"
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   data class KeyCommand(val code: Int, val withShift: Boolean = false)
@@ -122,7 +121,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
     maybeStartDetectors(reactContext.applicationContext)
-    preferences = DevMenuPreferencesHandle(reactContext).also {
+    preferences = DevMenuPreferencesHandle.also {
       if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty()) || hasDisableOnboardingQueryParam(launchUrl.orEmpty())) {
         it.isOnboardingFinished = true
       }
@@ -134,13 +133,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  fun getDevSettings(): Bundle {
+  fun getDevSettings(): DevToolsSettings {
     val reactHost = delegate?.reactHost()
     if (reactHost != null) {
       return DevMenuDevSettings.getDevSettings(reactHost)
     }
 
-    return Bundle.EMPTY
+    return DevToolsSettings()
   }
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
@@ -234,7 +233,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun updateStateIfNeeded(activity: Activity, bindingView: BindingView) {
     val currentReactInstance = currentReactInstance.get() ?: return
-    val appInfo = DevMenuAppInfo.getAppInfo(currentReactInstance, activity)
+    val appInfo = AppInfo.getAppInfo(currentReactInstance)
     bindingView.viewModel.updateAppInfo(appInfo)
   }
 
@@ -366,6 +365,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  fun toggleFab() {
+    preferences?.showFab?.let {
+      preferences?.showFab = !it
+    }
+  }
+
   override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
     Log.i(DEV_MENU_TAG, "Set new dev-menu delegate: ${newDelegate.javaClass}")
     // removes event listener for old delegate
@@ -398,8 +403,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
-  override fun getMenuHost(): ReactHostWrapper = TODO()
-
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
   }
@@ -410,12 +413,5 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       setUpReactInstance(newReactInstance)
     }
   }
-
-  fun getMenuPreferences(): Bundle {
-    return Bundle().apply {
-      putBoolean("isOnboardingFinished", getSettings()?.isOnboardingFinished ?: false)
-    }
-  }
-
 //endregion
 }

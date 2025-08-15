@@ -1,4 +1,4 @@
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import { AndroidConfig, IOSConfig } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 

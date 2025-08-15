@@ -35,7 +35,7 @@ export const Search = () => {
             heading: 'EAS dashboard',
             items: expoDashboardItems,
             getItemsAsync: getExpoItemsAsync,
-            sectionIndex: 1,
+            sectionIndex: 2,
           },
         ]}
       />

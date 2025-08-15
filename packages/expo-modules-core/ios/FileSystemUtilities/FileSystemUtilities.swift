@@ -71,7 +71,7 @@ public struct FileSystemUtilities {
       guard let dir else {
         continue
       }
-      if standardizedPath.hasPrefix(dir.appendingPathComponent("/").absoluteString) || standardizedPath == dir.absoluteString {
+      if standardizedPath.hasPrefix(dir.appendingPathComponent("/").path) || standardizedPath == dir.path {
         return [.read, .write]
       }
     }

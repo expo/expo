@@ -28,6 +28,15 @@ describe(getPatchPackageSourcesAsync, () => {
       })
     );
   });
+
+  it('should NOT add patches dir if it is ignored from the root', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.fromJSON(require('./fixtures/PatchPackage.json'));
+
+    const options = await normalizeOptionsAsync('/app', { ignorePaths: ['patches/'] });
+    const sources = await getPatchPackageSourcesAsync('/app', options);
+    expect(sources).toEqual([]);
+  });
 });
 
 describe('patch-package postinstall', () => {

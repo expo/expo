@@ -147,13 +147,19 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  protectedScreens: Set<string>
+  protectedScreens: Set<string>,
+  useOnlyUserDefinedScreens: boolean = false
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const sorted = node?.children?.length
-    ? getSortedChildren(node.children, order, node.initialRouteName)
-    : [];
+  const nodeChildren = node?.children ?? [];
+  const children = useOnlyUserDefinedScreens
+    ? nodeChildren.filter((child) =>
+        order.some((userDefinedScreen) => userDefinedScreen.name === child.route)
+      )
+    : nodeChildren;
+
+  const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
   return React.useMemo(
     () =>
       sorted
@@ -295,7 +301,7 @@ export function screenOptionsFactory(
     };
 
     // Prevent generated screens from showing up in the tab bar.
-    if (route.generated) {
+    if (route.internal) {
       output.tabBarItemStyle = { display: 'none' };
       output.tabBarButton = () => null;
       // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.

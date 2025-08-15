@@ -235,10 +235,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      this@VideoPlayer.duration = 0f
-      this@VideoPlayer.isLive = false
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
         sendEvent(PlayerEvent.PlayedToEnd())
+      } else {
+        // New playback info is set in the onPlaybackStateChanged event, which occurs after mediaItemTransition.
+        // The onPlaybackStateChanged is not triggered if the video repeats (since the state remains STATE_READY)
+        // That is why the playback info is not reset when the transition reason is MEDIA_ITEM_TRANSITION_REASON_REPEAT.
+        resetPlaybackInfo()
       }
       subtitles.setSubtitlesEnabled(false)
       super.onMediaItemTransition(mediaItem, reason)
@@ -249,8 +252,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         return
       }
       if (playbackState == Player.STATE_READY) {
-        this@VideoPlayer.duration = this@VideoPlayer.player.duration / 1000f
-        this@VideoPlayer.isLive = this@VideoPlayer.player.isCurrentMediaItemLive
+        refreshPlaybackInfo()
       }
       setStatus(playerStateToPlayerStatus(playbackState), null)
       super.onPlaybackStateChanged(playbackState)
@@ -269,8 +271,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
     override fun onPlayerErrorChanged(error: PlaybackException?) {
       error?.let {
-        this@VideoPlayer.duration = 0f
-        this@VideoPlayer.isLive = false
+        resetPlaybackInfo()
         setStatus(ERROR, error)
       } ?: run {
         setStatus(playerStateToPlayerStatus(player.playbackState), null)
@@ -381,6 +382,16 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     if (this.status != oldStatus) {
       sendEvent(PlayerEvent.StatusChanged(status, oldStatus, playbackError))
     }
+  }
+
+  private fun refreshPlaybackInfo() {
+    duration = player.duration / 1000f
+    isLive = player.isCurrentMediaItemLive
+  }
+
+  private fun resetPlaybackInfo() {
+    duration = 0f
+    isLive = false
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {

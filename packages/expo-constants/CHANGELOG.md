@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 18.0.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
+- Remove invalid import from expo-dev-launcher. ([#37558](https://github.com/expo/expo/pull/37558) by [@douglowder](https://github.com/douglowder))
+- Fix check-packages warning. ([#37570](https://github.com/expo/expo/pull/37570) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- [iOS] forward PROJECT_ROOT env var to app config script ([#38208](https://github.com/expo/expo/pull/38208) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 17.1.7 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
 ## 17.1.6 — 2025-05-06
 
 _This version does not introduce any user-facing changes._

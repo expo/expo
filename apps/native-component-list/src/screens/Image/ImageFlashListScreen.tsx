@@ -26,7 +26,6 @@ export default function ImageFlashListScreen() {
         data={DATA}
         renderItem={renderItem}
         keyExtractor={(_, index: number) => String(index)}
-        estimatedItemSize={IMAGE_SIZE}
       />
     </View>
   );

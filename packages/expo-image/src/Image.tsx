@@ -129,17 +129,29 @@ export class Image extends React.PureComponent<ImageProps> {
 
   /**
    * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
-   * @param url - The URL of the image to generate a blurhash from.
+   * @param source - The image source, either a URL (string) or an ImageRef
    * @param numberOfComponents - The number of components to encode the blurhash with.
    * Must be between 1 and 9. Defaults to `[4, 3]`.
+   * @platform android
    * @platform ios
    * @return A promise resolving to the blurhash string.
    */
   static async generateBlurhashAsync(
-    url: string,
+    source: string | ImageRef,
     numberOfComponents: [number, number] | { width: number; height: number }
   ): Promise<string | null> {
-    return await ImageModule.generateBlurhashAsync(url, numberOfComponents);
+    return ImageModule.generateBlurhashAsync(source, numberOfComponents);
+  }
+
+  /**
+   * Asynchronously generates a [Thumbhash](https://evanw.github.io/thumbhash/) from an image.
+   * @param source - The image source, either a URL (string) or an ImageRef
+   * @platform android
+   * @platform ios
+   * @return A promise resolving to the thumbhash string.
+   */
+  static async generateThumbhashAsync(source: string | ImageRef): Promise<string> {
+    return ImageModule.generateThumbhashAsync(source);
   }
 
   /**

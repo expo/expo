@@ -1,5 +1,6 @@
 import type { RNConfigDependencyAndroid, RNConfigReactNativePlatformsConfigAndroid } from './reactNativeConfig.types';
-export declare function resolveDependencyConfigImplAndroidAsync(packageRoot: string, reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined): Promise<RNConfigDependencyAndroid | null>;
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+export declare function resolveDependencyConfigImplAndroidAsync(packageRoot: string, reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined, expoModuleConfig?: ExpoModuleConfig | null): Promise<RNConfigDependencyAndroid | null>;
 /**
  * Parse the `RNConfigDependencyAndroid.packageName`
  */

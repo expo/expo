@@ -1,16 +1,56 @@
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { router } from '../imperative-api';
 import { act, fireEvent, renderRouter, screen, waitFor, within } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
-test('given no routes, unmatched route', () => {
+jest.mock('expo-constants', () => ({
+  ...jest.requireActual('expo-constants'),
+  expoConfig: {
+    sdkVersion: '54.0.0',
+  },
+}));
+
+// TODO(@hassankhan): Move this mock to __mocks__
+// `window.location` is set on all platforms in Expo Router
+const originalWindow = (global as any).window;
+beforeAll(() => {
+  (global as any).window = {
+    location: {
+      origin: 'http://localhost:8081',
+    },
+  };
+});
+
+afterAll(() => {
+  (global as any).window = originalWindow;
+});
+
+const originalHermes = (global as any).HermesInternal;
+beforeAll(() => {
+  (global as any).HermesInternal = {
+    getRuntimeProperties: () => ({
+      'OSS Release Version': 'for RN 0.79.5',
+    }),
+  };
+});
+
+afterAll(() => {
+  (global as any).HermesInternal = originalHermes;
+});
+
+test('given no routes, renders no route in the sitemap', () => {
   renderRouter({
-    _layout: () => <Slot />,
+    _layout: () => (
+      <View testID="layout">
+        <Slot />
+      </View>
+    ),
   });
   act(() => router.replace('/_sitemap'));
   expect(screen).toHavePathname('/_sitemap');
-  expect(screen.getByText('Unmatched Route')).toBeOnTheScreen();
+  expect(screen.getByTestId('expo-router-sitemap')).toBeVisible();
+  expect(screen.queryByTestId('sitemap-item-container')).toBeNull();
 });
 
 test('given single index route, renders one route', () => {
@@ -19,7 +59,8 @@ test('given single index route, renders one route', () => {
     index: () => <Text />,
   });
   act(() => router.replace('/_sitemap'));
-  expect(screen.getByText('index.js')).toBeOnTheScreen();
+  expect(screen.getByTestId('expo-router-sitemap')).toBeVisible();
+  expect(screen.getByText('index.js')).toBeVisible();
 });
 
 test('given multiple same level routes, renders them as flat list', () => {
@@ -132,6 +173,26 @@ test('renders and expands all levels of a deeply nested route on presses on head
   expect(nestedItems[1]).toHaveTextContent('index.js');
   expect(nestedItems[2]).toHaveTextContent('secondLevel/_layout.js');
   expect(nestedItems[3]).toHaveTextContent('index.js');
+});
+
+describe('system information', () => {
+  it('shows location origin, Expo SDK version and Hermes version', () => {
+    renderRouter({
+      _layout: () => <Slot />,
+      index: () => <Text />,
+    });
+    act(() => router.replace('/_sitemap'));
+    expect(screen.getByText('System Information')).toBeOnTheScreen();
+
+    expect(screen.getByText('Location origin')).toBeOnTheScreen();
+    expect(screen.getByText('http://localhost:8081')).toBeOnTheScreen();
+
+    expect(screen.getByText('Expo SDK')).toBeOnTheScreen();
+    expect(screen.getByText('54.0.0')).toBeOnTheScreen();
+
+    expect(screen.getByText('Hermes version')).toBeOnTheScreen();
+    expect(screen.getByText('for RN 0.79.5')).toBeOnTheScreen();
+  });
 });
 
 describe('links', () => {

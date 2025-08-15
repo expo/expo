@@ -4,16 +4,17 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.9.3'
+version = '0.10.0'
 
 android {
   namespace "expo.modules.insights"
   defaultConfig {
     versionCode 1
-    versionName "0.9.3"
+    versionName "0.10.0"
   }
 }
 
 dependencies {
   implementation project(':expo-eas-client')
+  implementation "com.facebook.react:react-android"
 }

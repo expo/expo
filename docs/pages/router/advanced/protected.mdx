@@ -93,7 +93,7 @@ export function AppLayout() {
     <Stack>
       <Stack.Protected guard={isLoggedIn}>
         <Stack.Protected guard={isAdmin}>
-          <Stack.Screen name="protected" />
+          <Stack.Screen name="private" />
         </Stack.Protected>
 
         <Stack.Screen name="about" />
@@ -157,15 +157,15 @@ const isLoggedIn = false;
 export default function TabLayout() {
   return (
     <Tabs>
-      <Tabs.Screen name="index" options={{ tabBarLabel: "Home" }} />
+      <Tabs.Screen name="index" options={{ tabBarLabel: 'Home' }} />
       <Tabs.Protected guard={isLoggedIn}>
-        <Tabs.Screen name="private" options={{ tabBarLabel: "Private" }} />
-        <Tabs.Screen name="profile" options={{ tabBarLabel: "Profile" }} />
+        <Tabs.Screen name="private" options={{ tabBarLabel: 'Private' }} />
+        <Tabs.Screen name="profile" options={{ tabBarLabel: 'Profile' }} />
       </Tabs.Protected>
 
       <Tabs.Protected guard={!isLoggedIn}>
-        <Tabs.Screen name="login" options={{ tabBarLabel: "Login" }} />
-      </Tabs.Screen>
+        <Tabs.Screen name="login" options={{ tabBarLabel: 'Login' }} />
+      </Tabs.Protected>
     </Tabs>
   );
 }

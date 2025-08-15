@@ -86,7 +86,7 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
-    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self];
+    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
   }
   return self;
 }
@@ -323,8 +323,6 @@
   [_appBridge invalidate];
   [self invalidateDevMenuApp];
 
-  self.manifest = nil;
-  self.manifestURL = nil;
   self.networkInterceptor = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
@@ -343,22 +341,14 @@
   [self _addInitModuleObserver];
 #endif
 
-  UIView *rootView;
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(onAppContentDidAppear)
-                                               name:RCTContentDidAppearNotification
-                                             object:rootView];
+  DevLauncherViewController *swiftUIViewController = [[DevLauncherViewController alloc] init];
 
-  rootView = [self.reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
-                                                               initialProperties:nil
-                                                                   launchOptions:_launchOptions];
-
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-
-  UIViewController *rootViewController = [self createRootViewController];
-  [self setRootView:rootView toRootViewController:rootViewController];
-  _window.rootViewController = rootViewController;
+  _window.rootViewController = swiftUIViewController;
   [_window makeKeyAndVisible];
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self onAppContentDidAppear];
+  });
 }
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
@@ -639,21 +629,13 @@
  */
 - (void)onAppContentDidAppear
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
-
   dispatch_async(dispatch_get_main_queue(), ^{
-    #ifdef RCT_NEW_ARCH_ENABLED
-      #define EXPECTED_ROOT_VIEW RCTSurfaceView
-    #else
-      #define EXPECTED_ROOT_VIEW RCTRootContentView
-    #endif
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
     for (UIView *view in views) {
-      if (![view isKindOfClass:[EXPECTED_ROOT_VIEW class]]) {
+      if ([NSStringFromClass([view class]) containsString:@"SplashScreen"]) {
         [view removeFromSuperview];
       }
     }
-    #undef EXPECTED_ROOT_VIEW
   });
 }
 
@@ -721,7 +703,7 @@
 
   if (appIconName != nil) {
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *appIconPath = [[resourcePath stringByAppendingString:appIconName] stringByAppendingString:@".png"];
+    NSString *appIconPath = [[resourcePath stringByAppendingPathComponent:appIconName] stringByAppendingString:@".png"];
     appIcon = [@"file://" stringByAppendingString:appIconPath];
   }
 
@@ -736,9 +718,30 @@
   return appVersion;
 }
 
+-(RCTReleaseLevel)getReactNativeReleaseLevel
+{
+//  @TODO: Read this value from the main react-native factory instance on 0.82
+  NSString *releaseLevelString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
+  RCTReleaseLevel releaseLevel = Stable;
+  if ([releaseLevelString isKindOfClass:[NSString class]]) {
+    NSString *lower = [releaseLevelString lowercaseString];
+    if ([lower isEqualToString:@"canary"]) {
+      releaseLevel = Canary;
+    } else if ([lower isEqualToString:@"experimental"]) {
+      releaseLevel = Experimental;
+    } else if ([lower isEqualToString:@"stable"]) {
+      releaseLevel = Stable;
+    }
+  }
+
+  return releaseLevel;
+}
+
 -(void)copyToClipboard:(NSString *)content {
+#if !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ?: @"");
+#endif
 }
 
 - (void)setDevMenuAppBridge
@@ -773,7 +776,7 @@
   // the `u.expo.dev` determines that it is the modern manifest protocol
   NSString *projectUrl = @"";
   if (_updatesInterface) {
-    projectUrl = [constants valueForKeyPath:@"manifest.updates.url"];
+    projectUrl = [[self.manifest updatesInfo] valueForKey:@"url"];
   }
 
   NSURL *url = [NSURL URLWithString:projectUrl];
@@ -781,7 +784,7 @@
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
 
-  NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: @"";
+  NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: [self.manifest easProjectId];
   BOOL hasAppId = appId.length > 0;
 
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
@@ -824,6 +827,16 @@
     }
   }
   return nil;
+}
+
+- (UIViewController *)createRootViewController
+{
+  return [[DevLauncherViewController alloc] init];
+}
+
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController
+{
+  rootViewController.view = rootView;
 }
 
 @end

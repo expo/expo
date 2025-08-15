@@ -1,16 +1,16 @@
-import { getConfig } from '@expo/config';
-import { Updates } from '@expo/config-plugins';
+import { getConfig } from 'expo/config';
+import { Updates } from 'expo/config-plugins';
 
 import { createFingerprintAsync } from '../createFingerprintAsync';
 import { resolveRuntimeVersionAsync } from '../resolveRuntimeVersionAsync';
 import { resolveWorkflowAsync } from '../workflow';
 
-jest.mock('@expo/config-plugins', () => ({
+jest.mock('expo/config-plugins', () => ({
   Updates: {
     resolveRuntimeVersionPolicyAsync: jest.fn(),
   },
 }));
-jest.mock('@expo/config');
+jest.mock('expo/config');
 
 jest.mock('../workflow');
 jest.mock('../createFingerprintAsync');

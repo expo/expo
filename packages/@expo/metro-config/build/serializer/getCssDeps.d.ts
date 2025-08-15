@@ -1,6 +1,5 @@
-import type { Module } from 'metro';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
 import { SerialAsset } from './serializerAssets';
-export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 type Options = {
     processModuleFilter: (modules: Module) => boolean;
     assetPlugins: readonly string[];

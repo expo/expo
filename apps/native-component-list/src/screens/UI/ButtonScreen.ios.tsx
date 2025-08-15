@@ -1,4 +1,3 @@
-import { Button } from '@expo/ui/swift-ui';
 import {
   Button as ButtonPrimitive,
   CircularProgress,
@@ -6,9 +5,9 @@ import {
   Image,
   Text,
   VStack,
-} from '@expo/ui/swift-ui-primitives';
+} from '@expo/ui/swift-ui';
 import * as React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
@@ -22,6 +21,12 @@ export default function ButtonScreen() {
         <Section title="System Styles">
           <Button style={styles.button} variant="default">
             Default
+          </Button>
+          <Button style={styles.button} variant="glass">
+            Glass button
+          </Button>
+          <Button style={styles.button} variant="glassProminent">
+            Glass Prominent
           </Button>
           <Button style={styles.button} variant="bordered">
             Bordered
@@ -66,6 +71,7 @@ export default function ButtonScreen() {
           <Button style={styles.button} systemImage="heart">
             Heart
           </Button>
+          <Button style={styles.button} systemImage="gear" variant="glass" />
         </Section>
         <Section title="Tinted Buttons">
           <Button style={styles.button} color="#f00f0f">
@@ -92,10 +98,22 @@ export default function ButtonScreen() {
   );
 }
 
+function Button(
+  props: React.ComponentProps<typeof ButtonPrimitive> & { style?: StyleProp<ViewStyle> }
+) {
+  const { style, ...restProps } = props;
+  return (
+    <Host matchContents style={style}>
+      <ButtonPrimitive {...restProps}>{props.children}</ButtonPrimitive>
+    </Host>
+  );
+}
+
 const styles = StyleSheet.create({
   button: {
     width: 150,
     margin: 5,
+    marginLeft: 20,
     overflow: 'visible',
   },
   buttonHost: {

@@ -221,6 +221,10 @@ Due to system limitations on Android, it is impossible to create empty albums. I
 Android 11 introduced permission changes that make the operation of moving assets between albums require confirmation from the user every time.
 Therefore, when creating a new asset, instead of creating the asset and then moving it to the album, it is recommended to pass the `album` parameter to the [`createAssetAsync`](#medialibrarycreateassetasynclocaluri-album) method, which will automatically add the asset to the album without the need for user confirmation.
 
+### Wrong orientation of images
+
+On Android, when using `getAssetsAsync` without `resolveWithFullInfo: true`, image orientation may be incorrect because EXIF data (which includes orientation) is only read when that option is enabled.
+
 ## API
 
 ```js

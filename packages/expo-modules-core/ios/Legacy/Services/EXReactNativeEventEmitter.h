@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/React-Core-umbrella.h>
+#import <React/RCTEventEmitter.h>
 
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXEventEmitterService.h>
@@ -13,6 +13,6 @@
 
 @interface EXReactNativeEventEmitter : RCTEventEmitter <EXInternalModule, EXBridgeModule, EXModuleRegistryConsumer, EXEventEmitterService>
 
-@property (nonatomic, strong) EXAppContext *appContext;
+@property(nonatomic, strong) EXAppContext *appContext;
 
 @end

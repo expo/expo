@@ -1,8 +1,14 @@
-import { ConfigPlugin, IOSConfig, WarningAggregator, withDangerousMod } from '@expo/config-plugins';
+import {
+  ConfigPlugin,
+  IOSConfig,
+  WarningAggregator,
+  withDangerousMod,
+  withXcodeProject,
+} from '@expo/config-plugins';
 import { ExpoConfig, IOSIcons } from '@expo/config-types';
 import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
-import { join } from 'path';
+import path from 'path';
 
 import { ContentsJson, ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
 
@@ -12,13 +18,27 @@ const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
 
 export const withIosIcons: ConfigPlugin = (config) => {
-  return withDangerousMod(config, [
+  config = withDangerousMod(config, [
     'ios',
     async (config) => {
       await setIconsAsync(config, config.modRequest.projectRoot);
       return config;
     },
   ]);
+
+  config = withXcodeProject(config, (config) => {
+    const icon = getIcons(config);
+    const projectName = config.modRequest.projectName;
+
+    if (icon && typeof icon === 'string' && path.extname(icon) === '.icon' && projectName) {
+      const iconName = path.basename(icon, '.icon');
+      setIconName(config.modResults, iconName);
+      addIconFileToProject(config.modResults, projectName, iconName);
+    }
+    return config;
+  });
+
+  return config;
 };
 
 export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | string | null {
@@ -30,12 +50,34 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
       return iosSpecificIcons || config.icon || null;
     }
 
+    if (typeof iosSpecificIcons === 'object') {
+      const paths = [iosSpecificIcons.light, iosSpecificIcons.dark, iosSpecificIcons.tinted].filter(
+        Boolean
+      );
+      for (const iconPath of paths) {
+        if (typeof iconPath === 'string' && path.extname(iconPath) === '.icon') {
+          WarningAggregator.addWarningIOS(
+            'icon',
+            `Liquid glass icons (.icon) should be provided as a string to the "ios.icon" property, not as an object. Found: "${iconPath}"`
+          );
+        }
+      }
+    }
+
     // in iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
     if (!iosSpecificIcons.light && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
       return config.icon || null;
     }
 
     return iosSpecificIcons;
+  }
+
+  // Top level icon property should not be used to specify a `.icon` folder
+  if (config.icon && typeof config.icon === 'string' && path.extname(config.icon) === '.icon') {
+    WarningAggregator.addWarningIOS(
+      'icon',
+      `Liquid glass icons (.icon) should be provided via the "ios.icon" property, not the root "icon" property. Found: "${config.icon}"`
+    );
   }
 
   if (config.icon) {
@@ -59,8 +101,12 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
+  if (typeof icon === 'string' && path.extname(icon) === '.icon') {
+    return await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot);
+  }
+
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
-  await fs.promises.mkdir(join(iosNamedProjectRoot, IMAGESET_PATH), { recursive: true });
+  await fs.promises.mkdir(path.join(iosNamedProjectRoot, IMAGESET_PATH), { recursive: true });
 
   const imagesJson: ContentsJson['images'] = [];
 
@@ -103,7 +149,9 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   }
 
   // Finally, write the Contents.json
-  await writeContentsJsonAsync(join(iosNamedProjectRoot, IMAGESET_PATH), { images: imagesJson });
+  await writeContentsJsonAsync(path.join(iosNamedProjectRoot, IMAGESET_PATH), {
+    images: imagesJson,
+  });
 }
 
 /**
@@ -113,7 +161,7 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
  */
 function getIosNamedProjectPath(projectRoot: string): string {
   const projectName = getProjectName(projectRoot);
-  return join(projectRoot, 'ios', projectName);
+  return path.join(projectRoot, 'ios', projectName);
 }
 
 function getAppleIconName(size: number, scale: number, appearance?: 'dark' | 'tinted'): string {
@@ -175,7 +223,7 @@ export async function generateUniversalIconAsync(
     source = await createSquareAsync({ size });
   }
   // Write image buffer to the file system.
-  const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
+  const assetPath = path.join(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await fs.promises.writeFile(assetPath, source);
 
   return {
@@ -185,4 +233,52 @@ export async function generateUniversalIconAsync(
     size: `${size}x${size}`,
     ...(appearance ? { appearances: [{ appearance: 'luminosity', value: appearance }] } : {}),
   };
+}
+
+async function addLiquidGlassIcon(
+  iconPath: string,
+  projectRoot: string,
+  iosNamedProjectRoot: string
+): Promise<void> {
+  const iconName = path.basename(iconPath, '.icon');
+  const sourceIconPath = path.join(projectRoot, iconPath);
+  const targetIconPath = path.join(iosNamedProjectRoot, `${iconName}.icon`);
+
+  if (!fs.existsSync(sourceIconPath)) {
+    WarningAggregator.addWarningIOS(
+      'icon',
+      `Liquid glass icon file not found at path: ${iconPath}`
+    );
+    return;
+  }
+
+  await fs.promises.cp(sourceIconPath, targetIconPath, { recursive: true });
+}
+
+/**
+ * Adds the .icons name to the project
+ */
+function setIconName(project: any, iconName: string): void {
+  const configurations = project.pbxXCBuildConfigurationSection();
+
+  for (const config of Object.values(configurations)) {
+    if ((config as any)?.buildSettings) {
+      (config as any).buildSettings.ASSETCATALOG_COMPILER_APPICON_NAME = iconName;
+    }
+  }
+}
+
+/**
+ * Adds the .icon file to the project
+ */
+function addIconFileToProject(project: any, projectName: string, iconName: string): void {
+  const iconPath = `${iconName}.icon`;
+
+  IOSConfig.XcodeUtils.addResourceFileToGroup({
+    filepath: `${projectName}/${iconPath}`,
+    groupName: projectName,
+    project,
+    isBuildFile: true,
+    verbose: true,
+  });
 }

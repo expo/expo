@@ -1,21 +1,49 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import CoreGraphics
+import ExpoModulesCore
+import ImageIO
 import Photos
 import UniformTypeIdentifiers
-import ExpoModulesCore
 
 internal struct ImageUtils {
   static func readImageFrom(mediaInfo: MediaInfo, shouldReadCroppedImage: Bool) -> UIImage? {
-    guard let image = (mediaInfo[.originalImage] as? UIImage)?.fixOrientation() else {
+    // ---------------------------------------------------------------------------
+    // 1. Fast-path  (allowsEditing == true)
+    // ---------------------------------------------------------------------------
+    // When the user confirms a crop in the system UI, UIKit puts the final bitmap
+    // – with the crop *and* the correct visual orientation already baked in –
+    // under `UIImagePickerController.InfoKey.editedImage`.
+    // Re-using that image means we don't have to:
+    //   • translate `cropRect` into the sensor's coordinate space, nor
+    //   • worry about EXIF orientation flags that differ across formats.
+    // This single line therefore handles the vast majority of cases safely.
+    if shouldReadCroppedImage, let systemCropped = mediaInfo[.editedImage] as? UIImage {
+      return systemCropped.fixOrientation()
+    }
+
+    // ---------------------------------------------------------------------------
+    // 2. Manual path  (no .editedImage available)
+    // ---------------------------------------------------------------------------
+    // Some edge-cases (older iOS versions, multi-selection via PHPicker, or
+    // editing disabled) don't supply `.editedImage`.  In those cases we:
+    //   a) pull `.originalImage`,
+    //   b) apply `cropRect` *before* touching orientation, and
+    //   c) call `fixOrientation()` once at the end to normalize the bitmap.
+    guard let originalImage = mediaInfo[.originalImage] as? UIImage else {
       return nil
     }
-    if !shouldReadCroppedImage {
-      return image
+
+    if shouldReadCroppedImage,
+      let cropRect = mediaInfo[.cropRect] as? CGRect,
+      let cropped = ImageUtils.crop(image: originalImage, to: cropRect) {
+      // Crop first (rect is defined in the original pixel space), then rotate.
+      return cropped.fixOrientation()
     }
-    guard let cropRect = mediaInfo[.cropRect] as? CGRect, let croppedImage = ImageUtils.crop(image: image, to: cropRect) else {
-      return nil
-    }
-    return croppedImage
+
+    // No editing – only remove any EXIF orientation so JavaScript consumers see
+    // an upright image.
+    return originalImage.fixOrientation()
   }
 
   static func crop(image: UIImage, to: CGRect) -> UIImage? {
@@ -147,7 +175,8 @@ internal struct ImageUtils {
   /**
    Reads base64 representation of the image data. If the data is `nil` fallbacks to reading the data from the url.
    */
-  static func readBase64From(imageData: Data?, orImageFileUrl url: URL, tryReadingFile: Bool) throws -> String? {
+  static func readBase64From(imageData: Data?, orImageFileUrl url: URL, tryReadingFile: Bool) throws
+    -> String? {
     if tryReadingFile {
       do {
         let data = try Data(contentsOf: url)
@@ -189,7 +218,9 @@ internal struct ImageUtils {
 
     return await withCheckedContinuation { continuation in
       asset.requestContentEditingInput(with: options) { input, _ in
-        guard let imageUrl = input?.fullSizeImageURL, let properties = CIImage(contentsOf: imageUrl)?.properties else {
+        guard let imageUrl = input?.fullSizeImageURL,
+          let properties = CIImage(contentsOf: imageUrl)?.properties
+        else {
           log.error("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
           return continuation.resume(returning: nil)
         }
@@ -230,7 +261,9 @@ internal struct ImageUtils {
     let options = PHContentEditingInputRequestOptions()
     options.isNetworkAccessAllowed = true
     asset.requestContentEditingInput(with: options) { input, _ in
-      guard let imageUrl = input?.fullSizeImageURL, let properties = CIImage(contentsOf: imageUrl)?.properties else {
+      guard let imageUrl = input?.fullSizeImageURL,
+        let properties = CIImage(contentsOf: imageUrl)?.properties
+      else {
         log.error("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
         return completion(nil)
       }
@@ -241,7 +274,8 @@ internal struct ImageUtils {
 
   static func readExifFrom(data: Data) -> ExifInfo? {
     if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
-      if let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) as? [String: Any] {
+      if let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil)
+        as? [String: Any] {
         return ImageUtils.readExifFrom(imageMetadata: properties)
       }
     }
@@ -278,7 +312,9 @@ internal struct ImageUtils {
       return inputData
     }
 
-    guard let sourceData = inputData, let imageSource = CGImageSourceCreateWithData(sourceData as CFData, nil) else {
+    guard let sourceData = inputData,
+      let imageSource = CGImageSourceCreateWithData(sourceData as CFData, nil)
+    else {
       throw FailedToReadImageException()
     }
 
@@ -293,11 +329,12 @@ internal struct ImageUtils {
     let gifMetadata = initialMetadata ?? gifProperties
     CGImageDestinationSetProperties(imageDestination, gifMetadata as CFDictionary?)
 
-    for frameIndex in 0 ..< frameCount {
+    for frameIndex in 0..<frameCount {
       guard var cgImage = CGImageSourceCreateImageAtIndex(imageSource, frameIndex, nil) else {
         throw FailedToCreateGifException()
       }
-      var frameProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, frameIndex, nil) as? [String: Any] ?? [:]
+      var frameProperties =
+        CGImageSourceCopyPropertiesAtIndex(imageSource, frameIndex, nil) as? [String: Any] ?? [:]
 
       if let cropRect {
         cgImage = cgImage.cropping(to: cropRect) ?? cgImage
@@ -310,5 +347,28 @@ internal struct ImageUtils {
       throw FailedToExportGifException()
     }
     return destinationData as Data
+  }
+
+  /*
+   * Extracts the pixel dimensions from an image file.
+   * This method efficiently reads metadata without loading the entire image into memory.
+   * @param url The file URL of the image to analyze
+   * @return A CGSize containing the width and height, or nil if the dimensions cannot be determined
+   */
+  static func readSizeFrom(url: URL) -> CGSize? {
+    // First, try to fetch the dimensions from the image metadata as this is the fastest way
+    if let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
+      let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
+      let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
+      let height = properties[kCGImagePropertyPixelHeight] as? CGFloat {
+      return CGSize(width: width, height: height)
+    }
+
+    // Fallback: minimally decode the image using UIImage when metadata is not available
+    if let img = UIImage(contentsOfFile: url.path) {
+      return CGSize(width: img.size.width, height: img.size.height)
+    }
+
+    return nil
   }
 }

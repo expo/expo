@@ -218,6 +218,10 @@ exports[`built-in plugins compiles mods 1`] = `
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
       },
+      "expo-notifications": {
+        "name": "expo-notifications",
+        "version": "UNVERSIONED",
+      },
       "expo-splash-screen": {
         "name": "expo-splash-screen",
         "version": "UNVERSIONED",
@@ -476,6 +480,12 @@ exports[`built-in plugins introspects mods 1`] = `
                 },
                 "_": "#ff0000",
               },
+              {
+                "$": {
+                  "name": "notification_icon_color",
+                },
+                "_": "green",
+              },
             ],
           },
         },
@@ -558,8 +568,9 @@ exports[`built-in plugins introspects mods 1`] = `
             "value": "http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects",
           },
           {
-            "type": "comment",
-            "value": "org.gradle.parallel=true",
+            "key": "org.gradle.parallel",
+            "type": "property",
+            "value": "true",
           },
           {
             "type": "empty",
@@ -662,6 +673,26 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
+            "value": "Use this property to enable edge-to-edge display support.",
+          },
+          {
+            "type": "comment",
+            "value": "This allows your app to draw behind system bars for an immersive UI.",
+          },
+          {
+            "type": "comment",
+            "value": "Note: Only works with ReactActivity and should not be used with custom Activity.",
+          },
+          {
+            "key": "edgeToEdgeEnabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
             "value": "Enable GIF support in React Native images (~200 B increase)",
           },
           {
@@ -738,6 +769,7 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "android:allowBackup": "true",
+                  "android:enableOnBackInvokedCallback": "false",
                   "android:icon": "@mipmap/ic_launcher",
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
@@ -860,6 +892,18 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.notifications.default_notification_icon",
+                      "android:resource": "@drawable/notification_icon",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.notifications.default_notification_color",
+                      "android:resource": "@color/notification_icon_color",
                     },
                   },
                   {
@@ -1369,6 +1413,10 @@ exports[`built-in plugins introspects mods 1`] = `
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
       },
+      "expo-notifications": {
+        "name": "expo-notifications",
+        "version": "UNVERSIONED",
+      },
       "expo-splash-screen": {
         "name": "expo-splash-screen",
         "version": "UNVERSIONED",
@@ -1627,6 +1675,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "#ff0000",
               },
+              {
+                "$": {
+                  "name": "notification_icon_color",
+                },
+                "_": "green",
+              },
             ],
           },
         },
@@ -1669,6 +1723,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "android:allowBackup": "true",
+                  "android:enableOnBackInvokedCallback": "false",
                   "android:icon": "@mipmap/ic_launcher",
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
@@ -1791,6 +1846,18 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.notifications.default_notification_icon",
+                      "android:resource": "@drawable/notification_icon",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.notifications.default_notification_color",
+                      "android:resource": "@color/notification_icon_color",
                     },
                   },
                   {
@@ -2309,6 +2376,10 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       },
       "expo-navigation-bar": {
         "name": "expo-navigation-bar",
+        "version": "UNVERSIONED",
+      },
+      "expo-notifications": {
+        "name": "expo-notifications",
         "version": "UNVERSIONED",
       },
       "expo-splash-screen": {

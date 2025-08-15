@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom colors for image picker cropping interface -->
+    <!-- Dark mode defaults -->
+    <color name="expoCropToolbarColor">#00000000</color> <!-- Transparent -->
+    <color name="expoCropToolbarIconColor">#ffffff</color> <!-- White icons -->
+    <color name="expoCropToolbarActionTextColor">#ffffff</color> <!-- White text -->
+    <color name="expoCropBackButtonIconColor">#ffffff</color> <!-- White back button -->
+    <color name="expoCropBackgroundColor">#000000</color> <!-- Black background -->
+</resources>

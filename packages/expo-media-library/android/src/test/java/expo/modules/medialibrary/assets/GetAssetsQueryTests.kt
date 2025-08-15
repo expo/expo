@@ -34,7 +34,8 @@ internal class GetAssetsQueryTests {
       createdAfter = 2345.0,
       album = "sampleAlbumId",
       mediaType = listOf(MediaType.PHOTO.apiName),
-      sortBy = listOf("${SortBy.DEFAULT.keyName} ASC")
+      sortBy = listOf("${SortBy.DEFAULT.keyName} ASC"),
+      resolveWithFullInfo = false
     )
 
     val expectedSelection = "${MediaStore.Images.Media.BUCKET_ID} = $album" +
@@ -66,7 +67,8 @@ internal class GetAssetsQueryTests {
       createdAfter = null,
       album = null,
       mediaType = emptyList(),
-      sortBy = emptyList()
+      sortBy = emptyList(),
+      resolveWithFullInfo = false
     )
     // act
     val queryInfo = getQueryFromOptions(options)
@@ -89,7 +91,8 @@ internal class GetAssetsQueryTests {
       createdAfter = null,
       album = null,
       mediaType = emptyList(),
-      sortBy = emptyList()
+      sortBy = emptyList(),
+      resolveWithFullInfo = false
     )
 
     // act
@@ -109,7 +112,8 @@ internal class GetAssetsQueryTests {
       createdAfter = null,
       album = null,
       mediaType = listOf("someRandomString"),
-      sortBy = emptyList()
+      sortBy = emptyList(),
+      resolveWithFullInfo = false
     )
 
     getQueryFromOptions(options)
@@ -124,7 +128,8 @@ internal class GetAssetsQueryTests {
       createdAfter = null,
       album = null,
       mediaType = emptyList(),
-      sortBy = listOf("invalid name")
+      sortBy = listOf("invalid name"),
+      resolveWithFullInfo = false
     )
 
     getQueryFromOptions(options)

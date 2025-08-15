@@ -31,3 +31,15 @@ class ContentEntryException :
 
 class AssetFileException(message: String) :
   CodedException(message)
+
+class UnableToLoadPermissionException(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)
+
+class UnableToLoadException(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)
+
+class UnableToDeleteException(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)
+
+class UnableToSaveException(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)

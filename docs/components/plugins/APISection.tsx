@@ -109,7 +109,7 @@ const renderAPI = (
     testRequire = undefined,
     headersMapping = {},
   }: Omit<Props, 'forceVersion'>
-): JSX.Element => {
+) => {
   try {
     let data;
 

@@ -13,6 +13,7 @@ import { DiagnosticButton } from './DiagnosticsButton';
 import GeofencingScreen from './GeofencingDiagnosticsScreen';
 import LocationDiagnosticsScreen from './LocationDiagnosticsScreen';
 import ScrollView from '../../components/NavigationScrollView';
+import { CappedWidthContainerView } from '../../components/Views';
 import { ColorTheme } from '../../constants/Colors';
 import { DiagnosticsStackRoutes } from '../../navigation/Navigation.types';
 import defaultNavigationOptions from '../../navigation/defaultNavigationOptions';
@@ -65,16 +66,18 @@ function DiagnosticsScreen({
 }: StackScreenProps<DiagnosticsStackRoutes, 'Diagnostics'>) {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: spacing[4] }}>
-      <Spacer.Vertical size="large" />
-      <AudioDiagnostic navigation={navigation} />
-      <Spacer.Vertical size="large" />
-      {Environment.IsIOSRestrictedBuild ? (
-        <ForegroundLocationDiagnostic navigation={navigation} />
-      ) : (
-        <BackgroundLocationDiagnostic navigation={navigation} />
-      )}
-      <Spacer.Vertical size="large" />
-      <GeofencingDiagnostic navigation={navigation} />
+      <CappedWidthContainerView>
+        <Spacer.Vertical size="large" />
+        <AudioDiagnostic navigation={navigation} />
+        <Spacer.Vertical size="large" />
+        {Environment.IsIOSRestrictedBuild ? (
+          <ForegroundLocationDiagnostic navigation={navigation} />
+        ) : (
+          <BackgroundLocationDiagnostic navigation={navigation} />
+        )}
+        <Spacer.Vertical size="large" />
+        <GeofencingDiagnostic navigation={navigation} />
+      </CappedWidthContainerView>
     </ScrollView>
   );
 }

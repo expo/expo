@@ -481,7 +481,9 @@ export function routePatternToRegex(pattern: string) {
     `^(${pattern
       .split('/')
       .map((it) => {
-        if (it.startsWith(':')) {
+        if (it.startsWith('(') && it.endsWith(')')) {
+          return `${it}?`;
+        } else if (it.startsWith(':')) {
           return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
         }
 

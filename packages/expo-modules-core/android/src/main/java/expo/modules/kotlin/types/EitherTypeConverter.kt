@@ -129,6 +129,8 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
   private val secondType = secondTypeConverter.getCppRequiredTypes()
   private val thirdType = thirdTypeConverter.getCppRequiredTypes()
 
+  override fun isTrivial(): Boolean = false
+
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): EitherOfThree<FirstType, SecondType, ThirdType> {
     val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType)
     val deferredValues = createDeferredValues(
@@ -178,6 +180,8 @@ class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : A
   private val secondType = secondTypeConverter.getCppRequiredTypes()
   private val thirdType = thirdTypeConverter.getCppRequiredTypes()
   private val fourthType = fourthTypeConverter.getCppRequiredTypes()
+
+  override fun isTrivial(): Boolean = false
 
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
     val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType, fourthJavaType)

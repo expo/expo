@@ -124,9 +124,10 @@ export type AssetInfo = Asset & {
 };
 /**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
- * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * and time-lapse or high-frame-rate video. Maps to [`PHAssetMediaSubtype`](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * @platform ios
  * */
-export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse';
+export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse' | 'spatialMedia' | 'videoCinematic';
 export type MediaLibraryAssetInfoQueryOptions = {
     /**
      * Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets.
@@ -241,6 +242,11 @@ export type AssetsOptions = {
      */
     mediaType?: MediaTypeValue[] | MediaTypeValue;
     /**
+     * An array of [MediaSubtype](#mediasubtype)s or a single `MediaSubtype`.
+     * @platform ios
+     */
+    mediaSubtypes?: MediaSubtype[] | MediaSubtype;
+    /**
      * `Date` object or Unix timestamp in milliseconds limiting returned assets only to those that
      * were created after this date.
      */
@@ -250,6 +256,13 @@ export type AssetsOptions = {
      * date.
      */
     createdBefore?: Date | number;
+    /**
+     * Whether to resolve full info for the assets during the query.
+     * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+     * @default false
+     * @platform android
+     */
+    resolveWithFullInfo?: boolean;
 };
 export type PagedInfo<T> = {
     /**

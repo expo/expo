@@ -44,7 +44,14 @@ const ImageWrapper = React.forwardRef(
       events?.onMount?.forEach((e) => e?.());
     }, []);
 
-    const tintId = useId();
+    // Use a unique ID for the SVG filter so that multiple <Image> can be used
+    // on the same page with different tint colors without conflicts.
+    const tintId = useId()
+      // Make it safe for use as an SVG ID. SVG IDs are most strict than HTML
+      // IDs. They must be compliant with https://www.w3.org/TR/xml/#NT-Name.
+      // React 19 changed useId() to include « and ». These must be removed or
+      // the SVG filter will not work (e.g. in Safari which enforces the spec).
+      .replace(/[«»]/g, '_');
 
     // Thumbhash uri always has to start with 'thumbhash:/'
     const { resolvedSource, isImageHash } = useImageHashes(source);

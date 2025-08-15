@@ -1,7 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.experience
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Debug
@@ -25,7 +27,8 @@ import expo.modules.core.interfaces.Package
 import expo.modules.device.DeviceModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.filesystem.FileSystemModule
-import expo.modules.filesystem.FileSystemPackage
+import expo.modules.filesystem.legacy.FileSystemLegacyModule
+import expo.modules.filesystem.legacy.FileSystemPackage
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.haptics.HapticsModule
@@ -47,6 +50,7 @@ import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
+import host.exp.exponent.utils.currentDeviceIsAPhone
 import org.json.JSONException
 
 open class HomeActivity : BaseExperienceActivity() {
@@ -54,6 +58,13 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     configureSplashScreen(installSplashScreen())
     enableEdgeToEdge()
+
+    if (currentDeviceIsAPhone(this)) {
+      // Like on iOS, we lock the orientation only for phones
+      @SuppressLint("SourceLockedOrientationActivity")
+      requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
     super.onCreate(savedInstanceState)
 
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
@@ -175,6 +186,7 @@ open class HomeActivity : BaseExperienceActivity() {
         DeviceModule::class.java,
         EASClientModule::class.java,
         FileSystemModule::class.java,
+        FileSystemLegacyModule::class.java,
         FontLoaderModule::class.java,
         FontUtilsModule::class.java,
         HapticsModule::class.java,

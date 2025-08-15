@@ -74,7 +74,9 @@ struct AudioUtils {
     if let directory {
       let fileUrl = createRecordingUrl(from: directory, with: options)
       do {
-        return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
+        let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
+        recorder.isMeteringEnabled = options.isMeteringEnabled
+        return recorder
       } catch {
         return AVAudioRecorder()
       }

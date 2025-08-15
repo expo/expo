@@ -1,5 +1,5 @@
-const { boolish } = require('getenv');
-const process = require('process');
+import { boolish } from 'getenv';
+import process from 'node:process';
 
 export async function build(task, opts) {
   // Process JS/TS files with SWC

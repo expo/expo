@@ -29,7 +29,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
 
     expo::FrontendConverterProvider::instance()->createConverters();
 
+#if UNIT_TEST
     expo::RuntimeHolder::registerNatives();
+#endif
     expo::JSIContext::registerNatives();
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();

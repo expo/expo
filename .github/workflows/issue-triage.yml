@@ -7,7 +7,7 @@ on:
 
 jobs:
   needs-repro:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ contains(github.event.label.name, 'incomplete issue: missing or invalid repro') }}"
     steps:
       - uses: actions/github-script@v7
@@ -51,7 +51,7 @@ jobs:
             })
 
   needs-info:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ contains(github.event.label.name, 'incomplete issue: missing info') }}"
     steps:
       - uses: actions/github-script@v7
@@ -80,7 +80,7 @@ jobs:
             })
 
   issue-accepted:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       issues: write
     if: github.event.label.name == 'issue accepted'
@@ -131,7 +131,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
   question:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ contains(github.event.label.name, 'invalid issue: question') }}"
     steps:
       - uses: actions/github-script@v7
@@ -159,7 +159,7 @@ jobs:
             })
 
   feature-request:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ contains(github.event.label.name, 'invalid issue: feature request') }}"
     steps:
       - uses: actions/github-script@v7
@@ -182,7 +182,7 @@ jobs:
             })
 
   third-party:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ contains(github.event.label.name, 'invalid issue: third-party library') }}"
     steps:
       - uses: actions/github-script@v7
@@ -209,7 +209,7 @@ jobs:
               state: 'closed'
             })
   react-native-core:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ contains(github.event.label.name, 'invalid issue: react-native-core') }}"
     steps:
       - uses: actions/github-script@v7
@@ -231,7 +231,7 @@ jobs:
               state: 'closed'
             })
   comments-on-closed:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ github.event.label.name == 'Comments on closed issue' }}"
     steps:
       - uses: actions/github-script@v7
@@ -253,7 +253,7 @@ jobs:
               lock_reason: 'resolved'
             })
   eas-build-troubleshooting:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ github.event.label.name == 'invalid issue: EAS Build troubleshooting' }}"
     steps:
       - uses: actions/github-script@v7
@@ -275,7 +275,7 @@ jobs:
               state: 'closed'
             })
   version-bump:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "${{ github.event.label.name == 'Version bump PR' }}"
     steps:
       - uses: actions/github-script@v7

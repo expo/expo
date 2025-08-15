@@ -1,4 +1,7 @@
 const path = require('node:path');
+
+const subdomain = process.env.EXPO_TUNNEL_SUBDOMAIN ?? 'expo-e2e-universal-linking';
+
 /** @type {import('expo/config').ExpoConfig} */
 module.exports = {
   name: 'Router E2E',
@@ -11,7 +14,13 @@ module.exports = {
   userInterfaceStyle: 'automatic',
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'dev.expo.routere2e',
+    appleTeamId: process.env.APPLE_TEAM_ID,
+    bundleIdentifier: process.env.APPLE_BUNDLE_ID ?? 'com.expo.routere2e',
+    associatedDomains: [
+      `applinks:${subdomain}.ngrok.io`,
+      `webcredentials:${subdomain}.ngrok.io`,
+      `activitycontinuation:${subdomain}.ngrok.io`,
+    ],
   },
   android: {
     package: 'dev.expo.routere2e',
@@ -46,7 +55,6 @@ module.exports = {
         },
       },
     ],
-
     [
       'expo-router',
       {
@@ -63,6 +71,10 @@ module.exports = {
         redirects: process.env.E2E_ROUTER_REDIRECTS
           ? JSON.parse(process.env.E2E_ROUTER_REDIRECTS)
           : undefined,
+        rewrites: process.env.E2E_ROUTER_REWRITES
+          ? JSON.parse(process.env.E2E_ROUTER_REWRITES)
+          : undefined,
+        unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
       },
     ],
   ],

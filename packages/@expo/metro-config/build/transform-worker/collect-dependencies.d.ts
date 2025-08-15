@@ -1,6 +1,12 @@
-import type { NodePath } from '@babel/traverse';
-import * as t from '@babel/types';
-import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
+/**
+ * Copyright 2024-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import { types as t } from '@babel/core';
+import type { NodePath } from '@babel/core';
 export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch' | 'worker';
 type AllowOptionalDependenciesWithOptions = {
     exclude: string[];
@@ -44,19 +50,21 @@ type MutableDependencyData = {
     };
 };
 export type DependencyData = Readonly<MutableDependencyData>;
-type MutableInternalDependency = MutableDependencyData & {
+export type MutableInternalDependency = MutableDependencyData & {
     locs: t.SourceLocation[];
     index: number;
     name: string;
+    /** Usage of the dep, number of imports of the dep in other modules, used for tree shaking. */
+    imports: number;
 };
 export type InternalDependency = Readonly<MutableInternalDependency>;
 export type State = {
-    asyncRequireModulePathStringLiteral: StringLiteral | null;
+    asyncRequireModulePathStringLiteral: t.StringLiteral | null;
     dependencyCalls: Set<string>;
     dependencyRegistry: DependencyRegistry;
     dependencyTransformer: DependencyTransformer;
     dynamicRequires: DynamicRequiresBehavior;
-    dependencyMapIdentifier: Identifier | null;
+    dependencyMapIdentifier: t.Identifier | null;
     keepRequireNames: boolean;
     allowOptionalDependencies: AllowOptionalDependencies;
     unstable_allowRequireContext: boolean;
@@ -83,7 +91,7 @@ export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
     dependencies: readonly Dependency[];
 }>;
 export interface DependencyTransformer {
-    transformSyncRequire(path: NodePath<CallExpression>, dependency: InternalDependency, state: State): void;
+    transformSyncRequire(path: NodePath<t.CallExpression>, dependency: InternalDependency, state: State): void;
     transformImportMaybeSyncCall(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformImportCall(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformPrefetch(path: NodePath<any>, dependency: InternalDependency, state: State): void;

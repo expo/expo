@@ -6,19 +6,95 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- use relative paths in missing imports errors ([#38853](https://github.com/expo/expo/pull/38853) by [@EvanBacon](https://github.com/EvanBacon))
+- Reuse `derefSchema` from `@expo/schema-utils` ([#38863](https://github.com/expo/expo/pull/38863) by [@kitten](https://github.com/kitten))
+
+## 0.25.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Remove flipper hack support ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
+- Use template tarball from expo package. ([#37334](https://github.com/expo/expo/pull/37334) by [@jakex7](https://github.com/jakex7))
+- CLI returns non-zero return code on Abort and Silent Errors ([#38365](https://github.com/expo/expo/pull/38365) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 🎉 New features
+
+- Add experimental `--unstable-hosted-native` flag to expo export. ([#38265](https://github.com/expo/expo/pull/38265) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable async require by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 - Support JSON output for install check. ([#37318](https://github.com/expo/expo/pull/37318) by [@betomoedano](https://github.com/betomoedano))
+- Add `EXPO_USE_STICKY_RESOLVER` to enable experimental sticky resolution to native modules ([#37201](https://github.com/expo/expo/pull/37201) by [@kitten](https://github.com/kitten))
+- Support external URLs with static redirects ([#38041](https://github.com/expo/expo/pull/38041) by [@hassankhan](https://github.com/hassankhan))
+- Add `EXPO_UNSTABLE_LIVE_BINDINGS` to allow developer to disable live binding in `experimentalImportSupport`. ([#38135](https://github.com/expo/expo/pull/38135) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Add `location.origin`, Expo SDK version and Hermes version to sitemap UI ([#38201](https://github.com/expo/expo/pull/38201) by [@hassankhan](https://github.com/hassankhan))
+- Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
+- Create `metro-runtime` and `common` chunks when bundle splitting is enabled ([#38339](https://github.com/expo/expo/pull/38339) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 🐛 Bug fixes
 
+- Fix DOM component metadata overwriting causing WebView 404s after EAS updates. ([#38290](https://github.com/expo/expo/pull/38290) by [@danoc](https://github.com/danoc))
+- Support `--output-dir` being a directory outside of the project root. ([#38260](https://github.com/expo/expo/pull/38260) by [@EvanBacon](https://github.com/EvanBacon))
+- Update error message for ngrok ([#22469](https://github.com/expo/expo/pull/22469) by [@russorat](https://github.com/russorat))
 - Support SSR imports of internal node builtins such as `_http_agent`. ([#37494](https://github.com/expo/expo/pull/37494) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow anonymous sessions even when `projectId` is set ([#36874](https://github.com/expo/expo/pull/36874) by [@kadikraman](https://github.com/kadikraman))
+- Add static rewrites support to export and server-side handling ([#37930](https://github.com/expo/expo/pull/37930) by [@hassankhan](https://github.com/hassankhan))
+- Fix missing Error import stack with `EXPO_METRO_UNSTABLE_ERRORS` enabled and no cause ([#38256](https://github.com/expo/expo/pull/38256)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Enable inverse dependency stack trace (`EXPO_METRO_UNSTABLE_ERRORS`) for Metro bundling errors by default ([#38296](https://github.com/expo/expo/pull/38296) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix duplicate code frames printed in transformation error ([#38288](https://github.com/expo/expo/pull/38288) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix processing circular dependencies for inverse dependency resolver stack trace ([#38414](https://github.com/expo/expo/pull/38414) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Run prebuild only for the platforms specified in app config (if listed). ([#31752](https://github.com/expo/expo/pull/31752) by [@prathameshmm02](https://github.com/prathameshmm02))
+- Improve API Routes development errors (remove duplicates and misleading stack traces) ([#38465](https://github.com/expo/expo/pull/38465) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Resolve extensionless routes as HTML in static server ([#38610](https://github.com/expo/expo/pull/38610) by [@hassankhan](https://github.com/hassankhan))
+- Factor in no :hermes_enabled in Podfile ([#38664](https://github.com/expo/expo/pull/38664) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
+
+- Extend list of blocked internal imports for react-native-web. ([#38381](https://github.com/expo/expo/pull/38381) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix typos. ([#38264](https://github.com/expo/expo/pull/38264) by [@EvanBacon](https://github.com/EvanBacon))
+- add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
+- Use Vaul for modals and sheets on web with a custom stack ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
+- fix web back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
+- Added CSS-Modules Fast Refresh E2E Coverage ([#37845](https://github.com/expo/expo/pull/37845) by [@hirbod](https://github.com/hirbod))
+- Added tests for modal stacking ([#37856](https://github.com/expo/expo/pull/37856) by [@hirbod](https://github.com/hirbod))
+- simplify/optimize web-modal tests ([#38025](https://github.com/expo/expo/pull/38025) by [@hirbod](https://github.com/hirbod))
+- Fix e2e start-test for local runs ([#38066](https://github.com/expo/expo/pull/38066) by [@Ubax](https://github.com/Ubax))
+- Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
+- Treat Meta Quest devices as Android devices in `resolvePlatformFromUserAgentHeader` ([#37749](https://github.com/expo/expo/pull/37749) by [@behenate](https://github.com/behenate))
+- Add missing `expo-router` optional peer dependency and `@expo/server` dependency ([#38533](https://github.com/expo/expo/pull/38533) by [@kitten](https://github.com/kitten))
+- Update `@react-native/js-polyfills` to instead be loaded from `react-native/rn-get-polyfills` ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
+- Add missing (reverse) peer dependency on `expo` ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.24.20 - 2025-07-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.19 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Allow fast resolver to resolve nested `node_modules` packages in monorepos. ([#37769](https://github.com/expo/expo/pull/37769) by [@byCedric](https://github.com/byCedric))
+- Rewrite React canary resolution to rely on normal Node module resolution. ([#37770](https://github.com/expo/expo/pull/37770) by [@byCedric](https://github.com/byCedric))
+
+## 0.24.17 - 2025-07-02
+
+### 💡 Others
+
+- Bumped `playwright` version to 1.53.1. ([#37631](https://github.com/expo/expo/pull/37631) by [@kudo](https://github.com/kudo))
+
+## 0.24.16 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.15 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
 
 ## 0.24.14 - 2025-06-04
 

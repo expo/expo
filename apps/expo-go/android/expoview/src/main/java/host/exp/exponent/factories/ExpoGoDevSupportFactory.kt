@@ -24,7 +24,7 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
     redBoxHandler: RedBoxHandler?,
     devBundleDownloadListener: DevBundleDownloadListener?,
     minNumShakes: Int,
-    customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+    customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
@@ -52,7 +52,7 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
     redBoxHandler: RedBoxHandler?,
     devBundleDownloadListener: DevBundleDownloadListener?,
     minNumShakes: Int,
-    customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+    customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,

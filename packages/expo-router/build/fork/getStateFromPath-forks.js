@@ -404,7 +404,10 @@ function routePatternToRegex(pattern) {
     return new RegExp(`^(${pattern
         .split('/')
         .map((it) => {
-        if (it.startsWith(':')) {
+        if (it.startsWith('(') && it.endsWith(')')) {
+            return `${it}?`;
+        }
+        else if (it.startsWith(':')) {
             return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
         }
         return `${it === '*' ? '.*' : (0, escape_string_regexp_1.default)(it)}\\/`;

@@ -22,6 +22,7 @@ import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
 import withDocumentPicker from './unversioned/expo-document-picker';
 import withNavigationBar from './unversioned/expo-navigation-bar/expo-navigation-bar';
+import withNotifications from './unversioned/expo-notifications/expo-notifications';
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
@@ -98,6 +99,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     // AndroidManifest.xml
     AndroidConfig.AllowBackup.withAllowBackup,
     AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
+    AndroidConfig.PredictiveBackGesture.withPredictiveBackGesture,
     // Note: The withAndroidIntentFilters plugin must appear before the withScheme
     // plugin or withScheme will override the output of withAndroidIntentFilters.
     AndroidConfig.IntentFilters.withAndroidIntentFilters,
@@ -133,6 +135,7 @@ const versionedExpoSDKPackages: string[] = [
   'expo-ads-admob',
   'expo-apple-authentication',
   'expo-contacts',
+  'expo-notifications',
   'expo-updates',
   'expo-navigation-bar',
   'expo-document-picker',
@@ -146,6 +149,7 @@ export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
     withAdMob,
     withAppleAuthentication,
     withContacts,
+    withNotifications,
     withUpdates,
     withDocumentPicker,
     // System UI must come before splash screen as they overlap

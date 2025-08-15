@@ -6,7 +6,18 @@
 
 ### 🎉 New features
 
-- Add `isMyLocationEnabled` prop on iOS. ([#36741](https://github.com/expo/expo/pull/36741) by [@fobos531](https://github.com/fobos531))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.12.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add `contentPadding` property to the `GoogleMaps.View` component on Android. ([#38382](https://github.com/expo/expo/pull/38382) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add anchor and zIndex support to GoogleMapsView markers. ([#38357](https://github.com/expo/expo/pull/38357) by [@shollington-rbi](https://github.com/shollington-rbi))
+- Add support for Google Maps styling with JSON configuration and `mapId` property. ([#38493](https://github.com/expo/expo/pull/38493) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add points of interest filter, elevation and emphasis styling to Apple maps. ([#38514](https://github.com/expo/expo/pull/38514) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
@@ -15,6 +26,12 @@
 ### 💡 Others
 
 - Fixed `ExpoComposeView` breaking change errors. ([#36256](https://github.com/expo/expo/pull/36256) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 - 2025-06-18
+
+### 🎉 New features
+
+- Add `isMyLocationEnabled` prop on iOS. ([#36741](https://github.com/expo/expo/pull/36741) by [@fobos531](https://github.com/fobos531))
 
 ## 0.10.0 — 2025-05-08
 

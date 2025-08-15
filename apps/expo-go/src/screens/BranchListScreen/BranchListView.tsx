@@ -1,10 +1,11 @@
 import { ApolloQueryResult } from '@apollo/client';
 import { spacing } from '@expo/styleguide-native';
-import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
 
 import { BranchListItem } from '../../components/BranchListItem';
+import { CappedWidthContainerView } from '../../components/Views';
 import { BranchesForProjectQuery } from '../../graphql/types';
 
 export type BranchManifest = {
@@ -92,9 +93,8 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
   );
 
   return (
-    <View
-      flex="1"
-      style={{
+    <CappedWidthContainerView
+      wrapperStyle={{
         backgroundColor: theme.background.screen,
       }}>
       <FlatList
@@ -106,6 +106,6 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
         onEndReached={handleLoadMoreAsync}
         onEndReachedThreshold={0.2}
       />
-    </View>
+    </CappedWidthContainerView>
   );
 }

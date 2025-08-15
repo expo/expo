@@ -6,19 +6,49 @@
 
 ### 🎉 New features
 
-- Add android config plugin for app name translation. ([#37202](https://github.com/expo/expo/pull/37202) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
-
-- remove `expo-notifications` from auto plugins ([#36873](https://github.com/expo/expo/pull/36873) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
-- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+## 10.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Support Liquid Glass app icons. ([#37609](https://github.com/expo/expo/pull/37609) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Support `android.predictiveBackGestureEnabled` field in app config. ([#38774](https://github.com/expo/expo/pull/38774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- revert remove `expo-notifications` from auto plugins ([#37886](https://github.com/expo/expo/pull/37886) by [@vonovak](https://github.com/vonovak))
+- [Android] Fix splash screen icon not showing when app launched from push notifications ([#38700](https://github.com/expo/expo/pull/38700) by [@hirbod](https://github.com/hirbod))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 9.0.11 - 2025-07-08
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.10 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.9 - 2025-07-02
+
+### 🎉 New features
+
+- Add android config plugin for app name translation. ([#37202](https://github.com/expo/expo/pull/37202) by [@aleqsio](https://github.com/aleqsio))
+
+## 9.0.7 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- [reverted] remove `expo-notifications` from auto plugins ([#36873](https://github.com/expo/expo/pull/36873) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 9.0.6 — 2025-05-06
 

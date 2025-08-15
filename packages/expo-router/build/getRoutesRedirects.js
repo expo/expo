@@ -41,6 +41,7 @@ const Linking = __importStar(require("expo-linking"));
 const react_1 = require("react");
 const getStateFromPath_forks_1 = require("./fork/getStateFromPath-forks");
 const matchers_1 = require("./matchers");
+const url_1 = require("./utils/url");
 function applyRedirects(url, redirects) {
     if (typeof url !== 'string' || !redirects) {
         return url;
@@ -61,34 +62,27 @@ function applyRedirects(url, redirects) {
     }
     return applyRedirects(convertRedirect(url, redirect[1]), redirects);
 }
-function getRedirectModule(route) {
+function getRedirectModule(redirectConfig) {
     return {
         default: function RedirectComponent() {
-            // Use the store directly instead of useGlobalSearchParams.
-            // Importing the hooks directly causes build errors on the server
-            const params = require('./hooks').useGlobalSearchParams();
-            // Replace dynamic parts of the route with the actual values from the params
-            let href = route
-                .split('/')
-                .map((part) => {
-                const dynamicName = (0, matchers_1.matchDynamicName)(part);
-                if (!dynamicName) {
-                    return part;
+            const pathname = require('./hooks').usePathname();
+            const isExternal = (0, url_1.shouldLinkExternally)(redirectConfig.destination);
+            (0, react_1.useEffect)(() => {
+                if (isExternal) {
+                    let href = redirectConfig.destination;
+                    if (href.startsWith('//') && process.env.EXPO_OS !== 'web') {
+                        href = `https:${href}`;
+                    }
+                    Linking.openURL(href);
                 }
-                else {
-                    const param = params[dynamicName.name];
-                    delete params[dynamicName.name];
-                    return param;
-                }
-            })
-                .filter(Boolean)
-                .join('/');
-            // Add any remaining params as query string
-            const queryString = new URLSearchParams(params).toString();
-            if (queryString) {
-                href += `?${queryString}`;
+            }, []);
+            if (isExternal) {
+                return null;
             }
-            return (0, react_1.createElement)(require('./link/Link').Redirect, { href });
+            const href = convertRedirect(pathname, redirectConfig);
+            return (0, react_1.createElement)(require('./link/Link').Redirect, {
+                href,
+            });
         },
     };
 }

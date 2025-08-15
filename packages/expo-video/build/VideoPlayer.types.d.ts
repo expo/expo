@@ -182,6 +182,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     readonly availableVideoTracks: VideoTrack[];
     /**
+     * Indicates whether the player is currently playing back the media to an external device via AirPlay.
+     *
+     * @platform ios
+     */
+    readonly isExternalPlaybackActive: boolean;
+    /**
      * Initializes a new video player instance with the given source.
      *
      * @param source The source of the video to be played.

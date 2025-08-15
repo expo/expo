@@ -3,20 +3,29 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackRouter = exports.stackRouterOverride = void 0;
 const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
 const non_secure_1 = require("nanoid/non-secure");
+const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
+const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
+const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
-const NativeStackNavigator = (0, native_stack_1.createNativeStackNavigator)().Navigator;
+const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
 function isStackAction(action) {
     return (action.type === 'PUSH' ||
         action.type === 'NAVIGATE' ||
         action.type === 'POP' ||
         action.type === 'POP_TO_TOP' ||
-        action.type === 'REPLACE');
+        action.type === 'REPLACE' ||
+        action.type === 'PRELOAD');
 }
+const isPreviewAction = (action) => !!action.payload &&
+    'params' in action.payload &&
+    !!action.payload.params &&
+    typeof action.payload === 'object' &&
+    '__internal__expoRouterIsPreviewNavigation' in action.payload.params &&
+    !!action.payload.params.__internal__expoRouterIsPreviewNavigation;
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -81,6 +90,11 @@ const stackRouterOverride = (original) => {
                             route = state.routes.findLast((route) => route.name === action.payload.name);
                         }
                     }
+                    // START FORK
+                    if (isPreviewAction(action)) {
+                        route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === route.key);
+                    }
+                    // END FORK
                     if (!route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
@@ -145,7 +159,7 @@ const stackRouterOverride = (original) => {
                             }
                             // If the routes length is the same as the state routes length, then we are navigating to a new route.
                             // Otherwise we are replacing an existing route.
-                            const key = routes.length === state.routes.length
+                            const key = routes.length === state.routes.length && !isPreviewAction(action)
                                 ? `${action.payload.name}-${(0, non_secure_1.nanoid)()}`
                                 : route.key;
                             routes.push({
@@ -201,6 +215,81 @@ const stackRouterOverride = (original) => {
                     // };
                     // END FORK
                 }
+                case 'PRELOAD': {
+                    // START FORK
+                    // This will be the case for example for protected route
+                    if (!state.routeNames.includes(action.payload.name)) {
+                        return null;
+                    }
+                    // END FORK
+                    const getId = options.routeGetIdList[action.payload.name];
+                    const id = getId?.({ params: action.payload.params });
+                    let route;
+                    if (id !== undefined) {
+                        route = state.routes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                    }
+                    if (route) {
+                        return {
+                            ...state,
+                            routes: state.routes.map((r) => {
+                                if (r.key !== route?.key) {
+                                    return r;
+                                }
+                                return {
+                                    ...r,
+                                    params: routeParamList[action.payload.name] !== undefined
+                                        ? {
+                                            ...routeParamList[action.payload.name],
+                                            ...action.payload.params,
+                                        }
+                                        : action.payload.params,
+                                };
+                            }),
+                        };
+                    }
+                    else {
+                        // START FORK
+                        const currentPreloadedRoute = {
+                            key: `${action.payload.name}-${(0, non_secure_1.nanoid)()}`,
+                            name: action.payload.name,
+                            params: routeParamList[action.payload.name] !== undefined
+                                ? {
+                                    ...routeParamList[action.payload.name],
+                                    ...action.payload.params,
+                                }
+                                : action.payload.params,
+                        };
+                        // END FORK
+                        return {
+                            ...state,
+                            // START FORK
+                            // Adding the current preloaded route to the beginning of the preloadedRoutes array
+                            // This ensures that the preloaded route will be the next one after the visible route
+                            // and when navigation will happen, there will be no reshuffling
+                            // This is a workaround for the link preview navigation issue, when screen would freeze after navigation from native side
+                            // and reshuffling from react-navigation
+                            preloadedRoutes: [currentPreloadedRoute].concat(state.preloadedRoutes.filter((r) => r.name !== action.payload.name || id !== getId?.({ params: r.params }))),
+                            // preloadedRoutes: state.preloadedRoutes
+                            //   .filter(
+                            //     (r) =>
+                            //       r.name !== action.payload.name ||
+                            //       id !== getId?.({ params: r.params })
+                            //   )
+                            //   .concat({
+                            //     key: `${action.payload.name}-${nanoid()}`,
+                            //     name: action.payload.name,
+                            //     params:
+                            //       routeParamList[action.payload.name] !== undefined
+                            //         ? {
+                            //             ...routeParamList[action.payload.name],
+                            //             ...action.payload.params,
+                            //           }
+                            //         : action.payload.params,
+                            //   }),
+                            // END FORK
+                        };
+                    }
+                }
                 default: {
                     return original.getStateForAction(state, action, options);
                 }
@@ -253,11 +342,40 @@ function filterSingular(state, getId) {
     };
 }
 const Stack = Object.assign((props) => {
-    return <RNStack {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
+    const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const screenOptions = (0, react_1.useMemo)(() => {
+        if (isStackAnimationDisabled) {
+            return disableAnimationInScreenOptions(props.screenOptions);
+        }
+        return props.screenOptions;
+    }, [props.screenOptions, isStackAnimationDisabled]);
+    return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,
 });
+function disableAnimationInScreenOptions(options) {
+    const animationNone = 'none';
+    if (options) {
+        if (typeof options === 'function') {
+            const newOptions = (...args) => {
+                const oldResult = options(...args);
+                return {
+                    ...oldResult,
+                    animation: animationNone,
+                };
+            };
+            return newOptions;
+        }
+        return {
+            ...options,
+            animation: animationNone,
+        };
+    }
+    return {
+        animation: animationNone,
+    };
+}
 exports.default = Stack;
 const StackRouter = (options) => {
     const router = (0, native_1.StackRouter)(options);

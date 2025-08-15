@@ -37,8 +37,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.attemptModification = attemptModification;
-const config_1 = require("@expo/config");
 const chalk_1 = __importDefault(require("chalk"));
+const config_1 = require("expo/config");
 const Log = __importStar(require("./log"));
 /** Wraps `[@expo/config] modifyConfigAsync()` and adds additional logging. */
 async function attemptModification(projectRoot, edits, exactEdits) {

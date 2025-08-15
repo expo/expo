@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 17.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [Android] Added `promptSubtitle` and `promptDescription` parameters to `authenticateAsync`. ([#35335](https://github.com/expo/expo/pull/35335) by [@filipejuan](https://github.com/filipejuan))
+
+## 16.0.5 - 2025-07-01
+
+### 💡 Others
+
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 16.0.4 — 2025-04-30

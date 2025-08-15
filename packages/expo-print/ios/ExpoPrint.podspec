@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-  s.swift_version  = '5.4'
+  s.swift_version  = '5.9'
 
   s.dependency 'ExpoModulesCore'
 

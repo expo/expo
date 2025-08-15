@@ -12,7 +12,7 @@ import expo.modules.devmenu.R
 private const val BASE_FONT_SIZE = 16f
 
 @JvmInline
-value class FontSize(internal val font: TextStyle) {
+value class FontSize(val font: TextStyle) {
   companion object {
     internal fun create(
       fontSize: Int,
@@ -32,6 +32,7 @@ value class FontSize(internal val font: TextStyle) {
 }
 
 object Typography {
+  val size10 = FontSize.create(10, 17)
   val size12 = FontSize.create(12, 19)
   val size13 = FontSize.create(13, 21, -0.003f)
   val size14 = FontSize.create(14, 22, -0.006f)
@@ -61,6 +62,12 @@ object Typography {
 
   val inter = FontFamily(
     Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_medium, FontWeight.Medium),
     Font(R.font.inter_semibold, FontWeight.SemiBold)
+  )
+
+  val mono = FontFamily(
+    Font(R.font.jetbrains_mono_regular, FontWeight.Normal),
+    Font(R.font.jetbrains_mono_medium, FontWeight.Medium)
   )
 }

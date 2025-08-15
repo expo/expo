@@ -39,6 +39,7 @@ exports.useFocusEffect = useFocusEffect;
 // running the effect. This is especially useful for native redirects.
 const React = __importStar(require("react"));
 const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
+const useNavigation_1 = require("./useNavigation");
 /**
  * Hook to run an effect whenever a route is **focused**. Similar to
  * [`React.useEffect`](https://react.dev/reference/react/useEffect).
@@ -74,7 +75,8 @@ const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
  * @param do_not_pass_a_second_prop
  */
 function useFocusEffect(effect, do_not_pass_a_second_prop) {
-    const navigation = (0, useLoadedNavigation_1.useOptionalNavigation)();
+    const optionalNavigation = (0, useLoadedNavigation_1.useOptionalNavigation)();
+    const navigation = (0, useNavigation_1.useNavigation)();
     if (do_not_pass_a_second_prop !== undefined) {
         const message = "You passed a second argument to 'useFocusEffect', but it only accepts one argument. " +
             "If you want to pass a dependency array, you can use 'React.useCallback':\n\n" +
@@ -87,7 +89,7 @@ function useFocusEffect(effect, do_not_pass_a_second_prop) {
         console.error(message);
     }
     React.useEffect(() => {
-        if (!navigation) {
+        if (!navigation || !optionalNavigation) {
             return;
         }
         let isFocused = false;
@@ -157,6 +159,6 @@ function useFocusEffect(effect, do_not_pass_a_second_prop) {
             unsubscribeFocus();
             unsubscribeBlur();
         };
-    }, [effect, navigation]);
+    }, [effect, navigation, optionalNavigation, navigation.isFocused()]);
 }
 //# sourceMappingURL=useFocusEffect.js.map

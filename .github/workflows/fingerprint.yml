@@ -65,8 +65,30 @@ jobs:
           bunx create-expo-app -t blank@sdk-52 my-app
       - name: 💾 Create fingerprint from the temp project
         if: ${{ startsWith(matrix.os, 'windows') == false }}
+        env:
+          ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }}
         run: |
           cd ../my-app
+
+          # Add dependencies with native binaries
+          bun add -D sharp
+          cat > fingerprint.config.js <<EOF
+          /** @type {import('expo/fingerprint').Config} */
+          const config = {
+            extraSources: [
+              {
+                type: 'dir',
+                filePath: 'node_modules/@img',
+              },
+              {
+                type: 'dir',
+                filePath: 'node_modules/sharp',
+              },
+            ],
+          };
+          module.exports = config;
+          EOF
+
           if [[ "${{ env.ACTIONS_STEP_DEBUG }}" == "true" ]]; then
             ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ../expo/fingerprint-${{ matrix.os }}.json
           else
@@ -74,9 +96,31 @@ jobs:
           fi
       - name: 💾 Create fingerprint from the temp project (Windows)
         if: ${{ startsWith(matrix.os, 'windows') }}
+        env:
+          ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }}
         shell: pwsh
         run: |
           cd ../my-app
+
+          # Add dependencies with native binaries
+          bun add -D sharp
+          @"
+          /** @type {import('expo/fingerprint').Config} */
+          const config = {
+            extraSources: [
+              {
+                type: 'dir',
+                filePath: 'node_modules/@img',
+              },
+              {
+                type: 'dir',
+                filePath: 'node_modules/sharp',
+              },
+            ],
+          };
+          module.exports = config;
+          "@ | Set-Content fingerprint.config.js
+
           if ($env:ACTIONS_STEP_DEBUG -eq "true") {
             node ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate --debug > ../expo/fingerprint-${{ matrix.os }}.json
           } else {

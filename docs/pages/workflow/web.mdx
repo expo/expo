@@ -71,7 +71,7 @@ If you haven't added Expo to your React Native app yet, you can either [install 
 
 <Terminal cmd={['$ npm install expo']} />
 
-2. Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent) instead of `AppRegistry.registerComponent`:
+2. Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of `AppRegistry.registerComponent`:
 
 ```diff
 + import {registerRootComponent} from 'expo';

@@ -1,0 +1,6 @@
+appId: dev.expo.updatese2e
+---
+- runFlow:
+    file: brickingDisabled_runUpdate.yml
+- runFlow:
+    file: brickingDisabled_jsReloadUpdate.yml

@@ -3,7 +3,7 @@ import {
   convertCertificatePEMToCertificate,
   validateSelfSignedCertificate,
 } from '@expo/code-signing-certificates';
-import { ExpoConfig, getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from 'expo/config';
 import { promises as fs } from 'fs';
 import path from 'path';
 

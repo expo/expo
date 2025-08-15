@@ -25,7 +25,7 @@ export const loadRequestedParcels = new Task<TaskArgs>(
 
     const allPackages = await runWithSpinner(
       'Loading requested workspace packages',
-      () => getListOfPackagesAsync(),
+      async () => await getListOfPackagesAsync(),
       'Loaded requested workspace packages'
     );
 

@@ -4,9 +4,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object Sizing {
+  object Border {
+    val hairlineWidth = Dp.Hairline
+    val default = 1.dp
+  }
+
+  val border = Border
+
   object BorderRadius {
     val none = 0.dp
-    val hairlineWidth = Dp.Hairline
     val extraSmall = 2.dp
     val small = 4.dp
     val medium = 6.dp

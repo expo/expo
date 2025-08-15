@@ -3,19 +3,11 @@
   "apple": {
     "podspecPath": "expo-dev-menu.podspec",
     "swiftModuleName": "EXDevMenu",
-    "modules": [
-      "DevMenuModule",
-      "DevMenuInternalModule",
-      "DevMenuPreferences",
-      "RNCSafeAreaProviderManager"
-    ],
+    "modules": ["DevMenuModule", "DevMenuInternalModule", "DevMenuPreferences"],
     "reactDelegateHandlers": ["ExpoDevMenuReactDelegateHandler"],
     "debugOnly": true
   },
   "android": {
-    "modules": [
-      "expo.modules.devmenu.modules.DevMenuModule",
-      "expo.modules.devmenu.modules.DevMenuPreferences"
-    ]
+    "modules": ["expo.modules.devmenu.modules.DevMenuModule"]
   }
 }

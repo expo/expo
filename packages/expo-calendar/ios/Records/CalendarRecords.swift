@@ -45,7 +45,7 @@ struct Event: Record {
   @Field
   var title: String
   @Field
-  var location: String
+  var location: String?
   @Field
   var creationDate: Either<String, Double>?
   @Field

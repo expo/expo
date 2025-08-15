@@ -17,7 +17,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifySearchResults = exports.generatePackageListAsync = exports.generateModulesProviderAsync = exports.getConfiguration = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = exports.findModulesAsync = void 0;
+exports.verifySearchResults = exports.generatePackageListAsync = exports.generateModulesProviderAsync = exports.getConfiguration = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = exports.findModulesAsync = void 0;
+exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
 exports.queryAutolinkingModulesFromProjectAsync = queryAutolinkingModulesFromProjectAsync;
 exports.findProjectRootSync = findProjectRootSync;
 const path_1 = __importDefault(require("path"));
@@ -26,7 +27,6 @@ Object.defineProperty(exports, "findModulesAsync", { enumerable: true, get: func
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
 Object.defineProperty(exports, "getProjectPackageJsonPathAsync", { enumerable: true, get: function () { return mergeLinkingOptions_1.getProjectPackageJsonPathAsync; } });
 Object.defineProperty(exports, "mergeLinkingOptionsAsync", { enumerable: true, get: function () { return mergeLinkingOptions_1.mergeLinkingOptionsAsync; } });
-Object.defineProperty(exports, "resolveSearchPathsAsync", { enumerable: true, get: function () { return mergeLinkingOptions_1.resolveSearchPathsAsync; } });
 const resolveModules_1 = require("./resolveModules");
 Object.defineProperty(exports, "resolveExtraBuildDependenciesAsync", { enumerable: true, get: function () { return resolveModules_1.resolveExtraBuildDependenciesAsync; } });
 Object.defineProperty(exports, "resolveModulesAsync", { enumerable: true, get: function () { return resolveModules_1.resolveModulesAsync; } });
@@ -38,11 +38,14 @@ Object.defineProperty(exports, "generatePackageListAsync", { enumerable: true, g
 var verifySearchResults_1 = require("./verifySearchResults");
 Object.defineProperty(exports, "verifySearchResults", { enumerable: true, get: function () { return verifySearchResults_1.verifySearchResults; } });
 __exportStar(require("../types"), exports);
+async function resolveSearchPathsAsync(searchPaths, cwd) {
+    return (0, mergeLinkingOptions_1.resolveSearchPaths)(searchPaths, cwd);
+}
 /**
  * Programmatic API to query autolinked modules for a project.
  */
 async function queryAutolinkingModulesFromProjectAsync(projectRoot, options) {
-    const searchPaths = await (0, mergeLinkingOptions_1.resolveSearchPathsAsync)(null, projectRoot);
+    const searchPaths = await resolveSearchPathsAsync(null, projectRoot);
     const linkOptions = await (0, mergeLinkingOptions_1.mergeLinkingOptionsAsync)({ ...options, projectRoot, searchPaths });
     const searchResults = await (0, findModules_1.findModulesAsync)(linkOptions);
     return await (0, resolveModules_1.resolveModulesAsync)(searchResults, linkOptions);

@@ -66,5 +66,10 @@ it('runs `npx expo login` and throws due to invalid credentials', async () => {
     executeExpoAsync(projectRoot, ['login', '--username=bacon', '--password=invalid'], {
       verbose: false,
     })
-  ).rejects.toThrow(/Your username, email, or password was incorrect/);
+  ).rejects.toThrow(
+    // Account for the normal error, or the rate limiting error:
+    // - Your username, email, or password was incorrect
+    // - ApiV2Error: Exceeded maximum login attempts. Try again later.
+    /(Your username, email, or password was incorrect|Exceeded maximum login attempts)/
+  );
 });

@@ -91,7 +91,7 @@
                 "description": "The target file path that this route should redirect to",
                 "type": "string"
               },
-              "temporary": {
+              "permanent": {
                 "description": "Whether the redirect is temporary or permanent. Defaults to `false`.",
                 "type": "boolean",
                 "default": false
@@ -107,6 +107,39 @@
               }
             }
           }
+        },
+        "rewrites": {
+          "description": "Enable static rewrites",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["source", "destination"],
+            "properties": {
+              "source": {
+                "description": "The previous file path that should be rewritten",
+                "type": "string"
+              },
+              "destination": {
+                "description": "The target file path that this route should rewrite",
+                "type": "string"
+              },
+              "methods": {
+                "description": "HTTP methods that should be rewritten. Omit to rewrite all methods.",
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+                }
+              }
+            }
+          }
+        },
+        "unstable_useServerMiddleware": {
+          "description": "Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config.",
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false

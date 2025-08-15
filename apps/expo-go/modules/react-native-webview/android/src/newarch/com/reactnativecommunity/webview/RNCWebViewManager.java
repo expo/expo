@@ -226,7 +226,7 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
     }
 
     @Override
-    @ReactProp(name = "suppressMenuItems ")
+    @ReactProp(name = "suppressMenuItems")
     public void setSuppressMenuItems(RNCWebViewWrapper view, @Nullable ReadableArray items) {}
 
     @Override
@@ -331,6 +331,12 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
         mRNCWebViewManagerImpl.setWebviewDebuggingEnabled(view, value);
     }
 
+    @Override
+    @ReactProp(name = "paymentRequestEnabled")
+    public void setPaymentRequestEnabled(RNCWebViewWrapper view, boolean value) {
+        mRNCWebViewManagerImpl.setPaymentRequestEnabled(view, value);
+    }
+
     /* iOS PROPS - no implemented here */
     @Override
     public void setAllowingReadAccessToURL(RNCWebViewWrapper view, @Nullable String value) {}
@@ -394,6 +400,9 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
 
     @Override
     public void setRefreshControlLightMode(RNCWebViewWrapper view, boolean value) {}
+
+    @Override
+    public void setIndicatorStyle(RNCWebViewWrapper view, @Nullable String value) {}
 
     @Override
     public void setScrollEnabled(RNCWebViewWrapper view, boolean value) {}

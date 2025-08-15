@@ -23,7 +23,7 @@ const TESTS = [
   'KeepAwake',
   // 'Audio',
   'HTML',
-  'FileSystem@next',
+  'FileSystem',
   'Fetch',
 ];
 

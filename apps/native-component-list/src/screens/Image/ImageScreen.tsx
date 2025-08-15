@@ -36,6 +36,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Generate Placeholders',
+    route: 'image/generate-placeholders',
+    getComponent() {
+      return optionalRequire(() => require('./ImageGeneratePlaceholders'));
+    },
+  },
+  {
     name: 'Image formats',
     route: 'image/formats',
     getComponent() {

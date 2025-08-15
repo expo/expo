@@ -6,6 +6,7 @@ import expo.modules.kotlin.modules.InternalModuleDefinitionBuilder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.views.decorators.UseCommonProps
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
@@ -23,11 +24,12 @@ open class ModuleDefinitionBuilderWithCompose(
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
     P::class.memberProperties.forEach { prop ->
       val kType = prop.returnType.arguments.first().type
-      if (kType != null) {
+      if (kType != null && viewDefinitionBuilder.props[prop.name] == null) {
         viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType), prop)
       }
     }
 
+    viewDefinitionBuilder.UseCommonProps()
     viewDefinitionBuilder.UseCSSProps()
     body.invoke(viewDefinitionBuilder)
     registerViewDefinition(viewDefinitionBuilder.build())

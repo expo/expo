@@ -30,10 +30,17 @@ internal enum ButtonVariant: String, Enumerable {
   case card
   case link
   case plain
+  case glass
+  case glassProminent
 }
 
-final class ButtonProps: ExpoSwiftUI.ViewProps, Observable {
-  required init() {}
+final class ButtonProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps, Observable {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var text: String?
   @Field var systemImage: String?
   @Field var color: Color?

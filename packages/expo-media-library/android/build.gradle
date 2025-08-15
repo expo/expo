@@ -4,19 +4,20 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '17.1.6'
+version = '18.0.0'
 
 android {
   namespace "expo.modules.medialibrary"
   defaultConfig {
     versionCode 37
-    versionName "17.1.6"
+    versionName "18.0.0"
   }
 }
 
 dependencies {
   implementation "androidx.annotation:annotation:1.2.0"
   api "androidx.exifinterface:exifinterface:1.3.3"
+  implementation 'androidx.activity:activity-ktx:1.10.1'
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')

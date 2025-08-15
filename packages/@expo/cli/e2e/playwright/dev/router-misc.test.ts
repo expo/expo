@@ -84,4 +84,81 @@ test.describe(inputDir, () => {
     await expect(page.locator('[data-testid="foo-param"]')).toHaveText('bar');
     expect(page.url()).toEqual(`${expoStart.url.href}hash-support?foo=bar#my-hash`);
   });
+
+  test.describe('navigation using browser buttons', () => {
+    test('navigation back after page reload', async ({ page }) => {
+      console.log('Server running:', expoStart.url);
+
+      // Navigate to the index page
+      await page.goto(new URL('/browser-buttons', expoStart.url).href);
+      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
+        'IndexGo to OneGo to 404'
+      );
+
+      // Navigate to the "one" page
+      await page.locator('text=Go to One').click();
+      await expect(page.locator('[data-testid="browser-buttons-one"]')).toHaveText('One');
+
+      // Reload the page
+      await page.reload();
+      await expect(page.locator('[data-testid="browser-buttons-one"]')).toHaveText('One');
+
+      // Go back again, should still be on the index page
+      await page.goBack();
+      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
+        'IndexGo to OneGo to 404'
+      );
+    });
+    test('navigation forward after page reload', async ({ page }) => {
+      console.log('Server running:', expoStart.url);
+
+      // Navigate to the index page
+      await page.goto(new URL('/browser-buttons', expoStart.url).href);
+      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
+        'IndexGo to OneGo to 404'
+      );
+
+      // Navigate to the "one" page
+      await page.locator('text=Go to One').click();
+      await expect(page.locator('[data-testid="browser-buttons-one"]')).toHaveText('One');
+
+      // Go back again, should still be on the index page
+      await page.goBack();
+      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
+        'IndexGo to OneGo to 404'
+      );
+
+      // Reload the page
+      await page.reload();
+      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
+        'IndexGo to OneGo to 404'
+      );
+
+      // Go forward again, should still be on the "one" page
+      await page.goForward();
+      await expect(page.locator('[data-testid="browser-buttons-one"]')).toHaveText('One');
+    });
+    test('navigation back to 404 works', async ({ page }) => {
+      console.log('Server running:', expoStart.url);
+
+      // Navigate to the index page
+      await page.goto(new URL('/browser-buttons', expoStart.url).href);
+      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
+        'IndexGo to OneGo to 404'
+      );
+
+      // Navigate to the 404 page
+      await page.locator('text=Go to 404').click();
+      await expect(page.locator('body')).toContainText('Unmatched Route');
+
+      await page.goBack();
+      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
+        'IndexGo to OneGo to 404'
+      );
+
+      // Go back again, should still be on the 404 page
+      await page.goForward();
+      await expect(page.locator('body')).toContainText('Unmatched Route');
+    });
+  });
 });

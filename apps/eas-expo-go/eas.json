@@ -7,9 +7,10 @@
   },
   "build": {
     "base": {
+      "node": "22.17.1",
       "credentialsSource": "local",
       "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
+        "image": "latest",
         "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
@@ -21,10 +22,10 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk53-0.80.0",
+          "key": "sdk54-0.81.0",
           "customPaths": ["../expo-go/ios/Pods"]
         },
-        "image": "macos-sonoma-14.6-xcode-16.0",
+        "image": "latest",
         "cocoapods": "1.16.2",
         "resourceClass": "medium",
         "env": {
@@ -41,7 +42,7 @@
         "EAS_BUILD_PROFILE": "versioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleDebug",
+        "gradleCommand": ":app:assembleMobileDebug",
         "withoutCredentials": true
       },
       "ios": {
@@ -62,7 +63,7 @@
         "EAS_BUILD_PROFILE": "unversioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleDebug",
+        "gradleCommand": ":app:assembleMobileDebug",
         "withoutCredentials": true
       },
       "ios": {
@@ -82,7 +83,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:bundleRelease"
+        "gradleCommand": ":app:bundleMobileRelease"
       },
       "ios": {
         "autoIncrement": "buildNumber",
@@ -104,7 +105,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:assembleRelease"
+        "gradleCommand": ":app:assembleMobileRelease"
       },
       "ios": {
         "resourceClass": "large",
@@ -113,6 +114,39 @@
           "disabled": true
         },
         "simulator": true
+      }
+    },
+    "versioned-quest-client": {
+      "extends": "versioned-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestDebug"
+      }
+    },
+    "versioned-quest-client-add-sdk": {
+      "extends": "versioned-quest-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-add-sdk"
+      }
+    },
+    "unversioned-quest-client": {
+      "extends": "unversioned-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestDebug"
+      }
+    },
+    "release-quest-client": {
+      "extends": "release-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "release-client"
+      },
+      "android": {
+        "gradleCommand": ":app:bundleQuestRelease"
+      }
+    },
+    "publish-quest-client": {
+      "extends": "publish-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestRelease"
       }
     }
   },

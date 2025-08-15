@@ -1,4 +1,4 @@
-import { Spacer, View } from 'expo-dev-client-components';
+import { padding, Spacer } from 'expo-dev-client-components';
 import * as Tracking from 'expo-tracking-transparency';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
@@ -9,6 +9,7 @@ import { DeleteAccountSection } from './DeleteAccountSection';
 import { DevMenuGestureSection } from './DevMenuGestureSection';
 import { ThemeSection } from './ThemeSection';
 import { TrackingSection } from './TrackingSection';
+import { CappedWidthContainerView } from '../../components/Views';
 import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 
 export function SettingsScreen() {
@@ -19,7 +20,7 @@ export function SettingsScreen() {
       style={styles.container}
       keyboardShouldPersistTaps="always"
       keyboardDismissMode="on-drag">
-      <View flex="1" padding="medium">
+      <CappedWidthContainerView style={padding.padding.medium}>
         <ThemeSection />
         <Spacer.Vertical size="medium" />
         {Platform.OS === 'ios' && <DevMenuGestureSection />}
@@ -31,7 +32,7 @@ export function SettingsScreen() {
             <DeleteAccountSection />
           </>
         ) : null}
-      </View>
+      </CappedWidthContainerView>
     </KeyboardAwareScrollView>
   );
 }

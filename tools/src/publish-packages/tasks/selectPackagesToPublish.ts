@@ -1,7 +1,9 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import * as semver from 'semver';
 
 import {
+  createParcelAsync,
   createParcelsForDependenciesOf,
   createParcelsForGraphNodes,
   loadRequestedParcels,
@@ -17,7 +19,7 @@ import {
   resolveReleaseTypeAndVersion,
   validateVersion,
 } from '../helpers';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, ReleaseType, TaskArgs } from '../types';
 
 const { green, cyan } = chalk;
 
@@ -82,6 +84,37 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
       logger.success('🤷‍♂️ There is nothing to be published.');
       return Task.STOP;
     }
+
+    // Enforce publishing expo-template-bare-minimum if expo is selected.
+    const expoParcel = [...parcelsToPublish].find((parcel) => parcel.pkg.packageName === 'expo');
+    const isBareTemplateSelected =
+      [...parcelsToPublish].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      ) !== undefined;
+    if (expoParcel && !isBareTemplateSelected) {
+      const bareTemplateNode = [...dependentNodes].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      )!;
+      const templateParcel = await createParcelAsync(bareTemplateNode);
+
+      // Template don't not have changelog so we need to match Expo's release type.
+      const newExpoVersion = expoParcel.state.releaseVersion || '';
+      templateParcel.minReleaseType =
+        semver.minor(newExpoVersion) === 0 &&
+        semver.patch(newExpoVersion) === 0 &&
+        !semver.prerelease(newExpoVersion)
+          ? ReleaseType.MAJOR
+          : ReleaseType.PATCH;
+      const { releaseVersion } = await resolveReleaseTypeAndVersion(templateParcel, options);
+
+      parcelsToPublish.add(templateParcel);
+      logger.log(
+        `📦 ${green('expo-template-bare-minimum')} is required to be published with ${green(
+          'expo'
+        )} package, will be published as ${cyan.bold(releaseVersion)}.`
+      );
+    }
+
     return [[...parcelsToPublish], options];
   }
 );
@@ -97,7 +130,7 @@ async function promptToPublishParcel(
 ): Promise<boolean | 'back' | 'skip'> {
   const customVersionId = 'custom-version';
   const packageName = parcel.pkg.packageName;
-  const releaseVersion = resolveReleaseTypeAndVersion(parcel, options);
+  const { releaseVersion, explainer } = await resolveReleaseTypeAndVersion(parcel, options);
 
   if (process.env.CI) {
     parcel.state.releaseVersion = releaseVersion;
@@ -131,7 +164,7 @@ async function promptToPublishParcel(
     {
       type: 'list',
       name: 'action',
-      message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(releaseVersion)}?`,
+      message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(releaseVersion)}?${explainer ? `\n${explainer}` : ''}`,
       choices,
       default: lastAction || 'yes',
     },

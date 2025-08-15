@@ -111,6 +111,10 @@ public final class ImageModule: Module {
         view.useAppleWebpCodec = useAppleWebpCodec
       }
 
+      Prop("enforceEarlyResizing", false) { (view, enforceEarlyResizing: Bool) in
+        view.enforceEarlyResizing = enforceEarlyResizing
+      }
+
       AsyncFunction("startAnimating") { (view: ImageView) in
         view.sdImageView.startAnimating()
       }
@@ -166,19 +170,22 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("generateBlurhashAsync") { (url: URL, numberOfComponents: CGSize, promise: Promise) in
-      let downloader = SDWebImageDownloader()
-      let parsedNumberOfComponents = (Int(numberOfComponents.width), Int(numberOfComponents.height))
-      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
-        DispatchQueue.global().async {
-          if let downloadedImage = image {
-            let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
-            promise.resolve(blurhashString)
-          } else {
-            promise.reject(BlurhashGenerationException())
-          }
+    AsyncFunction("generateBlurhashAsync") { (source: Either<Image, URL>, numberOfComponents: CGSize, promise: Promise) in
+      let parsedNumberOfComponents = (width: Int(numberOfComponents.width), height: Int(numberOfComponents.height))
+      generatePlaceholder(source: source) { (image: UIImage) in
+        if let blurhashString = blurhash(fromImage: image, numberOfComponents: parsedNumberOfComponents) {
+          promise.resolve(blurhashString)
+        } else {
+          promise.reject(BlurhashGenerationException())
         }
-      })
+      }
+    }
+
+    AsyncFunction("generateThumbhashAsync") { (source: Either<Image, URL>, promise: Promise) in
+      generatePlaceholder(source: source) { (image: UIImage) in
+        let blurhashString = thumbHash(fromImage: image)
+        promise.resolve(blurhashString.base64EncodedString())
+      }
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in
@@ -221,6 +228,24 @@ public final class ImageModule: Module {
       Property("mediaType") { image in
         return imageFormatToMediaType(image.ref.sd_imageFormat)
       }
+    }
+  }
+
+  func generatePlaceholder(
+    source: Either<Image, URL>,
+    generator: @escaping (UIImage) -> Void
+  ) {
+    if let image: Image = source.get() {
+      generator(image.ref)
+    } else if let url: URL = source.get() {
+      let downloader = SDWebImageDownloader()
+      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+        DispatchQueue.global().async {
+          if let downloadedImage = image {
+            generator(downloadedImage)
+          }
+        }
+      })
     }
   }
 

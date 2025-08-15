@@ -1,12 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <jsi/jsi.h>
-
-#if __has_include(<reacthermes/React-hermes-umbrella.h>)
-#import <reacthermes/React-hermes-umbrella.h>
-#elif __has_include(<React_jsc/React-jsc-umbrella.h>)
-#import <React_jsc/React-jsc-umbrella.h>
-#endif
+#import <hermes/hermes.h>
 
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
@@ -164,7 +159,26 @@ typedef jsi::Function (^InstanceFactory)(jsi::Runtime& runtime, NSString * name,
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
 
     // Returning something else than `this` is not supported in native constructors.
-    constructor(caller, arguments);
+    @try {
+      constructor(caller, arguments);
+    } @catch (NSException *exception) {
+      jsi::String jsMessage = expo::convertNSStringToJSIString(runtime, exception.reason ?: @"Constructor failed");
+      jsi::Value error = runtime
+        .global()
+        .getProperty(runtime, "Error")
+        .asObject(runtime)
+        .asFunction(runtime)
+        .callAsConstructor(runtime, {
+          jsi::Value(runtime, jsMessage)
+        });
+      
+      if (exception.userInfo[@"code"]) {
+        jsi::String jsCode = expo::convertNSStringToJSIString(runtime, exception.userInfo[@"code"]);
+        error.asObject(runtime).setProperty(runtime, "code", jsi::Value(runtime, jsCode));
+      }
+      
+      throw jsi::JSError(runtime, jsi::Value(runtime, error));
+    }
 
     return jsi::Value(runtime, thisValue);
   };

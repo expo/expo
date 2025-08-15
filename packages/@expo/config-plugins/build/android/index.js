@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.Locales = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.BuildProperties = exports.AllowBackup = void 0;
+exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.PredictiveBackGesture = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.Locales = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.CodeMod = exports.BuildProperties = exports.AllowBackup = void 0;
 function AllowBackup() {
   const data = _interopRequireWildcard(require("./AllowBackup"));
   AllowBackup = function () {
@@ -186,6 +186,19 @@ Object.defineProperty(exports, "Permissions", {
     return Permissions();
   }
 });
+function PredictiveBackGesture() {
+  const data = _interopRequireWildcard(require("./PredictiveBackGesture"));
+  PredictiveBackGesture = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "PredictiveBackGesture", {
+  enumerable: true,
+  get: function () {
+    return PredictiveBackGesture();
+  }
+});
 function PrimaryColor() {
   const data = _interopRequireWildcard(require("./PrimaryColor"));
   PrimaryColor = function () {
@@ -314,6 +327,19 @@ Object.defineProperty(exports, "WindowSoftInputMode", {
   enumerable: true,
   get: function () {
     return WindowSoftInputMode();
+  }
+});
+function CodeMod() {
+  const data = _interopRequireWildcard(require("./codeMod"));
+  CodeMod = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "CodeMod", {
+  enumerable: true,
+  get: function () {
+    return CodeMod();
   }
 });
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }

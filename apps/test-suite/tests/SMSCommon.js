@@ -1,4 +1,4 @@
-import * as FS from 'expo-file-system';
+import * as FS from 'expo-file-system/legacy';
 import * as SMS from 'expo-sms';
 
 async function assertExists(testFile, expectedToExist, expect) {

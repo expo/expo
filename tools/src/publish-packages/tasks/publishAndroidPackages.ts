@@ -7,12 +7,12 @@ import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { ExpoModuleConfig, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
-import type { CommandOptions, Parcel } from '../types';
+import type { CommandOptions, Parcel, TaskArgs } from '../types';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
 const EXCLUDE = ['expo-module-template-local', 'expo-module-template'];
 
-export const publishAndroidArtifacts = new Task(
+export const publishAndroidArtifacts = new Task<TaskArgs>(
   {
     name: 'publishAndroidArtifacts',
     dependsOn: [updateAndroidProjects],

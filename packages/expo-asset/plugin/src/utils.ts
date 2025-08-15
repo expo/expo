@@ -1,4 +1,4 @@
-import { addWarningForPlatform } from '@expo/config-plugins/build/utils/warnings.js';
+import { WarningAggregator } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -34,7 +34,7 @@ export function validateAssets(assets: string[], platform: 'android' | 'ios') {
     const isFont = FONT_TYPES.includes(ext);
 
     if (!isNameValid) {
-      addWarningForPlatform(
+      WarningAggregator.addWarningForPlatform(
         platform,
         'expo-asset',
         `\`${name}\` is not a supported asset name - file-based resource names must contain only lowercase a-z, 0-9, or underscore`
@@ -43,12 +43,16 @@ export function validateAssets(assets: string[], platform: 'android' | 'ios') {
     }
 
     if (!accepted) {
-      addWarningForPlatform(platform, 'expo-asset', `\`${ext}\` is not a supported asset type`);
+      WarningAggregator.addWarningForPlatform(
+        platform,
+        'expo-asset',
+        `\`${ext}\` is not a supported asset type`
+      );
       return;
     }
 
     if (isFont) {
-      addWarningForPlatform(
+      WarningAggregator.addWarningForPlatform(
         platform,
         'expo-asset',
         `Fonts are not supported with the \`expo-asset\` plugin. Use \`expo-font\` instead. Ignoring ${asset}`

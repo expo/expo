@@ -7,12 +7,16 @@ on:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
       - packages/expo-updates/cli/**
   pull_request:
-    branches: [main]
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
       - packages/expo-updates/cli/**
   schedule:
     - cron: '0 18 * * SUN' # 18:00 UTC every Sunday
+
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
 
 jobs:
   cli:

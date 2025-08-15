@@ -10,15 +10,21 @@ on:
       - packages/expo-asset/**
       - packages/expo-constants/**
       - packages/expo-crypto/**
+      - packages/expo-eas-client/**
       - packages/expo-file-system/**
       - packages/expo-font/**
       - packages/expo-keep-awake/**
       - packages/expo-linking/**
       - packages/expo-local-authentication/**
+      - packages/expo-manifests/**
       - packages/expo-mesh-gradient/**
       - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
       - packages/expo-sqlite/**
+      - packages/expo-structured-headers/**
+      - packages/expo-updates/**
+      - packages/expo-updates-interface/**
+      - packages/expo-web-browser/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

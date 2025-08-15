@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
+import { addTemplateTarball } from './addTemplateTarball';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
@@ -18,6 +19,7 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
+import { updateProjectTemplates } from './updateProjectTemplates';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 import Git from '../../Git';
 import logger from '../../Logger';
@@ -44,12 +46,17 @@ const cleanWorkingTree = new Task<TaskArgs>(
           ref: 'HEAD',
           paths: ['packages/**/expo-module.config.json'],
         });
-
         // Remove local repositories.
         await Git.cleanAsync({
           recursive: true,
           force: true,
           paths: ['packages/**/local-maven-repo/**'],
+        });
+        // Remove tarballs.
+        await Git.cleanAsync({
+          recursive: false,
+          force: true,
+          paths: ['packages/**/*.tgz', 'templates/**/*.tgz'],
         });
       },
       'Cleaned up the working tree'
@@ -71,11 +78,13 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       selectPackagesToPublish,
       updatePackageVersions,
       updateBundledNativeModulesFile,
+      updateProjectTemplates,
       updateModuleTemplate,
       updateWorkspaceProjects,
       updateAndroidProjects,
       publishAndroidArtifacts,
       updateIosProjects,
+      addTemplateTarball,
       cutOffChangelogs,
       commitStagedChanges,
       pushCommittedChanges,
@@ -87,9 +96,9 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
     ],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
-    const count = parcels.length;
+    const packagesCount = parcels.length;
     logger.success(
-      `\n✅ Successfully published ${cyan.bold(count + '')} package${count > 1 ? 's' : ''}.\n`
+      `\n✅ Successfully published ${cyan.bold(packagesCount)} package${packagesCount > 1 ? 's' : ''}.\n`
     );
 
     if (options.tag !== 'latest') {

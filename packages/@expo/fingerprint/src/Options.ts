@@ -54,6 +54,11 @@ export const DEFAULT_IGNORE_PATHS = [
 
   // Ignore nested node_modules
   '**/node_modules/**/node_modules/**',
+
+  // Ignore node binaries that might be platform dependent
+  '**/node_modules/**/*.node',
+  '**/node_modules/@img/sharp-*/**/*',
+  '**/node_modules/sharp/{build,vendor}/**/*',
 ];
 
 export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;

@@ -8,6 +8,7 @@ export interface NativeRequestInit {
     credentials?: RequestCredentials;
     headers?: NativeHeadersType;
     method?: string;
+    redirect?: RequestRedirect;
 }
 export type NativeResponseEvents = {
     didReceiveResponseData(data: Uint8Array): void;
@@ -22,7 +23,7 @@ export declare class NativeResponse extends SharedObject<NativeResponseEvents> {
     readonly statusText: string;
     readonly url: string;
     readonly redirected: boolean;
-    startStreaming(): Promise<Uint8Array | null>;
+    startStreaming(): Promise<Uint8Array<ArrayBuffer> | null>;
     cancelStreaming(reason: string): void;
     arrayBuffer(): Promise<ArrayBuffer>;
     text(): Promise<string>;

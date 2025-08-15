@@ -189,3 +189,42 @@ describe('base url relative links', () => {
     expect(node.getAttribute('href')).toBe('https://www.example.com/foo');
   });
 });
+
+describe('Link with preview', () => {
+  it('renders a Link with preview as normal link', () => {
+    const { getByTestId } = render(
+      <Link href="/foo" testID="link">
+        <Link.Trigger>
+          <Text>Foo</Text>
+        </Link.Trigger>
+        <Link.Preview />
+        <Link.Menu>
+          <Link.MenuAction title="Bar" onPress={() => {}}>
+            Bar
+          </Link.MenuAction>
+        </Link.Menu>
+      </Link>
+    );
+
+    expect(getByTestId('link')).toMatchSnapshot();
+  });
+  it('correctly renders link with Preview and asChild', () => {
+    const { getByTestId } = render(
+      <View testID="link-wrapper">
+        <Link href="/foo" asChild>
+          <Link.Trigger>
+            <Text testID="inner-text">Foo</Text>
+          </Link.Trigger>
+          <Link.Preview />
+          <Link.Menu>
+            <Link.MenuAction title="Bar" onPress={() => {}}>
+              Bar
+            </Link.MenuAction>
+          </Link.Menu>
+        </Link>
+      </View>
+    );
+    const linkWrapper = getByTestId('link-wrapper');
+    expect(linkWrapper).toMatchSnapshot();
+  });
+});

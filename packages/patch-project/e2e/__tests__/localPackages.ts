@@ -18,3 +18,11 @@ export async function packBareTemplateTarballAsync(outputRoot: string): Promise<
   const outputJson = JSON.parse(stdout);
   return path.join(outputRoot, outputJson[0].filename);
 }
+
+export async function packBlankTemplateTarballAsync(outputRoot: string): Promise<string> {
+  const { stdout } = await spawnAsync('npm', ['pack', '--json', '--pack-destination', outputRoot], {
+    cwd: path.join(EXPO_DIR, 'templates', 'expo-template-blank'),
+  });
+  const outputJson = JSON.parse(stdout);
+  return path.join(outputRoot, outputJson[0].filename);
+}

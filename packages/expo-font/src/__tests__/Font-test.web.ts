@@ -4,13 +4,9 @@ import ExpoFontLoader from '../ExpoFontLoader';
 import * as Font from '../index';
 
 jest.mock('../ExpoFontLoader.web', () => {
-  const mod = jest.requireActual('../ExpoFontLoader.web');
+  const mod = jest.requireActual('../../mocks/ExpoFontLoader');
   return {
-    ...mod.default,
-    loadAsync: jest.fn(mod.loadAsync),
-    unloadAllAsync: jest.fn(mod.unloadAllAsync),
-    isLoaded: jest.fn(mod.isLoaded),
-    unloadAsync: jest.fn(mod.unloadAsync),
+    ...mod,
   };
 });
 
@@ -19,12 +15,12 @@ afterEach(async () => {
   jest.resetModules();
   await Font.unloadAllAsync();
 });
+const name = 'foo bar';
 
 if (typeof window === 'undefined') {
   it(`noop`, async () => {});
 } else {
   it(`works without map`, async () => {
-    const name = 'foobar';
     const resource = { uri: 'font.ttf' };
 
     expect(Font.isLoaded(name)).toBe(false);
@@ -47,8 +43,6 @@ if (typeof window === 'undefined') {
   });
 
   it(`rejects unloading fonts if the font hasn't finished loading yet.`, async () => {
-    const name = 'foobar';
-
     // Load font in sync
     const loadPromise = Font.loadAsync(name, { uri: 'foo.ttf' });
     // Check to ensure it's loading
@@ -63,7 +57,6 @@ if (typeof window === 'undefined') {
   });
 
   it(`parses map`, async () => {
-    const name = 'foobar';
     const resource = { uri: 'font.ttf' };
 
     const map = {
@@ -82,7 +75,6 @@ if (typeof window === 'undefined') {
   });
 
   it(`parses asset`, async () => {
-    const name = 'foobar';
     const resource = { localUri: 'font.ttf', uri: 'font.ttf', downloadAsync() {}, name: 'font' };
 
     await Font.loadAsync(name, resource);
@@ -95,8 +87,6 @@ if (typeof window === 'undefined') {
   });
 
   it(`passes display to native method`, async () => {
-    const name = 'foobar';
-
     await Font.loadAsync(name, { uri: 'foobar.ttf', display: Font.FontDisplay.OPTIONAL });
 
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);

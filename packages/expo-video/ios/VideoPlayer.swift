@@ -52,7 +52,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
 
-      ref.seek(to: timeToSeek)
+      ref.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
     }
   }
 
@@ -415,6 +415,14 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {
     currentVideoTrack = newVideoTrack
+  }
+
+  func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool) {
+    let payload = IsExternalPlaybackActiveEventPayload(
+      isExternalPlaybackActive: newIsExternalPlaybackActive,
+      oldIsExternalPlaybackActive: oldIsExternalPlaybackActive
+    )
+    safeEmit(event: "isExternalPlaybackActiveChange", payload: payload)
   }
 
   func safeEmit(event: String, payload: Record? = nil) {

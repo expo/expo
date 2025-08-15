@@ -75,8 +75,6 @@ extension UIImage {
     guard let resultCgImage = ctx.makeImage() else {
       return nil
     }
-    let result = UIImage(cgImage: resultCgImage)
-
-    return result
+    return UIImage(cgImage: resultCgImage)
   }
 }

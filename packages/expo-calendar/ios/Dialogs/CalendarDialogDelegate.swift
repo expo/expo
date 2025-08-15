@@ -17,7 +17,7 @@ class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDele
     case .saved:
       let evt = controller.event
       let id = evt?.calendarItemIdentifier
-      promise.resolve(DialogEditResponse(action: .saved, id: id))
+      promise.resolve(DialogEditResponse(action: .saved, id: id?.isEmpty == false ? id : nil))
     default: promise.resolve(DialogEditResponse())
     }
     controller.dismiss(animated: true, completion: onComplete)

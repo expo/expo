@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Modal 1`] = `
+"1:I["src/modal/Modal.tsx",[],"Modal",1]
+2:I["../../node_modules/react-native/index.js",[],"Text",1]
+0:["$","$L1",null,{"visible":true,"children":["$","$L2",null,{"children":"Hello World"},null]},null]"
+`;

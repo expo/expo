@@ -36,14 +36,14 @@ describe(resolvePostcssConfig, () => {
       {
         'postcss.config.json': JSON.stringify({
           plugins: {
-            autoprefixer: {},
+            tailwindcss: {},
           },
         }),
       },
       '/'
     );
 
-    expect(await resolvePostcssConfig('/')).toEqual({ plugins: { autoprefixer: {} } });
+    expect(await resolvePostcssConfig('/')).toEqual({ plugins: { tailwindcss: {} } });
   });
 
   it('resolves no config', async () => {

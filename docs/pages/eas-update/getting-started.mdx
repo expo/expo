@@ -53,7 +53,7 @@ If the command fails, refer to the [Installing Expo modules](/bare/installing-ex
 
 If you created your project with `npx create-expo-app`, or you don't call `registerRootComponent` in your app at all (for example, it's handled by Expo Router), then you are all set. The following applies to projects created with other tools, such as React Native Community CLI.
 
-We recommend that apps using EAS Update use Expo's [`registerRootComponent`](/versions/latest/sdk/register-root-component.mdx) instead of React Native's `registerApplication`. This will ensure that Expo is able to configure React Native to load assets, such as images, that are included in updates. If you do not use `registerRootComponent`, you may find that your assets will not be available in release builds.
+We recommend that apps using EAS Update use Expo's [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of React Native's `registerApplication`. This will ensure that Expo is able to configure React Native to load assets, such as images, that are included in updates. If you do not use `registerRootComponent`, you may find that your assets will not be available in release builds.
 
 In a simple app created with React Native Community CLI, the diff would look like this:
 

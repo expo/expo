@@ -43,9 +43,9 @@ class NoDatabaseLauncher @JvmOverloads constructor(
 
     private const val ERROR_LOG_FILENAME = "expo-error.log"
 
-    fun consumeErrorLog(context: Context, logger: UpdatesLogger): String? {
+    fun consumeErrorLog(filesDir: File, logger: UpdatesLogger): String? {
       return try {
-        val errorLogFile = File(context.filesDir, ERROR_LOG_FILENAME)
+        val errorLogFile = File(filesDir, ERROR_LOG_FILENAME)
         if (!errorLogFile.exists()) {
           return null
         }

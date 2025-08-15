@@ -16,7 +16,9 @@ function Rectangle(props) {
     return <ShapeNativeView {...props} style={props.style} type="rectangle"/>;
 }
 function Polygon(props) {
-    return <ShapeNativeView {...props} style={props.style} type="polygon"/>;
+    return (<ShapeNativeView {...props} 
+    // @ts-expect-error
+    modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)} style={props.style} type="polygon"/>);
 }
 export const Shape = {
     Star,

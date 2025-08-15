@@ -10,56 +10,11 @@ public func Constructor<R>(
 }
 
 /**
- Class constructor with one argument.
+ Class constructor with one or more arguments.
  */
-public func Constructor<R, A0: AnyArgument>(
-  @_implicitSelfCapture _ body: @escaping (A0) throws -> R
-) -> SyncFunctionDefinition<(A0), A0, R> {
-  return Function("constructor", body)
-}
-
-/**
- Class constructor with two arguments.
- */
-public func Constructor<R, A0: AnyArgument, A1: AnyArgument>(
-  @_implicitSelfCapture _ body: @escaping (A0, A1) throws -> R
-) -> SyncFunctionDefinition<(A0, A1), A0, R> {
-  return Function("constructor", body)
-}
-
-/**
- Class constructor with three arguments.
- */
-public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
-  @_implicitSelfCapture _ body: @escaping (A0, A1, A2) throws -> R
-) -> SyncFunctionDefinition<(A0, A1, A2), A0, R> {
-  return Function("constructor", body)
-}
-
-/**
- Class constructor with four arguments.
- */
-public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
-  @_implicitSelfCapture _ body: @escaping (A0, A1, A2, A3) throws -> R
-) -> SyncFunctionDefinition<(A0, A1, A2, A3), A0, R> {
-  return Function("constructor", body)
-}
-
-/**
- Class constructor with five arguments.
- */
-public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
-  @_implicitSelfCapture _ body: @escaping (A0, A1, A2, A3, A4) throws -> R
-) -> SyncFunctionDefinition<(A0, A1, A2, A3, A4), A0, R> {
-  return Function("constructor", body)
-}
-
-/**
- Class constructor with six arguments.
- */
-public func Constructor<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
-  @_implicitSelfCapture _ body: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
-) -> SyncFunctionDefinition<(A0, A1, A2, A3, A4, A5), A0, R> {
+public func Constructor<R, A0: AnyArgument, each A: AnyArgument>(
+  @_implicitSelfCapture _ body: @escaping (A0, repeat each A) throws -> R
+) -> SyncFunctionDefinition<(A0, repeat each A), A0, R> {
   return Function("constructor", body)
 }
 

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { Resolution, ResolutionContext } from '@expo/metro/metro-resolver';
 import fs from 'fs';
-import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
 import jestResolver from './createJResolver';
@@ -146,9 +146,7 @@ export function createFastResolver({
         blockList,
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        moduleDirectory: context.nodeModulesPaths.length
-          ? (context.nodeModulesPaths as string[])
-          : undefined,
+        paths: context.nodeModulesPaths.length ? (context.nodeModulesPaths as string[]) : undefined,
         extensions,
         conditions,
         realpathSync(file: string): string {

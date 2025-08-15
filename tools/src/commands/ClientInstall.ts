@@ -1,52 +1,72 @@
 import { Command } from '@expo/commander';
-import spawnAsync from '@expo/spawn-async';
-import { Android, Config, Simulator, Versions } from '@expo/xdl';
 import chalk from 'chalk';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { Writable } from 'node:stream';
+import { extract as tarExtract } from 'tar';
 
-import { STAGING_API_HOST } from '../Constants';
+import * as AndroidDevice from '../AndroidDevice';
+import * as Simulator from '../IOSSimulator';
 import { Platform, getNewestSDKVersionAsync } from '../ProjectVersions';
+import * as Versions from '../Versions';
 import askForPlatformAsync from '../utils/askForPlatformAsync';
 import askForSDKVersionAsync from '../utils/askForSDKVersionAsync';
 
 type ActionOptions = {
   platform?: Platform;
   sdkVersion?: string;
+  production?: boolean;
 };
 
-async function downloadAndInstallOnIOSAsync(clientUrl: string): Promise<void> {
+const EXPO_GO_APP_ID_IOS = 'host.exp.Exponent';
+const EXPO_GO_APP_ID_ANDROID = 'host.exp.exponent';
+
+async function downloadAndInstallOnIOSAsync(downloadUrl: string): Promise<void> {
   if (!(await Simulator.isSimulatorInstalledAsync())) {
-    console.error(chalk.red('iOS simulator is not installed!'));
-    return;
+    throw new Error('iOS simulator is not installed.');
   }
 
-  console.log('Booting up iOS simulator...');
-
-  const simulator = await Simulator.ensureSimulatorOpenAsync();
-
-  console.log('Uninstalling previously installed Expo client...');
-
-  await Simulator.uninstallExpoAppFromSimulatorAsync(simulator);
-
-  console.log(`Installing Expo client from ${chalk.blue(clientUrl)} on iOS simulator...`);
-
-  const installResult = await Simulator.installExpoOnSimulatorAsync({ url: clientUrl, simulator });
-
-  if (installResult.status !== 0) {
-    throw new Error('Installing Expo client simulator failed!');
+  const simulator = await Simulator.queryFirstBootedSimulatorAsync();
+  if (!simulator) {
+    throw new Error('No booted iOS simulator found.');
   }
 
-  const appIdentifier = 'host.exp.Exponent';
+  console.log('Uninstalling previously installed Expo Go...');
 
-  console.log(`Launching Expo client with identifier ${chalk.blue(appIdentifier)}...`);
+  await Simulator.uninstallAppFromSimulatorAsync(simulator, EXPO_GO_APP_ID_IOS);
 
-  await spawnAsync('xcrun', ['simctl', 'launch', 'booted', appIdentifier]);
+  console.log(`Downloading Expo Go from ${chalk.blue(downloadUrl)}`);
+  const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'expotools-client-install-'));
+  try {
+    const downloadFilePath = await downloadExpoGoAsync({ downloadUrl, targetDir: tmpDir });
+    const appPath = path.join(tmpDir, 'Expo Go.app');
+    await fs.promises.mkdir(appPath, { recursive: true });
+    await tarExtract({
+      file: downloadFilePath,
+      cwd: appPath,
+      strip: 1,
+    });
+    console.log(`Extracted to ${chalk.blue(tmpDir)}`);
+    console.log(`Installing Expo Go from ${chalk.blue(appPath)} on iOS simulator...`);
+    await Simulator.installSimulatorAppAsync(simulator, appPath);
+    console.log(`Launching Expo Go with identifier ${chalk.blue(EXPO_GO_APP_ID_IOS)}...`);
+    await Simulator.launchSimulatorAppAsync(simulator, EXPO_GO_APP_ID_IOS);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
+    }
+  } finally {
+    await fs.promises.rm(tmpDir, { recursive: true, force: true });
+  }
 }
 
-async function downloadAndInstallOnAndroidAsync(clientUrl: string): Promise<void> {
+async function downloadAndInstallOnAndroidAsync(downloadUrl: string): Promise<void> {
+  const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'expotools-client-install-'));
   try {
     console.log('Checking if the are any Android devices or emulators connected...');
 
-    const devices = await Android.getAttachedDevicesAsync();
+    const devices = await AndroidDevice.getAttachedDevicesAsync();
     if (devices.length === 0) {
       throw new Error('No connected devices or emulators found.');
     }
@@ -54,38 +74,56 @@ async function downloadAndInstallOnAndroidAsync(clientUrl: string): Promise<void
     const device = devices[0];
     if (devices.length > 1) {
       console.log(
-        `More than one Android device found. Installing on the first one found, ${device.name}.`
+        `More than one Android device found. Installing on the first one found, ${device}.`
       );
     }
 
-    if (!device.isAuthorized) {
-      throw new Error(
-        `This computer is not authorized for developing on ${device.name}. See https://expo.fyi/authorize-android-device.`
-      );
-    }
+    console.log('Uninstalling previously installed Expo Go...');
 
-    console.log('Uninstalling previously installed Expo client...');
+    try {
+      await AndroidDevice.uninstallAppAsync({ device, appId: EXPO_GO_APP_ID_ANDROID });
+    } catch {}
 
-    await Android.uninstallExpoAsync(device);
-
+    console.log(`Downloading Expo Go from ${chalk.blue(downloadUrl)}`);
+    const downloadFilePath = await downloadExpoGoAsync({ downloadUrl, targetDir: tmpDir });
     console.log(
-      `Installing Expo client from ${chalk.blue(clientUrl)} on Android ${device.type}...`
+      `Installing Expo Go from ${chalk.blue(downloadFilePath)} on Android device ${chalk.blue(device)}...`
     );
 
-    await Android.installExpoAsync({ url: clientUrl, device });
+    await AndroidDevice.installAppAsync({ device, appPath: downloadFilePath });
 
-    console.log('Launching application...');
+    const activity = `${EXPO_GO_APP_ID_ANDROID}/.LauncherActivity`;
+    console.log(`Launching Expo Go activity ${chalk.blue(activity)}...`);
 
-    await Android.getAdbOutputAsync([
-      'shell',
-      'am',
-      'start',
-      '-n',
-      `host.exp.exponent/.LauncherActivity`,
-    ]);
-  } catch (error) {
-    console.error(chalk.red(`Unable to install Expo client: ${error.message}`));
+    await AndroidDevice.startActivityAsync({
+      device,
+      activity,
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
+    }
+  } finally {
+    await fs.promises.rm(tmpDir, { recursive: true, force: true });
   }
+}
+
+async function downloadExpoGoAsync({
+  downloadUrl,
+  targetDir,
+}: {
+  downloadUrl: string;
+  targetDir: string;
+}): Promise<string> {
+  const downloadFilePath = path.join(targetDir, path.basename(downloadUrl));
+  await fs.promises.rm(downloadFilePath, { force: true });
+  const stream = fs.createWriteStream(downloadFilePath);
+  const resp = await fetch(downloadUrl);
+  if (!resp.ok || !resp.body) {
+    throw new Error(`Failed to download Expo Go from ${downloadUrl}`);
+  }
+  await resp.body.pipeTo(Writable.toWeb(stream));
+  return downloadFilePath;
 }
 
 async function action(options: ActionOptions) {
@@ -97,11 +135,11 @@ async function action(options: ActionOptions) {
   if (!sdkVersion) {
     throw new Error(`Unable to find SDK version. Try to use ${chalk.yellow('--sdkVersion')} flag.`);
   }
+  const versionsApiHost = options.production
+    ? Versions.VersionsApiHost.PRODUCTION
+    : Versions.VersionsApiHost.STAGING;
 
-  // Set XDL config to use staging
-  Config.api.host = STAGING_API_HOST;
-
-  const versions = await Versions.versionsAsync();
+  const versions = await Versions.getVersionsAsync(versionsApiHost);
   const sdkConfiguration = versions?.sdkVersions?.[sdkVersion];
 
   if (!sdkConfiguration) {
@@ -109,26 +147,29 @@ async function action(options: ActionOptions) {
   }
 
   const tarballKey = `${platform}ClientUrl`;
-  const clientUrl = sdkConfiguration[tarballKey];
+  const downloadUrl = sdkConfiguration[tarballKey];
 
-  if (!clientUrl) {
-    throw new Error(`Client url not found at ${chalk.yellow(tarballKey)} key of versions config!`);
+  if (!downloadUrl) {
+    throw new Error(
+      `Expo Go download url not found at ${chalk.yellow(tarballKey)} key of versions config!`
+    );
   }
 
   switch (platform) {
     case 'ios': {
-      await downloadAndInstallOnIOSAsync(clientUrl);
+      await downloadAndInstallOnIOSAsync(downloadUrl);
       break;
     }
     case 'android': {
-      await downloadAndInstallOnAndroidAsync(clientUrl);
+      await downloadAndInstallOnAndroidAsync(downloadUrl);
       break;
     }
     default: {
       throw new Error(`Platform "${platform}" not implemented!`);
     }
   }
-  console.log(chalk.green('Successfully installed and launched staging version of the client 🎉'));
+
+  console.log(chalk.green(`Successfully installed and launched Expo Go 🎉`));
 }
 
 export default (program: Command) => {
@@ -136,9 +177,10 @@ export default (program: Command) => {
     .command('client-install')
     .alias('ci')
     .description(
-      'Installs staging version of the client on iOS simulator, Android emulator or connected Android device.'
+      'Installs specific SDK version of the Expo Go on iOS simulator, Android emulator or connected Android device.'
     )
-    .option('-p, --platform [string]', 'Platform for which the client will be installed.')
-    .option('-s, --sdkVersion [string]', 'SDK version of the client to install.')
+    .option('-p, --platform [string]', 'Platform for which the Expo Go will be installed.')
+    .option('-s, --sdkVersion [string]', 'SDK version of the Expo Go to install.')
+    .option('--production', 'Install Expo Go from production endpoint.')
     .asyncAction(action);
 };

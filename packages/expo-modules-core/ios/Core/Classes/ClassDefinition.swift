@@ -45,17 +45,40 @@ public final class ClassDefinition: ObjectDefinition {
 
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     let constructorBlock: ClassConstructorBlock = { [weak self, weak appContext] this, arguments in
-      guard let self = self, let appContext else {
-        // TODO: Throw an exception? (@tsapeta)
+      guard let self, let appContext else {
+        let exception = NSException(
+          name: NSExceptionName("ExpoClassConstructorException"),
+          reason: "Call to function '\(String(describing: self?.name)).constructor' has been rejected.\n→ Caused by: App context was lost",
+          userInfo: nil
+        )
+        exception.raise()
         return
       }
 
       // Call the native constructor when defined.
-      let result = try? self.constructor?.call(by: this, withArguments: arguments, appContext: appContext)
+      do {
+        if let constructor {
+          let result = try constructor.call(by: this, withArguments: arguments, appContext: appContext)
 
-      // Register the shared object if returned by the constructor.
-      if let result = result as? SharedObject {
-        appContext.sharedObjectRegistry.add(native: result, javaScript: this)
+          // Register the shared object if returned by the constructor.
+          if let result = result as? SharedObject {
+            appContext.sharedObjectRegistry.add(native: result, javaScript: this)
+          }
+        }
+      } catch let error as Exception {
+        let exception = NSException(
+          name: NSExceptionName("ExpoClassConstructorException"),
+          reason: error.description,
+          userInfo: ["code": error.code]
+        )
+        exception.raise()
+      } catch {
+        let exception = NSException(
+          name: NSExceptionName("ExpoClassConstructorException"),
+          reason: error.localizedDescription,
+          userInfo: nil
+        )
+        exception.raise()
       }
     }
 
@@ -81,12 +104,12 @@ public final class ClassDefinition: ObjectDefinition {
     try decorateWithClasses(object: prototype, appContext: appContext)
     try decorateWithProperties(object: prototype, appContext: appContext)
   }
-  
+
   private func createClass(appContext: AppContext, name: String, consturctor: @escaping ClassConstructorBlock) throws -> JavaScriptObject {
     if isSharedRef {
       return try appContext.runtime.createSharedRefClass(name, constructor: consturctor)
     }
-    
+
     return try appContext.runtime.createSharedObjectClass(name, constructor: consturctor)
   }
 }
@@ -100,7 +123,7 @@ internal protocol ClassAssociatedObject {}
 
 // Basically we only need these two
 extension JavaScriptObject: ClassAssociatedObject, AnyArgument, AnyJavaScriptValue {
-  internal static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
+  public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
     guard value.kind == .object else {
       throw Conversions.ConvertingException<JavaScriptObject>(value)
     }

@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 15.0.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
+- [ios] Prevent duplicate values in LSApplicationQueriesSchemes ([#37697](https://github.com/expo/expo/pull/37697) by [@huextrat](https://github.com/huextrat))
+
+## 14.1.5 - 2025-06-27
+
+### 🐛 Bug fixes
+
+- [android] Replace LabeledIntent with Intent in composeAsync ([#37624](https://github.com/expo/expo/pull/37624) by [@Ubax](https://github.com/Ubax))
+
 ## 14.1.4 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

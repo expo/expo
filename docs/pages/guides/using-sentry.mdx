@@ -18,17 +18,18 @@ It notifies you of exceptions or errors that your users run into while using you
 
 This guide covers three main aspects of integrating Sentry with your Expo projects:
 
-1. [Install and configure Sentry](#install-and-configure-sentry) in your React Native app
-2. Using Sentry with EAS:
-   - [EAS Build](#usage-with-eas-build) for building your app
-   - [EAS Update](#usage-with-eas-update) for over-the-air updates
-3. [Setting up the Sentry-Expo integration](#sentry-integration-with-eas) to view crash reports and session replays directly in your Expo dashboard
+- [Install and configure Sentry](#install-and-configure-sentry) in your React Native app
+
+- Using Sentry with EAS:
+
+  - [EAS Build](#usage-with-eas-build) for building your app
+  - [EAS Update](#usage-with-eas-update) for over-the-air updates
+
+- [Setting up the Sentry-Expo integration](#sentry-integration-with-eas-dashboard) to view crash reports and session replays directly in your EAS dashboard
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
 ## Install and configure Sentry
-
-> `sentry-expo` has been merged into `@sentry/react-native` and is now deprecated. We recommend upgrading to SDK 50 to use `@sentry/react-native` for the best experience. If you're already using `sentry-expo`, [learn how to migrate](https://expo.fyi/sentry-expo-migration).
 
 <Step label="1">
 
@@ -79,7 +80,7 @@ Follow the prompts in the wizard to complete the setup process. The wizard will 
 
 </Step>
 
-<Step label="6">
+<Step label="3">
 
 ### Verify the configuration
 
@@ -167,13 +168,13 @@ Once configured, information about the associated update will show up in an erro
 
 </Collapsible>
 
-## Sentry integration with Expo dashboard
+## Sentry integration with EAS dashboard
 
-The Sentry integration with Expo allows you to view crash reports and Session Replays for your Expo app deployments directly within your Expo dashboard. This integration provides a direct link to Sentry stack traces with full context, session replays, and debugging capabilities.
+The Sentry integration with Expo allows you to view crash reports and Session Replays for your Expo app deployments directly within your EAS dashboard. This integration provides a direct link to Sentry stack traces with full context, session replays, and debugging capabilities.
 
 ### Install
 
-> Sentry owner, manager, or admin permissions are required to install this integration.
+> **info** Sentry owner, manager, or admin permissions are required to install this integration.
 
 1. Log in to you Expo account and open [**Account settings > Overview**](https://expo.dev/accounts/[your-account]/settings).
 2. Under **Connections** and click **Connect** next to Sentry.
@@ -188,13 +189,11 @@ After connecting your accounts, you need to link your EAS Project to your Sentry
 
 ### Usage
 
-To see your Sentry data in Expo dashboard:
-
-1. Open **Projects > [Your Project] > Updates > Deployments > [Deployment]** to view Sentry data from a Release.
+To see your Sentry data in EAS dashboard, open **Projects > [Your Project] > Updates > Deployments > [Deployment]** to view Sentry data from a Release.
 
 With this integration, you can:
 
-- View crash reports directly in your Expo dashboard
+- View crash reports directly in your EAS dashboard
 - Access Session Replays to see exactly what happened before an error occurred
 - Get detailed stack traces with full context
 - Navigate seamlessly between EAS and Sentry for debugging

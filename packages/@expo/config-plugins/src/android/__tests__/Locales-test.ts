@@ -1,10 +1,7 @@
-import { XML } from 'expo/config-plugins';
-import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as nodePath from 'path';
 
 import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
-import { writeXMLAsync } from '../../utils/XML';
 import * as WarningAggregator from '../../utils/warnings';
 import { getLocales, setLocalesAsync } from '../Locales';
 jest.mock('fs');
@@ -90,21 +87,21 @@ describe('e2e: Android locales', () => {
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+es/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">spanish-name</string>
+        <string name="CFBundleDisplayName">"spanish-name"</string>
       </resources>"
     `);
     // backwards compatibility
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">us-name</string>
-        <string name="app_name">us-name</string>
+        <string name="CFBundleDisplayName">"us-name"</string>
+        <string name="app_name">"us-name"</string>
       </resources>"
     `);
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en+US/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">us-name</string>
+        <string name="app_name">"us-name"</string>
       </resources>"
     `);
 

@@ -16,9 +16,10 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.Direction
 import java.util.EnumSet
@@ -29,10 +30,12 @@ data class TextInputProps(
   val multiline: MutableState<Boolean> = mutableStateOf(false),
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
-  val autocorrection: MutableState<Boolean> = mutableStateOf(true)
+  val autocorrection: MutableState<Boolean> = mutableStateOf(true),
+  val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
-fun String.keyboardType(): KeyboardType {
+private fun String.keyboardType(): KeyboardType {
   return when (this) {
     "default" -> KeyboardType.Text
     "numeric" -> KeyboardType.Number
@@ -47,19 +50,38 @@ fun String.keyboardType(): KeyboardType {
   }
 }
 
+private fun String.autoCapitalize(): KeyboardCapitalization {
+  return when (this) {
+    "characters" -> KeyboardCapitalization.Characters
+    "none" -> KeyboardCapitalization.None
+    "sentences" -> KeyboardCapitalization.Sentences
+    "unspecified" -> KeyboardCapitalization.Unspecified
+    "words" -> KeyboardCapitalization.Words
+    else -> KeyboardCapitalization.None
+  }
+}
+
 class TextInputView(context: Context, appContext: AppContext) :
   ExpoComposeView<TextInputProps>(context, appContext, withHostingView = true) {
   override val props = TextInputProps()
   private val onValueChanged by EventDispatcher()
 
+  private val textState = mutableStateOf<String?>(null)
+
+  var text: String?
+    get() = textState.value
+    set(value) {
+      textState.value = value
+      onValueChanged(mapOf("value" to (value ?: "")))
+    }
+
   @Composable
-  override fun Content() {
-    var value by remember { props.defaultValue }
+  override fun Content(modifier: Modifier) {
     AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
       TextField(
-        value = value,
+        value = requireNotNull(textState.value),
         onValueChange = {
-          value = it
+          textState.value = it
           onValueChanged(mapOf("value" to it))
         },
         placeholder = { Text(props.placeholder.value) },
@@ -67,8 +89,10 @@ class TextInputView(context: Context, appContext: AppContext) :
         singleLine = !props.multiline.value,
         keyboardOptions = KeyboardOptions.Default.copy(
           keyboardType = props.keyboardType.value.keyboardType(),
-          autoCorrectEnabled = props.autocorrection.value
-        )
+          autoCorrectEnabled = props.autocorrection.value,
+          capitalization = props.autoCapitalize.value.autoCapitalize()
+        ),
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
       )
     }
   }

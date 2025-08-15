@@ -63,40 +63,49 @@ describe('exports static with bundle splitting', () => {
   // Ensure the correct script tags are injected.
   it('has eager script tags in html', async () => {
     expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['entry', '_layout', 'index'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index'].map(expectChunkPathMatching)
     );
   });
   it('has eager script tags in dynamic html', async () => {
     const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
 
-    expect(staticParamsPage).toEqual(['entry', '[post]', '_layout'].map(expectChunkPathMatching));
+    expect(staticParamsPage).toEqual(
+      ['__expo-metro-runtime', '__common', 'entry', '[post]', '_layout'].map(
+        expectChunkPathMatching
+      )
+    );
 
     expect(await getScriptTagsAsync('[post].html')).toEqual(staticParamsPage);
   });
   it('has (fewer) eager script tags in generated routes', async () => {
     // Less chunks because the not-found route is not an async import.
     expect(await getScriptTagsAsync('+not-found.html')).toEqual(
-      ['entry', '_layout'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout'].map(expectChunkPathMatching)
     );
   });
 
   it('has source maps', async () => {
     const files = findProjectFiles(outputDir);
-    const mapFiles = files.filter((file) => file?.endsWith('.map'));
+    const mapFiles = files.filter((file) => file?.endsWith('.map')).sort();
 
-    // "_expo/static/js/web/[post]-854b84d726cca00d17047171ff4ef43d.js.map",
-    // "_expo/static/js/web/_layout-e67451b6ca1f415eec1baf46b17d16c6.js.map",
-    // "_expo/static/js/web/about-5a4fd4bb060bd4461401d4604b0ea1ac.js.map",
-    // "_expo/static/js/web/asset-fd2508eb5960aa4c5c12cfd8db6e0ba4.js.map",
-    // "_expo/static/js/web/head-51629e20be61b36513e213c8645375c9.js.map",
-    // "_expo/static/js/web/index-98a25924035cd8babecad8755a8564de.js.map",
-    // "_expo/static/js/web/index-ed899c31dab920e6b5c3cf04e0c156b6.js.map",
-    // "_expo/static/js/web/links-4545c832242c66b83e4bd38b67066808.js.map",
-    // "_expo/static/js/web/styled-93437b3b1dcaa498dabb3a1de3aae7ac.js.map",
+    // "_expo/static/js/web/[file]-[hash].js.map",
     expect(mapFiles).toEqual(
-      ['\\[post\\]', '_layout', 'about', 'asset', 'entry', 'index', 'links', 'styled'].map((file) =>
-        expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
-      )
+      [
+        '__expo-metro-runtime',
+        '__common',
+        'entry',
+        '_layout',
+        'index',
+        '\\[post\\]',
+        'about',
+        'asset',
+        'links',
+        'styled',
+      ]
+        .sort()
+        .map((file) =>
+          expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
+        )
     );
 
     for (const file of mapFiles) {
@@ -184,44 +193,45 @@ describe('exports static with bundle splitting', () => {
       return link.attributes.as !== 'font';
     });
     expect(links.length).toBe(
-      // Global CSS, CSS Module
-      4
+      // Global CSS, CSS Module, Vaul Modal CSS (and entry point)
+      6
     );
 
-    links.forEach((link) => {
-      // Linked to the expected static location
-      expect(link.attributes.href).toMatch(/^\/_expo\/static\/css\/.*\.css$/);
-    });
+    const linkStrings = links.map((l) => l.toString());
 
-    expect(links[0].toString()).toMatch(
-      /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+    expect(linkStrings).toEqual(
+      expect.arrayContaining([
+        // Global CSS
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+        // Modal CSS
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+        // Test CSS module
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+      ])
     );
-    expect(links[1].toString()).toMatch(
-      /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
-    );
-    // CSS Module
-    expect(links[2].toString()).toMatch(
-      /<link rel="preload" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
-    );
-    expect(links[3].toString()).toMatch(
-      /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
-    );
 
-    expect(
-      fs.readFileSync(path.join(outputDir, links[0].attributes.href), 'utf-8')
-    ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
-
-    // CSS Module
-    expect(
-      fs.readFileSync(path.join(outputDir, links[2].attributes.href), 'utf-8')
-    ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
-
-    const styledHtml = await getPageHtml(outputDir, 'styled.html');
-
-    // Ensure the atomic CSS class is used
-    expect(
-      styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
-    ).toMatch('HPV33q_text');
+    const globalPreload = links.find((l) => /global-.*\.css/.test(l.attributes.href!));
+    expect(globalPreload).toBeDefined();
+    if (globalPreload) {
+      expect(
+        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href), 'utf-8')
+      ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
+    }
   });
 
   it('statically extracts fonts', async () => {

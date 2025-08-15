@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 
 /**
  * Colors for slider's core elements.
@@ -53,6 +53,9 @@ export type SliderProps = {
    * Callback triggered on dragging along the slider.
    */
   onValueChange?: (value: number) => void;
+
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 type NativeSliderProps = Omit<SliderProps, 'onValueChange'> &
@@ -86,6 +89,8 @@ export function transformSliderProps(props: SliderProps): NativeSliderProps {
           }
         : undefined,
     color: props.color,
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

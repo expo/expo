@@ -1,0 +1,28 @@
+appId: dev.expo.updatese2e
+---
+- runFlow:
+    file: basic_startAndStop.yml
+- runFlow:
+    file: basic_checkRequestHeaders.yml
+- runFlow:
+    file: basic_reload.yml
+- runFlow:
+    file: basic_runUpdate.yml
+- runFlow:
+    file: basic_updateInvalidHash.yml
+- runFlow:
+    file: basic_updateInvalidAssetHash.yml
+- runFlow:
+    file: basic_updateMultipleAssets.yml
+- runFlow:
+    file: basic_updateOldCommitTime.yml
+- runFlow:
+    file: basic_rollback.yml
+- runFlow:
+    file: jsapi_runUpdate.yml
+- runFlow:
+    file: jsapi_stateMachine.yml
+- runFlow:
+    file: jsapi_setRequestHeadersOverride.yml
+- runFlow:
+    file: assetRecovery_restoreAssetFiles.yml

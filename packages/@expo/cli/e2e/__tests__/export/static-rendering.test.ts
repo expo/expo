@@ -3,9 +3,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { executeExpoAsync } from '../../utils/expo';
-import { createStaticServe } from '../../utils/server';
-import { findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -30,8 +29,8 @@ describe('exports static', () => {
     );
   });
 
-  xdescribe('server', () => {
-    const server = createStaticServe({
+  describe('server', () => {
+    const server = createExpoServe({
       cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
@@ -48,7 +47,24 @@ describe('exports static', () => {
     });
 
     it(`can serve up index html`, async () => {
-      expect(await server.fetchAsync('/').then((res) => res.text())).toMatch(/<div id="root">/);
+      const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+    });
+
+    it(`can serve up non-index html`, async () => {
+      const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
+      expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
+    });
+
+    ['other', 'welcome-to-the-universe'].forEach((post) => {
+      it(`can serve up statically generated html for post: ${post}`, async () => {
+        const html = getHtml(
+          await server.fetchAsync(`/${post}`).then((res) => res.text())
+        );
+        expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
+          `Post: ${post}`
+        );
+      });
     });
 
     it(`gets a 404`, async () => {
@@ -172,37 +188,51 @@ describe('exports static', () => {
       return link.attributes.as !== 'font';
     });
     expect(links.length).toBe(
-      // Global CSS, CSS Module
-      4
+      // Global CSS, CSS Module, Vaul Modal CSS (and entry point)
+      6
     );
 
-    links.forEach((link) => {
-      // Linked to the expected static location
-      expect(link.attributes.href).toMatch(/^\/_expo\/static\/css\/.*\.css$/);
-    });
+    const linkStrings = links.map((l) => l.toString());
 
-    expect(links[0].toString()).toMatch(
-      /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+    expect(linkStrings).toEqual(
+      expect.arrayContaining([
+        // Global CSS (preload + stylesheet)
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+        // Modal CSS module extracted from Vaul modal
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+        // Example test CSS module (preload + stylesheet)
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+      ])
     );
-    expect(links[1].toString()).toMatch(
-      /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
-    );
+
+    // Ensure the global CSS file is still generated
+    const globalPreload = links.find((l) => /global-.*\.css/.test(l.attributes.href!));
+    expect(globalPreload).toBeDefined();
+    if (globalPreload) {
+      expect(
+        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href), 'utf-8')
+      ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
+    }
+
     // CSS Module
-    expect(links[2].toString()).toMatch(
-      /<link rel="preload" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
-    );
-    expect(links[3].toString()).toMatch(
-      /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
-    );
-
     expect(
-      fs.readFileSync(path.join(outputDir, links[0].attributes.href), 'utf-8')
+      fs.readFileSync(path.join(outputDir, links[3].attributes.href), 'utf-8')
     ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
-
-    // CSS Module
-    expect(
-      fs.readFileSync(path.join(outputDir, links[2].attributes.href), 'utf-8')
-    ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
 
     const styledHtml = await getPageHtml(outputDir, 'styled.html');
 

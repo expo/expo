@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const { createRequestHandler } = require('@expo/server/build/vendor/express');
+const { createRequestHandler } = require('@expo/server/adapter/express');
 
 const express = require('express');
 const compression = require('compression');
@@ -31,7 +31,7 @@ app.use(
 app.use(morgan('tiny'));
 
 app.all(
-  '*',
+  '/{*all}',
   createRequestHandler({
     build: SERVER_BUILD_DIR,
   })

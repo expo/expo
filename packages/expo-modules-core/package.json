@@ -1,11 +1,12 @@
 {
   "name": "expo-modules-core",
-  "version": "2.3.13",
+  "version": "3.0.0",
   "description": "The core of Expo Modules architecture",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
   "sideEffects": [
-    "*.fx.ts"
+    "*.fx.ts",
+    "./src/polyfill/*.ts"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -40,8 +41,12 @@
   "dependencies": {
     "invariant": "^2.2.4"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "devDependencies": {
-    "@testing-library/react-native": "^13.1.0",
-    "expo-module-scripts": "^4.1.7"
+    "@testing-library/react-native": "^13.2.0",
+    "expo-module-scripts": "^5.0.0"
   }
 }

@@ -22,6 +22,7 @@ import { ProjectsSection } from './ProjectsSection';
 import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
 import { RecentlyOpenedSection } from './RecentlyOpenedSection';
 import { SnacksSection } from './SnacksSection';
+import { UpgradeWarning } from './UpgradeWarning';
 import FeatureFlags from '../../FeatureFlags';
 import { APIV2Client } from '../../api/APIV2Client';
 import ApolloClient from '../../api/ApolloClient';
@@ -30,6 +31,7 @@ import ScrollView from '../../components/NavigationScrollView';
 import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import UserReviewSection from '../../components/UserReviewSection';
+import { CappedWidthContainerView } from '../../components/Views';
 import {
   AppPlatform,
   HomeScreenDataDocument,
@@ -106,79 +108,82 @@ export class HomeScreenView extends React.Component<Props, State> {
     return (
       <View style={styles.container}>
         <HomeScreenHeader currentAccount={data} />
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
-          }
-          bounces
-          key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
-          style={styles.container}
-          contentContainerStyle={[styles.contentContainer]}>
-          <UserReviewSection apps={data?.apps} snacks={data?.snacks} />
-          <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
-          {projects?.length ? (
-            <View bg="default" rounded="large" border="default" overflow="hidden">
-              {projects.map((project, i) => (
-                <React.Fragment key={`${project.description}${project.url}`}>
-                  <DevelopmentServerListItem
-                    url={project.url}
-                    image={
-                      project.source === 'desktop'
-                        ? require('../../assets/cli.png')
-                        : require('../../assets/snack.png')
-                    }
-                    imageStyle={styles.projectImageStyle}
-                    title={project.description}
-                    platform={project.platform}
-                    subtitle={project.url}
-                  />
-                  {projects.length > 1 && i !== projects.length - 1 ? (
-                    <Divider style={{ height: 1 }} />
-                  ) : null}
-                </React.Fragment>
-              ))}
-              {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
-                <DevelopmentServersOpenQR />
-              ) : null}
-              {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_CLIPBOARD_BUTTON ? (
-                <DevelopmentServersOpenURL />
-              ) : null}
-            </View>
-          ) : (
-            <DevelopmentServersPlaceholder isAuthenticated={this.props.isAuthenticated} />
-          )}
-          {this.props.recentHistory.count() ? (
-            <>
-              <Spacer.Vertical size="medium" />
-              <RecentlyOpenedHeader onClearPress={this._handlePressClearHistory} />
-              <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
-            </>
-          ) : null}
+        <CappedWidthContainerView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
+            }
+            bounces
+            key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
+            style={styles.container}
+            contentContainerStyle={[styles.contentContainer]}>
+            <UpgradeWarning />
+            <UserReviewSection apps={data?.apps} snacks={data?.snacks} />
+            <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
+            {projects?.length ? (
+              <View bg="default" rounded="large" border="default" overflow="hidden">
+                {projects.map((project, i) => (
+                  <React.Fragment key={`${project.description}${project.url}`}>
+                    <DevelopmentServerListItem
+                      url={project.url}
+                      image={
+                        project.source === 'desktop'
+                          ? require('../../assets/cli.png')
+                          : require('../../assets/snack.png')
+                      }
+                      imageStyle={styles.projectImageStyle}
+                      title={project.description}
+                      platform={project.platform}
+                      subtitle={project.url}
+                    />
+                    {projects.length > 1 && i !== projects.length - 1 ? (
+                      <Divider style={{ height: 1 }} />
+                    ) : null}
+                  </React.Fragment>
+                ))}
+                {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
+                  <DevelopmentServersOpenQR />
+                ) : null}
+                {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_CLIPBOARD_BUTTON ? (
+                  <DevelopmentServersOpenURL />
+                ) : null}
+              </View>
+            ) : (
+              <DevelopmentServersPlaceholder isAuthenticated={this.props.isAuthenticated} />
+            )}
+            {this.props.recentHistory.count() ? (
+              <>
+                <Spacer.Vertical size="medium" />
+                <RecentlyOpenedHeader onClearPress={this._handlePressClearHistory} />
+                <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
+              </>
+            ) : null}
 
-          {data?.apps.length && this.props.accountName ? (
-            <>
-              <Spacer.Vertical size="medium" />
-              <SectionHeader header="Projects" />
-              <ProjectsSection
-                accountName={this.props.accountName}
-                apps={data.apps.slice(0, 3)}
-                showMore={data.apps.length > 3}
-              />
-            </>
-          ) : null}
+            {data?.apps.length && this.props.accountName ? (
+              <>
+                <Spacer.Vertical size="medium" />
+                <SectionHeader header="Projects" />
+                <ProjectsSection
+                  accountName={this.props.accountName}
+                  apps={data.apps.slice(0, 3)}
+                  showMore={data.apps.length > 3}
+                />
+              </>
+            ) : null}
 
-          {data?.snacks.length && this.props.accountName ? (
-            <>
-              <Spacer.Vertical size="medium" />
-              <SectionHeader header="Snacks" />
-              <SnacksSection
-                accountName={this.props.accountName}
-                snacks={data.snacks.slice(0, 3)}
-                showMore={data.snacks.length > 3}
-              />
-            </>
-          ) : null}
-        </ScrollView>
+            {data?.snacks.length && this.props.accountName ? (
+              <>
+                <Spacer.Vertical size="medium" />
+                <SectionHeader header="Snacks" />
+                <SnacksSection
+                  accountName={this.props.accountName}
+                  snacks={data.snacks.slice(0, 3)}
+                  showMore={data.snacks.length > 3}
+                />
+              </>
+            ) : null}
+          </ScrollView>
+        </CappedWidthContainerView>
         <ThemedStatusBar />
       </View>
     );

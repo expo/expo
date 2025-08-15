@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.syncConfigurationToNativeAsync = syncConfigurationToNativeAsync;
-const config_1 = require("@expo/config");
-const config_plugins_1 = require("@expo/config-plugins");
 const plist_1 = __importDefault(require("@expo/plist"));
+const config_1 = require("expo/config");
+const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 /**

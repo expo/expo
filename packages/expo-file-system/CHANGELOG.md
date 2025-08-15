@@ -6,12 +6,37 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+
+## 19.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Make the modern filesystem API the default, move previous one to `expo-file-system/legacy`. ([#38404](https://github.com/expo/expo/pull/38404) by [@aleqsio](https://github.com/aleqsio))
+
+### 🎉 New features
+
+- Add support for asset uris. ([#38785](https://github.com/expo/expo/pull/38785) by [@aleqsio](https://github.com/aleqsio))
+- Make file implement blob interface directly. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))
+- Add directory info function ([#37910](https://github.com/expo/expo/pull/37910) by [@Wenszel](https://github.com/Wenszel))
+- Add total and available sizes, directory sizes. ([#37594](https://github.com/expo/expo/pull/37594) by [@aleqsio](https://github.com/aleqsio))
+- Add info method, modificationTime and creationTime properties to file-system/next. ([#37505](https://github.com/expo/expo/pull/37505) by [@Wenszel](https://github.com/Wenszel))
 - Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
+- [next] Add limited support for SAF Uris. ([#38075](https://github.com/expo/expo/pull/38075) by [@aleqsio](https://github.com/aleqsio))
+- [next] Add full support for SAF Uris. ([#38075](https://github.com/expo/expo/pull/38075) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
+- Update exists logic to align with documentation ([#37692](https://github.com/expo/expo/pull/37692) by [@Wenszel](https://github.com/Wenszel))
 - Fix memory usage issue in getInfoAsync ([#37417](https://github.com/expo/expo/pull/37417) by [@Wenszel](https://github.com/Wenszel))
 - Improved type safety in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37107](https://github.com/expo/expo/pull/37107) by [@hirbod](https://github.com/hirbod))
+- Added required modifiers in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37467](https://github.com/expo/expo/pull/37467)
+
+## 18.1.11 - 2025-07-01
 
 ### 💡 Others
 

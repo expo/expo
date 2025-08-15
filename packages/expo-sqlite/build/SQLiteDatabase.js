@@ -66,6 +66,19 @@ export class SQLiteDatabase {
         return new SQLiteSession(this.nativeDatabase, nativeSession);
     }
     /**
+     * Load a SQLite extension.
+     * @param libPath The path to the extension library file.
+     * @param entryPoint The entry point of the extension. If not provided, the default entry point is inferred by [`sqlite3_load_extension`](https://www.sqlite.org/c3ref/load_extension.html).
+     *
+     * @platform android
+     * @platform ios
+     * @platform macos
+     * @platform tvos
+     */
+    loadExtensionAsync(libPath, entryPoint) {
+        return this.nativeDatabase.loadExtensionAsync(libPath, entryPoint);
+    }
+    /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
      * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
@@ -115,6 +128,7 @@ export class SQLiteDatabase {
      * @platform android
      * @platform ios
      * @platform macos
+     * @platform tvos
      *
      * @example
      * ```ts
@@ -203,6 +217,19 @@ export class SQLiteDatabase {
         const nativeSession = new ExpoSQLite.NativeSession();
         this.nativeDatabase.createSessionSync(nativeSession, dbName);
         return new SQLiteSession(this.nativeDatabase, nativeSession);
+    }
+    /**
+     * Load a SQLite extension.
+     * @param libPath The path to the extension library file.
+     * @param entryPoint The entry point of the extension. If not provided, the default entry point is inferred by [`sqlite3_load_extension`](https://www.sqlite.org/c3ref/load_extension.html).
+     *
+     * @platform android
+     * @platform ios
+     * @platform macos
+     * @platform tvos
+     */
+    loadExtensionSync(libPath, entryPoint) {
+        this.nativeDatabase.loadExtensionSync(libPath, entryPoint);
     }
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
@@ -331,6 +358,10 @@ export class SQLiteDatabase {
  * The default directory for SQLite databases.
  */
 export const defaultDatabaseDirectory = ExpoSQLite.defaultDatabaseDirectory;
+/**
+ * The pre-bundled SQLite extensions.
+ */
+export const bundledExtensions = ExpoSQLite.bundledExtensions;
 /**
  * Open a database.
  *

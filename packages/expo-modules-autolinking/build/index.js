@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
 const path_1 = __importDefault(require("path"));
 const autolinking_1 = require("./autolinking");
+const dependencies_1 = require("./dependencies");
 const reactNativeConfig_1 = require("./reactNativeConfig");
 function hasCoreFeatures(module) {
     return module.coreFeatures !== undefined;
@@ -47,15 +48,15 @@ function registerReactNativeConfigCommand() {
     return commander_1.default
         .command('react-native-config [paths...]')
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "android", "ios"', 'ios')
-        .option('--transitive-linking-dependencies <transitiveLinkingDependencies...>', 'The transitive dependencies to include in autolinking. Internally used by fingerprint and only supported react-native-edge-to-edge.')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
+        .option('--source-dir <sourceDir>', 'The path to the native source directory')
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
         .action(async (searchPaths, providedOptions) => {
         if (!['android', 'ios'].includes(providedOptions.platform)) {
             throw new Error(`Unsupported platform: ${providedOptions.platform}`);
         }
         const projectRoot = path_1.default.dirname(await (0, autolinking_1.getProjectPackageJsonPathAsync)(providedOptions.projectRoot));
-        const linkingOptions = await (0, autolinking_1.mergeLinkingOptionsAsync)(searchPaths.length > 0
+        const options = await (0, autolinking_1.mergeLinkingOptionsAsync)(searchPaths.length > 0
             ? {
                 ...providedOptions,
                 projectRoot,
@@ -65,13 +66,6 @@ function registerReactNativeConfigCommand() {
                 ...providedOptions,
                 projectRoot,
             });
-        const transitiveLinkingDependencies = providedOptions.transitiveLinkingDependencies ?? [];
-        const options = {
-            platform: linkingOptions.platform,
-            projectRoot,
-            searchPaths: linkingOptions.searchPaths,
-            transitiveLinkingDependencies,
-        };
         const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(options);
         if (providedOptions.json) {
             console.log(JSON.stringify(results));
@@ -79,6 +73,27 @@ function registerReactNativeConfigCommand() {
         else {
             console.log(require('util').inspect(results, false, null, true));
         }
+    });
+}
+/**
+ Register the `verify` command.
+ */
+function registerVerifyCommand() {
+    return commander_1.default
+        .command('verify')
+        .option('-p, --platform [platform]', 'The platform to validate native modules for. Available options: "android", "ios", "both"', 'both')
+        .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
+        .option('-v, --verbose', 'Output all results instead of just warnings.', () => true, false)
+        .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+        .action(async (providedOptions) => {
+        const platforms = providedOptions.platform === 'both' ? ['android', 'ios'] : [providedOptions.platform];
+        const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: providedOptions.projectRoot });
+        const results = (0, dependencies_1.mergeResolutionResults)(await Promise.all(platforms.map((platform) => (0, dependencies_1.scanDependencyResolutionsForPlatform)(linker, platform))));
+        await (0, autolinking_1.verifySearchResults)(results, {
+            projectRoot: providedOptions.projectRoot,
+            verbose: providedOptions.verbose,
+            json: providedOptions.json,
+        });
     });
 }
 module.exports = async function (args) {
@@ -92,12 +107,7 @@ module.exports = async function (args) {
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Checks whether there are no resolving issues in the current setup.
-    registerSearchCommand('verify', (results, options) => {
-        const numberOfDuplicates = (0, autolinking_1.verifySearchResults)(results, options);
-        if (!numberOfDuplicates) {
-            console.log('✅ Everything is fine!');
-        }
-    });
+    registerVerifyCommand();
     // Searches for available expo modules and resolves the results for given platform.
     registerResolveCommand('resolve', async (results, options) => {
         const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);

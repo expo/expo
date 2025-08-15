@@ -22,7 +22,7 @@ fi
 #   5. Add custom redirects
 #   6. Notify Google of sitemap changes for SEO
 
-echo "::group::[1/5] Sync Next.js static assets in \`_next/**\` folder"
+echo "::group::[1/6] Sync Next.js static assets in \`_next/**\` folder"
 aws s3 sync \
   --no-progress \
   --exclude "*" \
@@ -32,7 +32,7 @@ aws s3 sync \
   "s3://${bucket}"
 echo "::endgroup::"
 
-echo "::group::[2/5] Sync assets in \`static/**\` folder"
+echo "::group::[2/6] Sync assets in \`static/**\` folder"
 aws s3 sync \
   --no-progress \
   --exclude "*" \
@@ -44,7 +44,7 @@ echo "::endgroup::"
 
 # Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
 # see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
-echo "::group::[3/5] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
+echo "::group::[3/6] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
 aws s3 cp \
   --no-progress \
   --recursive \
@@ -54,7 +54,7 @@ aws s3 cp \
   "s3://${bucket}"
 echo "::endgroup::"
 
-echo "::group::[4/5] Sync assets and clean up outdated files from previous deployments"
+echo "::group::[4/6] Sync assets and clean up outdated files from previous deployments"
 aws s3 sync \
   --no-progress \
   --delete \
@@ -88,7 +88,7 @@ redirects[development/develop-your-project]=develop/development-builds/use-devel
 redirects[develop/development-builds/installation]=develop/development-builds/create-a-build
 
 # Guides that have been deleted
-redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[guides/web-performance]=guides/analyzing-bundles
 redirects[push-notifications/obtaining-a-device-token-for-fcm-or-apns]=push-notifications/sending-notifications-custom
 
 # Redirects after adding Home to the docs
@@ -237,7 +237,7 @@ redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[guides/how-expo-works]=faq
 redirects[config/app]=workflow/configuration
 redirects[guides/authentication.md]=guides/authentication
-redirects[versions/latest/workflow/linking/]=guides/linking
+redirects[versions/latest/workflow/linking]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest
 
 # Deprecated webpack
@@ -310,8 +310,15 @@ redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
 redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 redirects[eas/workflows/upgrade]=eas/workflows/automating-eas-cli
 
+# After moving eas/workflows/examples to eas/workflows/examples/*
+redirects[eas/workflows/examples]=eas/workflows/examples/introduction
+redirects[eas/workflows/examples/#development-builds-workflow]=eas/workflows/examples/create-development-builds
+redirects[eas/workflows/examples/#preview-updates-workflow]=eas/workflows/examples/publish-preview-update
+redirects[eas/workflows/examples/#deploy-to-production-workflow]=eas/workflows/examples/deploy-to-production
+redirects[eas/workflows/reference/e2e-tests]=eas/workflows/examples/e2e-tests
+
 # After moving e2e-tests to eas/workflows/reference
-redirects[build-reference/e2e-tests]=eas/workflows/reference/e2e-tests
+redirects[build-reference/e2e-tests]=eas/workflows/examples/e2e-tests
 
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites
@@ -357,7 +364,7 @@ redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 # After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
 redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-privacy-protection
 
-echo "::group::[5/5] Add custom redirects"
+echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
@@ -380,4 +387,12 @@ do
       "s3://${bucket}/${i}/index.html"
   fi
 done
+echo "::endgroup::"
+
+# Set the S3 bucket properties including default error page, which is 404.html
+# You can see those settings inside AWS dashboard in "Properties" -> "Static website hosting"
+echo "::group::[6/6] Setting bucket properties"
+aws s3 website s3://${bucket}/ \
+  --index-document index.html \
+  --error-document 404.html
 echo "::endgroup::"

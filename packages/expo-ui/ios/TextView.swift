@@ -7,6 +7,9 @@ internal final class TextViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPro
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var text: String = ""
   @Field var weight: String?
   @Field var design: String?

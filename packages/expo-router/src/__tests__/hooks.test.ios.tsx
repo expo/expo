@@ -540,7 +540,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -581,7 +581,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -626,7 +626,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -664,7 +664,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),

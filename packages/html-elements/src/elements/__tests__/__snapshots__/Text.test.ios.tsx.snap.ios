@@ -37,7 +37,7 @@ exports[`renders Code 1`] = `
 <Text
   style={
     {
-      "fontFamily": "Courier New",
+      "fontFamily": "ui-monospace",
       "fontWeight": "500",
     }
   }
@@ -108,7 +108,7 @@ exports[`renders Pre 1`] = `
 <Text
   style={
     {
-      "fontFamily": "Courier New",
+      "fontFamily": "ui-monospace",
       "fontWeight": "500",
       "marginVertical": 32,
     }

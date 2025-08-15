@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { Children, type PropsWithChildren } from 'react';
+import { Children, isValidElement, type PropsWithChildren } from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
@@ -17,7 +17,14 @@ type Props = PropsWithChildren<{
 const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
-  const component = props.children as JSX.Element;
+  const component = isValidElement<PropsWithChildren<{ className?: string }>>(props.children)
+    ? props.children
+    : null;
+
+  if (!component) {
+    return props.children;
+  }
+
   const children = component.props.children ?? '';
   const hasMultipleChildren = Children.toArray(children).length > 1;
 

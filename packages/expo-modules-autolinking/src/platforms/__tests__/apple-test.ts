@@ -1,5 +1,5 @@
-import fs from 'fs';
 import { glob } from 'glob';
+import { vol } from 'memfs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -12,11 +12,9 @@ import {
 } from '../apple';
 
 jest.mock('glob');
-jest.mock('fs');
-
-const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
 
 afterEach(() => {
+  vol.reset();
   jest.resetAllMocks();
 });
 
@@ -215,29 +213,30 @@ describe(resolveModuleAsync, () => {
 
 describe(resolveExtraBuildDependenciesAsync, () => {
   it('should resolve extra build dependencies from Podfile.properties.json', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`{
-"apple.extraPods": "[{\\"name\\":\\"test\\"}]"
-}`);
+    vol.fromJSON(
+      { 'Podfile.properties.json': `{"apple.extraPods": "[{\\"name\\":\\"test\\"}]"}` },
+      '/app/ios'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
     expect(extraBuildDeps).toEqual([{ name: 'test' }]);
   });
 
   it('should return null for invalid JSON', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`{
-  "apple.extraPods": [{ name }]
-}`);
+    vol.fromJSON({ 'Podfile.properties.json': `{"apple.extraPods": [{ name }]}` }, '/app/ios');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
     expect(extraBuildDeps).toBe(null);
   });
 
-  it('should return null if no speicifed any properties', async () => {
-    mockFsReadFile.mockResolvedValueOnce(``);
+  it('should return null if it does not contain any known properties', async () => {
+    vol.fromJSON({ 'Podfile.properties.json': '' }, '/app/ios');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
     expect(extraBuildDeps).toBe(null);
   });
 
   it('should return null if Podfile.properties.json not found', async () => {
-    mockFsReadFile.mockRejectedValueOnce(new Error('File not found'));
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/macos');
     expect(extraBuildDeps).toBe(null);
   });

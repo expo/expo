@@ -68,7 +68,7 @@
 
   if (appIconName != nil) {
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *appIconPath = [[resourcePath stringByAppendingString:appIconName] stringByAppendingString:@".png"];
+    NSString *appIconPath = [resourcePath stringByAppendingPathComponent:[appIconName stringByAppendingPathExtension:@"png"]];
     appIcon = [@"file://" stringByAppendingString:appIconPath];
   }
 

@@ -18,7 +18,7 @@ export async function isAvailableAsync() {
  * Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called or the app is restarted. If you are
  * already preventing screen capture, this method does nothing (unless you pass a new and unique `key`).
  *
- * > On iOS, this will only prevent screen recordings, and is only available on iOS 11 and newer. On older
+ * > On iOS, this prevents screen recordings and screenshots, and is only available on iOS 11+ (recordings) and iOS 13+ (screenshots). On older
  * iOS versions, this method does nothing.
  *
  * @param key Optional. If provided, this will help prevent multiple instances of the `preventScreenCaptureAsync`
@@ -26,7 +26,7 @@ export async function isAvailableAsync() {
  * When using multiple keys, you'll have to re-allow each one in order to re-enable screen capturing.
  *
  * @platform android
- * @platform ios 11+
+ * @platform ios
  */
 export async function preventScreenCaptureAsync(key = 'default') {
     if (!ExpoScreenCapture.preventScreenCapture) {
@@ -72,6 +72,43 @@ export function usePreventScreenCapture(key = 'default') {
             allowScreenCaptureAsync(key);
         };
     }, [key]);
+}
+// @needsAudit
+/**
+ * Enables a privacy protection blur overlay that hides sensitive content when the app is not in focus.
+ * The overlay applies a customizable blur effect when the app is in the app switcher, background, or during interruptions
+ * (calls, Siri, Control Center, etc.), and automatically removes it when the app becomes active again.
+ *
+ * This provides visual privacy protection by preventing sensitive app content from being visible in:
+ * - App switcher previews
+ * - Background app snapshots
+ * - Screenshots taken during inactive states
+ *
+ * For Android, app switcher protection is automatically provided by `preventScreenCaptureAsync()`
+ * using the FLAG_SECURE window flag, which shows a blank screen in the recent apps preview.
+ *
+ * @param blurIntensity The intensity of the blur effect, from 0.0 (no blur) to 1.0 (maximum blur). Default is 0.5.
+ *
+ * @platform ios
+ *
+ */
+export async function enableAppSwitcherProtectionAsync(blurIntensity = 0.5) {
+    if (!ExpoScreenCapture.enableAppSwitcherProtection) {
+        throw new UnavailabilityError('ScreenCapture', 'enableAppSwitcherProtectionAsync');
+    }
+    await ExpoScreenCapture.enableAppSwitcherProtection(blurIntensity);
+}
+// @needsAudit
+/**
+ * Disables the privacy protection overlay that was previously enabled with `enableAppSwitcherProtectionAsync`.
+ *
+ * @platform ios
+ */
+export async function disableAppSwitcherProtectionAsync() {
+    if (!ExpoScreenCapture.disableAppSwitcherProtection) {
+        throw new UnavailabilityError('ScreenCapture', 'disableAppSwitcherProtectionAsync');
+    }
+    await ExpoScreenCapture.disableAppSwitcherProtection();
 }
 // @needsAudit
 /**

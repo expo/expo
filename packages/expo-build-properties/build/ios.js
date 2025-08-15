@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withIosDeploymentTarget = exports.withIosBuildProperties = void 0;
+exports.withIosInfoPlist = exports.withIosDeploymentTarget = exports.withIosBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.BuildProperties;
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
@@ -8,7 +8,8 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'newArchEnabled',
         propValueGetter: (config) => {
             if (config.ios?.newArchEnabled !== undefined) {
-                config_plugins_1.WarningAggregator.addWarningIOS('withIosBuildProperties', 'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.', 'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
+                config_plugins_1.WarningAggregator.addWarningIOS('withIosBuildProperties', 'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.\n' +
+                    'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
             }
             return config.ios?.newArchEnabled?.toString();
         },
@@ -36,6 +37,10 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'apple.privacyManifestAggregationEnabled',
         propValueGetter: (config) => (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
     },
+    {
+        propName: 'ios.buildReactNativeFromSource',
+        propValueGetter: (config) => config.ios?.buildReactNativeFromSource?.toString(),
+    },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;
@@ -49,6 +54,20 @@ const withIosDeploymentTarget = (config, props) => {
     return config;
 };
 exports.withIosDeploymentTarget = withIosDeploymentTarget;
+const withIosInfoPlist = (config, props) => {
+    const reactNativeReleaseLevel = props.ios?.reactNativeReleaseLevel;
+    if (reactNativeReleaseLevel) {
+        config = withIosReactNativeReleaseLevel(config, { reactNativeReleaseLevel });
+    }
+    return config;
+};
+exports.withIosInfoPlist = withIosInfoPlist;
+const withIosReactNativeReleaseLevel = (config, { reactNativeReleaseLevel }) => {
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
+        config.modResults['ReactNativeReleaseLevel'] = reactNativeReleaseLevel;
+        return config;
+    });
+};
 const withIosDeploymentTargetXcodeProject = (config, props) => {
     return (0, config_plugins_1.withXcodeProject)(config, (config) => {
         config.modResults = updateDeploymentTargetXcodeProject(config.modResults, props.deploymentTarget);

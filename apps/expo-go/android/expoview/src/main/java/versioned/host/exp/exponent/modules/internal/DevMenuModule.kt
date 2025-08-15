@@ -1,5 +1,4 @@
 package versioned.host.exp.exponent.modules.internal
-
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +10,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
@@ -78,6 +78,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val debuggerMap = Bundle()
     val hmrMap = Bundle()
     val perfMap = Bundle()
+    val fabMap = Bundle()
 
     if (devSettings != null && devSupportManager.devSupportEnabled) {
       inspectorMap.putString("label", getString(if (devSettings.isElementInspectorEnabled) R.string.devmenu_hide_element_inspector else R.string.devmenu_show_element_inspector))
@@ -92,6 +93,19 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       debuggerMap.putString("label", getString(R.string.devmenu_open_js_debugger))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
+    }
+
+    if (VRUtilities.isQuest()) {
+      if (devSettings != null && devSupportManager.devSupportEnabled) {
+        val label = if (devSettings.isFloatingActionButtonEnabled) {
+          getString(R.string.devmenu_hide_fab)
+        } else {
+          getString(R.string.devmenu_show_fab)
+        }
+        fabMap.putString("label", label)
+        fabMap.putBoolean("isEnabled", true)
+      }
+      items.putBundle("dev-fab", fabMap)
     }
 
     if (devSettings != null && devSupportManager.devSupportEnabled && devSettings is DevInternalSettings) {
@@ -147,6 +161,9 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
           }
           devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
         }
+        "dev-fab" -> {
+          devSupportManager.setFloatingActionButtonEnabled(!devSettings.isFloatingActionButtonEnabled)
+        }
       }
     }
   }
@@ -169,7 +186,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
   //region LifecycleEventListener
 
   override fun onHostResume() {
-    val activity = currentActivity
+    val activity = reactApplicationContext.currentActivity
 
     if (activity is ExperienceActivity) {
       devMenuManager.registerDevMenuModuleForActivity(this, activity)
@@ -188,7 +205,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    * or null if no activity is currently attached to react context.
    */
   private fun getDevSupportManager(): DevSupportManager? {
-    val activity = currentActivity as? ReactNativeActivity?
+    val activity = reactApplicationContext.currentActivity as? ReactNativeActivity?
     return activity?.devSupportManager
   }
 
@@ -197,7 +214,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    * Such permission is required for example to enable performance monitor.
    */
   private fun requestOverlaysPermission() {
-    val context = currentActivity ?: return
+    val context = reactApplicationContext.currentActivity ?: return
     // Get permission to show debug overlay in dev builds.
     if (!Settings.canDrawOverlays(context)) {
       val intent = Intent(

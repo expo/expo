@@ -8,11 +8,54 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.21.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add internal support for exporting native assets for hosting. ([#38265](https://github.com/expo/expo/pull/38265) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `browserslist` and automatic vendor prefixing support ([#37489](https://github.com/expo/expo/pull/37489) by [@EvanBacon](https://github.com/EvanBacon))
+- Fork Import Export Plugin from `metro` and enhance its syntax support (`experimentalImportSupport` now supports export namespace from, export destructed named object, live bindings by default and more) ([#38135](https://github.com/expo/expo/pull/38135) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Enable ESM Import Export Support by default ([#38298](https://github.com/expo/expo/pull/38298)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
+- Create `metro-runtime` and `common` chunks when bundle splitting is enabled ([#38339](https://github.com/expo/expo/pull/38339) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 🐛 Bug fixes
+
+- Ensure react-native projects without Expo code-loading can use async routes. ([#38587](https://github.com/expo/expo/pull/38587) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix Fast Refresh on web by calling `module.hot.accept()` in the transformer. ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
+- Fix failing build with tree shaking due to missing import location ([#37916](https://github.com/expo/expo/pull/37916) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 💡 Others
+
+- Improve debug logs and types of `import-export-plugin` ([#38203](https://github.com/expo/expo/pull/38203) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix Babel dependencies by removing reliance on `@babel/parser`, `@babel/types`, and `@babel/template`, and adding missing `@babel/code-frame` dependency ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
+- Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
+- Fix `@react-native/js-polyfills`, `hermes-parser`, and `babel-preset-expo` (fallback) dependency resolution for isolated dependencies ([#38535](https://github.com/expo/expo/pull/38535) by [@kitten](https://github.com/kitten))
+- Resolve `react-native` from project root when looking up Hermes compiler ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
+- Import `getDefaultConfig` and `mergeConfig` from pinned `metro-config` version ([#38682](https://github.com/expo/expo/pull/38682) by [@kitten](https://github.com/kitten))
+
+## 0.20.17 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.16 - 2025-07-02
+
+### 🐛 Bug fixes
+
+- Fix require path of assets with RSC client references ([#37663](https://github.com/expo/expo/pull/37663) by [@byCedric](https://github.com/byCedric))
+
+## 0.20.15 - 2025-06-18
+
+### 🐛 Bug fixes
+
 - Fix tree shaking overlapping exports ([#36717](https://github.com/expo/expo/pull/36717) by [@EvanBacon](https://github.com/EvanBacon))
 - Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
 
 ### 💡 Others
 
+- Remove flipper hack support from types. ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.20.14 — 2025-05-06

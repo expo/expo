@@ -55,8 +55,10 @@ const LocalAuthenticationScreen = () => {
     setWaiting(true);
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Authenticate',
+        promptMessage: 'Authenticate pls',
         cancelLabel: 'Cancel label',
+        promptSubtitle: 'Android subtitle',
+        promptDescription: 'Android description',
         disableDeviceFallback: !withFallback,
         biometricsSecurityLevel: securityLevels[securityLevelIndex],
       });

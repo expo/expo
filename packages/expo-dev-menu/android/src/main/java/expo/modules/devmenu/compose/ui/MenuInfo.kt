@@ -1,13 +1,11 @@
 package expo.modules.devmenu.compose.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
@@ -16,20 +14,16 @@ fun MenuInfo(
   label: String,
   value: String
 ) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
+  RowLayout(
     modifier = Modifier
       .background(Theme.colors.background.default)
-      .padding(Theme.spacing.small)
+      .padding(Theme.spacing.small),
+    rightComponent = {
+      Text(value)
+    }
   ) {
     Text(
       label
-    )
-
-    Spacer(Modifier.weight(1f))
-
-    Text(
-      value
     )
   }
 }

@@ -125,6 +125,11 @@ final class DynamicTypeSpec: ExpoSpec {
           expect(try (~[Double].self).cast([1.2, 3.4], appContext: appContext) as? [Double]) == [1.2, 3.4]
           expect(try (~[[String]].self).cast([["hello", "expo"]], appContext: appContext) as? [[String]]) == [["hello", "expo"]]
         }
+        it("casts from JS value") {
+          let appContext = AppContext.create()
+          let jsValue = try appContext.runtime.eval("([1.2, 3.4])")
+          expect(try (~[Double].self).cast(jsValue: jsValue, appContext: appContext) as? [Double]) == [1.2, 3.4]
+        }
         it("casts arrays") {
           let value = 9.9
           let anyValue = [value] as [Any]

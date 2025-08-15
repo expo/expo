@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Link with preview correctly renders link with Preview and asChild 1`] = `
+<div
+  class="css-view-g5y9jx"
+  data-testid="link-wrapper"
+>
+  <a
+    class="css-text-146c3p1 r-cursor-1loqt21"
+    data-testid="inner-text"
+    dir="auto"
+    href="/undefined/foo"
+    role="link"
+  >
+    Foo
+  </a>
+</div>
+`;
+
+exports[`Link with preview renders a Link with preview as normal link 1`] = `
+<a
+  class="css-text-146c3p1 r-cursor-1loqt21"
+  data-testid="link"
+  dir="auto"
+  href="/undefined/foo"
+  role="link"
+>
+  <span
+    class="css-textHasAncestor-1jxf684"
+  >
+    Foo
+  </span>
+</a>
+`;

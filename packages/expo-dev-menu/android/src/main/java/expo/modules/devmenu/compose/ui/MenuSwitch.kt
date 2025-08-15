@@ -19,10 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composables.core.Icon
 import com.composeunstyled.Button
 import com.composeunstyled.Thumb
 import com.composeunstyled.ToggleSwitch
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
@@ -30,10 +30,9 @@ import expo.modules.devmenu.compose.theme.Theme
 fun MenuSwitch(
   label: String,
   icon: Painter? = null,
+  toggled: Boolean = false,
   onToggled: (Boolean) -> Unit = {}
 ) {
-  var toggled by remember { mutableStateOf(false) }
-
   val animatedBackgroundColor by animateColorAsState(
     if (toggled) {
       Theme.colors.background.success
@@ -52,9 +51,7 @@ fun MenuSwitch(
 
   Button(
     onClick = {
-      val newValue = !toggled
-      toggled = newValue
-      onToggled(newValue)
+      onToggled(!toggled)
     },
     backgroundColor = Theme.colors.background.default
   ) {
@@ -64,10 +61,9 @@ fun MenuSwitch(
         .padding(Theme.spacing.small)
     ) {
       if (icon != null) {
-        Icon(
+        DayNighIcon(
           icon,
           contentDescription = label,
-          tint = Theme.colors.icon.default,
           modifier = Modifier.size(Theme.sizing.icon.small)
         )
 
@@ -100,7 +96,10 @@ fun MenuSwitch(
 @Composable
 @Preview(showBackground = true)
 fun MenuSwitchPreview() {
+  var toggled by remember { mutableStateOf(false) }
   MenuSwitch(
-    label = "Menu Switch"
+    label = "Menu Switch",
+    toggled = toggled,
+    onToggled = { toggled = it }
   )
 }

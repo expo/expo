@@ -65,6 +65,14 @@ public final class VideoModule: Module {
         #endif
       }
 
+      Prop("fullscreenOptions") {(view, options: FullscreenOptions?) in
+        #if !os(tvOS)
+        view.playerViewController.fullscreenOrientation = options?.orientation.toUIInterfaceOrientationMask() ?? .all
+        view.playerViewController.autoExitOnRotate = options?.autoExitOnRotate ?? false
+        view.playerViewController.setValue(options?.enable ?? true, forKey: "allowsEnteringFullScreen")
+        #endif
+      }
+
       Prop("showsTimecodes") { (view, showsTimecodes: Bool?) in
         #if !os(tvOS)
         view.playerViewController.showsTimecodes = showsTimecodes ?? true
@@ -118,6 +126,25 @@ public final class VideoModule: Module {
 
       AsyncFunction("stopPictureInPicture") { view in
         view.stopPictureInPicture()
+      }
+    }
+
+    View(VideoAirPlayButtonView.self) {
+      Events(
+        "onBeginPresentingRoutes",
+        "onEndPresentingRoutes"
+      )
+
+      Prop("tint") { (view, tint: UIColor?) in
+        view.tint = tint
+      }
+
+      Prop("activeTint") { (view, activeTint: UIColor?) in
+        view.activeTintColor = activeTint
+      }
+
+      Prop("prioritizeVideoDevices") { (view, prioritizeVideoDevices: Bool?) in
+        view.prioritizeVideoDevices = prioritizeVideoDevices ?? true
       }
     }
 
@@ -282,6 +309,10 @@ public final class VideoModule: Module {
         player.audioTracks.selectAudioTrack(audioTrack: audioTrack)
       }
 
+      Property("isExternalPlaybackActive") { player -> Bool in
+        return player.ref.isExternalPlaybackActive
+      }
+
       Function("play") { player in
         player.ref.play()
       }
@@ -308,6 +339,7 @@ public final class VideoModule: Module {
 
       Function("replay") { player in
         player.ref.seek(to: CMTime.zero)
+        player.ref.play()
       }
 
       AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in

@@ -12,6 +12,11 @@ import {
   resolveModulesAsync,
   verifySearchResults,
 } from './autolinking';
+import {
+  makeCachedDependenciesLinker,
+  mergeResolutionResults,
+  scanDependencyResolutionsForPlatform,
+} from './dependencies';
 import { type RNConfigCommandOptions, createReactNativeConfigAsync } from './reactNativeConfig';
 import type {
   ModuleDescriptor,
@@ -103,16 +108,13 @@ function registerReactNativeConfigCommand() {
       'The platform that the resulting modules must support. Available options: "android", "ios"',
       'ios'
     )
-    .option(
-      '--transitive-linking-dependencies <transitiveLinkingDependencies...>',
-      'The transitive dependencies to include in autolinking. Internally used by fingerprint and only supported react-native-edge-to-edge.'
-    )
     .addOption(
       new commander.Option(
         '--project-root <projectRoot>',
         'The path to the root of the project'
       ).default(process.cwd(), 'process.cwd()')
     )
+    .option('--source-dir <sourceDir>', 'The path to the native source directory')
     .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths, providedOptions) => {
       if (!['android', 'ios'].includes(providedOptions.platform)) {
@@ -121,7 +123,7 @@ function registerReactNativeConfigCommand() {
       const projectRoot = path.dirname(
         await getProjectPackageJsonPathAsync(providedOptions.projectRoot)
       );
-      const linkingOptions = await mergeLinkingOptionsAsync<SearchOptions>(
+      const options = await mergeLinkingOptionsAsync<RNConfigCommandOptions>(
         searchPaths.length > 0
           ? {
               ...providedOptions,
@@ -133,19 +135,53 @@ function registerReactNativeConfigCommand() {
               projectRoot,
             }
       );
-      const transitiveLinkingDependencies = providedOptions.transitiveLinkingDependencies ?? [];
-      const options: RNConfigCommandOptions = {
-        platform: linkingOptions.platform,
-        projectRoot,
-        searchPaths: linkingOptions.searchPaths,
-        transitiveLinkingDependencies,
-      };
       const results = await createReactNativeConfigAsync(options);
       if (providedOptions.json) {
         console.log(JSON.stringify(results));
       } else {
         console.log(require('util').inspect(results, false, null, true));
       }
+    });
+}
+
+/**
+ Register the `verify` command.
+ */
+function registerVerifyCommand() {
+  return commander
+    .command('verify')
+    .option(
+      '-p, --platform [platform]',
+      'The platform to validate native modules for. Available options: "android", "ios", "both"',
+      'both'
+    )
+    .addOption(
+      new commander.Option(
+        '--project-root <projectRoot>',
+        'The path to the root of the project'
+      ).default(process.cwd(), 'process.cwd()')
+    )
+    .option<boolean>(
+      '-v, --verbose',
+      'Output all results instead of just warnings.',
+      () => true,
+      false
+    )
+    .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+    .action(async (providedOptions) => {
+      const platforms =
+        providedOptions.platform === 'both' ? ['android', 'ios'] : [providedOptions.platform];
+      const linker = makeCachedDependenciesLinker({ projectRoot: providedOptions.projectRoot });
+      const results = mergeResolutionResults(
+        await Promise.all(
+          platforms.map((platform) => scanDependencyResolutionsForPlatform(linker, platform))
+        )
+      );
+      await verifySearchResults(results, {
+        projectRoot: providedOptions.projectRoot,
+        verbose: providedOptions.verbose,
+        json: providedOptions.json,
+      });
     });
 }
 
@@ -160,12 +196,7 @@ module.exports = async function (args: string[]) {
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 
   // Checks whether there are no resolving issues in the current setup.
-  registerSearchCommand('verify', (results, options) => {
-    const numberOfDuplicates = verifySearchResults(results, options);
-    if (!numberOfDuplicates) {
-      console.log('✅ Everything is fine!');
-    }
-  });
+  registerVerifyCommand();
 
   // Searches for available expo modules and resolves the results for given platform.
   registerResolveCommand('resolve', async (results, options) => {

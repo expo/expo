@@ -4,10 +4,26 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
+
+/**
+ * Applies a test tag to a modifier if a testID is provided.
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+private fun Modifier.applyTestTag(testID: String?): Modifier =
+  if (!testID.isNullOrEmpty()) {
+    this.semantics { testTagsAsResourceId = true }.testTag(testID)
+  } else {
+    this
+  }
 
 /**
  * A base class that should be used by compose views.
@@ -19,8 +35,10 @@ abstract class ExpoComposeView<T : ComposeProps>(
 ) : ExpoView(context, appContext) {
   open val props: T? = null
 
+  var testID: String? = null
+
   @Composable
-  abstract fun Content()
+  abstract fun Content(modifier: Modifier)
 
   override val shouldUseAndroidLayout = withHostingView
 
@@ -36,12 +54,13 @@ abstract class ExpoComposeView<T : ComposeProps>(
   @Composable
   protected fun Children() {
     if (withHostingView) {
-      return Content()
+      Content(modifier = Modifier.applyTestTag(testID))
+      return
     }
 
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content()
+      child.Content(modifier = Modifier.applyTestTag(child.testID))
     }
   }
 

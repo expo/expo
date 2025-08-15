@@ -87,7 +87,7 @@ const renderClass = (
     allowOverwrites,
   }: ClassDefinitionData,
   sdkVersion: string
-): JSX.Element => {
+) => {
   const properties = children?.filter(isProp);
   const methods = children
     ?.filter(child => isMethod(child, allowOverwrites) && !isInheritedFromCommonClass(child))

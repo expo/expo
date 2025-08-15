@@ -8,15 +8,52 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix missing launch args from pending intent extras. ([#37172](https://github.com/expo/expo/pull/37172) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
-- [Android] Fix missing intent extras when handling external intents. ([#37307](https://github.com/expo/expo/pull/37307) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
-- [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- [ios] Fix tvOS and Swiftlint after UI refresh. ([#38808](https://github.com/expo/expo/pull/38808) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
+
+## 6.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [iOS] Reimplement UI in SwiftUI. ([#37413](https://github.com/expo/expo/pull/37413) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Add floating action button option in the settings menu. ([#38247](https://github.com/expo/expo/pull/38247) by [@behenate](https://github.com/behenate))
+- [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Use same strings in UI as iOS. ([#37786](https://github.com/expo/expo/pull/37786) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix an issue where the packager commands stop working after a reload. ([#38579](https://github.com/expo/expo/pull/38579) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] RN 0.81.0: patched some reflection issues after kotlin upgrade ([#38451](https://github.com/expo/expo/pull/38451) by [@chrfalch](https://github.com/chrfalch))
+- Fixed release build error on Android. ([#37579](https://github.com/expo/expo/pull/37579) by [@kudo](https://github.com/kudo))
+- Informational message for tvOS on signin page. ([#38518](https://github.com/expo/expo/pull/38518) by [@douglowder](https://github.com/douglowder))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.1.16 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.15 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.14 - 2025-06-26
+
+### 🐛 Bug fixes
+
+- [Android] Fix missing launch args from pending intent extras. ([#37172](https://github.com/expo/expo/pull/37172) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+- [Android] Fix missing intent extras when handling external intents. ([#37307](https://github.com/expo/expo/pull/37307) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+
+## 5.1.13 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
 
 ## 5.1.12 - 2025-06-04
 

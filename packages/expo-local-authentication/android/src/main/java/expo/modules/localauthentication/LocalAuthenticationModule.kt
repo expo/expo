@@ -205,9 +205,6 @@ class LocalAuthenticationModule : Module() {
       return
     }
 
-    val promptMessage = options.promptMessage
-    val cancelLabel = options.cancelLabel
-    val requireConfirmation = options.requireConfirmation
     val allowedAuthenticators = if (options.disableDeviceFallback) {
       options.biometricsSecurityLevel.toNativeBiometricSecurityLevel()
     } else {
@@ -217,19 +214,22 @@ class LocalAuthenticationModule : Module() {
     isAuthenticating = true
     this.promise = promise
     val executor: Executor = Executors.newSingleThreadExecutor()
-    biometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
+    val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
+    biometricPrompt = localBiometricPrompt
     val promptInfoBuilder = PromptInfo.Builder().apply {
-      setTitle(promptMessage)
+      setTitle(options.promptMessage)
+      setSubtitle(options.promptSubtitle)
+      setDescription(options.promptDescription)
       setAllowedAuthenticators(allowedAuthenticators)
-      if (options.disableDeviceFallback) {
-        setNegativeButtonText(cancelLabel)
+      if (options.disableDeviceFallback && options.cancelLabel != null) {
+        setNegativeButtonText(options.cancelLabel)
       }
-      setConfirmationRequired(requireConfirmation)
+      setConfirmationRequired(options.requireConfirmation)
     }
 
     val promptInfo = promptInfoBuilder.build()
     try {
-      biometricPrompt!!.authenticate(promptInfo)
+      localBiometricPrompt.authenticate(promptInfo)
     } catch (e: NullPointerException) {
       promise.reject(UnexpectedException("Canceled authentication due to an internal error", e))
     }
@@ -248,14 +248,14 @@ class LocalAuthenticationModule : Module() {
     }
 
     val promptMessage = options.promptMessage
-    val requireConfirmation = options.requireConfirmation
+    val promptDescription = options.promptDescription
 
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
     appContext.mainQueue.launch {
       // On Android devices older than 11, we need to use Keyguard to unlock by Device Credentials.
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-        val credentialConfirmationIntent = keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, "")
+        val credentialConfirmationIntent = keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, promptDescription)
         fragmentActivity.startActivityForResult(credentialConfirmationIntent, DEVICE_CREDENTIAL_FALLBACK_CODE)
         return@launch
       }
@@ -267,8 +267,10 @@ class LocalAuthenticationModule : Module() {
 
       val promptInfoBuilder = PromptInfo.Builder().apply {
         setTitle(promptMessage)
+        setSubtitle(options.promptSubtitle)
+        setDescription(promptDescription)
         setAllowedAuthenticators(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-        setConfirmationRequired(requireConfirmation)
+        setConfirmationRequired(options.requireConfirmation)
       }
 
       val promptInfo = promptInfoBuilder.build()
@@ -286,7 +288,7 @@ class LocalAuthenticationModule : Module() {
   // but it will be ignored on falling-back to device credential on biometric authentication.
   // That means, setting level to `SECURITY_LEVEL_SECRET` might be misleading for some users.
   // But there is no equivalent APIs prior to M.
-  // `andriodx.biometric.BiometricManager#canAuthenticate(int)` looks like an alternative,
+  // `androidx.biometric.BiometricManager#canAuthenticate(int)` looks like an alternative,
   // but specifying `BiometricManager.Authenticators.DEVICE_CREDENTIAL` alone is not
   // supported prior to API 30.
   // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)

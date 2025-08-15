@@ -4,6 +4,9 @@ description: Learn how to use the Tabs layout in Expo Router.
 hasVideoLink: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -16,6 +19,22 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 />
 
 Tabs are a common way to navigate between different sections of an app. Expo Router provides a tabs layout to help you create a tab bar at the bottom of your app. The fastest way to get started is to use a template. See the [quick start installation](/router/installation/#quick-start) to get started.
+
+This guide covers the JavaScript tabs layout. For other tab-layouts see:
+
+<BoxLink
+  title="Native tabs"
+  href="/router/advanced/native-tabs/"
+  description="See native tabs if you want to achieve a native look and feel for your tab bar."
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Custom tabs"
+  href="/router/advanced/custom-tabs/"
+  description="See custom tabs if your app requires a fully custom design that is not possible using system tabs."
+  Icon={BookOpen02Icon}
+/>
 
 Continue reading to add tabs to an existing project or to customize your app's tabs.
 

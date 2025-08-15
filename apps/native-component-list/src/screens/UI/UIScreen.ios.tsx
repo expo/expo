@@ -35,11 +35,19 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Section component',
-    route: 'ui/section',
+    name: 'Form component',
+    route: 'ui/form',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SectionScreen'));
+      return optionalRequire(() => require('./FormScreen'));
+    },
+  },
+  {
+    name: 'ShareLink component',
+    route: 'ui/share-link',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ShareLinkScreen'));
     },
   },
   {
@@ -107,11 +115,19 @@ export const UIScreens = [
     },
   },
   {
-    name: 'SwiftUI primitives',
-    route: 'ui/swiftui-primitives',
+    name: 'Hosting RN Views',
+    route: 'ui/hosting-rn-views',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SwiftUIPrimitivesScreen'));
+      return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'Modifiers',
+    route: 'ui/modifiers',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ModifiersScreen'));
     },
   },
 ];
@@ -124,7 +140,7 @@ export default function UIScreen() {
       route: `/components/${screen.route}`,
     };
   });
-  return <ComponentListScreen apis={apis} sort={false} />;
+  return <ComponentListScreen apis={apis} sort />;
 }
 
 UIScreen.navigationOptions = {

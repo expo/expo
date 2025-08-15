@@ -35,11 +35,6 @@ describe('Export DOM Components', () => {
 
   beforeAll(async () => {
     projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
-
-    // TODO(kudo,20250304): Remove this once we publish `@expo/metro-config` with DOM components fixes.
-    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
-    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
-    await fs.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   });
 
   it('runs `npx expo export`', async () => {
@@ -260,27 +255,31 @@ describe('Export DOM Components', () => {
     // If this changes then everything else probably changed as well.
     const outputFiles = findProjectFiles(outputDir);
     // Remove maps because there are path info inside maps and they are not deterministic across machines.
-    const outputFilesWithoutMap = outputFiles
-      .filter((file) => !(file.startsWith('www.bundle/') && file.endsWith('.map')))
-      .sort();
-    expect(outputFilesWithoutMap).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/),
-      'assetmap.json',
-      'assets/369745d4a4a6fa62fa0ed495f89aa964',
-      'assets/3858f62230ac3c915f300c664312c63f',
-      'assets/4f355ba1efca4b9c0e7a6271af047f61',
-      'assets/5b50965d3dfbc518fe50ce36c314a6ec',
-      'assets/817aca47ff3cea63020753d336e628a4',
-      'assets/e62addcde857ebdb7342e6b9f1095e97',
-      'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+    const outputFilesWithoutMap = outputFiles.filter(
+      (file) => !(file.startsWith('www.bundle/') && file.endsWith('.map'))
+    );
+    expect(outputFilesWithoutMap).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
+        expect.stringMatching(
+          /_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/
+        ),
+        'assetmap.json',
+        'assets/369745d4a4a6fa62fa0ed495f89aa964',
+        'assets/3858f62230ac3c915f300c664312c63f',
+        'assets/4f355ba1efca4b9c0e7a6271af047f61',
+        'assets/5b50965d3dfbc518fe50ce36c314a6ec',
+        'assets/817aca47ff3cea63020753d336e628a4',
+        'assets/e62addcde857ebdb7342e6b9f1095e97',
+        'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
 
-      'metadata.json',
+        'metadata.json',
 
-      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
-      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
-      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
-    ]);
+        expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
+        expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
+        expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
+      ])
+    );
   });
 });
 

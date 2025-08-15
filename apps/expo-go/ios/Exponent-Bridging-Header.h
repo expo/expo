@@ -33,4 +33,3 @@
 
 #import "EXScopedNotificationsUtils.h"
 #import "EXScopedNotificationSerializer.h"
-#import "EXScopedNotificationCategoryMigrator.h"

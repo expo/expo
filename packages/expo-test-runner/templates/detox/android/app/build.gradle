@@ -103,9 +103,9 @@ apply from: new File(reactNativeRoot, "react.gradle")
 def enableSeparateBuildPerCPUArchitecture = false
 
 /**
- * Run Proguard to shrink the Java bytecode in release builds.
+ * Run R8 to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInReleaseBuilds') ?: false).toBoolean()
+def enableMinifyInReleaseBuilds = (findProperty('android.enableMinifyInReleaseBuilds') ?: false).toBoolean()
 
 /**
  * The preferred build flavor of JavaScriptCore.
@@ -249,7 +249,7 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
+            minifyEnabled enableMinifyInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }

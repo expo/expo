@@ -1,13 +1,19 @@
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react-native';
+// @ts-ignore-next-line: no @types/node
+import fs from 'fs/promises';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Text, View } from 'react-native';
 
-import { useSQLiteContext, SQLiteProvider } from '../hooks';
+import { deepEqual, useSQLiteContext, SQLiteProvider, type SQLiteProviderProps } from '../hooks';
 
 jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 describe(useSQLiteContext, () => {
+  afterEach(async () => {
+    await fs.unlink('test.db').catch(() => {});
+  });
+
   it('should return a SQLite database instance', async () => {
     const wrapper = ({ children }: React.PropsWithChildren) => (
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>
@@ -20,6 +26,38 @@ describe(useSQLiteContext, () => {
     });
     expect(result.current).toHaveProperty('execAsync');
     expect(result.current).toHaveProperty('runAsync');
+  });
+
+  it('should prevent re-opening database for the same passing props', async () => {
+    const openDatabaseSpy = jest.spyOn(require('../SQLiteDatabase'), 'openDatabaseAsync');
+    const SQLiteProviderWithView = (props: Omit<SQLiteProviderProps, 'children'>) => {
+      return (
+        <SQLiteProvider {...props}>
+          <View />
+        </SQLiteProvider>
+      );
+    };
+
+    const { rerender } = render(
+      <SQLiteProviderWithView databaseName=":memory:" options={{ enableChangeListener: true }} />
+    );
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
+
+    // Passing same options from new object should not re-open the database
+    rerender(
+      <SQLiteProviderWithView databaseName=":memory:" options={{ enableChangeListener: true }} />
+    );
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
+
+    // Passing different options should re-open the database
+    rerender(<SQLiteProviderWithView databaseName=":memory:" />);
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(2);
+
+    // Passing different databaseName should re-open the database
+    rerender(<SQLiteProviderWithView databaseName="test.db" />);
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(3);
+
+    openDatabaseSpy.mockRestore();
   });
 
   it('should return the same SQLite instance on subsequent calls', async () => {
@@ -142,5 +180,26 @@ describe(useSQLiteContext, () => {
       );
     });
     consoleErrorSpy.mockRestore();
+  });
+});
+
+describe(deepEqual, () => {
+  it('should return true for two identical objects', () => {
+    const obj1 = { a: 1, b: { c: 2 } };
+    const obj2 = { a: 1, b: { c: 2 } };
+    expect(deepEqual(obj1, obj2)).toBe(true);
+  });
+
+  it('should return false for two different objects', () => {
+    const obj1 = { a: 1, b: { c: 2 } };
+    const obj2 = { a: 1, b: { c: 3 } };
+    expect(deepEqual(obj1, obj2)).toBe(false);
+  });
+
+  it('should handle undefined values', () => {
+    expect(deepEqual(undefined, undefined)).toBe(true);
+    expect(deepEqual(undefined, {})).toBe(false);
+    expect(deepEqual({}, undefined)).toBe(false);
+    expect(deepEqual({ a: 1, b: { c: 2 } }, { a: 1 })).toBe(false);
   });
 });

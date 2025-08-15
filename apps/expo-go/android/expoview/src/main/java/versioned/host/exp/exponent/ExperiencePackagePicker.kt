@@ -26,7 +26,8 @@ import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
-import expo.modules.filesystem.FileSystemPackage
+import expo.modules.filesystem.legacy.FileSystemLegacyModule
+import expo.modules.filesystem.legacy.FileSystemPackage
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLObjectManagerModule
@@ -161,6 +162,7 @@ object ExperiencePackagePicker : ModulesProvider {
     FontUtilsModule::class.java,
     ExpoLinkingModule::class.java,
     FileSystemModule::class.java,
+    FileSystemLegacyModule::class.java,
     FontLoaderModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,

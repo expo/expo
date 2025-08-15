@@ -303,7 +303,9 @@ public class CalendarModule: Module {
     }
 
     AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in
-      try checkCalendarPermissions()
+      if #unavailable(iOS 17.0) {
+        try checkCalendarPermissions()
+      }
       guard calendarDialogDelegate == nil else {
         throw EventDialogInProgressException()
       }

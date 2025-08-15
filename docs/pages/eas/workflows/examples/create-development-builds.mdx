@@ -1,0 +1,116 @@
+---
+title: Create development builds with EAS Workflows
+sidebar_title: Create development builds
+description: Learn how to create development builds with EAS Workflows.
+hideTOC: true
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+[Development builds](/develop/development-builds/introduction/) are specialized builds of your project that include Expo's developer tools. These types of builds include all native dependencies inside your project, enabling you to run a production-like build of your project on a simulator, emulator, or a physical device. This workflow allows you to create development builds for each platform and for both physical devices, Android emulators, and iOS simulators, which your team can access with `eas build:dev`.
+
+<ContentSpotlight
+  alt="Graph showing the development builds workflow."
+  src="/static/images/eas-workflows/create-development-builds.png"
+/>
+
+<VideoBoxLink
+  className="mb-4"
+  videoId="u8MAJ0F18s0"
+  title="Expo Golden Workflow: Automate the creation of development builds"
+/>
+
+## Get started
+
+<Prerequisites summary="Prerequisites" numberOfRequirements={2}>
+  <Requirement number={1} title="Set up your environment">
+    To get started, you'll need to configure your project and devices to build and run development builds. Learn how to set up your environment for development builds with the following guides:
+
+<BoxLink
+  title="Android device setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=android&device=physical"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Android Emulator setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=android&device=simulated"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="iOS device setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=physical"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="iOS Simulator setup"
+  description="Get your project ready for development builds."
+  href="/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=simulated"
+  Icon={BookOpen02Icon}
+/>
+
+  </Requirement>
+  <Requirement number={2} title="Create build profiles">
+  After you've configured your project and devices, add the following build profiles to your **eas.json** file.
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+  </Requirement>
+</Prerequisites>
+
+The following workflow creates a build for each platform and for both physical devices, Android emulators, and iOS simulators. They all will run in parallel.
+
+```yaml .eas/workflows/create-development-builds.yml
+name: Create development builds
+
+jobs:
+  android_development_build:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: development
+  ios_device_development_build:
+    name: Build iOS device
+    type: build
+    params:
+      platform: ios
+      profile: development
+  ios_simulator_development_build:
+    name: Build iOS simulator
+    type: build
+    params:
+      platform: ios
+      profile: development-simulator
+```
+
+Run the above workflow with:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/create-development-builds.yml']} />

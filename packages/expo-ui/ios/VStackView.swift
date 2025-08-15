@@ -24,6 +24,9 @@ internal final class VStackViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierP
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var spacing: Double?
   @Field var useTapGesture: Bool?
   @Field var alignment: HorizontalAlignmentOptions?

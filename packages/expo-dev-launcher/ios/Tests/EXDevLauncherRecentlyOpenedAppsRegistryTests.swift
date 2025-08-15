@@ -6,7 +6,7 @@ import XCTest
 
 class EXDevLauncherRecentlyOpenedAppsRegistry3DaysAgo: EXDevLauncherRecentlyOpenedAppsRegistry {
   override func getCurrentTimestamp() -> Int64 {
-    return Int64((Date().timeIntervalSince1970 - (60 * 60 * 24 * 3) - 1) * 1_000); // 3 days and 1 second ago
+    return Int64((Date().timeIntervalSince1970 - (60 * 60 * 24 * 3) - 1) * 1_000) // 3 days and 1 second ago
   }
 }
 
@@ -26,11 +26,11 @@ class EXDevLauncherRecentlyOpenedAppsRegistryTests: XCTestCase {
     let urlString = "http://localhost:8081"
 
     let registry1 = EXDevLauncherRecentlyOpenedAppsRegistry()
-    registry1.appWasOpened(urlString, queryParams:[:], manifest: nil)
+    registry1.appWasOpened(urlString, queryParams: [:], manifest: nil)
 
     let registry2 = EXDevLauncherRecentlyOpenedAppsRegistry()
     let recentlyOpenedApps = registry2.recentlyOpenedApps()
-    
+
     XCTAssertNotNil(recentlyOpenedApps[0])
     XCTAssertEqual(recentlyOpenedApps[0]["url"] as! String, urlString)
   }
@@ -43,7 +43,7 @@ class EXDevLauncherRecentlyOpenedAppsRegistryTests: XCTestCase {
 
     let registryNew = EXDevLauncherRecentlyOpenedAppsRegistry()
     let recentlyOpenedApps = registryNew.recentlyOpenedApps()
-    
+
     XCTAssertTrue(recentlyOpenedApps.count == 0)
   }
 }

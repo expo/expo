@@ -2,6 +2,9 @@ import { requireNativeView } from 'expo';
 import { useState } from 'react';
 import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
 
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
+
 export type HostProps = {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
@@ -29,7 +32,7 @@ export type HostProps = {
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-};
+} & CommonViewModifierProps;
 
 const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI', 'HostView');
 
@@ -37,10 +40,13 @@ const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, style, ...restProps } = props;
+  const { matchContents, onLayoutContent, style, modifiers, ...restProps } = props;
   const [containerStyle, setContainerStyle] = useState<ViewStyle | null>(null);
+
   return (
     <HostNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       style={[style, containerStyle]}
       onLayoutContent={(e) => {
         onLayoutContent?.(e);

@@ -10,8 +10,8 @@ class CameraExceptions {
   class ImageRetrievalException(url: String) :
     CodedException("Could not get the image from given url: '$url'")
 
-  class UnsupportedAspectRatioException(aspectRatio: String) :
-    CodedException("Unsupported aspect ratio: '$aspectRatio'")
+  class BarcodeScanningCancelledException() :
+    CodedException("Barcode scanning was cancelled")
 
   class BarcodeScanningFailedException :
     CodedException("Barcode scanning failed")

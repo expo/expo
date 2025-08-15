@@ -1,9 +1,22 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import React_RCTAppDelegate
+import React
 
-public class ExpoReactNativeFactory: RCTReactNativeFactory {
+@MainActor public class ExpoReactNativeFactory: RCTReactNativeFactory {
   private let reactDelegate = ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers)
+
+  @objc public override init(delegate: any RCTReactNativeFactoryDelegate) {
+    let releaseLevel = (Bundle.main.object(forInfoDictionaryKey: "ReactNativeReleaseLevel") as? String)
+      .flatMap { [
+        "canary": RCTReleaseLevel.Canary,
+        "experimental": RCTReleaseLevel.Experimental,
+        "stable": RCTReleaseLevel.Stable
+      ][$0.lowercased()]
+      }
+    ?? RCTReleaseLevel.Stable
+
+    super.init(delegate: delegate, releaseLevel: releaseLevel)
+  }
 
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
     // Alan: This is temporary. We need to cast to ExpoReactNativeFactoryDelegate here because currently, if you extend RCTReactNativeFactory

@@ -3,7 +3,7 @@ import { AndroidConfig, IOSConfig } from 'expo/config-plugins';
 
 import withUpdates from '../withUpdates';
 
-jest.mock('@expo/config');
+jest.mock('expo/config');
 
 describe('Updates plugin', () => {
   beforeAll(() => {

@@ -366,6 +366,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/root-layout': '/router/basics/layout/#root-layout',
   '/router/advance/stack': '/router/advanced/stack/',
   '/router/advance/tabs': '/router/advanced/tabs/',
+  '/router/advance/native-tabs': '/router/advanced/native-tabs/',
   '/router/advance/drawer': '/router/advanced/drawer/',
   '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
   '/router/advance/modal': '/router/advanced/modals/',
@@ -479,8 +480,18 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
   '/eas/workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
 
+  // After moving eas/workflows/examples to eas/workflows/examples/*
+  '/eas/workflows/examples/': '/eas/workflows/examples/introduction/',
+  '/eas/workflows/examples/#development-builds-workflow/':
+    '/eas/workflows/examples/create-development-builds/',
+  '/eas/workflows/examples/#preview-updates-workflow/':
+    '/eas/workflows/examples/publish-preview-update/',
+  '/eas/workflows/examples/#deploy-to-production-workflow/':
+    '/eas/workflows/examples/deploy-to-production/',
+  '/eas/workflows/reference/e2e-tests/': '/eas/workflows/examples/e2e-tests/',
+
   // After moving e2e-tests to eas/workflows/reference
-  '/build-reference/e2e-tests/': '/eas/workflows/reference/e2e-tests/',
+  '/build-reference/e2e-tests/': '/eas/workflows/examples/e2e-tests/',
 
   // After merging EAS environment variables guides
   '/eas/using-environment-variables/': '/eas/environment-variables/',

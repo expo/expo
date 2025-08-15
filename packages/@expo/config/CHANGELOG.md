@@ -8,6 +8,24 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 12.0.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.13 - 2025-07-08
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.12 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.11 - 2025-07-01
+
+### 🐛 Bug fixes
+
 - Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
 
 ### 💡 Others

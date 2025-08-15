@@ -1,7 +1,10 @@
 import React from 'react';
+import { Text } from 'react-native';
 
+import { Link } from '../exports';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
 import { screen, renderRouter, act } from '../testing-library';
 
 it('prefetch a sibling route', () => {
@@ -40,7 +43,7 @@ it('prefetch a sibling route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -56,7 +59,7 @@ it('prefetch a sibling route', () => {
               params: {},
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -109,7 +112,7 @@ it('will prefetch the correct route within a group', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -125,7 +128,7 @@ it('will prefetch the correct route within a group', () => {
               params: {},
             },
           ],
-          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index', '_sitemap', '+not-found'],
+          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index'],
           routes: [
             {
               key: expect.any(String),
@@ -178,7 +181,7 @@ it('will prefetch the correct route within nested groups', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -194,14 +197,7 @@ it('will prefetch the correct route within nested groups', () => {
               params: {},
             },
           ],
-          routeNames: [
-            '(b)/test',
-            '(a)/index',
-            '(b)/index',
-            '(a)/(c)/test',
-            '_sitemap',
-            '+not-found',
-          ],
+          routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test'],
           routes: [
             {
               key: expect.any(String),
@@ -252,7 +248,7 @@ it('works with relative Href', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -268,7 +264,7 @@ it('works with relative Href', () => {
               params: {},
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -319,7 +315,7 @@ it('works with params', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -337,7 +333,7 @@ it('works with params', () => {
               },
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -403,7 +399,7 @@ it('ignores the current route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -413,7 +409,7 @@ it('ignores the current route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -517,7 +513,7 @@ it('can prefetch a deeply nested route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -527,7 +523,7 @@ it('can prefetch a deeply nested route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -647,7 +643,7 @@ it('can prefetch a parent route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -657,7 +653,7 @@ it('can prefetch a parent route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -711,4 +707,86 @@ it('can prefetch a parent route', () => {
     stale: false,
     type: 'stack',
   });
+});
+
+it('can still use <Screen /> while prefetching in stack', () => {
+  const headerTitle = jest.fn(() => null);
+  renderRouter({
+    _layout: () => (
+      <Stack screenOptions={{ headerTitle }}>
+        <Stack.Screen name="index" options={{ title: 'index' }} />
+        <Stack.Screen name="second" options={{ title: 'custom-title' }} />
+      </Stack>
+    ),
+    index: () => <Link href="/second" prefetch />,
+    second: () => {
+      return (
+        <>
+          <Stack.Screen options={{ title: 'Should only change after focus' }} />
+          <Text testID="second">Second</Text>
+        </>
+      );
+    },
+  });
+
+  expect(headerTitle.mock.calls).toStrictEqual([
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+  ]);
+
+  // Check that it actually prefetched the screen
+  expect(screen.UNSAFE_getByProps({ title: 'custom-title' })).toBeDefined();
+
+  headerTitle.mockClear();
+  act(() => router.push('/second'));
+
+  expect(headerTitle.mock.calls).toStrictEqual([
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+  ]);
+});
+
+it('can still use <Screen /> while prefetching in tabs', () => {
+  const headerTitle = jest.fn(() => null);
+  renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ headerTitle }}>
+        <Tabs.Screen name="index" options={{ title: 'index' }} />
+        <Tabs.Screen name="second" options={{ title: 'custom-title' }} />
+      </Tabs>
+    ),
+    index: () => <Link href="/second" prefetch />,
+    second: () => {
+      return (
+        <>
+          <Stack.Screen options={{ title: 'Should only change after focus' }} />
+          <Text testID="second">Second</Text>
+        </>
+      );
+    },
+  });
+
+  expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
+    'index',
+    'index',
+    'custom-title',
+    'index',
+    'Should only change after focus',
+  ]);
+
+  headerTitle.mockClear();
+  act(() => router.push('/second'));
+
+  expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
+    'index',
+    'Should only change after focus',
+    'index',
+    'Should only change after focus',
+    'index',
+  ]);
 });

@@ -1,4 +1,6 @@
-import { NavigationAction } from '@react-navigation/native';
+import { NavigationAction, type NavigationState, PartialRoute, type PartialState, type NavigationContainerRef, ParamListBase } from '@react-navigation/native';
+import { type RefObject } from 'react';
+import { ResultState } from '../fork/getStateFromPath';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 export declare const routingQueue: {
@@ -12,7 +14,7 @@ export declare const routingQueue: {
         target?: string;
     }>[];
     add(action: NavigationAction): void;
-    run(): void;
+    run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>): void;
 };
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(url: Href, options?: NavigationOptions): void;
@@ -44,6 +46,34 @@ export type LinkToOptions = {
      * If used with `push`, the history will be filtered even if no navigation occurs.
      */
     dangerouslySingular?: SingularOptions;
+    __internal__PreviewKey?: string;
 };
 export declare function linkTo(originalHref: Href, options?: LinkToOptions): void;
+/**
+ * React Navigation uses params to store information about the screens, rather then create new state for each level.
+ * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
+ */
+export declare function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>): Record<string, any>;
+export declare function findDivergentState(_actionState: ResultState, _navigationState: NavigationState, lookThroughAllTabs?: boolean): {
+    actionState: PartialState<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>>;
+    navigationState: Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>;
+    actionStateRoute: PartialRoute<any> | undefined;
+    navigationRoutes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+};
 //# sourceMappingURL=routing.d.ts.map

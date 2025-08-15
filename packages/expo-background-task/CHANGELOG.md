@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.0.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
+- [iOS] Rethrow obj-c exception as swift error. ([#38714](https://github.com/expo/expo/pull/38714) by [@jakex7](https://github.com/jakex7))
+
+## 0.2.8 - 2025-07-01
+
+### 💡 Others
+
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.2.7 — 2025-05-08

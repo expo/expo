@@ -47,11 +47,8 @@ exports.hashKey = hashKey;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
-const template_1 = __importDefault(require("@babel/template"));
-const traverse_1 = __importDefault(require("@babel/traverse"));
-const types_1 = require("@babel/types");
-const t = __importStar(require("@babel/types"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const crypto = __importStar(require("node:crypto"));
 const debug = require('debug')('expo:metro:collect-dependencies');
@@ -80,7 +77,7 @@ function collectDependencies(ast, options) {
         unstable_isESMImportAtSource: options.unstable_isESMImportAtSource ?? null,
         collectOnly: options.collectOnly,
     };
-    (0, traverse_1.default)(ast, {
+    (0, core_1.traverse)(ast, {
         // Match new Worker() patterns
         NewExpression(path, state) {
             if (path.node.callee.type === 'Identifier' &&
@@ -106,7 +103,7 @@ function collectDependencies(ast, options) {
             }
             const callee = path.node.callee;
             const name = callee.type === 'Identifier' ? callee.name : null;
-            if ((0, types_1.isImport)(callee)) {
+            if (core_1.types.isImport(callee)) {
                 processImportCall(path, state, {
                     asyncType: 'async',
                     isESMImport: true,
@@ -198,9 +195,9 @@ function collectDependencies(ast, options) {
         ExportNamedDeclaration: collectImports,
         ExportAllDeclaration: collectImports,
         Program(path, state) {
-            state.asyncRequireModulePathStringLiteral = t.stringLiteral(options.asyncRequireModulePath);
+            state.asyncRequireModulePathStringLiteral = core_1.types.stringLiteral(options.asyncRequireModulePath);
             if (options.dependencyMapName != null) {
-                state.dependencyMapIdentifier = t.identifier(options.dependencyMapName);
+                state.dependencyMapIdentifier = core_1.types.identifier(options.dependencyMapName);
             }
             else {
                 state.dependencyMapIdentifier = path.scope.generateUidIdentifier('dependencyMap');
@@ -313,7 +310,7 @@ function processRequireContextCall(path, state) {
     // this enables calling collectDependencies multiple times on the same AST.
     if (state.collectOnly !== true) {
         // require() the generated module representing this context
-        path.get('callee').replaceWith(t.identifier('require'));
+        path.get('callee').replaceWith(core_1.types.identifier('require'));
     }
     transformer.transformSyncRequire(path, dep, state);
 }
@@ -370,12 +367,12 @@ function processResolveWorkerCallWithName(name, path, state) {
 }
 function getExportNamesFromPath(path) {
     if (path.node.source) {
-        if (t.isExportAllDeclaration(path.node)) {
+        if (core_1.types.isExportAllDeclaration(path.node)) {
             return ['*'];
         }
-        else if (t.isExportNamedDeclaration(path.node)) {
+        else if (core_1.types.isExportNamedDeclaration(path.node)) {
             return path.node.specifiers.map((specifier) => {
-                const exportedName = t.isIdentifier(specifier.exported)
+                const exportedName = core_1.types.isIdentifier(specifier.exported)
                     ? specifier.exported.name
                     : specifier.exported.value;
                 const localName = 'local' in specifier ? specifier.local.name : exportedName;
@@ -383,7 +380,7 @@ function getExportNamesFromPath(path) {
                 return specifier.type === 'ExportSpecifier' ? localName : exportedName;
             });
         }
-        else if (t.isImportDeclaration(path.node)) {
+        else if (core_1.types.isImportDeclaration(path.node)) {
             return path.node.specifiers
                 .map((specifier) => {
                 if (specifier.type === 'ImportDefaultSpecifier') {
@@ -392,7 +389,7 @@ function getExportNamesFromPath(path) {
                 else if (specifier.type === 'ImportNamespaceSpecifier') {
                     return '*';
                 }
-                return t.isImportSpecifier(specifier) && t.isIdentifier(specifier.imported)
+                return core_1.types.isImportSpecifier(specifier) && core_1.types.isIdentifier(specifier.imported)
                     ? specifier.imported.name
                     : null;
             })
@@ -505,7 +502,7 @@ function getNearestLocFromPath(path) {
     }
     // Avoid using the location of the `Program` node,
     // to avoid conflating locations of single line code
-    if (current && t.isProgram(current.node)) {
+    if (current && core_1.types.isProgram(current.node)) {
         current = null;
     }
     return current?.node.METRO_INLINE_REQUIRES_INIT_LOC ?? current?.node.loc;
@@ -516,6 +513,7 @@ function registerDependency(state, qualifier, path) {
     if (loc != null) {
         dependency.locs.push(loc);
     }
+    dependency.imports += 1;
     return dependency;
 }
 function isOptionalDependency(name, path, state) {
@@ -569,7 +567,7 @@ exports.InvalidRequireCallError = InvalidRequireCallError;
  * is reached. This makes dynamic require errors catchable by libraries that
  * want to use them.
  */
-const dynamicRequireErrorTemplate = template_1.default.expression(`
+const dynamicRequireErrorTemplate = core_1.template.expression(`
   (function(line) {
     throw new Error(
       'Dynamic require defined at line ' + line + '; not supported by Metro',
@@ -580,28 +578,28 @@ const dynamicRequireErrorTemplate = template_1.default.expression(`
  * Produces a Babel template that transforms an "import(...)" call into a
  * "require(...)" call to the asyncRequire specified.
  */
-const makeAsyncRequireTemplate = template_1.default.expression(`
+const makeAsyncRequireTemplate = core_1.template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH)(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
-const makeAsyncRequireTemplateWithName = template_1.default.expression(`
+const makeAsyncRequireTemplateWithName = core_1.template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH)(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
-const makeAsyncPrefetchTemplate = template_1.default.expression(`
+const makeAsyncPrefetchTemplate = core_1.template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).prefetch(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
-const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
+const makeAsyncPrefetchTemplateWithName = core_1.template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).prefetch(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
-const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
+const makeAsyncImportMaybeSyncTemplate = core_1.template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
-const makeResolveTemplate = template_1.default.expression(`
+const makeResolveTemplate = core_1.template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_resolve(MODULE_ID, DEPENDENCY_MAP.paths)
 `);
-const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
+const makeAsyncImportMaybeSyncTemplateWithName = core_1.template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
-const makeResolveWeakTemplate = template_1.default.expression(`
+const makeResolveWeakTemplate = core_1.template.expression(`
   MODULE_ID
 `);
 const DefaultDependencyTransformer = {
@@ -610,7 +608,7 @@ const DefaultDependencyTransformer = {
         path.node.arguments = [moduleIDExpression];
         // Always add the debug name argument last
         if (state.keepRequireNames || dependency.isOptional) {
-            path.node.arguments.push(t.stringLiteral(dependency.name));
+            path.node.arguments.push(core_1.types.stringLiteral(dependency.name));
         }
     },
     transformImportCall(path, dependency, state) {
@@ -652,15 +650,15 @@ const DefaultDependencyTransformer = {
     },
     transformIllegalDynamicRequire(path, state) {
         path.replaceWith(dynamicRequireErrorTemplate({
-            LINE: t.numericLiteral(path.node.loc?.start.line ?? 0),
+            LINE: core_1.types.numericLiteral(path.node.loc?.start.line ?? 0),
         }));
     },
 };
 function createModuleIDExpression(dependency, state) {
-    return t.memberExpression(nullthrows(state.dependencyMapIdentifier), t.numericLiteral(dependency.index), true);
+    return core_1.types.memberExpression(nullthrows(state.dependencyMapIdentifier), core_1.types.numericLiteral(dependency.index), true);
 }
 function createModuleNameLiteral(dependency) {
-    return t.stringLiteral(dependency.name);
+    return core_1.types.stringLiteral(dependency.name);
 }
 /**
  * Given an import qualifier, return a key used to register the dependency.
@@ -721,6 +719,7 @@ class DependencyRegistry {
                 index: this._dependencies.size,
                 key: hashKey(key),
                 exportNames: qualifier.exportNames,
+                imports: 0,
             };
             if (qualifier.optional) {
                 newDependency.isOptional = true;

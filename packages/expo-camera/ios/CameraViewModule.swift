@@ -379,7 +379,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
   @available(iOS 16.0, *)
   @MainActor
   private func launchScanner(with options: VisionScannerOptions?) {
-    let symbologies = options?.toSymbology() ?? [.qr]
+    let symbologies = options?.toSymbology() ?? []
     let controller = DataScannerViewController(
       recognizedDataTypes: [.barcode(symbologies: symbologies)],
       isPinchToZoomEnabled: options?.isPinchToZoomEnabled ?? true,

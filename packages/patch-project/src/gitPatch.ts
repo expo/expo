@@ -53,7 +53,7 @@ export async function diffAsync(
 }
 
 export async function applyPatchAsync(projectRoot: string, patchFilePath: string) {
-  return await runGitAsync(['apply', patchFilePath], { cwd: projectRoot });
+  return await runGitAsync(['apply', '--ignore-whitespace', patchFilePath], { cwd: projectRoot });
 }
 
 export async function getPatchChangedLinesAsync(patchFilePath: string): Promise<number> {

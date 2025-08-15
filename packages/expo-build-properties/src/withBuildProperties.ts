@@ -2,13 +2,14 @@ import { ConfigPlugin } from 'expo/config-plugins';
 
 import {
   withAndroidBuildProperties,
+  withAndroidCleartextTraffic,
+  withAndroidDayNightTheme,
   withAndroidProguardRules,
   withAndroidPurgeProguardRulesOnce,
-  withAndroidCleartextTraffic,
   withAndroidQueries,
-  withAndroidDayNightTheme,
+  withAndroidSettingsGradle,
 } from './android';
-import { withIosBuildProperties, withIosDeploymentTarget } from './ios';
+import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
 import { PluginConfigType, validateConfig } from './pluginConfig';
 
 /**
@@ -23,6 +24,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
 
   config = withAndroidProguardRules(config, pluginConfig);
   config = withAndroidCleartextTraffic(config, pluginConfig);
+  config = withAndroidSettingsGradle(config, pluginConfig);
   config = withAndroidQueries(config, pluginConfig);
   // Assuming `withBuildProperties` could be called multiple times from different config-plugins,
   // the `withAndroidProguardRules` always appends new rules by default.
@@ -35,6 +37,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
 
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);
+  config = withIosInfoPlist(config, pluginConfig);
 
   return config;
 };

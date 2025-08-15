@@ -18,7 +18,7 @@ import java.util.Date
 class SelectionPolicyFilterAwareTest {
   private val config = UpdatesConfiguration(null, mapOf<String, Any>("updateUrl" to Uri.parse("https://exp.host/@test/test")))
   private val manifestFilters = JSONObject("{\"branchname\": \"rollout\"}")
-  private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy("1.0")
+  private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy("1.0", config)
   private val updateRollout0 = ExpoUpdatesManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e71\",\"createdAt\":\"2021-01-10T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}")).let {
     ExpoUpdatesUpdate.fromExpoUpdatesManifest(it, null, config).updateEntity
   }

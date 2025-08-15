@@ -213,4 +213,93 @@ describe(withBuildProperties, () => {
       'apple.privacyManifestAggregationEnabled': 'true',
     });
   });
+
+  it('generates the ios.buildReactNativeFromSource property', async () => {
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { buildReactNativeFromSource: true } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      'ios.buildReactNativeFromSource': 'true',
+      EX_DEV_CLIENT_NETWORK_INSPECTOR: 'true',
+      'apple.privacyManifestAggregationEnabled': 'true',
+    });
+  });
+
+  it('generates the android.buildArchs property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { buildArchs: ['armeabi-v7a', 'arm64-v8a'] },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'reactNativeArchitectures',
+      value: 'armeabi-v7a,arm64-v8a',
+    });
+  });
+
+  it('generates the android.exclusiveMavenMirror property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { exclusiveMavenMirror: 'https://my.internal.proxy.net/' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'exclusiveEnterpriseRepository',
+      value: 'https://my.internal.proxy.net/',
+    });
+  });
+
+  it('generates the android.reactNativeReleaseLevel property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { reactNativeReleaseLevel: 'canary' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'reactNativeReleaseLevel',
+      value: 'canary',
+    });
+  });
 });

@@ -176,6 +176,8 @@ Otherwise, you must add the following permissions to your **app.json** inside th
 
 ### iOS
 
+If you only intend to create events using system-provided calendar UI with [`createEventInCalendarAsync`](#createeventincalendarasynceventdata-presentationoptions), you don't need to request permissions.
+
 The following usage description keys are used by this library:
 
 <IOSPermissions permissions={['NSCalendarsUsageDescription', 'NSRemindersUsageDescription']} />

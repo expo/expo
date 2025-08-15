@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.util.Rational
+import android.view.accessibility.CaptioningManager
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -33,6 +34,8 @@ import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoTrack
 import expo.modules.video.utils.applyPiPParams
+import expo.modules.video.records.FullscreenOptions
+import expo.modules.video.utils.SubtitleUtils
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculatePiPAspectRatio
 import expo.modules.video.utils.calculateRectHint
@@ -72,6 +75,14 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
   private var pictureInPictureHelperTag: String? = null
   private var reactNativeEventDispatcher: EventDispatcher? = null
+  private var captioningChangeListener: CaptioningManager.CaptioningChangeListener? = null
+
+  private val windowFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+    if (hasFocus) {
+      // Reconfigure when window gains focus (returning from settings)
+      SubtitleUtils.configureSubtitleView(playerView, context)
+    }
+  }
 
   // We need to keep track of the target surface view visibility, but only apply it when `useExoShutter` is false.
   var shouldHideSurfaceView: Boolean = true
@@ -132,6 +143,17 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       field = value
     }
 
+  var fullscreenOptions: FullscreenOptions = FullscreenOptions()
+    set(value) {
+      field = value
+      if (value.enable) {
+        playerView.setFullscreenButtonClickListener { enterFullscreen() }
+      } else {
+        playerView.setFullscreenButtonClickListener(null)
+        playerView.setFullscreenButtonVisibility(false)
+      }
+    }
+
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
@@ -150,6 +172,9 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     // Start with the SurfaceView being transparent to avoid any flickers when the prop value is delivered.
     this.playerView.setShutterBackgroundColor(Color.TRANSPARENT)
     this.playerView.videoSurfaceView?.alpha = 0f
+
+    // Configure subtitle view to fix sizing issues with embedded styles
+    SubtitleUtils.configureSubtitleView(playerView, context)
     addView(
       playerView,
       ViewGroup.LayoutParams(
@@ -172,6 +197,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   fun enterFullscreen() {
     val intent = Intent(context, FullscreenPlayerActivity::class.java)
     intent.putExtra(VideoManager.INTENT_PLAYER_KEY, videoViewId)
+    intent.putExtra(FullscreenPlayerActivity.INTENT_FULLSCREEN_OPTIONS_KEY, fullscreenOptions)
     // Set before starting the activity to avoid entering PiP unintentionally
     isInFullscreen = true
     currentActivity.startActivity(intent)
@@ -306,7 +332,24 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
         .add(fragment, fragment.id)
         .commitAllowingStateLoss()
     }
+
+    // Set up listener for accessibility caption changes when attached to window
+    setupCaptioningChangeListener()
+    // Reconfigure when view is attached (handles returning from settings)
+    SubtitleUtils.configureSubtitleView(playerView, context)
+
+    // Set up window focus change listener
+    decorView.onFocusChangeListener = windowFocusChangeListener
+
     applyPiPParams(currentActivity, autoEnterPiP)
+  }
+
+  override fun onVisibilityChanged(changedView: View, visibility: Int) {
+    super.onVisibilityChanged(changedView, visibility)
+    if (visibility == View.VISIBLE) {
+      // Reconfigure subtitles when view becomes visible (immediate response)
+      SubtitleUtils.configureSubtitleView(playerView, context)
+    }
   }
 
   override fun onDetachedFromWindow() {
@@ -318,6 +361,17 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
         .remove(fragment)
         .commitAllowingStateLoss()
     }
+
+    // Clean up captioning change listener
+    captioningChangeListener?.let {
+      val captioningManager = context.getSystemService(Context.CAPTIONING_SERVICE) as? CaptioningManager
+      captioningManager?.removeCaptioningChangeListener(it)
+      captioningChangeListener = null
+    }
+
+    // Clean up window focus listener
+    decorView.onFocusChangeListener = null
+
     applyPiPParams(currentActivity, false)
   }
 
@@ -354,6 +408,16 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       R.layout.texture_player_view
     } else {
       R.layout.surface_player_view
+    }
+  }
+
+  private fun setupCaptioningChangeListener() {
+    val captioningManager = context.getSystemService(Context.CAPTIONING_SERVICE) as? CaptioningManager
+
+    captioningChangeListener = SubtitleUtils.createCaptioningChangeListener(playerView, context)
+
+    captioningChangeListener?.let { listener ->
+      captioningManager?.addCaptioningChangeListener(listener)
     }
   }
 

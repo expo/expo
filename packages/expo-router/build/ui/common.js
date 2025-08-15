@@ -7,6 +7,7 @@ const href_1 = require("../link/href");
 const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
 const Slot_1 = require("./Slot");
+const constants_1 = require("../constants");
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 exports.ViewSlot = Slot_1.Slot;
 exports.SafeAreaViewSlot = Slot_1.Slot;
@@ -45,6 +46,12 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             continue;
         }
         let routeState = state;
+        if (routeState.name === constants_1.NOT_FOUND_ROUTE_NAME) {
+            if (process.env.NODE_ENV !== 'production') {
+                console.warn(`Tab trigger '${trigger.name}' has the href '${trigger.href}' which points to a +not-found route.`);
+            }
+            continue;
+        }
         const targetStateName = layoutRouteNode.route || '__root';
         // The state object is the current state from the rootNavigator
         // We need to work out the state for just this trigger
@@ -57,12 +64,6 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
         const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
         if (!routeNode) {
             console.warn(`Unable to find routeNode for trigger ${JSON.stringify(trigger)}. This might be a bug with Expo Router`);
-            continue;
-        }
-        if (routeNode.generated && routeNode.internal && routeNode.route.includes('+not-found')) {
-            if (process.env.NODE_ENV !== 'production') {
-                console.warn(`Tab trigger '${trigger.name}' has the href '${trigger.href}' which points to a +not-found route.`);
-            }
             continue;
         }
         const duplicateTrigger = trigger.type === 'internal' &&

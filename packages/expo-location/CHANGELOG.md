@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 19.0.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.6 - 2025-07-01
+
+### 💡 Others
+
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 18.1.5 — 2025-05-08

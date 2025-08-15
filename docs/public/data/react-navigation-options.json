@@ -1,0 +1,324 @@
+{
+  "source": "React Navigation Documentation (Markdown)",
+  "sourceUrl": "https://raw.githubusercontent.com/react-navigation/react-navigation.github.io/main/versioned_docs/version-7.x/native-stack-navigator.md",
+  "fetchedAt": "2025-05-27T18:58:23.643Z",
+  "totalOptions": 52,
+  "categories": {
+    "header": 25,
+    "other": 27
+  },
+  "options": [
+    {
+      "name": "title",
+      "description": "String that can be used as a fallback for `headerTitle`.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerBackButtonMenuEnabled",
+      "description": "Boolean indicating whether to show the menu on longPress of iOS >= 14 back button. Defaults to `true`.",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerBackVisible",
+      "description": "Whether the back button is visible in the header. You can use it to show a back button alongside `headerLeft` if you have specified it.\n\nThis will have no effect on the first screen in the stack.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerBackTitle",
+      "description": "Title string used by the back button on iOS. Defaults to the previous scene's title, \"Back\" or arrow icon depending on the available space. See `headerBackButtonDisplayMode` to read about limitations and customize the behavior.\n\nUse `headerBackButtonDisplayMode: \"minimal\"` to hide it.",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerBackButtonDisplayMode",
+      "description": "How the back button displays icon and title.\n\nSupported values:\n\n- \"default\" - Displays one of the following depending on the available space: previous screen's title, generic title (e.g. 'Back') or no title (only icon).\n- \"generic\" – Displays one of the following depending on the available space: generic title (e.g. 'Back') or no title (only icon).\n- \"minimal\" – Always displays only the icon without a title.\n\nThe space-aware behavior is disabled when:\n\n- The iOS version is 13 or lower\n- Custom font family or size is set (e.g. with `headerBackTitleStyle`)\n- Back button menu is disabled (e.g. with `headerBackButtonMenuEnabled`)\n\nIn such cases, a static title and icon are always displayed.",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerBackTitleStyle",
+      "description": "Style object for header back title. Supported properties:\n\n- `fontFamily`\n- `fontSize`",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerBackImageSource",
+      "description": "Image to display in the header as the icon in the back button. Defaults to back icon image for the platform\n\n- A chevron on iOS\n- An arrow on Android",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerLargeStyle",
+      "description": "Style of the header when a large title is shown. The large title is shown if `headerLargeTitle` is `true` and the edge of any scrollable content reaches the matching edge of the header.\n\nSupported properties:\n\n- backgroundColor",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerLargeTitle",
+      "description": "Whether to enable header with large title which collapses to regular header on scroll.\nDefaults to `false`.\n\nFor large title to collapse on scroll, the content of the screen should be wrapped in a scrollable view such as `ScrollView` or `FlatList`. If the scrollable area doesn't fill the screen, the large title won't collapse on scroll. You also need to specify `contentInsetAdjustmentBehavior=\"automatic\"` in your `ScrollView`, `FlatList` etc.",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerLargeTitleShadowVisible",
+      "description": "Whether drop shadow of header is visible when a large title is shown.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerLargeTitleStyle",
+      "description": "Style object for large title in header. Supported properties:\n\n- `fontFamily`\n- `fontSize`\n- `fontWeight`\n- `color`",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerShown",
+      "description": "Whether to show the header. The header is shown by default. Setting this to `false` hides the header.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerStyle",
+      "description": "Style object for header. Supported properties:\n\n- `backgroundColor`",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerShadowVisible",
+      "description": "Whether to hide the elevation shadow (Android) or the bottom border (iOS) on the header.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerTransparent",
+      "description": "Boolean indicating whether the navigation bar is translucent.\n\nDefaults to `false`. Setting this to `true` makes the header absolutely positioned - so that the header floats over the screen so that it overlaps the content underneath, and changes the background color to `transparent` unless specified in `headerStyle`.\n\nThis is useful if you want to render a semi-transparent header or a blurred background.\n\nNote that if you don't want your content to appear under the header, you need to manually add a top margin to your content. React Navigation won't do it automatically.\n\nTo get the height of the header, you can use `HeaderHeightContext` with React's Context API or `useHeaderHeight`.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerBlurEffect",
+      "description": "Blur effect for the translucent header. The `headerTransparent` option needs to be set to `true` for this to work.\n\nSupported values: `extraLight`, `light`, `dark`, `regular`, `prominent`, `systemUltraThinMaterial`, `systemThinMaterial`, `systemMaterial`, `systemThickMaterial`, `systemChromeMaterial`, `systemUltraThinMaterialLight`, `systemThinMaterialLight`, `systemMaterialLight`, `systemThickMaterialLight`, `systemChromeMaterialLight`, `systemUltraThinMaterialDark`, `systemThinMaterialDark`, `systemMaterialDark`, `systemThickMaterialDark`, `systemChromeMaterialDark`",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "headerBackground",
+      "description": "Function which returns a React Element to render as the background of the header. This is useful for using backgrounds such as an image or a gradient.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerTintColor",
+      "description": "Tint color for the header. Changes the color of back button and title.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerLeft",
+      "description": "Function which returns a React Element to display on the left side of the header. This replaces the back button. See `headerBackVisible` to show the back button along side left element.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerRight",
+      "description": "Function which returns a React Element to display on the right side of the header.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerTitle",
+      "description": "String or a function that returns a React Element to be used by the header. Defaults to `title` or name of the screen.\n\nWhen a function is passed, it receives `tintColor` and`children` in the options object as an argument. The title string is passed in `children`.\n\nNote that if you render a custom element by passing a function, animations for the title won't work.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerTitleAlign",
+      "description": "How to align the header title. Possible values:\n\n- `left`\n  \n\n- `center`\n  \n\nDefaults to `left` on platforms other than iOS.\n\nNot supported on iOS. It's always `center` on iOS and cannot be changed.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerTitleStyle",
+      "description": "Style object for header title. Supported properties:\n\n- `fontFamily`\n- `fontSize`\n- `fontWeight`\n- `color`",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "headerSearchBarOptions",
+      "description": "Options to render a native search bar on iOS. Search bars are rarely static so normally it is controlled by passing an object to `headerSearchBarOptions` navigation option in the component's body.\n\nYou also need to specify `contentInsetAdjustmentBehavior=\"automatic\"` in your `ScrollView`, `FlatList` etc. If you don't have a `ScrollView`, specify `headerTransparent: false`.\n\nSupported properties are:\n\n**ref**\n\nRef to manipulate the search input imperatively. It contains the following methods:\n\n- `focus` - focuses the search bar\n- `blur` - removes focus from the search bar\n- `setText` - sets the search bar's content to given value\n- `clearText` - removes any text present in the search bar input field\n- `cancelSearch` - cancel the search and close the search bar\n\n**autoCapitalize**\n\nControls whether the text is automatically auto-capitalized as it is entered by the user.\nPossible values:\n\n- `none`\n- `words`\n- `sentences`\n- `characters`\n\nDefaults to `sentences`.\n\n**autoFocus**\n\nWhether to automatically focus search bar when it's shown. Defaults to `false`.\n\n**barTintColor**\n\nThe search field background color. By default bar tint color is translucent.\n\n**tintColor**\n\nThe color for the cursor caret and cancel button text.\n\n**cancelButtonText**\n\nThe text to be used instead of default `Cancel` button text.\n\n**disableBackButtonOverride**\n\nWhether the back button should close search bar's text input or not. Defaults to `false`.\n\n**hideNavigationBar**\n\nBoolean indicating whether to hide the navigation bar during searching. Defaults to `true`.\n\n**hideWhenScrolling**\n\nBoolean indicating whether to hide the search bar when scrolling. Defaults to `true`.\n\n**inputType**\n\nThe type of the input. Defaults to `\"text\"`.\n\nSupported values: `\"text\"`, `\"phone\"`, `\"number\"`, `\"email\"`\n\n**obscureBackground**\n\nBoolean indicating whether to obscure the underlying content with semi-transparent overlay. Defaults to `true`.\n\n**placeholder**\n\nText displayed when search field is empty.\n\n**textColor**\n\nThe color of the text in the search field.\n\n**hintTextColor**\n\nThe color of the hint text in the search field.\n\n**headerIconColor**\n\nThe color of the search and close icons shown in the header\n\n**shouldShowHintSearchIcon**\n\nWhether to show the search hint icon when search bar is focused. Defaults to `true`.\n\n**onBlur**\n\nA callback that gets called when search bar has lost focus.\n\n**onCancelButtonPress**\n\nA callback that gets called when the cancel button is pressed.\n\n**onChangeText**\n\nA callback that gets called when the text changes. It receives the current text value of the search bar.",
+      "platform": "iOS only",
+      "category": "header"
+    },
+    {
+      "name": "header",
+      "description": "Custom header to use instead of the default header.\n\nThis accepts a function that returns a React Element to display as a header. The function receives an object containing the following properties as the argument:\n\n- `navigation` - The navigation object for the current screen.\n- `route` - The route object for the current screen.\n- `options` - The options for the current screen\n- `back` - Options for the back button, contains an object with a `title` property to use for back button label.\n\nTo set a custom header for all the screens in the navigator, you can specify this option in the `screenOptions` prop of the navigator.\n\nNote that if you specify a custom header, the native functionality such as large title, search bar etc. won't work.",
+      "platform": "Both",
+      "category": "header"
+    },
+    {
+      "name": "statusBarAnimation",
+      "description": "Sets the status bar animation (similar to the `StatusBar` component). Defaults to `fade` on iOS and `none` on Android.\n\nSupported values: `\"fade\"`, `\"none\"`, `\"slide\"`\n\nOn Android, setting either `fade` or `slide` will set the transition of status bar color. On iOS, this option applies to appereance animation of the status bar.\n\nRequires setting `View controller-based status bar appearance -> YES` (or removing the config) in your `Info.plist` file.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "statusBarHidden",
+      "description": "Whether the status bar should be hidden on this screen.\n\nRequires setting `View controller-based status bar appearance -> YES` (or removing the config) in your `Info.plist` file.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "statusBarStyle",
+      "description": "Sets the status bar color (similar to the `StatusBar` component). Defaults to `auto`.\n\nSupported values: `\"auto\"`, `\"inverted\"`, `\"dark\"`, `\"light\"`\n\nRequires setting `View controller-based status bar appearance -> YES` (or removing the config) in your `Info.plist` file.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "statusBarBackgroundColor",
+      "description": "This option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\nSets the background color of the status bar (similar to the `StatusBar` component).",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "statusBarTranslucent",
+      "description": "This option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\nSets the translucency of the status bar (similar to the `StatusBar` component). Defaults to `false`.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "contentStyle",
+      "description": "Style object for the scene content.",
+      "platform": "Both",
+      "category": "other"
+    },
+    {
+      "name": "animationMatchesGesture",
+      "description": "Whether the gesture to dismiss should use animation provided to `animation` prop. Defaults to `false`.\n\nDoesn't affect the behavior of screens presented modally.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "fullScreenGestureEnabled",
+      "description": "Whether the gesture to dismiss should work on the whole screen. Using gesture to dismiss with this option results in the same transition animation as `simple_push`. This behavior can be changed by setting `customAnimationOnGesture` prop. Achieving the default iOS animation isn't possible due to platform limitations. Defaults to `false`.\n\nDoesn't affect the behavior of screens presented modally.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "fullScreenGestureShadowEnabled",
+      "description": "Whether the full screen dismiss gesture has shadow under view during transition. Defaults to `true`.\n\nThis does not affect the behavior of transitions that don't use gestures enabled by `fullScreenGestureEnabled` prop.",
+      "platform": "Both",
+      "category": "other"
+    },
+    {
+      "name": "gestureEnabled",
+      "description": "Whether you can use gestures to dismiss this screen. Defaults to `true`.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "animationTypeForReplace",
+      "description": "The type of animation to use when this screen replaces another screen. Defaults to `push`.\n\nSupported values: `push`, `pop`",
+      "platform": "Both",
+      "category": "other"
+    },
+    {
+      "name": "animation",
+      "description": "How the screen should animate when pushed or popped.\n\nSupported values: `default`, `fade`, `fade_from_bottom`, `flip`, `simple_push`, `slide_from_bottom`, `slide_from_right`, `slide_from_left`, `none`",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "presentation",
+      "description": "How should the screen be presented.\n\nSupported values: `card`, `modal`, `transparentModal`, `containedModal`, `containedTransparentModal`, `fullScreenModal`, `formSheet`",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "sheetAllowedDetents",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nDescribes heights where a sheet can rest.\n\nSupported values: `fitToContents`\n\nDefaults to `[1.0]`.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "sheetElevation",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nInteger value describing elevation of the sheet, impacting shadow on the top edge of the sheet.\n\nNot dynamic - changing it after the component is rendered won't have an effect.\n\nDefaults to `24`.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "sheetExpandsWhenScrolledToEdge",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nWhether the sheet should expand to larger detent when scrolling.\n\nDefaults to `true`.\n\nPlease note that for this interaction to work, the ScrollView must be \"first-subview-chain\" descendant of the Screen component. This restriction is due to platform requirements.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "sheetCornerRadius",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nThe corner radius that the sheet will try to render with.\n\nIf set to non-negative value it will try to render sheet with provided radius, else it will apply system default.\n\nIf left unset, system default is used.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "sheetInitialDetentIndex",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\n**Index** of the detent the sheet should expand to after being opened.\n\nIf the specified index is out of bounds of `sheetAllowedDetents` array, in dev environment more errors will be thrown, in production the value will be reset to default value.\n\nAdditionaly there is `last` value available, when set the sheet will expand initially to last (largest) detent.\n\nDefaults to `0` - which represents first detent in the detents array.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "sheetGrabberVisible",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nBoolean indicating whether the sheet shows a grabber at the top.\n\nDefaults to `false`.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "sheetLargestUndimmedDetentIndex",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nThe largest sheet detent for which a view underneath won't be dimmed.\n\nThis prop can be set to an number, which indicates index of detent in `sheetAllowedDetents` array for which there won't be a dimming view beneath the sheet.\n\nAdditionaly there are following options available:\n\n- `none` - there will be dimming view for all detents levels,\n- `last` - there won't be a dimming view for any detent level.\n\nDefaults to `none`, indicating that the dimming view should be always present.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "orientation",
+      "description": "The display orientation to use for the screen.\n\nSupported values: `default`, `all`, `portrait`, `portrait_up`, `portrait_down`, `landscape`, `landscape_left`, `landscape_right`",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "autoHideHomeIndicator",
+      "description": "Boolean indicating whether the home indicator should prefer to stay hidden. Defaults to `false`.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "gestureDirection",
+      "description": "Sets the direction in which you should swipe to dismiss the screen.\n\nSupported values: `vertical`, `horizontal`\n\nWhen using `vertical` option, options `fullScreenGestureEnabled: true`, `customAnimationOnGesture: true` and `animation: 'slide_from_bottom'` are set by default.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "animationDuration",
+      "description": "Changes the duration (in milliseconds) of `slide_from_bottom`, `fade_from_bottom`, `fade` and `simple_push` transitions on iOS. Defaults to `350`.\n\nThe duration of `default` and `flip` transitions isn't customizable.",
+      "platform": "iOS only",
+      "category": "other"
+    },
+    {
+      "name": "navigationBarColor",
+      "description": "This option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\nSets the navigation bar color. Defaults to initial status bar color.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "navigationBarHidden",
+      "description": "Boolean indicating whether the navigation bar should be hidden. Defaults to `false`.",
+      "platform": "Android only",
+      "category": "other"
+    },
+    {
+      "name": "freezeOnBlur",
+      "description": "Boolean indicating whether to prevent inactive screens from re-rendering. Defaults to `false`.\nDefaults to `true` when `enableFreeze()` from `react-native-screens` package is run at the top of the application.\n\nOnly supported on iOS and Android.",
+      "platform": "iOS only",
+      "category": "other"
+    }
+  ]
+}

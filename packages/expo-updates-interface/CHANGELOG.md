@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 1.1.0 — 2025-04-04
 
 ### 💡 Others
