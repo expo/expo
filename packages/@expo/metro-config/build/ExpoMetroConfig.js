@@ -277,8 +277,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
             babelTransformerPath: require.resolve('./babel-transformer'),
-            // NOTE: This cannot be an absolute path, as it is used in the cache key.
-            asyncRequireModulePath: '@expo/metro-config/build/async-require',
+            // TODO: The absolute path invalidates caching across devices. To account for this, we remove the `asyncRequireModulePath` from the cache key but that means any changes to the file will not invalidate the cache.
+            asyncRequireModulePath: require.resolve('./async-require'),
             assetRegistryPath: '@react-native/assets-registry/registry',
             // hermesParser: true,
             getTransformOptions: async () => ({
