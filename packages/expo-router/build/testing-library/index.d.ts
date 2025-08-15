@@ -1,15 +1,15 @@
 import './expect';
 import './mocks';
-import { render } from '@testing-library/react-native';
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoLinkingOptions } from '../getLinkingConfig';
 import { ReactNavigationState } from '../global-state/router-store';
-export * from '@testing-library/react-native';
-export type RenderRouterOptions = Parameters<typeof render>[1] & {
+declare const rnTestingLibrary: typeof import("@testing-library/react-native");
+export type * from '@testing-library/react-native';
+export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] & {
     initialUrl?: any;
     linking?: Partial<ExpoLinkingOptions>;
 };
-type Result = ReturnType<typeof render> & {
+type Result = ReturnType<typeof rnTestingLibrary.render> & {
     getPathname(): string;
     getPathnameWithParams(): string;
     getSegments(): string[];
