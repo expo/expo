@@ -35,7 +35,7 @@
     "eslint-config-universe": "^15.0.3",
     "eslint-plugin-eslint-plugin": "^6.2.0",
     "jest": "^30.0.0",
-    "ts-jest": "^29.4.0"
+    "ts-jest": "^29.4.1"
   },
   "engines": {
     "node": ">=18.0.0"
