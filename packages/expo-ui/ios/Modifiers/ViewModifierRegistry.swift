@@ -212,14 +212,15 @@ internal struct ClipShapeModifier: ViewModifier {
   let shape: String
   let cornerRadius: CGFloat
 
+  @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
     case "circle":
-      return AnyView(content.clipShape(Circle()))
+      content.clipShape(Circle())
     case "roundedRectangle":
-      return AnyView(content.clipShape(RoundedRectangle(cornerRadius: cornerRadius)))
+      content.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     default:
-      return AnyView(content.clipShape(Rectangle()))
+      content.clipShape(Rectangle())
     }
   }
 }
@@ -378,43 +379,39 @@ internal struct AnyViewModifier: ViewModifier {
 }
 
 internal struct GlassEffectModifier: ViewModifier {
-  let glass: String
+  let glassVariant: String
+  let interactive: Bool
+  let tint: Color?
   let shape: String
   
+  @ViewBuilder
   func body(content: Content) -> some View {
     if #available(iOS 26.0, *) {
-      let glassType = parseGlassType(glass)
-      let glassShape = parseGlassShape(shape)
-      content.glassEffect(glassType, in: glassShape)
+      let glass = parseGlassVariant(glassVariant)
+      switch shape {
+      case "capsule":
+          content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
+      case "circle":
+          content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
+      case "ellipse":
+          content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
+      default:
+          content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
+      }
     } else {
       content
     }
   }
   
-  private func parseGlassShape(_ shapeString: String) -> any Shape {
-    switch shapeString {
-    case "circle":
-      return Circle()
-    case "capsule":
-      return Capsule()
-    case "ellipse":
-      return Ellipse()
-    default:
-      return Rectangle()
-    }
-  }
-  
   @available(iOS 26.0, *)
-  private func parseGlassType(_ glassString: String) -> Glass {
+  private func parseGlassVariant(_ glassString: String) -> Glass {
     switch glassString {
-    case "clear":
-      return .clear
     case "regular":
       return .regular
-    case "identity":
-      return .identity
+    case "clear":
+      return .clear
     default:
-      return .regular
+      return .identity
     }
   }
 }
@@ -704,9 +701,18 @@ extension ViewModifierRegistry {
     }
 
     register("glassEffect") { params, _ in
-      let glass = params["glass"] as? String ?? "regular"
+      let glassDict = params["glass"] as? [String: Any]
+      let glassVariant = glassDict?["variant"] as? String ?? "regular"
+      let interactive = glassDict?["interactive"] as? Bool ?? false
+      let tintColor = (glassDict?["tint"] as? String).map { Color(hex: $0) }
       let shape = params["shape"] as? String ?? "capsule"
-      return GlassEffectModifier(glass: glass, shape: shape)
+
+      return GlassEffectModifier(
+        glassVariant: glassVariant,
+        interactive: interactive,
+        tint: tintColor,
+        shape: shape
+      )
     }
   }
 }

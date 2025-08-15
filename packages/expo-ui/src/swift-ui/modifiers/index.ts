@@ -296,7 +296,11 @@ export const clipped = (clipped: boolean = true) => createModifier('clipped', { 
  * Applies a glass effect to a view.
  */
 export const glassEffect = (params?: {
-  glass?: 'regular' | 'clear' | 'identity';
+  glass?: {
+    variant: 'regular' | 'clear' | 'identity';
+    interactive?: boolean;
+    tint?: string;
+  };
   shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
 }) => createModifier('glassEffect', params);
 

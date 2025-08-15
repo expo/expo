@@ -230,7 +230,11 @@ export declare const clipped: (clipped?: boolean) => ModifierConfig;
  * Applies a glass effect to a view.
  */
 export declare const glassEffect: (params?: {
-    glass?: "regular" | "clear" | "identity";
+    glass?: {
+        variant: "regular" | "clear" | "identity";
+        interactive?: boolean;
+        tint?: string;
+    };
     shape?: "circle" | "capsule" | "rectangle" | "ellipse";
 }) => ModifierConfig;
 /**
