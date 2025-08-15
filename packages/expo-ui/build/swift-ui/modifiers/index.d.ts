@@ -227,6 +227,13 @@ export declare const aspectRatio: (params: {
  */
 export declare const clipped: (clipped?: boolean) => ModifierConfig;
 /**
+ * Applies a glass effect to a view.
+ */
+export declare const glassEffect: (params?: {
+    glass?: "regular" | "clear" | "identity";
+    shape?: "circle" | "capsule" | "rectangle" | "ellipse";
+}) => ModifierConfig;
+/**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  */

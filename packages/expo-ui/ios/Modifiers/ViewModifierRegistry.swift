@@ -377,6 +377,48 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
+internal struct GlassEffectModifier: ViewModifier {
+  let glass: String
+  let shape: String
+  
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, *) {
+      let glassType = parseGlassType(glass)
+      let glassShape = parseGlassShape(shape)
+      content.glassEffect(glassType, in: glassShape)
+    } else {
+      content
+    }
+  }
+  
+  private func parseGlassShape(_ shapeString: String) -> any Shape {
+    switch shapeString {
+    case "circle":
+      return Circle()
+    case "capsule":
+      return Capsule()
+    case "ellipse":
+      return Ellipse()
+    default:
+      return Rectangle()
+    }
+  }
+  
+  @available(iOS 26.0, *)
+  private func parseGlassType(_ glassString: String) -> Glass {
+    switch glassString {
+    case "clear":
+      return .clear
+    case "regular":
+      return .regular
+    case "identity":
+      return .identity
+    default:
+      return .regular
+    }
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -659,6 +701,12 @@ extension ViewModifierRegistry {
       let alignmentString = params["alignment"] as? String ?? "center"
       let alignment = parseAlignment(alignmentString)
       return BackgroundOverlayModifier(color: color, alignment: alignment)
+    }
+
+    register("glassEffect") { params, _ in
+      let glass = params["glass"] as? String ?? "regular"
+      let shape = params["shape"] as? String ?? "capsule"
+      return GlassEffectModifier(glass: glass, shape: shape)
     }
   }
 }

@@ -292,6 +292,14 @@ export const aspectRatio = (params: { ratio: number; contentMode?: 'fit' | 'fill
  */
 export const clipped = (clipped: boolean = true) => createModifier('clipped', { clipped });
 
+/**
+ * Applies a glass effect to a view.
+ */
+export const glassEffect = (params?: {
+  glass?: 'regular' | 'clear' | 'identity';
+  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
+}) => createModifier('glassEffect', params);
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
