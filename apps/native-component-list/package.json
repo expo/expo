@@ -169,6 +169,6 @@
     "babel-jest": "^29.2.1",
     "expo-module-scripts": "^5.0.0",
     "jest": "^29.2.1",
-    "react-test-renderer": "19.0.0"
+    "react-test-renderer": "19.1.0"
   }
 }
