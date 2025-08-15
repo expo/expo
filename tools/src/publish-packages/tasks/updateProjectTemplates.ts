@@ -36,7 +36,8 @@ async function updateTemplateAsync(parcel: Parcel, modulesToUpdate: Record<strin
   logger.info('  ', `${green.bold(parcel.pkg.packageName)}...`);
 
   const packageJsonPath = path.join(parcel.pkg.path, 'package.json');
-  const packageJson = require(packageJsonPath);
+  // Read fresh JSON from disk to avoid Node's require cache returning stale data.
+  const packageJson = await JsonFile.readAsync(packageJsonPath);
 
   for (const dependencyKey of DEPENDENCIES_KEYS) {
     const dependencies = packageJson[dependencyKey];
