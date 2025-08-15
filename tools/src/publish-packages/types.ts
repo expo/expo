@@ -20,6 +20,12 @@ export type CommandOptions = {
   canary: boolean;
   deps: boolean;
   skipAndroidArtifacts: boolean;
+  /**
+   * When true, automatically selects packages whose current package.json version
+   * has already been bumped locally but that version has not been published yet.
+   * Presents a multi-select prompt to optionally deselect some of them.
+   */
+  autoSelectUnpublished: boolean;
 
   /* exclusive options that affect what the command does */
   listUnpublished: boolean;

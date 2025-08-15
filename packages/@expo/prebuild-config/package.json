@@ -34,14 +34,14 @@
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^5.0.0"
+    "expo-module-scripts": "^5.0.1"
   },
   "dependencies": {
-    "@expo/config": "~12.0.0",
-    "@expo/config-plugins": "~11.0.0",
-    "@expo/config-types": "^54.0.0",
-    "@expo/image-utils": "^0.8.0",
-    "@expo/json-file": "^10.0.0",
+    "@expo/config": "~12.0.1",
+    "@expo/config-plugins": "~11.0.1",
+    "@expo/config-types": "^54.0.1",
+    "@expo/image-utils": "^0.8.1",
+    "@expo/json-file": "^10.0.1",
     "@react-native/normalize-colors": "0.81.0",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",

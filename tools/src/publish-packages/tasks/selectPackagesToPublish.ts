@@ -46,6 +46,70 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     // A set of parcels selected to publish which will be passed to the next task.
     const parcelsToPublish = new Set<Parcel>();
 
+    // Fast-path: auto-select packages whose current package.json version has not been published yet.
+    if (options.autoSelectUnpublished && !process.env.CI) {
+      const candidates: Parcel[] = [];
+
+      for (const parcel of parcelsToSelect) {
+        const currentVersion = parcel.pkg.packageVersion;
+        const publishedVersions = parcel.pkgView?.versions ?? [];
+        const isUnpublishedVersion = !publishedVersions.includes(currentVersion);
+
+        // If the package was never published (pkgView is null) or the current version is not published yet.
+        if (parcel.pkgView === null || isUnpublishedVersion) {
+          candidates.push(parcel);
+        }
+      }
+
+      if (candidates.length > 0) {
+        // Resolve target release versions up-front to show in the checklist.
+        const resolvedVersions = new Map<Parcel, string>();
+        for (const parcel of candidates) {
+          const { releaseVersion } = await resolveReleaseTypeAndVersion(parcel, options);
+          resolvedVersions.set(parcel, releaseVersion);
+        }
+
+        const { selectedParcels } = await inquirer.prompt([
+          {
+            type: 'checkbox',
+            name: 'selectedParcels',
+            message:
+              'Auto-selected packages whose current version is not published yet. Deselect any you do not want to publish:',
+            choices: candidates.map((p) => {
+              const name = p.pkg.packageName;
+              const current = p.pkg.packageVersion;
+              const target = resolvedVersions.get(p) ?? current;
+              return {
+                name: `${green(name)} (${cyan(target)})`,
+                value: p,
+                checked: true,
+              };
+            }),
+            pageSize: Math.min(20, candidates.length + 2),
+          },
+        ]);
+
+        // Apply selections
+        for (const parcel of candidates) {
+          if (selectedParcels.includes(parcel)) {
+            parcel.state.releaseVersion = resolvedVersions.get(parcel) ?? parcel.pkg.packageVersion;
+            parcelsToPublish.add(parcel);
+          } else {
+            parcel.state.releaseVersion = null;
+          }
+        }
+
+        // Cleanup: remove non-selected parcels from dependency sets of others in this run
+        for (const parcel of parcelsToSelect) {
+          if (!parcelsToPublish.has(parcel)) {
+            parcel.dependents.forEach((dependent) => {
+              dependent.dependencies.delete(parcel);
+            });
+          }
+        }
+      }
+    }
+
     // This call mutates `parcelsToPublish` set, adding the selected parcels.
     await selectParcelsToPublish(parcelsToSelect, parcelsToPublish, options);
 
