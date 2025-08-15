@@ -58,7 +58,13 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
   override val type: String?
     get() {
       val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
-      return if (extension.isNotEmpty()) MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.lowercase()) else null
+      return if (extension.isNotEmpty()) {
+        MimeTypeMap
+          .getSingleton()
+          .getMimeTypeFromExtension(extension.lowercase())
+      } else {
+     	  null
+     	}
     }
 
   override fun lastModified(): Long? {
