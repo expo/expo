@@ -77,7 +77,8 @@
     "expo"
   ],
   "peerDependencies": {
-    "@react-navigation/drawer": "^7.3.9",
+    "@react-navigation/drawer": "^7.5.0",
+    "@testing-library/jest-native": ">= 5.0.0",
     "@testing-library/react-native": ">= 12.0.0",
     "expo": "*",
     "expo-constants": "*",
@@ -87,7 +88,7 @@
     "react-native": "*",
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
-    "react-native-safe-area-context": ">= 4.0.0",
+    "react-native-safe-area-context": ">= 5.4.0",
     "react-native-screens": "*",
     "react-native-web": "*",
     "react-server-dom-webpack": ">= 19.0.0"
@@ -116,7 +117,7 @@
     }
   },
   "devDependencies": {
-    "@react-navigation/drawer": "^7.3.9",
+    "@react-navigation/drawer": "^7.5.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.2.0",
@@ -132,9 +133,9 @@
     "@expo/server": "^0.7.0",
     "@radix-ui/react-slot": "1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
-    "@react-navigation/bottom-tabs": "^7.3.10",
-    "@react-navigation/native": "^7.1.6",
-    "@react-navigation/native-stack": "^7.3.10",
+    "@react-navigation/bottom-tabs": "^7.4.0",
+    "@react-navigation/native": "^7.1.8",
+    "@react-navigation/native-stack": "^7.3.16",
     "client-only": "^0.0.1",
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",
