@@ -22,6 +22,7 @@
 - [Android] Add VRUtilities for VR-related values and utils ([#37744](https://github.com/expo/expo/pull/37744) by [@behenate](https://github.com/behenate))
 - [Andorid] Start using experimental converters in properties. ([#38597](https://github.com/expo/expo/pull/38597) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Rethrow pending Jni exceptions. ([#38625](https://github.com/expo/expo/pull/38625) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add new type - `ValueOrUndefined`. ([#38620](https://github.com/expo/expo/pull/38620) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
