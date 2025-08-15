@@ -53,12 +53,12 @@ class IntegrityModule : Module() {
       }
     }
 
-    AsyncFunction(REQUEST_INTEGRITY_CHECK_METHOD_NAME) { challenge: String, promise: Promise ->
+    AsyncFunction(REQUEST_INTEGRITY_CHECK_METHOD_NAME) { requestHash: String, promise: Promise ->
       integrityTokenProvider?.let {
         val integrityTokenResponse: Task<StandardIntegrityToken> =
           it.request(
             StandardIntegrityTokenRequest.builder()
-              .setRequestHash(challenge)
+              .setRequestHash(requestHash)
               .build()
           )
         integrityTokenResponse
