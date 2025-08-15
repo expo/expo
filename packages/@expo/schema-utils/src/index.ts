@@ -6,7 +6,14 @@ import {
   ValidationError as ValidationResult,
 } from './validate';
 
-const CACHE_SYMBOL = Symbol();
+export { JSONSchema } from './JSONSchema';
+
+const CACHE_SYMBOL = Symbol('@expo/schema-utils');
+
+interface SchemaCacheData {
+  schema: JSONSchema;
+  cache: WeakMap<object, ValidationResult | null>;
+}
 
 const flattenValidationResults = (
   input: ValidationResult,
@@ -44,22 +51,35 @@ export class ValidationError extends Error {
   }
 }
 
-export const derefSchema = (schema: JSONSchema): JSONSchema => {
-  let derefed = (schema as any)[CACHE_SYMBOL] as JSONSchema | undefined;
+const derefSchemaCache = (schema: JSONSchema): SchemaCacheData => {
+  let derefed = (schema as any)[CACHE_SYMBOL] as SchemaCacheData | undefined;
   if (!derefed) {
-    derefed = deref(schema);
+    derefed = {
+      schema: deref(schema),
+      cache: new WeakMap(),
+    };
     (schema as any)[CACHE_SYMBOL] = derefed;
   }
   return derefed!;
 };
 
+export function derefSchema(schema: JSONSchema): JSONSchema {
+  return derefSchemaCache(schema).schema;
+}
+
 export function validate(
   schema: JSONSchema,
   value: unknown,
 ) {
-  const derefed = derefSchema(schema);
-  const result = validateSchema(derefed, value, '');
+  const data = derefSchemaCache(schema);
+  let result: ValidationResult | null | undefined;
+  if (typeof value !== 'object' || value == null || (result = data.cache.get(value)) === undefined) {
+    result = validateSchema(data.schema, value, '');
+    if (typeof value === 'object' && value != null) {
+      data.cache.set(value, result);
+    }
+  }
   if (result) {
-    throw new ValidationError(result, derefed);
+    throw new ValidationError(result, data.schema);
   }
 }
