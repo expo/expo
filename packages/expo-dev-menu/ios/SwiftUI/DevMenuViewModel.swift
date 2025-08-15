@@ -92,7 +92,6 @@ class DevMenuViewModel: ObservableObject {
 
   func toggleFastRefresh() {
     devMenuManager.toggleFastRefresh()
-    devMenuManager.closeMenu()
     loadDevSettings()
   }
 
