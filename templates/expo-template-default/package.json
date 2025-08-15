@@ -19,7 +19,6 @@
     "expo": "~54.0.0-preview.0",
     "expo-haptics": "~15.0.0",
     "expo-image": "~3.0.0",
-    "expo-linking": "~8.0.0",
     "expo-router": "~6.0.0-beta.0",
     "expo-splash-screen": "~31.0.0",
     "expo-status-bar": "~3.0.0",
