@@ -170,8 +170,12 @@ export function deref(input: any): any {
     }
     // Assign the target object to the output
     if (sourceValue !== NOT_FOUND_SYMBOL && sourceValue != null) {
-      return typeof sourceValue === 'object' && 'name' in sourceValue
-        ? { ...sourceValue, name: output.name }
+      return typeof sourceValue === 'object'
+        ? {
+            ...sourceValue,
+            title: output.title,
+            description: output.description,
+          }
         : sourceValue;
     }
   }

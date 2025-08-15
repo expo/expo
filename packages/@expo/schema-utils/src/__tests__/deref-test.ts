@@ -120,7 +120,7 @@ it('should work with root refs', () => {
   };
 
   const EXPECTED = {
-    description: 'unique identifier of a the object',
+    description: 'Just a basic schema.',
     type: 'string',
     minLength: 1,
   };

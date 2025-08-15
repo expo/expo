@@ -26,7 +26,7 @@ export type StringArray = [string, ...string[]];
  * This interface was referenced by `JSONSchema`'s JSON-Schema
  * via the `definition` "simpleTypes".
  */
-export type SimpleTypes = "array" | "boolean" | "integer" | "null" | "number" | "object" | "string";
+export type SimpleTypes = 'array' | 'boolean' | 'integer' | 'null' | 'number' | 'object' | 'string';
 /**
  * Core schema meta-schema
  */

@@ -13,7 +13,20 @@ export interface ValidationError extends BaseValidationError {
 
 type OneOrMany<T> = T | T[];
 
-const getValueType = (value: unknown): 'null' | 'boolean' | 'object' | 'array' | 'number' | 'integer' | 'string' => {
+const getValueType = (
+  value: unknown
+):
+  | 'null'
+  | 'boolean'
+  | 'object'
+  | 'array'
+  | 'number'
+  | 'integer'
+  | 'string'
+  | 'symbol'
+  | 'undefined'
+  | 'bigint'
+  | 'function' => {
   const typeOf = typeof value;
   switch (typeOf) {
     case 'number':
@@ -30,7 +43,7 @@ const getValueType = (value: unknown): 'null' | 'boolean' | 'object' | 'array' |
         return 'object';
       }
     default:
-      return 'null';
+      return typeOf;
   }
 };
 
@@ -81,7 +94,8 @@ const dateRe = /^\d{4}-\d{2}-\d{2}$/;
 const dateTimeRe = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
 const timeRe = /^\d{2}:\d{2}:\d{2}$/;
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const hostnameRe = /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+const hostnameRe =
+  /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 const uriRe = /^https?:\/\//;
 
 const validateFormat = (format: string, value: string): boolean => {
@@ -119,7 +133,7 @@ const isEnumValue = (enumValues: unknown[], value: unknown): boolean => {
 const validateString = (
   schema: JSONSchema,
   value: string,
-  path: string,
+  path: string
 ): ValidationError | null => {
   if (schema.minLength != null && value.length < schema.minLength) {
     return {
@@ -130,8 +144,8 @@ const validateString = (
     };
   } else if (schema.maxLength != null && value.length > schema.maxLength) {
     return {
-      message: `String must be at most ${schema.minLength} characters`,
-      keyword: 'minLength',
+      message: `String must be at most ${schema.maxLength} characters`,
+      keyword: 'maxLength',
       path,
       value,
     };
@@ -157,7 +171,7 @@ const validateString = (
 const validateNumber = (
   schema: JSONSchema,
   value: number,
-  path: string,
+  path: string
 ): ValidationError | null => {
   if (schema.multipleOf != null && value % schema.multipleOf !== 0) {
     return {
@@ -191,10 +205,7 @@ const validateNumber = (
       path,
       value,
     };
-  } else if (
-    typeof schema.exclusiveMaximum === 'number' &&
-    value >= schema.exclusiveMaximum
-  ) {
+  } else if (typeof schema.exclusiveMaximum === 'number' && value >= schema.exclusiveMaximum) {
     return {
       message: `Number must be less than ${schema.exclusiveMaximum}`,
       keyword: 'exclusiveMaximum',
@@ -212,12 +223,9 @@ const validateNumber = (
       path,
       value,
     };
-  } else if (
-    typeof schema.exclusiveMinimum === 'number' &&
-    value <= schema.exclusiveMinimum
-  ) {
+  } else if (typeof schema.exclusiveMinimum === 'number' && value <= schema.exclusiveMinimum) {
     return {
-      message: `Number must be less than ${schema.exclusiveMinimum}`,
+      message: `Number must be greater than ${schema.exclusiveMinimum}`,
       keyword: 'exclusiveMinimum',
       path,
       value,
@@ -230,7 +238,7 @@ const validateNumber = (
 const validateContains = (
   containsSchema: JSONSchema,
   value: unknown[],
-  path: string,
+  path: string
 ): ValidationError | null => {
   for (let idx = 0; idx < value.length; idx++) {
     if (validateSchema(containsSchema, value[idx], path) === null) {
@@ -249,7 +257,7 @@ const validateItems = (
   itemsSchema: JSONSchema | JSONSchema[],
   additionalItems: boolean | JSONSchema | undefined,
   value: unknown[],
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   if (Array.isArray(itemsSchema)) {
@@ -271,7 +279,7 @@ const validateItems = (
         return null;
       } else {
         return {
-          message: `Array contained ${value.length - idx} more items tham items schema`,
+          message: `Array contained ${value.length - idx} more items than items schema`,
           keyword: 'additionalItems',
           path,
           value,
@@ -290,11 +298,7 @@ const validateItems = (
   }
 };
 
-const validateArray = (
-  schema: JSONSchema,
-  value: unknown[],
-  path: string,
-) => {
+const validateArray = (schema: JSONSchema, value: unknown[], path: string) => {
   let child: ValidationError | null;
   if (schema.minItems != null && value.length < schema.minItems) {
     return {
@@ -338,7 +342,7 @@ const validateRequired = (
   path: string
 ): ValidationError | null => {
   for (let idx = 0; idx < keys.length; idx++) {
-    if (!(keys[idx] in value)) {
+    if (value[keys[idx]] === undefined) {
       return {
         message: `Required property "${keys[idx]}" is missing`,
         keyword: 'required',
@@ -353,12 +357,12 @@ const validateRequired = (
 const validateProperties = (
   properties: Record<string, JSONSchema>,
   value: Record<string, unknown>,
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   for (const key in properties) {
     if (
-      key in value &&
+      value[key] !== undefined &&
       (child = validateSchema(properties[key], value[key], `${path}.${key}`)) != null
     ) {
       return child;
@@ -372,7 +376,7 @@ const validatePatternProperties = (
   patternProperties: Record<string, JSONSchema>,
   keys: string[],
   value: Record<string, unknown>,
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   for (const pattern in patternProperties) {
@@ -397,7 +401,7 @@ const validateAdditionalProperties = (
   visitedPatternProperties: Set<string>,
   keys: string[],
   value: Record<string, unknown>,
-  path: string,
+  path: string
 ): ValidationError | null => {
   if (additionalProperties === true) {
     return null;
@@ -413,7 +417,9 @@ const validateAdditionalProperties = (
           path: `${path}.${key}`,
           value: value[key],
         };
-      } else if ((child = validateSchema(additionalProperties, value[key], `${path}.${key}`)) != null) {
+      } else if (
+        (child = validateSchema(additionalProperties, value[key], `${path}.${key}`)) != null
+      ) {
         return child;
       }
     }
@@ -424,7 +430,7 @@ const validateAdditionalProperties = (
 const validatePropertyNames = (
   propertyNames: JSONSchema,
   keys: string[],
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   for (let idx = 0; idx < keys.length; idx++) {
@@ -440,14 +446,14 @@ const validatePropertyNames = (
 const validateDependencies = (
   dependencies: Record<string, JSONSchema | string[] | undefined>,
   value: Record<string, unknown>,
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   for (const key in dependencies) {
-    if (key in value) {
+    if (value[key] !== undefined) {
       if (Array.isArray(dependencies[key])) {
         for (let idx = 0; idx < dependencies[key].length; idx++) {
-          if (!(dependencies[key][idx] in value)) {
+          if (value[dependencies[key][idx]] === undefined) {
             return {
               message: `Property "${dependencies[key][idx]}" is required when "${key}" is present`,
               keyword: 'dependencies',
@@ -470,7 +476,7 @@ const validateDependencies = (
 const validateObject = (
   schema: JSONSchema,
   value: Record<string, unknown>,
-  path: string,
+  path: string
 ): ValidationError | null => {
   const keys = Object.keys(value);
   const visitedPatternProperties = new Set<string>();
@@ -501,7 +507,13 @@ const validateObject = (
     return child;
   } else if (
     schema.patternProperties != null &&
-    (child = validatePatternProperties(visitedPatternProperties, schema.patternProperties, keys, value, path)) != null
+    (child = validatePatternProperties(
+      visitedPatternProperties,
+      schema.patternProperties,
+      keys,
+      value,
+      path
+    )) != null
   ) {
     return child;
   } else if (
@@ -518,11 +530,7 @@ const validateObject = (
     return child;
   } else if (
     schema.propertyNames != null &&
-    (child = validatePropertyNames(
-      schema.propertyNames as JSONSchema,
-      keys,
-      path,
-    )) != null
+    (child = validatePropertyNames(schema.propertyNames as JSONSchema, keys, path)) != null
   ) {
     return child;
   } else if (
@@ -537,36 +545,40 @@ const validateObject = (
 
 const validateType = (
   schemaType: OneOrMany<'null' | 'boolean' | 'object' | 'array' | 'number' | 'integer' | 'string'>,
-  valueType: 'null' | 'boolean' | 'object' | 'array' | 'number' | 'integer' | 'string',
-  path: string,
+  valueType: string,
+  path: string
 ): ValidationError | null => {
   if (Array.isArray(schemaType)) {
     if (valueType === 'integer' && schemaType.includes('number')) {
       return null;
     }
-    return !schemaType.includes(valueType) ? {
-      message: `Expected type ${schemaType.join(' or ')}, got ${valueType}`,
-      keyword: 'type',
-      path,
-      value: undefined,
-    } : null;
+    return !schemaType.includes(valueType as any)
+      ? {
+          message: `Expected type ${schemaType.join(' or ')}, got ${valueType}`,
+          keyword: 'type',
+          path,
+          value: undefined,
+        }
+      : null;
   } else {
     if (valueType === 'integer' && schemaType === 'number') {
       return null;
     }
-    return schemaType !== valueType ? {
-      message: `Expected type ${schemaType}, got ${valueType}`,
-      keyword: 'type',
-      path,
-      value: undefined,
-    } : null;
+    return schemaType !== valueType
+      ? {
+          message: `Expected type ${schemaType}, got ${valueType}`,
+          keyword: 'type',
+          path,
+          value: undefined,
+        }
+      : null;
   }
 };
 
 const validateAllOf = (
   schemas: JSONSchema[],
   value: unknown,
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   for (let idx = 0; idx < schemas.length; idx++) {
@@ -580,7 +592,7 @@ const validateAllOf = (
 const validateAnyOf = (
   schemas: JSONSchema[],
   value: unknown,
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   const cause: ValidationError[] = [];
@@ -603,7 +615,7 @@ const validateAnyOf = (
 const validateOneOf = (
   schemas: JSONSchema[],
   value: unknown,
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   const cause: ValidationError[] = [];
@@ -638,7 +650,7 @@ const validateConditional = (
   thenSchema: JSONSchema | undefined,
   elseSchema: JSONSchema | undefined,
   value: unknown,
-  path: string,
+  path: string
 ): ValidationError | null => {
   let child: ValidationError | null;
   if (validateSchema(ifSchema, value, path) != null) {
@@ -669,16 +681,18 @@ const validateConditional = (
 export const validateSchema = (
   schema: JSONSchema,
   value: unknown,
-  path: string,
+  path: string
 ): ValidationError | null => {
   if (typeof schema === 'boolean') {
     // Draft 07: Schemas can be booleans
-    return !schema ? {
-      message: 'Schema is false',
-      keyword: 'schema',
-      path,
-      value: undefined,
-    } : null;
+    return !schema
+      ? {
+          message: 'Schema is false',
+          keyword: 'schema',
+          path,
+          value: undefined,
+        }
+      : null;
   }
 
   const valueType = getValueType(value);

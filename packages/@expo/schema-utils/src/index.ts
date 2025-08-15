@@ -17,7 +17,7 @@ interface SchemaCacheData {
 
 const flattenValidationResults = (
   input: ValidationResult,
-  output: BaseValidationError[] = [],
+  output: BaseValidationError[] = []
 ): BaseValidationError[] => {
   output.push({
     message: input.message,
@@ -32,7 +32,7 @@ const flattenValidationResults = (
 };
 
 const toErrorMessage = (errors: BaseValidationError[], name: string) => {
-  let message = `Invalid options object. ${name} has been initialized using an options object that deos not match the API schema.`;
+  let message = `Invalid options object. ${name} has been initialized using an options object that does not match the API schema.`;
   for (const error of errors) {
     message += `\n - options${error.path} (${error.keyword}): ${error.message}`;
   }
@@ -44,7 +44,7 @@ export class ValidationError extends Error {
   errors: BaseValidationError[];
   constructor(result: ValidationResult, schema: JSONSchema) {
     const errors = flattenValidationResults(result);
-    super(toErrorMessage(errors, typeof schema.name === 'string' ? schema.name : 'Value'));
+    super(toErrorMessage(errors, typeof schema.title === 'string' ? schema.title : 'Value'));
     this.name = 'ValidationError';
     this.errors = errors;
     this.schema = schema;
@@ -67,13 +67,14 @@ export function derefSchema(schema: JSONSchema): JSONSchema {
   return derefSchemaCache(schema).schema;
 }
 
-export function validate(
-  schema: JSONSchema,
-  value: unknown,
-) {
+export function validate(schema: JSONSchema, value: unknown) {
   const data = derefSchemaCache(schema);
   let result: ValidationResult | null | undefined;
-  if (typeof value !== 'object' || value == null || (result = data.cache.get(value)) === undefined) {
+  if (
+    typeof value !== 'object' ||
+    value == null ||
+    (result = data.cache.get(value)) === undefined
+  ) {
     result = validateSchema(data.schema, value, '');
     if (typeof value === 'object' && value != null) {
       data.cache.set(value, result);

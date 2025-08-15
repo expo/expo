@@ -21,7 +21,7 @@ const getValueType = value => {
         return 'object';
       }
     default:
-      return 'null';
+      return typeOf;
   }
 };
 const isDeepEqual = (a, b) => {
@@ -111,8 +111,8 @@ const validateString = (schema, value, path) => {
     };
   } else if (schema.maxLength != null && value.length > schema.maxLength) {
     return {
-      message: `String must be at most ${schema.minLength} characters`,
-      keyword: 'minLength',
+      message: `String must be at most ${schema.maxLength} characters`,
+      keyword: 'maxLength',
       path,
       value
     };
@@ -179,7 +179,7 @@ const validateNumber = (schema, value, path) => {
     };
   } else if (typeof schema.exclusiveMinimum === 'number' && value <= schema.exclusiveMinimum) {
     return {
-      message: `Number must be less than ${schema.exclusiveMinimum}`,
+      message: `Number must be greater than ${schema.exclusiveMinimum}`,
       keyword: 'exclusiveMinimum',
       path,
       value
@@ -222,7 +222,7 @@ const validateItems = (itemsSchema, additionalItems, value, path) => {
         return null;
       } else {
         return {
-          message: `Array contained ${value.length - idx} more items tham items schema`,
+          message: `Array contained ${value.length - idx} more items than items schema`,
           keyword: 'additionalItems',
           path,
           value
@@ -273,7 +273,7 @@ const validateArray = (schema, value, path) => {
 };
 const validateRequired = (keys, value, path) => {
   for (let idx = 0; idx < keys.length; idx++) {
-    if (!(keys[idx] in value)) {
+    if (value[keys[idx]] === undefined) {
       return {
         message: `Required property "${keys[idx]}" is missing`,
         keyword: 'required',
@@ -287,7 +287,7 @@ const validateRequired = (keys, value, path) => {
 const validateProperties = (properties, value, path) => {
   let child;
   for (const key in properties) {
-    if (key in value && (child = validateSchema(properties[key], value[key], `${path}.${key}`)) != null) {
+    if (value[key] !== undefined && (child = validateSchema(properties[key], value[key], `${path}.${key}`)) != null) {
       return child;
     }
   }
@@ -346,10 +346,10 @@ const validatePropertyNames = (propertyNames, keys, path) => {
 const validateDependencies = (dependencies, value, path) => {
   let child;
   for (const key in dependencies) {
-    if (key in value) {
+    if (value[key] !== undefined) {
       if (Array.isArray(dependencies[key])) {
         for (let idx = 0; idx < dependencies[key].length; idx++) {
-          if (!(dependencies[key][idx] in value)) {
+          if (value[dependencies[key][idx]] === undefined) {
             return {
               message: `Property "${dependencies[key][idx]}" is required when "${key}" is present`,
               keyword: 'dependencies',

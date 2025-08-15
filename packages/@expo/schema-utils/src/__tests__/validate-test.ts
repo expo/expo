@@ -61,7 +61,7 @@ describe('minimum', () => {
     expect(validateSchema({ exclusiveMinimum: 2 as any }, 2, '')).toMatchInlineSnapshot(`
       {
         "keyword": "exclusiveMinimum",
-        "message": "Number must be less than 2",
+        "message": "Number must be greater than 2",
         "path": "",
         "value": 2,
       }
@@ -164,7 +164,7 @@ describe('items', () => {
     expect(validateSchema({ items: [{ type: 'number' }] }, [1, 2], '')).toMatchInlineSnapshot(`
       {
         "keyword": "additionalItems",
-        "message": "Array contained 1 more items tham items schema",
+        "message": "Array contained 1 more items than items schema",
         "path": "",
         "value": [
           1,
@@ -176,7 +176,7 @@ describe('items', () => {
       .toMatchInlineSnapshot(`
       {
         "keyword": "additionalItems",
-        "message": "Array contained 1 more items tham items schema",
+        "message": "Array contained 1 more items than items schema",
         "path": "",
         "value": [
           1,
@@ -450,8 +450,8 @@ describe('maxLength', () => {
     expect(validateSchema({ maxLength: 2 }, '12', '')).toEqual(null);
     expect(validateSchema({ maxLength: 2 }, '123', '')).toMatchInlineSnapshot(`
       {
-        "keyword": "minLength",
-        "message": "String must be at most undefined characters",
+        "keyword": "maxLength",
+        "message": "String must be at most 2 characters",
         "path": "",
         "value": "123",
       }

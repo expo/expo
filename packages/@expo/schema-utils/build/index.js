@@ -47,7 +47,7 @@ const flattenValidationResults = (input, output = []) => {
   return output;
 };
 const toErrorMessage = (errors, name) => {
-  let message = `Invalid options object. ${name} has been initialized using an options object that deos not match the API schema.`;
+  let message = `Invalid options object. ${name} has been initialized using an options object that does not match the API schema.`;
   for (const error of errors) {
     message += `\n - options${error.path} (${error.keyword}): ${error.message}`;
   }
@@ -56,7 +56,7 @@ const toErrorMessage = (errors, name) => {
 class ValidationError extends Error {
   constructor(result, schema) {
     const errors = flattenValidationResults(result);
-    super(toErrorMessage(errors, typeof schema.name === 'string' ? schema.name : 'Value'));
+    super(toErrorMessage(errors, typeof schema.title === 'string' ? schema.title : 'Value'));
     this.name = 'ValidationError';
     this.errors = errors;
     this.schema = schema;
