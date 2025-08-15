@@ -1,10 +1,5 @@
+import { Host, Section, Text, Form, VStack, HStack } from '@expo/ui/swift-ui';
 import {
-  Host,
-  Section,
-  Text,
-  Form,
-  VStack,
-  HStack,
   background,
   cornerRadius,
   shadow,
@@ -26,7 +21,7 @@ import {
   grayscale,
   colorInvert,
   clipShape,
-} from '@expo/ui/swift-ui-primitives';
+} from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
 
