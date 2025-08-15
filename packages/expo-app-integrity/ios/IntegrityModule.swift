@@ -9,11 +9,11 @@ public class IntegrityModule: Module {
     Name("ExpoAppIntegrity")
 
     AsyncFunction("generateKey") {
-       do {
-         return try await service.generateKey()
-       } catch let error {
-         throw handleIntegrityCheckError(error)
-       }
+      do {
+        return try await service.generateKey()
+      } catch let error {
+        throw handleIntegrityCheckError(error)
+      }
     }
 
     AsyncFunction("attestKey") { (key: String, challenge: String) in
