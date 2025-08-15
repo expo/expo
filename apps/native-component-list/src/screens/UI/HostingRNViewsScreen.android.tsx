@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
-export default function SwiftUIPrimitivesScreen() {
+export default function HostingRNViewsScreen() {
   return (
     <ScrollView style={{ flex: 1 }}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -13,6 +13,6 @@ export default function SwiftUIPrimitivesScreen() {
   );
 }
 
-SwiftUIPrimitivesScreen.navigationOptions = {
-  title: 'SwiftUI primitives',
+HostingRNViewsScreen.navigationOptions = {
+  title: 'Hosting RN Views',
 };
