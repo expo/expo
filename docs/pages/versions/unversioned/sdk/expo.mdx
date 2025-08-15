@@ -133,6 +133,8 @@ const clone = structuredClone(original);
 console.log(clone); // { name: 'Expo', date: Date }
 ```
 
+The `transfer` option for `ArrayBuffer` and `TypedArray`s is not implemented.
+
 Remove any custom polyfills for `structuredClone` to prevent bloat. Refer to the standard documentation for more information on the [structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone).
 
 <APISection packageName="expo" />
