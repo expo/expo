@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix `jest-expo/universal` causing warnings related to incorrect `watchPlugins` configuration. ([#37394](https://github.com/expo/expo/pull/37394) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Execute the Jest binary inside the "jest" proxy. ([#37394](https://github.com/expo/expo/pull/37394) by [@byCedric](https://github.com/byCedric))
 
 ## 54.0.0 — 2025-08-13
 
