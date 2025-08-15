@@ -11198,11 +11198,6 @@ jest-runtime@30.0.5:
     slash "^3.0.0"
     strip-bom "^4.0.0"
 
-"jest-snapshot-prettier@npm:prettier@^2":
-  version "2.8.8"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
-  integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
-
 jest-snapshot@30.0.5, jest-snapshot@^30.0.0:
   version "30.0.5"
   resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-30.0.5.tgz#6600716eef2e6d8ea1dd788ae4385f3a2791b11f"
@@ -16467,7 +16462,7 @@ ts-invariant@^0.9.4:
   dependencies:
     tslib "^2.1.0"
 
-ts-jest@^29.4.0, ts-jest@~29.4.1:
+ts-jest@^29.4.1, ts-jest@~29.4.1:
   version "29.4.1"
   resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-29.4.1.tgz#42d33beb74657751d315efb9a871fe99e3b9b519"
   integrity sha512-SaeUtjfpg9Uqu8IbeDKtdaS0g8lS6FT6OzM3ezrDfErPJPHNDo/Ey+VFGP1bQIDfagYDLyRpd7O15XpG1Es2Uw==
