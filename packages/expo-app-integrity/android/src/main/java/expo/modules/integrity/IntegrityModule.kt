@@ -94,12 +94,14 @@ class IntegrityModule : Module() {
         val errorCode = mapStandardIntegrityErrorCode(exception.errorCode)
         IntegrityException(
           exception.message ?: "Unknown standard integrity error",
-          errorCode
+          errorCode,
+          exception
         )
       }
       else -> IntegrityException(
         exception?.message ?: "Unknown error",
-        "ERR_APP_INTEGRITY_UNKNOWN"
+        "ERR_APP_INTEGRITY_UNKNOWN",
+        exception
       )
     }
   }
