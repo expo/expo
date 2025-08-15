@@ -3,7 +3,7 @@
 // This is directly derived from the `json-schema-deref-sync` tests.
 // NOTE: File refs and loader support have been removed
 
-import { jsonSchemaDeref as deref } from '../jsonSchemaDeref';
+import { deref } from '../deref';
 
 const basicSchema = {
   description: 'Just a basic schema.',
@@ -101,6 +101,28 @@ it('should work with basic local refs', () => {
         type: 'boolean',
       },
     },
+  };
+
+  expect(deref(INPUT)).toEqual(EXPECTED);
+});
+
+it('should work with root refs', () => {
+  const INPUT = {
+    description: 'Just a basic schema.',
+    $ref: '#/definitions/root',
+    definitions: {
+      root: {
+        description: 'unique identifier of a the object',
+        type: 'string',
+        minLength: 1,
+      },
+    },
+  };
+
+  const EXPECTED = {
+    description: 'Just a basic schema.',
+    type: 'string',
+    minLength: 1,
   };
 
   expect(deref(INPUT)).toEqual(EXPECTED);

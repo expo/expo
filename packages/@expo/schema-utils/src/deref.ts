@@ -11,8 +11,8 @@ const getRef = (node: NodeRef | unknown): string | undefined =>
     : undefined;
 
 /** Parse a JSON schema ref into a path array, or return undefined */
-const parseRefMaybe = (ref: string): RefPath | undefined => {
-  if (ref[0] !== '#') {
+const parseRefMaybe = (ref: string | undefined): RefPath | undefined => {
+  if (ref == null || ref[0] !== '#') {
     return undefined;
   }
   const props = [];
@@ -106,9 +106,9 @@ const getSortedRefEntries = (refs: Map<RefPath, RefPath>): readonly [RefPath, Re
  *
  * @see https://github.com/cvent/json-schema-deref-sync
  */
-export function jsonSchemaDeref(input: any): any {
-  // Find all JSON schema refs paths
+export function deref(input: any): any {
   const refs = new Map<RefPath, RefPath>();
+  // Find all JSON schema refs paths
   findRefsRec(input, refs, []);
   // Shallow copy output
   const output = { ...input };
@@ -158,6 +158,26 @@ export function jsonSchemaDeref(input: any): any {
     // The for-loops prior have made sure that the output has already been deeply
     // cloned and traversed for the entire path
     outputNode[target[target.length - 1]] = sourceValue;
+  }
+  // Handle root refs last
+  const rootTargetRef = parseRefMaybe(getRef(input));
+  if (rootTargetRef) {
+    // Get value from output
+    let sourceValue = getValueAtPath(output, rootTargetRef);
+    // If no value was found, try to get a value from the input instead
+    if (sourceValue === NOT_FOUND_SYMBOL) {
+      sourceValue = getValueAtPath(input, rootTargetRef);
+    }
+    // Assign the target object to the output
+    if (sourceValue !== NOT_FOUND_SYMBOL && sourceValue != null) {
+      return typeof sourceValue === 'object'
+        ? {
+            ...sourceValue,
+            title: output.title,
+            description: output.description,
+          }
+        : sourceValue;
+    }
   }
   // Return the output with resolved refs
   return output;
