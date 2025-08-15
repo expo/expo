@@ -37,7 +37,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
   "dependencies": {
-    "react-native-edge-to-edge": "1.6.0",
     "react-native-is-edge-to-edge": "^1.1.6"
   },
   "devDependencies": {
