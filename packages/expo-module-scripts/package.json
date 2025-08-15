@@ -41,7 +41,7 @@
     "glob": "^10.4.2",
     "jest-expo": "~54.0.10",
     "jest-snapshot-prettier": "npm:prettier@^2",
-    "jest-watch-typeahead": "2.2.1",
+    "jest-watch-typeahead": "^3.0.1",
     "resolve-workspace-root": "^2.0.0",
     "ts-jest": "~29.4.1",
     "typescript": "^5.9.2"
