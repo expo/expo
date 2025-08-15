@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove unused peer dependency on `@testing-library/jest-native` ([#38886](https://github.com/expo/expo/pull/38886) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 6.0.0-beta.1 — 2025-08-15
