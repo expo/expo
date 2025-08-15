@@ -63,8 +63,8 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
           .getSingleton()
           .getMimeTypeFromExtension(extension.lowercase())
       } else {
-     	  null
-     	}
+        null
+      }
     }
 
   override fun lastModified(): Long? {
