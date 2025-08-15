@@ -22,7 +22,7 @@ class Storage {
   }
 
   setItem(key: string, value: string): void {
-    this.storage.setItemSync(key, value);
+    this.storage.setItemSync(key, String(value));
   }
 
   get length(): number {

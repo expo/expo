@@ -99,10 +99,11 @@ export function normalizeStorageIndex(index) {
     if (Object.is(value, -0)) {
         return 0;
     }
-    if (value < 0 || Number.isNaN(value)) {
-        return null;
-    }
     if (!Number.isSafeInteger(value)) {
+        // Chromium uses zero index when the index is out of bounds
+        return 0;
+    }
+    if (value < 0) {
         return null;
     }
     return value;

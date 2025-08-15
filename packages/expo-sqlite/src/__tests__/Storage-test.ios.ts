@@ -70,11 +70,25 @@ describe('SQLiteStorage asynchronous', () => {
 
   it('should get key by index', async () => {
     await storage.setItemAsync('key', 'value');
+    await storage.setItemAsync('key2', 'value2');
+
     expect(await storage.getKeyByIndexAsync(0)).toBe('key');
 
-    // Invalid index should normalize to 0
-    expect(await storage.getKeyByIndexAsync(-1)).toBe('key');
+    expect(await storage.getKeyByIndexAsync(-1)).toBe(null);
+    expect(await storage.getKeyByIndexAsync(0.5)).toBe('key');
+    // @ts-expect-error
+    expect(await storage.getKeyByIndexAsync(true)).toBe('key2');
+    // @ts-expect-error
+    expect(await storage.getKeyByIndexAsync(false)).toBe('key');
+    // @ts-expect-error
+    expect(await storage.getKeyByIndexAsync({ valueOf: () => 1 })).toBe('key2');
+
+    expect(await storage.getKeyByIndexAsync(Number.MAX_SAFE_INTEGER)).toBe(null);
+    expect(await storage.getKeyByIndexAsync(Number.MAX_SAFE_INTEGER + 1)).toBe('key');
     expect(await storage.getKeyByIndexAsync(Number.MAX_VALUE)).toBe('key');
+    expect(await storage.getKeyByIndexAsync(NaN)).toBe('key');
+    expect(await storage.getKeyByIndexAsync(Infinity)).toBe('key');
+    expect(await storage.getKeyByIndexAsync(-Infinity)).toBe('key');
   });
 });
 
@@ -139,11 +153,25 @@ describe('SQLiteStorage synchronous', () => {
 
   it('should get key by index', () => {
     storage.setItemSync('key', 'value');
+    storage.setItemSync('key2', 'value2');
+
     expect(storage.getKeyByIndexSync(0)).toBe('key');
 
-    // Invalid index should normalize to 0
-    expect(storage.getKeyByIndexSync(-1)).toBe('key');
+    expect(storage.getKeyByIndexSync(-1)).toBe(null);
+    expect(storage.getKeyByIndexSync(0.5)).toBe('key');
+    // @ts-expect-error
+    expect(storage.getKeyByIndexSync(true)).toBe('key2');
+    // @ts-expect-error
+    expect(storage.getKeyByIndexSync(false)).toBe('key');
+    // @ts-expect-error
+    expect(storage.getKeyByIndexSync({ valueOf: () => 1 })).toBe('key2');
+
+    expect(storage.getKeyByIndexSync(Number.MAX_SAFE_INTEGER)).toBe(null);
+    expect(storage.getKeyByIndexSync(Number.MAX_SAFE_INTEGER + 1)).toBe('key');
     expect(storage.getKeyByIndexSync(Number.MAX_VALUE)).toBe('key');
+    expect(storage.getKeyByIndexSync(NaN)).toBe('key');
+    expect(storage.getKeyByIndexSync(Infinity)).toBe('key');
+    expect(storage.getKeyByIndexSync(-Infinity)).toBe('key');
   });
 });
 

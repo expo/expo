@@ -196,24 +196,23 @@ describe(normalizeStorageIndex, () => {
     expect(normalizeStorageIndex(Number.MIN_SAFE_INTEGER)).toBeNull();
   });
 
-  it('should return null when index is out of bounds', () => {
-    expect(normalizeStorageIndex(Number.NEGATIVE_INFINITY)).toBeNull();
-    expect(normalizeStorageIndex(Number.POSITIVE_INFINITY)).toBeNull();
-    expect(normalizeStorageIndex(Number.MIN_SAFE_INTEGER)).toBeNull();
-    expect(normalizeStorageIndex(Number.MAX_VALUE)).toBeNull();
+  it('should return 0 when index is out of bounds', () => {
+    expect(normalizeStorageIndex(Number.NEGATIVE_INFINITY)).toBe(0);
+    expect(normalizeStorageIndex(Number.POSITIVE_INFINITY)).toBe(0);
+    expect(normalizeStorageIndex(Number.MAX_VALUE)).toBe(0);
+    expect(normalizeStorageIndex(Number.NaN)).toBe(0);
   });
 
-  it('should return null for non-number values', () => {
-    expect(normalizeStorageIndex(Number.NaN)).toBeNull();
-    expect(normalizeStorageIndex('a')).toBeNull();
-    expect(normalizeStorageIndex({})).toBeNull();
-    expect(normalizeStorageIndex(() => {})).toBeNull();
+  it('should return 0 for non-number values', () => {
+    expect(normalizeStorageIndex('a')).toBe(0);
+    expect(normalizeStorageIndex({})).toBe(0);
+    expect(normalizeStorageIndex(() => {})).toBe(0);
   });
 
   it('should support bigint with lossy conversion', () => {
     expect(normalizeStorageIndex(BigInt(1))).toBe(1);
     expect(normalizeStorageIndex(BigInt(-1))).toBeNull();
-    expect(normalizeStorageIndex(BigInt(Number.MAX_VALUE))).toBeNull();
+    expect(normalizeStorageIndex(BigInt(Number.MAX_VALUE))).toBe(0);
   });
 
   it('should return 0 for IEEE 754 negative zero', () => {

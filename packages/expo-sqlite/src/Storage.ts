@@ -126,7 +126,10 @@ export class SQLiteStorage {
    */
   async getKeyByIndexAsync(index: number): Promise<string | null> {
     const db = await this.getDbAsync();
-    const offset = normalizeStorageIndex(index) ?? 0;
+    const offset = normalizeStorageIndex(index);
+    if (offset == null) {
+      return null;
+    }
     const result = await db.getFirstAsync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, offset);
     return result?.key ?? null;
   }
@@ -219,7 +222,10 @@ export class SQLiteStorage {
    */
   getKeyByIndexSync(index: number): string | null {
     const db = this.getDbSync();
-    const offset = normalizeStorageIndex(index) ?? 0;
+    const offset = normalizeStorageIndex(index);
+    if (offset == null) {
+      return null;
+    }
     const result = db.getFirstSync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, offset);
     return result?.key ?? null;
   }

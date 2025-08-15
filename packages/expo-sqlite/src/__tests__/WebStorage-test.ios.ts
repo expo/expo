@@ -47,6 +47,27 @@ describe('Web Storage API compatibility', () => {
     localStorage.clear();
   });
 
+  it('should stringify setItem value argument', () => {
+    // @ts-expect-error
+    localStorage.setItem('key', {
+      toString() {
+        return 'hello';
+      },
+    });
+    expect(localStorage.getItem('key')).toBe('hello');
+
+    // @ts-expect-error
+    localStorage.setItem('key', {
+      test() {
+        return 'hello';
+      },
+      valueOf() {
+        return 'hello';
+      },
+    });
+    expect(localStorage.getItem('key')).toBe('[object Object]');
+  });
+
   it('should support property accessor', () => {
     localStorage.test = 'testValue';
     expect(localStorage['test']).toBe('testValue');

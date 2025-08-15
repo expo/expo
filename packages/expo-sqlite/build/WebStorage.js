@@ -18,7 +18,7 @@ class Storage {
         this.storage.removeItemSync(key);
     }
     setItem(key, value) {
-        this.storage.setItemSync(key, value);
+        this.storage.setItemSync(key, String(value));
     }
     get length() {
         return this.storage.getLengthSync();
@@ -45,6 +45,7 @@ function withPropertyAccessors(obj) {
             if (typeof prop !== 'string' || builtin.has(prop)) {
                 return Reflect.get(target, prop, receiver);
             }
+            // Values are always converted to strings so getItem returns null only when there is no value
             const value = target.getItem(prop);
             return value === null ? undefined : value;
         },
