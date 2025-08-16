@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Export all expression should not overwrite named exports of a module when import export plugin with live bindings is used (default) ([#38894](https://github.com/expo/expo/pull/38894) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 💡 Others
+
+## 0.21.2 — 2025-08-16
+
+### 🐛 Bug fixes
+
+- Export all expression should not overwrite named exports of a module when import export plugin with live bindings is used (default) ([#38894](https://github.com/expo/expo/pull/38894) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 0.21.1 — 2025-08-15
 

@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- For `expo-router/testing-library`, `@testing-library/react-native` must now be installed separately and it's an optional peer dependency ([#38887](https://github.com/expo/expo/pull/38887) by [@kitten](https://github.com/kitten))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Remove unused peer dependency on `@testing-library/jest-native` ([#38886](https://github.com/expo/expo/pull/38886) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 6.0.0-beta.2 — 2025-08-16
+
+### 🛠 Breaking changes
+
+- For `expo-router/testing-library`, `@testing-library/react-native` must now be installed separately and it's an optional peer dependency ([#38887](https://github.com/expo/expo/pull/38887) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Remove unused peer dependency on `@testing-library/jest-native` ([#38886](https://github.com/expo/expo/pull/38886) by [@kitten](https://github.com/kitten))
 
 ## 6.0.0-beta.1 — 2025-08-15
 

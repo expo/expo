@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 3.0.2 — 2025-08-16
+
+### 🐛 Bug fixes
+
 - Regression: Use the command's root instead of the app's root when resolving extra build dependencies ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
