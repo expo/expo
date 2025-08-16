@@ -619,7 +619,7 @@ const originBabelTransformer: BabelTransformer = (() => {
 
 type BabelTransformResult = ReturnType<BabelTransformer['transform']>;
 
-interface CustomBabelTransformer extends Omit<BabelTransformer, 'transform'> {
+export interface CustomBabelTransformer extends Omit<BabelTransformer, 'transform'> {
   transform(
     babelTransformerArgs: BabelTransformerArgs,
     parentTransformer?: BabelTransformer
