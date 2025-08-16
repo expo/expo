@@ -15,18 +15,6 @@ export type SupportedPlatform =
   | 'devtools'
   | (string & {});
 
-export interface GenerateOptions {
-  target: string;
-  namespace?: string;
-  empty?: boolean;
-}
-
-export interface GenerateModulesProviderOptions {
-  target: string;
-  entitlement?: string;
-  packages: string[];
-}
-
 export type PackageRevision = {
   name: string;
   path: string;

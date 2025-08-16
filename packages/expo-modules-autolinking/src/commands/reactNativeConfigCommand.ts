@@ -24,7 +24,7 @@ export function reactNativeConfigCommand() {
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths: string[] | null, commandArguments: ReactNativeConfigArguments) => {
       // TODO(@kitten): Do we need to restrict this?
-      const platform = commandArguments.platform;
+      const platform = commandArguments.platform ?? 'ios';
       if (platform !== 'android' && platform !== 'ios') {
         throw new Error(`Unsupported platform: ${platform}`);
       }

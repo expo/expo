@@ -2,7 +2,7 @@ import commander from 'commander';
 
 import {
   AutolinkingCommonArguments,
-  mergeLinkingOptionsAsync,
+  createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
 import {
@@ -33,21 +33,32 @@ export function generateModulesProviderCommand() {
     )
     .action(
       async (searchPaths: string[] | null, commandArguments: GenerateModulesProviderArguments) => {
-        const options = await mergeLinkingOptionsAsync({ ...commandArguments, searchPaths });
-        const expoModulesSearchResults = await findModulesAsync(options);
-        const expoModulesResolveResults = await resolveModulesAsync(
-          expoModulesSearchResults,
-          options
-        );
+        const platform = commandArguments.platform ?? 'apple';
+        const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
+          ...commandArguments,
+          searchPaths,
+        });
+        const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
+        const appRoot = await autolinkingOptionsLoader.getAppRoot();
 
-        const includeModules = new Set(options.packages ?? []);
+        const expoModulesSearchResults = await findModulesAsync({
+          autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
+          appRoot: await autolinkingOptionsLoader.getAppRoot(),
+        });
+        const expoModulesResolveResults = await resolveModulesAsync(expoModulesSearchResults, {
+          autolinkingOptions,
+          appRoot,
+        });
+
+        const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) =>
           includeModules.has(module.packageName)
         );
 
         await generateModulesProviderAsync(filteredModules, {
-          ...options,
-          packages: options.packages ?? [], // TODO: Remove
+          platform,
+          targetPath: commandArguments.target,
+          entitlementPath: commandArguments.entitlement,
         });
       }
     );

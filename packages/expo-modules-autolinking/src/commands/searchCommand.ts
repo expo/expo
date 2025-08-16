@@ -2,7 +2,7 @@ import commander from 'commander';
 
 import {
   AutolinkingCommonArguments,
-  mergeLinkingOptionsAsync,
+  createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
 import { findModulesAsync } from '../autolinking';
@@ -15,10 +15,18 @@ export function searchCommand() {
   return registerAutolinkingArguments(commander.command('search [searchPaths...]'))
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths: string[] | null, commandArguments: SearchArguments) => {
-      const options = await mergeLinkingOptionsAsync({ ...commandArguments, searchPaths });
-      // TODO(@kitten): Check projectRoot path
-      const expoModulesSearchResults = await findModulesAsync(options);
-      if (options.json) {
+      const platform = commandArguments.platform ?? 'apple';
+      const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
+        ...commandArguments,
+        searchPaths,
+      });
+
+      const expoModulesSearchResults = await findModulesAsync({
+        autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
+        appRoot: await autolinkingOptionsLoader.getAppRoot(),
+      });
+
+      if (commandArguments.json) {
         console.log(JSON.stringify(expoModulesSearchResults));
       } else {
         console.log(require('util').inspect(expoModulesSearchResults, false, null, true));

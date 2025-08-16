@@ -2,7 +2,7 @@ import commander from 'commander';
 
 import {
   AutolinkingCommonArguments,
-  mergeLinkingOptionsAsync,
+  createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
 import {
@@ -33,15 +33,31 @@ export function resolveCommand() {
   return registerAutolinkingArguments(commander.command('resolve [searchPaths...]'))
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths: string[] | null, commandArguments: ResolveArguments) => {
-      const options = await mergeLinkingOptionsAsync({ ...commandArguments, searchPaths });
-      // TODO(@kitten): Replace projectRoot path
-      const expoModulesSearchResults = await findModulesAsync(options);
-      const expoModulesResolveResults = await resolveModulesAsync(
-        expoModulesSearchResults,
-        options
-      );
-      const extraDependencies = await resolveExtraBuildDependenciesAsync(options);
-      const configuration = getConfiguration(options);
+      const platform = commandArguments.platform ?? 'apple';
+      const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
+        ...commandArguments,
+        searchPaths,
+      });
+
+      const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
+      const appRoot = await autolinkingOptionsLoader.getAppRoot();
+
+      const expoModulesSearchResults = await findModulesAsync({
+        autolinkingOptions,
+        appRoot,
+      });
+
+      const expoModulesResolveResults = await resolveModulesAsync(expoModulesSearchResults, {
+        autolinkingOptions,
+        appRoot,
+      });
+
+      const extraDependencies = await resolveExtraBuildDependenciesAsync({
+        commandRoot: autolinkingOptionsLoader.getCommandRoot(),
+        platform,
+      });
+
+      const configuration = getConfiguration({ autolinkingOptions });
 
       const coreFeatures = [
         ...expoModulesResolveResults.reduce<Set<string>>((acc, module) => {
@@ -57,7 +73,7 @@ export function resolveCommand() {
         }, new Set()),
       ];
 
-      if (options.json) {
+      if (commandArguments.json) {
         console.log(
           JSON.stringify({
             extraDependencies,

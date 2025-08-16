@@ -1,45 +1,52 @@
 import chalk from 'chalk';
 
 import { getLinkingImplementationForPlatform } from './utils';
-import { GenerateModulesProviderOptions, GenerateOptions, ModuleDescriptor } from '../types';
+import { ModuleDescriptor, SupportedPlatform } from '../types';
 
-/**
- * Generates a source file listing all packages to link.
- * Right know it works only for Android platform.
- */
+interface GeneratePackageListParams {
+  platform: SupportedPlatform;
+  targetPath: string;
+  namespace: string;
+}
+
+/** Generates a source file listing all packages to link (Android-only) */
 export async function generatePackageListAsync(
   modules: ModuleDescriptor[],
-  options: GenerateOptions
+  params: GeneratePackageListParams
 ) {
   try {
-    const platformLinking = getLinkingImplementationForPlatform(options.platform);
-    await platformLinking.generatePackageListAsync(modules, options.target, options.namespace);
+    const platformLinking = getLinkingImplementationForPlatform(params.platform);
+    await platformLinking.generatePackageListAsync(modules, params.targetPath, params.namespace);
   } catch (e) {
     console.error(
-      chalk.red(`Generating package list is not available for platform: ${options.platform}`)
+      chalk.red(`Generating package list is not available for platform: ${params.platform}`)
     );
     throw e;
   }
 }
 
-/**
- * Generates ExpoModulesProvider file listing all packages to link.
- * Right know it works only for Apple platforms.
+interface GenerateModulesProviderParams {
+  platform: SupportedPlatform;
+  targetPath: string;
+  entitlementPath: string | null | undefined;
+}
+
+/** Generates ExpoModulesProvider file listing all packages to link (Apple-only)
  */
 export async function generateModulesProviderAsync(
   modules: ModuleDescriptor[],
-  options: GenerateModulesProviderOptions
+  params: GenerateModulesProviderParams
 ) {
   try {
-    const platformLinking = getLinkingImplementationForPlatform(options.platform);
+    const platformLinking = getLinkingImplementationForPlatform(params.platform);
     await platformLinking.generateModulesProviderAsync(
       modules,
-      options.target,
-      options.entitlement
+      params.targetPath,
+      params.entitlementPath
     );
   } catch (e) {
     console.error(
-      chalk.red(`Generating modules provider is not available for platform: ${options.platform}`)
+      chalk.red(`Generating modules provider is not available for platform: ${params.platform}`)
     );
     throw e;
   }

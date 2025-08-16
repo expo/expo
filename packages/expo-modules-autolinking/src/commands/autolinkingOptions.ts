@@ -196,7 +196,10 @@ const loadPackageJSONAsync = async (packageJsonPath: string): Promise<Record<str
 export interface LinkingOptionsLoader {
   getCommandRoot(): string;
   getAppRoot(): Promise<string>;
-  getPlatformOptions(platform?: SupportedPlatform): Promise<AutolinkingOptions>;
+  getPlatformOptions<T extends SupportedPlatform | undefined>(
+    platform: T
+  ): Promise<AutolinkingOptions & { platform: T }>;
+  getPlatformOptions(): Promise<AutolinkingOptions>;
 }
 
 export function createAutolinkingOptionsLoader(
@@ -234,7 +237,7 @@ export function createAutolinkingOptionsLoader(
         options.exclude = [...(options.exclude ?? []), ...extraArgumentsOptions.extraExclude];
       }
 
-      return {
+      const autolinkingOptions: AutolinkingOptions = {
         legacy_shallowReactNativeLinking: options.legacy_shallowReactNativeLinking ?? false,
         searchPaths: options.searchPaths ?? [],
         nativeModulesDir:
@@ -242,7 +245,12 @@ export function createAutolinkingOptionsLoader(
         exclude: options.exclude ?? [],
         buildFromSource: options.buildFromSource,
         flags: options.flags,
-      } satisfies AutolinkingOptions;
+      };
+
+      return {
+        ...autolinkingOptions,
+        platform,
+      };
     },
   };
 }

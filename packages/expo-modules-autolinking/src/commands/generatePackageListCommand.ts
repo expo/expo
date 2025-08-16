@@ -2,6 +2,7 @@ import commander from 'commander';
 
 import {
   AutolinkingCommonArguments,
+  createAutolinkingOptionsLoader,
   mergeLinkingOptionsAsync,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
@@ -35,14 +36,32 @@ export function generatePackageListCommand() {
     )
     .action(
       async (searchPaths: string[] | null, commandArguments: GeneratePackageListArguments) => {
-        const options = await mergeLinkingOptionsAsync({ ...commandArguments, searchPaths });
+        const platform = commandArguments.platform ?? 'apple';
+        const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
+          ...commandArguments,
+          searchPaths,
+        });
+
         let expoModulesResolveResults: ModuleDescriptor[] = [];
-        if (!options.empty) {
-          // TODO(@kitten): Replace projectRoot path
-          const expoModulesSearchResults = await findModulesAsync(options);
-          expoModulesResolveResults = await resolveModulesAsync(expoModulesSearchResults, options);
+        if (!commandArguments.empty) {
+          const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
+          const appRoot = await autolinkingOptionsLoader.getAppRoot();
+
+          const expoModulesSearchResults = await findModulesAsync({
+            autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
+            appRoot: await autolinkingOptionsLoader.getAppRoot(),
+          });
+          expoModulesResolveResults = await resolveModulesAsync(expoModulesSearchResults, {
+            autolinkingOptions,
+            appRoot,
+          });
         }
-        await generatePackageListAsync(expoModulesResolveResults, options);
+
+        await generatePackageListAsync(expoModulesResolveResults, {
+          platform,
+          targetPath: commandArguments.target,
+          namespace: commandArguments.namespace,
+        });
       }
     );
 }

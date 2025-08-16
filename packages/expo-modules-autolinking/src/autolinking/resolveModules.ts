@@ -1,14 +1,23 @@
 import { getLinkingImplementationForPlatform } from './utils';
-import type { ExtraDependencies, ModuleDescriptor, ResolveOptions, SearchResults } from '../types';
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type {
+  ExtraDependencies,
+  ModuleDescriptor,
+  SearchResults,
+  SupportedPlatform,
+} from '../types';
 
-/**
- * Resolves search results to a list of platform-specific configuration.
- */
+interface ResolveModulesParams {
+  appRoot: string;
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
+}
+
+/** Resolves search results to a list of platform-specific configuration. */
 export async function resolveModulesAsync(
   searchResults: SearchResults,
-  options: ResolveOptions
+  { appRoot, autolinkingOptions }: ResolveModulesParams
 ): Promise<ModuleDescriptor[]> {
-  const platformLinking = getLinkingImplementationForPlatform(options.platform);
+  const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
 
   return (
     await Promise.all(
@@ -16,7 +25,7 @@ export async function resolveModulesAsync(
         const resolvedModule = await platformLinking.resolveModuleAsync(
           packageName,
           revision,
-          options
+          autolinkingOptions // TODO: Unclear what's needed here: untyped!
         );
         return resolvedModule
           ? {
@@ -32,15 +41,22 @@ export async function resolveModulesAsync(
     .sort((a, b) => a.packageName.localeCompare(b.packageName));
 }
 
-/**
- * Resolves the extra build dependencies for the project, such as additional Maven repositories or CocoaPods pods.
- */
-export async function resolveExtraBuildDependenciesAsync(
-  options: ResolveOptions
-): Promise<ExtraDependencies> {
-  const platformLinking = getLinkingImplementationForPlatform(options.platform);
+interface ResolveExtraBuildDependenciesParams {
+  commandRoot: string;
+  platform: SupportedPlatform;
+}
+
+/** Resolves the extra build dependencies for the project, such as additional Maven repositories or CocoaPods pods. */
+export async function resolveExtraBuildDependenciesAsync({
+  commandRoot,
+  platform,
+}: ResolveExtraBuildDependenciesParams): Promise<ExtraDependencies> {
+  const platformLinking = getLinkingImplementationForPlatform(platform);
   const extraDependencies = await platformLinking.resolveExtraBuildDependenciesAsync(
-    options.projectRoot
+    // NOTE: We assume we must be inside the native folder here
+    // The `resolve` command either is invoked in the CWD of `./{android,ios}` or has a `--project-root`
+    // that's in the native directory
+    commandRoot
   );
   return extraDependencies ?? [];
 }
