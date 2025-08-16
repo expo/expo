@@ -2,7 +2,7 @@ import commander from 'commander';
 
 import {
   AutolinkingCommonArguments,
-  mergeLinkingOptionsAsync,
+  createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
 import { createReactNativeConfigAsync } from '../reactNativeConfig';
@@ -28,10 +28,20 @@ export function reactNativeConfigCommand() {
       if (platform !== 'android' && platform !== 'ios') {
         throw new Error(`Unsupported platform: ${platform}`);
       }
-      const options = await mergeLinkingOptionsAsync({ ...commandArguments, searchPaths });
-      // TODO(@kitten): Replace projectRoot path
-      const reactNativeConfig = createReactNativeConfigAsync({ ...options, platform });
-      if (options.json) {
+
+      const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
+        ...commandArguments,
+        searchPaths,
+      });
+
+      const reactNativeConfig = createReactNativeConfigAsync({
+        autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
+        appRoot: await autolinkingOptionsLoader.getAppRoot(),
+        // NOTE(@kitten): This is currently not validated, and assumed to be validated later
+        sourceDir: commandArguments.sourceDir ?? undefined,
+      });
+
+      if (commandArguments.json) {
         console.log(JSON.stringify(reactNativeConfig));
       } else {
         console.log(require('util').inspect(reactNativeConfig, false, null, true));

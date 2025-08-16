@@ -10,7 +10,6 @@ import type {
   ModuleDescriptorIos,
   ModuleIosPodspecInfo,
   PackageRevision,
-  SearchOptions,
 } from '../types';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
