@@ -46,11 +46,6 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
   return commander
     .command(`${commandName} [paths...]`)
     .option<string[] | null>(
-      '-i, --ignore-paths <ignorePaths...>',
-      'Paths to ignore when looking up for modules.',
-      (value, previous) => (previous ?? []).concat(value)
-    )
-    .option<string[] | null>(
       '-e, --exclude <exclude...>',
       'Package names to exclude when looking up for modules.',
       (value, previous) => (previous ?? []).concat(value)

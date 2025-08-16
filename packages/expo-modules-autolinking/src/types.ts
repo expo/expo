@@ -18,7 +18,6 @@ export type AutolinkingOptions = {
    */
   legacy_shallowReactNativeLinking?: boolean;
   searchPaths?: string[] | null;
-  ignorePaths?: string[] | null;
   exclude?: string[] | null;
   flags?: Record<string, any>;
 };
@@ -38,7 +37,6 @@ export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
 export interface SearchOptions {
   // Available in the CLI
   searchPaths?: string[];
-  ignorePaths?: string[] | null;
   exclude?: string[] | null;
   platform: SupportedPlatform;
   silent?: boolean;
