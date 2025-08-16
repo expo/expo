@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed type definition for `textSync()` to return `string` instead of `Promise<string>`
+
 ### 💡 Others
 
 ## 19.0.1 — 2025-08-15

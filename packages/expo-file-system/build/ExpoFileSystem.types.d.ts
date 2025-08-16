@@ -115,7 +115,7 @@ export declare class File {
      * Retrieves text from the file.
      * @returns The contents of the file as string.
      */
-    textSync(): Promise<string>;
+    textSync(): string;
     /**
      * Retrieves content of the file as base64.
      * @returns A promise that resolves with the contents of the file as a base64 string.
