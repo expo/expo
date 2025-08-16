@@ -15,7 +15,7 @@ function generatePackageListCommand(cli) {
         .option('-n, --namespace <namespace>', 'Java package name under which the package list should be placed.')
         .option('--empty', 'Whether to only generate an empty list. Might be used when the user opts-out of autolinking.', false)
         .action(async (searchPaths, commandArguments) => {
-        const platform = commandArguments.platform ?? 'apple';
+        const platform = commandArguments.platform ?? 'android';
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)({
             ...commandArguments,
             searchPaths,

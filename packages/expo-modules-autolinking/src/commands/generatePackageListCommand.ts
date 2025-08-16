@@ -37,7 +37,7 @@ export function generatePackageListCommand(cli: commander.CommanderStatic) {
     )
     .action(
       async (searchPaths: string[] | null, commandArguments: GeneratePackageListArguments) => {
-        const platform = commandArguments.platform ?? 'apple';
+        const platform = commandArguments.platform ?? 'android';
         const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
           ...commandArguments,
           searchPaths,
