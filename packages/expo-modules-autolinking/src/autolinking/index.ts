@@ -47,7 +47,7 @@ async function apiResolveModulesAsync(
   const autolinkingOptionsLoader = createAutolinkingOptionsLoader(providedOptions);
   return resolveModulesAsync(
     searchResults,
-    await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform),
+    await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform)
   );
 }
 
