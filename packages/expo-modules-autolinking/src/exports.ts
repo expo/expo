@@ -1,3 +1,16 @@
+import findUp from 'find-up';
+
+import { findModulesAsync } from './autolinking/findModules';
+import { resolveModulesAsync } from './autolinking/resolveModules';
+import {
+  AutolinkingCommonArguments,
+  AutolinkingOptions,
+  createAutolinkingOptionsLoader,
+  filterMapSearchPaths,
+} from './commands/autolinkingOptions';
+import { ModuleDescriptor, SupportedPlatform } from './types';
+
+export * from './types';
 export * from './autolinking';
 
 export {
@@ -10,3 +23,48 @@ export {
   makeCachedDependenciesLinker,
   scanDependencyResolutionsForPlatform,
 } from './dependencies';
+
+/** @deprecated */
+export async function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(
+  argumentsOptions: Options
+): Promise<Options & AutolinkingOptions> {
+  const autolinkingOptionsLoader = createAutolinkingOptionsLoader(argumentsOptions);
+  return {
+    ...argumentsOptions,
+    ...(await autolinkingOptionsLoader.getPlatformOptions()),
+    projectRoot: autolinkingOptionsLoader.getAppRoot(),
+  };
+}
+
+/** @deprecated */
+export async function queryAutolinkingModulesFromProjectAsync(
+  projectRoot: string,
+  options: Partial<AutolinkingCommonArguments> & { platform: SupportedPlatform }
+): Promise<ModuleDescriptor[]> {
+  const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
+    ...options,
+    // NOTE(@kitten): This has always been duplicated
+    projectRoot: options.projectRoot ?? projectRoot,
+  });
+  const appRoot = await autolinkingOptionsLoader.getAppRoot();
+  const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(options.platform);
+  const searchResults = await findModulesAsync({ appRoot, autolinkingOptions });
+  return await resolveModulesAsync(searchResults, autolinkingOptions);
+}
+
+/** @deprecated */
+export function findProjectRootSync(cwd: string = process.cwd()): string {
+  const result = findUp.sync('package.json', { cwd });
+  if (!result) {
+    throw new Error(`Couldn't find "package.json" up from path "${cwd}"`);
+  }
+  return result;
+}
+
+/** @deprecated */
+export async function resolveSearchPathsAsync(
+  searchPaths: string[] | null,
+  cwd: string
+): Promise<string[]> {
+  return filterMapSearchPaths(searchPaths, cwd) ?? [];
+}

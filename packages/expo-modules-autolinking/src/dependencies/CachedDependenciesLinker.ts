@@ -1,13 +1,13 @@
 import fs from 'fs';
 
-import { SearchOptions, SupportedPlatform } from '../autolinking';
+import { SupportedPlatform } from '../types';
 import { scanDependenciesRecursively } from './resolution';
 import { scanDependenciesFromRNProjectConfig } from './rncliLocal';
 import { scanDependenciesInSearchPath } from './scanning';
 import { type ResolutionResult, DependencyResolutionSource } from './types';
 import { filterMapResolutionResult, mergeResolutionResults } from './utils';
 import { resolveExpoModule } from '../autolinking/findModules';
-import { createLinkingOptionsFactory } from '../autolinking/mergeLinkingOptions';
+import { AutolinkingOptions, createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
 import { resolveReactNativeModule, RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 import { loadConfigAsync } from '../reactNativeConfig/config';
 
@@ -27,14 +27,12 @@ export interface CachedDependenciesLinker {
 export function makeCachedDependenciesLinker(params: {
   projectRoot: string;
 }): CachedDependenciesLinker {
-  const linkingOptionsFactory = createLinkingOptionsFactory<SearchOptions>({
+  const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
     projectRoot: params.projectRoot,
-    platform: 'apple', // Placeholder value
   });
 
-  let projectRoot: Promise<string> | undefined;
-  const getProjectRoot = () =>
-    projectRoot || (projectRoot = linkingOptionsFactory.getProjectRoot());
+  let appRoot: Promise<string> | undefined;
+  const getAppRoot = () => appRoot || (appRoot = autolinkingOptionsLoader.getAppRoot());
 
   const dependenciesResultBySearchPath = new Map<string, Promise<ResolutionResult>>();
   let reactNativeProjectConfig: Promise<RNConfigReactNativeProjectConfig | null> | undefined;
@@ -43,13 +41,13 @@ export function makeCachedDependenciesLinker(params: {
 
   return {
     async getOptionsForPlatform(platform) {
-      const options = await linkingOptionsFactory.getPlatformOptions(platform);
+      const options = await autolinkingOptionsLoader.getPlatformOptions(platform);
       return makeCachedDependenciesSearchOptions(options);
     },
     async loadReactNativeProjectConfig() {
       if (reactNativeProjectConfig === undefined) {
         reactNativeProjectConfig = loadConfigAsync<RNConfigReactNativeProjectConfig>(
-          await getProjectRoot()
+          await getAppRoot()
         );
       }
       return reactNativeProjectConfig;
@@ -59,7 +57,7 @@ export function makeCachedDependenciesLinker(params: {
       return (
         reactNativeProjectConfigDependencies ||
         (reactNativeProjectConfigDependencies = scanDependenciesFromRNProjectConfig(
-          await getProjectRoot(),
+          await getAppRoot(),
           reactNativeProjectConfig
         ))
       );
@@ -67,7 +65,7 @@ export function makeCachedDependenciesLinker(params: {
     async scanDependenciesRecursively() {
       return (
         recursiveDependencies ||
-        (recursiveDependencies = scanDependenciesRecursively(await getProjectRoot()))
+        (recursiveDependencies = scanDependenciesRecursively(await getAppRoot()))
       );
     },
     async scanDependenciesInSearchPath(searchPath: string) {
@@ -134,7 +132,7 @@ export async function scanDependencyResolutionsForPlatform(
   return dependencies;
 }
 
-const makeCachedDependenciesSearchOptions = (options: SearchOptions) => ({
+const makeCachedDependenciesSearchOptions = (options: AutolinkingOptions) => ({
   excludeNames: new Set(options.exclude),
   searchPaths:
     options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)

@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Regression: Use the command's root instead of the app's root when resolving extra build dependencies ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Refactor command implementations and deprecate old Expo modules autolinking API ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
 
 ## 3.0.1 — 2025-08-15
 

@@ -1,5 +1,9 @@
-import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision, ResolveOptions } from '../types';
-export declare function getConfiguration(options: ResolveOptions): Record<string, any> | undefined;
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../types';
+interface AndroidConfigurationOutput {
+    buildFromSource: string[];
+}
+export declare function getConfiguration(options: AutolinkingOptions): AndroidConfigurationOutput | undefined;
 /**
  * Generates Java file that contains all autolinked packages.
  */
@@ -36,3 +40,4 @@ export declare function convertPackageWithGradleToProjectName(packageName: strin
  * tries to align the behavior with the `withGradleProperties` plugin.
  */
 export declare function searchGradlePropertyFirst(contents: string, propertyName: string): string | null;
+export {};

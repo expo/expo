@@ -1,4 +1,4 @@
-import { SupportedPlatform } from '../autolinking';
+import { SupportedPlatform } from '../types';
 import { type ResolutionResult } from './types';
 import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 export interface CachedDependenciesSearchOptions {

@@ -34,10 +34,8 @@ function getSwiftModuleNames(pods, swiftModuleNames) {
     // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
     return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
 }
-/**
- * Resolves module search result with additional details required for iOS platform.
- */
-async function resolveModuleAsync(packageName, revision, options) {
+/** Resolves module search result with additional details required for iOS platform. */
+async function resolveModuleAsync(packageName, revision, extraOutput) {
     const podspecFiles = await findPodspecFiles(revision);
     if (!podspecFiles.length) {
         return null;
@@ -52,7 +50,7 @@ async function resolveModuleAsync(packageName, revision, options) {
         packageName,
         pods,
         swiftModuleNames,
-        flags: options.flags,
+        flags: extraOutput.flags,
         modules: revision.config?.appleModules() ?? [],
         appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
         reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
@@ -194,7 +192,7 @@ function wrapInDebugConfigurationCheck(indentationLevel, debugBlock, releaseBloc
     return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }
 async function parseEntitlementsAsync(entitlementPath) {
-    if (!(await (0, fileUtils_1.fileExistsAsync)(entitlementPath))) {
+    if (!entitlementPath || !(await (0, fileUtils_1.fileExistsAsync)(entitlementPath))) {
         return {};
     }
     const { stdout } = await (0, spawn_async_1.default)('plutil', ['-convert', 'json', '-o', '-', entitlementPath]);

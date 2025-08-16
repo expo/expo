@@ -2,22 +2,20 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-import type {
-  ExtraDependencies,
-  ModuleDescriptorAndroid,
-  PackageRevision,
-  ResolveOptions,
-} from '../types';
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../types';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 
-export function getConfiguration(options: ResolveOptions): Record<string, any> | undefined {
-  const buildFromSource = options.android?.buildFromSource;
-  if (buildFromSource) {
-    return { buildFromSource };
-  }
-  return undefined;
+interface AndroidConfigurationOutput {
+  buildFromSource: string[];
+}
+
+export function getConfiguration(
+  options: AutolinkingOptions
+): AndroidConfigurationOutput | undefined {
+  return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
 }
 
 /**
