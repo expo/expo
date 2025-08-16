@@ -43,13 +43,11 @@ export function getSwiftModuleNames(
   return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
 }
 
-/**
- * Resolves module search result with additional details required for iOS platform.
- */
+/** Resolves module search result with additional details required for iOS platform. */
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
-  options: SearchOptions
+  extraOutput: { flags?: Record<string, any> }
 ): Promise<ModuleDescriptorIos | null> {
   const podspecFiles = await findPodspecFiles(revision);
   if (!podspecFiles.length) {
@@ -68,7 +66,7 @@ export async function resolveModuleAsync(
     packageName,
     pods,
     swiftModuleNames,
-    flags: options.flags,
+    flags: extraOutput.flags,
     modules: revision.config?.appleModules() ?? [],
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
@@ -99,7 +97,7 @@ export async function resolveExtraBuildDependenciesAsync(
 export async function generateModulesProviderAsync(
   modules: ModuleDescriptorIos[],
   targetPath: string,
-  entitlementPath: string
+  entitlementPath: string | null
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
@@ -280,8 +278,10 @@ function wrapInDebugConfigurationCheck(
   )}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }
 
-async function parseEntitlementsAsync(entitlementPath: string): Promise<AppleCodeSignEntitlements> {
-  if (!(await fileExistsAsync(entitlementPath))) {
+async function parseEntitlementsAsync(
+  entitlementPath: string | null
+): Promise<AppleCodeSignEntitlements> {
+  if (!entitlementPath || !(await fileExistsAsync(entitlementPath))) {
     return {};
   }
   const { stdout } = await spawnAsync('plutil', ['-convert', 'json', '-o', '-', entitlementPath]);

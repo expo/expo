@@ -1,13 +1,18 @@
 import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { getLinkingImplementationForPlatform } from '../platforms';
 import type { SupportedPlatform } from '../types';
-import { getLinkingImplementationForPlatform } from './utils';
 
 interface GetConfigurationParams {
   autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
 }
 
-export function getConfiguration({ autolinkingOptions }: GetConfigurationParams) {
+export function getConfiguration({
+  autolinkingOptions,
+}: GetConfigurationParams): Record<string, any> | undefined {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
-  // TODO(@kitten): Unclear what's needed here due to lack of types
-  return platformLinking.getConfiguration?.(autolinkingOptions);
+  if ('getConfiguration' in platformLinking) {
+    return platformLinking.getConfiguration(autolinkingOptions);
+  } else {
+    return undefined;
+  }
 }

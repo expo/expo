@@ -41,9 +41,7 @@ interface FindModulesParams {
   autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
 }
 
-/**
- * Searches for modules to link based on given config.
- */
+/** Searches for modules to link based on given config. */
 export async function findModulesAsync({
   appRoot,
   autolinkingOptions,

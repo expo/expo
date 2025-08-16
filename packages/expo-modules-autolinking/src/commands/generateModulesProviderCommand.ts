@@ -45,10 +45,10 @@ export function generateModulesProviderCommand() {
           autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
           appRoot: await autolinkingOptionsLoader.getAppRoot(),
         });
-        const expoModulesResolveResults = await resolveModulesAsync(expoModulesSearchResults, {
-          autolinkingOptions,
-          appRoot,
-        });
+        const expoModulesResolveResults = await resolveModulesAsync(
+          expoModulesSearchResults,
+          autolinkingOptions
+        );
 
         const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) =>
@@ -58,7 +58,7 @@ export function generateModulesProviderCommand() {
         await generateModulesProviderAsync(filteredModules, {
           platform,
           targetPath: commandArguments.target,
-          entitlementPath: commandArguments.entitlement,
+          entitlementPath: commandArguments.entitlement ?? null,
         });
       }
     );

@@ -1,5 +1,5 @@
-import { getLinkingImplementationForPlatform } from './utils';
 import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { getLinkingImplementationForPlatform } from '../platforms';
 import type {
   ExtraDependencies,
   ModuleDescriptor,
@@ -7,37 +7,34 @@ import type {
   SupportedPlatform,
 } from '../types';
 
-interface ResolveModulesParams {
-  appRoot: string;
-  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
-}
-
 /** Resolves search results to a list of platform-specific configuration. */
 export async function resolveModulesAsync(
   searchResults: SearchResults,
-  { appRoot, autolinkingOptions }: ResolveModulesParams
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform }
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
+  // Additional output property for Cocoapods flags
+  const extraOutput = { flags: autolinkingOptions.flags };
 
-  return (
-    await Promise.all(
-      Object.entries(searchResults).map(async ([packageName, revision]) => {
-        const resolvedModule = await platformLinking.resolveModuleAsync(
-          packageName,
-          revision,
-          autolinkingOptions // TODO: Unclear what's needed here: untyped!
-        );
-        return resolvedModule
-          ? {
-              packageName,
-              packageVersion: revision.version,
-              ...resolvedModule,
-            }
-          : null;
-      })
-    )
-  )
-    .filter(Boolean)
+  const moduleDescriptorList = await Promise.all(
+    Object.entries(searchResults).map(async ([packageName, revision]) => {
+      const resolvedModule = await platformLinking.resolveModuleAsync(
+        packageName,
+        revision,
+        extraOutput
+      );
+      return resolvedModule
+        ? {
+            ...resolvedModule,
+            packageVersion: revision.version,
+            packageName: resolvedModule.packageName ?? packageName,
+          }
+        : null;
+    })
+  );
+
+  return moduleDescriptorList
+    .filter((moduleDescriptor) => moduleDescriptor != null)
     .sort((a, b) => a.packageName.localeCompare(b.packageName));
 }
 

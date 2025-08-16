@@ -47,10 +47,10 @@ export function resolveCommand() {
         appRoot,
       });
 
-      const expoModulesResolveResults = await resolveModulesAsync(expoModulesSearchResults, {
-        autolinkingOptions,
-        appRoot,
-      });
+      const expoModulesResolveResults = await resolveModulesAsync(
+        expoModulesSearchResults,
+        autolinkingOptions
+      );
 
       const extraDependencies = await resolveExtraBuildDependenciesAsync({
         commandRoot: autolinkingOptionsLoader.getCommandRoot(),

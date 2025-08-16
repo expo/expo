@@ -51,10 +51,10 @@ export function generatePackageListCommand() {
             autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
             appRoot: await autolinkingOptionsLoader.getAppRoot(),
           });
-          expoModulesResolveResults = await resolveModulesAsync(expoModulesSearchResults, {
-            autolinkingOptions,
-            appRoot,
-          });
+          expoModulesResolveResults = await resolveModulesAsync(
+            expoModulesSearchResults,
+            autolinkingOptions
+          );
         }
 
         await generatePackageListAsync(expoModulesResolveResults, {
