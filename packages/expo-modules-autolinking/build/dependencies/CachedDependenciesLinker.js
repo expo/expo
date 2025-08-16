@@ -93,28 +93,19 @@ async function scanDependencyResolutionsForPlatform(linker, platform, include) {
     });
     return dependencies;
 }
-async function scanExpoModuleResolutionsForPlatform(linker, platform, include) {
+async function scanExpoModuleResolutionsForPlatform(linker, platform) {
     const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
-    const includeNames = new Set(include);
     const resolutions = (0, utils_1.mergeResolutionResults)(await Promise.all([
         ...searchPaths.map((searchPath) => {
             return linker.scanDependenciesInSearchPath(searchPath);
         }),
         linker.scanDependenciesRecursively(),
     ]));
-    const dependencies = await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
-        if (excludeNames.has(resolution.name)) {
-            return null;
-        }
-        else if (includeNames.has(resolution.name)) {
-            return resolution;
-        }
-        else {
-            const expoModule = await (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames);
-            return expoModule ? resolution : null;
-        }
+    return await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
+        return !excludeNames.has(resolution.name)
+            ? await (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames)
+            : null;
     });
-    return dependencies;
 }
 const makeCachedDependenciesSearchOptions = (options) => ({
     excludeNames: new Set(options.exclude),

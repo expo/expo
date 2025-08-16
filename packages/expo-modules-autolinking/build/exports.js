@@ -28,6 +28,7 @@ const resolveModules_1 = require("./autolinking/resolveModules");
 const autolinkingOptions_1 = require("./commands/autolinkingOptions");
 __exportStar(require("./types"), exports);
 __exportStar(require("./autolinking"), exports);
+__exportStar(require("./platforms"), exports);
 var dependencies_1 = require("./dependencies");
 Object.defineProperty(exports, "makeCachedDependenciesLinker", { enumerable: true, get: function () { return dependencies_1.makeCachedDependenciesLinker; } });
 Object.defineProperty(exports, "scanDependencyResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanDependencyResolutionsForPlatform; } });
