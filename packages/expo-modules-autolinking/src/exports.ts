@@ -1,6 +1,7 @@
 import findUp from 'find-up';
 
-import { findModulesAsync, resolveModulesAsync } from './autolinking';
+import { findModulesAsync } from './autolinking/findModules';
+import { resolveModulesAsync } from './autolinking/resolveModules';
 import {
   AutolinkingCommonArguments,
   AutolinkingOptions,
