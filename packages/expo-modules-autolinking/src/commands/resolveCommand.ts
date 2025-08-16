@@ -29,8 +29,8 @@ interface ResolveArguments extends AutolinkingCommonArguments {
 }
 
 /** Searches for available expo modules and resolves the results for given platform. */
-export function resolveCommand() {
-  return registerAutolinkingArguments(commander.command('resolve [searchPaths...]'))
+export function resolveCommand(cli: commander.CommanderStatic) {
+  return registerAutolinkingArguments(cli.command('resolve [searchPaths...]'))
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths: string[] | null, commandArguments: ResolveArguments) => {
       const platform = commandArguments.platform ?? 'apple';

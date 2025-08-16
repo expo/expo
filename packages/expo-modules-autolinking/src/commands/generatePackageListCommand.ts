@@ -20,8 +20,8 @@ interface GeneratePackageListArguments extends AutolinkingCommonArguments {
  * @privateRemarks
  * This command is deprecated for apple platforms, use `generate-modules-provider` instead.
  */
-export function generatePackageListCommand() {
-  return registerAutolinkingArguments(commander.command('generate-package-list [searchPaths...]'))
+export function generatePackageListCommand(cli: commander.CommanderStatic) {
+  return registerAutolinkingArguments(cli.command('generate-package-list [searchPaths...]'))
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'

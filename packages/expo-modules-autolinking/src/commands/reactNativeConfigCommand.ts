@@ -13,8 +13,8 @@ interface ReactNativeConfigArguments extends AutolinkingCommonArguments {
 }
 
 /** The react-native-config command (like RN CLI linking) */
-export function reactNativeConfigCommand() {
-  return registerAutolinkingArguments(commander.command('react-native-config [searchPaths...]'))
+export function reactNativeConfigCommand(cli: commander.CommanderStatic) {
+  return registerAutolinkingArguments(cli.command('react-native-config [searchPaths...]'))
     .option(
       '-p, --platform [platform]',
       'The platform that the resulting modules must support. Available options: "android", "ios"',

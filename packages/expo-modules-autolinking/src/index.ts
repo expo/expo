@@ -8,17 +8,18 @@ import { searchCommand } from './commands/searchCommand';
 import { verifyCommand } from './commands/verifyCommand';
 
 async function main(args: string[]) {
-  await commander
+  const cli = commander
     .version(require('expo-modules-autolinking/package.json').version)
-    .description('CLI command that searches for native modules to autolink them.')
-    .parseAsync(args, { from: 'user' });
+    .description('CLI command that searches for native modules to autolink them.');
 
-  verifyCommand();
-  searchCommand();
-  resolveCommand();
-  generatePackageListCommand();
-  generateModulesProviderCommand();
-  reactNativeConfigCommand();
+  verifyCommand(cli);
+  searchCommand(cli);
+  resolveCommand(cli);
+  generatePackageListCommand(cli);
+  generateModulesProviderCommand(cli);
+  reactNativeConfigCommand(cli);
+
+  await cli.parseAsync(args, { from: 'user' });
 }
 
 module.exports = main;

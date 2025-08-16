@@ -11,8 +11,8 @@ interface SearchArguments extends AutolinkingCommonArguments {
   json?: boolean | null;
 }
 
-export function searchCommand() {
-  return registerAutolinkingArguments(commander.command('search [searchPaths...]'))
+export function searchCommand(cli: commander.CommanderStatic) {
+  return registerAutolinkingArguments(cli.command('search [searchPaths...]'))
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths: string[] | null, commandArguments: SearchArguments) => {
       const platform = commandArguments.platform ?? 'apple';

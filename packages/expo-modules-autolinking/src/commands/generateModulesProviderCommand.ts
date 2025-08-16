@@ -16,10 +16,8 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
 }
 
 /** Generates a source file listing all packages to link in the runtime */
-export function generateModulesProviderCommand() {
-  return registerAutolinkingArguments(
-    commander.command('generate-modules-provider [searchPaths...]')
-  )
+export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
+  return registerAutolinkingArguments(cli.command('generate-modules-provider [searchPaths...]'))
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'

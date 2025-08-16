@@ -23,8 +23,8 @@ interface VerifyArguments extends AutolinkingCommonArguments {
   json?: boolean | null;
 }
 
-export function verifyCommand() {
-  return registerAutolinkingArguments(commander.command('verify'))
+export function verifyCommand(cli: commander.CommanderStatic) {
+  return registerAutolinkingArguments(cli.command('verify'))
     .option('-v, --verbose', 'Output all results instead of just warnings.', () => true, false)
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .option(
