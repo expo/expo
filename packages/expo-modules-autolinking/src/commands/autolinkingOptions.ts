@@ -243,8 +243,9 @@ export function createAutolinkingOptionsLoader(
       const autolinkingOptions: AutolinkingOptions = {
         legacy_shallowReactNativeLinking: options.legacy_shallowReactNativeLinking ?? false,
         searchPaths: options.searchPaths ?? [],
-        nativeModulesDir:
-          options.nativeModulesDir ?? resolvePathMaybe(appRoot, './modules') ?? null,
+        nativeModulesDir: options.nativeModulesDir
+          ? (resolvePathMaybe(options.nativeModulesDir, appRoot) ?? null)
+          : (resolvePathMaybe('./modules', appRoot) ?? null),
         exclude: options.exclude ?? [],
         buildFromSource: options.buildFromSource,
         flags: options.flags,
