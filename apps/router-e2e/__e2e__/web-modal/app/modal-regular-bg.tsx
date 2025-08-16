@@ -33,7 +33,7 @@ export default function Page() {
       </View>
 
       <Link testID="open-sheet-radius" href="/sheet-radius" style={styles.button}>
-        Open Sheet (radius 24)
+        Open Sheet (radius 40)
       </Link>
 
       <Link testID="open-modal-transparent" href="/modal-transparent" style={styles.button}>
