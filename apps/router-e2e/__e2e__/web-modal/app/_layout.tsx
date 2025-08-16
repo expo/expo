@@ -72,7 +72,7 @@ export default function Layout() {
         options={{
           presentation: 'formSheet',
           sheetAllowedDetents: [0.4],
-          sheetCornerRadius: 32,
+          sheetCornerRadius: 40,
           sheetGrabberVisible: true,
         }}
       />

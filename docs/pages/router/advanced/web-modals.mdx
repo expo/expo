@@ -133,14 +133,15 @@ The difference between the presentation of how a modal appears in your web app o
 
 You can use `webModalStyle` to customize the dimensions and appearance of your modals on web. It provides the following properties for further customization:
 
-| Property            | Type              | Description                                                                                                    | Default                |
-| ------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| `width`             | `number` `string` | Override the width of the modal (px or percentage). Only applies for web platform on a desktop.                | -                      |
-| `height`            | `number` `string` | Override the height of the modal (px or percentage). Only applies for web platform on a desktop.               | -                      |
-| `minHeight`         | `number` `string` | Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.                     | `640px`                |
-| `minWidth`          | `number` `string` | Minimum width of the desktop modal (px or percentage). Overrides the default 580px.                            | `580px`                |
-| `border`            | `string`          | Override the border of the desktop modal (any valid CSS border value, for example, '1px solid #ccc' or 'none') | None                   |
-| `overlayBackground` | `string`          | Override the overlay background color (any valid CSS color or rgba/hsla value).                                | Semi-transparent black |
+| Property            | Type              | Description                                                                                                                    | Default                |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| `width`             | `number` `string` | Override the width of the modal (px or percentage). Only applies for web platform on a desktop.                                | `83vw`                 |
+| `height`            | `number` `string` | Override the height of the modal (px or percentage). Only applies for web platform on a desktop.                               | `79vh`                 |
+| `minHeight`         | `number` `string` | Minimum height of the desktop modal (px or percentage). Overrides the default iOS 26 sizing.                                   | `min(586px, 79vh)`     |
+| `minWidth`          | `number` `string` | Minimum width of the desktop modal (px or percentage). Overrides the default iOS 26 sizing.                                    | `min(936px, 83vw)`     |
+| `border`            | `string`          | Override the border of the desktop modal (any valid CSS border value, for example, '1px solid #ccc' or 'none')                 | None                   |
+| `overlayBackground` | `string`          | Override the overlay background color (any valid CSS color or rgba/hsla value).                                                | Semi-transparent black |
+| `shadow`            | `string`          | Override the modal shadow filter (any valid CSS filter value, for example, 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none') | Drop-shadow filter     |
 
 ### Custom CSS properties
 
@@ -149,33 +150,37 @@ Expo Router uses custom CSS properties to style modals, which you can override g
 #### Width and height sizing variables
 
 ```css
-/* Default modal width (580px on desktop) */
---expo-router-modal-width: 580px;
+/* Default modal width (83vw on desktop, following iOS 26 specifications) */
+--expo-router-modal-width: 83vw;
 
-/* Maximum modal width (90vw by default) */
---expo-router-modal-max-width: 90vw;
+/* Maximum modal width (936px max, 83vw by default, following iOS 26) */
+--expo-router-modal-max-width: min(936px, 83vw);
 
 /* Minimum modal width (auto by default) */
 --expo-router-modal-min-width: auto;
 
-/* Default modal height (640px) */
---expo-router-modal-height: 640px;
+/* Default modal height (79vh, following iOS 26 specifications) */
+--expo-router-modal-height: 79vh;
 
-/* Minimum modal height (follows height by default) */
---expo-router-modal-min-height: 640px;
+/* Minimum modal height (586px max, 79vh by default, following iOS 26) */
+--expo-router-modal-min-height: min(586px, 79vh);
 ```
 
 #### Border and overlay styling variables
 
 ```css
-/* Modal border (1px solid rgba with transparency) */
---expo-router-modal-border: 1px solid rgba(61.2, 61.2, 66, 0.29);
+/* Modal border (none by default) */
+--expo-router-modal-border: none;
 
-/* Modal corner radius (10px by default) */
---expo-router-modal-border-radius: 10px;
+/* Modal corner radius (24px by default, following iOS 26) */
+--expo-router-modal-border-radius: 24px;
 
-/* Overlay background color (40% black by default) */
---expo-router-modal-overlay-background: rgba(0, 0, 0, 0.4);
+/* Modal shadow filter (drop-shadow by default) */
+--expo-router-modal-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04))
+  drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+
+/* Overlay background color (25% black by default) */
+--expo-router-modal-overlay-background: rgba(0, 0, 0, 0.25);
 ```
 
 #### How `webModalStyle` maps to CSS variables
@@ -189,6 +194,7 @@ webModalStyle: {
   height: 600,
   border: '2px solid blue',
   overlayBackground: 'rgba(0, 0, 0, 0.7)',
+  shadow: 'drop-shadow(0 8px 16px rgba(0,0,0,0.2))',
 }
 
 // ...automatically sets these CSS variables:
@@ -196,6 +202,7 @@ webModalStyle: {
 // --expo-router-modal-height: 600px
 // --expo-router-modal-border: 2px solid blue
 // --expo-router-modal-overlay-background: rgba(0, 0, 0, 0.7)
+// --expo-router-modal-shadow: drop-shadow(0 8px 16px rgba(0,0,0,0.2))
 ```
 
 ## Common examples
@@ -428,8 +435,9 @@ You can add custom values using the `--expo-router-*` variables in your global C
   --expo-router-modal-max-width: 95vw;
   --expo-router-modal-height: 640px;
   --expo-router-modal-min-height: 640px;
-  --expo-router-modal-border: 1px solid rgba(61.2, 61.2, 66, 0.29);
+  --expo-router-modal-border: none;
   --expo-router-modal-border-radius: 16px;
+  --expo-router-modal-shadow: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
   --expo-router-modal-overlay-background: rgba(0, 0, 0, 0.5);
 }
 ```

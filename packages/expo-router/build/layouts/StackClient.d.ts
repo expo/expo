@@ -38,6 +38,11 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
          * @platform web
          */
         overlayBackground?: string;
+        /**
+         * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
+         * @platform web
+         */
+        shadow?: string;
     };
 };
 declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router"> & import("@react-navigation/native").DefaultRouterOptions<string> & {

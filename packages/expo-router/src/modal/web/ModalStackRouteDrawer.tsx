@@ -135,12 +135,16 @@ function ModalStackRouteDrawer({
     modalStyleVars.maxHeight = '100dvh';
   }
 
-  // Apply corner radius (default 10px)
-  const radiusValue = options.sheetCornerRadius ?? 10;
+  // Apply corner radius (default 24px for iOS 26)
+  const radiusValue = options.sheetCornerRadius ?? 24;
   const radiusCss = typeof radiusValue === 'number' ? `${radiusValue}px` : radiusValue;
 
   if (options.webModalStyle?.border) {
     modalStyleVars['--expo-router-modal-border'] = options.webModalStyle.border;
+  }
+
+  if (options.webModalStyle?.shadow) {
+    modalStyleVars['--expo-router-modal-shadow'] = options.webModalStyle.shadow;
   }
 
   if (isSheet) {
@@ -148,15 +152,11 @@ function ModalStackRouteDrawer({
     modalStyleVars.borderTopLeftRadius = radiusCss;
     modalStyleVars.borderTopRightRadius = radiusCss;
 
-    // Only apply CSS var override if a custom corner radius was provided
-    if (options.sheetCornerRadius) {
-      modalStyleVars['--expo-router-modal-border-radius'] = radiusCss;
-    }
+    // Always set CSS var to ensure consistency with default iOS 26 radius
+    modalStyleVars['--expo-router-modal-border-radius'] = radiusCss;
   } else {
-    // All corners for desktop modal
-    if (options.sheetCornerRadius) {
-      modalStyleVars['--expo-router-modal-border-radius'] = radiusCss;
-    }
+    // All corners for desktop modal - always set CSS var for iOS 26 default
+    modalStyleVars['--expo-router-modal-border-radius'] = radiusCss;
   }
   // --- End Styling -----------------------------------------------------------
 
