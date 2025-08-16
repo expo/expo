@@ -120,20 +120,13 @@ function registerReactNativeConfigCommand() {
       if (!['android', 'ios'].includes(providedOptions.platform)) {
         throw new Error(`Unsupported platform: ${providedOptions.platform}`);
       }
-      const projectRoot = path.dirname(
-        await getProjectPackageJsonPathAsync(providedOptions.projectRoot)
-      );
       const options = await mergeLinkingOptionsAsync<RNConfigCommandOptions>(
         searchPaths.length > 0
           ? {
               ...providedOptions,
-              projectRoot,
               searchPaths,
             }
-          : {
-              ...providedOptions,
-              projectRoot,
-            }
+          : providedOptions
       );
       const results = await createReactNativeConfigAsync(options);
       if (providedOptions.json) {
