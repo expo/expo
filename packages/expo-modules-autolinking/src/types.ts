@@ -41,13 +41,6 @@ export interface SearchOptions {
   platform: SupportedPlatform;
   nativeModulesDir?: string | null;
   projectRoot: string;
-  /**
-   * Filter the search results to only include the project dependencies.
-   * In a monorepo, you may like to set this to false and link all modules from the monorepo.
-   * @default true
-   */
-  onlyProjectDeps?: boolean;
-
   // Scratched from project's config
   flags?: Record<string, any>;
 

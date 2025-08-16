@@ -61,12 +61,6 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
         'The path to the root of the project'
       ).default(process.cwd(), 'process.cwd()')
     )
-    .option(
-      '--only-project-deps',
-      'For a monorepo, include only modules that are the project dependencies.',
-      true
-    )
-    .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
     .action(async (searchPaths, providedOptions) => {
       const options = await mergeLinkingOptionsAsync<OptionsType>(
         searchPaths.length > 0
