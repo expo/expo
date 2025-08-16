@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = void 0;
+exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.unstable_transformerPath = void 0;
 exports.createStableModuleIdFactory = createStableModuleIdFactory;
 exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
@@ -256,7 +256,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         symbolicator: {
             customizeFrame: (0, customizeFrame_1.getDefaultCustomizeFrame)(),
         },
-        transformerPath: require.resolve('./transform-worker/transform-worker'),
+        transformerPath: exports.unstable_transformerPath,
         // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
@@ -289,6 +289,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     });
     return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
+/** Use to access the Expo Metro transformer path */
+exports.unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
 // re-export for legacy cases.
 exports.EXPO_DEBUG = env_1.env.EXPO_DEBUG;
 function getPkgVersion(projectRoot, pkgName) {
