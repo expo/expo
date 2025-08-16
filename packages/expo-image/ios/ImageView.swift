@@ -121,10 +121,12 @@ public final class ImageView: ExpoView {
     if window == nil {
       // Cancel pending requests when the view is unmounted.
       cancelPendingOperation()
-      return
+    } else if !bounds.isEmpty {
+      // Reload the image after mounting the view with non-empty bounds.
+      reload()
+    } else {
+      loadPlaceholderIfNecessary()
     }
-
-    loadPlaceholderIfNecessary()
   }
 
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
