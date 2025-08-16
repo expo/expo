@@ -115,6 +115,7 @@ test.describe(baseDir, () => {
       const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
       });
+
       const bundleFile = jsFiles[0]?.path;
 
       // Sanity check
