@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Remove safe area view.
 - remove global enableFreeze(false) ([#38837](https://github.com/expo/expo/pull/38837) by [@Ubax](https://github.com/Ubax))
 - Remove deprecated `@testing-library/jest-native` in favor of `@testing-library/react-native` ([#37361](https://github.com/expo/expo/pull/37361) by [@byCedric](https://github.com/byCedric))
 - Replace `schema-utils` with `@expo/schema-utils` ([#38863](https://github.com/expo/expo/pull/38863) by [@kitten](https://github.com/kitten))
