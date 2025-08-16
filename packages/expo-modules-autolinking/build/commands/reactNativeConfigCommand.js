@@ -19,7 +19,7 @@ function reactNativeConfigCommand(cli) {
             ...commandArguments,
             searchPaths,
         });
-        const reactNativeConfig = (0, reactNativeConfig_1.createReactNativeConfigAsync)({
+        const reactNativeConfig = await (0, reactNativeConfig_1.createReactNativeConfigAsync)({
             autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
             appRoot: await autolinkingOptionsLoader.getAppRoot(),
             // NOTE(@kitten): This is currently not validated, and assumed to be validated later
