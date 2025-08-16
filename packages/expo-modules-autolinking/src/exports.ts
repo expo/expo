@@ -12,6 +12,7 @@ import { ModuleDescriptor, SupportedPlatform } from './types';
 
 export * from './types';
 export * from './autolinking';
+export * from './platforms';
 
 export {
   ResolutionResult,

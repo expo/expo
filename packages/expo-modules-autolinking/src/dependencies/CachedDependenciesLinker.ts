@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { SupportedPlatform } from '../types';
+import { PackageRevision, SupportedPlatform } from '../types';
 import { scanDependenciesRecursively } from './resolution';
 import { scanDependenciesFromRNProjectConfig } from './rncliLocal';
 import { scanDependenciesInSearchPath } from './scanning';
@@ -134,12 +134,9 @@ export async function scanDependencyResolutionsForPlatform(
 
 export async function scanExpoModuleResolutionsForPlatform(
   linker: CachedDependenciesLinker,
-  platform: SupportedPlatform,
-  include?: string[]
-): Promise<ResolutionResult> {
+  platform: SupportedPlatform
+): Promise<Record<string, PackageRevision>> {
   const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
-  const includeNames = new Set(include);
-
   const resolutions = mergeResolutionResults(
     await Promise.all([
       ...searchPaths.map((searchPath) => {
@@ -148,19 +145,11 @@ export async function scanExpoModuleResolutionsForPlatform(
       linker.scanDependenciesRecursively(),
     ])
   );
-
-  const dependencies = await filterMapResolutionResult(resolutions, async (resolution) => {
-    if (excludeNames.has(resolution.name)) {
-      return null;
-    } else if (includeNames.has(resolution.name)) {
-      return resolution;
-    } else {
-      const expoModule = await resolveExpoModule(resolution, platform, excludeNames);
-      return expoModule ? resolution : null;
-    }
+  return await filterMapResolutionResult(resolutions, async (resolution) => {
+    return !excludeNames.has(resolution.name)
+      ? await resolveExpoModule(resolution, platform, excludeNames)
+      : null;
   });
-
-  return dependencies;
 }
 
 const makeCachedDependenciesSearchOptions = (options: AutolinkingOptions) => ({

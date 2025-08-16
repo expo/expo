@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Reuse `expo/internal/unstable-autolinking-exports` for `DevToolsPluginManager` ([#38913](https://github.com/expo/expo/pull/38913) by [@kitten](https://github.com/kitten))
+
 ## 0.25.1 — 2025-08-15
 
 ### 💡 Others
