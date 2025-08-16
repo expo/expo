@@ -603,6 +603,29 @@ async function transformAsset(
   return transformJS(jsFile, context);
 }
 
+const originBabelTransformer: BabelTransformer = (() => {
+  let babelTransformerImport: typeof import('../babel-transformer') | undefined;
+  const getBabelTransformer = (): BabelTransformer =>
+    babelTransformerImport || (babelTransformerImport = require('../babel-transformer'));
+  return {
+    get transform() {
+      return getBabelTransformer().transform;
+    },
+    get getCacheKey() {
+      return getBabelTransformer().getCacheKey;
+    },
+  };
+})();
+
+type BabelTransformResult = ReturnType<BabelTransformer['transform']>;
+
+interface CustomBabelTransformer extends Omit<BabelTransformer, 'transform'> {
+  transform(
+    babelTransformerArgs: BabelTransformerArgs,
+    parentTransformer?: BabelTransformer
+  ): BabelTransformResult | PromiseLike<BabelTransformResult>;
+}
+
 /**
  * Transforms a JavaScript file with Babel before processing the file with
  * the generic JavaScript transformation.
@@ -612,7 +635,7 @@ async function transformJSWithBabel(
   context: TransformationContext
 ): Promise<TransformResponse> {
   const { babelTransformerPath } = context.config;
-  const transformer: BabelTransformer = require(babelTransformerPath);
+  const transformer: CustomBabelTransformer = require(babelTransformerPath);
 
   // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
   // a malformed state. For now, we'll enable the experimental import support which compiles import statements
@@ -632,7 +655,8 @@ async function transformJSWithBabel(
       functionMapBabelPlugin,
       // importLocationsPlugin populates metadata.metro.unstable_importDeclarationLocs
       importLocationsPlugin,
-    ])
+    ]),
+    originBabelTransformer
   );
 
   const jsFile: JSFile = {
