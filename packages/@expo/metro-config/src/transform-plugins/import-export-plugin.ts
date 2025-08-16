@@ -119,6 +119,7 @@ const liveBindExportAllTemplate = template.statements(`
 
   Object.keys(REQUIRED).forEach(function (KEY) {
     if (KEY === "default" || KEY === "__esModule") return;
+    if (Object.prototype.hasOwnProperty.call(exports, KEY)) return;
     if (KEY in exports && exports[KEY] === REQUIRED[KEY]) return;
     Object.defineProperty(exports, KEY, {
       enumerable: true,
@@ -737,22 +738,6 @@ export function importExportPlugin({
             }
           });
 
-          state.exportAll.forEach((e) => {
-            const template = state.opts.liveBindings
-              ? liveBindExportAllTemplate
-              : exportAllTemplate;
-            body.push(
-              ...withLocation(
-                template({
-                  FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
-                  REQUIRED: path.scope.generateUidIdentifier(e.file),
-                  KEY: path.scope.generateUidIdentifier('key'),
-                }),
-                e.loc
-              )
-            );
-          });
-
           state.exportNamed.forEach((e) => {
             if (e.namespace) {
               body.push(
@@ -776,6 +761,23 @@ export function importExportPlugin({
                 )
               );
             }
+          });
+
+          // Must be last to avoid overwriting explicit exports.
+          state.exportAll.forEach((e) => {
+            const template = state.opts.liveBindings
+              ? liveBindExportAllTemplate
+              : exportAllTemplate;
+            body.push(
+              ...withLocation(
+                template({
+                  FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
+                  REQUIRED: path.scope.generateUidIdentifier(e.file),
+                  KEY: path.scope.generateUidIdentifier('key'),
+                }),
+                e.loc
+              )
+            );
           });
 
           // Inspired by https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-helper-module-transforms/src/rewrite-live-references.ts#L99
