@@ -3,14 +3,16 @@ import { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform }
 export { getConfiguration } from './getConfiguration';
 export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
 /** @deprecated */
-export interface SearchOptions extends AutolinkingOptions {
+export interface SearchOptions extends Partial<AutolinkingOptions> {
     projectRoot: string;
     platform: SupportedPlatform;
+    [extra: string]: unknown;
 }
 /** @deprecated */
 export interface ResolveOptions {
     projectRoot: string;
     platform: SupportedPlatform;
+    [extra: string]: unknown;
 }
 /** @deprecated */
 declare function apiFindModulesAsync(providedOptions: SearchOptions): Promise<SearchResults>;

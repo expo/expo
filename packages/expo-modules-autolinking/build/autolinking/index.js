@@ -4,6 +4,7 @@ exports.generatePackageListAsync = exports.generateModulesProviderAsync = export
 exports.findModulesAsync = apiFindModulesAsync;
 exports.resolveExtraBuildDependenciesAsync = apiResolveExtraBuildDependenciesAsync;
 exports.resolveModulesAsync = apiResolveModulesAsync;
+const autolinkingOptions_1 = require("../commands/autolinkingOptions");
 const findModules_1 = require("./findModules");
 const resolveModules_1 = require("./resolveModules");
 var getConfiguration_1 = require("./getConfiguration");
@@ -13,9 +14,10 @@ Object.defineProperty(exports, "generateModulesProviderAsync", { enumerable: tru
 Object.defineProperty(exports, "generatePackageListAsync", { enumerable: true, get: function () { return generatePackageList_1.generatePackageListAsync; } });
 /** @deprecated */
 async function apiFindModulesAsync(providedOptions) {
+    const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)(providedOptions);
     return (0, findModules_1.findModulesAsync)({
-        appRoot: providedOptions.projectRoot,
-        autolinkingOptions: providedOptions,
+        appRoot: await autolinkingOptionsLoader.getAppRoot(),
+        autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform),
     });
 }
 /** @deprecated */
@@ -27,6 +29,7 @@ async function apiResolveExtraBuildDependenciesAsync(providedOptions) {
 }
 /** @deprecated */
 async function apiResolveModulesAsync(searchResults, providedOptions) {
-    return (0, resolveModules_1.resolveModulesAsync)(searchResults, providedOptions);
+    const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)(providedOptions);
+    return (0, resolveModules_1.resolveModulesAsync)(searchResults, await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform));
 }
 //# sourceMappingURL=index.js.map

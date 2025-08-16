@@ -240,21 +240,26 @@ export function createAutolinkingOptionsLoader(
         options.exclude = [...(options.exclude ?? []), ...extraArgumentsOptions.extraExclude];
       }
 
-      const autolinkingOptions: AutolinkingOptions = {
-        legacy_shallowReactNativeLinking: options.legacy_shallowReactNativeLinking ?? false,
-        searchPaths: options.searchPaths ?? [],
-        nativeModulesDir: options.nativeModulesDir
-          ? (resolvePathMaybe(options.nativeModulesDir, appRoot) ?? null)
-          : (resolvePathMaybe('./modules', appRoot) ?? null),
-        exclude: options.exclude ?? [],
-        buildFromSource: options.buildFromSource,
-        flags: options.flags,
-      };
-
       return {
-        ...autolinkingOptions,
+        ...normalizeAutolinkingOptions(options, appRoot),
         platform,
       };
     },
   };
 }
+
+const normalizeAutolinkingOptions = (
+  options: Partial<AutolinkingOptions>,
+  appRoot: string
+): AutolinkingOptions => {
+  return {
+    legacy_shallowReactNativeLinking: options.legacy_shallowReactNativeLinking ?? false,
+    searchPaths: options.searchPaths ?? [],
+    nativeModulesDir: options.nativeModulesDir
+      ? (resolvePathMaybe(options.nativeModulesDir, appRoot) ?? null)
+      : (resolvePathMaybe('./modules', appRoot) ?? null),
+    exclude: options.exclude ?? [],
+    buildFromSource: options.buildFromSource,
+    flags: options.flags,
+  };
+};
