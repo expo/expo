@@ -5,12 +5,12 @@ import {
   createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
+import { findModulesAsync } from '../autolinking/findModules';
+import { getConfiguration } from '../autolinking/getConfiguration';
 import {
-  findModulesAsync,
-  getConfiguration,
-  resolveExtraBuildDependenciesAsync,
   resolveModulesAsync,
-} from '../autolinking';
+  resolveExtraBuildDependenciesAsync,
+} from '../autolinking/resolveModules';
 import type {
   ModuleDescriptor,
   CommonNativeModuleDescriptor,

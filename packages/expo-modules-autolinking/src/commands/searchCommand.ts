@@ -5,7 +5,7 @@ import {
   createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
-import { findModulesAsync } from '../autolinking';
+import { findModulesAsync } from '../autolinking/findModules';
 
 interface SearchArguments extends AutolinkingCommonArguments {
   json?: boolean | null;

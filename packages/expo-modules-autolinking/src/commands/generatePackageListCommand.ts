@@ -3,10 +3,11 @@ import commander from 'commander';
 import {
   AutolinkingCommonArguments,
   createAutolinkingOptionsLoader,
-  mergeLinkingOptionsAsync,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
-import { findModulesAsync, generatePackageListAsync, resolveModulesAsync } from '../autolinking';
+import { findModulesAsync } from '../autolinking/findModules';
+import { generatePackageListAsync } from '../autolinking/generatePackageList';
+import { resolveModulesAsync } from '../autolinking/resolveModules';
 import type { ModuleDescriptor } from '../types';
 
 interface GeneratePackageListArguments extends AutolinkingCommonArguments {
@@ -45,7 +46,6 @@ export function generatePackageListCommand() {
         let expoModulesResolveResults: ModuleDescriptor[] = [];
         if (!commandArguments.empty) {
           const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
-          const appRoot = await autolinkingOptionsLoader.getAppRoot();
 
           const expoModulesSearchResults = await findModulesAsync({
             autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),

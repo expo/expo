@@ -5,11 +5,9 @@ import {
   createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
-import {
-  findModulesAsync,
-  generateModulesProviderAsync,
-  resolveModulesAsync,
-} from '../autolinking';
+import { findModulesAsync } from '../autolinking/findModules';
+import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
+import { resolveModulesAsync } from '../autolinking/resolveModules';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
@@ -39,7 +37,6 @@ export function generateModulesProviderCommand() {
           searchPaths,
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
-        const appRoot = await autolinkingOptionsLoader.getAppRoot();
 
         const expoModulesSearchResults = await findModulesAsync({
           autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
