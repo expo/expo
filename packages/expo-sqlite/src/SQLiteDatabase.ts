@@ -90,6 +90,16 @@ export class SQLiteDatabase {
    * @platform ios
    * @platform macos
    * @platform tvos
+   *
+   * @example
+   * ```ts
+   * // Load `sqlite-vec` from `bundledExtensions`. You need to enable `withSQLiteVecExtension` to include `sqlite-vec`.
+   * const extension = SQLite.bundledExtensions['sqlite-vec'];
+   * await db.loadExtensionAsync(extension.libPath, extension.entryPoint);
+   *
+   * // You can also load a custom extension.
+   * await db.loadExtensionAsync('/path/to/extension');
+   * ```
    */
   public loadExtensionAsync(libPath: string, entryPoint?: string): Promise<void> {
     return this.nativeDatabase.loadExtensionAsync(libPath, entryPoint);
@@ -251,6 +261,17 @@ export class SQLiteDatabase {
    * @platform ios
    * @platform macos
    * @platform tvos
+   *
+   * @example
+   * ```ts
+   * // Load `sqlite-vec` from `bundledExtensions`. You need to enable `withSQLiteVecExtension` to include `sqlite-vec`.
+   * const extension = SQLite.bundledExtensions['sqlite-vec'];
+   * db.loadExtensionSync(extension.libPath, extension.entryPoint);
+   *
+   * // You can also load a custom extension.
+   * db.loadExtensionSync('/path/to/extension');
+   * ```
+
    */
   public loadExtensionSync(libPath: string, entryPoint?: string): void {
     this.nativeDatabase.loadExtensionSync(libPath, entryPoint);
