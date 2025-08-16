@@ -10,7 +10,7 @@ import {
 } from '../dependencies';
 
 interface VerifyOptions {
-  projectRoot: string;
+  appRoot: string;
   verbose?: boolean;
   json?: boolean;
 }
@@ -29,7 +29,7 @@ export async function verifySearchResults(
   results: ResolutionResult,
   options: VerifyOptions
 ): Promise<void> {
-  const { projectRoot } = options;
+  const { appRoot } = options;
 
   async function getHumanReadableDependency(dependency: BaseDependencyResolution): Promise<string> {
     let version = dependency.version || null;
@@ -47,7 +47,7 @@ export async function verifySearchResults(
         version = null;
       }
     }
-    const relative = path.relative(projectRoot, dependency.originPath);
+    const relative = path.relative(appRoot, dependency.originPath);
     return version
       ? `${dependency.name}@${version} (at: ${relative})`
       : `${dependency.name} at: ${relative}`;
