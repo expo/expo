@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^5.0.1",
-    "ws": "^8.18.0"
+    "ws": "^8.18.1"
   },
   "peerDependencies": {
     "react": "*",
