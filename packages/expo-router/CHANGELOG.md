@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Update web modals to iOS 26 specifications ([#38897](https://github.com/expo/expo/pull/38897) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 - Remove unused peer dependency on `@testing-library/jest-native` ([#38886](https://github.com/expo/expo/pull/38886) by [@kitten](https://github.com/kitten))
