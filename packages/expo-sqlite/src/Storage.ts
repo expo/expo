@@ -214,7 +214,7 @@ export class SQLiteStorage {
   getLengthSync(): number {
     const db = this.getDbSync();
     const result = db.getFirstSync<{ count: number }>(STATEMENT_LENGTH);
-    return result?.count ?? 0;
+    return result!.count ?? 0;
   }
 
   /**

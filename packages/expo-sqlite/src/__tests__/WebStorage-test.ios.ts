@@ -14,7 +14,7 @@ describe('Web Storage API compatibility', () => {
     await fs.unlink('ExpoSQLiteStorage').catch(() => {});
   });
 
-  it('should return Storag name from `toString`', () => {
+  it('should return Storage name from `toString`', () => {
     expect(typeof localStorage.toString).toBe('function');
     expect(localStorage.toString()).toBe('[object Storage]');
   });

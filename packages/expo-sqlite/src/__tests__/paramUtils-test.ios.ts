@@ -158,8 +158,8 @@ describe(normalizeStorageIndex, () => {
   });
 
   it('should support Number object', () => {
-    expect(normalizeStorageIndex(Number(1))).toBe(1);
-    expect(normalizeStorageIndex(Number(100))).toBe(100);
+    expect(normalizeStorageIndex(new Number(1))).toBe(1);
+    expect(normalizeStorageIndex(new Number(100))).toBe(100);
   });
 
   it('should support boolean as 1 and 0', () => {
