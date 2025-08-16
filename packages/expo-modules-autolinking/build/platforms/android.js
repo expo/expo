@@ -18,11 +18,7 @@ const path_1 = __importDefault(require("path"));
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 function getConfiguration(options) {
-    const buildFromSource = options.android?.buildFromSource;
-    if (buildFromSource) {
-        return { buildFromSource };
-    }
-    return undefined;
+    return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
 }
 /**
  * Generates Java file that contains all autolinked packages.
