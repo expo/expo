@@ -22,6 +22,7 @@ export {
   CachedDependenciesSearchOptions,
   makeCachedDependenciesLinker,
   scanDependencyResolutionsForPlatform,
+  scanExpoModuleResolutionsForPlatform,
 } from './dependencies';
 
 /** @deprecated */

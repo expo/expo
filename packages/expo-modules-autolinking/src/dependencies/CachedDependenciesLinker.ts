@@ -132,6 +132,37 @@ export async function scanDependencyResolutionsForPlatform(
   return dependencies;
 }
 
+export async function scanExpoModuleResolutionsForPlatform(
+  linker: CachedDependenciesLinker,
+  platform: SupportedPlatform,
+  include?: string[]
+): Promise<ResolutionResult> {
+  const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
+  const includeNames = new Set(include);
+
+  const resolutions = mergeResolutionResults(
+    await Promise.all([
+      ...searchPaths.map((searchPath) => {
+        return linker.scanDependenciesInSearchPath(searchPath);
+      }),
+      linker.scanDependenciesRecursively(),
+    ])
+  );
+
+  const dependencies = await filterMapResolutionResult(resolutions, async (resolution) => {
+    if (excludeNames.has(resolution.name)) {
+      return null;
+    } else if (includeNames.has(resolution.name)) {
+      return resolution;
+    } else {
+      const expoModule = await resolveExpoModule(resolution, platform, excludeNames);
+      return expoModule ? resolution : null;
+    }
+  });
+
+  return dependencies;
+}
+
 const makeCachedDependenciesSearchOptions = (options: AutolinkingOptions) => ({
   excludeNames: new Set(options.exclude),
   searchPaths:

@@ -2,7 +2,7 @@ import { ModPlatform, StaticPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import {
   makeCachedDependenciesLinker,
-  scanDependencyResolutionsForPlatform,
+  scanExpoModuleResolutionsForPlatform,
 } from 'expo/internal/unstable-autolinking-exports';
 
 /**
@@ -19,7 +19,7 @@ export async function getAutolinkedPackagesAsync(
   const linker = makeCachedDependenciesLinker({ projectRoot });
   const dependenciesPerPlatform = await Promise.all(
     platforms.map((platform) => {
-      return scanDependencyResolutionsForPlatform(linker, platform);
+      return scanExpoModuleResolutionsForPlatform(linker, platform);
     })
   );
   return resolvePackagesList(dependenciesPerPlatform);
