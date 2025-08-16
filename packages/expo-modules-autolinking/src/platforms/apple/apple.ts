@@ -3,14 +3,14 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-import { fileExistsAsync } from '../fileUtils';
+import { fileExistsAsync } from '../../fileUtils';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
   ModuleDescriptorIos,
   ModuleIosPodspecInfo,
   PackageRevision,
-} from '../types';
+} from '../../types';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';

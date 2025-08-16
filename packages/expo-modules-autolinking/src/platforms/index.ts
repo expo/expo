@@ -1,12 +1,12 @@
 import { SupportedPlatform } from '../types';
 
 interface PlatformImplementations {
-  ios: typeof import('../platforms/apple');
-  macos: typeof import('../platforms/apple');
-  tvos: typeof import('../platforms/apple');
-  apple: typeof import('../platforms/apple');
-  android: typeof import('../platforms/android');
-  devtools: typeof import('../platforms/devtools');
+  ios: typeof import('./apple/apple');
+  macos: typeof import('./apple/apple');
+  tvos: typeof import('./apple/apple');
+  apple: typeof import('./apple/apple');
+  android: typeof import('./android/android');
+  devtools: typeof import('./devtools');
 }
 
 function getLinkingImplementationForPlatform<Platform extends keyof PlatformImplementations>(

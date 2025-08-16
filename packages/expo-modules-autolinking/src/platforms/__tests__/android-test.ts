@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { glob } from 'glob';
 import { vol } from 'memfs';
 import path from 'path';
@@ -10,7 +9,7 @@ import {
   convertPackageWithGradleToProjectName,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
-} from '../android';
+} from '../android/android';
 
 jest.mock('glob');
 
