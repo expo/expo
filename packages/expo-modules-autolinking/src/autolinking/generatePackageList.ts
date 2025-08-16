@@ -1,5 +1,3 @@
-import chalk from 'chalk';
-
 import { getLinkingImplementationForPlatform } from '../platforms';
 import { ModuleDescriptor, ModuleDescriptorIos, SupportedPlatform } from '../types';
 

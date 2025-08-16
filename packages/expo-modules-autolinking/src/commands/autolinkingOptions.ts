@@ -56,7 +56,10 @@ const resolvePathMaybe = (target: unknown, basePath: string): string | null => {
   }
 };
 
-const filterMapSearchPaths = (searchPaths: unknown, basePath: string): string[] | undefined => {
+export const filterMapSearchPaths = (
+  searchPaths: unknown,
+  basePath: string
+): string[] | undefined => {
   if (Array.isArray(searchPaths)) {
     return searchPaths
       .map((searchPath) => resolvePathMaybe(searchPath, basePath))
@@ -252,14 +255,5 @@ export function createAutolinkingOptionsLoader(
         platform,
       };
     },
-  };
-}
-
-export async function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(
-  argumentsOptions: Options
-): Promise<Options & AutolinkingOptions> {
-  return {
-    ...argumentsOptions,
-    ...(await createAutolinkingOptionsLoader(argumentsOptions).getPlatformOptions()),
   };
 }
