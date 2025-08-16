@@ -2,7 +2,7 @@ import { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autol
 import { ModuleDescriptor, SupportedPlatform } from './types';
 export * from './types';
 export * from './autolinking';
-export { ResolutionResult, BaseDependencyResolution, DependencyResolution, DependencyResolutionSource, CachedDependenciesLinker, CachedDependenciesSearchOptions, makeCachedDependenciesLinker, scanDependencyResolutionsForPlatform, } from './dependencies';
+export { ResolutionResult, BaseDependencyResolution, DependencyResolution, DependencyResolutionSource, CachedDependenciesLinker, CachedDependenciesSearchOptions, makeCachedDependenciesLinker, scanDependencyResolutionsForPlatform, scanExpoModuleResolutionsForPlatform, } from './dependencies';
 /** @deprecated */
 export declare function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(argumentsOptions: Options): Promise<Options & AutolinkingOptions>;
 /** @deprecated */

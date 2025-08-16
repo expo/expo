@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCachedDependenciesLinker = makeCachedDependenciesLinker;
 exports.scanDependencyResolutionsForPlatform = scanDependencyResolutionsForPlatform;
+exports.scanExpoModuleResolutionsForPlatform = scanExpoModuleResolutionsForPlatform;
 const fs_1 = __importDefault(require("fs"));
 const resolution_1 = require("./resolution");
 const rncliLocal_1 = require("./rncliLocal");
@@ -89,6 +90,29 @@ async function scanDependencyResolutionsForPlatform(linker, platform, include) {
             }
         }
         return resolution;
+    });
+    return dependencies;
+}
+async function scanExpoModuleResolutionsForPlatform(linker, platform, include) {
+    const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
+    const includeNames = new Set(include);
+    const resolutions = (0, utils_1.mergeResolutionResults)(await Promise.all([
+        ...searchPaths.map((searchPath) => {
+            return linker.scanDependenciesInSearchPath(searchPath);
+        }),
+        linker.scanDependenciesRecursively(),
+    ]));
+    const dependencies = await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
+        if (excludeNames.has(resolution.name)) {
+            return null;
+        }
+        else if (includeNames.has(resolution.name)) {
+            return resolution;
+        }
+        else {
+            const expoModule = await (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames);
+            return expoModule ? resolution : null;
+        }
     });
     return dependencies;
 }
