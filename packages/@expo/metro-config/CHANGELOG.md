@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- [Internal] Expose Expo babel transformer as second argument to custom babel transformers ([#38901](https://github.com/expo/expo/pull/38901) by [@kitten](https://github.com/kitten))
+- [Internal] Export `unstable_transformerPath` ([#38901](https://github.com/expo/expo/pull/38901) by [@kitten](https://github.com/kitten))
+
 ## 0.21.1 — 2025-08-15
 
 _This version does not introduce any user-facing changes._

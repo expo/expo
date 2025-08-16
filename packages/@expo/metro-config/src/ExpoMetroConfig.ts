@@ -30,6 +30,8 @@ import { getPostcssConfigHash } from './transform-worker/postcss';
 import { toPosixPath } from './utils/filePath';
 import { setOnReadonly } from './utils/setOnReadonly';
 
+export type { CustomBabelTransformer } from './transform-worker/metro-transform-worker';
+
 const debug = require('debug')('expo:metro:config') as typeof console.log;
 
 export interface LoadOptions {
@@ -345,7 +347,7 @@ export function getDefaultConfig(
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
     },
-    transformerPath: require.resolve('./transform-worker/transform-worker'),
+    transformerPath: unstable_transformerPath,
     // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
@@ -379,6 +381,9 @@ export function getDefaultConfig(
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
+
+/** Use to access the Expo Metro transformer path */
+export const unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
 
 // re-export for use in config files.
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
