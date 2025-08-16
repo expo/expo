@@ -55,7 +55,6 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
       'The platform that the resulting modules must support. Available options: "apple", "android"',
       'apple'
     )
-    .option('--silent', 'Silence resolution warnings')
     .addOption(
       new commander.Option(
         '--project-root <projectRoot>',

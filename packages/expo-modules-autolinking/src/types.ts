@@ -39,7 +39,6 @@ export interface SearchOptions {
   searchPaths?: string[];
   exclude?: string[] | null;
   platform: SupportedPlatform;
-  silent?: boolean;
   nativeModulesDir?: string | null;
   projectRoot: string;
   /**
