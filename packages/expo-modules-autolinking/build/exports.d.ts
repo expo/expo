@@ -5,10 +5,12 @@ export * from './autolinking';
 export { ResolutionResult, BaseDependencyResolution, DependencyResolution, DependencyResolutionSource, CachedDependenciesLinker, CachedDependenciesSearchOptions, makeCachedDependenciesLinker, scanDependencyResolutionsForPlatform, scanExpoModuleResolutionsForPlatform, } from './dependencies';
 /** @deprecated */
 export declare function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(argumentsOptions: Options): Promise<Options & AutolinkingOptions>;
-/** @deprecated */
-export declare function queryAutolinkingModulesFromProjectAsync(projectRoot: string, options: Partial<AutolinkingCommonArguments> & {
+interface QueryAutolinkingModulesFromProjectParams extends Partial<AutolinkingCommonArguments> {
     platform: SupportedPlatform;
-}): Promise<ModuleDescriptor[]>;
+    [extra: string]: unknown;
+}
+/** @deprecated */
+export declare function queryAutolinkingModulesFromProjectAsync(projectRoot: string, options: QueryAutolinkingModulesFromProjectParams): Promise<ModuleDescriptor[]>;
 /** @deprecated */
 export declare function findProjectRootSync(cwd?: string): string;
 /** @deprecated */

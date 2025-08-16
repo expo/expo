@@ -37,10 +37,15 @@ export async function mergeLinkingOptionsAsync<Options extends Partial<Autolinki
   };
 }
 
+interface QueryAutolinkingModulesFromProjectParams extends Partial<AutolinkingCommonArguments> {
+  platform: SupportedPlatform;
+  [extra: string]: unknown;
+}
+
 /** @deprecated */
 export async function queryAutolinkingModulesFromProjectAsync(
   projectRoot: string,
-  options: Partial<AutolinkingCommonArguments> & { platform: SupportedPlatform }
+  options: QueryAutolinkingModulesFromProjectParams
 ): Promise<ModuleDescriptor[]> {
   const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
     ...options,
