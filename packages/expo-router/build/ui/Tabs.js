@@ -52,7 +52,7 @@ __exportStar(require("./TabTrigger"), exports);
  */
 function Tabs(props) {
     const { children, asChild, options, ...rest } = props;
-    const Comp = asChild ? common_1.SafeAreaViewSlot : react_native_1.View;
+    const Comp = asChild ? common_1.ViewSlot : react_native_1.View;
     const { NavigationContent } = useTabsWithChildren({
         // asChild adds an extra layer, so we need to process the child's children
         children: asChild &&
