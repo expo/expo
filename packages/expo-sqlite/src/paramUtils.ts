@@ -101,21 +101,7 @@ export function composeRows<T>(
  * @hidden
  */
 export function normalizeStorageIndex(index: any): number | null {
-  // Convert the index to a number
-  let value: number;
-  if (typeof index === 'boolean') {
-    value = index ? 1 : 0;
-  } else if (typeof index === 'string') {
-    value = Number(index);
-  } else if (typeof index === 'bigint') {
-    value = Number(index);
-  } else if (typeof index.valueOf === 'function') {
-    value = index.valueOf();
-  } else {
-    value = index;
-  }
-
-  value = Math.floor(value);
+  const value = Math.floor(Number(index));
 
   // Boundary checks
   if (Object.is(value, -0)) {
