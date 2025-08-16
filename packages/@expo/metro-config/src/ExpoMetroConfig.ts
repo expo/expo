@@ -30,6 +30,8 @@ import { getPostcssConfigHash } from './transform-worker/postcss';
 import { toPosixPath } from './utils/filePath';
 import { setOnReadonly } from './utils/setOnReadonly';
 
+export type { CustomBabelTransformer } from './transform-worker/metro-transform-worker';
+
 const debug = require('debug')('expo:metro:config') as typeof console.log;
 
 export interface LoadOptions {
