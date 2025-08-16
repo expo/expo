@@ -16,3 +16,4 @@ export declare function makeCachedDependenciesLinker(params: {
     projectRoot: string;
 }): CachedDependenciesLinker;
 export declare function scanDependencyResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, include?: string[]): Promise<ResolutionResult>;
+export declare function scanExpoModuleResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, include?: string[]): Promise<ResolutionResult>;

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Switch autolinked package internal to `expo/internal/unstable-autolinking-exports` ([#38909](https://github.com/expo/expo/pull/38909) by [@kitten](https://github.com/kitten))
+
 ## 10.0.1 — 2025-08-15
 
 _This version does not introduce any user-facing changes._

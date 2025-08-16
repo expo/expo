@@ -31,6 +31,9 @@
   "files": [
     "build"
   ],
+  "peerDependencies": {
+    "expo": "*"
+  },
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/xml2js": "~0.4.11",
