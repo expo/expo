@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.0-preview.1 — 2025-08-15
+
+### 💡 Others
+
 - Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
 
 ## 54.0.0-preview.0 — 2025-08-13

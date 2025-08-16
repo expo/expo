@@ -23,6 +23,11 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
   async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n📤 Updating workspace projects...');
 
+    if (options.templatesOnly) {
+      logger.info('  Skipping workspace updates (templates-only).');
+      return;
+    }
+
     const workspaceInfo = await Workspace.getInfoAsync();
 
     // Append project templates as they're not yarn workspaces.

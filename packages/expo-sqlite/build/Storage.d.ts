@@ -38,6 +38,14 @@ export declare class SQLiteStorage {
      */
     closeAsync(): Promise<void>;
     /**
+     * Retrieves the number of key-value pairs stored in the storage asynchronously.
+     */
+    getLengthAsync(): Promise<number>;
+    /**
+     * Retrieves the key at the given index asynchronously.
+     */
+    getKeyByIndexAsync(index: number): Promise<string | null>;
+    /**
      * Retrieves the value associated with the given key synchronously.
      */
     getItemSync(key: string): string | null;
@@ -62,6 +70,14 @@ export declare class SQLiteStorage {
      * Closes the database connection synchronously.
      */
     closeSync(): void;
+    /**
+     * Retrieves the number of key-value pairs stored in the storage synchronously.
+     */
+    getLengthSync(): number;
+    /**
+     * Retrieves the key at the given index synchronously.
+     */
+    getKeyByIndexSync(index: number): string | null;
     /**
      * Alias for [`getItemAsync()`](#getitemasynckey) method.
      */

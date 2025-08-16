@@ -380,8 +380,10 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
+      var _exportedNames = {};
       Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (_key) {
         if (_key === "default" || _key === "__esModule") return;
+        if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
         if (_key in exports && exports[_key] === _$$_REQUIRE(_dependencyMap[0])[_key]) return;
         Object.defineProperty(exports, _key, {
           enumerable: true,
@@ -390,8 +392,10 @@ it(`recursively expands export all statements with nested statements`, async () 
           }
         });
       });
+      var _exportedNames2 = {};
       Object.keys(_$$_REQUIRE(_dependencyMap[1])).forEach(function (_key2) {
         if (_key2 === "default" || _key2 === "__esModule") return;
+        if (Object.prototype.hasOwnProperty.call(_exportedNames2, _key2)) return;
         if (_key2 in exports && exports[_key2] === _$$_REQUIRE(_dependencyMap[1])[_key2]) return;
         Object.defineProperty(exports, _key2, {
           enumerable: true,
@@ -408,8 +412,12 @@ it(`recursively expands export all statements with nested statements`, async () 
         value: true
       });
       const z1 = 0;
+      var _exportedNames = {
+        "z1": true
+      };
       Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (_key) {
         if (_key === "default" || _key === "__esModule") return;
+        if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
         if (_key in exports && exports[_key] === _$$_REQUIRE(_dependencyMap[0])[_key]) return;
         Object.defineProperty(exports, _key, {
           enumerable: true,

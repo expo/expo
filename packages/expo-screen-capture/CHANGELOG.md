@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 8.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- [Android] Prevent hard crash when we cannot access the event emitter. ([#38869](https://github.com/expo/expo/pull/38869) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 8.0.0 — 2025-08-13
 
 ### 🎉 New features

@@ -55,9 +55,7 @@ export declare function Router({ routerData }: {
 export declare function ServerRouter({ children, route }: {
     children: ReactNode;
     route: RouteProps;
-}): import("react").FunctionComponentElement<{
-    children?: ReactNode | undefined;
-}>;
+}): import("react").FunctionComponentElement<import("react").FragmentProps>;
 export type LinkProps = ClassicLinkProps & {
     href: string;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;

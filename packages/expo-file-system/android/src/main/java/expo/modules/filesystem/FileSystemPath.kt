@@ -3,6 +3,7 @@ package expo.modules.filesystem
 import android.net.Uri
 import android.os.Build
 import androidx.core.net.toUri
+import expo.modules.filesystem.unifiedfile.AssetFile
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
@@ -15,6 +16,10 @@ import kotlin.io.path.moveTo
 
 val Uri.isContentUri get(): Boolean {
   return scheme == "content"
+}
+
+val Uri.isAssetUri get(): Boolean {
+  return scheme == "asset"
 }
 
 fun slashifyFilePath(path: String?): String? {
@@ -37,6 +42,8 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
     val newAdapter = if (uri.isContentUri) {
       SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), uri)
+    } else if (uri.isAssetUri) {
+      AssetFile(appContext?.reactContext ?: throw Exception("No context"), uri)
     } else {
       JavaFile(uri)
     }
@@ -114,6 +121,10 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   fun checkPermission(permission: Permission): Boolean {
     if (uri.isContentUri) {
       // TODO: Consider adding a check for content URIs (not in legacy FS)
+      return true
+    }
+    if (uri.isAssetUri) {
+      // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors ect.
       return true
     }
     val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, javaFile.path) ?: EnumSet.noneOf(Permission::class.java)

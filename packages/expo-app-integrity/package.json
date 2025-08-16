@@ -1,6 +1,6 @@
 {
   "name": "@expo/app-integrity",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A native module that helps assert app integrity on mobile platforms",
   "sideEffects": false,
   "main": "build/index.js",
@@ -37,7 +37,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^5.0.0"
+    "expo-module-scripts": "^5.0.1"
   },
   "peerDependencies": {
     "expo": "*",

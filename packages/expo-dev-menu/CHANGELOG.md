@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Prevent crash when getting app icon. ([#38888](https://github.com/expo/expo/pull/38888) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+## 7.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
 
 ## 7.0.0 — 2025-08-13
 

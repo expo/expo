@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "types": "build/ExpoMetroConfig.d.ts",
@@ -37,10 +37,10 @@
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
-    "@expo/config": "~12.0.0",
+    "@expo/config": "~12.0.1",
     "@expo/metro": "~0.1.1",
-    "@expo/env": "~2.0.0",
-    "@expo/json-file": "~10.0.0",
+    "@expo/env": "~2.0.1",
+    "@expo/json-file": "~10.0.1",
     "@expo/spawn-async": "^1.7.2",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
@@ -68,7 +68,7 @@
     "@jridgewell/trace-mapping": "^0.3.20",
     "@types/babel__core": "^7.20.5",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^5.0.0",
+    "expo-module-scripts": "^5.0.1",
     "sass": "^1.60.0"
   },
   "publishConfig": {

@@ -7,8 +7,13 @@ import semver from 'semver';
  *
  * @param stdout - Raw stdout from `npx expo install --check --json` command
  * @param issues - Array to append formatted issue messages to
+ * @param projectMajorSdkVersion - The major version of the project's SDK
  */
-export function parseInstallCheckOutput(stdout: string, issues: string[]): void {
+export function parseInstallCheckOutput(
+  stdout: string,
+  issues: string[],
+  projectMajorSdkVersion: number
+): void {
   if (!stdout.trim()) return;
 
   try {
@@ -70,11 +75,6 @@ export function parseInstallCheckOutput(stdout: string, issues: string[]): void 
 
       const pad = (s: string, n: number) => s.padEnd(n, ' ');
 
-      const header =
-        chalk.bold('Run ') +
-        chalk.cyan('npx expo install --check') +
-        chalk.bold(' to review and fix the mismatches below:\n');
-
       const formatSection = (
         title: string,
         rws: Row[],
@@ -106,7 +106,7 @@ export function parseInstallCheckOutput(stdout: string, issues: string[]): void 
         .filter((r) => r.isExpo)
         .map(
           (r) =>
-            `- ${r.name} → https://github.com/expo/expo/blob/main/packages/${r.name}/CHANGELOG.md`
+            `- ${r.name} → https://github.com/expo/expo/blob/sdk-${projectMajorSdkVersion}/packages/${r.name}/CHANGELOG.md`
         );
       const sections = [
         formatSection('Major version mismatches', major, chalk.yellow, '❗'),

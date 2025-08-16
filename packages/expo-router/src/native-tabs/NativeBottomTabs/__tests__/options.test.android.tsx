@@ -1,8 +1,9 @@
+import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
-import { screen, renderRouter } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { Icon } from '../../common/elements';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabOptions } from '../NativeTabsView';

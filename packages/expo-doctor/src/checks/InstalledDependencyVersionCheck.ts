@@ -51,7 +51,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       }
 
       const initialIssuesCount = issues.length;
-      parseInstallCheckOutput(commandResult.stdout, issues);
+      parseInstallCheckOutput(commandResult.stdout, issues, projectMajorSdkVersion);
 
       // If no issues were added from stdout, fall back to stderr
       if (issues.length === initialIssuesCount && commandResult.stderr.trim()) {

@@ -7,11 +7,12 @@ internal final class ContentUnavailableViewProps: ExpoSwiftUI.ViewProps, CommonV
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var title: String = ""
   @Field var systemImage: String = ""
   @Field var description: String = ""
-  @Field var testID: String?
-  @Field var modifiers: [[String: Any]]?
 }
 
 struct ContentUnavailableView: ExpoSwiftUI.View {

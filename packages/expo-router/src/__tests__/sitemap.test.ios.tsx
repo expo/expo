@@ -1,7 +1,8 @@
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 
 import { router } from '../imperative-api';
-import { act, fireEvent, renderRouter, screen, waitFor, within } from '../testing-library';
+import { renderRouter } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
 jest.mock('expo-constants', () => ({
