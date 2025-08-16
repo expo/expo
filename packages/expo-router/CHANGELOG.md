@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Remove unused peer dependency on `@testing-library/jest-native` ([#38886](https://github.com/expo/expo/pull/38886) by [@kitten](https://github.com/kitten))
+- Replace internal `Slot` types ([#38899](https://github.com/expo/expo/pull/38899) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

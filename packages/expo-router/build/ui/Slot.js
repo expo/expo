@@ -19,6 +19,7 @@ const react_native_1 = require("react-native");
  */
 function ShimSlotForReactNative(Component) {
     return (0, react_1.forwardRef)(function RNSlotHOC({ style, ...props }, ref) {
+        // TODO(@kitten): I understand why we do this, but this pulls in all of react-native-web
         style = (0, react_1.useMemo)(() => react_native_1.StyleSheet.flatten(style), [style]);
         return <Component ref={ref} {...props} style={style}/>;
     });
