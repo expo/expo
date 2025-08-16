@@ -4,62 +4,24 @@ type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
 
-export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
+// NOTE(@kitten): Our code has never guaranteed this to be exhaustive, hence the `| (string & {})` addition
+export type SupportedPlatform =
+  | 'apple'
+  | 'ios'
+  | 'android'
+  | 'web'
+  | 'macos'
+  | 'tvos'
+  | 'devtools'
+  | (string & {});
 
-/**
- * Options that can be passed through `expo.autolinking` config in the package.json file.
- */
-export type AutolinkingOptions = {
-  /** Only scan direct "dependencies" of a project for React Native modules, rather than including transitive dependencies.
-   * @remarks
-   * Before SDK 54, React Native modules would only be linked if they were listed as dependencies
-   * of a project. However, in SDK 54+ transitive React Native modules dependencies are also
-   * auto-linked, unless this flag is enabled.
-   */
-  legacy_shallowReactNativeLinking?: boolean;
-  searchPaths?: string[] | null;
-  exclude?: string[] | null;
-  flags?: Record<string, any>;
-};
-
-export type AndroidAutolinkingOptions = AutolinkingOptions & {
-  buildFromSource?: string[] | null;
-};
-
-export type BaseAutolinkingOptions = AutolinkingOptions & {
-  [key in SupportedPlatform]?: AutolinkingOptions;
-};
-
-export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
-  android?: AndroidAutolinkingOptions;
-}
-
-export interface SearchOptions {
-  // Available in the CLI
-  searchPaths?: string[];
-  exclude?: string[] | null;
-  platform: SupportedPlatform;
-  nativeModulesDir?: string | null;
-  projectRoot: string;
-  // Scratched from project's config
-  flags?: Record<string, any>;
-
-  android?: {
-    buildFromSource?: string[] | null;
-  };
-}
-
-export interface ResolveOptions extends SearchOptions {
-  json?: boolean;
-}
-
-export interface GenerateOptions extends ResolveOptions {
+export interface GenerateOptions {
   target: string;
   namespace?: string;
   empty?: boolean;
 }
 
-export interface GenerateModulesProviderOptions extends ResolveOptions {
+export interface GenerateModulesProviderOptions {
   target: string;
   entitlement?: string;
   packages: string[];
