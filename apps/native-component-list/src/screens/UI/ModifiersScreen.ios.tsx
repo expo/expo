@@ -21,6 +21,7 @@ import {
   grayscale,
   colorInvert,
   clipShape,
+  glassEffect,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
@@ -246,6 +247,18 @@ export default function ModifiersScreen() {
             ]}>
             🚀 Tap this layout demo!
           </Text>
+          <HStack
+            modifiers={[
+              padding({ all: 16 }),
+              glassEffect({
+                glass: {
+                  variant: 'regular',
+                  interactive: true,
+                },
+              }),
+            ]}>
+            <Text modifiers={[foregroundColor('#000000')]}>Hello world</Text>
+          </HStack>
         </VStack>
       </Host>
     </ScrollView>
