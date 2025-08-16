@@ -179,7 +179,7 @@ export class SQLiteStorage {
     getLengthSync() {
         const db = this.getDbSync();
         const result = db.getFirstSync(STATEMENT_LENGTH);
-        return result?.count ?? 0;
+        return result.count ?? 0;
     }
     /**
      * Retrieves the key at the given index synchronously.
