@@ -106,9 +106,10 @@ export function getDefaultSdkVersion(projectRoot: string): VersionInfo {
     semver.satisfies(reactNativeVersion, info.reactNativeVersionRange)
   );
   if (!versionInfo) {
-    throw new Error(
-      `Unable to find compatible expo sdk version - reactNativeVersion[${reactNativeVersion}]`
+    console.warn(
+      `⚠️  React Native ${reactNativeVersion} is not yet officially supported. Using the latest Expo SDK version.`
     );
+    return getLatestSdkVersion();
   }
   return versionInfo;
 }
@@ -129,6 +130,11 @@ export function getSdkVersion(reactNativeVersion: string): string {
   const versionInfo = ExpoVersionMappings.find((info) =>
     semver.satisfies(reactNativeVersion, info.reactNativeVersionRange)
   );
-  assert(versionInfo, `Unsupported react-native version: ${reactNativeVersion}`);
-  return versionInfo?.sdkVersion;
+  if (!versionInfo) {
+    console.warn(
+      `⚠️  React Native ${reactNativeVersion} is not yet officially supported. Using the latest Expo SDK version.`
+    );
+    return getLatestSdkVersion().sdkVersion;
+  }
+  return versionInfo.sdkVersion;
 }
