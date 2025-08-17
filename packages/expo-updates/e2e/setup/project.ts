@@ -35,6 +35,7 @@ function getExpoDependencyChunks({
     ['@expo/config-types', '@expo/env', '@expo/json-file'],
     ['@expo/config'],
     ['@expo/config-plugins'],
+    ['@expo/plist'],
     ['expo-modules-core'],
     ['unimodules-app-loader'],
     ['expo-task-manager'],
