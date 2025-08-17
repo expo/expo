@@ -9,7 +9,7 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '16.0.1'
+version = '16.0.2'
 
 android {
   if (rootProject.hasProperty("ndkPath")) {
@@ -22,7 +22,7 @@ android {
   namespace "expo.modules.gl"
   defaultConfig {
     versionCode 31
-    versionName "16.0.1"
+    versionName "16.0.2"
 
     externalNativeBuild {
       cmake {
