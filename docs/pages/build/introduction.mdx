@@ -58,3 +58,33 @@ It's designed to work for any native project, whether or not you use Expo and Re
   href="/build-reference/limitations"
   Icon={Cube01Icon}
 />
+import React from 'react';
+import { Text, View, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>🌞 شمس العراق</Text>
+      <Text style={styles.text}>مرحبا بك في تطبيقك الأول!</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#a3c9a8', // لون التطبيق عفني أخضر فاتح
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+  },
+  text: {
+    fontSize: 18,
+    color: '#222',
+  },
+});
