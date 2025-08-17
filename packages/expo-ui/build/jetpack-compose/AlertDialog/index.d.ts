@@ -1,3 +1,4 @@
+import { ExpoModifier } from '../../types';
 export type AlertDialogProps = {
     /**
      * The title of the alert dialog.
@@ -29,6 +30,8 @@ export type AlertDialogProps = {
      * Callback that is called when the user tries to dismiss the dialog.
      */
     onDismissPressed?: () => void;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 export type NativeAlertDialogProps = AlertDialogProps;
 /**

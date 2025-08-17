@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 6.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- Show `console.error` and LogBox for unhandled promise rejection in development ([#38834](https://github.com/expo/expo/pull/38834) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 6.0.0 — 2025-08-13
 
 ### 🛠 Breaking changes

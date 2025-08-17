@@ -12,6 +12,7 @@ const useBackButton_1 = require("./useBackButton");
 const useDocumentTitle_1 = require("./useDocumentTitle");
 const useLinking_1 = require("./useLinking");
 const useThenable_1 = require("./useThenable");
+const imperative_api_1 = require("../imperative-api");
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 /**
  * Container component which holds the navigation state designed for React Native apps.
@@ -37,6 +38,7 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
     const refContainer = react_1.default.useRef(null);
     (0, useBackButton_1.useBackButton)(refContainer);
     (0, useDocumentTitle_1.useDocumentTitle)(refContainer, documentTitle);
+    (0, imperative_api_1.useImperativeApiEmitter)(refContainer);
     const [lastUnhandledLink, setLastUnhandledLink] = react_1.default.useState();
     const { getInitialState } = (0, useLinking_1.useLinking)(refContainer, {
         enabled: isLinkingEnabled,

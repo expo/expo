@@ -61,7 +61,8 @@ data class DateTimePickerProps(
   val displayedComponents: MutableState<DisplayedComponents> = mutableStateOf(DisplayedComponents.DATE),
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
   val is24Hour: MutableState<Boolean> = mutableStateOf(true),
-  val color: MutableState<AndroidColor?> = mutableStateOf(null)
+  val color: MutableState<AndroidColor?> = mutableStateOf(null),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -74,11 +75,11 @@ class DateTimePickerView(context: Context, appContext: AppContext) :
   @Composable
   override fun Content(modifier: Modifier) {
     if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
-      ExpoTimePicker(props = props) {
+      ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
         onDateSelected(it)
       }
     } else {
-      ExpoDatePicker(props = props) {
+      ExpoDatePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
         onDateSelected(it)
       }
     }

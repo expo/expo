@@ -1,6 +1,7 @@
 import AwaitLock from 'await-lock';
 
 import { openDatabaseAsync, openDatabaseSync, type SQLiteDatabase } from './index';
+import { normalizeStorageIndex } from './paramUtils';
 
 /**
  * Update function for the [`setItemAsync()`](#setitemasynckey-value) or [`setItemSync()`](#setitemsynckey-value) method. It computes the new value based on the previous value. The function returns the new value to set for the key.
@@ -16,6 +17,8 @@ const STATEMENT_SET =
 const STATEMENT_REMOVE = 'DELETE FROM storage WHERE key = ?;';
 const STATEMENT_GET_ALL_KEYS = 'SELECT key FROM storage;';
 const STATEMENT_CLEAR = 'DELETE FROM storage;';
+const STATEMENT_LENGTH = 'SELECT COUNT(*) as count FROM storage;';
+const STATEMENT_GET_KEY_BY_INDEX = 'SELECT key FROM storage LIMIT 1 OFFSET ?;';
 
 const MIGRATION_STATEMENT_0 =
   'CREATE TABLE IF NOT EXISTS storage (key TEXT PRIMARY KEY NOT NULL, value TEXT);';
@@ -109,6 +112,28 @@ export class SQLiteStorage {
     }
   }
 
+  /**
+   * Retrieves the number of key-value pairs stored in the storage asynchronously.
+   */
+  async getLengthAsync(): Promise<number> {
+    const db = await this.getDbAsync();
+    const result = await db.getFirstAsync<{ count: number }>(STATEMENT_LENGTH);
+    return result?.count ?? 0;
+  }
+
+  /**
+   * Retrieves the key at the given index asynchronously.
+   */
+  async getKeyByIndexAsync(index: number): Promise<string | null> {
+    const db = await this.getDbAsync();
+    const offset = normalizeStorageIndex(index);
+    if (offset == null) {
+      return null;
+    }
+    const result = await db.getFirstAsync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, offset);
+    return result?.key ?? null;
+  }
+
   //#endregion
 
   //#region Synchronous API
@@ -181,6 +206,28 @@ export class SQLiteStorage {
       this.db.closeSync();
       this.db = null;
     }
+  }
+
+  /**
+   * Retrieves the number of key-value pairs stored in the storage synchronously.
+   */
+  getLengthSync(): number {
+    const db = this.getDbSync();
+    const result = db.getFirstSync<{ count: number }>(STATEMENT_LENGTH);
+    return result!.count ?? 0;
+  }
+
+  /**
+   * Retrieves the key at the given index synchronously.
+   */
+  getKeyByIndexSync(index: number): string | null {
+    const db = this.getDbSync();
+    const offset = normalizeStorageIndex(index);
+    if (offset == null) {
+      return null;
+    }
+    const result = db.getFirstSync<{ key: string }>(STATEMENT_GET_KEY_BY_INDEX, offset);
+    return result?.key ?? null;
   }
 
   //#endregion
@@ -408,7 +455,6 @@ export class SQLiteStorage {
       );
     }
   }
-
   //#endregion
 }
 

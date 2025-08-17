@@ -5,45 +5,45 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCachedDependenciesLinker = makeCachedDependenciesLinker;
 exports.scanDependencyResolutionsForPlatform = scanDependencyResolutionsForPlatform;
+exports.scanExpoModuleResolutionsForPlatform = scanExpoModuleResolutionsForPlatform;
 const fs_1 = __importDefault(require("fs"));
 const resolution_1 = require("./resolution");
 const rncliLocal_1 = require("./rncliLocal");
 const scanning_1 = require("./scanning");
 const utils_1 = require("./utils");
 const findModules_1 = require("../autolinking/findModules");
-const mergeLinkingOptions_1 = require("../autolinking/mergeLinkingOptions");
+const autolinkingOptions_1 = require("../commands/autolinkingOptions");
 const reactNativeConfig_1 = require("../reactNativeConfig");
 const config_1 = require("../reactNativeConfig/config");
 function makeCachedDependenciesLinker(params) {
-    const linkingOptionsFactory = (0, mergeLinkingOptions_1.createLinkingOptionsFactory)({
+    const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)({
         projectRoot: params.projectRoot,
-        platform: 'apple', // Placeholder value
     });
-    let projectRoot;
-    const getProjectRoot = () => projectRoot || (projectRoot = linkingOptionsFactory.getProjectRoot());
+    let appRoot;
+    const getAppRoot = () => appRoot || (appRoot = autolinkingOptionsLoader.getAppRoot());
     const dependenciesResultBySearchPath = new Map();
     let reactNativeProjectConfig;
     let reactNativeProjectConfigDependencies;
     let recursiveDependencies;
     return {
         async getOptionsForPlatform(platform) {
-            const options = await linkingOptionsFactory.getPlatformOptions(platform);
+            const options = await autolinkingOptionsLoader.getPlatformOptions(platform);
             return makeCachedDependenciesSearchOptions(options);
         },
         async loadReactNativeProjectConfig() {
             if (reactNativeProjectConfig === undefined) {
-                reactNativeProjectConfig = (0, config_1.loadConfigAsync)(await getProjectRoot());
+                reactNativeProjectConfig = (0, config_1.loadConfigAsync)(await getAppRoot());
             }
             return reactNativeProjectConfig;
         },
         async scanDependenciesFromRNProjectConfig() {
             const reactNativeProjectConfig = await this.loadReactNativeProjectConfig();
             return (reactNativeProjectConfigDependencies ||
-                (reactNativeProjectConfigDependencies = (0, rncliLocal_1.scanDependenciesFromRNProjectConfig)(await getProjectRoot(), reactNativeProjectConfig)));
+                (reactNativeProjectConfigDependencies = (0, rncliLocal_1.scanDependenciesFromRNProjectConfig)(await getAppRoot(), reactNativeProjectConfig)));
         },
         async scanDependenciesRecursively() {
             return (recursiveDependencies ||
-                (recursiveDependencies = (0, resolution_1.scanDependenciesRecursively)(await getProjectRoot())));
+                (recursiveDependencies = (0, resolution_1.scanDependenciesRecursively)(await getAppRoot())));
         },
         async scanDependenciesInSearchPath(searchPath) {
             let result = dependenciesResultBySearchPath.get(searchPath);
@@ -92,6 +92,20 @@ async function scanDependencyResolutionsForPlatform(linker, platform, include) {
         return resolution;
     });
     return dependencies;
+}
+async function scanExpoModuleResolutionsForPlatform(linker, platform) {
+    const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
+    const resolutions = (0, utils_1.mergeResolutionResults)(await Promise.all([
+        ...searchPaths.map((searchPath) => {
+            return linker.scanDependenciesInSearchPath(searchPath);
+        }),
+        linker.scanDependenciesRecursively(),
+    ]));
+    return await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
+        return !excludeNames.has(resolution.name)
+            ? await (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames)
+            : null;
+    });
 }
 const makeCachedDependenciesSearchOptions = (options) => ({
     excludeNames: new Set(options.exclude),

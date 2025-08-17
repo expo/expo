@@ -1,11 +1,11 @@
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { screen, act, waitFor, fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Button, Platform, Text, View } from 'react-native';
 
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
-import { renderRouter, screen, waitFor } from '../../testing-library';
+import { renderRouter } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
 import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';

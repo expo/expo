@@ -12,6 +12,9 @@ declare class ExpoFileSystemModule extends NativeModule {
   ): Promise<string>;
   totalDiskSpace: number;
   availableDiskSpace: number;
+  documentDirectory: string;
+  cacheDirectory: string;
+  bundleDirectory: string;
 }
 
 export default requireNativeModule<ExpoFileSystemModule>('FileSystem');

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 3.0.2 — 2025-08-16
+
+### 🐛 Bug fixes
+
+- Regression: Use the command's root instead of the app's root when resolving extra build dependencies ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Refactor command implementations and deprecate old Expo modules autolinking API ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
+- Add internal API to scan only for Expo modules ([#38909](https://github.com/expo/expo/pull/38909) by [@kitten](https://github.com/kitten))
+- Expose `getLinkingImplementationForPlatform` and `PackageRevision` for Expo modules from internal autolinking API ([#38913](https://github.com/expo/expo/pull/38913) by [@kitten](https://github.com/kitten))
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.0 — 2025-08-13
 
 ### 🛠 Breaking changes

@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 export type AndroidVariant = 'picker' | 'input';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 export type DateTimePickerProps = {
@@ -42,6 +42,8 @@ export type DateTimePickerProps = {
      * @default true
      */
     is24Hour?: boolean;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {
     variant?: AndroidVariant;

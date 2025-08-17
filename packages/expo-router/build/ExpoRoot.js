@@ -46,7 +46,6 @@ const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
-const imperative_api_1 = require("./imperative-api");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const ModalContext_1 = require("./modal/ModalContext");
 const primitives_1 = require("./primitives");
@@ -147,7 +146,6 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <ModalContext_1.ModalContextProvider>
-              <imperative_api_1.ImperativeApiEmitter />
               <Content />
             </ModalContext_1.ModalContextProvider>
           </WrapperComponent>

@@ -130,7 +130,7 @@ export declare class File {
      * Retrieves byte content of the entire file.
      * @returns A promise that resolves with the contents of the file as a Uint8Array.
      */
-    bytes(): Promise<Uint8Array>;
+    bytes(): Promise<Uint8Array<ArrayBuffer>>;
     /**
      * Retrieves byte content of the entire file.
      * @returns A promise that resolves with the contents of the file as a Uint8Array.
@@ -211,7 +211,7 @@ export declare class File {
 }
 export declare class FileHandle {
     close(): void;
-    readBytes(length: number): Uint8Array;
+    readBytes(length: number): Uint8Array<ArrayBuffer>;
     writeBytes(bytes: Uint8Array): void;
     offset: number | null;
     size: number | null;

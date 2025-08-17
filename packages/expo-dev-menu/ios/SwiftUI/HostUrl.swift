@@ -27,9 +27,7 @@ struct HostUrl: View {
           .foregroundColor(.secondary.opacity(0.7))
       }
       .padding()
-#if !os(tvOS)
-      .background(Color(.secondarySystemBackground))
-#endif
+      .background(Color.expoSecondarySystemBackground)
       .cornerRadius(20)
     }
     .buttonStyle(.plain)

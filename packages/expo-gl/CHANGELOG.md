@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 16.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2025-08-15
+
+### 💡 Others
+
 - [Web] Remove `findDOMNode` usage. ([#38800](https://github.com/expo/expo/pull/38800) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 16.0.0 — 2025-08-13

@@ -10,11 +10,22 @@
 
 ### 💡 Others
 
+## 10.0.2 — 2025-08-16
+
+### 💡 Others
+
+- Switch autolinked package internal to `expo/internal/unstable-autolinking-exports` ([#38909](https://github.com/expo/expo/pull/38909) by [@kitten](https://github.com/kitten))
+
+## 10.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.0 — 2025-08-13
 
 ### 🎉 New features
 
 - Support Liquid Glass app icons. ([#37609](https://github.com/expo/expo/pull/37609) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Support `android.predictiveBackGestureEnabled` field in app config. ([#38774](https://github.com/expo/expo/pull/38774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

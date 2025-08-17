@@ -20,6 +20,10 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
  *
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
+ * @param Nav - The navigator component to wrap.
+ * @param processor - A function that processes the screens before passing them to the navigator.
+ * @param useOnlyUserDefinedScreens - If true, all screens not specified as navigator's children will be ignored.
+ *
  *  @example
  * ```tsx app/_layout.tsx
  * import { ParamListBase, TabNavigationState } from "@react-navigation/native";
@@ -44,7 +48,7 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
  * }
  * ```
  */
-export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]): ForwardRefExoticComponent<PropsWithoutRef<PickPartial<ComponentProps<T>, "children">> & RefAttributes<unknown>> & {
+export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[], useOnlyUserDefinedScreens?: boolean): ForwardRefExoticComponent<PropsWithoutRef<PickPartial<ComponentProps<T>, "children">> & RefAttributes<unknown>> & {
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
     Protected: typeof Protected;
 };

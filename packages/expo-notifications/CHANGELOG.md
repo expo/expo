@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.32.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.32.1 — 2025-08-15
+
+### 💡 Others
+
+- Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+
 ## 0.32.0 — 2025-08-13
 
 ### 🛠 Breaking changes

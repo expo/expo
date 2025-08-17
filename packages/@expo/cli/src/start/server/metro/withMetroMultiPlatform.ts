@@ -671,7 +671,7 @@ export function withExtendedResolver(
             )
           ) {
             throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
+              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
             );
           }
 
