@@ -489,6 +489,19 @@ If you're currently using `@react-native-async-storage/async-storage` in your pr
 + import AsyncStorage from 'expo-sqlite/kv-store';
 ```
 
+### The `localStorage` API
+
+The `expo-sqlite/localStorage/install` module provides a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) API. If you're already familiar with this API from the web, or you would like to be able to share storage code between web and other platforms, this may be useful. To use it, you just need to import the `expo-sqlite/localStorage/install` module:
+
+> **Note:** `import 'expo-sqlite/localStorage/install';` is a no-op on Web and will be excluded from the production JS bundle.
+
+```ts Install globalThis.localStorage
+import 'expo-sqlite/localStorage/install';
+
+globalThis.localStorage.setItem('key', 'value');
+console.log(globalThis.localStorage.getItem('key')); // 'value'
+```
+
 ## Security
 
 SQL injections are a class of vulnerabilities where attackers trick your app into executing user input as SQL code. You must escape all user input passed to SQLite to defend against SQL injections. [Prepared statements](#prepared-statements) are an effective defense against this problem. They explicitly separate a SQL query's logic from its input parameters, and SQLite automatically escapes inputs when executing prepared statements.
