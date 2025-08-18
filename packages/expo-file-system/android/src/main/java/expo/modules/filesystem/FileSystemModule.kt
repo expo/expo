@@ -20,9 +20,6 @@ import java.io.FileOutputStream
 import java.net.URI
 import java.util.EnumSet
 
-const val PICKER_REQUEST_DIRECTORY = 5395
-const val PICKER_REQUEST_FILE = 5396
-
 class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
