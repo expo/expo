@@ -55,7 +55,7 @@ data class GoogleMapsViewProps(
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM),
   val contentPadding: MutableState<MapContentPaddingRecord> = mutableStateOf(MapContentPaddingRecord()),
-  val mapOptions: MutableState<MapOptionsRecord> = mutableStateOf(MapOptionsRecord()),
+  val mapOptions: MutableState<MapOptionsRecord> = mutableStateOf(MapOptionsRecord())
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")

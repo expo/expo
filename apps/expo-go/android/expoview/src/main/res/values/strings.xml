@@ -45,8 +45,8 @@
   <string name="devmenu_open_js_debugger">Open JS Debugger</string>
   <string name="devmenu_disable_fast_refresh">Disable Fast Refresh</string>
   <string name="devmenu_enable_fast_refresh">Enable Fast Refresh</string>
-  <string name="devmenu_show_fab">Show Dev Menu button</string>
-  <string name="devmenu_hide_fab">Hide Dev Menu button</string>
+  <string name="devmenu_show_fab">Show developer action button</string>
+  <string name="devmenu_hide_fab">Hide developer action button</string>
   <string name="devmenu_fast_refresh_unavailable">Fast Refresh Unavailable</string>
   <string name="devmenu_fast_refresh_unavailable_details">Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh.</string>
   <string name="devmenu_hide_performance_monitor">Hide Performance Monitor</string>

@@ -57,6 +57,13 @@ function _ReactNative78CompatPlugin() {
   };
   return data;
 }
+function _withEdgeToEdge() {
+  const data = _interopRequireDefault(require("./unversioned/edge-to-edge/withEdgeToEdge"));
+  _withEdgeToEdge = function () {
+    return data;
+  };
+  return data;
+}
 function _expoAdsAdmob() {
   const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
   _expoAdsAdmob = function () {
@@ -120,13 +127,6 @@ function _expoUpdates() {
   };
   return data;
 }
-function _withEdgeToEdge() {
-  const data = _interopRequireDefault(require("./unversioned/react-native-edge-to-edge/withEdgeToEdge"));
-  _withEdgeToEdge = function () {
-    return data;
-  };
-  return data;
-}
 function _reactNativeMaps() {
   const data = _interopRequireDefault(require("./unversioned/react-native-maps"));
   _reactNativeMaps = function () {
@@ -181,7 +181,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // app/build.gradle
   _configPlugins().AndroidConfig.GoogleServices.withApplyPlugin, _configPlugins().AndroidConfig.Package.withPackageGradle, _configPlugins().AndroidConfig.Version.withVersion,
   // AndroidManifest.xml
-  _configPlugins().AndroidConfig.AllowBackup.withAllowBackup, _configPlugins().AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
+  _configPlugins().AndroidConfig.AllowBackup.withAllowBackup, _configPlugins().AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode, _configPlugins().AndroidConfig.PredictiveBackGesture.withPredictiveBackGesture,
   // Note: The withAndroidIntentFilters plugin must appear before the withScheme
   // plugin or withScheme will override the output of withAndroidIntentFilters.
   _configPlugins().AndroidConfig.IntentFilters.withAndroidIntentFilters, _configPlugins().AndroidConfig.Scheme.withScheme, _configPlugins().AndroidConfig.Orientation.withOrientation, _configPlugins().AndroidConfig.Permissions.withInternalBlockedPermissions, _configPlugins().AndroidConfig.Permissions.withPermissions,

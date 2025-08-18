@@ -317,9 +317,9 @@ data class MapContentPaddingRecord(
 
   @Field
   val bottom: Float = 0f
-): Record
+) : Record
 
 data class MapOptionsRecord(
   @Field
-  val mapId: String? = null,
+  val mapId: String? = null
 ) : Record

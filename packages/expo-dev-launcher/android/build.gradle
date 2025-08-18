@@ -20,13 +20,13 @@ expoModule {
 }
 
 group = "host.exp.exponent"
-version = "5.1.11"
+version = "6.0.2"
 
 android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "5.1.11"
+    versionName "6.0.2"
   }
 
   buildTypes {
@@ -91,7 +91,7 @@ dependencies {
   api project.dependencies.platform("io.insert-koin:koin-bom:3.5.6")
   api "io.insert-koin:koin-core"
 
-  def composeVersion = "1.8.2"
+  def composeVersion = "1.9.0"
 
   implementation "androidx.compose.foundation:foundation-android:$composeVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"

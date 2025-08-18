@@ -26,6 +26,7 @@ describe('server api redirects', () => {
           E2E_ROUTER_ASYNC: 'development',
           EXPO_USE_FAST_RESOLVER: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
+            { source: '/redirect/permanent/methods', destination: '/methods', permanent: true },
             { source: '/redirect/methods', destination: '/methods' },
             { source: '/redirect/dynamic/[slug]', destination: '/dynamic/[slug]' },
             { source: '/redirect/dynamic/[other]/[slug]', destination: '/dynamic/[slug]/[other]' },
@@ -67,6 +68,36 @@ describe('server api redirects', () => {
         expect(response.status).toEqual(200);
         expect(response.redirected).toEqual(true);
         expect(new URL(response.url).pathname).toEqual('/methods');
+      });
+    });
+
+    (
+      [
+        ['POST', 307, 308],
+        ['GET', 302, 301],
+        ['HEAD', 302, 301],
+        ['PUT', 307, 308],
+        ['DELETE', 307, 308],
+      ] as [string, number, number][]
+    ).map(async ([method, status, permanentStatus]) => {
+      it(`returns appropriate redirect status for ${method} routes`, async () => {
+        // Request missing route
+        const response = await server.fetchAsync('/redirect/methods', {
+          method,
+          redirect: 'manual',
+        });
+
+        expect(response.status).toEqual(status);
+      });
+
+      it(`returns appropriate permanent redirect status for ${method} routes`, async () => {
+        // Request missing route
+        const response = await server.fetchAsync('/redirect/permanent/methods', {
+          method,
+          redirect: 'manual',
+        });
+
+        expect(response.status).toEqual(permanentStatus);
       });
     });
 

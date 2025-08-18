@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'expo.modules.integrity'
-version = '0.0.1'
+version = '0.1.1'
 
 android {
   namespace 'expo.modules.integrity'
   defaultConfig {
     versionCode 1
-    versionName "0.0.1"
+    versionName "0.1.1"
   }
 }
 

@@ -292,7 +292,7 @@ it('transforms and extracts "import" statements as live bindings', () => {
   `);
 });
 
-it('transforms export all as live bindings', () => {
+it('transforms export all as live bindings (no named exports)', () => {
   const code = `
     export * from 'foo';
   `;
@@ -301,9 +301,11 @@ it('transforms export all as live bindings', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
+    var _exportedNames = {};
     var _foo = require("foo");
     Object.keys(_foo).forEach(function (_key) {
       if (_key === "default" || _key === "__esModule") return;
+      if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
       if (_key in exports && exports[_key] === _foo[_key]) return;
       Object.defineProperty(exports, _key, {
         enumerable: true,
@@ -322,6 +324,70 @@ it('transforms export all as live bindings', () => {
     > 2 |     export * from 'foo';
         |     ^^^^^^^^^^^^^^^^^^^^ dep #0 (foo)"
   `);
+});
+
+it('places export all with live bindings above export default and named', () => {
+  const code = `
+    export * from 'foo';
+    export { baz } from 'bar';
+    export default bax;
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+    var _bar = require('bar');
+    var _default = bax;
+    var _exportedNames = {
+      "baz": true
+    };
+    var _foo = require("foo");
+    Object.keys(_foo).forEach(function (_key) {
+      if (_key === "default" || _key === "__esModule") return;
+      if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
+      if (_key in exports && exports[_key] === _foo[_key]) return;
+      Object.defineProperty(exports, _key, {
+        enumerable: true,
+        get: function () {
+          return _foo[_key];
+        }
+      });
+    });
+    exports.default = _default;
+    Object.defineProperty(exports, "baz", {
+      enumerable: true,
+      get: function () {
+        return _bar.baz;
+      }
+    });
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+});
+
+it('places export all above export default and named', () => {
+  const code = `
+    export * from 'foo';
+    export { baz } from 'bar';
+    export default bax;
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+    var _baz = require('bar').baz;
+    var _default = bax;
+    var _foo = require("foo");
+    for (var _key in _foo) {
+      exports[_key] = _foo[_key];
+    }
+    exports.default = _default;
+    exports.baz = _baz;
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts });
 });
 
 it('does not transform import all as export as live bindings', () => {

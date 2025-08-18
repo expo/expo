@@ -67,7 +67,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
           config: configChannelTest,
           database: db
         )
-        try! db.addUpdate(update)
+        try! db.addUpdate(update, config: configChannelTest)
       }
     }
     

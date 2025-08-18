@@ -1,4 +1,5 @@
 import { RenderToImageOptions } from './FontUtils.types';
+export type { RenderToImageOptions };
 /**
  * Creates an image with provided text.
  * @param glyphs Text to be exported.

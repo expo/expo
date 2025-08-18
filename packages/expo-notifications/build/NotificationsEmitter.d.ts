@@ -63,15 +63,7 @@ export declare function addNotificationsDroppedListener(listener: () => void): E
  */
 export declare function addNotificationResponseReceivedListener(listener: (event: NotificationResponse) => void): EventSubscription;
 /**
- * @deprecated call `remove()` on the subscription object instead.
- *
- * Removes a notification subscription returned by an `addNotificationListener` call.
- * @param subscription A subscription returned by `addNotificationListener` method.
- * @header listen
- */
-export declare function removeNotificationSubscription(subscription: EventSubscription): void;
-/**
- * Gets the notification response that was received most recently
+ * Gets the notification response received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
  *
  * - `null` - if no notification response has been received yet

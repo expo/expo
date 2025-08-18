@@ -6,10 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add support for `@babel/plugin-transform-class-static-block` on web and native. ([#37495](https://github.com/expo/expo/pull/37495) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
 
 ### 🐛 Bug fixes
+
+- Define default `@babel/runtime` minimum version as `^7.20.0` by default ([#38790](https://github.com/expo/expo/pull/38790) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -17,10 +35,16 @@
 - Add fork of `@babel/transform-export-namespace-from` to preserve location of the transformed import/export statements ([#38042](https://github.com/expo/expo/pull/38042) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Remove Babel value-imports instead only relying on types and the `@babel/core` instance passed to the preset and plugins ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
 - Updated test snapshot. ([#38430](https://github.com/expo/expo/pull/38430) by [@kudo](https://github.com/kudo))
+- Replace `react-refresh` dependency with peer dependency fulfilled by `expo` ([#38562](https://github.com/expo/expo/pull/38562) by [@kitten](https://github.com/kitten))
+- Add optional reverse peer dependency on `expo` (for inline-manifest plugin) ([#38600](https://github.com/expo/expo/pull/38600) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 📚 3rd party library updates
+
+- Bumped `react-native-web` and `babel-plugin-react-native-web` to 0.21.0. ([#38425](https://github.com/expo/expo/pull/38425) by [@kudo](https://github.com/kudo))
 
 ## 13.2.3 - 2025-07-03
 

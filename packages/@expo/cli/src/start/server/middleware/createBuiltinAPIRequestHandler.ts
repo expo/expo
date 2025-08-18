@@ -1,4 +1,4 @@
-import { convertRequest, RequestHandler, respond } from '@expo/server/build/vendor/http';
+import { convertRequest, RequestHandler, respond } from '@expo/server/adapter/http';
 
 import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 

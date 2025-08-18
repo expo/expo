@@ -21,9 +21,9 @@ public class AudioModule: Module {
       self.appContext?.permissions?.register([
         AudioRecordingRequester()
       ])
+      #endif
 
       setupInterruptionHandling()
-      #endif
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
@@ -135,7 +135,11 @@ public class AudioModule: Module {
       }
 
       Property("playbackRate") { player in
-        player.ref.rate
+        return if player.isPlaying {
+          player.ref.rate
+        } else {
+          player.currentRate
+        }
       }
 
       Property("paused") { player in
@@ -234,9 +238,29 @@ public class AudioModule: Module {
         try recorder.prepare(options: options, sessionOptions: sessionOptions)
       }
 
-      Function("record") { (recorder: AudioRecorder) -> [String: Any] in
+      Function("record") { (recorder: AudioRecorder, options: RecordOptions?) in
         try checkPermissions()
-        return try recorder.startRecording()
+
+        switch (options?.atTime, options?.forDuration) {
+        case let (atTime?, forDuration?):
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime, forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case let (atTime?, nil):
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime)
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case let (nil, forDuration?):
+          recorder.ref.record(forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case (nil, nil):
+          return try recorder.startRecording()
+        }
       }
 
       Function("pause") { recorder in

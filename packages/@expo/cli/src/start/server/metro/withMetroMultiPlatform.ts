@@ -89,23 +89,39 @@ function withWebPolyfills(
       })()
     );
 
+    const virtualModulesPolyfills = [virtualModuleId, virtualEnvVarId];
+
     if (ctx.platform === 'web') {
-      return [
-        virtualModuleId,
-        virtualEnvVarId,
-        // Ensure that the error-guard polyfill is included in the web polyfills to
-        // make metro-runtime work correctly.
-        // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
-        require.resolve('@react-native/js-polyfills/error-guard'),
-      ];
+      try {
+        const rnGetPolyfills: () => string[] = require('react-native/rn-get-polyfills');
+        return [
+          ...virtualModulesPolyfills,
+          // Ensure that the error-guard polyfill is included in the web polyfills to
+          // make metro-runtime work correctly.
+          // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
+          // NOTE(@kitten): This is technically the public API to get polyfills rather than resolving directly into
+          // `@react-native/js-polyfills`. We should really just start vendoring these, but for now, this exclusion works
+          ...rnGetPolyfills().filter((x: string) => !x.includes('/console')),
+        ];
+      } catch (error: any) {
+        if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+          // If react-native is not installed, because we're targeting web, we still continue
+          // This should be rare, but we add it so we don't unnecessarily have a fixed peer dependency on react-native
+          debug(
+            'Skipping react-native/rn-get-polyfills from getPolyfills. react-native is not installed.'
+          );
+          return virtualModulesPolyfills;
+        } else {
+          throw error;
+        }
+      }
     }
 
-    // Generally uses `rn-get-polyfills`
+    // Generally uses `@expo/metro-config`'s `getPolyfills` function, unless overridden
     const polyfills = originalGetPolyfills(ctx);
     return [
       ...polyfills,
-      virtualModuleId,
-      virtualEnvVarId,
+      ...virtualModulesPolyfills,
       // Removed on server platforms during the transform.
       require.resolve('expo/virtual/streams.js'),
     ];
@@ -655,7 +671,7 @@ export function withExtendedResolver(
             )
           ) {
             throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
+              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
             );
           }
 

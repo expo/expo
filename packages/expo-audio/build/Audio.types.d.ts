@@ -16,6 +16,61 @@ export type AudioSource = string | number | null | {
     headers?: Record<string, string>;
 };
 /**
+ * Options for configuring audio player behavior.
+ */
+export type AudioPlayerOptions = {
+    /**
+     * How often (in milliseconds) to emit playback status updates.
+     * @default 500
+     *
+     * @platform ios
+     * @platform android
+     * @platform web
+     */
+    updateInterval?: number;
+    /**
+     * If set to `true`, the system will attempt to download the resource to the device before loading.
+     * This value defaults to `false`.
+     *
+     * Works with:
+     * - Local assets from `require('path/to/file')`
+     * - Remote HTTP/HTTPS URLs
+     * - Asset objects
+     *
+     * When enabled, this ensures the audio file is fully downloaded before playback begins.
+     * This can improve playback performance and reduce buffering, especially for users
+     * managing multiple audio players simultaneously.
+     *
+     * On Android and iOS, this will download the audio file to the device's tmp directory before playback begins.
+     * The system will purge the file at its discretion.
+     *
+     * On web, this will download the audio file to the user's device memory and make it available for the user to play.
+     * The system will usually purge the file from memory after a reload or on memory pressure.
+     * On web, CORS restrictions apply to the blob url, so you need to make sure the server returns the `Access-Control-Allow-Origin` header.
+     *
+     * @platform ios
+     * @platform web
+     * @platform android
+     */
+    downloadFirst?: boolean;
+    /**
+     * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
+     * If `undefined` (default), does not use CORS at all. If set to `'anonymous'`, the audio will be loaded with CORS enabled.
+     * Note that some audio may not play if CORS is enabled, depending on the CDN settings.
+     * If you encounter issues, consider adjusting the `crossOrigin` property.
+     *
+     *
+     * @platform web
+     * @default undefined
+     */
+    crossOrigin?: 'anonymous' | 'use-credentials';
+};
+/**
+ * @deprecated Use `AudioPlayerOptions` instead.
+ * Options for audio loading behavior.
+ */
+export type AudioLoadOptions = AudioPlayerOptions;
+/**
  * Represents an available audio input device for recording.
  *
  * This type describes audio input sources like built-in microphones, external microphones,
@@ -205,6 +260,36 @@ export declare enum AudioQuality {
  * file size consistency and quality characteristics.
  */
 export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrained' | 'variable';
+/**
+ * Options for controlling how audio recording is started.
+ */
+export type RecordingStartOptions = {
+    /**
+     * The duration in seconds after which recording should automatically stop.
+     * If not provided, recording continues until manually stopped.
+     *
+     * @platform ios
+     * @platform android
+     * @platform web
+     */
+    forDuration?: number;
+    /**
+     * The time in seconds to wait before starting the recording.
+     * If not provided, recording starts immediately.
+     *
+     * **Platform behavior:**
+     * - Android: Ignored, recording starts immediately
+     * - iOS: Uses native AVAudioRecorder.record(atTime:) for precise timing.
+     * - Web: Ignored, recording starts immediately
+     *
+     * > **warning** On iOS, the recording process starts immediately (you'll see status updates),
+     * but actual audio capture begins after the specified delay. This is not a countdown, since
+     * the recorder is active but silent during the delay period.
+     *
+     * @platform ios
+     */
+    atTime?: number;
+};
 export type RecordingOptions = {
     /**
      * A boolean that determines whether audio level information will be part of the status object under the "metering" key.

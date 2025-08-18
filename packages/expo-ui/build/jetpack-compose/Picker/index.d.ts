@@ -1,4 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
+import { ExpoModifier } from '../../types';
 /**
  * Colors for picker's core elements.
  */
@@ -52,6 +53,10 @@ export type PickerProps = {
      * Picker color.
      */
     color?: string;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
+    /** Modifiers for the individual buttons */
+    buttonModifiers?: ExpoModifier[];
 };
 type NativePickerProps = PickerProps;
 /**

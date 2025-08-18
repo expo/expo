@@ -1,5 +1,5 @@
 import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-core';
-import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStatus } from './Audio.types';
+import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions, RecordingStatus } from './Audio.types';
 /**
  * @hidden
  */
@@ -168,8 +168,9 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     uri: string | null;
     /**
      * Starts the recording.
+     * @param options Optional recording configuration options.
      */
-    record(): void;
+    record(options?: RecordingStartOptions): void;
     /**
      * Stop the recording.
      */
@@ -201,6 +202,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     /**
      * Starts the recording at the given time.
      * @param seconds The time in seconds to start recording at.
+     * @deprecated Use `record({ atTime: seconds })` instead.
      */
     startRecordingAtTime(seconds: number): void;
     /**
@@ -210,6 +212,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     /**
      * Stops the recording once the specified time has elapsed.
      * @param seconds The time in seconds to stop recording at.
+     * @deprecated Use `record({ forDuration: seconds })` instead.
      */
     recordForDuration(seconds: number): void;
 }

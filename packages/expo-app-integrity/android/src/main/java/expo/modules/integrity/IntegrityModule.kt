@@ -5,6 +5,8 @@ import com.google.android.play.core.integrity.StandardIntegrityManager.StandardI
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.StandardIntegrityManager
+import com.google.android.play.core.integrity.model.StandardIntegrityErrorCode
+import com.google.android.play.core.integrity.StandardIntegrityException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
@@ -27,7 +29,7 @@ class IntegrityModule : Module() {
       val cloudProjectNumberLong = cloudProjectNumber.toLongOrNull()
 
       if (cloudProjectNumberLong == null) {
-        promise.reject(IntegrityException("Invalid cloud project number: '$cloudProjectNumber'. It must be a valid number."))
+        promise.reject(IntegrityException(IntegrityErrorCodes.INVALID_PROJECT_NUMBER, "Invalid cloud project number: '$cloudProjectNumber'. It must be a valid number."))
         return@AsyncFunction
       }
 
@@ -43,15 +45,10 @@ class IntegrityModule : Module() {
         promise.resolve()
       }.addOnFailureListener {
         integrityTokenException = it
-        promise.reject(
-          IntegrityException(
-            integrityTokenException?.message ?: "Unknown error",
-            integrityTokenException
-          )
-        )
+        promise.reject(handleIntegrityError(it))
       }.addOnCanceledListener {
         promise.reject(
-          IntegrityException("Request cancelled")
+          IntegrityException(IntegrityErrorCodes.CANCELLED, "Request cancelled")
         )
       }
     }
@@ -71,22 +68,65 @@ class IntegrityModule : Module() {
             )
           }
           .addOnFailureListener { exception: Exception? ->
-            promise.reject(
-              IntegrityException(exception?.message ?: "Unknown error", exception)
-            )
+            promise.reject(handleIntegrityError(exception))
           }
           .addOnCanceledListener {
             promise.reject(
-              IntegrityException("Request cancelled")
+              IntegrityException(IntegrityErrorCodes.CANCELLED, "Request cancelled")
             )
           }
       } ?: promise.reject(
-        IntegrityException(
-          integrityTokenException?.message
-            ?: "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME",
-          integrityTokenException
-        )
+        if (integrityTokenException != null) {
+          handleIntegrityError(integrityTokenException)
+        } else {
+          IntegrityException(
+            IntegrityErrorCodes.NOT_PREPARED,
+            "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME"
+          )
+        }
       )
+    }
+  }
+
+  private fun handleIntegrityError(exception: Throwable?): IntegrityException {
+    return when (exception) {
+      is StandardIntegrityException -> {
+        val errorCode = mapStandardIntegrityErrorCode(exception.errorCode)
+        IntegrityException(
+          errorCode,
+          exception.message ?: "Unknown standard integrity error",
+          exception
+        )
+      }
+      else -> IntegrityException(
+        IntegrityErrorCodes.UNKNOWN,
+        exception?.message ?: "Unknown error",
+        exception
+      )
+    }
+  }
+
+  // https://developer.android.com/google/play/integrity/reference/com/google/android/play/core/integrity/model/StandardIntegrityErrorCode
+  private fun mapStandardIntegrityErrorCode(errorCode: Int): String {
+    return when (errorCode) {
+      StandardIntegrityErrorCode.API_NOT_AVAILABLE -> IntegrityErrorCodes.API_NOT_AVAILABLE
+      StandardIntegrityErrorCode.APP_NOT_INSTALLED -> IntegrityErrorCodes.APP_NOT_INSTALLED
+      StandardIntegrityErrorCode.APP_UID_MISMATCH -> IntegrityErrorCodes.APP_UID_MISMATCH
+      StandardIntegrityErrorCode.CANNOT_BIND_TO_SERVICE -> IntegrityErrorCodes.CANNOT_BIND_SERVICE
+      StandardIntegrityErrorCode.CLIENT_TRANSIENT_ERROR -> IntegrityErrorCodes.CLIENT_TRANSIENT_ERROR
+      StandardIntegrityErrorCode.CLOUD_PROJECT_NUMBER_IS_INVALID -> IntegrityErrorCodes.INVALID_PROJECT_NUMBER
+      StandardIntegrityErrorCode.GOOGLE_SERVER_UNAVAILABLE -> IntegrityErrorCodes.GOOGLE_SERVER_UNAVAILABLE
+      StandardIntegrityErrorCode.INTEGRITY_TOKEN_PROVIDER_INVALID -> IntegrityErrorCodes.PROVIDER_INVALID
+      StandardIntegrityErrorCode.INTERNAL_ERROR -> IntegrityErrorCodes.INTERNAL_ERROR
+      StandardIntegrityErrorCode.NETWORK_ERROR -> IntegrityErrorCodes.NETWORK_ERROR
+      StandardIntegrityErrorCode.NO_ERROR -> IntegrityErrorCodes.NO_ERROR
+      StandardIntegrityErrorCode.PLAY_SERVICES_NOT_FOUND -> IntegrityErrorCodes.PLAY_SERVICES_NOT_FOUND
+      StandardIntegrityErrorCode.PLAY_SERVICES_VERSION_OUTDATED -> IntegrityErrorCodes.PLAY_SERVICES_OUTDATED
+      StandardIntegrityErrorCode.PLAY_STORE_NOT_FOUND -> IntegrityErrorCodes.PLAY_STORE_NOT_FOUND
+      StandardIntegrityErrorCode.PLAY_STORE_VERSION_OUTDATED -> IntegrityErrorCodes.PLAY_STORE_OUTDATED
+      StandardIntegrityErrorCode.REQUEST_HASH_TOO_LONG -> IntegrityErrorCodes.REQUEST_HASH_TOO_LONG
+      StandardIntegrityErrorCode.TOO_MANY_REQUESTS -> IntegrityErrorCodes.TOO_MANY_REQUESTS
+      else -> IntegrityErrorCodes.UNKNOWN
     }
   }
 }
