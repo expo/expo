@@ -19,6 +19,8 @@ import {
   DialogEventResult,
   OpenEventPresentationOptions,
   PresentationOptions,
+  CalendarAccessLevel,
+  AlarmMethod,
 } from '../Calendar';
 
 type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
@@ -70,6 +72,7 @@ export declare class ExpoCalendar {
   /**
    * ID of the source to be used for the calendar. Likely the same as the source for any other
    * locally stored calendars.
+   * @platform ios
    */
   sourceId?: string;
   /**
@@ -78,6 +81,7 @@ export declare class ExpoCalendar {
   source: Source;
   /**
    * Type of calendar this object represents.
+   * @platform ios
    */
   type?: CalendarType;
   /**
@@ -86,6 +90,7 @@ export declare class ExpoCalendar {
   color: string;
   /**
    * Whether the calendar is used in the Calendar or Reminders OS app.
+   * @platform ios
    */
   entityType?: EntityTypes;
   /**
@@ -96,6 +101,52 @@ export declare class ExpoCalendar {
    * Availability types that this calendar supports.
    */
   allowedAvailabilities: Availability[];
+  /**
+   * Boolean value indicating whether this is the device's primary calendar.
+   * @platform android
+   */
+  isPrimary?: boolean;
+  /**
+   * Internal system name of the calendar.
+   * @platform android
+   */
+  name?: string | null;
+  /**
+   * Name for the account that owns this calendar.
+   * @platform android
+   */
+  ownerAccount?: string;
+  /**
+   * Time zone for the calendar.
+   * @platform android
+   */
+  timeZone?: string;
+  /**
+   * Alarm methods that this calendar supports.
+   * @platform android
+   */
+  allowedReminders?: AlarmMethod[];
+  /**
+   * Attendee types that this calendar supports.
+   * @platform android
+   */
+  allowedAttendeeTypes?: AttendeeType[];
+  /**
+   * Indicates whether the OS displays events on this calendar.
+   * @platform android
+   */
+  isVisible?: boolean;
+  /**
+   * Indicates whether this calendar is synced and its events stored on the device.
+   * Unexpected behavior may occur if this is not set to `true`.
+   * @platform android
+   */
+  isSynced?: boolean;
+  /**
+   * Level of access that the user has for the calendar.
+   * @platform android
+   */
+  accessLevel?: CalendarAccessLevel;
 
   /**
    * Returns a calendar event list for the given date range.

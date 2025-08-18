@@ -113,9 +113,6 @@ export async function getCalendarsNext(type) {
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
 export async function createCalendarNext(details = {}) {
-    if (Platform.OS === 'android' || !InternalExpoCalendar.createCalendarNext) {
-        throw new UnavailabilityError('Calendar', 'createCalendarNext');
-    }
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, id: undefined, color: color || undefined };
     const createdCalendar = await InternalExpoCalendar.createCalendarNext(newDetails);

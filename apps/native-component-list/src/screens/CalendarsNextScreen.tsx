@@ -98,18 +98,27 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
         sourceId: calendars.find((cal) => cal.source && cal.source.name === 'Default')?.source.id,
       }),
       android: () => {
-        // TODO: Add source details for Android
-        return {};
+        const firstCalendar = calendars.find((cal) => cal.source);
+        return {
+          source: {
+            id: firstCalendar?.source?.id || '1',
+            type: 'com.google',
+            name: 'Default',
+            isLocalAccount: false,
+          },
+          ownerAccount: firstCalendar?.ownerAccount || firstCalendar?.source.name || 'Default',
+        };
       },
     })();
     const newCalendar = {
       title: 'cool new calendar',
-      entityType: Calendar.EntityTypes.EVENT,
       color: '#c0ff33',
       ...sourceDetails,
       name: 'coolNewCalendar',
       accessLevel: Calendar.CalendarAccessLevel.OWNER,
+      allowedAttendeeTypes: [Calendar.AttendeeType.REQUIRED, Calendar.AttendeeType.OPTIONAL],
     };
+
     try {
       const calendar = await createCalendarNext(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
