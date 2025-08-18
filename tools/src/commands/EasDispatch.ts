@@ -715,16 +715,24 @@ async function processIosTarArchiveAsync(archivePath: string, projectDir: string
     const appBundle = extractedContents.find((item) => item.endsWith('.app'));
     if (appBundle) {
       const appBundlePath = path.join(tempExtractDir, appBundle);
-      await spawnAsync('tar', ['-zcvf', archivePath, '-C', appBundlePath, '.'], {
-        stdio: 'pipe',
-      });
+      await spawnAsync(
+        'tar',
+        ['--disable-copyfile', '--no-xattrs', '-zcvf', archivePath, '-C', appBundlePath, '.'],
+        {
+          stdio: 'pipe',
+        }
+      );
       logger.info(`Created tar from .app bundle contents: ${archivePath}`);
     }
     // If no .app file, check if it's a valid iOS app bundle. tar.gz could be from Cloudfront URL.
     else if (fs.existsSync(path.join(tempExtractDir, 'Info.plist'))) {
-      await spawnAsync('tar', ['-zcvf', archivePath, '-C', tempExtractDir, '.'], {
-        stdio: 'pipe',
-      });
+      await spawnAsync(
+        'tar',
+        ['--disable-copyfile', '--no-xattrs', '-zcvf', archivePath, '-C', tempExtractDir, '.'],
+        {
+          stdio: 'pipe',
+        }
+      );
       logger.info(`Created tar from extracted contents: ${archivePath}`);
     } else {
       throw new Error('Unknown archive format');
