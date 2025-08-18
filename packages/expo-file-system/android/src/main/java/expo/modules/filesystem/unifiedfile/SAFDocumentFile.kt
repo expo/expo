@@ -7,45 +7,56 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class SAFDocumentFile(private val context: Context, override val uri: Uri) : UnifiedFileInterface {
-  private val treeDocumentFile: DocumentFile? = DocumentFile.fromTreeUri(context, uri)
+  private val documentFile: DocumentFile?
+    get() {
+      // Relying on singleUri.isDirectory did not work, and there's no explicit method for this, so we check path
+      val pathSegment = uri.pathSegments.getOrNull(0) ?: "tree"
+      if (pathSegment == "document") {
+        // If the path starts with "document", we treat it as a raw file URI
+        return DocumentFile.fromSingleUri(context, uri)
+      } else {
+        // Otherwise, we treat it as a tree URI
+        return DocumentFile.fromTreeUri(context, uri)
+      }
+    }
 
-  override fun exists(): Boolean = treeDocumentFile?.exists() == true
+  override fun exists(): Boolean = documentFile?.exists() == true
 
   override fun isDirectory(): Boolean {
-    return treeDocumentFile?.isDirectory == true
+    return documentFile?.isDirectory == true
   }
 
   override fun isFile(): Boolean {
-    return treeDocumentFile?.isFile == true
+    return documentFile?.isFile == true
   }
 
   override val parentFile: UnifiedFileInterface?
-    get() = treeDocumentFile?.parentFile?.uri?.let { SAFDocumentFile(context, it) }
+    get() = documentFile?.parentFile?.uri?.let { SAFDocumentFile(context, it) }
 
   override fun createFile(mimeType: String, displayName: String): UnifiedFileInterface? {
-    val documentFile = treeDocumentFile?.createFile(mimeType, displayName)
+    val documentFile = documentFile?.createFile(mimeType, displayName)
     return documentFile?.uri?.let { SAFDocumentFile(context, it) }
   }
 
   override fun createDirectory(displayName: String): UnifiedFileInterface? {
-    val documentFile = treeDocumentFile?.createDirectory(displayName)
+    val documentFile = documentFile?.createDirectory(displayName)
     return documentFile?.uri?.let { SAFDocumentFile(context, it) }
   }
 
-  override fun delete(): Boolean = treeDocumentFile?.delete() == true
+  override fun delete(): Boolean = documentFile?.delete() == true
 
   override fun listFilesAsUnified(): List<UnifiedFileInterface> =
-    treeDocumentFile?.listFiles()?.map { SAFDocumentFile(context, it.uri) } ?: emptyList()
+    documentFile?.listFiles()?.map { SAFDocumentFile(context, it.uri) } ?: emptyList()
 
   override val type: String?
-    get() = treeDocumentFile?.type
+    get() = documentFile?.type
 
   override fun lastModified(): Long? {
-    return treeDocumentFile?.lastModified()
+    return documentFile?.lastModified()
   }
 
   override val fileName: String?
-    get() = treeDocumentFile?.name
+    get() = documentFile?.name
 
   override val creationTime: Long? get() {
     // It seems there's no way to get this
@@ -63,14 +74,14 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
   }
 
   override fun length(): Long {
-    return treeDocumentFile?.length() ?: 0
+    return documentFile?.length() ?: 0
   }
 
   override fun walkTopDown(): Sequence<SAFDocumentFile> {
     return sequence {
       yield(this@SAFDocumentFile)
       if (isDirectory()) {
-        treeDocumentFile?.listFiles()?.forEach { child ->
+        documentFile?.listFiles()?.forEach { child ->
           yieldAll(SAFDocumentFile(context, child.uri).walkTopDown())
         }
       }

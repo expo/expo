@@ -125,6 +125,11 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
+File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
+  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
+  return new File(file);
+};
+
 /**
  * Represents a directory on the filesystem.
  *
@@ -179,3 +184,8 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return new Directory(super.createDirectory(name).uri);
   }
 }
+
+Directory.pickDirectoryAsync = async function (initialUri?: string) {
+  const directory = (await ExpoFileSystem.pickDirectoryAsync(initialUri)).uri;
+  return new Directory(directory);
+};
