@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Change Constants to Constant/Property.
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 10.0.4 — 2025-08-27
 
