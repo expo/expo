@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix live binding export deduplication failing to trigger ([#38951](https://github.com/expo/expo/pull/38951) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.21.2 — 2025-08-16
