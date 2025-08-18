@@ -236,7 +236,7 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
       const content = await outputFile.text();
       expect(content).toBe('Hello world');
-      const contentSync = await outputFile.textSync();
+      const contentSync = outputFile.textSync();
       expect(contentSync).toBe('Hello world');
     });
 
