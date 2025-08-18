@@ -3,6 +3,5 @@ export { PermissionResponse, PermissionExpiration, PermissionStatus } from 'expo
 export * from './ExpoAudio';
 
 export type * from './Audio.types';
-export { AudioQuality, IOSOutputFormat } from './Audio.types';
 export type * from './AudioModule.types';
 export * from './RecordingConstants';
