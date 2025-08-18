@@ -402,19 +402,21 @@ export function importExportPlugin({
                 );
 
               if (local.name === 'default') {
-                path.insertBefore(
-                  withLocation(
-                    importAllTemplate({
-                      IMPORT: t.cloneNode(state.importDefault),
-                      FILE: resolvePath(
-                        t.cloneNode(nullthrows(path.node.source)),
-                        state.opts.resolve
-                      ),
-                      LOCAL: temp,
-                    }),
-                    loc
-                  )
-                );
+                if (!sharedModuleExportFrom) {
+                  path.insertBefore(
+                    withLocation(
+                      importAllTemplate({
+                        IMPORT: t.cloneNode(state.importDefault),
+                        FILE: resolvePath(
+                          t.cloneNode(nullthrows(path.node.source)),
+                          state.opts.resolve
+                        ),
+                        LOCAL: temp,
+                      }),
+                      loc
+                    )
+                  );
+                }
 
                 state.exportNamed.push({
                   local: temp.name,
@@ -460,19 +462,21 @@ export function importExportPlugin({
                   state.exportDefault.push({ local: temp.name, loc });
                 }
               } else if (s.type === 'ExportNamespaceSpecifier') {
-                path.insertBefore(
-                  withLocation(
-                    importAllTemplate({
-                      IMPORT: t.cloneNode(state.importAll),
-                      FILE: resolvePath(
-                        t.cloneNode(nullthrows(path.node.source)),
-                        state.opts.resolve
-                      ),
-                      LOCAL: temp,
-                    }),
-                    loc
-                  )
-                );
+                if (!sharedModuleExportFrom) {
+                  path.insertBefore(
+                    withLocation(
+                      importAllTemplate({
+                        IMPORT: t.cloneNode(state.importAll),
+                        FILE: resolvePath(
+                          t.cloneNode(nullthrows(path.node.source)),
+                          state.opts.resolve
+                        ),
+                        LOCAL: temp,
+                      }),
+                      loc
+                    )
+                  );
+                }
                 state.exportNamed.push({
                   local: temp.name,
                   remote: remote.name,

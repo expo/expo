@@ -525,7 +525,25 @@ it('transforms export default as local then >1 locals with live binding', () => 
     export { default as b, c, d } from 'bar';
   `;
 
-  const expected = ''; // TODO
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+    var _bar = require('bar');
+    exports.b = _bar;
+    Object.defineProperty(exports, "c", {
+      enumerable: true,
+      get: function () {
+        return _bar.c;
+      }
+    });
+    Object.defineProperty(exports, "d", {
+      enumerable: true,
+      get: function () {
+        return _bar.d;
+      }
+    });
+  `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
 });
