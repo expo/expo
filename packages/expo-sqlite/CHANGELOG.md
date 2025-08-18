@@ -23,7 +23,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Updated API doc for `loadExtensionAsync()` and `loadExtensionSync()`. ([#38905](https://github.com/expo/expo/pull/38905) by [@kudo](https://github.com/kudo))
-- Change Constants to Constant/Property.
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 16.0.2 — 2025-08-16
 
