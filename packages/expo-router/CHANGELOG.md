@@ -11,6 +11,7 @@
 - remove error when link with preview is used for external link ([#38939](https://github.com/expo/expo/pull/38939) by [@Ubax](https://github.com/Ubax))
 - [Internal] Remove internal `SafeAreaViewSlot` to remove `SafeAreaView` import warning ([#38899](https://github.com/expo/expo/pull/38899) by [@kitten](https://github.com/kitten))
 - improve animation for stack push from different tab ([#38927](https://github.com/expo/expo/pull/38927) by [@Ubax](https://github.com/Ubax))
+- Add `Modal` `initialDetentIndex` prop to support `sheetInitialDetentIndex` option ([#38124](https://github.com/expo/expo/pull/38124) by [@lodev09](https://github.com/lodev09))
 
 ### 💡 Others
 
@@ -68,7 +69,6 @@
 - NativeTabs dynamic options ([#38581](https://github.com/expo/expo/pull/38581) by [@Ubax](https://github.com/Ubax))
 - add option to set border radius of highlight ([#38779](https://github.com/expo/expo/pull/38779) by [@Ubax](https://github.com/Ubax))
 - remove highlightBorderRadius prop ([#38796](https://github.com/expo/expo/pull/38796) by [@Ubax](https://github.com/Ubax)
-- Add `Modal` `initialDetentIndex` prop to support `sheetInitialDetentIndex` option ([#38124](https://github.com/expo/expo/pull/38124) by [@lodev09](https://github.com/lodev09))
 
 ### 🐛 Bug fixes
 
