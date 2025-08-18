@@ -310,9 +310,9 @@ Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/
 + <Icon sf="house" drawable="home_drawable" />
 ```
 
-**No mock header**
+### Use Stacks inside tabs
 
-React Navigation's JavaScript tabs have a mock stack header which is not present in the native tabs. Instead, you should nest a native stack layout inside the tabs to support both headers and pushing screens.
+The JavaScript `<Tabs />` have a mock stack header which is not present in the native tabs. Instead, you should nest a native `<Stack />` layout inside the native tabs to support both headers and pushing screens.
 
 ## Known limitations
 
