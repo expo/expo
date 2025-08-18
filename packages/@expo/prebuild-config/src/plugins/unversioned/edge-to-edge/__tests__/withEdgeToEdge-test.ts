@@ -6,16 +6,12 @@ import {
 } from '@expo/config-plugins';
 import { type ExpoConfig } from '@expo/config-types';
 
-import { hasEnabledEdgeToEdge } from '../helpers'; // Adjust path as needed
 import { configureEdgeToEdgeEnforcement } from '../withConfigureEdgeToEdgeEnforcement';
 import { applyEdgeToEdge } from '../withEdgeToEdge';
 import { configureEdgeToEdgeEnabledGradleProperties } from '../withEdgeToEdgeEnabledGradleProperties';
+import { applyEnforceNavigationBarContrast } from '../withEnforceNavigationBarContrast';
 import { restoreDefaultTheme } from '../withRestoreDefaultTheme';
 
-const mockEdgeToEdgePlugin = jest.fn();
-const mockLoadEdgeToEdgeConfigPlugin = jest.fn(() => {
-  return mockEdgeToEdgePlugin;
-});
 const mockWithRestoreDefaultTheme = jest.fn((config) => config);
 const mockWithConfigureEdgeToEdgeEnforcement = jest.fn((config, _props) => config);
 const mockWithEdgeToEdgeEnabledGradleProperties = jest.fn((config, _props) => config);
@@ -44,14 +40,6 @@ jest.mock('../withConfigureEdgeToEdgeEnforcement', () => {
     __esModule: true,
     ...originalModule,
     withConfigureEdgeToEdgeEnforcement: mockWithConfigureEdgeToEdgeEnforcement,
-  };
-});
-
-jest.mock('../helpers', () => {
-  const originalModule = jest.requireActual('../helpers');
-  return {
-    ...originalModule,
-    loadEdgeToEdgeConfigPlugin: mockLoadEdgeToEdgeConfigPlugin,
   };
 });
 
@@ -356,6 +344,212 @@ describe('configureEdgeToEdgeEnforcement', () => {
   });
 });
 
+describe('applyEnforceNavigationBarContrast', () => {
+  const attributeName = 'android:enforceNavigationBarContrast';
+
+  it('adds attribute when enforceNavigationBarContrast is true and it does not exist', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'AppTheme', parent: 'Theme.Whatever' },
+              item: [{ $: { name: 'android:otherSetting' }, _: 'true' }],
+            },
+          ],
+        },
+      },
+    };
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
+
+    const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
+    expect(appTheme?.item).toContainEqual({
+      _: 'true',
+      $: {
+        name: attributeName,
+        'tools:targetApi': '29',
+      },
+    });
+    expect(appTheme?.item).toContainEqual({ $: { name: 'android:otherSetting' }, _: 'true' });
+    expect(resultConfig.modResults).toMatchInlineSnapshot(`
+      {
+        "resources": {
+          "style": [
+            {
+              "$": {
+                "name": "AppTheme",
+                "parent": "Theme.Whatever",
+              },
+              "item": [
+                {
+                  "$": {
+                    "name": "android:enforceNavigationBarContrast",
+                    "tools:targetApi": "29",
+                  },
+                  "_": "true",
+                },
+                {
+                  "$": {
+                    "name": "android:otherSetting",
+                  },
+                  "_": "true",
+                },
+              ],
+            },
+          ],
+        },
+      }
+    `);
+  });
+
+  it('updates attribute to true when it already exists as false', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'AppTheme', parent: 'Theme.Whatever' },
+              item: [
+                { $: { name: 'android:otherSetting' }, _: 'true' },
+                { _: 'false', $: { name: attributeName, 'tools:targetApi': '29' } }, // Attribute exists as false
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true); // enforce = true
+
+    const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
+    const targetItem = appTheme?.item?.find((i) => i.$.name === attributeName);
+    expect(targetItem?._).toBe('true');
+    expect(resultConfig.modResults).toMatchInlineSnapshot(`
+      {
+        "resources": {
+          "style": [
+            {
+              "$": {
+                "name": "AppTheme",
+                "parent": "Theme.Whatever",
+              },
+              "item": [
+                {
+                  "$": {
+                    "name": "android:otherSetting",
+                  },
+                  "_": "true",
+                },
+                {
+                  "$": {
+                    "name": "android:enforceNavigationBarContrast",
+                    "tools:targetApi": "29",
+                  },
+                  "_": "true",
+                },
+              ],
+            },
+          ],
+        },
+      }
+    `);
+  });
+
+  it('updates attribute to false when enforceNavigationBarContrast is false', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'AppTheme', parent: 'Theme.Whatever' },
+              item: [
+                { $: { name: 'android:otherSetting' }, _: 'true' },
+                { _: 'true', $: { name: attributeName, 'tools:targetApi': '29' } }, // Attribute exists as true
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, false); // enforce = false
+
+    const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
+    const targetItem = appTheme?.item?.find((i) => i.$.name === attributeName);
+    expect(targetItem?._).toBe('false');
+    expect(resultConfig.modResults).toMatchInlineSnapshot(`
+      {
+        "resources": {
+          "style": [
+            {
+              "$": {
+                "name": "AppTheme",
+                "parent": "Theme.Whatever",
+              },
+              "item": [
+                {
+                  "$": {
+                    "name": "android:otherSetting",
+                  },
+                  "_": "true",
+                },
+                {
+                  "$": {
+                    "name": "android:enforceNavigationBarContrast",
+                    "tools:targetApi": "29",
+                  },
+                  "_": "false",
+                },
+              ],
+            },
+          ],
+        },
+      }
+    `);
+  });
+
+  it('does nothing if AppTheme is not found', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'SomeOtherTheme', parent: 'Theme.Whatever' },
+              item: [],
+            },
+          ],
+        },
+      },
+    };
+    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
+
+    expect(resultConfig.modResults).toEqual(originalModResults);
+  });
+
+  it('does nothing if styles resource is missing', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          // style: [] // Missing style array
+        },
+      },
+    };
+    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
+
+    expect(resultConfig.modResults).toEqual(originalModResults);
+  });
+});
+
 describe('configureEdgeToEdgeEnabledGradleProperties', () => {
   it('adds property when edgeToEdgeEnabled is true and property does not exist', () => {
     const inputConfig: GradlePropertiesConfig = {
@@ -374,12 +568,26 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
         },
         {
           "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
+          "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
+      # WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
         },
         {
           "key": "expo.edgeToEdgeEnabled",
           "type": "property",
-          "value": "true",
+          "value": "true
+      ",
+        },
+        {
+          "type": "comment",
+          "value": "Use this property to enable edge-to-edge display support.
+      # This allows your app to draw behind system bars for an immersive UI.
+      # Note: Only works with ReactActivity and should not be used with custom Activity.",
+        },
+        {
+          "key": "edgeToEdgeEnabled",
+          "type": "property",
+          "value": "true
+      ",
         },
       ]
     `);
@@ -397,12 +605,26 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
       [
         {
           "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
+          "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
+      # WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
         },
         {
           "key": "expo.edgeToEdgeEnabled",
           "type": "property",
-          "value": "false",
+          "value": "false
+      ",
+        },
+        {
+          "type": "comment",
+          "value": "Use this property to enable edge-to-edge display support.
+      # This allows your app to draw behind system bars for an immersive UI.
+      # Note: Only works with ReactActivity and should not be used with custom Activity.",
+        },
+        {
+          "key": "edgeToEdgeEnabled",
+          "type": "property",
+          "value": "false
+      ",
         },
       ]
     `);
@@ -432,18 +654,26 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
           "value": "Some other comment",
         },
         {
+          "key": "expo.edgeToEdgeEnabled",
+          "type": "property",
+          "value": "true",
+        },
+        {
           "key": "another.prop",
           "type": "property",
           "value": "hello",
         },
         {
           "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
+          "value": "Use this property to enable edge-to-edge display support.
+      # This allows your app to draw behind system bars for an immersive UI.
+      # Note: Only works with ReactActivity and should not be used with custom Activity.",
         },
         {
-          "key": "expo.edgeToEdgeEnabled",
+          "key": "edgeToEdgeEnabled",
           "type": "property",
-          "value": "true",
+          "value": "true
+      ",
         },
       ]
     `);
@@ -467,133 +697,33 @@ describe('configureEdgeToEdgeEnabledGradleProperties', () => {
     expect(resultConfig.modResults).toMatchInlineSnapshot(`
       [
         {
-          "type": "comment",
-          "value": "Whether the app is configured to use edge-to-edge via the app config or \`react-native-edge-to-edge\` plugin",
-        },
-        {
           "key": "expo.edgeToEdgeEnabled",
           "type": "property",
           "value": "false",
+        },
+        {
+          "type": "comment",
+          "value": "Use this property to enable edge-to-edge display support.
+      # This allows your app to draw behind system bars for an immersive UI.
+      # Note: Only works with ReactActivity and should not be used with custom Activity.",
+        },
+        {
+          "key": "edgeToEdgeEnabled",
+          "type": "property",
+          "value": "false
+      ",
         },
       ]
     `);
   });
 });
 
-// --- Tests for hasEnabledEdgeToEdge (Remains the Same) ---
-describe('hasEnabledEdgeToEdge', () => {
-  const pluginString = 'react-native-edge-to-edge/app.plugin.js';
-  const pluginArray: [string, object] = [pluginString, {}];
-
-  it('returns true if edgeToEdgeEnabled is true, regardless of plugin', () => {
-    expect(
-      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } })
-    ).toBe(true);
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: true },
-        plugins: [],
-      })
-    ).toBe(true);
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: true },
-        plugins: [pluginString],
-      })
-    ).toBe(true);
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: true },
-        plugins: [pluginArray],
-      })
-    ).toBe(true);
-  });
-
-  it('returns true if plugin is present (string), regardless of edgeToEdgeEnabled flag', () => {
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: false },
-        plugins: [pluginString],
-      })
-    ).toBe(true);
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: undefined },
-        plugins: [pluginString],
-      })
-    ).toBe(true);
-    expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test', plugins: [pluginString] })).toBe(
-      true
-    );
-  });
-
-  it('returns true if plugin is present (array), regardless of edgeToEdgeEnabled flag', () => {
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: false },
-        plugins: [pluginArray],
-      })
-    ).toBe(true);
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: undefined },
-        plugins: [pluginArray],
-      })
-    ).toBe(true);
-    expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test', plugins: [pluginArray] })).toBe(true);
-  });
-
-  it('returns true if plugin is present later in list', () => {
-    expect(
-      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', plugins: ['other-plugin', pluginString] })
-    ).toBe(true);
-    expect(
-      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', plugins: ['other-plugin', pluginArray] })
-    ).toBe(true);
-  });
-
-  it('returns false if edgeToEdgeEnabled is false or undefined and plugin is not present', () => {
-    expect(
-      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', android: { edgeToEdgeEnabled: false } })
-    ).toBe(false);
-    expect(
-      hasEnabledEdgeToEdge({
-        name: 'test',
-        slug: 'test',
-        android: { edgeToEdgeEnabled: undefined },
-      })
-    ).toBe(false);
-    expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test' })).toBe(false);
-    expect(hasEnabledEdgeToEdge({ name: 'test', slug: 'test', plugins: [] })).toBe(false);
-    expect(
-      hasEnabledEdgeToEdge({ name: 'test', slug: 'test', plugins: ['some-other-plugin'] })
-    ).toBe(false);
-  });
-});
-
-// --- Tests for applyEdgeToEdge (testing interactions) ---
+// --- Tests for applyEdgeToEdge ---
 
 describe('applyEdgeToEdge', () => {
   beforeEach(() => {
     // Reset mocks before each test
     jest.clearAllMocks();
-    // Default: plugin is loadable and does nothing by default
-    mockLoadEdgeToEdgeConfigPlugin.mockReturnValue(mockEdgeToEdgePlugin);
-    mockEdgeToEdgePlugin.mockImplementation((config) => config);
     mockWithRestoreDefaultTheme.mockImplementation((config) => config);
     mockWithConfigureEdgeToEdgeEnforcement.mockImplementation((config) => config);
     mockWithEdgeToEdgeEnabledGradleProperties.mockImplementation((config) => config);
@@ -612,16 +742,13 @@ describe('applyEdgeToEdge', () => {
       expect.any(String)
     );
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(1);
-    // Check flow: Should attempt to load plugin, find it (default mock), determine enabled=false, configure gradle, configure enforcement (disable=true), restore theme
-    expect(mockLoadEdgeToEdgeConfigPlugin).toHaveBeenCalledTimes(1);
     expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
-      edgeToEdgeEnabled: false,
+      edgeToEdgeEnabled: true,
     });
     expect(mockWithConfigureEdgeToEdgeEnforcement).toHaveBeenCalledWith(expect.anything(), {
-      disableEdgeToEdgeEnforcement: true,
+      disableEdgeToEdgeEnforcement: false,
     });
     expect(mockWithRestoreDefaultTheme).toHaveBeenCalledTimes(1);
-    expect(mockEdgeToEdgePlugin).not.toHaveBeenCalled(); // Should not run the external plugin
   });
 
   it('should add warnings when edgeToEdgeEnabled is false and plugin not configured', () => {
@@ -637,8 +764,6 @@ describe('applyEdgeToEdge', () => {
       expect.any(String)
     );
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(1);
-    // Check flow: Same as undefined case when plugin not present
-    expect(mockLoadEdgeToEdgeConfigPlugin).toHaveBeenCalledTimes(1);
     expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
       edgeToEdgeEnabled: false,
     });
@@ -646,7 +771,6 @@ describe('applyEdgeToEdge', () => {
       disableEdgeToEdgeEnforcement: true,
     });
     expect(mockWithRestoreDefaultTheme).toHaveBeenCalledTimes(1);
-    expect(mockEdgeToEdgePlugin).not.toHaveBeenCalled();
   });
 
   it('should not add enablement warnings when edgeToEdgeEnabled is true', () => {
@@ -662,95 +786,12 @@ describe('applyEdgeToEdge', () => {
       expect.stringContaining('explicitly set to false'),
       expect.any(String)
     );
-    // Check flow: Should load plugin, determine enabled=true, configure gradle, configure enforcement (disable=false), run external plugin
-    expect(mockLoadEdgeToEdgeConfigPlugin).toHaveBeenCalledTimes(1);
     expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
       edgeToEdgeEnabled: true,
     });
     expect(mockWithConfigureEdgeToEdgeEnforcement).toHaveBeenCalledWith(expect.anything(), {
       disableEdgeToEdgeEnforcement: false,
     });
-    expect(mockWithRestoreDefaultTheme).not.toHaveBeenCalled();
-    expect(mockEdgeToEdgePlugin).toHaveBeenCalledTimes(1);
-    expect(mockEdgeToEdgePlugin).toHaveBeenCalledWith(expect.anything(), {
-      android: { parentTheme: 'Default', enforceNavigationBarContrast: true },
-    });
-  });
-
-  it('should add conflict warning and skip external plugin/restore if plugin is manually configured and edgeToEdgeEnabled=false', () => {
-    const config: ExpoConfig = {
-      name: 'test',
-      slug: 'test',
-      android: { edgeToEdgeEnabled: false },
-      plugins: ['react-native-edge-to-edge/app.plugin.js'],
-    };
-    applyEdgeToEdge(config, '/app');
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
-      'EDGE_TO_EDGE_CONFLICT',
-      expect.stringContaining('configured the `react-native-edge-to-edge` plugin')
-    );
-    expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
-      // Should not show the 'explicitly false' warning
-      'EDGE_TO_EDGE_PLUGIN',
-      expect.stringContaining('explicitly set to false'),
-      expect.any(String)
-    );
-    // Check flow: Should load plugin, determine enabled=true (due to plugin presence), configure gradle, configure enforcement (disable=false), *skip* restore/external plugin call
-    expect(mockLoadEdgeToEdgeConfigPlugin).toHaveBeenCalledTimes(1);
-    expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
-      edgeToEdgeEnabled: true,
-    }); // Enabled=true because plugin is present
-    expect(mockWithConfigureEdgeToEdgeEnforcement).toHaveBeenCalledWith(expect.anything(), {
-      disableEdgeToEdgeEnforcement: false,
-    }); // Enforcement ON
-    expect(mockWithRestoreDefaultTheme).not.toHaveBeenCalled();
-    expect(mockEdgeToEdgePlugin).not.toHaveBeenCalled(); // External plugin skipped
-  });
-
-  it('should skip external plugin/restore if plugin is manually configured and edgeToEdgeEnabled=true', () => {
-    const config: ExpoConfig = {
-      name: 'test',
-      slug: 'test',
-      android: { edgeToEdgeEnabled: true },
-      plugins: ['react-native-edge-to-edge/app.plugin.js'],
-    };
-    applyEdgeToEdge(config, '/app');
-    expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
-      // No conflict warning needed here
-      'EDGE_TO_EDGE_CONFLICT',
-      expect.any(String)
-    );
-    // Check flow: Should load plugin, determine enabled=true, configure gradle, configure enforcement (disable=false), *skip* restore/external plugin call
-    expect(mockLoadEdgeToEdgeConfigPlugin).toHaveBeenCalledTimes(1);
-    expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
-      edgeToEdgeEnabled: true,
-    });
-    expect(mockWithConfigureEdgeToEdgeEnforcement).toHaveBeenCalledWith(expect.anything(), {
-      disableEdgeToEdgeEnforcement: false,
-    }); // Enforcement ON
-    expect(mockWithRestoreDefaultTheme).not.toHaveBeenCalled();
-    expect(mockEdgeToEdgePlugin).not.toHaveBeenCalled(); // External plugin skipped
-  });
-
-  it('should warn, disable enforcement, and restore theme if edge-to-edge plugin cannot be loaded', () => {
-    mockLoadEdgeToEdgeConfigPlugin.mockReturnValue(null); // Simulate load failure
-    const config: ExpoConfig = { name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } }; // Try to enable
-
-    applyEdgeToEdge(config, '/app');
-
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
-      'EDGE_TO_EDGE_PLUGIN',
-      expect.stringContaining('Failed to load the react-native-edge-to-edge config plugin')
-    );
-    // Check flow: Load plugin fails, determine enabled=false, configure gradle(false), configure enforcement (disable=true), restore theme
-    expect(mockLoadEdgeToEdgeConfigPlugin).toHaveBeenCalledTimes(1);
-    expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
-      edgeToEdgeEnabled: false,
-    });
-    expect(mockWithConfigureEdgeToEdgeEnforcement).toHaveBeenCalledWith(expect.anything(), {
-      disableEdgeToEdgeEnforcement: true,
-    });
-    expect(mockWithRestoreDefaultTheme).toHaveBeenCalledTimes(1);
-    expect(mockEdgeToEdgePlugin).not.toHaveBeenCalled();
+    expect(mockWithRestoreDefaultTheme).toHaveBeenCalled();
   });
 });
