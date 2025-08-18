@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add validation for iOS .icon directory.
+
 ## 2.0.6 — 2025-09-02
 
 _This version does not introduce any user-facing changes._
