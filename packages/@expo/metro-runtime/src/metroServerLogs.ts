@@ -31,6 +31,15 @@ export function captureStackForServerLogs() {
     const dataWithStack = [...data];
     if (syntheticStack) {
       dataWithStack.push(syntheticStack);
+    } else {
+      data.forEach((item) => {
+        if (hasStringKey(item, 'stack')) {
+          // We have to explicitly push the stack to the data array
+          // because otherwise it will be lost by `pretty-format`.
+          // TODO: Remove message from the stack to avoid duplication (message from `pretty-format` and from our added stack).
+          dataWithStack.push(item.stack);
+        }
+      });
     }
     if (componentStack) {
       dataWithStack.push(componentStack);
