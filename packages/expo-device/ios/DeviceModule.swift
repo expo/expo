@@ -6,23 +6,6 @@ public class DeviceModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoDevice")
 
-    // Constants([
-    //   "isDevice": isDevice(),
-    //   "brand": "Apple",
-    //   "manufacturer": "Apple",
-    //   "modelId": UIDevice.modelIdentifier,
-    //   "modelName": UIDevice.DeviceMap.modelName,
-    //   "deviceYearClass": UIDevice.DeviceMap.deviceYearClass,
-    //   "totalMemory": ProcessInfo.processInfo.physicalMemory,
-    //   "osName": UIDevice.current.systemName,
-    //   "osVersion": UIDevice.current.systemVersion,
-    //   "osBuildId": osBuildId(),
-    //   "osInternalBuildId": osBuildId(),
-    //   "deviceName": UIDevice.current.name,
-    //   "deviceType": getDeviceType(),
-    //   "supportedCpuArchitectures": cpuArchitectures()
-    // ])
-
     Constant("isDevice") {
       isDevice()
     }
