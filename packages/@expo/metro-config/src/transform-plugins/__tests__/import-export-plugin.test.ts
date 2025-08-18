@@ -560,6 +560,23 @@ it('transforms import default as local with live binding', () => {
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
 });
 
+it('transforms import default as local then >1 locals with live binding', () => {
+  const code = `
+    import { default as b, c, d } from 'bar';
+
+    test(b, c, d);
+  `;
+
+  const expected = `
+    var _bar = require('bar');
+    var b = _$$_IMPORT_DEFAULT('bar');
+
+    test(b, _bar.c, _bar.d)
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+});
+
 it('transforms import default and named as local with live binding', () => {
   const code = `
     import foo, { baz as bax } from 'bar';
