@@ -28,12 +28,6 @@ class FileSystemModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
 
-    Constants(
-      "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
-      "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
-      "bundleDirectory" to "asset://"
-    )
-
     Constant("documentDirectory") {
       Uri.fromFile(context.filesDir).toString() + "/"
     }
@@ -43,7 +37,7 @@ class FileSystemModule : Module() {
     }
 
     Constant("bundleDirectory") {
-      "asset:///"
+      "asset://"
     }
 
     Property("totalDiskSpace") {
