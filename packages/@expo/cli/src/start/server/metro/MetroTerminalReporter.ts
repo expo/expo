@@ -117,9 +117,11 @@ export class MetroTerminalReporter extends TerminalReporter {
                 }
               });
 
-              const filtered = usefulStackCount
-                ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
-                : symbolicated;
+              // Using EXPO_DEBUG we can print all stack
+              const filtered =
+                usefulStackCount && !env.EXPO_DEBUG
+                  ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
+                  : symbolicated;
 
               logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...filtered);
             })();
