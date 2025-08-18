@@ -113,7 +113,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Boolean indicating if the player should keep the screen on while playing.
    *
-   * > On Android this property has an effect only when a [`VideoView`](#videoview) is visible. If you want to keep the screen awake at all times use [`expo-keep-awake`](https://docs.expo.dev/versions/latest/sdk/keep-awake/).
+   * > On Android, this property has an effect only when a [`VideoView`](#videoview) is visible. If you want to keep the screen awake at all times use [`expo-keep-awake`](./keep-awake/).
    *
    * @default true
    * @platform android
