@@ -15,7 +15,7 @@ import { env } from '../../../utils/env';
 import { learnMore } from '../../../utils/link';
 import {
   logLikeMetro,
-  maybeSymbolicateAndFormatReactErrorLogAsync,
+  maybeSymbolicateAndFormatJSErrorStackLogAsync,
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
@@ -96,7 +96,7 @@ export class MetroTerminalReporter extends TerminalReporter {
             (async () => {
               const symbolicating = parsed.map((p) => {
                 if (typeof p === 'string') return p;
-                return maybeSymbolicateAndFormatReactErrorLogAsync(this.projectRoot, level, p);
+                return maybeSymbolicateAndFormatJSErrorStackLogAsync(this.projectRoot, level, p);
               });
 
               let usefulStackCount = 0;
