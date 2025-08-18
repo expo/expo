@@ -547,8 +547,11 @@ class AudioModule : Module() {
     uri.scheme == null || (uri.scheme == "file" && uri.path?.startsWith("/android_res/raw/") == true)
 
   private fun getResourceName(uri: Uri, fallback: String): String =
-    if (uri.scheme == null) fallback
-    else uri.path?.substringAfterLast("/")?.substringBeforeLast(".") ?: fallback
+    if (uri.scheme == null) {
+      fallback
+    } else {
+      uri.path?.substringAfterLast("/")?.substringBeforeLast(".") ?: fallback
+    }
 
   private fun getRawResourceURI(file: String): Uri {
     val resId = context.resources.getIdentifier(file, "raw", context.packageName)
