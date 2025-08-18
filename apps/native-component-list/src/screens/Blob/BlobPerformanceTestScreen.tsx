@@ -117,7 +117,9 @@ const performanceTest: PerformanceTestData[] = [
   {
     key: 'video-file-test',
     blobOperation: async () => {
-      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-1mb.mp4'));
+      const asset = Asset.fromModule(
+        require('../../../assets/expo-blob/performance-test-video-1mb.mp4')
+      );
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);
@@ -131,7 +133,9 @@ const performanceTest: PerformanceTestData[] = [
       return T1 - T0;
     },
     expoBlobOperation: async () => {
-      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-1mb.mp4'));
+      const asset = Asset.fromModule(
+        require('../../../assets/expo-blob/performance-test-video-1mb.mp4')
+      );
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);
