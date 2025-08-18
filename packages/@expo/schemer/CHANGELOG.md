@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Add validation for iOS .icon directory.
+- Add validation for iOS .icon directory. ([#38950](https://github.com/expo/expo/pull/38950) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.0.6 — 2025-09-02
 
