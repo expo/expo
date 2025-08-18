@@ -18,12 +18,12 @@ jobs:
       - uses: actions/checkout@v4
 
       # Start up the simulator first, so we can fail early it it doesn't work
-      # - name: 📱 Start iOS Simulator
-      #   uses: futureware-tech/simulator-action@v4
-      #   with:
-      #     erase_before_boot: true
-      #     wait_for_boot: true # Default is false
-      #     shutdown_after_job: true
+      - name: 📱 Start iOS Simulator
+        uses: futureware-tech/simulator-action@dab10d813144ef59b48d401cd95da151222ef8cd # pin@v4
+        with:
+          erase_before_boot: true
+          wait_for_boot: true # Default is false
+          shutdown_after_job: true
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -69,18 +69,17 @@ jobs:
 
       - name: Preload Expo bundle
         run: |
-          # Get the bundle URL
-          echo $E2E_ROUTER_EXPO_SERVER
           BUNDLE_INFO=$(curl --silent --show-error --fail -H "Content-Type: multipart/mixed" -H "expo-platform: ios" "http://localhost:${E2E_ROUTER_EXPO_PORT}")
           BUNDLE_URL=$(echo $BUNDLE_INFO | jq -r ".launchAsset.url")
 
           # Start the build early by starting the build in the background
           curl --silent --output /dev/null --show-error --fail $BUNDLE_URL &
+          echo "Triggered bundling for $BUNDLE_URL"
 
       - name: Install latest Expo Go
         working-directory: bin
         run: |
-          ./expotools client-install -p ios -s 53.0.0
+          ./expotools client-install -p ios -s 54.0.0
 
       - name: Setup maestro env
         run: |
@@ -88,12 +87,12 @@ jobs:
           echo "MAESTRO_APP_URL=exp://localhost:${E2E_ROUTER_EXPO_PORT}/--" >> $GITHUB_ENV
 
       - name: Run Maestro iOS tests
-        working-directory: apps/router-e2e
+        working-directory: apps/router-e2e/__e2e__/${{ env.E2E_ROUTER_SRC }}/__tests__
         env:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
         run: |
           # Run the Expo Dev Server in the background
-          maestro test launch-tests.yml --no-ansi --format=junit --debug-output .logs
+          maestro test . --no-ansi --format=junit --debug-output .logs
 
       - name: Log output
         if: ${{ failure() }}

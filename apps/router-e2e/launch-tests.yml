@@ -1,5 +1,0 @@
-appId: host.exp.Exponent
----
-- stopApp: host.exp.Exponent
-- openLink:
-    link: ${MAESTRO_APP_URL}/?_TEST_URL=1
