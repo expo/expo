@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- remove error when link with preview is used for external link ([#38939](https://github.com/expo/expo/pull/38939) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 - Throw an error when tabs are nested ([#38651](https://github.com/expo/expo/pull/38651) by [@Ubax](https://github.com/Ubax))
