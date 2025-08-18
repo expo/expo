@@ -362,22 +362,29 @@ internal struct BackgroundOverlayModifier: ViewModifier {
   }
 }
 
-/**
- * A type-erased wrapper for `ViewModifier`
- */
-internal struct AnyViewModifier: ViewModifier {
-  private let _body: (Content) -> AnyView
-
-  init<T: ViewModifier>(_ modifier: T) {
-    _body = { content in
-      AnyView(content.modifier(modifier))
+internal struct GlassEffectIdModifier: ViewModifier {
+  let id: String?
+  let namespace: String?
+  @Environment(\.namespaceProvider) private var namespaceProvider
+  
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      if let provider = namespaceProvider, let namespace = namespace {
+        let namespaceId = provider(namespace)
+        content.glassEffectID(id, in: namespaceId)
+      } else {
+        content
+      }
+      #else
+      content
+      #endif
+    } else {
+      content
     }
   }
-
-  func body(content: Content) -> some View {
-    _body(content)
-  }
 }
+
 
 internal struct GlassEffectModifier: ViewModifier {
   let glassVariant: String
@@ -421,6 +428,23 @@ internal struct GlassEffectModifier: ViewModifier {
     }
   }
   #endif
+}
+
+/**
+ * A type-erased wrapper for `ViewModifier`
+ */
+internal struct AnyViewModifier: ViewModifier {
+  private let _body: (Content) -> AnyView
+
+  init<T: ViewModifier>(_ modifier: T) {
+    _body = { content in
+      AnyView(content.modifier(modifier))
+    }
+  }
+
+  func body(content: Content) -> some View {
+    _body(content)
+  }
 }
 
 // MARK: - Registry
@@ -720,6 +744,12 @@ extension ViewModifierRegistry {
         tint: tintColor,
         shape: shape
       )
+    }
+
+    register("glassEffectId") { params, _ in
+      let id = params["id"] as? String
+      let namespace = params["namespace"] as? String
+      return GlassEffectIdModifier(id: id, namespace: namespace)
     }
   }
 }

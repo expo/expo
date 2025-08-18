@@ -130,6 +130,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ModifiersScreen'));
     },
   },
+  {
+    name: 'Glass Effect',
+    route: 'ui/glass-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GlassEffect'));
+    },
+  },
 ];
 
 export default function UIScreen() {
