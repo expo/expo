@@ -782,7 +782,13 @@ export async function transform(
 }
 
 export function getCacheKey(config: JsTransformerConfig): string {
-  const { babelTransformerPath, minifierPath, ...remainingConfig } = config;
+  const {
+    babelTransformerPath,
+    minifierPath,
+    // Pull out of the cache key to prevent accidental cache invalidation.
+    asyncRequireModulePath,
+    ...remainingConfig
+  } = config;
 
   // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
   const filesKey = getMetroCacheKey([

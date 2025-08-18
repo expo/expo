@@ -908,10 +908,6 @@ export async function withMetroMultiPlatformAsync(
     }
   }
 
-  // TODO: Remove this
-  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
-  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
-
   let tsconfig: null | TsConfigPaths = null;
 
   if (isTsconfigPathsEnabled) {
