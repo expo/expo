@@ -6,7 +6,7 @@ import AVFoundation
 public final class VideoViewModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideoView")
-    
+
     Constant("ScaleNone") { AVLayerVideoGravity.resizeAspect.rawValue }
     Constant("ScaleToFill") { AVLayerVideoGravity.resize.rawValue }
     Constant("ScaleAspectFit") { AVLayerVideoGravity.resizeAspect.rawValue }

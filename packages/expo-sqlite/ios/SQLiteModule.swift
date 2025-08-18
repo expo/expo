@@ -28,7 +28,7 @@ public final class SQLiteModule: Module {
       return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
       #endif
     }
-    
+
     Constant("bundledExtensions") {
       var bundledExtensions: [String: [String: String?]] = [:]
       #if WITH_SQLITE_VEC
