@@ -8,6 +8,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
 import semver from 'semver';
+import * as tar from 'tar';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -703,8 +704,9 @@ async function processIosTarArchiveAsync(archivePath: string, projectDir: string
   const tempExtractDir = path.join(projectDir, 'temp-extract');
   try {
     await mkdirp(tempExtractDir);
-    await spawnAsync('tar', ['-xzf', archivePath, '-C', tempExtractDir], {
-      stdio: 'pipe',
+    await tar.extract({
+      file: archivePath,
+      cwd: tempExtractDir,
     });
 
     // delete the original archive and create a new later in the same path
@@ -715,23 +717,25 @@ async function processIosTarArchiveAsync(archivePath: string, projectDir: string
     const appBundle = extractedContents.find((item) => item.endsWith('.app'));
     if (appBundle) {
       const appBundlePath = path.join(tempExtractDir, appBundle);
-      await spawnAsync(
-        'tar',
-        ['--disable-copyfile', '--no-xattrs', '-zcvf', archivePath, '-C', appBundlePath, '.'],
+      await tar.create(
         {
-          stdio: 'pipe',
-        }
+          gzip: true,
+          file: archivePath,
+          cwd: appBundlePath,
+        },
+        ['.']
       );
       logger.info(`Created tar from .app bundle contents: ${archivePath}`);
     }
     // If no .app file, check if it's a valid iOS app bundle. tar.gz could be from Cloudfront URL.
     else if (fs.existsSync(path.join(tempExtractDir, 'Info.plist'))) {
-      await spawnAsync(
-        'tar',
-        ['--disable-copyfile', '--no-xattrs', '-zcvf', archivePath, '-C', tempExtractDir, '.'],
+      await tar.create(
         {
-          stdio: 'pipe',
-        }
+          gzip: true,
+          file: archivePath,
+          cwd: tempExtractDir,
+        },
+        ['.']
       );
       logger.info(`Created tar from extracted contents: ${archivePath}`);
     } else {
