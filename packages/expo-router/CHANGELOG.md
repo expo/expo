@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - remove error when link with preview is used for external link ([#38939](https://github.com/expo/expo/pull/38939) by [@Ubax](https://github.com/Ubax))
+- [Internal] Remove internal `SafeAreaViewSlot` to remove `SafeAreaView` import warning ([#38899](https://github.com/expo/expo/pull/38899) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
