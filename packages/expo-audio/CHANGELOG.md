@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix regression in playing bundled assets in production.
+- [Android] Fix regression in playing bundled assets in production. ([#38928](https://github.com/expo/expo/pull/38928) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
