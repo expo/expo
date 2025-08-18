@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type ShareLinkProps = {
   /**
@@ -28,20 +28,12 @@ export type ShareLinkProps = {
    * Optional children to be rendered inside the share link.
    */
   children?: React.ReactNode;
-};
+} & CommonViewModifierProps;
 
 const ShareLinkNativeView: React.ComponentType<ShareLinkProps> = requireNativeView(
   'ExpoUI',
   'ShareLinkView'
 );
-
-/**
- * `<ShareLink>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function ShareLinkPrimitive(props: ShareLinkProps) {
-  return <ShareLinkNativeView {...props} />;
-}
 
 /**
  * Renders the native ShareLink component with the provided properties.
@@ -50,10 +42,13 @@ export function ShareLinkPrimitive(props: ShareLinkProps) {
  * @returns {JSX.Element} The rendered native ShareLink component.
  * @platform ios
  */
-export function ShareLink(props: ShareLinkProps & { style?: StyleProp<ViewStyle> }) {
+export function ShareLink(props: ShareLinkProps) {
+  const { modifiers, ...restProps } = props;
   return (
-    <Host style={props.style} matchContents>
-      <ShareLinkPrimitive {...props} />
-    </Host>
+    <ShareLinkNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+    />
   );
 }

@@ -81,6 +81,9 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     Log.log('Rebundling the Expo config file');
     // Re-bundle the config file the same way the app was originally bundled.
     await spawnAsync('node', [
+      // TODO(@kitten): This isn't correct. The template installs expo-constants, but expo also depends on it
+      // This however means that the top-level module doesn't have to exist. With isolated dependencies this will then fail
+      // But we can't resolve via `expo` because that then may do something differently than autolinking if the root has a different version
       path.join(require.resolve('expo-constants/package.json'), '../scripts/getAppConfig.js'),
       projectRoot,
       path.join(options.binary, 'EXConstants.bundle'),

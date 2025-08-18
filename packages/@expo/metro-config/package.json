@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.20.14",
+  "version": "0.21.2",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "types": "build/ExpoMetroConfig.d.ts",
@@ -37,10 +37,10 @@
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
-    "@expo/config": "~11.0.10",
-    "@expo/metro": "~0.1.0",
-    "@expo/env": "~1.0.5",
-    "@expo/json-file": "~9.1.4",
+    "@expo/config": "~12.0.2",
+    "@expo/metro": "~0.1.1",
+    "@expo/env": "~2.0.2",
+    "@expo/json-file": "~10.0.2",
     "@expo/spawn-async": "^1.7.2",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
@@ -49,17 +49,26 @@
     "dotenv-expand": "~11.0.6",
     "getenv": "^2.0.0",
     "glob": "^10.4.2",
+    "hermes-parser": "^0.29.1",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.27.0",
     "minimatch": "^9.0.0",
     "postcss": "~8.4.32",
     "resolve-from": "^5.0.0"
   },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
     "@types/babel__core": "^7.20.5",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^4.1.7",
+    "expo-module-scripts": "^5.0.2",
     "sass": "^1.60.0"
   },
   "publishConfig": {

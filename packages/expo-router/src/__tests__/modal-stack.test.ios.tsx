@@ -1,9 +1,10 @@
+import { act, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
-import { act, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 /**
  * Basic sanity check: a stack containing a mix of normal and modal screens

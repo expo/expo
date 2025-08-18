@@ -366,6 +366,7 @@ export async function createMetroServerAndBundleRequestAsync(
       isExporting: true,
       // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
       bytecode: false,
+      hosted: false,
     }),
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||
@@ -409,6 +410,7 @@ export async function exportEmbedAssetsAsync(
       // behavior.
       projectRoot: config.projectRoot, // this._getServerRootDir(),
       publicPath: config.transformer.publicPath,
+      isHosted: false,
     });
   } catch (error: any) {
     if (isError(error)) {

@@ -1,0 +1,47 @@
+{
+  "name": "expo-template-tabs-react-navigation",
+  "version": "1.0.0",
+  "main": "index.tsx",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "reset-project": "node ./src/scripts/reset-project.js"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~6.0.2",
+    "@expo/vector-icons": "^14.1.0",
+    "@react-navigation/bottom-tabs": "^7.4.0",
+    "@react-navigation/elements": "^2.6.3",
+    "@react-navigation/native": "^7.1.8",
+    "@react-navigation/native-stack": "^7.3.16",
+    "expo": "^54.0.0-preview.2",
+    "expo-asset": "~12.0.2",
+    "expo-blur": "~15.0.2",
+    "expo-constants": "~18.0.2",
+    "expo-font": "~14.0.2",
+    "expo-haptics": "~15.0.2",
+    "expo-image": "~3.0.2",
+    "expo-linking": "~8.0.2",
+    "expo-splash-screen": "~31.0.2",
+    "expo-status-bar": "~3.0.2",
+    "expo-symbols": "~1.0.2",
+    "expo-web-browser": "~15.0.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.79.1",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-reanimated": "~3.17.4",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.14.0",
+    "react-native-web": "^0.20.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "eslint": "^9.25.0",
+    "eslint-config-expo": "~10.0.0",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}

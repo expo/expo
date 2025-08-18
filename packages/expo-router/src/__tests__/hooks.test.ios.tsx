@@ -1,4 +1,4 @@
-import { renderHook as tlRenderHook } from '@testing-library/react-native';
+import { renderHook as tlRenderHook, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 import { expectType } from 'tsd';
@@ -14,7 +14,7 @@ import {
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, renderRouter } from '../testing-library';
+import { renderRouter } from '../testing-library';
 import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 /*
@@ -540,7 +540,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -581,7 +581,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -626,7 +626,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -664,7 +664,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),

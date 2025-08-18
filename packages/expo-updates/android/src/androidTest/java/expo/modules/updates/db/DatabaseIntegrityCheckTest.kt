@@ -40,10 +40,10 @@ class DatabaseIntegrityCheckTest {
     // from the database entirely.
     val scopeKey = "testScopeKey"
 
-    val embeddedUpdate1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), "1.0", scopeKey, JSONObject("{}"))
+    val embeddedUpdate1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), "1.0", scopeKey, JSONObject("{}"), null, null)
     embeddedUpdate1.status = UpdateStatus.EMBEDDED
 
-    val embeddedUpdate2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), "1.0", scopeKey, JSONObject("{}"))
+    val embeddedUpdate2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), "1.0", scopeKey, JSONObject("{}"), null, null)
     embeddedUpdate2.status = UpdateStatus.EMBEDDED
 
     db.updateDao().insertUpdate(embeddedUpdate1)
@@ -68,7 +68,7 @@ class DatabaseIntegrityCheckTest {
 
     val scopeKey = "testScopeKey"
 
-    val update1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", scopeKey, JSONObject("{}"))
+    val update1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", scopeKey, JSONObject("{}"), null, null)
     update1.status = UpdateStatus.READY
 
     db.updateDao().insertUpdate(update1)
@@ -98,7 +98,7 @@ class DatabaseIntegrityCheckTest {
 
     val scopeKey = "testScopeKey"
 
-    val update1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", scopeKey, JSONObject("{}"))
+    val update1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", scopeKey, JSONObject("{}"), null, null)
     update1.status = UpdateStatus.READY
 
     db.updateDao().insertUpdate(update1)

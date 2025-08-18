@@ -87,7 +87,7 @@ export const APICommentTextBlock = ({
   const see = getTagData('see', comment);
   const seeContent = see && (
     <InlineHelp
-      className={mergeClasses('shadow-none', `!${ELEMENT_SPACING}`)}
+      className={mergeClasses('shadow-none', `!${ELEMENT_SPACING}`, '[table_&]:mt-2')}
       size="sm"
       type="info-light">
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>

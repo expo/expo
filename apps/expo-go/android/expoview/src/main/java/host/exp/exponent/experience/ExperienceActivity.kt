@@ -52,6 +52,7 @@ import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
 import host.exp.exponent.kernel.KernelProvider
+import host.exp.exponent.kernel.fab.ExperienceFabView
 import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.notifications.ExponentNotificationManager
 import host.exp.exponent.notifications.NotificationConstants
@@ -106,6 +107,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
   @Inject
   lateinit var devMenuManager: DevMenuManager
+  private val floatingActionButton: ExperienceFabView by lazy {
+    ExperienceFabView(this)
+  }
 
   private val devBundleDownloadProgressListener: DevBundleDownloadProgressListener =
     object : DevBundleDownloadProgressListener {
@@ -330,6 +334,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   override fun onDoneLoading() {
     reactSurface?.view?.let {
       setReactRootView(it)
+      addReactViewToContentContainer(floatingActionButton)
     }
   }
 

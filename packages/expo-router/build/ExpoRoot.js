@@ -45,12 +45,14 @@ const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
-const imperative_api_1 = require("./imperative-api");
+const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const ModalContext_1 = require("./modal/ModalContext");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
+const Sitemap_1 = require("./views/Sitemap");
 const SplashScreen = __importStar(require("./views/Splash"));
+const Unmatched_1 = require("./views/Unmatched");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -144,7 +146,6 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <ModalContext_1.ModalContextProvider>
-              <imperative_api_1.ImperativeApiEmitter />
               <Content />
             </ModalContext_1.ModalContextProvider>
           </WrapperComponent>
@@ -153,11 +154,18 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     </storeContext_1.StoreContext.Provider>);
 }
 function Content() {
+    const children = [<primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>];
+    if ((0, utils_1.shouldAppendNotFound)()) {
+        children.push(<primitives_1.Screen name={constants_1.NOT_FOUND_ROUTE_NAME} component={Unmatched_1.Unmatched}/>);
+    }
+    if ((0, utils_1.shouldAppendSitemap)()) {
+        children.push(<primitives_1.Screen name={constants_1.SITEMAP_ROUTE_NAME} component={Sitemap_1.Sitemap}/>);
+    }
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
-        children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
+        children,
         id: constants_1.INTERNAL_SLOT_NAME,
     });
-    return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
+    return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

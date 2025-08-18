@@ -35,10 +35,12 @@ class DevMenuGestureRecognizer: UILongPressGestureRecognizer {
   init() {
     super.init(target: DevMenuGestureRecognizer.gestureDelegate, action: #selector(DevMenuGestureRecognizer.gestureDelegate.handleLongPress(_:)))
 
-    #if !os(tvOS)
+    #if os(tvOS)
+    minimumPressDuration = 2.0
+    #else
     numberOfTouchesRequired = 3
-    #endif
     minimumPressDuration = 0.5
+    #endif
     allowableMovement = 30
   }
 }

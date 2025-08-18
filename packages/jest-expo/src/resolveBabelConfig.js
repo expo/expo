@@ -16,12 +16,18 @@ function resolveBabelConfig(projectRoot) {
   }
 
   try {
-    return require.resolve('babel-preset-expo');
-  } catch (error) {
-    if (error.code === 'MODULE_NOT_FOUND') {
-      return null;
+    return require.resolve('expo/internal/babel-preset');
+  } catch {
+    try {
+      // TODO(@kitten): Temporary, since our E2E tests don't use monorepo
+      // packages consistently, including the `expo` package
+      return require.resolve('babel-preset-expo');
+    } catch (error) {
+      if (error.code === 'MODULE_NOT_FOUND') {
+        return null;
+      }
+      throw error;
     }
-    throw error;
   }
 }
 

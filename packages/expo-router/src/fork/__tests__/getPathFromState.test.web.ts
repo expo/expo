@@ -32,7 +32,7 @@ describe('hash support', () => {
     const state = {
       index: 1,
       key: 'key',
-      routeNames: ['index', '[test]', '_sitemap', '+not-found'],
+      routeNames: ['index', '[test]'],
       routes: [
         {
           key: 'key',

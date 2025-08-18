@@ -5,7 +5,7 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable"],
     "sourceMap": true,
-    "outDir": "./build",
+    "outDir": "./build/cjs",
     "typeRoots": ["../cli/ts-declarations"]
   }
 }

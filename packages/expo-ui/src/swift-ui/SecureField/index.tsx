@@ -1,10 +1,10 @@
 import { requireNativeView } from 'expo';
 import { Ref } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
-import { Host } from '../Host';
+import { type ViewEvent } from '../../types';
 import { TextFieldKeyboardType } from '../TextField';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 /**
  * Can be used for imperatively setting text on the SecureField component.
@@ -28,9 +28,9 @@ export type SecureFieldProps = {
    */
   onChangeText: (value: string) => void;
   keyboardType?: TextFieldKeyboardType;
-};
+} & CommonViewModifierProps;
 
-export type NativeSecureFieldProps = Omit<SecureFieldProps, 'onChangeText'> & {} & ViewEvent<
+type NativeSecureFieldProps = Omit<SecureFieldProps, 'onChangeText'> & {} & ViewEvent<
     'onValueChanged',
     { value: string }
   >;
@@ -41,12 +41,12 @@ const SecureFieldNativeView: React.ComponentType<NativeSecureFieldProps> = requi
   'SecureFieldView'
 );
 
-/**
- * @hidden
- */
 function transformSecureFieldProps(props: SecureFieldProps): NativeSecureFieldProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },
@@ -56,18 +56,6 @@ function transformSecureFieldProps(props: SecureFieldProps): NativeSecureFieldPr
 /**
  * Renders a `SecureField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
-export function SecureField(props: SecureFieldProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <SecureFieldPrimitive {...props} />
-    </Host>
-  );
-}
-
-/**
- * `<SecureField>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function SecureFieldPrimitive(props: SecureFieldProps) {
+export function SecureField(props: SecureFieldProps) {
   return <SecureFieldNativeView {...transformSecureFieldProps(props)} />;
 }

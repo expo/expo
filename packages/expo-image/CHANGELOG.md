@@ -6,6 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add `generateThumbhashAsync` ([#38090](https://github.com/expo/expo/pull/38090) by [@Wenszel](https://github.com/Wenszel))
 - Add support for `ImageRef` source in `generateBlurhashAsync` ([#37901](https://github.com/expo/expo/pull/37901) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Add generateBlurhashAsync ([#37817](https://github.com/expo/expo/pull/37817) by [@Wenszel](https://github.com/Wenszel))
@@ -16,10 +32,6 @@
 - [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fix caching resized images from Photo Library. ([#38105](https://github.com/expo/expo/pull/38105) by [@jakex7](https://github.com/jakex7))
 - [iOS] Fix `generatePlaceholder` method syntax error by removing unwanted trailing comma. ([#38318](https://github.com/expo/expo/pull/38318) by [@bortolilucas](https://github.com/bortolilucas))
-
-### 💡 Others
-
-### 📚 3rd party library updates
 
 ## 2.4.0 - 2025-07-17
 
