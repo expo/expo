@@ -5,28 +5,19 @@ struct HermesWarning: View {
     VStack(alignment: .leading, spacing: 8) {
       HStack {
         Image(systemName: "exclamationmark.triangle.fill")
-          .foregroundColor(.orange)
-
         Text("Warning")
           .font(.headline)
-          .foregroundColor(.orange)
 
         Spacer()
       }
+      .foregroundColor(.orange)
 
       Text("Debugging not working? Try manually reloading first")
         .font(.caption)
-        .foregroundColor(.orange)
     }
     .padding()
-    .background(Color.orange.opacity(0.1))
-    .overlay(
-      RoundedRectangle(cornerRadius: 12)
-        .stroke(Color.orange, lineWidth: 1)
-    )
-    .cornerRadius(12)
-    .padding(.horizontal)
-    .padding(.vertical, 8)
+    .background(Color.yellow.opacity(0.2))
+    .cornerRadius(18)
   }
 }
 

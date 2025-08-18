@@ -89,6 +89,10 @@ const importSideEffectTemplate = template.statement(`
   require(FILE);
 `);
 
+// NOTE(@krystofwoldrich): Export all template doesn't have to check for export existence
+// because it always runs before default and named exports which overwrite the exports object.
+// NOTE(@krystofwoldrich): This also re-exports `default` and `__esModule` properties
+// we might want to remove that in the future to align with the spec.
 /**
  * Produces an "export all" template that traverses all exported symbols and
  * re-exposes them.
@@ -119,6 +123,7 @@ const liveBindExportAllTemplate = template.statements(`
 
   Object.keys(REQUIRED).forEach(function (KEY) {
     if (KEY === "default" || KEY === "__esModule") return;
+    if (Object.prototype.hasOwnProperty.call(EXPORTED_NAMES, KEY)) return;
     if (KEY in exports && exports[KEY] === REQUIRED[KEY]) return;
     Object.defineProperty(exports, KEY, {
       enumerable: true,
@@ -155,6 +160,30 @@ const esModuleExportTemplate = template.statement(`
 const resolveTemplate = template.expression(`
   require.resolve(NODE)
 `);
+
+/**
+ * Creates static exported names array for the module.
+ *
+ * @example var _exportedNames = ['name1', 'name2', ...];
+ */
+const exportedNamesTemplate = ({
+  t: b,
+  NAMES,
+  IDENTIFIER,
+}: {
+  t: typeof t;
+  NAMES: readonly string[];
+  IDENTIFIER: string;
+}) => {
+  return b.variableDeclaration('var', [
+    b.variableDeclarator(
+      b.identifier(IDENTIFIER),
+      b.objectExpression(
+        NAMES.map((v) => b.objectProperty(b.stringLiteral(v), b.booleanLiteral(true)))
+      )
+    ),
+  ]);
+};
 
 /**
  * Enforces the resolution of a path to a fully-qualified one, if set.
@@ -712,6 +741,43 @@ export function importExportPlugin({
             body.unshift(e.node);
           });
 
+          // NOTE(@krystofwoldrich): Export all must be first as exports without live bindings
+          // rely on overwriting the exports object by default and named exports.
+          state.exportAll.forEach((e) => {
+            if (state.opts.liveBindings) {
+              // Generate a static list of exported names to runtime overwrites
+              const exportedNamesIdentifier = path.scope.generateUidIdentifier('_exportedNames');
+              const exportedNames = exportedNamesTemplate({
+                t,
+                IDENTIFIER: exportedNamesIdentifier.name,
+                NAMES: state.exportNamed.map((e) => e.remote),
+              });
+              body.push(exportedNames);
+              body.push(
+                ...withLocation(
+                  liveBindExportAllTemplate({
+                    FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
+                    REQUIRED: path.scope.generateUidIdentifier(e.file),
+                    KEY: path.scope.generateUidIdentifier('key'),
+                    EXPORTED_NAMES: exportedNamesIdentifier,
+                  }),
+                  e.loc
+                )
+              );
+            } else {
+              body.push(
+                ...withLocation(
+                  exportAllTemplate({
+                    FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
+                    REQUIRED: path.scope.generateUidIdentifier(e.file),
+                    KEY: path.scope.generateUidIdentifier('key'),
+                  }),
+                  e.loc
+                )
+              );
+            }
+          });
+
           state.exportDefault.forEach((e) => {
             if (e.namespace) {
               body.push(
@@ -735,22 +801,6 @@ export function importExportPlugin({
                 )
               );
             }
-          });
-
-          state.exportAll.forEach((e) => {
-            const template = state.opts.liveBindings
-              ? liveBindExportAllTemplate
-              : exportAllTemplate;
-            body.push(
-              ...withLocation(
-                template({
-                  FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
-                  REQUIRED: path.scope.generateUidIdentifier(e.file),
-                  KEY: path.scope.generateUidIdentifier('key'),
-                }),
-                e.loc
-              )
-            );
           });
 
           state.exportNamed.forEach((e) => {

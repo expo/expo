@@ -39,8 +39,10 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
   /**
-   * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
-   * Enable React Native new architecture for Android platform.
+   * Enable React Native New Architecture for Android platform.
+   *
+   * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
+   * app config file instead.
    */
   newArchEnabled?: boolean;
   /**
@@ -64,12 +66,12 @@ export interface PluginConfigTypeAndroid {
    */
   kotlinVersion?: string;
   /**
-   * Enable [Proguard or R8](https://developer.android.com/studio/build/shrink-code) in release builds to obfuscate Java code and reduce app size.
+   * Enable [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) in release builds to obfuscate Java code and reduce app size.
    */
-  enableProguardInReleaseBuilds?: boolean;
+  enableMinifyInReleaseBuilds?: boolean;
   /**
    * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
-   * This property should be used in combination with `enableProguardInReleaseBuilds`.
+   * This property should be used in combination with `enableMinifyInReleaseBuilds`.
    */
   enableShrinkResourcesInReleaseBuilds?: boolean;
   /**
@@ -137,7 +139,8 @@ export interface PluginConfigTypeAndroid {
   /**
    * Indicates whether the app intends to use cleartext network traffic.
    *
-   * @default false
+   * For Android 8 and below, the default platform-specific value is `true`.
+   * For Android 9 and above, the default platform-specific value is `false`.
    *
    * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
    */
@@ -173,9 +176,15 @@ export interface PluginConfigTypeAndroid {
    */
   enableBundleCompression?: boolean;
 
+  /*
+   * Enable building React Native from source. Turning this on will significantly increase the build times.
+   * @default false
+   */
+  buildReactNativeFromSource?: boolean;
+
   /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
-   *
+   * @deprecated Use `buildReactNativeFromSource` instead.
    * @default false
    */
   buildFromSource?: boolean;
@@ -199,6 +208,14 @@ export interface PluginConfigTypeAndroid {
    * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
    */
   exclusiveMavenMirror?: string;
+
+  /**
+   * The React Native release level to use for the project.
+   * This can be used to enable different sets of internal React Native feature flags.
+   *
+   * @default 'stable'
+   */
+  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 // @docsMissing
@@ -291,8 +308,10 @@ export type AndroidMavenRepositoryCredentials =
  */
 export interface PluginConfigTypeIos {
   /**
-   * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
-   * Enable React Native new architecture for iOS platform.
+   * Enable React Native New Architecture for iOS platform.
+   *
+   * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
+   * app config file instead.
    */
   newArchEnabled?: boolean;
   /**
@@ -360,15 +379,23 @@ export interface PluginConfigTypeIos {
   privacyManifestAggregationEnabled?: boolean;
 
   /**
-   * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-   * This feature is available from React Native 0.80.
-   * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies.
+   * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+   * This feature is available from React Native 0.80 and later when using the new architecture.
+   * From React Native 0.81, this setting will also use a precompiled React Native Core (`React.xcframework`).
    *
-   * @default true
-   * @see React Native documentation on [prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt) for more information.
+   * @default false
+   * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
    * @experimental
    */
-  buildFromSource?: boolean;
+  buildReactNativeFromSource?: boolean;
+
+  /**
+   * The React Native release level to use for the project.
+   * This can be used to enable different sets of internal React Native feature flags.
+   *
+   * @default 'stable'
+   */
+  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 /**
@@ -566,7 +593,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         buildToolsVersion: { type: 'string', nullable: true },
         kotlinVersion: { type: 'string', nullable: true },
 
-        enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+        enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
@@ -678,8 +705,14 @@ const schema: JSONSchemaType<PluginConfigType> = {
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
+        buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
         exclusiveMavenMirror: { type: 'string', nullable: true },
+        reactNativeReleaseLevel: {
+          type: 'string',
+          enum: ['stable', 'canary', 'experimental'],
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -716,7 +749,12 @@ const schema: JSONSchemaType<PluginConfigType> = {
           },
           nullable: true,
         },
-        buildFromSource: { type: 'boolean', nullable: true },
+        buildReactNativeFromSource: { type: 'boolean', nullable: true },
+        reactNativeReleaseLevel: {
+          type: 'string',
+          enum: ['stable', 'canary', 'experimental'],
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -783,6 +821,13 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
  */
 export function validateConfig(config: any): PluginConfigType {
   const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
+  // handle deprecated enableProguardInReleaseBuilds
+  if (
+    config.android?.enableProguardInReleaseBuilds !== undefined &&
+    config.android?.enableMinifyInReleaseBuilds === undefined
+  ) {
+    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
+  }
   if (!validate(config)) {
     throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
   }
@@ -791,10 +836,10 @@ export function validateConfig(config: any): PluginConfigType {
 
   if (
     config.android?.enableShrinkResourcesInReleaseBuilds === true &&
-    config.android?.enableProguardInReleaseBuilds !== true
+    config.android?.enableMinifyInReleaseBuilds !== true
   ) {
     throw new Error(
-      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.'
+      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.'
     );
   }
 

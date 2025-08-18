@@ -184,7 +184,9 @@ class RemoteLoaderTest {
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
       manifest.updateEntity!!.scopeKey,
-      manifest.updateEntity!!.manifest
+      manifest.updateEntity!!.manifest,
+      Uri.parse("https://exp.host/@test/test"),
+      null
     )
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
@@ -208,7 +210,9 @@ class RemoteLoaderTest {
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
       manifest.updateEntity!!.scopeKey,
-      manifest.updateEntity!!.manifest
+      manifest.updateEntity!!.manifest,
+      Uri.parse("https://exp.host/@test/test"),
+      null
     )
     update.status = UpdateStatus.PENDING
     db.updateDao().insertUpdate(update)
@@ -236,7 +240,9 @@ class RemoteLoaderTest {
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
       "differentScopeKey",
-      manifest.updateEntity!!.manifest
+      manifest.updateEntity!!.manifest,
+      Uri.parse("https://exp.host/@test-different-scope/test"),
+      null
     )
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)

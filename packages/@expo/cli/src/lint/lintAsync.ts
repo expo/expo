@@ -31,6 +31,8 @@ export const lintAsync = async (
     await prerequisite.bootstrapAsync();
   }
 
+  // TODO(@kitten): The direct require is fine, since we assume `expo > @expo/cli` does not depend on eslint
+  // However, it'd be safer to replace this with resolve-from, or another way of requiring via the project root
   const { loadESLint } = require('eslint');
 
   const mod = await import('eslint');

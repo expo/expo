@@ -1,13 +1,6 @@
 import { requireNativeView } from 'expo';
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const LabelNativeView = requireNativeView('ExpoUI', 'LabelView');
-/**
- * `<Label>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function LabelPrimitive(props) {
-    return <LabelNativeView {...props}/>;
-}
 /**
  * Renders a native label view, which could be used in a list or section.
  *
@@ -16,8 +9,7 @@ export function LabelPrimitive(props) {
  * @platform ios
  */
 export function Label(props) {
-    return (<Host style={props.style} matchContents>
-      <LabelPrimitive {...props}/>
-    </Host>);
+    const { modifiers, ...restProps } = props;
+    return (<LabelNativeView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} {...restProps}/>);
 }
 //# sourceMappingURL=index.js.map

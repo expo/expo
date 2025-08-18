@@ -4,13 +4,32 @@
 
 ### 🛠 Breaking changes
 
-- Move async-require and fast refresh to `expo`. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- Show `console.error` and LogBox for unhandled promise rejection in development ([#38834](https://github.com/expo/expo/pull/38834) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 6.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Move async-require and fast refresh to `expo`. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- noop unused code on native to suppress react-native import warnings. ([#38495](https://github.com/expo/expo/pull/38495) by [@EvanBacon](https://github.com/EvanBacon))
+- Update dependencies to align with transitive dependencies ([#38532](https://github.com/expo/expo/pull/38532) by [@kitten](https://github.com/kitten))
 
 ## 5.0.4 — 2025-04-28
 

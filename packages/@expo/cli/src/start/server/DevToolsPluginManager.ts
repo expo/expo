@@ -1,6 +1,4 @@
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
-import path from 'path';
-import resolveFrom from 'resolve-from';
 
 const debug = require('debug')('expo:start:server:devtools');
 
@@ -40,30 +38,16 @@ export default class DevToolsPluginManager {
   }
 
   private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<AutolinkingPlugin[]> {
-    const expoPackagePath = resolveFrom.silent(projectRoot, 'expo/package.json');
-    if (!expoPackagePath) {
-      return [];
-    }
-    const resolvedPath = resolveFrom.silent(
-      path.dirname(expoPackagePath),
-      'expo-modules-autolinking/exports'
-    );
-    if (!resolvedPath) {
-      return [];
-    }
-    const autolinkingModule = require(
-      resolvedPath
-    ) as typeof import('expo-modules-autolinking/exports');
-    if (!autolinkingModule.queryAutolinkingModulesFromProjectAsync) {
-      throw new Error(
-        'Missing exported `queryAutolinkingModulesFromProjectAsync()` function from `expo-modules-autolinking`'
-      );
-    }
-    const plugins = (await autolinkingModule.queryAutolinkingModulesFromProjectAsync(projectRoot, {
-      platform: 'devtools',
-      onlyProjectDeps: false,
-    })) as ModuleDescriptorDevTools[];
-    debug('Found autolinked plugins', this.plugins);
+    const autolinking: typeof import('expo/internal/unstable-autolinking-exports') = require('expo/internal/unstable-autolinking-exports');
+    const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
+    const revisions = await autolinking.scanExpoModuleResolutionsForPlatform(linker, 'devtools');
+    const { resolveModuleAsync } = autolinking.getLinkingImplementationForPlatform('devtools');
+    const plugins: ModuleDescriptorDevTools[] = (
+      await Promise.all(
+        Object.values(revisions).map((revision) => resolveModuleAsync(revision.name, revision))
+      )
+    ).filter((maybePlugin) => maybePlugin != null);
+    debug('Found autolinked plugins', plugins);
     return plugins;
   }
 }

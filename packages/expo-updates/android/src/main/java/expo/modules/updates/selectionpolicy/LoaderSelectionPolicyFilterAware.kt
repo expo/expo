@@ -1,5 +1,6 @@
 package expo.modules.updates.selectionpolicy
 
+import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.UpdateDirective
 import org.json.JSONObject
@@ -11,7 +12,7 @@ import org.json.JSONObject
  *
  * Uses `commitTime` to determine ordering of updates.
  */
-class LoaderSelectionPolicyFilterAware : LoaderSelectionPolicy {
+class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration) : LoaderSelectionPolicy {
   override fun shouldLoadNewUpdate(
     newUpdate: UpdateEntity?,
     launchedUpdate: UpdateEntity?,
@@ -29,11 +30,31 @@ class LoaderSelectionPolicyFilterAware : LoaderSelectionPolicy {
     }
     // if the current update doesn't pass the manifest filters
     // we should load the new update no matter the commitTime
-    return if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
-      true
-    } else {
-      newUpdate.commitTime.after(launchedUpdate.commitTime)
+    if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
+      return true
     }
+
+    // if new update doesn't match the configured URL, don't load it
+    if (newUpdate.url != null && newUpdate.url != config.updateUrl) {
+      return false
+    }
+
+    // if new update doesn't match the configured request headers, don't load it
+    if (newUpdate.requestHeaders != null && newUpdate.requestHeaders != config.requestHeaders) {
+      return false
+    }
+
+    // if the launched update no longer matches the configured URL, we should load the new update
+    if (launchedUpdate.url != null && launchedUpdate.url != config.updateUrl) {
+      return true
+    }
+
+    // if the launched update no longer matches the configured request headers, we should load the new update
+    if (launchedUpdate.requestHeaders != null && launchedUpdate.requestHeaders != config.requestHeaders) {
+      return true
+    }
+
+    return newUpdate.commitTime.after(launchedUpdate.commitTime)
   }
 
   override fun shouldLoadRollBackToEmbeddedDirective(

@@ -3,9 +3,12 @@ import {
   type NavigationState,
   PartialRoute,
   type PartialState,
+  type NavigationContainerRef,
+  ParamListBase,
 } from '@react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
+import { type RefObject } from 'react';
 import { Platform } from 'react-native';
 
 import { store } from './router-store';
@@ -20,6 +23,7 @@ import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
+import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
@@ -45,25 +49,20 @@ export const routingQueue = {
     return routingQueue.queue;
   },
   add(action: NavigationAction) {
-    // Reset the identity of the queue.
-    if (routingQueue.queue.length === 0) {
-      routingQueue.queue = [];
-    }
-
     routingQueue.queue.push(action);
     for (const callback of routingQueue.subscribers) {
       callback();
     }
   },
-  run() {
-    const queue = routingQueue.queue;
-    if (queue.length === 0 || !store.navigationRef) {
-      return;
-    }
-
+  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
+    // Reset the identity of the queue.
+    const events = routingQueue.queue;
     routingQueue.queue = [];
-    for (const action of queue) {
-      store.navigationRef.dispatch(action);
+    let action: NavigationAction | undefined;
+    while ((action = events.shift())) {
+      if (ref.current) {
+        ref.current.dispatch(action);
+      }
     }
   },
 };
@@ -249,7 +248,7 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
       options.event,
       options.withAnchor,
       options.dangerouslySingular,
-      options.__internal__PreviewKey
+      !!options.__internal__PreviewKey
     )
   );
 }
@@ -260,7 +259,7 @@ function getNavigateAction(
   type = 'NAVIGATE',
   withAnchor?: boolean,
   singular?: SingularOptions,
-  previewKey?: string
+  isPreviewNavigation?: boolean
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -277,7 +276,11 @@ function getNavigateAction(
    * Other parameters such as search params and hash are not evaluated.
    */
 
-  const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState);
+  const { actionStateRoute, navigationState } = findDivergentState(
+    _actionState,
+    _navigationState,
+    type === 'PRELOAD'
+  );
 
   /*
    * We found the target navigator, but the payload is in the incorrect format
@@ -311,15 +314,22 @@ function getNavigateAction(
     rootPayload.params.initial = !withAnchor;
   }
 
+  const expoParams: InternalExpoRouterParams = isPreviewNavigation
+    ? {
+        __internal__expo_router_is_preview_navigation: true,
+        __internal_expo_router_no_animation: true,
+      }
+    : {};
+  const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);
+
   return {
     type,
     target: navigationState.key,
     payload: {
       // key: rootPayload.key,
       name: rootPayload.screen,
-      params: rootPayload.params,
+      params,
       singular,
-      previewKey,
     },
   };
 }
@@ -357,13 +367,27 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
 /*
  * Traverse the state tree comparing the current state and the action state until we find where they diverge
  */
-export function findDivergentState(_actionState: ResultState, _navigationState: NavigationState) {
+export function findDivergentState(
+  _actionState: ResultState,
+  _navigationState: NavigationState,
+  // If true, look through all tabs to find the target state, rather then just the current tab
+  lookThroughAllTabs: boolean = false
+) {
   let actionState: PartialState<NavigationState> | undefined = _actionState;
   let navigationState: NavigationState | undefined = _navigationState;
   let actionStateRoute: PartialRoute<any> | undefined;
+  const navigationRoutes = [];
   while (actionState && navigationState) {
     actionStateRoute = actionState.routes[actionState.routes.length - 1];
-    const stateRoute = navigationState.routes[navigationState.index];
+    const stateRoute = (() => {
+      if (navigationState.type === 'tab' && lookThroughAllTabs) {
+        return (
+          navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
+          navigationState.routes[navigationState.index ?? 0]
+        );
+      }
+      return navigationState.routes[navigationState.index ?? 0];
+    })();
 
     const childState: PartialState<NavigationState> | undefined = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
@@ -382,6 +406,8 @@ export function findDivergentState(_actionState: ResultState, _navigationState: 
       break;
     }
 
+    navigationRoutes.push(stateRoute);
+
     actionState = childState;
     navigationState = nextNavigationState as NavigationState;
   }
@@ -390,5 +416,6 @@ export function findDivergentState(_actionState: ResultState, _navigationState: 
     actionState,
     navigationState,
     actionStateRoute,
+    navigationRoutes,
   };
 }

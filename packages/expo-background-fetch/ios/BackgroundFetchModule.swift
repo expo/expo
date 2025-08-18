@@ -32,7 +32,9 @@ public class BackgroundFetchModule: Module {
     }
 
     AsyncFunction("unregisterTaskAsync") { (name: String) in
-      taskManager?.unregisterTask(withName: name, consumerClass: BackgroundFetchTaskConsumer.self)
+      try EXUtilities.catchException {
+        self.taskManager?.unregisterTask(withName: name, consumerClass: BackgroundFetchTaskConsumer.self)
+      }
     }
   }
 

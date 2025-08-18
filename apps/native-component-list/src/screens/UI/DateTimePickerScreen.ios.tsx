@@ -1,6 +1,6 @@
-import { DateTimePicker, DateTimePickerProps, Picker } from '@expo/ui/swift-ui';
+import { DateTimePicker, DateTimePickerProps, Host, Picker, VStack } from '@expo/ui/swift-ui';
 import * as React from 'react';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
@@ -28,40 +28,39 @@ export default function DatePickerScreen() {
           <Text>{selectedDate.toTimeString()}</Text>
         </Section>
         <Section title={getPickerType()}>
-          <View style={{ gap: 20 }}>
-            <DateTimePicker
-              onDateSelected={(date) => {
-                setSelectedDate(date);
-              }}
-              displayedComponents={
-                typeOptions[typeIndex] as DateTimePickerProps['displayedComponents']
-              }
-              title="Select date"
-              initialDate={selectedDate.toISOString()}
-              variant={displayOptions[selectedIndex] as DateTimePickerProps['variant']}
-              style={{ height: Platform.select({ android: 520, ios: undefined }) }}
-            />
+          <Host matchContents>
+            <VStack alignment="center" spacing={8}>
+              <DateTimePicker
+                onDateSelected={(date) => {
+                  setSelectedDate(date);
+                }}
+                displayedComponents={
+                  typeOptions[typeIndex] as DateTimePickerProps['displayedComponents']
+                }
+                title="Select date"
+                initialDate={selectedDate.toISOString()}
+                variant={displayOptions[selectedIndex] as DateTimePickerProps['variant']}
+              />
 
-            <Picker
-              options={displayOptions}
-              selectedIndex={selectedIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setSelectedIndex(index);
-              }}
-              variant="segmented"
-              style={{ height: 30 }}
-            />
+              <Picker
+                options={displayOptions}
+                selectedIndex={selectedIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setSelectedIndex(index);
+                }}
+                variant="segmented"
+              />
 
-            <Picker
-              options={typeOptions}
-              selectedIndex={typeIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setTypeIndex(index);
-              }}
-              variant="segmented"
-              style={{ height: 30 }}
-            />
-          </View>
+              <Picker
+                options={typeOptions}
+                selectedIndex={typeIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setTypeIndex(index);
+                }}
+                variant="segmented"
+              />
+            </VStack>
+          </Host>
         </Section>
       </Page>
     </ScrollView>

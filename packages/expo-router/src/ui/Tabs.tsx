@@ -30,7 +30,7 @@ import { isTabList } from './TabList';
 import { ExpoTabRouter, ExpoTabRouterOptions } from './TabRouter';
 import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
-import { SafeAreaViewSlot, ScreenTrigger, triggersToScreens } from './common';
+import { ViewSlot, ScreenTrigger, triggersToScreens } from './common';
 import { useComponent } from './useComponent';
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
@@ -83,7 +83,7 @@ export type TabsProps = ViewProps & {
  */
 export function Tabs(props: TabsProps) {
   const { children, asChild, options, ...rest } = props;
-  const Comp = asChild ? SafeAreaViewSlot : View;
+  const Comp = asChild ? ViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
     // asChild adds an extra layer, so we need to process the child's children

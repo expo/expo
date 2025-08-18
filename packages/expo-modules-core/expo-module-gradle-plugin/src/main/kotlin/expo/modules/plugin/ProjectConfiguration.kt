@@ -51,11 +51,11 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
   with(androidLibraryExtension()) {
     applySDKVersions(
       compileSdk = rootProject.extra.safeGet("compileSdkVersion")
-        ?: logger.warnIfNotDefined("compileSdkVersion", 35),
+        ?: logger.warnIfNotDefined("compileSdkVersion", 36),
       minSdk = rootProject.extra.safeGet("minSdkVersion")
         ?: logger.warnIfNotDefined("minSdkVersion", 24),
       targetSdk = rootProject.extra.safeGet("targetSdkVersion")
-        ?: logger.warnIfNotDefined("targetSdkVersion", 34)
+        ?: logger.warnIfNotDefined("targetSdkVersion", 36)
     )
     applyLinterOptions()
   }

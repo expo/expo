@@ -110,6 +110,7 @@ struct ContextMenuPreview: ExpoSwiftUI.View {
 
   var body: some View {
     Children()
+      .modifier(CommonViewModifiers(props: props))
   }
 }
 
@@ -118,6 +119,7 @@ struct ContextMenuActivationElement: ExpoSwiftUI.View {
 
   var body: some View {
     Children()
+      .modifier(CommonViewModifiers(props: props))
   }
 }
 
@@ -134,6 +136,7 @@ struct ContextMenu: ExpoSwiftUI.View {
         activationElement: activationElement,
         props: props
       )
+      .modifier(CommonViewModifiers(props: props))
     } else {
       let preview = props.children?
         .compactMap { $0.childView as? ContextMenuPreview }
@@ -148,12 +151,14 @@ struct ContextMenu: ExpoSwiftUI.View {
           preview: preview,
           props: props
         )
+        .modifier(CommonViewModifiers(props: props))
       } else {
         LongPressContextMenu(
           elements: props.elements,
           activationElement: activationElement,
           props: props
         )
+        .modifier(CommonViewModifiers(props: props))
       }
     }
   }

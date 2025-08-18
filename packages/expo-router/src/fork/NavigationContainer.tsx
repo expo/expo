@@ -25,6 +25,7 @@ import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
 import { useThenable } from './useThenable';
+import { useImperativeApiEmitter } from '../imperative-api';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -82,6 +83,7 @@ function NavigationContainerInner(
 
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
+  useImperativeApiEmitter(refContainer);
 
   const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
 

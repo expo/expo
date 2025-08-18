@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 import { Ref } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
-import { Host } from '../Host';
+import { type ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 /**
  * Determines which keyboard to open. For example, `'numeric'`.
@@ -78,7 +78,7 @@ export type TextFieldProps = {
    * @default true
    */
   autocorrection?: boolean;
-};
+} & CommonViewModifierProps;
 
 export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText'> & {} & ViewEvent<
     'onValueChanged',
@@ -91,12 +91,12 @@ const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNa
   'TextFieldView'
 );
 
-/**
- * @hidden
- */
 function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },
@@ -106,18 +106,6 @@ function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
 /**
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
-export function TextField(props: TextFieldProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <TextFieldPrimitive {...props} />
-    </Host>
-  );
-}
-
-/**
- * `<TextField>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function TextFieldPrimitive(props: TextFieldProps) {
+export function TextField(props: TextFieldProps) {
   return <TextFieldNativeView {...transformTextFieldProps(props)} />;
 }

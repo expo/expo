@@ -1,7 +1,8 @@
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { Fragment, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
-import { act, fireEvent, renderRouter, screen } from '../../testing-library';
+import { renderRouter } from '../../testing-library';
 import { Modal } from '../Modal';
 
 const ComponentWithModal = (props?: { onModalClose?: () => void }) => {

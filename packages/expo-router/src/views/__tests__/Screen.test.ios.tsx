@@ -1,7 +1,8 @@
+import { screen } from '@testing-library/react-native';
 import { View } from 'react-native';
 
 import Stack from '../../layouts/Stack';
-import { renderRouter, screen } from '../../testing-library';
+import { renderRouter } from '../../testing-library';
 
 describe('Screen', () => {
   it('should throw an error when name is set outside of a Layout', () => {

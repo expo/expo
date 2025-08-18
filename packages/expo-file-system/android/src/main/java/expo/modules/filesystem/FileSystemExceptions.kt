@@ -44,10 +44,8 @@ internal class UnableToWriteHandleException(reason: String) :
     "Unable to write to a file handle: '$reason'"
   )
 
-internal class UnableToGetInfoException(reason: String) :
-  CodedException(
-    "Unable to get info from a file: '$reason'"
-  )
+internal class PickerCancelledException :
+  CodedException("The file picker was cancelled by the user")
 
 internal class DestinationAlreadyExistsException :
   CodedException(
