@@ -13,7 +13,7 @@ export const name = 'FileSystem';
 
 export async function test({ describe, expect, it, ...t }) {
   const shouldSkipTestsRequiringPermissions =
-    (await TestUtils.shouldSkipTestsRequiringPermissionsAsync()) && isDeviceFarm();
+    (await TestUtils.shouldSkipTestsRequiringPermissionsAsync()) || isDeviceFarm();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
