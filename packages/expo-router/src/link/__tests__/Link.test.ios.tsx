@@ -11,11 +11,12 @@ import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
 import { LinkPreviewContextProvider } from '../preview/LinkPreviewContext';
-import type {
-  NativeLinkPreviewActionProps,
-  NativeLinkPreviewContentProps,
-  NativeLinkPreviewTriggerProps,
-  NativeLinkPreviewProps,
+import {
+  type NativeLinkPreviewActionProps,
+  type NativeLinkPreviewContentProps,
+  type NativeLinkPreviewTriggerProps,
+  type NativeLinkPreviewProps,
+  NativeLinkPreview,
 } from '../preview/native';
 
 // Render and observe the props of the Link component.
@@ -1128,6 +1129,63 @@ describe('Preview', () => {
       expect(
         NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
       ).toMatch(/slotB\/\[xyz\]-[-\w]+/);
+    });
+  });
+  describe('external links in preview', () => {
+    it('when link preview is used with external href and no context menu is added, then normal link is rendered', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev">
+            <Link.Trigger>https://expo.dev</Link.Trigger>
+            <Link.Preview />
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).not.toHaveBeenCalled();
+    });
+    it('when link preview is used with external href, no context menu, and asChild, then normal link is rendered', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev" asChild>
+            <Link.Trigger>
+              <Text>https://expo.dev</Text>
+            </Link.Trigger>
+            <Link.Preview />
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).not.toHaveBeenCalled();
+    });
+    it('when link is used with external href and context menu, then native link is used', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev">
+            <Link.Trigger>https://expo.dev</Link.Trigger>
+            <Link.Menu>
+              <Link.MenuAction title="Open in Safari" onPress={() => {}} />
+            </Link.Menu>
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).toHaveBeenCalled();
+    });
+    it('when link preview is used with external href and context menu, then native link is used', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev">
+            <Link.Trigger>https://expo.dev</Link.Trigger>
+            <Link.Preview />
+            <Link.Menu>
+              <Link.MenuAction title="Open in Safari" onPress={() => {}} />
+            </Link.Menu>
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).toHaveBeenCalled();
     });
   });
 });

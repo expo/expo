@@ -8,6 +8,7 @@ import { LinkWithPreview } from './LinkWithPreview';
 import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { LinkProps } from './useLinkHooks';
+import { shouldLinkExternally } from '../utils/url';
 
 export function ExpoLink(props: LinkProps) {
   const isPreview = useIsPreview();
@@ -31,7 +32,10 @@ export function ExpoLink(props: LinkProps) {
 }
 
 function isLinkWithPreview(props: LinkProps): boolean {
+  const isExternal = shouldLinkExternally(String(props.href));
   return Children.toArray(props.children).some(
-    (child) => isValidElement(child) && (child.type === LinkPreview || child.type === LinkMenu)
+    (child) =>
+      isValidElement(child) &&
+      ((!isExternal && child.type === LinkPreview) || child.type === LinkMenu)
   );
 }
