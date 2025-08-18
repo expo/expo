@@ -154,7 +154,7 @@ export function getStackAsFormattedLog(
       return {
         title: frame.methodName,
         subtitle: getStackFormattedLocation(projectRoot, frame),
-        collapse: frame.collapse,
+        collapse: frame.collapse || isInternalBytecode(frame),
       };
     });
 
@@ -470,3 +470,7 @@ export const nearestImportStack = (err: unknown, root: unknown = err): string | 
     return nearestImportStack(err.cause, root);
   }
 };
+
+function isInternalBytecode(frame: StackFrame): boolean {
+  return frame.file?.includes('InternalBytecode.js') ?? false;
+}
