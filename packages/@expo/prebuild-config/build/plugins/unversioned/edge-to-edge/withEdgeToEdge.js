@@ -48,9 +48,7 @@ const withEdgeToEdge = (config, {
 };
 exports.withEdgeToEdge = withEdgeToEdge;
 function applyEdgeToEdge(config, projectRoot) {
-  if (config.android?.edgeToEdgeEnabled === undefined) {
-    _configPlugins().WarningAggregator.addWarningAndroid(TAG, 'No configuration found for `edgeToEdgeEnabled` field in the project app config, falling back to true. In Android 16+ (targetSdkVersion 36) it is no longer be possible to disable edge-to-edge. Learn more:', 'https://expo.fyi/edge-to-edge-rollout');
-  } else if (config.android?.edgeToEdgeEnabled === false) {
+  if (config.android?.edgeToEdgeEnabled === false) {
     _configPlugins().WarningAggregator.addWarningAndroid(TAG, '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it is no longer be possible to disable edge-to-edge. Learn more:', 'https://expo.fyi/edge-to-edge-rollout');
   }
   const edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled !== false;

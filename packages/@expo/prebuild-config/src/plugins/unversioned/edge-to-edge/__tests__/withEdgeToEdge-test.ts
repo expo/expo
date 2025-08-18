@@ -18,11 +18,9 @@ const mockWithEdgeToEdgeEnabledGradleProperties = jest.fn((config, _props) => co
 
 jest.mock('../withEdgeToEdgeEnabledGradleProperties', () => {
   const originalModule = jest.requireActual('../withEdgeToEdgeEnabledGradleProperties');
-  return {
-    __esModule: true,
-    ...originalModule,
+  return Object.assign({ __esModule: true }, originalModule, {
     withEdgeToEdgeEnabledGradleProperties: mockWithEdgeToEdgeEnabledGradleProperties,
-  };
+  });
 });
 
 jest.mock('../withRestoreDefaultTheme', () => {
@@ -729,19 +727,19 @@ describe('applyEdgeToEdge', () => {
     mockWithEdgeToEdgeEnabledGradleProperties.mockImplementation((config) => config);
   });
 
-  it('should add warnings when edgeToEdgeEnabled is undefined and plugin not configured', () => {
+  it("shouldn't add warnings when edgeToEdgeEnabled is undefined and plugin not configured", () => {
     const config: ExpoConfig = {
       name: 'test',
       slug: 'test',
       android: { edgeToEdgeEnabled: undefined },
     };
     applyEdgeToEdge(config, '/app');
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
+    expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
       expect.stringContaining('No configuration found for `edgeToEdgeEnabled`'),
       expect.any(String)
     );
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(1);
+    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(0);
     expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
       edgeToEdgeEnabled: true,
     });

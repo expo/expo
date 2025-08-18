@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use React Native's `edgeToEdgeEnabled` Gradle property to provide edge-to-edge support. ([#38767](https://github.com/expo/expo/pull/38767) by [@behenate](https://github.com/behenate))
+
 ## 10.0.2 — 2025-08-16
 
 ### 💡 Others
@@ -31,8 +33,6 @@ _This version does not introduce any user-facing changes._
 
 - revert remove `expo-notifications` from auto plugins ([#37886](https://github.com/expo/expo/pull/37886) by [@vonovak](https://github.com/vonovak))
 - [Android] Fix splash screen icon not showing when app launched from push notifications ([#38700](https://github.com/expo/expo/pull/38700) by [@hirbod](https://github.com/hirbod))
-
-- Use React Native's `edgeToEdgeEnabled` Gradle property to provide edge-to-edge support. ([#38767](https://github.com/expo/expo/pull/38767) by [@behenate](https://github.com/behenate))
 
 ### ⚠️ Notices
 
