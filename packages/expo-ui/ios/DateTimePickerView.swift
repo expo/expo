@@ -1,7 +1,13 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class DateTimePickerProps: ExpoSwiftUI.ViewProps {
+final class DateTimePickerProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var title: String?
   @Field var initialDate: Date?
   @Field var variant: PickerStyle = .automatic
@@ -25,6 +31,7 @@ struct DateTimePickerView: ExpoSwiftUI.View {
     let displayedComponents = props.displayedComponents.toDatePickerComponent()
 
     DatePicker(props.title ?? "", selection: $date, displayedComponents: displayedComponents)
+      .modifier(CommonViewModifiers(props: props))
       .onAppear {
         date = props.initialDate ?? Date()
       }

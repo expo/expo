@@ -6,11 +6,27 @@
 
 ### 🎉 New features
 
-- [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- fix TS error when running tests ([#38660](https://github.com/expo/expo/pull/38660) by [@vonovak](https://github.com/vonovak))
 
 ## 5.2.4 - 2025-07-03
 

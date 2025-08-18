@@ -12,6 +12,8 @@ export function transformButtonProps(props) {
         text: children ?? '',
         systemImage,
         onButtonPressed: onPress,
+        // @ts-expect-error
+        modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
         elementColors: props.elementColors
             ? props.elementColors
             : props.color

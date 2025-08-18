@@ -16,11 +16,10 @@ describe(resolveDependencyConfigImplIosAsync, () => {
   it('should return ios config if podspec found', async () => {
     mockGlob.mockResolvedValueOnce(['RNTest.podspec']);
     vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/RNTest.podspec': '',
     });
     const result = await resolveDependencyConfigImplIosAsync(
-      '/app/node_modules/react-native-test',
+      { path: '/app/node_modules/react-native-test', version: '1.0.0' },
       undefined
     );
     expect(result).toMatchInlineSnapshot(`
@@ -36,11 +35,10 @@ describe(resolveDependencyConfigImplIosAsync, () => {
   it('should return ios config with override reactNativeConfig', async () => {
     mockGlob.mockResolvedValueOnce(['RNTest.podspec']);
     vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/RNTest.podspec': '',
     });
     const result = await resolveDependencyConfigImplIosAsync(
-      '/app/node_modules/react-native-test',
+      { path: '/app/node_modules/react-native-test', version: '1.0.0' },
       {
         configurations: ['Debug'],
         scriptPhases: [{ name: 'test', path: './test.sh' }],
@@ -65,7 +63,7 @@ describe(resolveDependencyConfigImplIosAsync, () => {
 
   it('should return null if reactNativeConfig is null', async () => {
     const result = await resolveDependencyConfigImplIosAsync(
-      '/app/node_modules/react-native-test',
+      { path: '/app/node_modules/react-native-test', version: '' },
       null
     );
     expect(result).toBeNull();
@@ -73,7 +71,7 @@ describe(resolveDependencyConfigImplIosAsync, () => {
 
   it('should return null if no podspec found', async () => {
     const result = await resolveDependencyConfigImplIosAsync(
-      '/app/node_modules/react-native-test',
+      { path: '/app/node_modules/react-native-test', version: '' },
       undefined
     );
     expect(result).toBeNull();
@@ -85,12 +83,11 @@ describe(resolveDependencyConfigImplIosAsync, () => {
       'react-native-maps.podspec',
     ]);
     vol.fromJSON({
-      '/app/node_modules/react-native-maps/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-maps/react-native-google-maps.podspec': '',
       '/app/node_modules/react-native-maps/react-native-maps.podspec': '',
     });
     const result = await resolveDependencyConfigImplIosAsync(
-      '/app/node_modules/react-native-maps',
+      { path: '/app/node_modules/react-native-maps', version: '' },
       undefined
     );
     expect(result?.podspecPath).toBe(

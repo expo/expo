@@ -4,6 +4,7 @@ import path from 'path';
 
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
+import { DependencyKind } from '../../Packages';
 import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
@@ -22,6 +23,11 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
   async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n📤 Updating workspace projects...');
 
+    if (options.templatesOnly) {
+      logger.info('  Skipping workspace updates (templates-only).');
+      return;
+    }
+
     const workspaceInfo = await Workspace.getInfoAsync();
 
     // Append project templates as they're not yarn workspaces.
@@ -29,7 +35,9 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
     templates.forEach((template) => {
       workspaceInfo[template.packageName] = {
         location: template.path.replace(EXPO_DIR, ''),
-        workspaceDependencies: template.getDependencies().map((dep) => dep.name),
+        workspaceDependencies: template
+          .getDependencies([DependencyKind.Normal, DependencyKind.Dev])
+          .map((dep) => dep.name),
         mismatchedWorkspaceDependencies: [],
         workspacePeerDependencies: [],
         workspaceOptionalDependencies: [],

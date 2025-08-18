@@ -51,11 +51,7 @@ class DevMenuDevOptionsDelegate {
 
   internal func togglePerformanceMonitor() {
     #if DEBUG
-    guard let perfMonitor = perfMonitor else {
-      return
-    }
-
-    guard let devSettings = devSettings else {
+    guard let perfMonitor, let devSettings else {
       return
     }
 

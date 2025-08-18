@@ -6,6 +6,50 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- remove error when link with preview is used for external link ([#38939](https://github.com/expo/expo/pull/38939) by [@Ubax](https://github.com/Ubax))
+- [Internal] Remove internal `SafeAreaViewSlot` to remove `SafeAreaView` import warning ([#38899](https://github.com/expo/expo/pull/38899) by [@kitten](https://github.com/kitten))
+- improve animation for stack push from different tab ([#38927](https://github.com/expo/expo/pull/38927) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Throw an error when tabs are nested ([#38651](https://github.com/expo/expo/pull/38651) by [@Ubax](https://github.com/Ubax))
+- refactor internal params logic ([#38929](https://github.com/expo/expo/pull/38929) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.0-beta.2 — 2025-08-16
+
+### 🛠 Breaking changes
+
+- For `expo-router/testing-library`, `@testing-library/react-native` must now be installed separately and it's an optional peer dependency ([#38887](https://github.com/expo/expo/pull/38887) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Remove unused peer dependency on `@testing-library/jest-native` ([#38886](https://github.com/expo/expo/pull/38886) by [@kitten](https://github.com/kitten))
+
+## 6.0.0-beta.1 — 2025-08-15
+
+### 🎉 New features
+
+- Add web tabs ([#38435](https://github.com/expo/expo/pull/38435) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [iOS] Suppress native link preview for Apple TV. ([#38814](https://github.com/expo/expo/pull/38814) by [@douglowder](https://github.com/douglowder))
+- fix navigation to hidden tabs ([#38829](https://github.com/expo/expo/pull/38829) by [@Ubax](https://github.com/Ubax))
+- add missing fields and checks to tabs API ([#38845](https://github.com/expo/expo/pull/38845) by [@Ubax](https://github.com/Ubax))
+- Remove reliance of deferred routing (for protected routes) on `ExpoRoot` update ([#38872](https://github.com/expo/expo/pull/38872) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- remove global enableFreeze(false) ([#38837](https://github.com/expo/expo/pull/38837) by [@Ubax](https://github.com/Ubax))
+- Remove deprecated `@testing-library/jest-native` in favor of `@testing-library/react-native` ([#37361](https://github.com/expo/expo/pull/37361) by [@byCedric](https://github.com/byCedric))
+- Replace `schema-utils` with `@expo/schema-utils` ([#38863](https://github.com/expo/expo/pull/38863) by [@kitten](https://github.com/kitten))
+
+## 6.0.0-beta.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
 - Add experimental link preview (iOS only) ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
 - Allow for multiple children in Link.Trigger ([#37700](https://github.com/expo/expo/pull/37700) by [@Ubax](https://github.com/Ubax))
@@ -19,6 +63,11 @@
 - Add `location.origin`, Expo SDK version and Hermes version to sitemap UI ([#38201](https://github.com/expo/expo/pull/38201) by [@hassankhan](https://github.com/hassankhan))
 - Add option to show only Link menu actions without preview ([#38398](https://github.com/expo/expo/pull/38398) by [@Ubax](https://github.com/Ubax))
 - Add more customization options to Link.Preview menu ([#38401](https://github.com/expo/expo/pull/38401) by [@Ubax](https://github.com/Ubax))
+- Native bottom tabs ([#37912](https://github.com/expo/expo/pull/37912) by [@Ubax](https://github.com/Ubax))
+- Allow running server middleware with `+middleware.ts` ([#38330](https://github.com/expo/expo/pull/38330) by [@hassankhan](https://github.com/hassankhan))
+- NativeTabs dynamic options ([#38581](https://github.com/expo/expo/pull/38581) by [@Ubax](https://github.com/Ubax))
+- add option to set border radius of highlight ([#38779](https://github.com/expo/expo/pull/38779) by [@Ubax](https://github.com/Ubax))
+- remove highlightBorderRadius prop ([#38796](https://github.com/expo/expo/pull/38796) by [@Ubax](https://github.com/Ubax)
 - Add `Modal` `initialDetentIndex` prop to support `sheetInitialDetentIndex` option ([#38124](https://github.com/expo/expo/pull/38124) by [@lodev09](https://github.com/lodev09))
 
 ### 🐛 Bug fixes
@@ -41,13 +90,35 @@
 - Fix modal with detents fixToContents on Android ([#38440](https://github.com/expo/expo/pull/38440) by [@Ubax](https://github.com/Ubax))
 - Fix detents in web modal ([#38446](https://github.com/expo/expo/pull/38446) by [@Ubax](https://github.com/Ubax))
 - Fix Link Preview between two separate stacks ([#38299](https://github.com/expo/expo/pull/38299) by [@Ubax](https://github.com/Ubax))
+- Fix preloading of Unmatched screen ([#38556](https://github.com/expo/expo/pull/38556) by [@Ubax](https://github.com/Ubax))
+- Fix context menu updates ([#38561](https://github.com/expo/expo/pull/38561) by [@Ubax](https://github.com/Ubax))
+- Fix issues with link preview in heavy views ([#38534](https://github.com/expo/expo/pull/38534) by [@Ubax](https://github.com/Ubax))
+- Fix Link Preview navigation in NativeTabs ([#38283](https://github.com/expo/expo/pull/38283) by [@Ubax](https://github.com/Ubax))
+- add option to hide label and show empty badge ([#38668](https://github.com/expo/expo/pull/38668) by [@Ubax](https://github.com/Ubax))
+- add unstable-native-tabs to files in package.json ([#38742](https://github.com/expo/expo/pull/38742) by [@Ubax](https://github.com/Ubax))
+- fix native tabs transitions with heavy views ([#38761](https://github.com/expo/expo/pull/38761) by [@Ubax](https://github.com/Ubax))
+- remove clip to bounds for Link.Preview ([#38763](https://github.com/expo/expo/pull/38763) by [@Ubax](https://github.com/Ubax))
+- fix preloading of protected routes ([#38789](https://github.com/expo/expo/pull/38789) by [@Ubax](https://github.com/Ubax))
+- fix link preview native navigation without tabs ([#38787](https://github.com/expo/expo/pull/38787) by [@Ubax](https://github.com/Ubax))
+- fix link preview on iPad ([#38791](https://github.com/expo/expo/pull/38791) by [@Ubax](https://github.com/Ubax))
+- revert heavy tabs optimization ([#38802](https://github.com/expo/expo/pull/38802) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
+- Clean up sitemap and add static hermes info. ([#38494](https://github.com/expo/expo/pull/38494) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix web modal code being imported on native. ([#38553](https://github.com/expo/expo/pull/38553) by [@EvanBacon](https://github.com/EvanBacon))
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
 - Add formsheet warning ([#37982](https://github.com/expo/expo/pull/37982) by [@Ubax](https://github.com/Ubax))
 - Extract screen search logic to swift ([#38320](https://github.com/expo/expo/pull/38320) by [@Ubax](https://github.com/Ubax))
 - Throw error when Stack.Screen is used with name outside of layout ([#38116](https://github.com/expo/expo/pull/38116) by [@Ubax](https://github.com/Ubax))
+- Update dependencies and peer dependencies to align with transitive dependencies and missing optional peers ([#38530](https://github.com/expo/expo/pull/38530) by [@kitten](https://github.com/kitten))
+- Update doctor checks to not assume project has a `@react-navigation/native` direct dependency ([#38547](https://github.com/expo/expo/pull/38547) by [@kitten](https://github.com/kitten))
+- Upgrade rnscreens to nigthly version and remove RNSDismissibleModalProtocol patch ([#38522](https://github.com/expo/expo/pull/38522) by [@Ubax](https://github.com/Ubax))
+- Move not-found and site map to root stack navigator ([#38417](https://github.com/expo/expo/pull/38417) by [@Ubax](https://github.com/Ubax))
+- Hide standalone Modal export ([#38648](https://github.com/expo/expo/pull/38648) by [@Ubax](https://github.com/Ubax))
+- Refactor link preview to show components in docs ([#38696](https://github.com/expo/expo/pull/38696) by [@Ubax](https://github.com/Ubax))
+- refactor tabs for docs export ([#38684](https://github.com/expo/expo/pull/38684) by [@Ubax](https://github.com/Ubax))
+- Use `@expo/server/private` for RSC Middleware imports ([#38717](https://github.com/expo/expo/pull/38717) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 5.1.4 - 2025-07-18
 

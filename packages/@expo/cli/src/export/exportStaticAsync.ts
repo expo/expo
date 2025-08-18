@@ -23,11 +23,16 @@ import {
 } from '../start/server/metro/MetroBundlerDevServer';
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import { getApiRoutesForDirectory } from '../start/server/metro/router';
+import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
+
+type ExtraScriptTag = {
+  platform: string;
+  src: string;
+};
 
 type Options = {
   mode: 'production' | 'development';
@@ -44,6 +49,8 @@ type Options = {
   maxWorkers?: number;
   isExporting: boolean;
   exp?: ExpoConfig;
+  // <script type="type/expo" data-platform="ios" src="..." />
+  scriptTags?: ExtraScriptTag[];
 };
 
 type HtmlRequestLocation = {
@@ -54,6 +61,18 @@ type HtmlRequestLocation = {
   /** The runtime route node object, used to associate async modules with the static HTML. */
   route: RouteNode;
 };
+
+export function injectScriptTags(html: string, scriptTags: ExtraScriptTag[]): string {
+  const scriptTagsHtml = scriptTags
+    .map((tag) =>
+      tag.platform === 'web'
+        ? `<script src="${tag.src}"></script>`
+        : `<script type="type/expo" src="${tag.src}" data-platform="${tag.platform}"></script>`
+    )
+    .join('\n');
+  html = html.replace('</head>', `${scriptTagsHtml}\n</head>`);
+  return html;
+}
 
 /** Match `(page)` -> `page` */
 function matchGroupName(name: string): string | undefined {
@@ -155,6 +174,7 @@ export async function exportFromServerAsync(
     routerRoot,
     files = new Map(),
     exp,
+    scriptTags,
   }: Options
 ): Promise<ExportAssetMap> {
   Log.log(
@@ -200,6 +220,12 @@ export async function exportFromServerAsync(
 
       if (injectFaviconTag) {
         html = injectFaviconTag(html);
+      }
+
+      if (scriptTags) {
+        // Inject script tags into the HTML.
+        // <script type="type/expo" data-platform="ios" src="..." />
+        html = injectScriptTags(html, scriptTags);
       }
 
       return html;
@@ -262,7 +288,7 @@ export function getHtmlFiles({
       let leaf: string | null = null;
       if (typeof value === 'string') {
         leaf = value;
-      } else if (Object.keys(value.screens).length === 0) {
+      } else if (value.screens && Object.keys(value.screens).length === 0) {
         // Ensure the trailing index is accounted for.
         if (key === value.path + '/index') {
           leaf = key;
@@ -492,6 +518,13 @@ function warnPossibleInvalidExportType(appDir: string) {
       chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
         .map((v) => path.relative(appDir, v))
         .join(', ')}`
+    );
+  }
+
+  const middlewareFile = getMiddlewareForDirectory(appDir);
+  if (middlewareFile) {
+    Log.warn(
+      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
     );
   }
 }

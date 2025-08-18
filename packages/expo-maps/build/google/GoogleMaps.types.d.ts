@@ -250,6 +250,16 @@ export declare enum GoogleMapsMapType {
 /**
  * @platform android
  */
+export type GoogleMapsMapStyleOptions = {
+    /**
+     * The JSON string of the map style options.
+     * @see For creating map style options, see https://mapstyle.withgoogle.com/
+     */
+    json: string;
+};
+/**
+ * @platform android
+ */
 export type GoogleMapsProperties = {
     /**
      * Whether the building layer is enabled on the map.
@@ -283,6 +293,10 @@ export type GoogleMapsProperties = {
      * The minimum zoom level for the map.
      */
     minZoomPreference?: number;
+    /**
+     * With style options you can customize the presentation of the standard Google map styles, changing the visual display of features like roads, parks, and other points of interest.
+     */
+    mapStyleOptions?: GoogleMapsMapStyleOptions;
 };
 /**
  * @platform android
@@ -292,6 +306,16 @@ export declare enum GoogleMapsColorScheme {
     DARK = "DARK",
     FOLLOW_SYSTEM = "FOLLOW_SYSTEM"
 }
+/**
+ * @platform android
+ */
+export type GoogleMapsMapOptions = {
+    /**
+     * A map ID is a unique identifier that represents Google Map styling and configuration settings that are stored in Google Cloud.
+     * @see For more information, see https://developers.google.com/maps/documentation/android-sdk/map-ids/mapid-over
+     */
+    mapId?: string;
+};
 /**
  * @platform android
  */
@@ -326,6 +350,10 @@ export type GoogleMapsViewProps = {
      * The properties for the map.
      */
     properties?: GoogleMapsProperties;
+    /**
+     * Defines configuration GoogleMapOptions for a GoogleMap
+     */
+    mapOptions?: GoogleMapsMapOptions;
     /**
      * Defines the color scheme for the map.
      */

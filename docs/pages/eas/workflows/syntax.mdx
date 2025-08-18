@@ -9,6 +9,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
 
 A workflow is a configurable automated process made up of one or more jobs. You must create a YAML file to define your workflow configuration.
 
@@ -178,6 +179,87 @@ Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/d
 on:
   schedule:
     - cron: '0 0 * * *' # Runs at midnight GMT every day
+```
+
+### `on.workflow_dispatch.inputs`
+
+Defines inputs that can be provided when manually triggering a workflow using the `eas workflow:run` command. This allows you to create parameterized workflows that can accept different values each time they run.
+
+```yaml
+on:
+  workflow_dispatch:
+    # @info #
+    inputs:
+      name:
+        type: string
+        required: false
+        description: 'Name of the person to greet'
+        default: 'World'
+      choice_example:
+        type: choice
+        options:
+          - to be
+          - not to be
+        required: true
+    # @end #
+```
+
+| Property      | Type       | Required                 | Description                                                                 |
+| ------------- | ---------- | ------------------------ | --------------------------------------------------------------------------- |
+| `type`        | `string`   | Yes                      | The input type (`string`, `boolean`, `number`, `choice`, or `environment`). |
+| `description` | `string`   | No                       | Description for the input.                                                  |
+| `required`    | `boolean`  | No                       | Whether the input is required. Defaults to `false`.                         |
+| `default`     | varies     | No                       | Default value for the input. Must match the input type.                     |
+| `options`     | `string[]` | Yes (for `type: choice`) | Available options for choice inputs.                                        |
+
+#### Providing inputs
+
+When running a workflow with inputs, you can provide them in several ways:
+
+1. Command line flags:
+
+   <Terminal
+     cmd={[
+       '$ eas workflow:run .eas/workflows/deploy.yml -F environment=production -F debug=true -F version=1.2.3',
+     ]}
+   />
+
+2. JSON via stdin:
+
+   <Terminal
+     cmd={[
+       `$ echo '{"environment": "production", "debug": true, "version": "1.2.3"}' | eas workflow:run .eas/workflows/deploy.yml`,
+     ]}
+   />
+
+3. Interactive prompts:
+   If required inputs are missing and you're not using `--non-interactive`, the CLI will prompt you for them:
+
+   <Terminal cmd={['$ eas workflow:run .eas/workflows/deploy.yml']} />
+
+#### Usage
+
+Input values are available in your workflow jobs through the `${{ inputs.<input_name> }}` syntax:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: string
+        required: true
+        description: 'Name of the person to greet'
+
+jobs:
+  deploy:
+    steps:
+      - name: Deploy to environment
+        run: |
+          echo "Hello, ${{ inputs.name }}!"
+
+          # Note: you can use `||` to provide a default value
+          #       for non-eas-workflow:run-run workflows.
+          echo "Hello, ${{ inputs.name || 'World' }}!"
 ```
 
 ## `jobs`
@@ -442,7 +524,8 @@ To ease the migration from GitHub Actions to EAS Workflows we expose some contex
   "sha": string,
   "ref": string, // e.g. refs/heads/main
   "ref_name": string, // e.g. main
-  "ref_type": "branch" | "tag" | "other"
+  "ref_type": "branch" | "tag" | "other",
+  "commit_message": string // Only available for push and schedule events
 }
 ```
 
@@ -640,6 +723,34 @@ This job outputs the following properties:
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
   "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
   "android_package_id": string | null // Submitted Android package ID. https://expo.fyi/android-package
+}
+```
+
+#### `testflight`
+
+Distributes iOS builds to TestFlight internal and external testing groups. See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: testflight
+    # @end #
+    params:
+      build_id: string # required
+      profile: string # optional, default: production
+      internal_groups: string[] # optional
+      external_groups: string[] # optional
+      changelog: string # optional
+      submit_beta_review: boolean # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
+  "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
 }
 ```
 

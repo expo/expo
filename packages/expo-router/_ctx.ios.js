@@ -1,6 +1,6 @@
 export const ctx = require.context(
   process.env.EXPO_ROUTER_APP_ROOT,
   true,
-  /^(?:\.\/)(?!(?:(?:(?:.*\+api)|(?:\+html)))\.[tj]sx?$).*(?:\.android|\.web)?\.[tj]sx?$/,
+  /^(?:\.\/)(?!(?:(?:(?:.*\+api)|(?:\+html)|(?:\+middleware)))\.[tj]sx?$).*(?:\.android|\.web)?\.[tj]sx?$/,
   process.env.EXPO_ROUTER_IMPORT_MODE
 );

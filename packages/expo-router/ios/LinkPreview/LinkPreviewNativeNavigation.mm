@@ -17,6 +17,59 @@
   return NO;
 }
 
++ (BOOL)isRNSBottomTabsScreenComponentView:(UIView *)view {
+  if (view != nil) {
+    return [view isKindOfClass:[RNSBottomTabsScreenComponentView class]];
+  }
+
+  return NO;
+}
+
++ (BOOL)isRNSBottomTabsHostComponentView:(UIView *)view {
+  if (view != nil) {
+    return [view isKindOfClass:[RNSBottomTabsHostComponentView class]];
+  }
+
+  return NO;
+}
+
++ (nullable UITabBarController *)getBottomTabControllerFromView:(UIView *)view {
+  if ([view isKindOfClass:[RNSBottomTabsScreenComponentView class]]) {
+    RNSBottomTabsScreenComponentView *bottomTabsView =
+        (RNSBottomTabsScreenComponentView *)view;
+    UIViewController *reactVC = [bottomTabsView reactViewController];
+    if (reactVC != nil &&
+        [reactVC.tabBarController isKindOfClass:[RNSTabBarController class]]) {
+      RNSTabBarController *tabBarController =
+          (RNSTabBarController *)reactVC.tabBarController;
+      return tabBarController;
+    }
+  }
+  if ([view isKindOfClass:[RNSBottomTabsHostComponentView class]]) {
+    RNSBottomTabsHostComponentView *bottomTabsView =
+        (RNSBottomTabsHostComponentView *)view;
+    return [bottomTabsView controller];
+  }
+  return nil;
+}
+
++ (nullable UIView *)getTab:(UITabBarController *)controller
+                    withKey:(NSString *)key {
+  if (controller != nil) {
+    for (UIViewController *subcontroller in controller.viewControllers) {
+      if ([subcontroller.view
+              isKindOfClass:[RNSBottomTabsScreenComponentView class]]) {
+        if (((RNSBottomTabsScreenComponentView *)subcontroller.view).tabKey ==
+            key) {
+          return subcontroller.view;
+        }
+      }
+    }
+  }
+
+  return nil;
+}
+
 + (nonnull NSArray<NSString *> *)getStackViewScreenIds:(UIView *)view {
   if (view != nil && [view isKindOfClass:[RNSScreenStackView class]]) {
     RNSScreenStackView *stackView = (RNSScreenStackView *)view;
@@ -41,7 +94,18 @@
   return nil;
 }
 
-+ (void)pushPreloadedView:(UIView *)view ontoStackView:(UIView *)rawStackView {
++ (nonnull NSString *)getTabKey:(UIView *)view {
+  if (view != nil &&
+      [view isKindOfClass:[RNSBottomTabsScreenComponentView class]]) {
+    RNSBottomTabsScreenComponentView *tabScreenView =
+        (RNSBottomTabsScreenComponentView *)view;
+    return tabScreenView.tabKey;
+  }
+  return @"";
+}
+
++ (void)pushPreloadedView:(nonnull UIView *)view
+            ontoStackView:(nonnull UIView *)rawStackView {
   if (![LinkPreviewNativeNavigationObjC isRNSScreenStackView:rawStackView]) {
     NSLog(@"ExpoRouter: The provided stack view is not a RNSScreenStackView.");
     return;

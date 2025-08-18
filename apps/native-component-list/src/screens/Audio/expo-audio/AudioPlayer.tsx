@@ -8,16 +8,18 @@ import Player from './Player';
 type AudioPlayerProps = {
   source: AudioSource | string | number;
   style?: StyleProp<ViewStyle>;
+  downloadFirst?: boolean;
 };
 
 const localSource = require('../../../../assets/sounds/polonez.mp3');
 const remoteSource =
   'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02';
 
-export default function AudioPlayer({ source, style }: AudioPlayerProps) {
+export default function AudioPlayer({ source, style, downloadFirst = false }: AudioPlayerProps) {
   const [currentSource, setCurrentSource] = React.useState(source);
-  const player = useAudioPlayer(source);
+  const player = useAudioPlayer(source, { downloadFirst });
   const status = useAudioPlayerStatus(player);
+
   const setVolume = (volume: number) => {
     player.volume = volume;
   };
@@ -47,7 +49,15 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
       audioPan={0}
       volume={player.volume}
       style={style}
-      play={() => player.play()}
+      play={() => {
+        // expo-audio does not support looping
+        // so we need to seek to the beginning of the audio when it finishes
+        // this is default on web, but not on native so we need to do it manually
+        if (status.didJustFinish) {
+          player.seekTo(0);
+        }
+        player.play();
+      }}
       pause={() => player.pause()}
       replace={() => replaceSource()}
       replay={() => {

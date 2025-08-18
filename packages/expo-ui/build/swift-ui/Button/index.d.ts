@@ -1,5 +1,5 @@
-import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
+import { type ViewEvent } from '../../types';
+import { type CommonViewModifierProps } from '../types';
 /**
  * The role of the button.
  * - `default` - The default button role.
@@ -57,8 +57,9 @@ export type ButtonProps = {
      * Disabled state of the button.
      */
     disabled?: boolean;
-};
+} & CommonViewModifierProps;
 /**
+ * exposed for ContextMenu
  * @hidden
  */
 export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage'> & {
@@ -67,18 +68,12 @@ export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children
     systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 /**
+ * exposed for ContextMenu
  * @hidden
  */
 export declare function transformButtonProps(props: Omit<ButtonProps, 'children'>, text: string | undefined): NativeButtonProps;
 /**
- * `<Button>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function ButtonPrimitive(props: ButtonProps): import("react").JSX.Element;
-/**
  * Displays a native button component.
  */
-export declare function Button(props: ButtonProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
+export declare function Button(props: ButtonProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -1,10 +1,11 @@
-import { Button, BottomSheet } from '@expo/ui/swift-ui';
+import { Button as ButtonPrimitive, BottomSheet, Host } from '@expo/ui/swift-ui';
 import * as React from 'react';
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, Text, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export default function BottomSheetScreen() {
   const [isOpened, setIsOpened] = React.useState<boolean>(true);
+  const { width } = useWindowDimensions();
   const height = useSharedValue(100);
 
   const handleIncreaseHeight = () => {
@@ -12,7 +13,7 @@ export default function BottomSheetScreen() {
   };
 
   const animatedStyles = useAnimatedStyle(() => ({
-    height: withTiming(height.value, { duration: 3000 }),
+    height: withTiming(height.value, { duration: 1000 }),
   }));
 
   return (
@@ -25,12 +26,22 @@ export default function BottomSheetScreen() {
       }}>
       <Button onPress={() => setIsOpened((h) => !h)}>Toggle</Button>
       <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
-      <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
-        <Animated.View style={[{ padding: 20 }, animatedStyles]}>
-          <Button onPress={handleIncreaseHeight}>Increase height</Button>
-        </Animated.View>
-      </BottomSheet>
+      <Host style={{ position: 'absolute', width }}>
+        <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
+          <Animated.View style={[{ padding: 20 }, animatedStyles]}>
+            <Button onPress={handleIncreaseHeight}>Increase height</Button>
+          </Animated.View>
+        </BottomSheet>
+      </Host>
     </ScrollView>
+  );
+}
+
+function Button(props: React.ComponentProps<typeof ButtonPrimitive>) {
+  return (
+    <Host matchContents>
+      <ButtonPrimitive {...props}>{props.children}</ButtonPrimitive>
+    </Host>
   );
 }
 
