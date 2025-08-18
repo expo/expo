@@ -284,11 +284,13 @@ function importExportPlugin({ types: t, }) {
                                 // For live bindings, we need to create a require statement for the module namespace
                                 state.opts.liveBindings ? path.node.source : local);
                             if (local.name === 'default') {
-                                path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: t.cloneNode(state.importDefault),
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
-                                    LOCAL: temp,
-                                }), loc));
+                                if (!sharedModuleExportFrom) {
+                                    path.insertBefore(withLocation(importAllTemplate({
+                                        IMPORT: t.cloneNode(state.importDefault),
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        LOCAL: temp,
+                                    }), loc));
+                                }
                                 state.exportNamed.push({
                                     local: temp.name,
                                     remote: remote.name,
@@ -320,11 +322,13 @@ function importExportPlugin({ types: t, }) {
                                 }
                             }
                             else if (s.type === 'ExportNamespaceSpecifier') {
-                                path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: t.cloneNode(state.importAll),
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
-                                    LOCAL: temp,
-                                }), loc));
+                                if (!sharedModuleExportFrom) {
+                                    path.insertBefore(withLocation(importAllTemplate({
+                                        IMPORT: t.cloneNode(state.importAll),
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        LOCAL: temp,
+                                    }), loc));
+                                }
                                 state.exportNamed.push({
                                     local: temp.name,
                                     remote: remote.name,
