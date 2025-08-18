@@ -394,29 +394,25 @@ export function importExportPlugin({
             }
 
             if (path.node.source) {
-              const temp =
-                sharedModuleExportFrom ??
-                path.scope.generateUidIdentifierBasedOnNode(
-                  // For live bindings, we need to create a require statement for the module namespace
-                  state.opts.liveBindings ? path.node.source : local
-                );
+              const temp = path.scope.generateUidIdentifierBasedOnNode(
+                // For live bindings, we need to create a require statement for the module namespace
+                state.opts.liveBindings ? path.node.source : local
+              );
 
               if (local.name === 'default') {
-                if (!sharedModuleExportFrom) {
-                  path.insertBefore(
-                    withLocation(
-                      importAllTemplate({
-                        IMPORT: t.cloneNode(state.importDefault),
-                        FILE: resolvePath(
-                          t.cloneNode(nullthrows(path.node.source)),
-                          state.opts.resolve
-                        ),
-                        LOCAL: temp,
-                      }),
-                      loc
-                    )
-                  );
-                }
+                path.insertBefore(
+                  withLocation(
+                    importAllTemplate({
+                      IMPORT: t.cloneNode(state.importDefault),
+                      FILE: resolvePath(
+                        t.cloneNode(nullthrows(path.node.source)),
+                        state.opts.resolve
+                      ),
+                      LOCAL: temp,
+                    }),
+                    loc
+                  )
+                );
 
                 state.exportNamed.push({
                   local: temp.name,
@@ -441,7 +437,7 @@ export function importExportPlugin({
                     );
                   }
                   state.exportDefault.push({
-                    namespace: temp.name,
+                    namespace: sharedModuleExportFrom?.name ?? temp.name,
                     local: local.name,
                     loc,
                   });
@@ -478,7 +474,7 @@ export function importExportPlugin({
                   );
                 }
                 state.exportNamed.push({
-                  local: temp.name,
+                  local: sharedModuleExportFrom?.name ?? temp.name,
                   remote: remote.name,
                   loc,
                 });
@@ -503,7 +499,7 @@ export function importExportPlugin({
                     local: local.name,
                     remote: remote.name,
                     loc,
-                    namespace: temp.name,
+                    namespace: sharedModuleExportFrom?.name ?? temp.name,
                   });
                 } else {
                   path.insertBefore(

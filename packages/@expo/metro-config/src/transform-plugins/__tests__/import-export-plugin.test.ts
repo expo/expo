@@ -530,7 +530,8 @@ it('transforms export default as local then >1 locals with live binding', () => 
       value: true
     });
     var _bar = require('bar');
-    exports.b = _bar;
+    var _bar2 = _$$_IMPORT_DEFAULT('bar');
+    exports.b = _bar2;
     Object.defineProperty(exports, "c", {
       enumerable: true,
       get: function () {
