@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Pass errors, synthetic and owners stacks to Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
