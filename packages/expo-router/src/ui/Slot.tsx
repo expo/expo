@@ -23,7 +23,6 @@ import { StyleSheet, type ViewProps } from 'react-native';
  */
 function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
   return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
-    // TODO(@kitten): I understand why we do this, but this pulls in all of react-native-web
     style = useMemo(() => StyleSheet.flatten(style), [style]);
     return <Component ref={ref} {...props} style={style} />;
   });
