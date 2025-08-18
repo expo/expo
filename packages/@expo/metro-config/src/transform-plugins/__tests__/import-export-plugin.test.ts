@@ -518,6 +518,33 @@ it('transforms export default as local with live binding', () => {
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
 });
 
+it.only('transforms export default as local then local with similar names with live binding', () => {
+  // NOTE: A bug here only reproduced once `c` is added
+  const code = `
+    export { default as a } from 'foo';
+    export { default as b, c, b as B } from 'bar';
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+    var _foo = _$$_IMPORT_DEFAULT('foo');
+    var _bar = _$$_IMPORT_DEFAULT('bar');
+    var _bar2 = require('bar');
+    exports.a = _foo;
+    exports.b = _bar;
+    Object.defineProperty(exports, "B", {
+      enumerable: true,
+      get: function () {
+        return _bar2.b;
+      }
+    });
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+});
+
 it('transforms import default as local with live binding', () => {
   const code = `
     import { default as foo } from 'bar';
