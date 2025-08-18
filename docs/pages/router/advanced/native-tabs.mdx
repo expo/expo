@@ -130,7 +130,7 @@ export default function TabLayout() {
   </NativeTabs>
 ```
 
-Liquid glass automatically changes colors based on if the background color is light or dark, there is no callback for this so you need to use a `PlatformColor` to set the color of the icon.
+Liquid glass on iOS automatically changes colors based on if the background color is light or dark. There is no callback for this, so you need to use a `PlatformColor` to set the color of the icon.
 
 ```tsx app/_layout.tsx
 import { DynamicColorIOS } from 'react-native';
@@ -291,13 +291,13 @@ export default function TabLayout() {
 
 ## Migrating from JavaScript tabs
 
-Native tabs are not designed to be a drop-in replacement for JavaScript tabs. The native tabs are constrained to the native platform behavior whereas the JS tabs can be customized more freely. If you aren't interested in the native platform behavior, you can continue using the JavaScript tabs.
+Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/router/advanced/tabs/). The native tabs are constrained to the native platform behavior, whereas the JavaScript tabs can be customized more freely. If you aren't interested in the native platform behavior, you can continue using the JavaScript tabs.
 
-**Use Trigger instead of Screen**
+### Use `Trigger` instead of `Screen`
 
-`NativeTabs` introduce the concept of a `Trigger` for adding routes to a layout. Unlike a `Screen` which styles routes that are added automatically, the `Trigger` system gives you better control for hiding and removing tabs from the tab bar.
+`NativeTabs` introduces the concept of a `Trigger` for adding routes to a layout. Unlike a `Screen`, which styles routes that are added automatically, the `Trigger` system gives you better control for hiding and removing tabs from the tab bar.
 
-**Use React components instead of props**
+### Use React components instead of props
 
 `NativeTabs` has a React-first API that opts to use components for defining UI in favor of props objects.
 
@@ -326,7 +326,7 @@ This is in active development. At the moment, you can only use build-time drawab
 
 ### Cannot measure the tab bar height
 
-The tabs move around, sometimes being on top of the screen when rendering on iPad, sometimes on the side of the screen when running on Apple Vision Pro, etc. We're working on a layout function to provide more detailed layout info in the future.
+The tabs move around, sometimes being on top of the screen when rendering on iPad, sometimes on the side of the screen when running on Apple Vision Pro, and so on. We're working on a layout function to provide more detailed layout info in the future.
 
 ### No support for nested tabs
 
