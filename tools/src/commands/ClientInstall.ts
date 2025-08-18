@@ -53,9 +53,8 @@ async function downloadAndInstallOnIOSAsync(downloadUrl: string): Promise<void> 
     console.log(`Launching Expo Go with identifier ${chalk.blue(EXPO_GO_APP_ID_IOS)}...`);
     await Simulator.launchSimulatorAppAsync(simulator, EXPO_GO_APP_ID_IOS);
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
-    }
+    console.error(chalk.red(error));
+    throw new Error('Unable to install Expo Go.', { cause: error });
   } finally {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
   }
@@ -100,9 +99,8 @@ async function downloadAndInstallOnAndroidAsync(downloadUrl: string): Promise<vo
       activity,
     });
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
-    }
+    console.error(chalk.red(error));
+    throw new Error('Unable to install Expo Go.', { cause: error });
   } finally {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
   }
