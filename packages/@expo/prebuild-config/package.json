@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "10.0.2",
+  "version": "10.0.3",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
@@ -42,7 +42,7 @@
   "dependencies": {
     "@expo/config": "~12.0.2",
     "@expo/config-plugins": "~11.0.2",
-    "@expo/config-types": "^54.0.2",
+    "@expo/config-types": "^54.0.3",
     "@expo/image-utils": "^0.8.2",
     "@expo/json-file": "^10.0.2",
     "@react-native/normalize-colors": "0.81.0",

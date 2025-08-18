@@ -9,14 +9,14 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~54.0.0-preview.2",
+    "expo": "~54.0.0-preview.3",
     "expo-clipboard": "8.0.2",
     "expo-dev-client": "~6.0.2",
     "expo-image": "~3.0.2",
     "expo-media-library": "18.0.2",
     "expo-notifications": "~0.32.2",
     "expo-splash-screen": "~31.0.2",
-    "expo-updates": "29.0.2",
+    "expo-updates": "29.0.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.0"

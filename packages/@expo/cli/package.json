@@ -54,7 +54,7 @@
     "@expo/osascript": "^2.3.2",
     "@expo/package-manager": "^1.9.2",
     "@expo/plist": "^0.4.2",
-    "@expo/prebuild-config": "^10.0.2",
+    "@expo/prebuild-config": "^10.0.3",
     "@expo/schema-utils": "^0.1.2",
     "@expo/server": "^0.7.2",
     "@expo/spawn-async": "^1.7.2",

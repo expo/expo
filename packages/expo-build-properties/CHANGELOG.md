@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.0.3 — 2025-08-18
+
+### 💡 Others
+
 - [ios] Removed `buildFromSource` option on iOS.
 
 ## 1.0.2 — 2025-08-16

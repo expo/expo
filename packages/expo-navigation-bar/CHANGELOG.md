@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.0.3 — 2025-08-18
+
+### 💡 Others
+
 - Remove `react-native-edge-to-edge` dependency. ([#38769](https://github.com/expo/expo/pull/38769) by [@behenate](https://github.com/behenate))
 
 ## 5.0.2 — 2025-08-16

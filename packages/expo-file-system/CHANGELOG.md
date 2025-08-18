@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed type definition for `textSync()` to return `string` instead of `Promise<string>` ([#38898](https://github.com/expo/expo/pull/38898) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
-
 ### 💡 Others
+
+## 19.0.3 — 2025-08-18
+
+### 🐛 Bug fixes
+
+- Fixed type definition for `textSync()` to return `string` instead of `Promise<string>` ([#38898](https://github.com/expo/expo/pull/38898) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
 
 ## 19.0.2 — 2025-08-16
 

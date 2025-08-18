@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 6.0.0-beta.3 — 2025-08-18
+
+### 🐛 Bug fixes
+
 - remove error when link with preview is used for external link ([#38939](https://github.com/expo/expo/pull/38939) by [@Ubax](https://github.com/Ubax))
 - [Internal] Remove internal `SafeAreaViewSlot` to remove `SafeAreaView` import warning ([#38899](https://github.com/expo/expo/pull/38899) by [@kitten](https://github.com/kitten))
 - improve animation for stack push from different tab ([#38927](https://github.com/expo/expo/pull/38927) by [@Ubax](https://github.com/Ubax))

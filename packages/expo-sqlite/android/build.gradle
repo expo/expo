@@ -46,13 +46,13 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '16.0.2'
+version = '16.0.3'
 
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "16.0.2"
+    versionName "16.0.3"
     buildConfigField "boolean", "USE_LIBSQL", project.ext.USE_LIBSQL.toString()
     buildConfigField "boolean", "WITH_SQLITE_VEC", project.ext.WITH_SQLITE_VEC.toString()
 
