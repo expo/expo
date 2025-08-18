@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix regression in playing bundled assets in production.
+
 ### 💡 Others
 
 ## 1.0.2 — 2025-08-16
