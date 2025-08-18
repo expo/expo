@@ -47,6 +47,7 @@ _This version does not introduce any user-facing changes._
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 - Moved **src/devtools** code to the `@expo/devtools` package. ([#38438](https://github.com/expo/expo/pull/38438) by [@kudo](https://github.com/kudo))
 - Remove (newly added) peer dependencies on `react-refresh` and `metro-runtime` ([#38562](https://github.com/expo/expo/pull/38562) by [@kitten](https://github.com/kitten))
+- Remove `react-native-edge-to-edge` dependency. ([#38767](https://github.com/expo/expo/pull/38767) by [@behenate](https://github.com/behenate))
 
 ### ⚠️ Notices
 
