@@ -10,6 +10,7 @@ import {
   StackRouter as RNStackRouter,
   StackActionType,
   StackNavigationState,
+  type RouteProp,
 } from '@react-navigation/native';
 import {
   NativeStackNavigationEventMap,
@@ -17,7 +18,6 @@ import {
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
 import { ComponentProps, useMemo } from 'react';
-import { StackAnimationTypes } from 'react-native-screens';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
@@ -488,11 +488,11 @@ function filterSingular<
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
+
     const screenOptions = useMemo(() => {
-      if (isStackAnimationDisabled) {
-        return disableAnimationInScreenOptions(props.screenOptions);
-      }
-      return props.screenOptions;
+      const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
+
+      return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
 
     return (
@@ -510,28 +510,35 @@ const Stack = Object.assign(
 type NativeStackScreenOptions = ComponentProps<typeof RNStack>['screenOptions'];
 
 function disableAnimationInScreenOptions(
-  options: NativeStackScreenOptions | undefined
+  options: NativeStackScreenOptions | undefined,
+  condition: (route: RouteProp<ParamListBase, string>) => boolean
 ): NativeStackScreenOptions {
-  const animationNone: StackAnimationTypes = 'none';
-  if (options) {
-    if (typeof options === 'function') {
-      const newOptions: typeof options = (...args) => {
-        const oldResult = options(...args);
+  if (options && typeof options === 'function') {
+    return (props) => {
+      const oldOptions = options(props);
+      if (condition(props.route)) {
         return {
-          ...oldResult,
-          animation: animationNone,
+          ...oldOptions,
+          animation: 'none',
         };
-      };
-      return newOptions;
-    }
-    return {
-      ...options,
-      animation: animationNone,
+      }
+      return oldOptions ?? {};
     };
   }
-  return {
-    animation: animationNone,
+  return (props) => {
+    if (condition(props.route)) {
+      return {
+        ...(options ?? {}),
+        animation: 'none',
+      };
+    }
+    return options ?? {};
   };
+}
+
+function shouldDisableAnimationBasedOnParams(route: RouteProp<ParamListBase, string>): boolean {
+  const expoParams = getInternalExpoRouterParams(route.params);
+  return !!expoParams.__internal_expo_router_no_animation;
 }
 
 export default Stack;

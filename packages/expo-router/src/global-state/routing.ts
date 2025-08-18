@@ -317,6 +317,7 @@ function getNavigateAction(
   const expoParams: InternalExpoRouterParams = isPreviewNavigation
     ? {
         __internal__expo_router_is_preview_navigation: true,
+        __internal_expo_router_no_animation: true,
       }
     : {};
   const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);

@@ -343,37 +343,40 @@ function filterSingular(state, getId) {
 const Stack = Object.assign((props) => {
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptions = (0, react_1.useMemo)(() => {
-        if (isStackAnimationDisabled) {
-            return disableAnimationInScreenOptions(props.screenOptions);
-        }
-        return props.screenOptions;
+        const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
+        return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
     return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,
 });
-function disableAnimationInScreenOptions(options) {
-    const animationNone = 'none';
-    if (options) {
-        if (typeof options === 'function') {
-            const newOptions = (...args) => {
-                const oldResult = options(...args);
+function disableAnimationInScreenOptions(options, condition) {
+    if (options && typeof options === 'function') {
+        return (props) => {
+            const oldOptions = options(props);
+            if (condition(props.route)) {
                 return {
-                    ...oldResult,
-                    animation: animationNone,
+                    ...oldOptions,
+                    animation: 'none',
                 };
-            };
-            return newOptions;
-        }
-        return {
-            ...options,
-            animation: animationNone,
+            }
+            return oldOptions ?? {};
         };
     }
-    return {
-        animation: animationNone,
+    return (props) => {
+        if (condition(props.route)) {
+            return {
+                ...(options ?? {}),
+                animation: 'none',
+            };
+        }
+        return options ?? {};
     };
+}
+function shouldDisableAnimationBasedOnParams(route) {
+    const expoParams = (0, navigationParams_1.getInternalExpoRouterParams)(route.params);
+    return !!expoParams.__internal_expo_router_no_animation;
 }
 exports.default = Stack;
 const StackRouter = (options) => {

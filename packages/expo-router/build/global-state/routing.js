@@ -258,6 +258,7 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
     const expoParams = isPreviewNavigation
         ? {
             __internal__expo_router_is_preview_navigation: true,
+            __internal_expo_router_no_animation: true,
         }
         : {};
     const params = (0, navigationParams_1.appendInternalExpoRouterParams)(rootPayload.params, expoParams);

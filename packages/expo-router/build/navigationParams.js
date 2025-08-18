@@ -3,8 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.appendInternalExpoRouterParams = appendInternalExpoRouterParams;
 exports.getInternalExpoRouterParams = getInternalExpoRouterParams;
 exports.removeInternalExpoRouterParams = removeInternalExpoRouterParams;
+const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = '__internal__expo_router_is_preview_navigation';
 const internalExpoRouterParamNames = [
+    INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
     INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
 ];
 function appendInternalExpoRouterParams(params, expoParams) {

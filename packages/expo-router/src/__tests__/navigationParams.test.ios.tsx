@@ -5,6 +5,7 @@ import {
   type InternalExpoRouterParamName,
 } from '../navigationParams';
 
+const NO_ANIMATION = '__internal_expo_router_no_animation' as InternalExpoRouterParamName;
 const IS_PREVIEW = '__internal__expo_router_is_preview_navigation' as InternalExpoRouterParamName;
 
 describe(appendInternalExpoRouterParams, () => {
@@ -15,15 +16,15 @@ describe(appendInternalExpoRouterParams, () => {
     expect(appendInternalExpoRouterParams(params, expoParams)).toBeUndefined();
   });
 
-  it('appends internal params to empty params', () => {
-    expect(appendInternalExpoRouterParams({}, { [IS_PREVIEW]: true })).toEqual({
-      [IS_PREVIEW]: true,
-      params: { [IS_PREVIEW]: true },
+  it.each([NO_ANIMATION, IS_PREVIEW])('appends internal params %p to empty params', (param) => {
+    expect(appendInternalExpoRouterParams({}, { [param]: true })).toEqual({
+      [param]: true,
+      params: { [param]: true },
     });
 
-    expect(appendInternalExpoRouterParams({}, { [IS_PREVIEW]: false })).toEqual({
-      [IS_PREVIEW]: false,
-      params: { [IS_PREVIEW]: false },
+    expect(appendInternalExpoRouterParams({}, { [param]: false })).toEqual({
+      [param]: false,
+      params: { [param]: false },
     });
   });
 
@@ -71,6 +72,17 @@ describe(appendInternalExpoRouterParams, () => {
     });
   });
 
+  it('handles multiple internal params', () => {
+    expect(
+      appendInternalExpoRouterParams({ foo: 1 }, { [NO_ANIMATION]: true, [IS_PREVIEW]: false })
+    ).toEqual({
+      foo: 1,
+      [NO_ANIMATION]: true,
+      [IS_PREVIEW]: false,
+      params: { [NO_ANIMATION]: true, [IS_PREVIEW]: false },
+    });
+  });
+
   it('handles undefined values in expoParams', () => {
     expect(appendInternalExpoRouterParams({ foo: 1 }, { [IS_PREVIEW]: undefined })).toEqual({
       foo: 1,
@@ -103,23 +115,24 @@ describe(appendInternalExpoRouterParams, () => {
 });
 
 describe(getInternalExpoRouterParams, () => {
-  it('gets internal params from root', () => {
-    const params = { foo: 1, [IS_PREVIEW]: 42 };
-    expect(getInternalExpoRouterParams(params)).toEqual({ [IS_PREVIEW]: 42 });
+  it.each([NO_ANIMATION, IS_PREVIEW])('gets internal params %p from root', (param) => {
+    const params = { foo: 1, [param]: 42 };
+    expect(getInternalExpoRouterParams(params)).toEqual({ [param]: 42 });
   });
 
-  it('gets internal params from nested params', () => {
-    const params = { foo: 1, params: { [IS_PREVIEW]: 'abc' } };
-    expect(getInternalExpoRouterParams(params)).toEqual({ [IS_PREVIEW]: 'abc' });
+  it.each([NO_ANIMATION, IS_PREVIEW])('gets internal params %p from nested params', (param) => {
+    const params = { foo: 1, params: { [param]: 'abc' } };
+    expect(getInternalExpoRouterParams(params)).toEqual({ [param]: 'abc' });
   });
 
   it('gets internal params from both root and nested, prefers root', () => {
     const params = {
       [IS_PREVIEW]: 'root',
-      params: { [IS_PREVIEW]: 'nested' },
+      params: { [NO_ANIMATION]: 'nested', [IS_PREVIEW]: 'nested' },
     };
     expect(getInternalExpoRouterParams(params)).toEqual({
       [IS_PREVIEW]: 'root',
+      [NO_ANIMATION]: 'nested',
     });
   });
 
@@ -131,7 +144,7 @@ describe(getInternalExpoRouterParams, () => {
 
 describe(removeInternalExpoRouterParams, () => {
   it('removes internal params from root', () => {
-    const params = { foo: 1, [IS_PREVIEW]: 3 };
+    const params = { foo: 1, [NO_ANIMATION]: 2, [IS_PREVIEW]: 3 };
     expect(removeInternalExpoRouterParams(params)).toEqual({ foo: 1 });
   });
 
@@ -147,7 +160,7 @@ describe(removeInternalExpoRouterParams, () => {
     const params = {
       [IS_PREVIEW]: 1,
       foo: 2,
-      params: { [IS_PREVIEW]: 3, bar: 5 },
+      params: { [NO_ANIMATION]: 3, [IS_PREVIEW]: 4, bar: 5 },
     };
     expect(removeInternalExpoRouterParams(params)).toEqual({
       foo: 2,
@@ -160,7 +173,7 @@ describe(removeInternalExpoRouterParams, () => {
   });
 
   it('returns empty object if only internal params present', () => {
-    const params = { [IS_PREVIEW]: 2 };
+    const params = { [NO_ANIMATION]: 1, [IS_PREVIEW]: 2 };
     expect(removeInternalExpoRouterParams(params)).toEqual({});
   });
 

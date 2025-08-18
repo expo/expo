@@ -44,6 +44,10 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
                 action.payload.params
               );
 
+              if (route.params && 'screen' in route.params) {
+                expoParams['__internal_expo_router_no_animation'] = true;
+              }
+
               const params = appendInternalExpoRouterParams(route.params, expoParams);
               return {
                 ...route,
