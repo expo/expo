@@ -65,6 +65,7 @@ export async function logMetroErrorWithStack(
 
   Log.log(
     getStackAsFormattedLog(projectRoot, { stack, codeFrame, error, showCollapsedFrames: true })
+      .stack
   );
 }
 
@@ -81,7 +82,10 @@ export function getStackAsFormattedLog(
     error?: Error;
     showCollapsedFrames?: boolean;
   }
-): string {
+): {
+  isFallback: boolean;
+  stack: string;
+} {
   const logs: string[] = [];
   let hasCodeFramePresented = false;
   const containsCodeFrame = likelyContainsCodeFrame(error?.message);
@@ -94,9 +98,22 @@ export function getStackAsFormattedLog(
     const maxWarningLineLength = Math.max(800, process.stdout.columns);
 
     const lineText = codeFrame.content;
-    const isPreviewTooLong = codeFrame.content
-      .split('\n')
-      .some((line) => line.length > maxWarningLineLength);
+    const lines = codeFrame.content.split('\n');
+    const cleanLines = lines.map((l) => stripVTControlCharacters(l).trim());
+
+    // ---- index.tsx ------------------------------------------------------
+    //  32 |         This is example code which will be under the title.
+    const title = path.basename(codeFrame.fileName);
+    const titlePadding = (cleanLines[0] || '').indexOf('|') + 2;
+    const titleMaxLength =
+      cleanLines.reduce((max, line) => Math.max(max, line.length), 0) - title.length;
+    logs.push(
+      chalk.gray(
+        `${'-'.repeat(titlePadding)} ${chalk.bold(title)} ${'-'.repeat(Math.min(titleMaxLength, maxWarningLineLength))}`
+      )
+    );
+
+    const isPreviewTooLong = lines.some((line) => line.length > maxWarningLineLength);
     const column = codeFrame.location?.column;
     // When the preview is too long, we skip reading the file and attempting to apply
     // code coloring, this is because it can get very slow.
@@ -143,6 +160,7 @@ export function getStackAsFormattedLog(
     }
   }
 
+  let isFallback = false;
   if (stack?.length) {
     const stackProps = stack.map((frame) => {
       return {
@@ -156,7 +174,7 @@ export function getStackAsFormattedLog(
     const backupStackLines: string[] = [];
 
     stackProps.forEach((frame) => {
-      const shouldShow = !frame.collapse || showCollapsedFrames;
+      const shouldShow = !frame.collapse;
 
       const position = terminalLink.isSupported
         ? terminalLink(frame.subtitle, frame.subtitle)
@@ -186,6 +204,7 @@ export function getStackAsFormattedLog(
     if (!backupStackLines.length) {
       logs.push(chalk.gray('  No stack trace available.'));
     } else {
+      isFallback = stackLines.length === 0;
       // If there are not stack lines then it means the error likely happened in the node modules, in this case we should fallback to showing all the
       // the stacks to give the user whatever help we can.
       const displayStack = stackLines.length ? stackLines : backupStackLines;
@@ -194,7 +213,11 @@ export function getStackAsFormattedLog(
   } else if (error && error.stack) {
     logs.push(chalk.gray(`  ${error.stack}`));
   }
-  return logs.join('\n');
+
+  return {
+    isFallback,
+    stack: logs.join('\n'),
+  };
 }
 
 export const IS_METRO_BUNDLE_ERROR_SYMBOL = Symbol('_isMetroBundleError');

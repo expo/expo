@@ -90,7 +90,10 @@ export async function maybeSymbolicateAndFormatReactErrorLogAsync(
     message: string;
     stack: StackFrame[];
   }
-): Promise<string> {
+): Promise<{
+  isFallback: boolean;
+  stack: string;
+}> {
   const log = new LogBoxLog({
     level: level as 'error' | 'warn',
     message: {
@@ -105,15 +108,16 @@ export async function maybeSymbolicateAndFormatReactErrorLogAsync(
 
   await new Promise((res) => log.symbolicate('stack', res));
 
-  const symbolicatedErrorMessageAndStackLog = [
-    log.message.content,
-    getStackAsFormattedLog(projectRoot, {
-      stack: log.symbolicated?.stack?.stack ?? [],
-      codeFrame: log.codeFrame,
-    }),
-  ].join('\n\n');
+  const formatted = getStackAsFormattedLog(projectRoot, {
+    stack: log.symbolicated?.stack?.stack ?? [],
+    codeFrame: log.codeFrame,
+  });
+  const symbolicatedErrorMessageAndStackLog = [log.message.content, formatted.stack].join('\n\n');
 
-  return symbolicatedErrorMessageAndStackLog;
+  return {
+    isFallback: formatted.isFallback,
+    stack: symbolicatedErrorMessageAndStackLog,
+  };
 }
 
 /** Attempt to parse an error message string to an unsymbolicated stack.  */

@@ -79,28 +79,51 @@ export class MetroTerminalReporter extends TerminalReporter {
         const mode = event.mode === 'NOBRIDGE' || event.mode === 'BRIDGE' ? '' : (event.mode ?? '');
         // @ts-expect-error
         if (level === 'warn' || level === 'error') {
-          // Quick check to see if an unsymbolicated stack is being logged.
-          const msg = event.data.join('\n');
-          if (msg.includes('.bundle//&platform=')) {
-            const parsed = parseErrorStringToObject(msg);
-
-            // Add --- index.tsx:4:16 -----------------------------------
-            if (parsed) {
-              maybeSymbolicateAndFormatReactErrorLogAsync(this.projectRoot, level, parsed)
-                .then((res) => {
-                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, res);
-                })
-                .catch((e) => {
-                  // Fallback on the original error message if we can't symbolicate the stack.
-                  debug('Error formatting stack', e);
-
-                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
-                });
-
-              return;
+          let hasStack = false;
+          const parsed = event.data.map((msg) => {
+            // Quick check to see if an unsymbolicated stack is being logged.
+            if (msg.includes('.bundle//&platform=')) {
+              const stack = parseErrorStringToObject(msg);
+              if (stack) {
+                hasStack = true;
+              }
+              return stack;
             }
+            return msg;
+          });
+
+          if (hasStack) {
+            (async () => {
+              const symbolicating = parsed.map((p) => {
+                if (typeof p === 'string') return p;
+                return maybeSymbolicateAndFormatReactErrorLogAsync(this.projectRoot, level, p);
+              });
+
+              let usefulStackCount = 0;
+              const fallbackIndices: number[] = [];
+              const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
+                if (s.status === 'rejected') {
+                  debug('Error formatting stack', parsed[index], s.reason);
+                  return parsed[index];
+                } else if (typeof s.value === 'string') {
+                  return s.value;
+                } else {
+                  if (!s.value.isFallback) {
+                    usefulStackCount++;
+                  } else {
+                    fallbackIndices.push(index);
+                  }
+                  return s.value.stack;
+                }
+              });
+
+              const filtered = usefulStackCount
+                ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
+                : symbolicated;
+
+              logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...filtered);
+            })();
+            return;
           }
         }
 
