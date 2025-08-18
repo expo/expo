@@ -1,0 +1,26 @@
+// Projet ALNC complet prêt pour Expo
+
+// 1. App.js import React from 'react'; import Navigation from './Navigation';
+
+export default function App() { return ; }
+
+// 2. Navigation.js import React from 'react'; import { createStackNavigator } from '@react-navigation/stack'; import { NavigationContainer } from '@react-navigation/native'; import FeedScreen from './screens/FeedScreen'; import UploadScreen from './screens/UploadScreen'; import ProfileScreen from './screens/ProfileScreen'; import WalletScreen from './screens/WalletScreen';
+
+const Stack = createStackNavigator();
+
+export default function Navigation() { return ( <Stack.Navigator initialRouteName="Feed"> <Stack.Screen name="Feed" component={FeedScreen} /> <Stack.Screen name="Upload" component={UploadScreen} /> <Stack.Screen name="Profile" component={ProfileScreen} /> <Stack.Screen name="Wallet" component={WalletScreen} /> </Stack.Navigator> ); }
+
+// 3. screens/FeedScreen.js import React, { useState } from 'react'; import { View, Text, FlatList, Dimensions, TouchableOpacity } from 'react-native'; import Video from 'react-native-video';
+
+const { height } = Dimensions.get('window');
+
+export default function FeedScreen() { const [videos, setVideos] = useState([ { id: '1', uri: 'https://www.w3schools.com/html/mov_bbb.mp4', likes: 0 }, { id: '2', uri: 'https://www.w3schools.com/html/movie.mp4', likes: 0 }, ]);
+
+const likeVideo = (id) => { setVideos(videos.map(v => v.id === id ? {...v, likes: v.likes + 1} : v)); };
+
+return ( <FlatList data={videos} keyExtractor={item => item.id} pagingEnabled renderItem={({ item }) => ( <View style={{ height: height, justifyContent: 'center', alignItems: 'center' }}> <Video source={{ uri: item.uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" repeat /> <TouchableOpacity onPress={() => likeVideo(item.id)} style={{ position: 'absolute', right: 20, bottom: 100 }}> <Text style={{ color: 'white', fontSize: 30 }}>❤️ {item.likes} )} /> ); }
+
+// 4. screens/UploadScreen.js import React from 'react'; import { View, Text } from 'react-native';
+
+export default function UploadScreen() { return
+
