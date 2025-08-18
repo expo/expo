@@ -18,12 +18,12 @@ jobs:
       - uses: actions/checkout@v4
 
       # Start up the simulator first, so we can fail early it it doesn't work
-      - name: 📱 Start iOS Simulator
-        uses: futureware-tech/simulator-action@v4
-        with:
-          erase_before_boot: true
-          wait_for_boot: true # Default is false
-          shutdown_after_job: true
+      # - name: 📱 Start iOS Simulator
+      #   uses: futureware-tech/simulator-action@v4
+      #   with:
+      #     erase_before_boot: true
+      #     wait_for_boot: true # Default is false
+      #     shutdown_after_job: true
 
       - name: Use Node.js
         uses: actions/setup-node@v4
