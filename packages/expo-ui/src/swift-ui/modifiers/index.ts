@@ -292,6 +292,18 @@ export const aspectRatio = (params: { ratio: number; contentMode?: 'fit' | 'fill
  */
 export const clipped = (clipped: boolean = true) => createModifier('clipped', { clipped });
 
+/**
+ * Applies a glass effect to a view.
+ */
+export const glassEffect = (params?: {
+  glass?: {
+    variant: 'regular' | 'clear' | 'identity';
+    interactive?: boolean;
+    tint?: string;
+  };
+  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
+}) => createModifier('glassEffect', params);
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -334,7 +346,8 @@ export type BuiltInModifier =
   | ReturnType<typeof overlay>
   | ReturnType<typeof backgroundOverlay>
   | ReturnType<typeof aspectRatio>
-  | ReturnType<typeof clipped>;
+  | ReturnType<typeof clipped>
+  | ReturnType<typeof glassEffect>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
