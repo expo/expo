@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Change Constants to Constant/Property.
+
 ## 14.0.4 — 2025-08-27
 
 _This version does not introduce any user-facing changes._
