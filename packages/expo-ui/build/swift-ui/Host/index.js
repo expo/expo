@@ -1,13 +1,14 @@
 import { requireNativeView } from 'expo';
 import { useState } from 'react';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const HostNativeView = requireNativeView('ExpoUI', 'HostView');
 /**
  * A hosting component for SwiftUI views.
  */
 export function Host(props) {
-    const { matchContents, onLayoutContent, style, ...restProps } = props;
+    const { matchContents, onLayoutContent, style, modifiers, ...restProps } = props;
     const [containerStyle, setContainerStyle] = useState(null);
-    return (<HostNativeView style={[style, containerStyle]} onLayoutContent={(e) => {
+    return (<HostNativeView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} style={[style, containerStyle]} onLayoutContent={(e) => {
             onLayoutContent?.(e);
             if (matchContents) {
                 const matchVertical = typeof matchContents === 'object' ? matchContents.vertical : matchContents;

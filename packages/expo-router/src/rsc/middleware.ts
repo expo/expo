@@ -6,7 +6,7 @@
  *
  */
 // This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
-import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
+import type { RenderRscArgs } from '@expo/server/private';
 import Constants from 'expo-constants';
 import path from 'node:path';
 

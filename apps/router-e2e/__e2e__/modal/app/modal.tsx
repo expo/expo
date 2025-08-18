@@ -1,4 +1,4 @@
-import { Modal } from 'expo-router';
+import { Modal } from 'expo-router/build/modal/Modal';
 import { useState } from 'react';
 import { Button, Text, View } from 'react-native';
 

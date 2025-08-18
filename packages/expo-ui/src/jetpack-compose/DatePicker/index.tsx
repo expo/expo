@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle, StyleSheet, PixelRatio } from 'react-native';
 
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 
 export type AndroidVariant = 'picker' | 'input';
 
@@ -47,6 +47,8 @@ export type DateTimePickerProps = {
    * @default true
    */
   is24Hour?: boolean;
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {
@@ -74,6 +76,8 @@ export function transformDateTimePickerProps(props: DateTimePickerProps): Native
       props?.onDateSelected?.(new Date(date));
     },
     variant,
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
     style: [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }],
   };
 }

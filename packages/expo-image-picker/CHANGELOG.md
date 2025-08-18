@@ -4,6 +4,24 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 17.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
 - [Web] Changed web `uri` to use blob URLs instead of base64 data URLs for better performance. The `uri` property will now be a blob URL instead of a base64 data URL, while the `base64` property behavior remains unchanged. ([#37447](https://github.com/expo/expo/pull/37447) by [@hirbod](https://github.com/hirbod))
 - [ios] The default for `preferredAssetRepresentationMode` is now `.current` instead of `.automatic`. This keeps the asset in its original container/codec (e.g. HEIC instead of JPEG) and is required for the new fast-path. Apps that relied on `.automatic` re-encoded output can pass `preferredAssetRepresentationMode: '.automatic'` to restore the old behaviour. ([#37569](https://github.com/expo/expo/pull/37569) by [@hirbod](https://github.com/hirbod))
 

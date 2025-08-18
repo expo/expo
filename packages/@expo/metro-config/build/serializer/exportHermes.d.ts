@@ -3,6 +3,7 @@ interface HermesBundleOutput {
     sourcemap: string | null;
 }
 type BuildHermesOptions = {
+    projectRoot: string;
     filename: string;
     code: string;
     map: string | null;

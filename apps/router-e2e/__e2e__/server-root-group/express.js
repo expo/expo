@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const { createRequestHandler } = require('@expo/server/build/vendor/express');
+const { createRequestHandler } = require('@expo/server/adapter/express');
 
 const express = require('express');
 const compression = require('compression');

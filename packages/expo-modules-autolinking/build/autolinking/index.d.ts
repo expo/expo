@@ -1,17 +1,23 @@
-import { findModulesAsync } from './findModules';
-import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync, resolveSearchPathsAsync } from './mergeLinkingOptions';
-import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
-import type { ModuleDescriptor, SearchOptions } from '../types';
-import { getConfiguration } from './getConfiguration';
-export { findModulesAsync, getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync, resolveExtraBuildDependenciesAsync, resolveModulesAsync, resolveSearchPathsAsync, getConfiguration, };
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform } from '../types';
+export { getConfiguration } from './getConfiguration';
 export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
-export { verifySearchResults } from './verifySearchResults';
-export * from '../types';
-/**
- * Programmatic API to query autolinked modules for a project.
- */
-export declare function queryAutolinkingModulesFromProjectAsync(projectRoot: string, options: Pick<SearchOptions, 'platform' | 'exclude' | 'onlyProjectDeps'>): Promise<ModuleDescriptor[]>;
-/**
- * Get the project root directory from the current working directory.
- */
-export declare function findProjectRootSync(cwd?: string): string;
+/** @deprecated */
+export interface SearchOptions extends Partial<AutolinkingOptions> {
+    projectRoot: string;
+    platform: SupportedPlatform;
+    [extra: string]: unknown;
+}
+/** @deprecated */
+export interface ResolveOptions {
+    projectRoot: string;
+    platform: SupportedPlatform;
+    [extra: string]: unknown;
+}
+/** @deprecated */
+declare function apiFindModulesAsync(providedOptions: SearchOptions): Promise<SearchResults>;
+/** @deprecated */
+declare function apiResolveExtraBuildDependenciesAsync(providedOptions: ResolveOptions): Promise<ExtraDependencies>;
+/** @deprecated */
+declare function apiResolveModulesAsync(searchResults: SearchResults, providedOptions: SearchOptions): Promise<ModuleDescriptor[]>;
+export { apiFindModulesAsync as findModulesAsync, apiResolveExtraBuildDependenciesAsync as resolveExtraBuildDependenciesAsync, apiResolveModulesAsync as resolveModulesAsync, };

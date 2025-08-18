@@ -46,6 +46,8 @@ export type ExportAssetDescriptor = {
   assetId?: string;
   /** Expo Router route path for formatting the HTML output. */
   routeId?: string;
+  /** Expo Router route path for formatting the middleware function output. */
+  middlewareId?: string;
   /** Expo Router API route path for formatting the server function output. */
   apiRouteId?: string;
   /** Expo Router route path for formatting the RSC output. */
@@ -71,6 +73,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   const assetEntries: [string, ExportAssetDescriptor][] = [];
   const apiRouteEntries: [string, ExportAssetDescriptor][] = [];
+  const middlewareEntries: [string, ExportAssetDescriptor][] = [];
   const routeEntries: [string, ExportAssetDescriptor][] = [];
   const rscEntries: [string, ExportAssetDescriptor][] = [];
   const remainingEntries: [string, ExportAssetDescriptor][] = [];
@@ -80,6 +83,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     hasServerOutput = hasServerOutput || asset[1].targetDomain === 'server';
     if (asset[1].assetId) assetEntries.push(asset);
     else if (asset[1].routeId != null) routeEntries.push(asset);
+    else if (asset[1].middlewareId != null) middlewareEntries.push(asset);
     else if (asset[1].apiRouteId != null) apiRouteEntries.push(asset);
     else if (asset[1].rscId != null) rscEntries.push(asset);
     else remainingEntries.push(asset);
@@ -225,6 +229,31 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
       );
       Log.log(
         id === '' ? chalk.gray(' (index)') : id,
+        sizeStr(assets.contents),
+        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+      );
+    }
+  }
+
+  if (middlewareEntries.length) {
+    const middlewareWithoutSourcemaps = middlewareEntries.filter(
+      (route) => !route[0].endsWith('.map')
+    );
+    Log.log('');
+    Log.log(chalk.bold`${BLT} Middleware:`);
+
+    for (const [middlewareFilename, assets] of middlewareWithoutSourcemaps.sort(
+      (a, b) => a[0].length - b[0].length
+    )) {
+      const id = assets.middlewareId!;
+      const hasSourceMap = middlewareEntries.find(
+        ([filename, route]) =>
+          filename !== middlewareFilename &&
+          route.middlewareId === assets.middlewareId &&
+          filename.endsWith('.map')
+      );
+      Log.log(
+        id,
         sizeStr(assets.contents),
         hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
       );

@@ -988,6 +988,7 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 
   addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
+  addExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
 }
 
 function addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
@@ -1228,6 +1229,49 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
         await db.closeAsync();
       }
     );
+  });
+}
+
+function addExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+  const vecExt = SQLite.bundledExtensions['sqlite-vec'];
+  const scopedIt = vecExt ? it : t.xit;
+
+  describe('Extensions', () => {
+    scopedIt('should load sqlite-vec extension', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.loadExtensionAsync(vecExt.libPath, vecExt.entryPoint);
+      // Example from https://github.com/asg017/sqlite-vec?#sample-usage
+      await db.execAsync(`
+create virtual table vec_examples using vec0(
+  sample_embedding float[8]
+);
+
+-- vectors can be provided as JSON or in a compact binary format
+insert into vec_examples(rowid, sample_embedding)
+  values
+    (1, '[-0.200, 0.250, 0.341, -0.211, 0.645, 0.935, -0.316, -0.924]'),
+    (2, '[0.443, -0.501, 0.355, -0.771, 0.707, -0.708, -0.185, 0.362]'),
+    (3, '[0.716, -0.927, 0.134, 0.052, -0.669, 0.793, -0.634, -0.162]'),
+    (4, '[-0.710, 0.330, 0.656, 0.041, -0.990, 0.726, 0.385, -0.958]');
+`);
+
+      const rows = await db.getAllAsync<{ rowid: number; distance: number }>(`
+-- KNN style query
+select
+  rowid,
+  distance
+from vec_examples
+where sample_embedding match '[0.890, 0.544, 0.825, 0.961, 0.358, 0.0196, 0.521, 0.175]'
+order by distance
+limit 2;
+`);
+      expect(rows.length).toBe(2);
+      expect(rows[0].rowid).toBe(2);
+      expect(rows[0].distance).toBeCloseTo(2.3868);
+      expect(rows[1].rowid).toBe(1);
+      expect(rows[1].distance).toBeCloseTo(2.3897);
+      await db.closeAsync();
+    });
   });
 }
 

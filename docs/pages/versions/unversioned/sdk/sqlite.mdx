@@ -4,7 +4,7 @@ description: A library that provides access to a database that can be queried th
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sqlite'
 packageName: 'expo-sqlite'
 iconUrl: '/static/images/packages/expo-sqlite.png'
-platforms: ['android', 'ios', 'macos', 'web']
+platforms: ['android', 'ios', 'macos', 'tvos', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -14,6 +14,8 @@ import { DiffBlock } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
+
+> **Warning** On Apple TV, the underlying database file is in the caches directory and not the application documents directory, per [Apple platform guidelines](https://github.com/react-native-tvos/react-native-tvos/issues/68#issuecomment-628327676).
 
 ## Installation
 
@@ -68,6 +70,12 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
       name: 'useSQLCipher',
       description:
         'Use the [SQLCipher](https://www.zetetic.net/sqlcipher/) implementations rather than the default SQLite.',
+      default: 'false',
+    },
+    {
+      name: 'withSQLiteVecExtension',
+      description:
+        'Include the [sqlite-vec](https://github.com/asg017/sqlite-vec) extension to [`bundledExtensions`](#sqlitebundledextensions).',
       default: 'false',
     },
   ]}
@@ -479,6 +487,19 @@ If you're currently using `@react-native-async-storage/async-storage` in your pr
 ```diff
 - import AsyncStorage from '@react-native-async-storage/async-storage';
 + import AsyncStorage from 'expo-sqlite/kv-store';
+```
+
+### The `localStorage` API
+
+The `expo-sqlite/localStorage/install` module provides a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) API. If you're already familiar with this API from the web, or you would like to be able to share storage code between web and other platforms, this may be useful. To use it, you just need to import the `expo-sqlite/localStorage/install` module:
+
+> **Note:** `import 'expo-sqlite/localStorage/install';` is a no-op on Web and will be excluded from the production JS bundle.
+
+```ts Install globalThis.localStorage
+import 'expo-sqlite/localStorage/install';
+
+globalThis.localStorage.setItem('key', 'value');
+console.log(globalThis.localStorage.getItem('key')); // 'value'
 ```
 
 ## Security

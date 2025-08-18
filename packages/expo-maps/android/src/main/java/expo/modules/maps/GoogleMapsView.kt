@@ -42,6 +42,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.GoogleMapOptions
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
@@ -54,6 +55,7 @@ data class GoogleMapsViewProps(
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM),
   val contentPadding: MutableState<MapContentPaddingRecord> = mutableStateOf(MapContentPaddingRecord()),
+  val mapOptions: MutableState<MapOptionsRecord> = mutableStateOf(MapOptionsRecord())
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -86,8 +88,10 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
     val polylineState by polylineStateFromProps()
     val polygonState by polygonStateFromProps()
     val circleState by circleStateFromProps()
+    val mapOptions = props.mapOptions.value.mapId?.let { GoogleMapOptions().mapId(it) } ?: GoogleMapOptions()
 
     GoogleMap(
+      googleMapOptionsFactory = { mapOptions },
       modifier = Modifier.fillMaxSize(),
       cameraPositionState = cameraState,
       uiSettings = props.uiSettings.value.toMapUiSettings(),

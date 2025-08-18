@@ -39,9 +39,14 @@ const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
  * ```
  */
 function useRootNavigationState() {
-    return (0, native_1.useNavigation)()
-        .getParent(constants_1.INTERNAL_SLOT_NAME)
-        .getState();
+    const parent = 
+    // We assume that this is called from routes in __root
+    // Users cannot customize the generated Sitemap or NotFound routes, so we should be safe
+    (0, native_1.useNavigation)().getParent(constants_1.INTERNAL_SLOT_NAME);
+    if (!parent) {
+        throw new Error('useRootNavigationState was called from a generated route. This is likely a bug in Expo Router.');
+    }
+    return parent.getState();
 }
 /**
  * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,

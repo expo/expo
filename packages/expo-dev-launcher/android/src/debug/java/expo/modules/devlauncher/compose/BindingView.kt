@@ -10,8 +10,10 @@ class BindingView(context: Context) : LinearLayout(context) {
     addView(
       ComposeView(context).apply {
         setContent {
-          AppTheme {
-            DevLauncherBottomTabsNavigator()
+          expo.modules.devmenu.compose.newtheme.AppTheme {
+            AppTheme {
+              DevLauncherBottomTabsNavigator()
+            }
           }
         }
       }

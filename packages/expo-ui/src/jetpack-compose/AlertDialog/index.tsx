@@ -1,5 +1,7 @@
 import { requireNativeView } from 'expo';
 
+import { ExpoModifier } from '../../types';
+
 export type AlertDialogProps = {
   /**
    * The title of the alert dialog.
@@ -31,6 +33,9 @@ export type AlertDialogProps = {
    * Callback that is called when the user tries to dismiss the dialog.
    */
   onDismissPressed?: () => void;
+
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 export type NativeAlertDialogProps = AlertDialogProps;
@@ -44,5 +49,11 @@ const AlertDialogNativeView: React.ComponentType<NativeAlertDialogProps> = requi
  * Renders an `AlertDialog` component.
  */
 export function AlertDialog(props: AlertDialogProps) {
-  return <AlertDialogNativeView {...props} />;
+  return (
+    <AlertDialogNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
 }

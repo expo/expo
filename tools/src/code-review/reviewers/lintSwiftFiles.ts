@@ -61,7 +61,7 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
       comments,
       body: `Found ${comments.length} violation${
         comments.length > 1 ? 's' : ''
-      }, ${errorsCount} serious. See the review comments below for more insights.`,
+      }, ${errorsCount} serious. See the review comments below for more insights. Some violations may be fixable by running \`swiftlint --config .swiftlint.yml package_path --fix\`.`,
     };
   } else {
     return {
