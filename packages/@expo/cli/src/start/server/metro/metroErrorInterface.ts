@@ -87,31 +87,21 @@ export function getStackAsFormattedLog(
   stack: string;
 } {
   const logs: string[] = [];
-  let hasCodeFramePresented = false;
   const containsCodeFrame = likelyContainsCodeFrame(error?.message);
 
   if (containsCodeFrame) {
     // Some transformation errors will have a code frame embedded in the error message
     // from Babel and we should not duplicate it as message is already printed before this call.
-    hasCodeFramePresented = true;
   } else if (codeFrame) {
     const maxWarningLineLength = Math.max(800, process.stdout.columns);
 
     const lineText = codeFrame.content;
     const lines = codeFrame.content.split('\n');
-    const cleanLines = lines.map((l) => stripVTControlCharacters(l).trim());
 
     // ---- index.tsx ------------------------------------------------------
     //  32 |         This is example code which will be under the title.
     const title = path.basename(codeFrame.fileName);
-    const titlePadding = (cleanLines[0] || '').indexOf('|') + 2;
-    const titleMaxLength =
-      cleanLines.reduce((max, line) => Math.max(max, line.length), 0) - title.length;
-    logs.push(
-      chalk.gray(
-        `${'-'.repeat(titlePadding)} ${chalk.bold(title)} ${'-'.repeat(Math.min(titleMaxLength, maxWarningLineLength))}`
-      )
-    );
+    logs.push(chalk.bold`Code: ${title}`);
 
     const isPreviewTooLong = lines.some((line) => line.length > maxWarningLineLength);
     const column = codeFrame.location?.column;
@@ -152,11 +142,9 @@ export function getStackAsFormattedLog(
         cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
 
         logs.push(formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)'));
-        hasCodeFramePresented = true;
       }
     } else {
       logs.push(codeFrame.content);
-      hasCodeFramePresented = true;
     }
   }
 
@@ -196,9 +184,6 @@ export function getStackAsFormattedLog(
       }
     });
 
-    if (hasCodeFramePresented) {
-      logs.push('');
-    }
     logs.push(chalk.bold`Call Stack`);
 
     if (!backupStackLines.length) {
