@@ -363,7 +363,7 @@ export type CameraViewProps = ViewProps & {
      */
     pictureSize?: string;
     /**
-     * Available lenses are emitted to the `onAvailableLensesChanged` callback whenever the currently selected camera changes or by calling [`getAvailableLensesAsync`](#getavailableaensesasync).
+     * Available lenses are emitted to the `onAvailableLensesChanged` callback whenever the currently selected camera changes or by calling [`getAvailableLensesAsync`](#getavailablelensesasync).
      * You can read more about the available lenses in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
      * @platform ios
      * @default 'builtInWideAngleCamera'

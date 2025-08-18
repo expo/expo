@@ -171,6 +171,10 @@ class DisabledUpdatesController(
     throw UpdatesDisabledException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported when expo-updates is not enabled.")
   }
 
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    throw UpdatesDisabledException("Updates.setUpdateRequestHeadersOverride() is not supported when expo-updates is not enabled.")
+  }
+
   @Synchronized
   private fun notifyController() {
     controllerScope.launch {

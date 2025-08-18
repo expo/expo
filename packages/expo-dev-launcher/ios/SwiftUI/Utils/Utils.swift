@@ -20,3 +20,48 @@ func getAvatarColor(for firstLetter: String) -> (background: Color, foreground: 
     return (Color.purple.opacity(0.2), Color.purple)
   }
 }
+
+func formatTimestamp(_ date: Date) -> String {
+  let formatter = DateFormatter()
+  formatter.dateStyle = .medium
+  formatter.timeStyle = .medium
+  return formatter.string(from: date)
+}
+
+func formatDate(_ date: Date) -> String {
+  let formatter = DateFormatter()
+  formatter.dateStyle = .medium
+  formatter.timeStyle = .none
+  return formatter.string(from: date)
+}
+
+extension Text {
+  func monospacedCaption() -> some View {
+    self
+      .font(.system(.caption, design: .monospaced))
+      .foregroundColor(.primary)
+  }
+
+  func monospacedCaptionSecondary() -> some View {
+    self
+      .font(.system(.caption, design: .monospaced))
+      .foregroundColor(.secondary)
+  }
+}
+
+extension View {
+  func systemGroupedBackground() -> some View {
+    return self.background(Color.expoSystemGroupedBackground)
+  }
+}
+
+func getDevLauncherBundle() -> Bundle? {
+  if let bundleURL = Bundle.main.url(forResource: "EXDevLauncher", withExtension: "bundle") {
+    if let bundle = Bundle(url: bundleURL) {
+      return bundle
+    }
+  }
+
+  // fallback to the main bundle
+  return .main
+}

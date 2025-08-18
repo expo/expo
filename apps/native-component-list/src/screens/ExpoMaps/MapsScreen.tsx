@@ -117,6 +117,22 @@ export const MapsScreens = Platform.select({
         return optionalRequire(() => require('./google/MapsStreetViewScreen'));
       },
     },
+    {
+      name: 'Maps map style options',
+      route: 'expo-maps/map-style-options',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsMapStyleOptionsScreen'));
+      },
+    },
+    {
+      name: 'Maps map ID',
+      route: 'expo-maps/map-id',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsMapIdScreen'));
+      },
+    },
   ],
   ios: [
     {
@@ -229,6 +245,14 @@ export const MapsScreens = Platform.select({
       options: {},
       getComponent() {
         return optionalRequire(() => require('./apple/MapsImageRefIntegrationScreen'));
+      },
+    },
+    {
+      name: 'Points of interest',
+      route: 'expo-maps/points-of-interest',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPointOfInterestScreen'));
       },
     },
   ],

@@ -7,9 +7,11 @@ internal final class DisclosureGroupViewProps: ExpoSwiftUI.ViewProps, CommonView
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var label: String
   @Field var isExpanded: Bool = true
-  @Field var testID: String?
   var onStateChange = EventDispatcher()
 }
 
@@ -24,6 +26,7 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
     DisclosureGroup(props.label, isExpanded: $isExpanded) {
       Children()
     }
+    .modifier(CommonViewModifiers(props: props))
     .onAppear {
       isExpanded = props.isExpanded
     }
@@ -34,7 +37,6 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
     .onChange(of: props.isExpanded) { newValue in
       isExpanded = newValue
     }
-    .modifier(CommonViewModifiers(props: props))
 #endif
   }
 }

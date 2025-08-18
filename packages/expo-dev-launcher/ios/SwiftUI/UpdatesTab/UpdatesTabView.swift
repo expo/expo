@@ -11,15 +11,13 @@ struct UpdatesTabView: View {
 
       if !viewModel.isLoggedIn {
         NotSignedInView()
+          .padding()
       } else if !viewModel.structuredBuildInfo.usesEASUpdates {
         NotUsingUpdatesView()
       } else {
         UpdatesListView()
       }
     }
-    #if !os(tvOS)
-    .background(Color(.systemGroupedBackground))
-    #endif
   }
 }
 

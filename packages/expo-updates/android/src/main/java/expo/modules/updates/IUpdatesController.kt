@@ -166,6 +166,7 @@ interface IUpdatesController {
   suspend fun setExtraParam(key: String, value: String?)
 
   fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?)
+  fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?)
 
   fun shutdown()
 }

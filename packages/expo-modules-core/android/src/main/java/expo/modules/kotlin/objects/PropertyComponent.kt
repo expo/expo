@@ -29,7 +29,7 @@ class PropertyComponent(
     val jniGetter = if (getter != null) {
       JNIFunctionBody { args ->
         val result = getter.callUserImplementation(args, appContext)
-        return@JNIFunctionBody JSTypeConverter.convertToJSValue(result)
+        return@JNIFunctionBody JSTypeConverter.convertToJSValue(result, useExperimentalConverter = true)
       }
     } else {
       null

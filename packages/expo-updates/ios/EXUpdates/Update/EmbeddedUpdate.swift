@@ -57,7 +57,9 @@ public final class EmbeddedUpdate: Update {
       keep: true,
       status: UpdateStatus.StatusEmbedded,
       isDevelopmentMode: false,
-      assetsFromManifest: processedAssets
+      assetsFromManifest: processedAssets,
+      url: config.originalEmbeddedUpdateUrl,
+      requestHeaders: config.originalEmbeddedRequestHeaders
     )
   }
 }

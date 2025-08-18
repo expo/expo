@@ -1,7 +1,8 @@
-import { Text } from 'react-native';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react-native';
+import { Text, View } from 'react-native';
 
 import { router } from '../imperative-api';
-import { act, fireEvent, renderRouter, screen, waitFor, within } from '../testing-library';
+import { renderRouter } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
 jest.mock('expo-constants', () => ({
@@ -39,13 +40,18 @@ afterAll(() => {
   (global as any).HermesInternal = originalHermes;
 });
 
-test('given no routes, unmatched route', () => {
+test('given no routes, renders no route in the sitemap', () => {
   renderRouter({
-    _layout: () => <Slot />,
+    _layout: () => (
+      <View testID="layout">
+        <Slot />
+      </View>
+    ),
   });
   act(() => router.replace('/_sitemap'));
   expect(screen).toHavePathname('/_sitemap');
-  expect(screen.getByText('Unmatched Route')).toBeOnTheScreen();
+  expect(screen.getByTestId('expo-router-sitemap')).toBeVisible();
+  expect(screen.queryByTestId('sitemap-item-container')).toBeNull();
 });
 
 test('given single index route, renders one route', () => {
@@ -54,7 +60,8 @@ test('given single index route, renders one route', () => {
     index: () => <Text />,
   });
   act(() => router.replace('/_sitemap'));
-  expect(screen.getByText('index.js')).toBeOnTheScreen();
+  expect(screen.getByTestId('expo-router-sitemap')).toBeVisible();
+  expect(screen.getByText('index.js')).toBeVisible();
 });
 
 test('given multiple same level routes, renders them as flat list', () => {
@@ -178,13 +185,13 @@ describe('system information', () => {
     act(() => router.replace('/_sitemap'));
     expect(screen.getByText('System Information')).toBeOnTheScreen();
 
-    expect(screen.getByText('Location origin:')).toBeOnTheScreen();
+    expect(screen.getByText('Location origin')).toBeOnTheScreen();
     expect(screen.getByText('http://localhost:8081')).toBeOnTheScreen();
 
-    expect(screen.getByText('Expo SDK version:')).toBeOnTheScreen();
+    expect(screen.getByText('Expo SDK')).toBeOnTheScreen();
     expect(screen.getByText('54.0.0')).toBeOnTheScreen();
 
-    expect(screen.getByText('Hermes version:')).toBeOnTheScreen();
+    expect(screen.getByText('Hermes version')).toBeOnTheScreen();
     expect(screen.getByText('for RN 0.79.5')).toBeOnTheScreen();
   });
 });

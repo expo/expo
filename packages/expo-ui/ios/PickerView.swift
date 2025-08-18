@@ -3,7 +3,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class PickerProps: ExpoSwiftUI.ViewProps {
+final class PickerProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var options: [String] = []
   @Field var selectedIndex: Int?
   @Field var variant: String?
@@ -29,6 +35,7 @@ struct PickerView: ExpoSwiftUI.View {
         }
       }
       .tint(props.color)
+      .modifier(CommonViewModifiers(props: props))
 #if !os(tvOS)
       .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
       .if(props.variant == "palette", { $0.pickerStyle(.palette) })

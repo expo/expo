@@ -1,13 +1,13 @@
 import ExpoModulesCore
 import WebKit
 
-class LinkPreviewNativeActionView: ExpoView {
+class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
   // MARK: - Shared props
   var title: String = "" {
     didSet {
       updateUiAction()
       if isMenuAction {
-        updateMenuAction()
+        updateMenu()
       }
     }
   }
@@ -15,7 +15,7 @@ class LinkPreviewNativeActionView: ExpoView {
     didSet {
       updateUiAction()
       if isMenuAction {
-        updateMenuAction()
+        updateMenu()
       }
     }
   }
@@ -23,7 +23,7 @@ class LinkPreviewNativeActionView: ExpoView {
     didSet {
       updateUiAction()
       if isMenuAction {
-        updateMenuAction()
+        updateMenu()
       }
     }
   }
@@ -49,27 +49,27 @@ class LinkPreviewNativeActionView: ExpoView {
   var singleSelection: Bool = false {
     didSet {
       if isMenuAction {
-        updateMenuAction()
+        updateMenu()
       }
     }
   }
   var displayAsPalette: Bool = false {
     didSet {
       if isMenuAction {
-        updateMenuAction()
+        updateMenu()
       }
     }
   }
   var displayInline: Bool = false {
     didSet {
       if isMenuAction {
-        updateMenuAction()
+        updateMenu()
       }
     }
   }
   var subActions: [LinkPreviewNativeActionView] = [] {
     didSet {
-      updateMenuAction()
+      updateMenu()
     }
   }
 
@@ -77,7 +77,7 @@ class LinkPreviewNativeActionView: ExpoView {
   let onSelected = EventDispatcher()
 
   // MARK: - Native API
-  var updateMenuCallback: (() -> Void) = {}
+  weak var parentMenuUpdatable: LinkPreviewMenuUpdatable?
 
   private var baseUiAction: UIAction
   private var menuAction: UIMenu
@@ -98,7 +98,7 @@ class LinkPreviewNativeActionView: ExpoView {
     baseUiAction = UIAction(title: "", handler: { _ in self.onSelected() })
   }
 
-  private func updateMenuAction() {
+  func updateMenu() {
     let subActions = subActions.map { subAction in
       subAction.uiAction
     }
@@ -125,7 +125,7 @@ class LinkPreviewNativeActionView: ExpoView {
       children: subActions
     )
 
-    updateMenuCallback()
+    parentMenuUpdatable?.updateMenu()
   }
 
   private func updateUiAction() {
@@ -142,16 +142,14 @@ class LinkPreviewNativeActionView: ExpoView {
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn ? .on : .off
 
-    updateMenuCallback()
+    parentMenuUpdatable?.updateMenu()
   }
 
   #if RCT_NEW_ARCH_ENABLED
     override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       if let childActionView = childComponentView as? LinkPreviewNativeActionView {
         subActions.append(childActionView)
-        childActionView.updateMenuCallback = { [weak self] in
-          self?.updateMenuCallback()
-        }
+        childActionView.parentMenuUpdatable = self
       } else {
         print(
           "ExpoRouter: Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewActionView"
@@ -169,4 +167,8 @@ class LinkPreviewNativeActionView: ExpoView {
       }
     }
   #endif
+}
+
+protocol LinkPreviewMenuUpdatable: AnyObject {
+  func updateMenu()
 }

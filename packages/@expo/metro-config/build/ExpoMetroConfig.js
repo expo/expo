@@ -25,7 +25,6 @@ const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
 const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
-const metro_config_1 = require("./traveling/metro-config");
 const filePath_1 = require("./utils/filePath");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
@@ -124,7 +123,7 @@ function createStableModuleIdFactory(root) {
     };
 }
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
-    const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
+    const { getDefaultConfig: getDefaultMetroConfig, mergeConfig, } = require('@expo/metro/metro-config');
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
     }
@@ -243,15 +242,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 if (!platform) {
                     return [];
                 }
-                if (platform === 'web') {
-                    return [
-                        // Ensure that the error-guard polyfill is included in the web polyfills to
-                        // make metro-runtime work correctly.
-                        require.resolve('@react-native/js-polyfills/error-guard'),
-                    ];
-                }
                 // Native behavior.
-                return require('@react-native/js-polyfills')();
+                return require(path_1.default.join(reactNativePath, 'rn-get-polyfills'))();
             },
         },
         server: {

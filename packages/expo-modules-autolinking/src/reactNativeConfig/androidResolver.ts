@@ -6,6 +6,7 @@ import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
 import {
   fileExistsAsync,
   globMatchFunctorAllAsync,
@@ -14,33 +15,58 @@ import {
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
-  reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined
+  reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined,
+  expoModuleConfig?: ExpoModuleConfig | null
 ): Promise<RNConfigDependencyAndroid | null> {
   if (reactNativeConfig === null) {
     // Skip autolinking for this package.
     return null;
   }
+
+  // NOTE(@kitten): We allow `reactNativeConfig === undefined` here. That indicates a missing config file
+  // However, React Native modules with left out config files are explicitly supported and valid
+
   const sourceDir = reactNativeConfig?.sourceDir || 'android';
   const androidDir = path.join(packageRoot, sourceDir);
   const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
-  if (!manifest && !gradle) {
+
+  const isPureCxxDependency =
+    reactNativeConfig?.cxxModuleCMakeListsModuleName != null &&
+    reactNativeConfig?.cxxModuleCMakeListsPath != null &&
+    reactNativeConfig?.cxxModuleHeaderName != null &&
+    !manifest &&
+    !gradle;
+
+  if (!manifest && !gradle && !isPureCxxDependency) {
     return null;
   }
 
-  const packageName =
-    reactNativeConfig?.packageName || (await parsePackageNameAsync(androidDir, manifest, gradle));
-  if (!packageName) {
-    return null;
+  if (reactNativeConfig === undefined && expoModuleConfig?.supportsPlatform('android')) {
+    if (!!gradle && !expoModuleConfig?.rawConfig.android?.gradlePath) {
+      // If the React Native module has a gradle file and the Expo module doesn't redirect it,
+      // they will conflict and we can't link both at the same time
+      return null;
+    }
   }
-  const nativePackageClassName = await parseNativePackageClassNameAsync(packageRoot, androidDir);
-  if (!nativePackageClassName) {
-    return null;
+
+  let packageInstance: string | null = null;
+  let packageImportPath: string | null = null;
+  if (!isPureCxxDependency) {
+    const packageName =
+      reactNativeConfig?.packageName || (await parsePackageNameAsync(androidDir, manifest, gradle));
+    if (!packageName) {
+      return null;
+    }
+    const nativePackageClassName = await parseNativePackageClassNameAsync(packageRoot, androidDir);
+    if (!nativePackageClassName) {
+      return null;
+    }
+    packageImportPath =
+      reactNativeConfig?.packageImportPath || `import ${packageName}.${nativePackageClassName};`;
+    packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
   }
 
   const packageJson = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf8'));
-  const packageImportPath =
-    reactNativeConfig?.packageImportPath || `import ${packageName}.${nativePackageClassName};`;
-  const packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
   const buildTypes = reactNativeConfig?.buildTypes || [];
   const dependencyConfiguration = reactNativeConfig?.dependencyConfiguration;
   const libraryName =
@@ -75,6 +101,7 @@ export async function resolveDependencyConfigImplAndroidAsync(
     cxxModuleCMakeListsModuleName,
     cxxModuleCMakeListsPath,
     cxxModuleHeaderName,
+    isPureCxxDependency,
   };
   if (!result.libraryName) {
     delete result.libraryName;

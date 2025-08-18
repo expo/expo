@@ -1,21 +1,22 @@
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { screen, act, waitFor, fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Button, Platform, Text, View } from 'react-native';
 
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
-import { renderRouter, screen } from '../../testing-library';
+import { renderRouter } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
 import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
 import { LinkPreviewContextProvider } from '../preview/LinkPreviewContext';
-import type {
-  NativeLinkPreviewActionProps,
-  NativeLinkPreviewContentProps,
-  NativeLinkPreviewTriggerProps,
-  NativeLinkPreviewProps,
+import {
+  type NativeLinkPreviewActionProps,
+  type NativeLinkPreviewContentProps,
+  type NativeLinkPreviewTriggerProps,
+  type NativeLinkPreviewProps,
+  NativeLinkPreview,
 } from '../preview/native';
 
 // Render and observe the props of the Link component.
@@ -25,15 +26,9 @@ jest.mock('../preview/native', () => {
   const handlerMap: Record<string, Function | undefined> = {};
   return {
     NativeLinkPreview: jest.fn(
-      ({
-        children,
-        onWillPreviewOpen,
-        onPreviewTapped,
-        onDidPreviewOpen,
-      }: NativeLinkPreviewProps) => {
+      ({ children, onWillPreviewOpen, onPreviewTapped }: NativeLinkPreviewProps) => {
         handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen();
         handlerMap['link-onPreviewTapped'] = onPreviewTapped;
-        handlerMap['link-onDidPreviewOpen'] = onDidPreviewOpen;
         return <View testID="link-preview-native-view">{children}</View>;
       }
     ),
@@ -282,7 +277,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -294,7 +289,7 @@ describe('singular', () => {
             index: 3,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -345,7 +340,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -357,7 +352,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -413,7 +408,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -425,7 +420,7 @@ test('can dynamically route using singular function', () => {
           index: 4,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -487,7 +482,7 @@ test('can dynamically route using singular function', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -499,7 +494,7 @@ test('can dynamically route using singular function', () => {
           index: 3,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['_sitemap', '[slug]', '+not-found'],
+          routeNames: ['[slug]'],
           routes: [
             {
               key: expect.any(String),
@@ -559,7 +554,7 @@ describe('prefetch', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -575,7 +570,98 @@ describe('prefetch', () => {
                 params: {},
               },
             ],
-            routeNames: ['index', 'test', '_sitemap', '+not-found'],
+            routeNames: ['index', 'test'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+
+  it('does not throw an exception when prefetching a protected route with guard false', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    // There was no state update, because prefetch of protected route didn't make any state changes, so we received the initial state
+    // This is stale state created by router
+    expect(screen).toHaveRouterState({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: true,
+    });
+  });
+
+  it('does not throw an exception when prefetching a protected route with guard true', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 0,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
+            ],
+            routeNames: ['test', 'index'],
             routes: [
               {
                 key: expect.any(String),
@@ -959,7 +1045,7 @@ describe('Preview', () => {
     };
   });
   describe('multiple preloaded paths with the same name', () => {
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -993,15 +1079,12 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByTestId('index')));
       act(() => fireEvent.press(screen.getByText('Preload A and C')));
       act(() => emitters['link-onWillPreviewOpen']());
-      act(() => emitters['link-onDidPreviewOpen']());
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen and onDidPreviewOpen
-      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
-      expect(
-        NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB-[-\w]+/);
+      // Initial render, onWillPreviewOpen, setTimeout from prefetch
+      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
+      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
     });
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1039,14 +1122,70 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByTestId('index')));
       act(() => fireEvent.press(screen.getByText('Preload Other Routes')));
       act(() => emitters['link-onWillPreviewOpen']());
-      act(() => emitters['link-onDidPreviewOpen']());
 
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen and onDidPreviewOpen
-      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
+      // Initial render, onWillPreviewOpen, setTimeout from prefetch
+      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(
         NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
       ).toMatch(/slotB\/\[xyz\]-[-\w]+/);
+    });
+  });
+  describe('external links in preview', () => {
+    it('when link preview is used with external href and no context menu is added, then normal link is rendered', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev">
+            <Link.Trigger>https://expo.dev</Link.Trigger>
+            <Link.Preview />
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).not.toHaveBeenCalled();
+    });
+    it('when link preview is used with external href, no context menu, and asChild, then normal link is rendered', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev" asChild>
+            <Link.Trigger>
+              <Text>https://expo.dev</Text>
+            </Link.Trigger>
+            <Link.Preview />
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).not.toHaveBeenCalled();
+    });
+    it('when link is used with external href and context menu, then native link is used', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev">
+            <Link.Trigger>https://expo.dev</Link.Trigger>
+            <Link.Menu>
+              <Link.MenuAction title="Open in Safari" onPress={() => {}} />
+            </Link.Menu>
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).toHaveBeenCalled();
+    });
+    it('when link preview is used with external href and context menu, then native link is used', () => {
+      renderRouter({
+        index: () => (
+          <Link href="https://expo.dev">
+            <Link.Trigger>https://expo.dev</Link.Trigger>
+            <Link.Preview />
+            <Link.Menu>
+              <Link.MenuAction title="Open in Safari" onPress={() => {}} />
+            </Link.Menu>
+          </Link>
+        ),
+      });
+      expect(screen.getByText('https://expo.dev')).toBeVisible();
+      expect(NativeLinkPreview).toHaveBeenCalled();
     });
   });
 });

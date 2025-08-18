@@ -10,20 +10,22 @@ import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } 
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { INTERNAL_SLOT_NAME } from './constants';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
-import { ImperativeApiEmitter } from './imperative-api';
+import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { ModalContextProvider } from './modal/ModalContext';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
+import { Unmatched } from './views/Unmatched';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -162,7 +164,6 @@ function ContextNavigator({
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <ModalContextProvider>
-              <ImperativeApiEmitter />
               <Content />
             </ModalContextProvider>
           </WrapperComponent>
@@ -173,12 +174,21 @@ function ContextNavigator({
 }
 
 function Content() {
+  const children = [<Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />];
+  if (shouldAppendNotFound()) {
+    children.push(<Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
+  }
+  if (shouldAppendSitemap()) {
+    children.push(<Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
+  }
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
-    children: <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
+    children,
     id: INTERNAL_SLOT_NAME,
   });
 
-  return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
+  return (
+    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+  );
 }
 
 let onUnhandledAction: (action: NavigationAction) => void;

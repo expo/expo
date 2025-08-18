@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
+import { AudioMode, AudioPlayerOptions, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 /**
@@ -9,7 +9,7 @@ import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
  * The player will start loading the audio source immediately upon creation.
  *
  * @param source The audio source to load. Can be a local asset via `require()`, a remote URL, or null for no initial source.
- * @param updateInterval How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+ * @param options Audio player configuration options.
  * @returns An `AudioPlayer` instance that's automatically managed by the component lifecycle.
  *
  * @example
@@ -24,8 +24,24 @@ import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
  *   );
  * }
  * ```
+ *
+ * @example Using downloadFirst
+ * ```tsx
+ * import { useAudioPlayer } from 'expo-audio';
+ *
+ * function MyComponent() {
+ *   const player = useAudioPlayer('https://example.com/audio.mp3', {
+ *     updateInterval: 1000,
+ *     downloadFirst: true,
+ *   });
+ *
+ *   return (
+ *     <Button title="Play" onPress={() => player.play()} />
+ *   );
+ * }
+ * ```
  */
-export declare function useAudioPlayer(source?: AudioSource, updateInterval?: number): AudioPlayer;
+export declare function useAudioPlayer(source?: AudioSource, options?: AudioPlayerOptions): AudioPlayer;
 /**
  * Hook that provides real-time playback status updates for an `AudioPlayer`.
  *
@@ -146,12 +162,12 @@ export declare function useAudioRecorderState(recorder: AudioRecorder, interval?
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayer) hook instead.
  * > See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
- * @param source
- * @param updateInterval
+ * @param source The audio source to load.
+ * @param options Audio player configuration options.
  */
-export declare function createAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number): AudioPlayer;
+export declare function createAudioPlayer(source?: AudioSource | string | number | null, options?: AudioPlayerOptions): AudioPlayer;
 /**
  * Enables or disables the audio subsystem globally.
  *
