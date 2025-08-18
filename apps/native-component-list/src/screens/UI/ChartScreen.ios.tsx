@@ -6,6 +6,7 @@ import {
   PointChartStyle,
   PointStyle,
   ChartDataPoint,
+  Host,
 } from '@expo/ui/swift-ui';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -153,19 +154,21 @@ export default function ChartScreen() {
         {'\n'}Pie charts require iOS 17+
       </Text>
       <View style={styles.chartContainer}>
-        <Chart
-          data={getCurrentData()}
-          type={chartType}
-          showGrid={gridIndex === 1}
-          animate={animateIndex === 1}
-          showLegend={legendIndex === 1}
-          lineStyle={chartType === 'line' ? getLineStyle() : undefined}
-          pointStyle={chartType === 'point' ? getPointStyle() : undefined}
-          areaStyle={chartType === 'area' ? getAreaStyle() : undefined}
-          barStyle={chartType === 'bar' ? getBarStyle() : undefined}
-          pieStyle={chartType === 'pie' ? getPieStyle() : undefined}
-          style={styles.chart}
-        />
+        <Host style={{ flex: 1 }}>
+          <Chart
+            data={getCurrentData()}
+            type={chartType}
+            showGrid={gridIndex === 1}
+            animate={animateIndex === 1}
+            showLegend={legendIndex === 1}
+            lineStyle={chartType === 'line' ? getLineStyle() : undefined}
+            pointStyle={chartType === 'point' ? getPointStyle() : undefined}
+            areaStyle={chartType === 'area' ? getAreaStyle() : undefined}
+            barStyle={chartType === 'bar' ? getBarStyle() : undefined}
+            pieStyle={chartType === 'pie' ? getPieStyle() : undefined}
+            style={styles.chart}
+          />
+        </Host>
       </View>
       <View style={styles.settingsContainer}>
         <MonoText textStyle={styles.settings}>
@@ -175,25 +178,29 @@ export default function ChartScreen() {
       </View>
       <HeadingText style={styles.controlHeading}>Chart Type</HeadingText>
       <View style={styles.pickerContainer}>
-        <Picker
-          options={chartTypeOptions}
-          selectedIndex={chartTypeIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => {
-            setChartTypeIndex(index);
-          }}
-          variant="segmented"
-        />
+        <Host matchContents>
+          <Picker
+            options={chartTypeOptions}
+            selectedIndex={chartTypeIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setChartTypeIndex(index);
+            }}
+            variant="segmented"
+          />
+        </Host>
       </View>
       <HeadingText style={styles.controlHeading}>Data Set</HeadingText>
       <View style={styles.pickerContainer}>
-        <Picker
-          options={dataSetOptions}
-          selectedIndex={dataSetIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => {
-            setDataSetIndex(index);
-          }}
-          variant="segmented"
-        />
+        <Host matchContents>
+          <Picker
+            options={dataSetOptions}
+            selectedIndex={dataSetIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setDataSetIndex(index);
+            }}
+            variant="segmented"
+          />
+        </Host>
       </View>
       {(chartType === 'line' || chartType === 'point') && (
         <>
@@ -202,25 +209,29 @@ export default function ChartScreen() {
           </HeadingText>
           <Text style={styles.optionLabel}>Line Style</Text>
           <View style={styles.pickerContainer}>
-            <Picker
-              options={lineStyleOptions}
-              selectedIndex={lineStyleIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setLineStyleIndex(index);
-              }}
-              variant="segmented"
-            />
+            <Host matchContents>
+              <Picker
+                options={lineStyleOptions}
+                selectedIndex={lineStyleIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setLineStyleIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
           </View>
           <Text style={styles.optionLabel}>Point Style</Text>
           <View style={styles.pickerContainer}>
-            <Picker
-              options={pointStyleOptions}
-              selectedIndex={pointStyleIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setPointStyleIndex(index);
-              }}
-              variant="segmented"
-            />
+            <Host matchContents>
+              <Picker
+                options={pointStyleOptions}
+                selectedIndex={pointStyleIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setPointStyleIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
           </View>
         </>
       )}
@@ -230,25 +241,29 @@ export default function ChartScreen() {
 
           <Text style={styles.optionLabel}>Corner Radius</Text>
           <View style={styles.pickerContainer}>
-            <Picker
-              options={barCornerRadiusOptions}
-              selectedIndex={barCornerRadiusIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setBarCornerRadiusIndex(index);
-              }}
-              variant="segmented"
-            />
+            <Host matchContents>
+              <Picker
+                options={barCornerRadiusOptions}
+                selectedIndex={barCornerRadiusIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setBarCornerRadiusIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
           </View>
           <Text style={styles.optionLabel}>Bar Width</Text>
           <View style={styles.pickerContainer}>
-            <Picker
-              options={barWidthOptions}
-              selectedIndex={barWidthIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setBarWidthIndex(index);
-              }}
-              variant="segmented"
-            />
+            <Host matchContents>
+              <Picker
+                options={barWidthOptions}
+                selectedIndex={barWidthIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setBarWidthIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
           </View>
         </>
       )}
@@ -257,62 +272,72 @@ export default function ChartScreen() {
           <HeadingText style={styles.controlHeading}>Pie Styling</HeadingText>
           <Text style={styles.optionLabel}>Inner Radius</Text>
           <View style={styles.pickerContainer}>
-            <Picker
-              options={pieInnerRadiusOptions}
-              selectedIndex={pieInnerRadiusIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setPieInnerRadiusIndex(index);
-              }}
-              variant="segmented"
-            />
+            <Host matchContents>
+              <Picker
+                options={pieInnerRadiusOptions}
+                selectedIndex={pieInnerRadiusIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setPieInnerRadiusIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
           </View>
           <Text style={styles.optionLabel}>Angular Inset</Text>
           <View style={styles.pickerContainer}>
-            <Picker
-              options={pieAngularInsetOptions}
-              selectedIndex={pieAngularInsetIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setPieAngularInsetIndex(index);
-              }}
-              variant="segmented"
-            />
+            <Host matchContents>
+              <Picker
+                options={pieAngularInsetOptions}
+                selectedIndex={pieAngularInsetIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setPieAngularInsetIndex(index);
+                }}
+                variant="segmented"
+              />
+            </Host>
           </View>
         </>
       )}
       <HeadingText style={styles.controlHeading}>Options</HeadingText>
       <Text style={styles.optionLabel}>Grid</Text>
       <View style={styles.pickerContainer}>
-        <Picker
-          options={toggleOptions}
-          selectedIndex={gridIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => {
-            setGridIndex(index);
-          }}
-          variant="segmented"
-        />
+        <Host matchContents>
+          <Picker
+            options={toggleOptions}
+            selectedIndex={gridIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setGridIndex(index);
+            }}
+            variant="segmented"
+          />
+        </Host>
       </View>
       <Text style={styles.optionLabel}>Animate</Text>
       <View style={styles.pickerContainer}>
-        <Picker
-          options={toggleOptions}
-          selectedIndex={animateIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => {
-            setAnimateIndex(index);
-          }}
-          variant="segmented"
-        />
+        <Host matchContents>
+          <Picker
+            options={toggleOptions}
+            selectedIndex={animateIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setAnimateIndex(index);
+            }}
+            variant="segmented"
+          />
+        </Host>
       </View>
       <Text style={styles.optionLabel}>Legend</Text>
       <Text style={styles.optionDescription}>Useful for bar and pie charts</Text>
       <View style={styles.pickerContainer}>
-        <Picker
-          options={toggleOptions}
-          selectedIndex={legendIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => {
-            setLegendIndex(index);
-          }}
-          variant="segmented"
-        />
+        <Host matchContents>
+          <Picker
+            options={toggleOptions}
+            selectedIndex={legendIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setLegendIndex(index);
+            }}
+            variant="segmented"
+          />
+        </Host>
       </View>
     </ScrollView>
   );

@@ -52,6 +52,7 @@ struct PointChartStyle: Record {
 }
 
 final class ChartProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var modifiers: ModifierArray?
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?

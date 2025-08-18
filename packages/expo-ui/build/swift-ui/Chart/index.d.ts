@@ -1,4 +1,5 @@
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { CommonViewModifierProps } from '../types';
 /**
  * The type of chart to display.
  * - `line` charts show continuous lines with optional dash array, width, point symbols, and color.
@@ -151,17 +152,12 @@ export type ChartProps = {
      * Pie chart specific styling options.
      */
     pieStyle?: PieChartStyle;
-};
-/**
- * `<Chart>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function ChartPrimitive({ data, ...props }: ChartProps): import("react").JSX.Element;
+} & CommonViewModifierProps;
 /**
  * Renders a native Chart component using Swift Charts.
  * @platform ios
  */
-export declare function Chart({ style, data, ...props }: ChartProps & {
+export declare function Chart({ style, data, modifiers, ...props }: ChartProps & {
     style?: StyleProp<ViewStyle>;
 }): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

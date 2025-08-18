@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { CommonViewModifierProps } from '../types';
 
 /**
  * The type of chart to display.
@@ -163,26 +164,26 @@ export type ChartProps = {
    * Pie chart specific styling options.
    */
   pieStyle?: PieChartStyle;
-};
+} & CommonViewModifierProps;
 
 const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('ExpoUI', 'ChartView');
-
-/**
- * `<Chart>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function ChartPrimitive({ data, ...props }: ChartProps) {
-  return <ChartNativeView data={data} {...props} />;
-}
 
 /**
  * Renders a native Chart component using Swift Charts.
  * @platform ios
  */
-export function Chart({ style, data, ...props }: ChartProps & { style?: StyleProp<ViewStyle> }) {
+export function Chart({
+  style,
+  data,
+  modifiers,
+  ...props
+}: ChartProps & { style?: StyleProp<ViewStyle> }) {
   return (
-    <Host style={style}>
-      <ChartPrimitive data={data} {...props} />
-    </Host>
+    <ChartNativeView
+      data={data}
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...props}
+    />
   );
 }
