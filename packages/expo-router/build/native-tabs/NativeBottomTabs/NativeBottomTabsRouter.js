@@ -23,6 +23,9 @@ function NativeBottomTabsRouter(options) {
                                 return route;
                             }
                             const expoParams = (0, navigationParams_1.getInternalExpoRouterParams)(action.payload.params);
+                            if (route.params && 'screen' in route.params) {
+                                expoParams['__internal_expo_router_no_animation'] = true;
+                            }
                             const params = (0, navigationParams_1.appendInternalExpoRouterParams)(route.params, expoParams);
                             return {
                                 ...route,
