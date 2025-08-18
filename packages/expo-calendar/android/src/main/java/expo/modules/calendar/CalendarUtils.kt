@@ -136,4 +136,19 @@ object CalendarUtils {
       }
     }
   }
+
+  @Throws(SecurityException::class)
+  internal fun removeRemindersForEvent(contentResolver: ContentResolver, eventID: Int) {
+    val cursor = CalendarContract.Reminders.query(
+      contentResolver,
+      eventID.toLong(),
+      arrayOf(
+        CalendarContract.Reminders._ID
+      )
+    )
+    while (cursor.moveToNext()) {
+      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
+      contentResolver.delete(reminderUri, null, null)
+    }
+  }
 }

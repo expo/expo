@@ -17,9 +17,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     async getAttendees(recurringEventOptions = {}) {
         return super.getAttendees(stringifyDateValues(recurringEventOptions));
     }
-    update(details, options = {}) {
+    async update(details, options = {}) {
         const nullableDetailsFields = getNullableDetailsFields(details);
-        super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
+        await super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
     }
     delete(options = {}) {
         super.delete(stringifyDateValues(options));
@@ -41,8 +41,8 @@ export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarRemin
  * such as retrieving its events, updating its details, and accessing its metadata.
  */
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
-    createEvent(details) {
-        const newEvent = super.createEvent(stringifyDateValues(details));
+    async createEvent(details) {
+        const newEvent = await super.createEvent(stringifyDateValues(details));
         Object.setPrototypeOf(newEvent, ExpoCalendarEvent.prototype);
         return newEvent;
     }

@@ -60,22 +60,6 @@ data class CalendarRecord (
     )
   }
 }
-
-enum class AlarmMethod(val value: String) {
-  ALARM("alarm"),
-  ALERT("alert"),
-  EMAIL("email"),
-  SMS("sms"),
-  DEFAULT("default")
-}
-
-enum class AttendeeType(val value: String) {
-  RESOURCE("resource"),
-  OPTIONAL("optional"),
-  REQUIRED("required"),
-  NONE("none")
-}
-
 enum class CalendarAccessLevel(val value: String) {
   CONTRIBUTOR("contributor"),
   EDITOR("editor"),

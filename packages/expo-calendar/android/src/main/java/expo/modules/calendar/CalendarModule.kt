@@ -8,6 +8,7 @@ import android.database.Cursor
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import expo.modules.calendar.CalendarUtils.removeRemindersForEvent
 import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
 import expo.modules.calendar.EventRecurrenceUtils.extractRecurrence
 import expo.modules.calendar.dialogs.CreateEventContract
@@ -470,7 +471,7 @@ class CalendarModule : Module() {
       val eventID = details.getString("id").toInt()
       val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
       contentResolver.update(updateUri, calendarEventBuilder.build(), null, null)
-      removeRemindersForEvent(eventID)
+      removeRemindersForEvent(contentResolver, eventID)
       if (details.containsKey("alarms")) {
         createRemindersForEvent(eventID, details.getList("alarms"))
       }
@@ -582,21 +583,6 @@ class CalendarModule : Module() {
         reminderValues.put(CalendarContract.Reminders.METHOD, method)
         contentResolver.insert(CalendarContract.Reminders.CONTENT_URI, reminderValues)
       }
-    }
-  }
-
-  @Throws(SecurityException::class)
-  private fun removeRemindersForEvent(eventID: Int) {
-    val cursor = CalendarContract.Reminders.query(
-      contentResolver,
-      eventID.toLong(),
-      arrayOf(
-        CalendarContract.Reminders._ID
-      )
-    )
-    while (cursor.moveToNext()) {
-      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
-      contentResolver.delete(reminderUri, null, null)
     }
   }
 

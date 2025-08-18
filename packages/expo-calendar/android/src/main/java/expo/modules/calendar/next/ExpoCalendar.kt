@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.provider.CalendarContract
 import android.text.TextUtils
 import expo.modules.calendar.CalendarUtils
+import expo.modules.calendar.EventNotSavedException
+import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.availabilityConstantMatchingString
 import expo.modules.calendar.next.records.CalendarRecord
 import expo.modules.calendar.next.records.CalendarAccessLevel
@@ -20,13 +22,16 @@ import java.util.TimeZone
 
 @OptIn(EitherType::class)
 class ExpoCalendar : SharedObject {
+  val localAppContext: AppContext
   var calendarRecord: CalendarRecord?
 
-  constructor(calendar: CalendarRecord) {
+  constructor(appContext: AppContext, calendar: CalendarRecord) {
+    this.localAppContext = appContext
     this.calendarRecord = calendar
   }
 
-  constructor(cursor: Cursor) {
+  constructor(appContext: AppContext, cursor: Cursor) {
+    this.localAppContext = appContext
     this.calendarRecord = CalendarRecord(
     id = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Calendars._ID),
     title = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME),
@@ -94,13 +99,26 @@ class ExpoCalendar : SharedObject {
     return rows > 0
   }
 
+  @Throws(EventNotSavedException::class)
+  fun createEvent(record: EventRecord): ExpoCalendarEvent? {
+    val event = ExpoCalendarEvent(localAppContext, record)
+    val calendarId = this.calendarRecord?.id;
+    if (calendarId == null) {
+      throw Exception("Calendar id is null")
+    }
+    val newEventId = event.saveEvent(record, calendarId)
+    event.eventRecord = event.eventRecord?.getUpdatedRecord(EventRecord(id = newEventId.toString()))
+    return event
+  }
+
   private fun serializeExpoCalendarEvents(cursor: Cursor): List<ExpoCalendarEvent> {
     val results: MutableList<ExpoCalendarEvent> = ArrayList()
     while (cursor.moveToNext()) {
-      results.add(ExpoCalendarEvent(cursor))
+      results.add(ExpoCalendarEvent(localAppContext, cursor))
     }
     return results
   }
+
   companion object {
     fun saveCalendar(calendarRecord: CalendarRecord, appContext: AppContext): Int {
       return updateCalendar(calendarRecord, appContext, isNew = true)

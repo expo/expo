@@ -2,7 +2,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
 import React, { useState, useEffect } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
@@ -13,6 +13,7 @@ type EventRowProps = {
   event: ExpoCalendarEvent;
   getEvent: (event: ExpoCalendarEvent) => void;
   getAttendees: (event: ExpoCalendarEvent) => void;
+  createAttendee: (event: ExpoCalendarEvent) => void;
   updateEvent: (event: ExpoCalendarEvent) => void;
   deleteEvent: (event: ExpoCalendarEvent) => void;
   openEventInCalendar: (event: ExpoCalendarEvent) => void;
@@ -23,6 +24,7 @@ const EventRow = ({
   event,
   getEvent,
   getAttendees,
+  createAttendee,
   updateEvent,
   deleteEvent,
   openEventInCalendar,
@@ -33,6 +35,7 @@ const EventRow = ({
     <MonoText>{JSON.stringify(event, null, 2)}</MonoText>
     <ListButton onPress={() => getEvent(event)} title="Get Event Using ID" />
     <ListButton onPress={() => getAttendees(event)} title="Get Attendees for Event" />
+    <ListButton onPress={() => createAttendee(event)} title="Create Attendee" />
     <ListButton onPress={() => updateEvent(event)} title="Update Event" />
     <ListButton onPress={() => deleteEvent(event)} title="Delete Event" />
     <ListButton onPress={() => openEventInCalendar(event)} title="Open in Calendar App" />
@@ -76,7 +79,8 @@ const EventsScreen = ({ route }: Props) => {
     const nextYear = new Date();
     nextYear.setFullYear(nextYear.getFullYear() + 1);
     const events = await calendar.listEvents(yesterday, nextYear);
-    setEvents(events);
+    const sortedEvents = events.sort((a, b) => Number(a.id) - Number(b.id));
+    setEvents(sortedEvents);
   };
 
   const calendar = route.params?.calendar;
@@ -96,7 +100,8 @@ const EventsScreen = ({ route }: Props) => {
 
     try {
       const newEvent = prepareEvent(calendar.id, recurring);
-      calendar.createEvent(newEvent);
+      const event = await calendar.createEvent(newEvent);
+      console.log('event', JSON.stringify(event, null, 2));
       Alert.alert('Event saved successfully');
       findEvents(calendar);
     } catch (e) {
@@ -118,10 +123,29 @@ const EventsScreen = ({ route }: Props) => {
 
   const getAttendees = async (event: ExpoCalendarEvent) => {
     try {
-      const attendees = event.getAttendees();
+      const attendees = await event.getAttendees();
       Alert.alert('Attendees found using getAttendees', JSON.stringify(attendees));
     } catch (e) {
       Alert.alert('Error finding attendees', e.message);
+    }
+  };
+
+  const createAttendee = async (event: ExpoCalendarEvent) => {
+    try {
+      if (Platform.OS !== 'android') {
+        Alert.alert('createAttendee is not supported on this platform');
+        return;
+      }
+      const attendee = await event.createAttendee({
+        email: 'test@example.com',
+        name: 'Test Attendee',
+        type: Calendar.AttendeeType.RESOURCE,
+        status: Calendar.AttendeeStatus.PENDING,
+        role: Calendar.AttendeeRole.SPEAKER,
+      });
+      Alert.alert('Attendee created using createAttendee', JSON.stringify(attendee));
+    } catch (e) {
+      Alert.alert('Error creating attendee', e.message);
     }
   };
 
@@ -140,7 +164,7 @@ const EventsScreen = ({ route }: Props) => {
       endDate,
     };
     try {
-      event.update(newEvent, {
+      await event.update(newEvent, {
         futureEvents: false,
       });
       Alert.alert('Event saved successfully');
@@ -227,6 +251,7 @@ const EventsScreen = ({ route }: Props) => {
           key={`${event.id}${event.startDate}`}
           getEvent={getEvent}
           getAttendees={getAttendees}
+          createAttendee={createAttendee}
           updateEvent={updateEvent}
           deleteEvent={deleteEvent}
           openEventInCalendar={openEventInCalendar}

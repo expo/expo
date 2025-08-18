@@ -12,7 +12,7 @@ export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalen
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(recurringEventOptions?: RecurringEventOptions): Promise<ExpoCalendarAttendee[]>;
-    update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): void;
+    update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): Promise<void>;
     delete(options?: RecurringEventOptions): void;
 }
 /**
@@ -28,7 +28,7 @@ export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalen
  * such as retrieving its events, updating its details, and accessing its metadata.
  */
 export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
-    createEvent(details: Partial<Omit<Event, 'creationDate' | 'lastModifiedDate' | 'originalStartDate' | 'isDetached' | 'status' | 'organizer'>>): ExpoCalendarEvent;
+    createEvent(details: Partial<Omit<Event, 'creationDate' | 'lastModifiedDate' | 'originalStartDate' | 'isDetached' | 'status' | 'organizer'>>): Promise<ExpoCalendarEvent>;
     createReminder(details: Partial<Reminder>): ExpoCalendarReminder;
     listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
     listReminders(startDate?: Date | null, endDate?: Date | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
