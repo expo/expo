@@ -174,7 +174,7 @@ export function getStackAsFormattedLog(
     const backupStackLines: string[] = [];
 
     stackProps.forEach((frame) => {
-      const shouldShow = !frame.collapse;
+      const shouldShow = !frame.collapse || showCollapsedFrames;
 
       const position = terminalLink.isSupported
         ? terminalLink(frame.subtitle, frame.subtitle)
