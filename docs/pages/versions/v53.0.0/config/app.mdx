@@ -1,24 +1,74 @@
----
-title: app.json / app.config.js
-description: A reference of available properties in Expo app config.
-maxHeadingDepth: 5
----
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from "react-native";
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+export default function App() {
+  const [points, setPoints] = useState(0);
 
-import schema from '~/public/static/schemas/v53.0.0/app-config-schema.json';
-import AppConfigSchemaTable from '~/ui/components/AppConfigSchemaTable';
-import { BoxLink } from '~/ui/components/BoxLink';
+  return (
+    <ScrollView style={styles.container}>
+      {/* Encabezado */}
+      <View style={styles.header}>
+        <Text style={styles.title}>📚 MemoCáceres</Text>
+        <Text style={styles.subtitle}>Aprender jugando con el Profe Cáceres</Text>
+      </View>
 
-The following is a list of properties that are available for you under the `"expo"` key in **app.json** or **app.config.json**. These properties can be passed to the top level object of **app.config.js** or **app.config.ts**.
+      {/* Personaje animado */}
+      <View style={styles.characterBox}>
+        <Image
+          source={{ uri: "https://i.ibb.co/5Wzy1Tf/profesor.png" }} // personaje animado simpático
+          style={styles.character}
+        />
+        <Text style={styles.text}>¡Hola! Soy el Profe Cáceres y jugarás mientras aprendes 🚀</Text>
+      </View>
 
-<BoxLink
-  title="Configuration with app config"
-  description="For information on app configuration, the differences between various app config files, and how to use them dynamically."
-  href="/workflow/configuration/"
-  Icon={BookOpen02Icon}
-/>
+      {/* Menú de Juegos */}
+      <Text style={styles.sectionTitle}>🎮 Juegos</Text>
+      <View style={styles.menu}>
+        <TouchableOpacity style={styles.button} onPress={() => setPoints(points + 10)}>
+          <Text style={styles.buttonText}>🧠 Memorama</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => setPoints(points + 10)}>
+          <Text style={styles.buttonText}>✨ Siluetas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => setPoints(points + 10)}>
+          <Text style={styles.buttonText}>📖 Preguntas Rápidas</Text>
+        </TouchableOpacity>
+      </View>
 
-## Properties
+      {/* Puntos y Logros */}
+      <Text style={styles.sectionTitle}>🏆 Tus Logros</Text>
+      <View style={styles.pointsBox}>
+        <Text style={styles.pointsText}>Puntos acumulados: {points}</Text>
+        <Text style={styles.achievement}>
+          {points >= 30 ? "🎉 ¡Genial! Desbloqueaste el nivel Profe Ayudante" : "Sigue jugando para desbloquear logros"}
+        </Text>
+      </View>
+    </ScrollView>
+  );
+}
 
-<AppConfigSchemaTable schema={schema} />
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#fff" },
+  header: { backgroundColor: "#0055A4", padding: 20, borderBottomLeftRadius: 25, borderBottomRightRadius: 25 },
+  title: { fontSize: 28, fontWeight: "bold", color: "#fff", textAlign: "center" },
+  subtitle: { fontSize: 16, color: "#FFDD00", textAlign: "center", marginTop: 5 },
+  characterBox: { alignItems: "center", margin: 20, padding: 15, backgroundColor: "#FFEEEE", borderRadius: 20 },
+  character: { width: 150, height: 150, marginBottom: 10, borderRadius: 100 },
+  text: { fontSize: 16, color: "#333", textAlign: "center" },
+  sectionTitle: { fontSize: 22, fontWeight: "bold", marginLeft: 15, marginTop: 20, color: "#D32F2F" },
+  menu: { margin: 15 },
+  button: {
+    backgroundColor: "#2196F3",
+    padding: 15,
+    marginVertical: 8,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  buttonText: { color: "#fff", fontSize: 18, textAlign: "center", fontWeight: "bold" },
+  pointsBox: { margin: 20, padding: 15, backgroundColor: "#E3F2FD", borderRadius: 15, alignItems: "center" },
+  pointsText: { fontSize: 18, fontWeight: "bold", color: "#0055A4" },
+  achievement: { marginTop: 10, fontSize: 16, color: "#D32F2F", textAlign: "center" },
+});
