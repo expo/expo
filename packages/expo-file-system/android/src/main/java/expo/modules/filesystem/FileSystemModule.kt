@@ -1,15 +1,10 @@
 package expo.modules.filesystem
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.os.Build
-import android.provider.DocumentsContract
 import android.webkit.URLUtil
 import expo.modules.interfaces.filesystem.Permission
-import expo.modules.kotlin.Promise
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
@@ -32,7 +27,6 @@ class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
-  @SuppressLint("WrongConstant")
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
@@ -90,70 +84,28 @@ class FileSystemModule : Module() {
       return@Coroutine destination.toURI()
     }
 
-    var pendingPickerPromise: Promise? = null
+    lateinit var filePickerLauncher: AppContextActivityResultLauncher<FilePickerContractOptions, FilePickerContractResult>
 
-    OnActivityResult { _, (requestCode, resultCode, data) ->
-      if (pendingPickerPromise == null) return@OnActivityResult
-      if (requestCode != PICKER_REQUEST_DIRECTORY && requestCode != PICKER_REQUEST_FILE) return@OnActivityResult
-      if (resultCode != Activity.RESULT_OK || data == null) {
-        pendingPickerPromise?.reject(PickerCancelledException())
-        pendingPickerPromise = null
-        return@OnActivityResult
-      }
-      val uri = data.data
-      val takeFlags = (
-        data.flags
-          and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        )
-      uri?.let {
-        appContext.throwingActivity.contentResolver.takePersistableUriPermission(it, takeFlags)
-      }
-      when (requestCode) {
-        PICKER_REQUEST_DIRECTORY -> {
-          pendingPickerPromise?.resolve(
-            FileSystemDirectory(uri ?: Uri.EMPTY)
-          )
-        }
-
-        PICKER_REQUEST_FILE -> {
-          pendingPickerPromise?.resolve(
-            FileSystemFile(uri ?: Uri.EMPTY)
-          )
-        }
-      }
-      pendingPickerPromise = null
+    RegisterActivityContracts {
+      filePickerLauncher = registerForActivityResult(
+        FilePickerContract(this@FileSystemModule)
+      )
     }
 
-    AsyncFunction("pickDirectoryAsync") { initialUri: Uri?, promise: Promise ->
-      if (pendingPickerPromise != null) {
-        throw FileSystemPendingPickerException()
+    AsyncFunction("pickDirectoryAsync") Coroutine { initialUri: Uri? ->
+      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY))
+      when (result) {
+        is FilePickerContractResult.Success -> result.path as FileSystemDirectory
+        is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
       }
-      val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-//        intent.addCategory(Intent.CATEGORY_OPENABLE)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        initialUri
-          .let { intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, it) }
-      }
-
-      pendingPickerPromise = promise
-      appContext.throwingActivity.startActivityForResult(intent, PICKER_REQUEST_DIRECTORY)
     }
 
-    AsyncFunction("pickFileAsync") { initialUri: Uri?, mimeType: String?, promise: Promise ->
-      if (pendingPickerPromise != null) {
-        throw FileSystemPendingPickerException()
+    AsyncFunction("pickFileAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
+      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, mimeType, PickerType.FILE))
+      when (result) {
+        is FilePickerContractResult.Success -> result.path as FileSystemFile
+        is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
       }
-      val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-//      intent.addCategory(Intent.CATEGORY_OPENABLE)
-      // if no type is set no intent handler is found – just android things
-      intent.type = mimeType ?: "*/*"
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        initialUri
-          .let { intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, it) }
-      }
-
-      pendingPickerPromise = promise
-      appContext.throwingActivity.startActivityForResult(intent, PICKER_REQUEST_FILE)
     }
 
     Function("info") { url: URI ->
