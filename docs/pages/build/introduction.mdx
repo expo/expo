@@ -1,60 +1,55 @@
----
-title: EAS Build
-sidebar_title: Introduction
-hideTOC: true
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+import React, { useState } from "react";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { initializeApp } from "firebase/app";
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+// 🔹 Firebase Config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "yourapp.firebaseapp.com",
+  projectId: "yourapp",
+  storageBucket: "yourapp.appspot.com",
+  messagingSenderId: "123456",
+  appId: "1:123456:web:abc123"
+};
 
-import { BoxLink } from '~/ui/components/BoxLink';
+// 🔹 Firebase Init
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 
-**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
+export default function YouTubeClone() {
+  const [video, setVideo] = useState(null);
+  const [url, setUrl] = useState("");
 
-It makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+  const uploadVideo = async () => {
+    if (!video) return;
+    const videoRef = ref(storage, `videos/${video.name}`);
+    await uploadBytes(videoRef, video);
+    const downloadURL = await getDownloadURL(videoRef);
+    setUrl(downloadURL);
+    alert("✅ Video Uploaded!");
+  };
 
-It's designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  return (
+    <div className="p-5">
+      <h1 className="text-xl font-bold">🎥 YouTube Clone</h1>
+      
+      <input
+        type="file"
+        accept="video/*"
+        onChange={(e) => setVideo(e.target.files[0])}
+      />
+      <button
+        onClick={uploadVideo}
+        className="bg-red-500 text-white px-4 py-2 rounded mt-2"
+      >
+        Upload Video
+      </button>
 
-### Get started
-
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Automate submissions"
-  description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, but you can also run it on your own machine, for example, to debug or to comply with any company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+      {url && (
+        <video controls width="400" className="mt-4">
+          <source src={url} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  );
+}
