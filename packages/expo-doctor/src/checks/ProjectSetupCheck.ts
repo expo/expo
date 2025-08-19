@@ -44,9 +44,11 @@ export class ProjectSetupCheck implements DoctorCheck {
     /* Check for multiple lockfiles. */
 
     const lockfileCheckResults = await Promise.all(
-      ['pnpm-lock.yaml', 'yarn.lock', 'package-lock.json'].map((lockfile) => {
-        return { lockfile, exists: fs.existsSync(`${projectRoot}/${lockfile}`) };
-      })
+      ['pnpm-lock.yaml', 'yarn.lock', 'package-lock.json', 'bun.lockb', 'bun.lock'].map(
+        (lockfile) => {
+          return { lockfile, exists: fs.existsSync(`${projectRoot}/${lockfile}`) };
+        }
+      )
     );
 
     const lockfiles = lockfileCheckResults
