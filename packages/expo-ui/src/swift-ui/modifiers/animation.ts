@@ -10,6 +10,8 @@ export type SpringAnimation = {
   response?: number;
   dampingFraction?: number;
   blendDuration?: number;
+  duration?: number;
+  bounce?: number;
 };
 
 export type InterpolatingSpringAnimation = {
@@ -18,6 +20,8 @@ export type InterpolatingSpringAnimation = {
   stiffness?: number;
   damping?: number;
   initialVelocity?: number;
+  duration?: number;
+  bounce?: number;
 };
 
 export type DefaultAnimation = {
@@ -36,6 +40,7 @@ export const Animation = {
   easeOut: (duration?: number): TimingAnimation => ({ type: 'easeOut', duration }),
   linear: (duration?: number): TimingAnimation => ({ type: 'linear', duration }),
 
+  // spring animations - response/dampingFraction variant
   spring: (
     response?: number,
     dampingFraction?: number,
@@ -47,6 +52,19 @@ export const Animation = {
     blendDuration,
   }),
 
+  // spring animations - duration/bounce variant
+  springDuration: (
+    duration?: number,
+    bounce?: number,
+    blendDuration?: number
+  ): SpringAnimation => ({
+    type: 'spring',
+    duration,
+    bounce,
+    blendDuration,
+  }),
+
+  // interpolating spring - physics-based variant (mass/stiffness/damping)
   interpolatingSpring: (
     mass?: number,
     stiffness?: number,
@@ -57,6 +75,18 @@ export const Animation = {
     mass,
     stiffness,
     damping,
+    initialVelocity,
+  }),
+
+  // interpolating spring - duration/bounce variant
+  interpolatingSpringDuration: (
+    duration?: number,
+    bounce?: number,
+    initialVelocity?: number
+  ): InterpolatingSpringAnimation => ({
+    type: 'interpolatingSpring',
+    duration,
+    bounce,
     initialVelocity,
   }),
 

@@ -46,9 +46,8 @@ export default function AnimationModifierScreen() {
                       scaleEffect(isScaled ? 1.3 : 1.0),
                       animation(Animation.easeInOut(2.0), isScaled),
                       onTapGesture(() => setIsScaled(!isScaled)),
-                    ]}>
-                    {isScaled ? 'Scaled' : null}
-                  </HStack>
+                    ]}
+                  />
                 </VStack>
 
                 <VStack spacing={8}>

@@ -7,6 +7,8 @@ export type SpringAnimation = {
     response?: number;
     dampingFraction?: number;
     blendDuration?: number;
+    duration?: number;
+    bounce?: number;
 };
 export type InterpolatingSpringAnimation = {
     type: 'interpolatingSpring';
@@ -14,6 +16,8 @@ export type InterpolatingSpringAnimation = {
     stiffness?: number;
     damping?: number;
     initialVelocity?: number;
+    duration?: number;
+    bounce?: number;
 };
 export type DefaultAnimation = {
     type: 'default';
@@ -25,7 +29,9 @@ export declare const Animation: {
     easeOut: (duration?: number) => TimingAnimation;
     linear: (duration?: number) => TimingAnimation;
     spring: (response?: number, dampingFraction?: number, blendDuration?: number) => SpringAnimation;
+    springDuration: (duration?: number, bounce?: number, blendDuration?: number) => SpringAnimation;
     interpolatingSpring: (mass?: number, stiffness?: number, damping?: number, initialVelocity?: number) => InterpolatingSpringAnimation;
+    interpolatingSpringDuration: (duration?: number, bounce?: number, initialVelocity?: number) => InterpolatingSpringAnimation;
     default: DefaultAnimation;
 };
 export declare const animation: (animationObject: AnimationObject, animatedValue: number | boolean) => import(".").ModifierConfig;

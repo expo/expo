@@ -471,27 +471,37 @@ internal struct AnimationModifier: ViewModifier {
       }
 
     case "spring":
+      let duration = config["duration"] as? Double
+      let bounce = config["bounce"] as? Double
       let response = config["response"] as? Double
       let dampingFraction = config["dampingFraction"] as? Double
       let blendDuration = config["blendDuration"] as? Double
-
-      if let response = response, let dampingFraction = dampingFraction {
-        if let blendDuration = blendDuration {
-          animation = .spring(response: response, dampingFraction: dampingFraction, blendDuration: blendDuration)
-        } else {
-          animation = .spring(response: response, dampingFraction: dampingFraction)
-        }
+      
+      if response != nil || dampingFraction != nil {
+        animation = .spring(response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825, blendDuration: blendDuration ?? 0.0)
+      } else if duration != nil || bounce != nil {
+        animation = .spring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, blendDuration: blendDuration ?? 0.0)
+      } else if let blendDuration = blendDuration {
+        animation = .spring(blendDuration: blendDuration)
       } else {
-        animation = .spring()
+        animation = .spring
       }
 
     case "interpolatingSpring":
-      let mass = config["mass"] as? Double ?? 1.0
-      let stiffness = config["stiffness"] as? Double ?? 100.0
-      let damping = config["damping"] as? Double ?? 10.0
-      let initialVelocity = config["initialVelocity"] as? Double ?? 0.0
-
-      animation = .interpolatingSpring(mass: mass, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity)
+      let duration = config["duration"] as? Double
+      let bounce = config["bounce"] as? Double
+      let mass = config["mass"] as? Double
+      let stiffness = config["stiffness"] as? Double
+      let damping = config["damping"] as? Double
+      let initialVelocity = config["initialVelocity"] as? Double
+      
+      if duration != nil || bounce != nil {
+        animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
+      } else if let stiffness = stiffness, let damping =  damping {
+        animation = .interpolatingSpring(mass: mass ?? 1.0, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity ?? 0.0)
+      } else {
+        animation = .interpolatingSpring
+      }
 
     default:
       animation = .default

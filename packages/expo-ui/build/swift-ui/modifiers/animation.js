@@ -4,17 +4,33 @@ export const Animation = {
     easeIn: (duration) => ({ type: 'easeIn', duration }),
     easeOut: (duration) => ({ type: 'easeOut', duration }),
     linear: (duration) => ({ type: 'linear', duration }),
+    // spring animations - response/dampingFraction variant
     spring: (response, dampingFraction, blendDuration) => ({
         type: 'spring',
         response,
         dampingFraction,
         blendDuration,
     }),
+    // spring animations - duration/bounce variant
+    springDuration: (duration, bounce, blendDuration) => ({
+        type: 'spring',
+        duration,
+        bounce,
+        blendDuration,
+    }),
+    // interpolating spring - physics-based variant (mass/stiffness/damping)
     interpolatingSpring: (mass, stiffness, damping, initialVelocity) => ({
         type: 'interpolatingSpring',
         mass,
         stiffness,
         damping,
+        initialVelocity,
+    }),
+    // interpolating spring - duration/bounce variant
+    interpolatingSpringDuration: (duration, bounce, initialVelocity) => ({
+        type: 'interpolatingSpring',
+        duration,
+        bounce,
         initialVelocity,
     }),
     default: { type: 'default' },
