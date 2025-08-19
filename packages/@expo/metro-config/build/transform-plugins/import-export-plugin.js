@@ -279,13 +279,14 @@ function importExportPlugin({ types: t, }) {
                             throw path.buildCodeFrameError('Module string names are not supported');
                         }
                         if (path.node.source) {
-                            const temp = sharedModuleExportFrom ??
-                                path.scope.generateUidIdentifierBasedOnNode(
-                                // For live bindings, we need to create a require statement for the module namespace
-                                state.opts.liveBindings ? path.node.source : local);
+                            const temp = path.scope.generateUidIdentifierBasedOnNode(
+                            // For live bindings, we need to create a require statement for the module namespace
+                            state.opts.liveBindings ? path.node.source : local);
                             if (local.name === 'default') {
                                 path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: t.cloneNode(state.importDefault),
+                                    IMPORT: s.type !== 'ExportNamespaceSpecifier'
+                                        ? t.cloneNode(state.importDefault)
+                                        : t.cloneNode(state.importAll),
                                     FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                     LOCAL: temp,
                                 }), loc));
@@ -305,7 +306,7 @@ function importExportPlugin({ types: t, }) {
                                         }), loc));
                                     }
                                     state.exportDefault.push({
-                                        namespace: temp.name,
+                                        namespace: sharedModuleExportFrom?.name ?? temp.name,
                                         local: local.name,
                                         loc,
                                     });
@@ -320,13 +321,15 @@ function importExportPlugin({ types: t, }) {
                                 }
                             }
                             else if (s.type === 'ExportNamespaceSpecifier') {
-                                path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: t.cloneNode(state.importAll),
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
-                                    LOCAL: temp,
-                                }), loc));
+                                if (!sharedModuleExportFrom) {
+                                    path.insertBefore(withLocation(importAllTemplate({
+                                        IMPORT: t.cloneNode(state.importAll),
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        LOCAL: temp,
+                                    }), loc));
+                                }
                                 state.exportNamed.push({
-                                    local: temp.name,
+                                    local: sharedModuleExportFrom?.name ?? temp.name,
                                     remote: remote.name,
                                     loc,
                                 });
@@ -344,7 +347,7 @@ function importExportPlugin({ types: t, }) {
                                         local: local.name,
                                         remote: remote.name,
                                         loc,
-                                        namespace: temp.name,
+                                        namespace: sharedModuleExportFrom?.name ?? temp.name,
                                     });
                                 }
                                 else {
@@ -455,10 +458,14 @@ function importExportPlugin({ types: t, }) {
                                 const imported = s.imported;
                                 const importedName = imported.type === 'StringLiteral' ? imported.value : imported.name;
                                 const localModule = getLocalModule();
-                                state.importedIdentifiers.set(local.name, {
-                                    source: localModule.name,
-                                    imported: importedName,
-                                });
+                                if (importedName !== 'default') {
+                                    // NOTE(@krystofwoldrich): Imported identifiers are exported as live bindings
+                                    // the plugin currently doesn't support live bindings for default imports
+                                    state.importedIdentifiers.set(local.name, {
+                                        source: localModule.name,
+                                        imported: importedName,
+                                    });
+                                }
                                 if (importedName === 'default') {
                                     state.imports.push({
                                         node: withLocation(importAllTemplate({

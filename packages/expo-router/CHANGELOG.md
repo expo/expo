@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 6.0.0-beta.4 — 2025-08-19
+
+### 🐛 Bug fixes
+
+- fix link preview error, when preview is open to a tab without a Stack ([#38969](https://github.com/expo/expo/pull/38969) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- validate BottomTabs props ([#38959](https://github.com/expo/expo/pull/38959) by [@Ubax](https://github.com/Ubax))
+- use deffered value to fix performance for heavy tabs ([#38841](https://github.com/expo/expo/pull/38841) by [@Ubax](https://github.com/Ubax))
+
 ## 6.0.0-beta.3 — 2025-08-18
 
 ### 🐛 Bug fixes

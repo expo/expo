@@ -23,6 +23,7 @@ function getTabPathFromRootStateByHref(href, rootState) {
         if (route.state?.type === 'tab') {
             const tabState = route.state;
             const oldTabKey = tabState.routes[tabState.index].key;
+            // The next route will be either stack inside a tab or a new tab key
             if (!arr[i + 1]) {
                 throw new Error(`New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`);
             }

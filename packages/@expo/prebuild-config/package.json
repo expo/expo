@@ -40,8 +40,8 @@
     "expo-module-scripts": "^5.0.2"
   },
   "dependencies": {
-    "@expo/config": "~12.0.2",
-    "@expo/config-plugins": "~11.0.2",
+    "@expo/config": "~12.0.3",
+    "@expo/config-plugins": "~11.0.3",
     "@expo/config-types": "^54.0.3",
     "@expo/image-utils": "^0.8.2",
     "@expo/json-file": "^10.0.2",
