@@ -55,7 +55,7 @@ function useLoaderData(loader) {
     }
     if (typeof window !== 'undefined') {
         if (!window.__EXPO_ROUTER_LOADER_DATA__) {
-            throw new Error('Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your expo-router plugin config.');
+            throw new Error('Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your `expo-router` plugin config.');
         }
         // This is used when first loading a page in the browser as the preloaded data should be
         // available as a `<script>` tag in the HTML

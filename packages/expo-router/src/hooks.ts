@@ -54,7 +54,7 @@ export function useLoaderData<T = any>(loader: LoaderFunction<T>): T {
   if (typeof window !== 'undefined') {
     if (!window.__EXPO_ROUTER_LOADER_DATA__) {
       throw new Error(
-        'Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your expo-router plugin config.'
+        'Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your `expo-router` plugin config.'
       );
     }
 

@@ -1535,7 +1535,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (!unstable_useServerDataLoaders) {
       throw new CommandError(
         'LOADERS_NOT_ENABLED',
-        'Server data loaders are not enabled. Add `unstable_useServerDataLoaders` to your app config.'
+        'Server data loaders are not enabled. Add `unstable_useServerDataLoaders` to your `expo-router` plugin config.'
       );
     }
 
