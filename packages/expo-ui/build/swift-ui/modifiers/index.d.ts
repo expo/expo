@@ -2,6 +2,7 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
+import { animation } from './animation';
 /**
  * Base interface for all view modifiers.
  * All modifiers must have a type field and can include arbitrary parameters.
@@ -237,10 +238,6 @@ export declare const glassEffect: (params?: {
     };
     shape?: "circle" | "capsule" | "rectangle" | "ellipse";
 }) => ModifierConfig;
-export declare const animation: (params: {
-    curve: "easeInOut" | "easeIn" | "easeOut" | "linear";
-    animatedValue: number | boolean;
-}) => ModifierConfig;
 /**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
@@ -271,4 +268,5 @@ export declare const isModifier: (value: any) => value is ModifierConfig;
  * Filters an array to only include valid modifiers.
  */
 export declare const filterModifiers: (modifiers: unknown[]) => ModifierConfig[];
+export * from './animation';
 //# sourceMappingURL=index.d.ts.map

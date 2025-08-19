@@ -3,6 +3,8 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
+import { animation } from './animation';
+
 /**
  * Base interface for all view modifiers.
  * All modifiers must have a type field and can include arbitrary parameters.
@@ -304,11 +306,6 @@ export const glassEffect = (params?: {
   shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
 }) => createModifier('glassEffect', params);
 
-export const animation = (params: {
-  curve: 'easeInOut' | 'easeIn' | 'easeOut' | 'linear';
-  animatedValue: number | boolean;
-}) => createModifier('animation', params);
-
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -391,3 +388,5 @@ export const isModifier = (value: any): value is ModifierConfig => {
 export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
   return modifiers.filter(isModifier);
 };
+
+export * from './animation';

@@ -198,7 +198,6 @@ export const clipped = (clipped = true) => createModifier('clipped', { clipped }
  * Applies a glass effect to a view.
  */
 export const glassEffect = (params) => createModifier('glassEffect', params);
-export const animation = (params) => createModifier('animation', params);
 // =============================================================================
 // Utility Functions
 // =============================================================================
@@ -226,4 +225,5 @@ export const isModifier = (value) => {
 export const filterModifiers = (modifiers) => {
     return modifiers.filter(isModifier);
 };
+export * from './animation';
 //# sourceMappingURL=index.js.map

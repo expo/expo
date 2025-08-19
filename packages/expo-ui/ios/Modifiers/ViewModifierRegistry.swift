@@ -424,11 +424,11 @@ internal struct GlassEffectModifier: ViewModifier {
 }
 
 internal struct AnimationModifier: ViewModifier {
-  let curve: String
+  let animationConfig: [String: Any]
   let animatedValue: AnyHashable?
 
   func body(content: Content) -> some View {
-    let animationValue = parseAnimationCurve(curve)
+    let animationValue = parseAnimation(animationConfig)
     if let value = animatedValue {
       content.animation(animationValue, value: value)
     } else {
@@ -436,17 +436,65 @@ internal struct AnimationModifier: ViewModifier {
     }
   }
 
-  private func parseAnimationCurve(_ curveString: String) -> Animation {
-    switch curveString {
+  private func parseAnimation(_ config: [String: Any]) -> Animation {
+    let type = config["type"] as? String ?? "default"
+    
+    var animation: Animation
+    
+    switch type {
     case "easeIn":
-      return .easeIn
+      let duration = config["duration"] as? Double
+      animation = duration != nil ? .easeIn(duration: duration!) : .easeIn
+      
     case "easeOut":
-      return .easeOut
+      let duration = config["duration"] as? Double
+      animation = duration != nil ? .easeOut(duration: duration!) : .easeOut
+      
     case "linear":
-      return .linear
+      let duration = config["duration"] as? Double
+      animation = duration != nil ? .linear(duration: duration!) : .linear
+      
+    case "easeInOut":
+      let duration = config["duration"] as? Double
+      animation = duration != nil ? .easeInOut(duration: duration!) : .easeInOut
+      
+    case "spring":
+      let response = config["response"] as? Double
+      let dampingFraction = config["dampingFraction"] as? Double
+      let blendDuration = config["blendDuration"] as? Double
+      
+      if let response = response, let dampingFraction = dampingFraction {
+        if let blendDuration = blendDuration {
+          animation = .spring(response: response, dampingFraction: dampingFraction, blendDuration: blendDuration)
+        } else {
+          animation = .spring(response: response, dampingFraction: dampingFraction)
+        }
+      } else {
+        animation = .spring()
+      }
+      
+    case "interpolatingSpring":
+      let mass = config["mass"] as? Double ?? 1.0
+      let stiffness = config["stiffness"] as? Double ?? 100.0
+      let damping = config["damping"] as? Double ?? 10.0
+      let initialVelocity = config["initialVelocity"] as? Double ?? 0.0
+      
+      animation = .interpolatingSpring(mass: mass, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity)
+      
     default:
-      return .easeInOut
+      animation = .default
     }
+    
+    if let delay = config["delay"] as? Double {
+      animation = animation.delay(delay)
+    }
+    
+    if let repeatCount = config["repeatCount"] as? Int {
+      let autoreverses = config["autoreverses"] as? Bool ?? false
+      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
+    }
+    
+    return animation
   }
 }
 
@@ -750,10 +798,10 @@ extension ViewModifierRegistry {
     }
 
     register("animation") { params, _ in
-      let curve = params["curve"] as? String ?? "easeInOut"
+      let animationConfig = params["animation"] as? [String: Any] ?? ["type": "default"]
       let animatedValue = params["animatedValue"] as? AnyHashable
 
-      return AnimationModifier(curve: curve, animatedValue: animatedValue)
+      return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
     }
   }
 }
