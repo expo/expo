@@ -1,8 +1,9 @@
+import { screen, act, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
-import { screen, renderRouter, act, fireEvent } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { Badge, Icon, Label } from '../../common/elements';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabOptions } from '../NativeTabsView';
@@ -82,23 +83,16 @@ it('when no options are passed, default ones are used', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-  expect(Object.keys(BottomTabsScreen.mock.calls[0][0])).toEqual([
-    'hidden',
-    'specialEffects',
-    'iconResourceName',
-    'icon',
-    'selectedIcon',
-    'title',
-    'tabKey',
-    'isFocused',
-    'children',
-  ]);
   expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
     tabKey: expect.stringMatching(/^index-[-\w]+/),
     isFocused: true,
     children: expect.objectContaining({}),
+    iconResourceName: undefined,
+    icon: undefined,
+    selectedIcon: undefined,
+    freezeContents: false,
   } as NativeTabOptions);
 });
 
@@ -611,17 +605,6 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(Object.keys(BottomTabsScreen.mock.calls[0][0])).toEqual([
-      'title',
-      'hidden',
-      'specialEffects',
-      'iconResourceName',
-      'icon',
-      'selectedIcon',
-      'tabKey',
-      'isFocused',
-      'children',
-    ]);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
@@ -629,6 +612,10 @@ describe('Dynamic options', () => {
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
       children: expect.objectContaining({}),
+      freezeContents: false,
+      icon: undefined,
+      selectedIcon: undefined,
+      iconResourceName: undefined,
     } as NativeTabOptions);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
@@ -637,6 +624,10 @@ describe('Dynamic options', () => {
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
       children: expect.objectContaining({}),
+      freezeContents: false,
+      icon: undefined,
+      selectedIcon: undefined,
+      iconResourceName: undefined,
     } as NativeTabOptions);
   });
 
@@ -659,23 +650,16 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(Object.keys(BottomTabsScreen.mock.calls[0][0])).toEqual([
-      'title',
-      'hidden',
-      'specialEffects',
-      'iconResourceName',
-      'icon',
-      'selectedIcon',
-      'tabKey',
-      'isFocused',
-      'children',
-    ]);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
+      iconResourceName: undefined,
+      icon: undefined,
+      selectedIcon: undefined,
+      freezeContents: false,
     } as NativeTabOptions);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
@@ -687,6 +671,8 @@ describe('Dynamic options', () => {
       icon: {
         sfSymbolName: 'homepod.2.fill',
       },
+      selectedIcon: undefined,
+      freezeContents: false,
     } as NativeTabOptions);
   });
 

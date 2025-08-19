@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 3.0.3 — 2025-08-18
+
+### 💡 Others
+
+- [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+
+## 3.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.0 — 2025-08-13
 
 ### 🎉 New features
@@ -22,6 +36,7 @@
 - [Android] Add VRUtilities for VR-related values and utils ([#37744](https://github.com/expo/expo/pull/37744) by [@behenate](https://github.com/behenate))
 - [Andorid] Start using experimental converters in properties. ([#38597](https://github.com/expo/expo/pull/38597) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Rethrow pending Jni exceptions. ([#38625](https://github.com/expo/expo/pull/38625) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add new type - `ValueOrUndefined`. ([#38620](https://github.com/expo/expo/pull/38620) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

@@ -1,7 +1,7 @@
+import { Asset } from 'expo-asset';
 import { PermissionStatus } from 'expo-modules-core';
 import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { RecordingPresets } from './RecordingConstants';
-import resolveAssetSource from './utils/resolveAssetSource';
 const nextId = (() => {
     let id = 0;
     return () => id++;
@@ -75,10 +75,12 @@ function getStatusFromMedia(media, id) {
     return status;
 }
 export class AudioPlayerWeb extends globalThis.expo.SharedObject {
-    constructor(source, interval) {
+    constructor(source, options = {}) {
         super();
+        const { updateInterval = 500, crossOrigin } = options;
         this.src = source;
-        this.interval = Math.max(interval, 1);
+        this.interval = Math.max(updateInterval, 1);
+        this.crossOrigin = crossOrigin;
         this.media = this._createMediaElement();
     }
     id = nextId();
@@ -90,6 +92,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     interval = 500;
     isPlaying = false;
     loaded = false;
+    crossOrigin;
     get playing() {
         return this.isPlaying;
     }
@@ -174,7 +177,9 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     _createMediaElement() {
         const newSource = getSourceUri(this.src);
         const media = new Audio(newSource);
-        media.crossOrigin = 'anonymous';
+        if (this.crossOrigin !== undefined) {
+            media.crossOrigin = this.crossOrigin;
+        }
         let lastEmitTime = 0;
         const intervalSec = this.interval / 1000;
         // Throttled status updates based on interval
@@ -228,10 +233,12 @@ function getSourceUri(source) {
         return source;
     }
     if (typeof source === 'number') {
-        return resolveAssetSource(source)?.uri ?? undefined;
+        const asset = Asset.fromModule(source);
+        return asset.uri;
     }
     if (typeof source?.assetId === 'number' && !source?.uri) {
-        return resolveAssetSource(source.assetId)?.uri ?? undefined;
+        const asset = Asset.fromModule(source.assetId);
+        return asset.uri;
     }
     return source?.uri ?? undefined;
 }

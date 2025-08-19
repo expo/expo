@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
-import { Dimensions, NativeSyntheticEvent } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type BottomSheetProps = {
   /**
@@ -16,7 +17,7 @@ export type BottomSheetProps = {
    * Callback function that is called when the `BottomSheet` is opened.
    */
   onIsOpenedChange: (isOpened: boolean) => void;
-};
+} & CommonViewModifierProps;
 
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {
   onIsOpenedChange: (event: NativeSyntheticEvent<{ isOpened: boolean }>) => void;
@@ -27,28 +28,18 @@ const BottomSheetNativeView: React.ComponentType<NativeBottomSheetProps> = requi
   'BottomSheetView'
 );
 
-export function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetProps {
+function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     onIsOpenedChange: ({ nativeEvent: { isOpened } }) => {
       props?.onIsOpenedChange?.(isOpened);
     },
   };
 }
 
-/**
- * `<BottomSheet>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function BottomSheetPrimitive(props: BottomSheetProps) {
-  return <BottomSheetNativeView {...transformBottomSheetProps(props)} />;
-}
-
 export function BottomSheet(props: BottomSheetProps) {
-  const { width } = Dimensions.get('window');
-  return (
-    <Host style={{ position: 'absolute', width }}>
-      <BottomSheetPrimitive {...props} />
-    </Host>
-  );
+  return <BottomSheetNativeView {...transformBottomSheetProps(props)} />;
 }

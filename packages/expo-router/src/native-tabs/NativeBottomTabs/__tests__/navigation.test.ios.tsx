@@ -1,10 +1,11 @@
+import { screen, fireEvent } from '@testing-library/react-native';
 import React, { act } from 'react';
 import { View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
 import { router } from '../../../imperative-api';
 import { Link } from '../../../link/Link';
-import { screen, renderRouter, fireEvent } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 
 jest.mock('react-native-screens', () => {

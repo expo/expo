@@ -14,10 +14,6 @@ Before you proceed, ensure you have set up `jest-expo` according to the [Unit te
 
 > **Note**: When using Expo Router, do not put your test files inside the **app** directory. All files inside your **app** directory must be either routes or layout files. Instead, use the **\_\_tests\_\_** directory or a separate directory. This approach is explained in [Unit testing with Jest](/develop/unit-testing/#structure-your-tests).
 
-### Jest Native Matchers (optional)
-
-[`@testing-library/jest-native`](https://testing-library.com/docs/ecosystem-jest-native/) provides custom Jest matchers that can be used to extend the functionality of `@testing-library/react-native`. If installed, Expo Router will automatically perform the `@testing-library/jest-native` setup.
-
 ## `renderRouter`
 
 `renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api/queries) to locate components.

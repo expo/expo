@@ -1,1 +1,0 @@
-{"version":3,"file":"resolveAssetSource.js","sourceRoot":"","sources":["../../src/utils/resolveAssetSource.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,IAAI,OAAO,EAAE,MAAM,cAAc,CAAC;AAChD,eAAe,OAAO,CAAC,kBAAkB,CAAC","sourcesContent":["import { Image as RNAsset } from 'react-native';\nexport default RNAsset.resolveAssetSource;\n"]}

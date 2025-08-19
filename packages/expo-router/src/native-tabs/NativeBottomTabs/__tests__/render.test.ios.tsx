@@ -1,10 +1,11 @@
+import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
 import { usePathname } from '../../../hooks';
 import { Redirect } from '../../../link/Redirect';
-import { screen, renderRouter, waitFor } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
 
@@ -321,4 +322,26 @@ describe('First focused tab', () => {
     expect(screen.queryByTestId('second')).toBeNull();
     expect(BottomTabsScreen).not.toHaveBeenCalled();
   });
+});
+
+it('when nesting NativeTabs, it throws an Error', () => {
+  expect(() =>
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="nested" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'nested/_layout': () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      'nested/index': () => <View testID="index-nested" />,
+    })
+  ).toThrow(
+    'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
+  );
 });

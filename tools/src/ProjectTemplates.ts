@@ -14,11 +14,23 @@ export type Template = {
 const DEPENDENCIES_KEYS = ['dependencies', 'devDependencies', 'peerDependencies'];
 
 export async function getAvailableProjectTemplatesAsync(): Promise<Package[]> {
-  const templates = (await fs.readdir(TEMPLATES_DIR, { withFileTypes: true }))
-    .filter((dirent) => dirent.isDirectory())
+  const directoryEntries = await fs.readdir(TEMPLATES_DIR, { withFileTypes: true });
+
+  const candidateTemplateDirectories = directoryEntries
+    .filter((dirent) => dirent.isDirectory() && !dirent.name.startsWith('.'))
     .map((dirent) => path.join(TEMPLATES_DIR, dirent.name));
 
-  return templates.map((templatePath) => {
+  const existingTemplateDirectories = (
+    await Promise.all(
+      candidateTemplateDirectories.map(async (templatePath) => {
+        const fullPackageJsonPath = path.join(templatePath, 'package.json');
+        const hasPackageJson = await fs.pathExists(fullPackageJsonPath);
+        return hasPackageJson ? templatePath : null;
+      })
+    )
+  ).filter((templatePath): templatePath is string => Boolean(templatePath));
+
+  return existingTemplateDirectories.map((templatePath) => {
     const fullPackageJsonPath = path.join(templatePath, 'package.json');
     const packageJson = require(fullPackageJsonPath);
 

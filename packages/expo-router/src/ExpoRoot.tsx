@@ -18,7 +18,6 @@ import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
-import { ImperativeApiEmitter } from './imperative-api';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { ModalContextProvider } from './modal/ModalContext';
 import { Screen } from './primitives';
@@ -165,7 +164,6 @@ function ContextNavigator({
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <ModalContextProvider>
-              <ImperativeApiEmitter />
               <Content />
             </ModalContextProvider>
           </WrapperComponent>

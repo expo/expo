@@ -1,3 +1,4 @@
+import { fireEvent, act, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -6,7 +7,7 @@ import { store } from '../global-state/router-store';
 import { useSegments } from '../hooks';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { fireEvent, act, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('should not render generated screens', () => {
   renderRouter({

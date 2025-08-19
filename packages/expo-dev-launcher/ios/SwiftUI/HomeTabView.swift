@@ -30,7 +30,11 @@ struct HomeTabView: View {
                 Button("reset".uppercased()) {
                   viewModel.clearRecentlyOpenedApps()
                 }
+                #if os(tvOS)
+                .font(.system(size: 24))
+                #else
                 .font(.system(size: 12))
+                #endif
               }
 
               LazyVStack(spacing: 6) {
@@ -65,9 +69,7 @@ struct HomeTabView: View {
         .padding()
     }
     .buttonStyle(PlainButtonStyle())
-    #if !os(tvOS)
-    .background(Color(.secondarySystemGroupedBackground))
-    #endif
+    .background(Color.expoSecondarySystemGroupedBackground)
     .cornerRadius(18)
   }
 }

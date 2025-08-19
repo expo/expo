@@ -2,9 +2,17 @@ import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
+import { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { findModulesAsync } from '../findModules';
 
 const projectRoot = '/fake/project';
+
+const BASE_AUTOLINKING_OPTIONS: AutolinkingOptions = {
+  legacy_shallowReactNativeLinking: false,
+  searchPaths: [],
+  nativeModulesDir: null,
+  exclude: [],
+};
 
 const expectAnyModule = (version = expect.any(String)) => {
   return expect.objectContaining({ version });
@@ -80,8 +88,11 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot,
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -106,8 +117,11 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot,
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({});
@@ -136,8 +150,11 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot,
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -175,8 +192,11 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot: path.join(projectRoot, 'packages/app'),
+      appRoot: path.join(projectRoot, 'packages/app'),
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
     if (isNegativeTest) {
       expect(result).toEqual({});
@@ -224,8 +244,11 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot: path.join(projectRoot, 'packages/app'),
+      appRoot: path.join(projectRoot, 'packages/app'),
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
     // TODO(@kitten): Fix the check here
     if (isNegativeTest) {
@@ -266,9 +289,12 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
-      platform: 'ios',
-      projectRoot: path.join(projectRoot, 'packages/app'),
+      appRoot: path.join(projectRoot, 'packages/app'),
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        searchPaths: [path.join(projectRoot, 'node_modules')],
+        platform: 'ios',
+      },
     });
     expect(result).toEqual({
       pkg: expectAnyModule(),
@@ -308,12 +334,15 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [
-        path.join(projectRoot, 'packages/app/node_modules'),
-        path.join(projectRoot, 'node_modules'),
-      ],
-      platform: 'ios',
-      projectRoot: path.join(projectRoot, 'packages/app'),
+      appRoot: path.join(projectRoot, 'packages/app'),
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        searchPaths: [
+          path.join(projectRoot, 'packages/app/node_modules'),
+          path.join(projectRoot, 'node_modules'),
+        ],
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -353,8 +382,11 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot: path.join(projectRoot, 'packages/app'),
+      appRoot: path.join(projectRoot, 'packages/app'),
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -410,8 +442,11 @@ describe(findModulesAsync, () => {
     });
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot: path.join(projectRoot, 'packages/app'),
+      appRoot: path.join(projectRoot, 'packages/app'),
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -472,9 +507,12 @@ describe(findModulesAsync, () => {
     });
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
-      platform: 'ios',
-      projectRoot,
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        searchPaths: [path.join(projectRoot, 'node_modules')],
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -501,10 +539,13 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
-      platform: 'ios',
-      projectRoot,
-      exclude: ['react-native-third-party'],
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        searchPaths: [path.join(projectRoot, 'node_modules')],
+        exclude: ['react-native-third-party'],
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -530,9 +571,12 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot,
-      exclude: ['react-native-third-party'],
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        exclude: ['react-native-third-party'],
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({
@@ -554,9 +598,12 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
-      platform: 'ios',
-      projectRoot,
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+        searchPaths: [path.join(projectRoot, 'node_modules')],
+      },
     });
 
     expect(result).toEqual({});
@@ -578,9 +625,13 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
-      platform: 'ios',
-      projectRoot,
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+        searchPaths: [path.join(projectRoot, 'node_modules')],
+        nativeModulesDir: path.join(projectRoot, 'modules'),
+      },
     });
 
     expect(result).toEqual({
@@ -616,8 +667,11 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      platform: 'ios',
-      projectRoot,
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
     });
 
     expect(result).toEqual({

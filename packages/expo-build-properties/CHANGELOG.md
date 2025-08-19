@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 1.0.3 — 2025-08-18
+
+### 💡 Others
+
+- [ios] Removed `buildFromSource` option on iOS.
+
+## 1.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.1 — 2025-08-15
+
+### 🎉 New features
+
+- Add `ios.reactNativeReleaseLevel` option ([#38840](https://github.com/expo/expo/pull/38840) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 1.0.0 — 2025-08-13
 
 ### 🎉 New features

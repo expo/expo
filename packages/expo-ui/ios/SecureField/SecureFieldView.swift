@@ -1,7 +1,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SecureFieldProps: ExpoSwiftUI.ViewProps {
+final class SecureFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
@@ -24,7 +30,9 @@ struct SecureFieldView: ExpoSwiftUI.View {
     SecureField(
       props.placeholder,
       text: $textManager.text
-    ).fixedSize(horizontal: false, vertical: true)
+    )
+      .modifier(CommonViewModifiers(props: props))
+      .fixedSize(horizontal: false, vertical: true)
       .onAppear { textManager.text = props.defaultValue }
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 10.0.3 — 2025-08-18
+
+### 💡 Others
+
+- Use React Native's `edgeToEdgeEnabled` Gradle property to provide edge-to-edge support. ([#38767](https://github.com/expo/expo/pull/38767) by [@behenate](https://github.com/behenate))
+
+## 10.0.2 — 2025-08-16
+
+### 💡 Others
+
+- Switch autolinked package internal to `expo/internal/unstable-autolinking-exports` ([#38909](https://github.com/expo/expo/pull/38909) by [@kitten](https://github.com/kitten))
+
+## 10.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.0 — 2025-08-13
 
 ### 🎉 New features

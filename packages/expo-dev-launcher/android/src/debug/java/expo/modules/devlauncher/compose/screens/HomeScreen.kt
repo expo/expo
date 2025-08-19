@@ -53,12 +53,10 @@ import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.NewText
-import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.primitives.pulseEffect
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.ui.Warning
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -114,15 +112,12 @@ fun CrashReport(
     return
   }
 
-  Spacer(Theme.spacing.large)
-
-  RoundedSurface {
+  Row(modifier = Modifier.padding(top = NewAppTheme.spacing.`6` - NewAppTheme.spacing.`4`)) {
     Button(onClick = {
       onClick(crashReport)
     }) {
-      Text(
-        "The last time you tried to open an app the development build crashed. Tap to get more information.",
-        modifier = Modifier.padding(Theme.spacing.medium)
+      Warning(
+        "The last time you tried to open an app the development build crashed. Tap to get more information."
       )
     }
   }
@@ -167,13 +162,13 @@ fun HomeScreen(
       modifier = Modifier.padding(vertical = NewAppTheme.spacing.`4`)
     )
 
-//    val crashReport = state.crashReport
-//    CrashReport(
-//      crashReport = crashReport,
-//      onClick = {
-//        onAction(HomeAction.NavigateToCrashReport(it))
-//      }
-//    )
+    val crashReport = state.crashReport
+    CrashReport(
+      crashReport = crashReport,
+      onClick = {
+        onAction(HomeAction.NavigateToCrashReport(it))
+      }
+    )
 
     Column(
       modifier = Modifier

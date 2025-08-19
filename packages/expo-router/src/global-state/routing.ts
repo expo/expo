@@ -3,9 +3,12 @@ import {
   type NavigationState,
   PartialRoute,
   type PartialState,
+  type NavigationContainerRef,
+  ParamListBase,
 } from '@react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
+import { type RefObject } from 'react';
 import { Platform } from 'react-native';
 
 import { store } from './router-store';
@@ -20,6 +23,7 @@ import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
+import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
@@ -45,25 +49,20 @@ export const routingQueue = {
     return routingQueue.queue;
   },
   add(action: NavigationAction) {
-    // Reset the identity of the queue.
-    if (routingQueue.queue.length === 0) {
-      routingQueue.queue = [];
-    }
-
     routingQueue.queue.push(action);
     for (const callback of routingQueue.subscribers) {
       callback();
     }
   },
-  run() {
-    const queue = routingQueue.queue;
-    if (queue.length === 0 || !store.navigationRef) {
-      return;
-    }
-
+  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
+    // Reset the identity of the queue.
+    const events = routingQueue.queue;
     routingQueue.queue = [];
-    for (const action of queue) {
-      store.navigationRef.dispatch(action);
+    let action: NavigationAction | undefined;
+    while ((action = events.shift())) {
+      if (ref.current) {
+        ref.current.dispatch(action);
+      }
     }
   },
 };
@@ -315,10 +314,13 @@ function getNavigateAction(
     rootPayload.params.initial = !withAnchor;
   }
 
-  const previewKeyParams = isPreviewNavigation
-    ? { __internal__expoRouterIsPreviewNavigation: isPreviewNavigation }
+  const expoParams: InternalExpoRouterParams = isPreviewNavigation
+    ? {
+        __internal__expo_router_is_preview_navigation: true,
+        __internal_expo_router_no_animation: true,
+      }
     : {};
-  const params = { ...rootPayload.params, ...previewKeyParams };
+  const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);
 
   return {
     type,

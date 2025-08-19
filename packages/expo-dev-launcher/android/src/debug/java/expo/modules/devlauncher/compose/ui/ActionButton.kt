@@ -50,6 +50,7 @@ fun ActionButton(
   foreground: Color,
   background: Color,
   modifier: Modifier = Modifier,
+  fill: Boolean = true,
   borderRadius: Dp = NewAppTheme.borderRadius.xl,
   textStyle: TextStyle = NewAppTheme.font.lg.merge(
     fontWeight = FontWeight.SemiBold
@@ -63,9 +64,15 @@ fun ActionButton(
     indication = ripple(color = foreground)
   ) {
     Box(
-      contentAlignment = Alignment.Companion.Center,
-      modifier = Modifier.Companion
-        .fillMaxWidth()
+      contentAlignment = Alignment.Center,
+      modifier = Modifier
+        .then(
+          if (fill) {
+            Modifier.fillMaxWidth()
+          } else {
+            Modifier
+          }
+        )
         .then(modifier)
     ) {
       NewText(

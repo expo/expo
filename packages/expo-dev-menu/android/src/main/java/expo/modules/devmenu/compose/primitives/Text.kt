@@ -19,9 +19,10 @@ import expo.modules.devmenu.compose.theme.Theme
 fun NewText(
   text: String,
   style: TextStyle? = null,
-  color: Color? = null,
+  color: Color = NewAppTheme.colors.text.default,
   maxLines: Int = Int.MAX_VALUE,
   softWrap: Boolean = true,
+  overflow: TextOverflow = TextOverflow.Clip,
   modifier: Modifier = Modifier
 ) {
   BasicText(
@@ -29,11 +30,35 @@ fun NewText(
     maxLines = maxLines,
     softWrap = softWrap,
     style = NewAppTheme.font.md.merge(
-      color = color ?: NewAppTheme.colors.text.default,
+      color = color,
       fontFamily = NewAppTheme.font.inter,
       fontWeight = FontWeight.Normal
     ).merge(style),
-    overflow = TextOverflow.Visible,
+    overflow = overflow,
+    modifier = modifier
+  )
+}
+
+@Composable
+fun NewText(
+  text: AnnotatedString,
+  style: TextStyle? = null,
+  color: Color = NewAppTheme.colors.text.default,
+  maxLines: Int = Int.MAX_VALUE,
+  softWrap: Boolean = true,
+  overflow: TextOverflow = TextOverflow.Clip,
+  modifier: Modifier = Modifier
+) {
+  BasicText(
+    text,
+    maxLines = maxLines,
+    softWrap = softWrap,
+    style = NewAppTheme.font.md.merge(
+      color = color,
+      fontFamily = NewAppTheme.font.inter,
+      fontWeight = FontWeight.Normal
+    ).merge(style),
+    overflow = overflow,
     modifier = modifier
   )
 }

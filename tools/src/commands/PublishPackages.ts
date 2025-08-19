@@ -49,6 +49,11 @@ export default (program: Command) => {
       false
     )
     .option('--no-deps', 'Whether not to include dependencies of the requested packages', false)
+    .option(
+      '--templates-only',
+      'Restrict publishing to template packages under templates/. Dependencies will not be auto-included.',
+      false
+    )
 
     /* exclusive options */
     .option(
@@ -75,6 +80,11 @@ export default (program: Command) => {
     .option(
       '-A, --skip-android-artifacts',
       'Whether to build and publish Android artifacts to the local NPM registry.',
+      false
+    )
+    .option(
+      '--auto-select-unpublished',
+      'When retrying after a failed publish, auto-select all packages whose current version is not published yet and allow deselecting in a multi-select prompt.',
       false
     )
     /* debug options */
@@ -123,6 +133,16 @@ ${chalk.gray('>')} ${chalk.italic.cyan('et publish expo-gl expo-auth-session')}`
 async function main(packageNames: string[], options: CommandOptions): Promise<void> {
   // Commander doesn't put arguments to options object, let's add it for convenience. In fact, this is an option.
   options.packageNames = packageNames;
+  // Enforce no-deps when templates-only is specified to avoid pulling in non-template dependencies.
+  if (options.templatesOnly) {
+    options.deps = false;
+    // Bare-minimum requires publishing the expo package as well, which is incompatible with templates-only
+    if (options.packageNames.includes('expo-template-bare-minimum')) {
+      throw new Error(
+        'The expo-template-bare-minimum cannot be published with --templates-only. Publish it together with the expo package (omit --templates-only), or remove it from the selection.'
+      );
+    }
+  }
 
   const tasks = tasksForOptions(options);
   const taskRunner = new TaskRunner<TaskArgs, PublishBackupData>({
