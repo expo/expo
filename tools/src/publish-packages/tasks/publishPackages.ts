@@ -66,7 +66,7 @@ export const publishPackages = new Task<TaskArgs>(
           },
         });
         // Assign SDK tag when package is a template
-        if (pkg.isTemplate()) {
+        if (pkg.isTemplate() && !options.canary) {
           const sdkTag = `sdk-${semver.major(pkg.packageVersion)}`;
           logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
           if (!options.dry) {
