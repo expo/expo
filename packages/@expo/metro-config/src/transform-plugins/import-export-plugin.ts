@@ -403,7 +403,10 @@ export function importExportPlugin({
                 path.insertBefore(
                   withLocation(
                     importAllTemplate({
-                      IMPORT: t.cloneNode(state.importDefault),
+                      IMPORT:
+                        s.type !== 'ExportNamespaceSpecifier'
+                          ? t.cloneNode(state.importDefault)
+                          : t.cloneNode(state.importAll),
                       FILE: resolvePath(
                         t.cloneNode(nullthrows(path.node.source)),
                         state.opts.resolve
@@ -642,10 +645,16 @@ export function importExportPlugin({
                 const importedName =
                   imported.type === 'StringLiteral' ? imported.value : imported.name;
                 const localModule = getLocalModule();
-                state.importedIdentifiers.set(local.name, {
-                  source: localModule.name,
-                  imported: importedName,
-                });
+
+                if (importedName !== 'default') {
+                  // NOTE(@krystofwoldrich): Imported identifiers are exported as live bindings
+                  // the plugin currently doesn't support live bindings for default imports
+                  state.importedIdentifiers.set(local.name, {
+                    source: localModule.name,
+                    imported: importedName,
+                  });
+                }
+
                 if (importedName === 'default') {
                   state.imports.push({
                     node: withLocation(
