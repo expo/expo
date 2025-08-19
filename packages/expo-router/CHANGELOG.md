@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- validate BottomTabs props ([#38959](https://github.com/expo/expo/pull/38959) by [@Ubax](https://github.com/Ubax))
+
 ## 6.0.0-beta.3 — 2025-08-18
 
 ### 🐛 Bug fixes
