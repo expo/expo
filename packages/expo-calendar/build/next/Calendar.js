@@ -12,7 +12,9 @@ export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAtten
  */
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     getOccurrence(recurringEventOptions = {}) {
-        return super.getOccurrence(stringifyDateValues(recurringEventOptions));
+        const result = super.getOccurrence(stringifyDateValues(recurringEventOptions));
+        Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);
+        return result;
     }
     async getAttendees(recurringEventOptions = {}) {
         return super.getAttendees(stringifyDateValues(recurringEventOptions));

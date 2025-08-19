@@ -755,26 +755,6 @@ export async function test(t) {
           t.expect(events.length).toBe(4);
         });
 
-        t.it('returns an instance of a recurring event', async () => {
-          const recurringEvent = await createTestEvent(calendar, {
-            recurrenceRule: {
-              frequency: Calendar.Frequency.DAILY,
-            },
-          });
-
-          const instanceStartDate = new Date(2020, 5, 6, 9);
-
-          const occurrence = recurringEvent.getOccurrence({
-            instanceStartDate,
-          });
-
-          t.expect(occurrence).toBeDefined();
-          t.expect(occurrence.id).toBe(recurringEvent.id);
-          t.expect(occurrence.title).toBe(recurringEvent.title);
-          t.expect(occurrence.startDate).toBe(new Date(2020, 5, 6, 9).toISOString());
-          t.expect(occurrence.endDate).toBe(new Date(2020, 5, 6, 10).toISOString());
-        });
-
         t.afterEach(async () => {
           calendar.delete();
         });
@@ -922,31 +902,34 @@ export async function test(t) {
           t.expect(event.location).toBe(newLocation);
         });
 
-        t.it('handles detached events', async () => {
-          const event = await createTestEvent(calendar, {
-            recurrenceRule: {
-              frequency: Calendar.Frequency.DAILY,
-            },
+        // Updating with `instanceStartDate` is not supported on Android
+        if (Platform.OS === 'ios') {
+          t.it('handles detached events', async () => {
+            const event = await createTestEvent(calendar, {
+              recurrenceRule: {
+                frequency: Calendar.Frequency.DAILY,
+              },
+            });
+
+            const occurrence = event.getOccurrence({
+              instanceStartDate: new Date(2020, 3, 5, 9),
+            });
+
+            t.expect(occurrence.isDetached).toBe(false);
+
+            const title = 'Detached event ' + new Date().toISOString();
+
+            occurrence.update({
+              title,
+            });
+
+            t.expect(occurrence.title).toBe(title);
+            t.expect(occurrence.recurrenceRule).toBeNull();
+            t.expect(occurrence.isDetached).toBe(true);
+            t.expect(occurrence.startDate).toBe(new Date(2020, 3, 5, 9).toISOString());
+            t.expect(occurrence.endDate).toBe(new Date(2020, 3, 5, 10).toISOString());
           });
-
-          const occurrence = event.getOccurrence({
-            instanceStartDate: new Date(2020, 3, 5, 9),
-          });
-
-          t.expect(occurrence.isDetached).toBe(false);
-
-          const title = 'Detached event ' + new Date().toISOString();
-
-          occurrence.update({
-            title,
-          });
-
-          t.expect(occurrence.title).toBe(title);
-          t.expect(occurrence.recurrenceRule).toBeNull();
-          t.expect(occurrence.isDetached).toBe(true);
-          t.expect(occurrence.startDate).toBe(new Date(2020, 3, 5, 9).toISOString());
-          t.expect(occurrence.endDate).toBe(new Date(2020, 3, 5, 10).toISOString());
-        });
+        }
 
         t.it('updates recurrence rule', async () => {
           const event = await createTestEvent(calendar);
@@ -1064,11 +1047,43 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          // TODO: Temporarly until we have a way to delete calendars on Android
-          //   calendar.delete();
-          Calendar.deleteCalendarAsync(calendar.id);
+          calendar.delete();
         });
       });
+
+      if (Platform.OS === 'ios') {
+        t.describe('Event.getOccurrence()', () => {
+          let calendar: ExpoCalendar;
+
+          t.beforeEach(async () => {
+            calendar = await createTestCalendarAsync();
+          });
+
+          t.it('returns an instance of a recurring event', async () => {
+            const recurringEvent = await createTestEvent(calendar, {
+              recurrenceRule: {
+                frequency: Calendar.Frequency.DAILY,
+              },
+            });
+
+            const instanceStartDate = new Date(2020, 5, 6, 9);
+
+            const occurrence = recurringEvent.getOccurrence({
+              instanceStartDate,
+            });
+
+            t.expect(occurrence).toBeDefined();
+            t.expect(occurrence.id).toBe(recurringEvent.id);
+            t.expect(occurrence.title).toBe(recurringEvent.title);
+            t.expect(occurrence.startDate).toBe(new Date(2020, 5, 6, 9).toISOString());
+            t.expect(occurrence.endDate).toBe(new Date(2020, 5, 6, 10).toISOString());
+          });
+
+          t.afterEach(async () => {
+            calendar.delete();
+          });
+        });
+      }
 
       t.describe('Event.delete()', () => {
         let calendar: ExpoCalendar;
@@ -1133,42 +1148,8 @@ export async function test(t) {
           t.expect(eventsAfterDelete.length).toBe(0);
         });
 
-        t.it('deletes an instance of a recurring event', async () => {
-          const recurringEvent = await createTestEvent(calendar, {
-            recurrenceRule: {
-              frequency: Calendar.Frequency.DAILY,
-            },
-          });
-
-          const eventsBeforeDelete = await calendar.listEvents(
-            new Date(2019, 3, 4),
-            new Date(2019, 3, 8)
-          );
-          t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
-          t.expect(eventsBeforeDelete.length).toBe(4);
-
-          recurringEvent.delete({
-            instanceStartDate: new Date(2019, 3, 5, 9),
-          });
-
-          const eventsAfterDelete = await calendar.listEvents(
-            new Date(2019, 3, 4),
-            new Date(2019, 3, 8)
-          );
-
-          t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
-          t.expect(eventsAfterDelete.length).toBe(3);
-          t.expect(eventsAfterDelete.map((e) => e.startDate)).toEqual([
-            new Date(2019, 3, 4, 9).toISOString(),
-            // 5th April is deleted
-            new Date(2019, 3, 6, 9).toISOString(),
-            new Date(2019, 3, 7, 9).toISOString(),
-          ]);
-        });
-
-        t.it(
-          'deletes a single occurrence of a recurring event via the occurrence instance',
-          async () => {
+        if (Platform.OS === 'ios') {
+          t.it('deletes an instance of a recurring event', async () => {
             const recurringEvent = await createTestEvent(calendar, {
               recurrenceRule: {
                 frequency: Calendar.Frequency.DAILY,
@@ -1182,11 +1163,8 @@ export async function test(t) {
             t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
             t.expect(eventsBeforeDelete.length).toBe(4);
 
-            const occurrence = recurringEvent.getOccurrence({
+            recurringEvent.delete({
               instanceStartDate: new Date(2019, 3, 5, 9),
-            });
-            occurrence.delete({
-              futureEvents: false,
             });
 
             const eventsAfterDelete = await calendar.listEvents(
@@ -1202,45 +1180,84 @@ export async function test(t) {
               new Date(2019, 3, 6, 9).toISOString(),
               new Date(2019, 3, 7, 9).toISOString(),
             ]);
-          }
-        );
+          });
 
-        t.it(
-          'deletes all future occurrences of a recurring event from a given instance',
-          async () => {
-            const recurringEvent = await createTestEvent(calendar, {
-              recurrenceRule: {
-                frequency: Calendar.Frequency.DAILY,
-              },
-            });
+          t.it(
+            'deletes a single occurrence of a recurring event via the occurrence instance',
+            async () => {
+              const recurringEvent = await createTestEvent(calendar, {
+                recurrenceRule: {
+                  frequency: Calendar.Frequency.DAILY,
+                },
+              });
 
-            const eventsBeforeDelete = await calendar.listEvents(
-              new Date(2019, 3, 4),
-              new Date(2019, 3, 8)
-            );
-            t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
-            t.expect(eventsBeforeDelete.length).toBe(4);
+              const eventsBeforeDelete = await calendar.listEvents(
+                new Date(2019, 3, 4),
+                new Date(2019, 3, 8)
+              );
+              t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
+              t.expect(eventsBeforeDelete.length).toBe(4);
 
-            const occurrence = recurringEvent.getOccurrence({
-              instanceStartDate: new Date(2019, 3, 5, 9),
-            });
-            occurrence.delete({
-              futureEvents: true,
-            });
+              const occurrence = recurringEvent.getOccurrence({
+                instanceStartDate: new Date(2019, 3, 5, 9),
+              });
+              occurrence.delete({
+                futureEvents: false,
+              });
 
-            const eventsAfterDelete = await calendar.listEvents(
-              new Date(2019, 3, 4),
-              new Date(2019, 3, 8)
-            );
+              const eventsAfterDelete = await calendar.listEvents(
+                new Date(2019, 3, 4),
+                new Date(2019, 3, 8)
+              );
 
-            t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
-            t.expect(eventsAfterDelete.length).toBe(1);
-            t.expect(eventsAfterDelete.map((e) => e.startDate)).toEqual([
-              new Date(2019, 3, 4, 9).toISOString(),
-              // 5th, 6th and 7th April is deleted
-            ]);
-          }
-        );
+              t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
+              t.expect(eventsAfterDelete.length).toBe(3);
+              t.expect(eventsAfterDelete.map((e) => e.startDate)).toEqual([
+                new Date(2019, 3, 4, 9).toISOString(),
+                // 5th April is deleted
+                new Date(2019, 3, 6, 9).toISOString(),
+                new Date(2019, 3, 7, 9).toISOString(),
+              ]);
+            }
+          );
+
+          t.it(
+            'deletes all future occurrences of a recurring event from a given instance',
+            async () => {
+              const recurringEvent = await createTestEvent(calendar, {
+                recurrenceRule: {
+                  frequency: Calendar.Frequency.DAILY,
+                },
+              });
+
+              const eventsBeforeDelete = await calendar.listEvents(
+                new Date(2019, 3, 4),
+                new Date(2019, 3, 8)
+              );
+              t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
+              t.expect(eventsBeforeDelete.length).toBe(4);
+
+              const occurrence = recurringEvent.getOccurrence({
+                instanceStartDate: new Date(2019, 3, 5, 9),
+              });
+              occurrence.delete({
+                futureEvents: true,
+              });
+
+              const eventsAfterDelete = await calendar.listEvents(
+                new Date(2019, 3, 4),
+                new Date(2019, 3, 8)
+              );
+
+              t.expect(Array.isArray(eventsAfterDelete)).toBe(true);
+              t.expect(eventsAfterDelete.length).toBe(1);
+              t.expect(eventsAfterDelete.map((e) => e.startDate)).toEqual([
+                new Date(2019, 3, 4, 9).toISOString(),
+                // 5th, 6th and 7th April is deleted
+              ]);
+            }
+          );
+        }
 
         t.it('throws an error when deleting a non-existent event', async () => {
           const event = await createTestEvent(calendar);
@@ -1254,9 +1271,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          // TODO: Temporarly until we have a way to delete calendars on Android
-          //   calendar.delete();
-          Calendar.deleteCalendarAsync(calendar.id);
+          calendar.delete();
         });
       });
 
@@ -1289,7 +1304,7 @@ export async function test(t) {
         });
 
         t.afterAll(async () => {
-          //   calendar.delete();
+          calendar.delete();
         });
       });
     });
@@ -1550,8 +1565,7 @@ export async function test(t) {
         let event: ExpoCalendarEvent;
 
         t.beforeEach(async () => {
-          // TODO: Add creating a new calendar, when it is available on Android
-          calendar = (await getCalendarsNext()).find((c) => c.id === '1');
+          calendar = await createTestCalendarAsync();
           event = await createTestEvent(calendar);
         });
 
@@ -1691,6 +1705,7 @@ export async function test(t) {
 
         t.afterEach(async () => {
           event.delete();
+          calendar.delete();
         });
       });
     }

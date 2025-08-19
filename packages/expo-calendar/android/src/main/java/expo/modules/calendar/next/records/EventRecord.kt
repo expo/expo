@@ -110,7 +110,7 @@ data class RecurrenceRuleRecord(
    * Returns the endDate in RRULE format, or null if endDate is null or invalid.
    */
   fun toRrFormat(): RecurrenceRuleRecord? {
-    if (endDate == null) return null
+    if (endDate == null) return this
     return try {
       val rrFormat = java.text.SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
       val date = sdf.parse(endDate)
@@ -121,9 +121,9 @@ data class RecurrenceRuleRecord(
           interval = interval,
           occurrence = occurrence,
         )
-      } else null
+      } else this
     } catch (e: Exception) {
-      null
+      this
     }
   }
 }
