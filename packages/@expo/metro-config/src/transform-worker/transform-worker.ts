@@ -30,7 +30,7 @@ import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
 
-interface TransformResponse {
+export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
   readonly output: readonly JsOutput[];
 }
