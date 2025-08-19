@@ -40,7 +40,14 @@ exports.transform = transform;
 const module_1 = __importDefault(require("module"));
 const path_1 = __importDefault(require("path"));
 const worker = __importStar(require("./metro-transform-worker"));
-const STICKY_PACKAGES = ['metro-transform-worker', 'metro', '@expo/metro-config', '@expo/metro'];
+const defaultTransformer = require('./transform-worker');
+const STICKY_PACKAGES = [
+    'metro-transform-worker',
+    'metro-babel-transformer',
+    'metro',
+    '@expo/metro-config',
+    '@expo/metro',
+];
 const debug = require('debug')('expo:metro-config:supervising-transform-worker');
 const escapeDependencyName = (dependency) => dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
 const dependenciesToRegex = (dependencies) => new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
@@ -71,7 +78,12 @@ const createStickyModuleMapper = (moduleNames) => {
         return null;
     };
 };
+let _initModuleInterceptDone = false;
 const initModuleIntercept = (moduleNames) => {
+    if (_initModuleInterceptDone) {
+        return;
+    }
+    _initModuleInterceptDone = true;
     const Module = module.constructor.length > 1 ? module.constructor : module_1.default;
     const originalResolveFilename = Module._resolveFilename;
     const stickyModuleMapper = createStickyModuleMapper(moduleNames);
@@ -98,20 +110,17 @@ const getCustomTransform = (() => {
     let _transformerPath;
     let _transformer;
     return (config) => {
-        if (!config.expo_customTransformerPath) {
-            throw new Error('expo_customTransformerPath was expected to be set');
-        }
-        else if (_transformerPath == null) {
+        if (_transformer == null && _transformerPath == null) {
             _transformerPath = config.expo_customTransformerPath;
         }
         else if (config.expo_customTransformerPath != null &&
             _transformerPath !== config.expo_customTransformerPath) {
-            throw new Error('expo_customTransformerPath must not be modified');
+            throw new Error('expo_customTransformerPath must not be modified after initialization');
         }
-        if (_transformer == null) {
+        initModuleIntercept(STICKY_PACKAGES);
+        if (_transformer == null && _transformerPath != null) {
             debug(`Loading custom transformer at "${_transformerPath}"`);
             try {
-                initModuleIntercept(STICKY_PACKAGES);
                 _transformer = require.call(null, _transformerPath);
             }
             catch (error) {
@@ -128,7 +137,7 @@ const removeCustomTransformPathFromConfig = (config) => {
     }
 };
 function transform(config, projectRoot, filename, data, options) {
-    const customWorker = getCustomTransform(config);
+    const customWorker = getCustomTransform(config) ?? defaultTransformer;
     removeCustomTransformPathFromConfig(config);
     return customWorker.transform(config, projectRoot, filename, data, options);
 }
