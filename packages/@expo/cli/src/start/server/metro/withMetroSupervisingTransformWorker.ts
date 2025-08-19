@@ -18,10 +18,12 @@ const defaultBabelTransformerPaths = [
 
 export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroConfig {
   const originalTransformerPath = config.transformerPath;
+  const originalBabelTransformerPath = config.transformer?.babelTransformerPath;
+
   const hasOriginalTransformPath = originalTransformerPath === unstable_transformerPath;
-  const hasOriginalBabelTransformerPath = defaultBabelTransformerPaths.includes(
-    config.transformer.babelTransformerPath
-  );
+  const hasOriginalBabelTransformerPath =
+    !originalBabelTransformerPath ||
+    defaultBabelTransformerPaths.includes(originalBabelTransformerPath);
   if (hasOriginalTransformPath && hasOriginalBabelTransformerPath) {
     return config;
   } else if (!hasOriginalBabelTransformerPath && hasOriginalTransformPath) {
