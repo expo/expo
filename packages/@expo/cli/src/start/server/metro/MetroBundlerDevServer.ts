@@ -30,6 +30,7 @@ import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
+import type { GetStaticContentOptions } from 'expo-router/build/static/renderStaticContent';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -379,7 +380,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
     manifest: ExpoRouterRuntimeManifest;
-    renderAsync: (path: string, opts?: { loaderData?: any }) => Promise<string>;
+    renderAsync: (path: string, opts?: GetStaticContentOptions) => Promise<string>;
     executeLoaderAsync: (path: string) => Promise<any>;
   }> {
     const url = this.getDevServerUrlOrAssert();
@@ -406,7 +407,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       serverManifest,
       // Get routes from Expo Router.
       manifest: await getManifest({ preserveApiRoutes: false, ...exp.extra?.router }),
-      renderAsync: async (pathname: string, opts?: { loaderData?: any }) => {
+      renderAsync: async (pathname: string, opts?: GetStaticContentOptions) => {
         const location = new URL(pathname, url);
         return await getStaticContent(location, opts);
       },
@@ -506,11 +507,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const location = new URL(pathname, this.getDevServerUrlOrAssert());
 
       const { exp } = getConfig(this.projectRoot);
-      const loaderData = exp.extra?.router?.unstable_useServerDataLoaders
-        ? await this.executeRouteLoaderAsync(location)
-        : undefined;
+      const useServerLoaders = exp.extra?.router?.unstable_useServerDataLoaders;
 
-      return await getStaticContent(location, { loaderData });
+      if (useServerLoaders) {
+        const loaderData = await this.executeRouteLoaderAsync(location);
+        return await getStaticContent(location, { loader: { enabled: true, data: loaderData } });
+      } else {
+        return await getStaticContent(location, { loader: { enabled: false } });
+      }
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([

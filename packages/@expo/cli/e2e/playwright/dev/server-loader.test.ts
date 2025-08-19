@@ -187,7 +187,6 @@ test.describe('server loader in development', () => {
 
   test('handles multiple dynamic routes with fallback', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
-
     const dynamicRoutes = ['/posts/dynamic-post-1', '/posts/dynamic-post-2'];
 
     for (const route of dynamicRoutes) {

@@ -9,6 +9,7 @@ import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
 import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import type { GetStaticContentOptions } from 'expo-router/build/static/renderStaticContent';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -213,9 +214,11 @@ export async function exportFromServerAsync(
       const normalizedPathname =
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
-      let loaderData: any;
-      if (exp?.extra?.router?.unstable_useServerDataLoaders) {
-        loaderData = await executeLoaderAsync(normalizedPathname);
+      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
+      let template: string;
+
+      if (useServerLoaders) {
+        const loaderData = await executeLoaderAsync(normalizedPathname);
 
         if (loaderData != null) {
           const loaderPath = getLoaderModulePath(normalizedPathname);
@@ -227,9 +230,13 @@ export async function exportFromServerAsync(
             loaderId: normalizedPathname,
           });
         }
-      }
 
-      const template = await renderAsync(normalizedPathname, { loaderData });
+        template = await renderAsync(normalizedPathname, {
+          loader: { enabled: true, data: loaderData },
+        });
+      } else {
+        template = await renderAsync(normalizedPathname, { loader: { enabled: false } });
+      }
       let html = await serializeHtmlWithAssets({
         isExporting,
         resources: resources.artifacts,

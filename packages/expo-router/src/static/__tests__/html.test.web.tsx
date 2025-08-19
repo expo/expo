@@ -13,7 +13,9 @@ describe('<LoaderDataScript>', () => {
     expect(scriptElement).not.toBeNull();
     expect(scriptElement?.getAttribute('type')).toBe('module');
     expect(scriptElement?.innerHTML).toContain('window.__EXPO_ROUTER_LOADER_DATA__');
-    expect(scriptElement?.innerHTML).toContain('JSON.parse(\"{\\\"\\\\u002F\\\":{\\\"foo\\\":\\\"bar\\\"}}\");');
+    expect(scriptElement?.innerHTML).toContain(
+      'JSON.parse(\"{\\\"\\\\u002F\\\":{\\\"foo\\\":\\\"bar\\\"}}\");'
+    );
   });
 
   it('handles special characters', () => {
