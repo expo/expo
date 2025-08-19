@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- [Android] In order to show the now playing notification, the `supportsBackgroundPlayground` property of the config plugin has to be `true`. ([#37225](https://github.com/expo/expo/pull/37566) by [@kerwanp](https://github.com/kerwanp))
+
 ### 🎉 New features
 
 - [Android] Support Foreground service when `showNowPlayingNotification` and `supportsBackgroundPlayback` are configured. ([#37225](https://github.com/expo/expo/pull/37566) by [@kerwanp](https://github.com/kerwanp))
 
 ### 🐛 Bug fixes
+
+- [Android] Fix video player stopping playback a few minutes after locking the device. ([#37225](https://github.com/expo/expo/pull/37566) by [@kerwanp](https://github.com/kerwanp))
 
 ### 💡 Others
 
