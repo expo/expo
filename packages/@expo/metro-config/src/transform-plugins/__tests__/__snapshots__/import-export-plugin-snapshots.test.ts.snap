@@ -209,7 +209,7 @@ exports[`with live bindings transforms export namespace as default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _appleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+var _appleIcons = _$$_IMPORT_ALL('apple-icons');
 exports.default = _appleIcons;"
 `;
 
@@ -389,7 +389,7 @@ exports[`with live bindings transforms re-export all + namespaces 1`] = `
 var _appleIcons = require('apple-icons');
 var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');
 var _appleIcons3 = _$$_IMPORT_ALL('apple-icons');
-var _appleIcons4 = _$$_IMPORT_DEFAULT('apple-icons');
+var _appleIcons4 = _$$_IMPORT_ALL('apple-icons');
 var _exportedNames = {
   "test": true,
   "_test": true,
@@ -527,7 +527,7 @@ exports[`with live bindings transforms re-export namespaces combined cases (1) 1
   value: true
 });
 var _appleIcons = _$$_IMPORT_ALL('apple-icons');
-var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');
+var _appleIcons2 = _$$_IMPORT_ALL('apple-icons');
 var _exportedNames = {
   "AppleIcons": true,
   "default": true
@@ -553,7 +553,7 @@ exports[`with live bindings transforms re-export namespaces combined cases (2) 1
   value: true
 });
 var _appleIcons = _$$_IMPORT_ALL('apple-icons');
-var _appleIcons2 = _$$_IMPORT_DEFAULT('apple-icons');
+var _appleIcons2 = _$$_IMPORT_ALL('apple-icons');
 var _exportedNames = {
   "AppleIcons": true,
   "default": true
@@ -578,7 +578,7 @@ exports[`with live bindings transforms re-export namespaces combined cases (3) 1
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _appleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+var _appleIcons = _$$_IMPORT_ALL('apple-icons');
 var _appleIcons2 = _$$_IMPORT_ALL('apple-icons');
 var _exportedNames = {
   "default": true,
@@ -604,7 +604,7 @@ exports[`with live bindings transforms re-export namespaces combined cases (4) 1
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _appleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+var _appleIcons = _$$_IMPORT_ALL('apple-icons');
 var _appleIcons2 = _$$_IMPORT_ALL('apple-icons');
 var _exportedNames = {
   "default": true,
@@ -828,7 +828,7 @@ exports[`without live bindings transforms export namespace as default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = _$$_IMPORT_DEFAULT('apple-icons');
+var _default = _$$_IMPORT_ALL('apple-icons');
 exports.default = _default;"
 `;
 
@@ -1016,7 +1016,7 @@ exports[`without live bindings transforms re-export all + namespaces 1`] = `
 var _test = require('apple-icons').test;
 var _default = _$$_IMPORT_DEFAULT('apple-icons');
 var _AppleIcons = _$$_IMPORT_ALL('apple-icons');
-var _default2 = _$$_IMPORT_DEFAULT('apple-icons');
+var _default2 = _$$_IMPORT_ALL('apple-icons');
 var _appleIcons = require("apple-icons");
 for (var _key in _appleIcons) {
   exports[_key] = _appleIcons[_key];
@@ -1106,7 +1106,7 @@ exports[`without live bindings transforms re-export namespaces combined cases (1
   value: true
 });
 var _AppleIcons = _$$_IMPORT_ALL('apple-icons');
-var _default = _$$_IMPORT_DEFAULT('apple-icons');
+var _default = _$$_IMPORT_ALL('apple-icons');
 var _appleIcons = require("apple-icons");
 for (var _key in _appleIcons) {
   exports[_key] = _appleIcons[_key];
@@ -1120,7 +1120,7 @@ exports[`without live bindings transforms re-export namespaces combined cases (2
   value: true
 });
 var _AppleIcons = _$$_IMPORT_ALL('apple-icons');
-var _default = _$$_IMPORT_DEFAULT('apple-icons');
+var _default = _$$_IMPORT_ALL('apple-icons');
 var _appleIcons = require("apple-icons");
 for (var _key in _appleIcons) {
   exports[_key] = _appleIcons[_key];
@@ -1133,7 +1133,7 @@ exports[`without live bindings transforms re-export namespaces combined cases (3
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = _$$_IMPORT_DEFAULT('apple-icons');
+var _default = _$$_IMPORT_ALL('apple-icons');
 var _AppleIcons = _$$_IMPORT_ALL('apple-icons');
 var _appleIcons = require("apple-icons");
 for (var _key in _appleIcons) {
@@ -1147,7 +1147,7 @@ exports[`without live bindings transforms re-export namespaces combined cases (4
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = _$$_IMPORT_DEFAULT('apple-icons');
+var _default = _$$_IMPORT_ALL('apple-icons');
 var _AppleIcons = _$$_IMPORT_ALL('apple-icons');
 var _appleIcons = require("apple-icons");
 for (var _key in _appleIcons) {
