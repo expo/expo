@@ -166,23 +166,23 @@ describe.each([
     `,
 
     // Import then export default
-    test('export imported namespace by specifier')`
+    test('export-default imported namespace by specifier')`
       import * as AppleIcons from 'apple-icons';
       export default AppleIcons;
     `,
-    test('export import default')`
+    test('export-default import default')`
       import AppleIcons from 'apple-icons';
       export default AppleIcons;
     `,
-    test('export import specifier')`
+    test('export-default import specifier')`
       import { test } from 'apple-icons';
       export default test;
     `,
-    test('export import specifier with local')`
+    test('export-default import specifier as local')`
       import { test as local } from 'apple-icons';
       export default local;
     `,
-    test('export import default specifier as local')`
+    test('export-default import default specifier as local')`
       import { default as local } from 'apple-icons';
       export default local;
     `,
