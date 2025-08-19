@@ -57,7 +57,7 @@ In this example, `requestHash` is a hash unique to the specific user action bein
 
 On success, send the result to your server for verification.
 
-> **Note**: If your app uses the same token provider for too long, the token provider can expire which results in the `INTEGRITY_TOKEN_PROVIDER_INVALID` error on the next token request. You should handle this error by requesting a new provider by calling `prepareIntegrityTokenProvider` again.
+> **Note**: If your app uses the same token provider for too long, the token provider can expire which results in the `ERR_APP_INTEGRITY_PROVIDER_INVALID` error on the next token request. You should handle this error by requesting a new provider by calling `prepareIntegrityTokenProvider` again.
 
 ### Decrypt and verify the integrity verdict
 
@@ -128,7 +128,7 @@ const attestationObject = await AppIntegrity.attestKey(keyId, challenge);
 
 On success, send the received `attestationObject` and the `keyId` to your server for verification.
 
-If the method returns Service unavailable error, try attestation again later with the same key. For any other error, discard the key identifier and create a new key when you want to try again.
+If the method returns `ERR_APP_INTEGRITY_SERVER_UNAVAILABLE` error, try attestation again later with the same key. For any other error, discard the key identifier and create a new key when you want to try again.
 
 > **info** If your app already has millions of daily active users and you want to start calling the `attestKey` method to initiate attestation from your app, review the [Preparing to use the app attest service](https://developer.apple.com/documentation/DeviceCheck/preparing-to-use-the-app-attest-service) for guidance on safely ramping your users.
 
