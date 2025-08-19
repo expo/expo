@@ -312,6 +312,12 @@ export const glassEffect = (params?: {
 export const glassEffectId = (id: string, namespace: string) =>
   createModifier('glassEffectId', { id, namespace });
 
+export const NAMESPACES = {
+  $1: '$1',
+  $2: '$2',
+  $3: '$3',
+};
+
 // =============================================================================
 // Type Definitions
 // =============================================================================

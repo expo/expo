@@ -242,6 +242,11 @@ export declare const glassEffect: (params?: {
  * Associates an identity value to Liquid Glass effects defined within this view.
  */
 export declare const glassEffectId: (id: string, namespace: string) => ModifierConfig;
+export declare const NAMESPACES: {
+    $1: string;
+    $2: string;
+    $3: string;
+};
 /**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.

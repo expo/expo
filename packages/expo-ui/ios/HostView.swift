@@ -25,6 +25,10 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps {
 
 struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   @ObservedObject var props: HostViewProps
+  
+  private static let cachedScreenSize: CGSize = {
+    return UIScreen.main.bounds.size
+  }()
 
   var body: some View {
     var useViewportSizeMeasurement: Bool = props.useViewportSizeMeasurement
@@ -55,6 +59,10 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   }
 
   private func safeAreaSize() -> CGSize {
+    guard Thread.isMainThread else {
+      return Self.cachedScreenSize
+    }
+    
     let safeSize = UIApplication
       .shared
       .connectedScenes
@@ -78,6 +86,9 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ViewportSizeMeasurementLayout: Layout {
+  private static let cachedScreenSize: CGSize = {
+    return UIScreen.main.bounds.size
+  }()
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     let maxSize = safeAreaSize()
     let proposalWidth = proposal.width ?? 0
@@ -105,6 +116,10 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   private func safeAreaSize() -> CGSize {
+    guard Thread.isMainThread else {
+      return Self.cachedScreenSize
+    }
+    
     let screenSize = UIScreen.main.bounds.size
     let safeSize = UIApplication
       .shared

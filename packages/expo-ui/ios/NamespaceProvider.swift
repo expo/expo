@@ -18,7 +18,10 @@ internal final class NamespaceProviderProps: ExpoSwiftUI.ViewProps {}
 
 internal struct NamespaceProvider: ExpoSwiftUI.View {
   @ObservedObject var props: NamespaceProviderProps
-  @State private var namespaceCache: [String: Namespace.ID] = [:]
+  @Namespace private var namespace1
+  @Namespace private var namespace2
+  @Namespace private var namespace3
+  // @State private var namespaceCache: [String: Namespace.ID] = [:]
   
   var body: some View {
     Children()
@@ -26,12 +29,23 @@ internal struct NamespaceProvider: ExpoSwiftUI.View {
   }
   
   private func getNamespace(for identifier: String) -> Namespace.ID {
-    if let existingNamespace = namespaceCache[identifier] {
-      return existingNamespace
+    switch identifier {
+    case "$1":
+      return namespace1
+    case "$2":
+      return namespace2
+    case "$3":
+      return namespace3
+    default:
+      return namespace1
+      // // Handle dynamic namespaces (existing behavior)
+      // if let existingNamespace = namespaceCache[identifier] {
+      //   return existingNamespace
+      // }
+      
+      // let newNamespace = Namespace().wrappedValue
+      // namespaceCache[identifier] = newNamespace
+      // return newNamespace
     }
-    
-    let newNamespace = Namespace().wrappedValue
-    namespaceCache[identifier] = newNamespace
-    return newNamespace
   }
 }
