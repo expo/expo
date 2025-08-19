@@ -196,11 +196,11 @@ describe.each([
       import _AppleIcons from 'apple-icons';
       export const AppleIcons = _AppleIcons;
     `,
-    test('export destructured import specifier')`
+    test('export import specifier')`
       import { test } from 'apple-icons';
       export const _test = test;
     `,
-    test('export import specifier with local')`
+    test('export import specifier as local')`
       import { test as local } from 'apple-icons';
       export const test = local;
     `,
@@ -210,45 +210,45 @@ describe.each([
     `,
 
     // Export destructure object
-    test('export destructured imported namespace by specifier')`
+    test('export destructured object from imported namespace by specifier')`
       import * as AppleIcons from 'apple-icons';
       export const { a, b } = AppleIcons;
     `,
-    test('export destructured import default')`
+    test('export destructured object from import default')`
       import AppleIcons from 'apple-icons';
       export const { a, b } = AppleIcons;
     `,
-    test('export destructured import specifier')`
+    test('export destructured object from import specifier')`
       import { test } from 'apple-icons';
       export const { a, b } = test;
     `,
-    test('export import specifier with local')`
+    test('export destructured object from import specifier as local')`
       import { test as local } from 'apple-icons';
       export const { a, b } = local;
     `,
-    test('export import default specifier with local')`
-      import { default as AppleIcons } from 'apple-icons';
-      export const { a, b } = AppleIcons;
+    test('export destructured object from import default specifier as local')`
+      import { default as local } from 'apple-icons';
+      export const { a, b } = local;
     `,
 
     // Export destructure array
-    test('export destructured imported namespace by specifier')`
+    test('export destructured array from imported namespace by specifier')`
       import * as AppleIcons from 'apple-icons';
       export const [a, b] = AppleIcons;
     `,
-    test('export destructured import default')`
+    test('export destructured array from import default')`
       import AppleIcons from 'apple-icons';
       export const [a, b] = AppleIcons;
     `,
-    test('export destructured import specifier')`
+    test('export destructured array from import specifier')`
       import { test } from 'apple-icons';
       export const [a, b] = test;
     `,
-    test('export destructured import specifier as local')`
+    test('export destructured array from import specifier as local')`
       import { test as local } from 'apple-icons';
       export const [a, b] = local;
     `,
-    test('export destructured import default specifier as local')`
+    test('export destructured array from import default specifier as local')`
       import { default as local } from 'apple-icons';
       export const [a, b] = local;
     `,

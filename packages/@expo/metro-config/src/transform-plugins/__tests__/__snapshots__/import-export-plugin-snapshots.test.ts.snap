@@ -1,6 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`with live bindings transforms export destructured import default 1`] = `
+exports[`with live bindings transforms export destructured array from import default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+const [a, b] = AppleIcons;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`with live bindings transforms export destructured array from import default specifier as local 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var local = _$$_IMPORT_DEFAULT('apple-icons');
+const [a, b] = local;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`with live bindings transforms export destructured array from import specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _apple_icons = require('apple-icons');
+const [a, b] = _apple_icons.test;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`with live bindings transforms export destructured array from import specifier as local 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _apple_icons = require('apple-icons');
+const [a, b] = _apple_icons.test;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`with live bindings transforms export destructured array from imported namespace by specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var AppleIcons = _$$_IMPORT_ALL('apple-icons');
+const [a, b] = AppleIcons;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`with live bindings transforms export destructured object from import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -13,36 +63,20 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`with live bindings transforms export destructured import default 2`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
-const [a, b] = AppleIcons;
-exports.a = a;
-exports.b = b;"
-`;
-
-exports[`with live bindings transforms export destructured import default specifier as local 1`] = `
+exports[`with live bindings transforms export destructured object from import default specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var local = _$$_IMPORT_DEFAULT('apple-icons');
-const [a, b] = local;
+const {
+  a,
+  b
+} = local;
 exports.a = a;
 exports.b = b;"
 `;
 
-exports[`with live bindings transforms export destructured import specifier 1`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var _apple_icons = require('apple-icons');
-const _test = _apple_icons.test;
-exports._test = _test;"
-`;
-
-exports[`with live bindings transforms export destructured import specifier 2`] = `
+exports[`with live bindings transforms export destructured object from import specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -55,27 +89,20 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`with live bindings transforms export destructured import specifier 3`] = `
+exports[`with live bindings transforms export destructured object from import specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var _apple_icons = require('apple-icons');
-const [a, b] = _apple_icons.test;
+const {
+  a,
+  b
+} = _apple_icons.test;
 exports.a = a;
 exports.b = b;"
 `;
 
-exports[`with live bindings transforms export destructured import specifier as local 1`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var _apple_icons = require('apple-icons');
-const [a, b] = _apple_icons.test;
-exports.a = a;
-exports.b = b;"
-`;
-
-exports[`with live bindings transforms export destructured imported namespace by specifier 1`] = `
+exports[`with live bindings transforms export destructured object from imported namespace by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -84,16 +111,6 @@ const {
   a,
   b
 } = AppleIcons;
-exports.a = a;
-exports.b = b;"
-`;
-
-exports[`with live bindings transforms export destructured imported namespace by specifier 2`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var AppleIcons = _$$_IMPORT_ALL('apple-icons');
-const [a, b] = AppleIcons;
 exports.a = a;
 exports.b = b;"
 `;
@@ -161,19 +178,6 @@ Object.defineProperty(exports, "local", {
 });"
 `;
 
-exports[`with live bindings transforms export import default specifier with local 1`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
-const {
-  a,
-  b
-} = AppleIcons;
-exports.a = a;
-exports.b = b;"
-`;
-
 exports[`with live bindings transforms export import specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -196,6 +200,15 @@ var _default = _apple_icons.test;
 exports.default = _default;"
 `;
 
+exports[`with live bindings transforms export import specifier 3`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _apple_icons = require('apple-icons');
+const _test = _apple_icons.test;
+exports._test = _test;"
+`;
+
 exports[`with live bindings transforms export import specifier and default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -209,6 +222,15 @@ Object.defineProperty(exports, "test", {
     return _apple_icons.test;
   }
 });"
+`;
+
+exports[`with live bindings transforms export import specifier as local 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _apple_icons = require('apple-icons');
+const test = _apple_icons.test;
+exports.test = test;"
 `;
 
 exports[`with live bindings transforms export import specifier as local, and default 1`] = `
@@ -246,28 +268,6 @@ exports[`with live bindings transforms export import specifier with local 2`] = 
 var _apple_icons = require('apple-icons');
 var _default = _apple_icons.test;
 exports.default = _default;"
-`;
-
-exports[`with live bindings transforms export import specifier with local 3`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var _apple_icons = require('apple-icons');
-const test = _apple_icons.test;
-exports.test = test;"
-`;
-
-exports[`with live bindings transforms export import specifier with local 4`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var _apple_icons = require('apple-icons');
-const {
-  a,
-  b
-} = _apple_icons.test;
-exports.a = a;
-exports.b = b;"
 `;
 
 exports[`with live bindings transforms export imported namespace by specifier 1`] = `
@@ -649,7 +649,57 @@ Object.defineProperty(exports, "test", {
 });"
 `;
 
-exports[`without live bindings transforms export destructured import default 1`] = `
+exports[`without live bindings transforms export destructured array from import default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
+const [a, b] = AppleIcons;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`without live bindings transforms export destructured array from import default specifier as local 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var local = _$$_IMPORT_DEFAULT('apple-icons');
+const [a, b] = local;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`without live bindings transforms export destructured array from import specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var test = require('apple-icons').test;
+const [a, b] = test;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`without live bindings transforms export destructured array from import specifier as local 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var local = require('apple-icons').test;
+const [a, b] = local;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`without live bindings transforms export destructured array from imported namespace by specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var AppleIcons = _$$_IMPORT_ALL('apple-icons');
+const [a, b] = AppleIcons;
+exports.a = a;
+exports.b = b;"
+`;
+
+exports[`without live bindings transforms export destructured object from import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -662,36 +712,20 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings transforms export destructured import default 2`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
-const [a, b] = AppleIcons;
-exports.a = a;
-exports.b = b;"
-`;
-
-exports[`without live bindings transforms export destructured import default specifier as local 1`] = `
+exports[`without live bindings transforms export destructured object from import default specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var local = _$$_IMPORT_DEFAULT('apple-icons');
-const [a, b] = local;
+const {
+  a,
+  b
+} = local;
 exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings transforms export destructured import specifier 1`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var test = require('apple-icons').test;
-const _test = test;
-exports._test = _test;"
-`;
-
-exports[`without live bindings transforms export destructured import specifier 2`] = `
+exports[`without live bindings transforms export destructured object from import specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -704,27 +738,20 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings transforms export destructured import specifier 3`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var test = require('apple-icons').test;
-const [a, b] = test;
-exports.a = a;
-exports.b = b;"
-`;
-
-exports[`without live bindings transforms export destructured import specifier as local 1`] = `
+exports[`without live bindings transforms export destructured object from import specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var local = require('apple-icons').test;
-const [a, b] = local;
+const {
+  a,
+  b
+} = local;
 exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings transforms export destructured imported namespace by specifier 1`] = `
+exports[`without live bindings transforms export destructured object from imported namespace by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -733,16 +760,6 @@ const {
   a,
   b
 } = AppleIcons;
-exports.a = a;
-exports.b = b;"
-`;
-
-exports[`without live bindings transforms export destructured imported namespace by specifier 2`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var AppleIcons = _$$_IMPORT_ALL('apple-icons');
-const [a, b] = AppleIcons;
 exports.a = a;
 exports.b = b;"
 `;
@@ -800,19 +817,6 @@ exports._AppleIcons = _AppleIcons;
 exports.local = local;"
 `;
 
-exports[`without live bindings transforms export import default specifier with local 1`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
-const {
-  a,
-  b
-} = AppleIcons;
-exports.a = a;
-exports.b = b;"
-`;
-
 exports[`without live bindings transforms export import specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -830,6 +834,15 @@ var _default = test;
 exports.default = _default;"
 `;
 
+exports[`without live bindings transforms export import specifier 3`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var test = require('apple-icons').test;
+const _test = test;
+exports._test = _test;"
+`;
+
 exports[`without live bindings transforms export import specifier and default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -837,6 +850,15 @@ exports[`without live bindings transforms export import specifier and default 1`
 var AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
 var test = require('apple-icons').test;
 exports.AppleIcons = AppleIcons;
+exports.test = test;"
+`;
+
+exports[`without live bindings transforms export import specifier as local 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var local = require('apple-icons').test;
+const test = local;
 exports.test = test;"
 `;
 
@@ -865,28 +887,6 @@ exports[`without live bindings transforms export import specifier with local 2`]
 var local = require('apple-icons').test;
 var _default = local;
 exports.default = _default;"
-`;
-
-exports[`without live bindings transforms export import specifier with local 3`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var local = require('apple-icons').test;
-const test = local;
-exports.test = test;"
-`;
-
-exports[`without live bindings transforms export import specifier with local 4`] = `
-"Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var local = require('apple-icons').test;
-const {
-  a,
-  b
-} = local;
-exports.a = a;
-exports.b = b;"
 `;
 
 exports[`without live bindings transforms export imported namespace by specifier 1`] = `
