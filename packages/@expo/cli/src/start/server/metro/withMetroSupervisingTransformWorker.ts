@@ -1,7 +1,9 @@
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import { unstable_transformerPath } from '@expo/metro-config';
+import { unstable_transformerPath, internal_supervisingTransformerPath } from '@expo/metro-config';
 
-const debug = require('debug')('expo:metro:withMetroSupervisingTransformWorker') as typeof console.log;
+const debug = require('debug')(
+  'expo:metro:withMetroSupervisingTransformWorker'
+) as typeof console.log;
 
 declare module '@expo/metro/metro-transform-worker' {
   export interface JsTransformerConfig {
@@ -17,6 +19,7 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
   debug('Detected customized "transformerPath": Wrapping transformer with supervisor');
   return {
     ...config,
+    transformerPath: internal_supervisingTransformerPath,
     transformer: {
       ...config.transformer,
       expo_customTransformerPath: originalTransformerPath,
