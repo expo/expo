@@ -13,6 +13,12 @@ public class LinkPreviewNativeModule: Module {
         view.tabPath = tabPath
       }
 
+      Prop("borderRadius") { (view, borderRadius: Double?) in
+        if let borderRadius = borderRadius {
+          view.triggerBorderRadius = borderRadius
+        }
+      }
+
       Events(
         "onPreviewTapped",
         "onPreviewTappedAnimationCompleted",
@@ -70,14 +76,6 @@ public class LinkPreviewNativeModule: Module {
       }
 
       Events("onSelected")
-    }
-
-    View(NativeLinkPreviewTrigger.self) {
-      Prop("borderRadius") { (view, borderRadius: Double?) in
-        if let borderRadius = borderRadius {
-          view.triggerBorderRadius = borderRadius
-        }
-      }
     }
   }
 }

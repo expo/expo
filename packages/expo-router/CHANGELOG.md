@@ -14,6 +14,7 @@
 
 - validate BottomTabs props ([#38959](https://github.com/expo/expo/pull/38959) by [@Ubax](https://github.com/Ubax))
 - use deffered value to fix performance for heavy tabs ([#38841](https://github.com/expo/expo/pull/38841) by [@Ubax](https://github.com/Ubax))
+- remove redundant native trigger view ([#38964](https://github.com/expo/expo/pull/38964) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.0-beta.3 — 2025-08-18
 
