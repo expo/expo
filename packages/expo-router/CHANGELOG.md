@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix link preview error, when preview is open to a tab without a Stack ([#38969](https://github.com/expo/expo/pull/38969) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.0-beta.3 — 2025-08-18

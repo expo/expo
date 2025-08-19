@@ -403,6 +403,11 @@ export function findDivergentState(
         actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
 
     if (didActionAndCurrentStateDiverge) {
+      // If we are looking through all tabs, we need to add new tab id if this is the last route
+      // Otherwise we wouldn't be able to change the tab
+      if (navigationState.type === 'tab' && lookThroughAllTabs) {
+        navigationRoutes.push(stateRoute);
+      }
       break;
     }
 
