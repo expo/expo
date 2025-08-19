@@ -376,18 +376,18 @@ internal class JavaScriptTypedArrayTest {
 
   @Test
   fun direct_buffer_should_return_correct_buffer() = withJSIInterop {
-      val subArray = evaluateScript("new Uint8Array(new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).buffer, 3, 5)").getTypedArray()
-      
-      val buffer = subArray.toDirectBuffer()
-      
-      Truth.assertThat(buffer.isDirect).isTrue()
-      Truth.assertThat(buffer.isReadOnly).isFalse()
+    val subArray = evaluateScript("new Uint8Array(new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).buffer, 3, 5)").getTypedArray()
 
-      Truth.assertThat(buffer.capacity()).isEqualTo(5)
-      
-      buffer.order(ByteOrder.nativeOrder())
-      Truth.assertThat(buffer.get(0)).isEqualTo(3.toByte())
-      Truth.assertThat(buffer.get(4)).isEqualTo(7.toByte())
+    val buffer = subArray.toDirectBuffer()
+
+    Truth.assertThat(buffer.isDirect).isTrue()
+    Truth.assertThat(buffer.isReadOnly).isFalse()
+
+    Truth.assertThat(buffer.capacity()).isEqualTo(5)
+
+    buffer.order(ByteOrder.nativeOrder())
+    Truth.assertThat(buffer.get(0)).isEqualTo(3.toByte())
+    Truth.assertThat(buffer.get(4)).isEqualTo(7.toByte())
   }
 
   private fun wrapBytes(array: ByteArray): ByteBuffer = ByteBuffer.wrap(array).order(ByteOrder.nativeOrder())
