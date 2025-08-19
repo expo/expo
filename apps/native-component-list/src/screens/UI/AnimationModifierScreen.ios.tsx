@@ -1,4 +1,14 @@
-import { Host, Section, Text, Form, VStack, HStack } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Section,
+  Text,
+  Form,
+  VStack,
+  HStack,
+  GlassEffectContainer,
+  Image,
+  NamespaceProvider,
+} from '@expo/ui/swift-ui';
 import {
   background,
   cornerRadius,
@@ -13,6 +23,10 @@ import {
   Animation,
   withDelay,
   withRepeat,
+  glassEffect,
+  glassEffectId,
+  padding,
+  zIndex,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
@@ -25,6 +39,7 @@ export default function AnimationModifierScreen() {
   const [interpolatingSpringValue, setInterpolatingSpringValue] = useState(false);
   const [delayValue, setDelayValue] = useState(false);
   const [repeatValue, setRepeatValue] = useState(false);
+  const [isGlassExpanded, setIsGlassExpanded] = useState(false);
 
   return (
     <ScrollView style={styles.container}>
@@ -209,6 +224,65 @@ export default function AnimationModifierScreen() {
             </VStack>
           </Section>
 
+          <Section title="✨ Glass Effect Animation">
+            <VStack spacing={16}>
+              <Text>Animated glass effects with NamespaceProvider</Text>
+
+              <NamespaceProvider>
+                <VStack spacing={12}>
+                  <GlassEffectContainer spacing={40}>
+                    <HStack
+                      spacing={40}
+                      modifiers={[
+                        animation(Animation.spring(), isGlassExpanded),
+                        frame({ width: 300, height: 200 }),
+                      ]}>
+                      <Image
+                        systemName="scribble.variable"
+                        modifiers={[
+                          frame({ width: 80, height: 80 }),
+                          glassEffect({
+                            glass: {
+                              variant: 'clear',
+                              interactive: true,
+                            },
+                          }),
+                          glassEffectId('image1', 'glassDemo'),
+                        ]}
+                      />
+                      <Image
+                        systemName="eraser.fill"
+                        modifiers={[
+                          zIndex(-1),
+                          frame({ width: 80, height: 80 }),
+                          glassEffect({
+                            glass: {
+                              variant: 'clear',
+                              interactive: true,
+                            },
+                          }),
+                          glassEffectId('image2', 'glassDemo'),
+                          offset({ x: -40, y: 0 }),
+                        ]}
+                      />
+                    </HStack>
+                  </GlassEffectContainer>
+
+                  <HStack
+                    modifiers={[
+                      frame({ width: 200, height: 50 }),
+                      background('#34495E'),
+                      cornerRadius(16),
+                      shadow({ radius: 6, x: 0, y: 3, color: '#34495E40' }),
+                      onTapGesture(() => setIsGlassExpanded(!isGlassExpanded)),
+                    ]}
+                  />
+                  <Text>{isGlassExpanded ? 'Tap to collapse' : 'Tap to expand glass effects'}</Text>
+                </VStack>
+              </NamespaceProvider>
+            </VStack>
+          </Section>
+
           <Section title="🎮 Reset Controls">
             <VStack spacing={16}>
               <HStack
@@ -225,6 +299,7 @@ export default function AnimationModifierScreen() {
                     setInterpolatingSpringValue(false);
                     setDelayValue(false);
                     setRepeatValue(false);
+                    setIsGlassExpanded(false);
                   }),
                 ]}
               />
