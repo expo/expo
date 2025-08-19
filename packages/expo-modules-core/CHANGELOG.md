@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix invalid array buffer offset in typed arrays.
+- [Android] Fix invalid array buffer offset in typed arrays. ([#38958](https://github.com/expo/expo/pull/38958) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
