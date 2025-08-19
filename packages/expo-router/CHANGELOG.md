@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Update web modals to iOS 26 specifications ([#38897](https://github.com/expo/expo/pull/38897) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
