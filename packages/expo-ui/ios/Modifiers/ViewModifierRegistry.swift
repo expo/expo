@@ -476,7 +476,7 @@ internal struct AnimationModifier: ViewModifier {
       let response = config["response"] as? Double
       let dampingFraction = config["dampingFraction"] as? Double
       let blendDuration = config["blendDuration"] as? Double
-      
+
       if response != nil || dampingFraction != nil {
         animation = .spring(response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825, blendDuration: blendDuration ?? 0.0)
       } else if duration != nil || bounce != nil {
@@ -494,10 +494,10 @@ internal struct AnimationModifier: ViewModifier {
       let stiffness = config["stiffness"] as? Double
       let damping = config["damping"] as? Double
       let initialVelocity = config["initialVelocity"] as? Double
-      
+
       if duration != nil || bounce != nil {
         animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
-      } else if let stiffness = stiffness, let damping =  damping {
+      } else if let stiffness = stiffness, let damping = damping {
         animation = .interpolatingSpring(mass: mass ?? 1.0, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity ?? 0.0)
       } else {
         animation = .interpolatingSpring
