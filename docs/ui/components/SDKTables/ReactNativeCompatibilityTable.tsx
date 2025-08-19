@@ -20,6 +20,7 @@ export const ReactNativeCompatibilityTable = () => {
           <HeaderCell>React Native version</HeaderCell>
           <HeaderCell>React version</HeaderCell>
           <HeaderCell>React Native Web version</HeaderCell>
+          <HeaderCell>Node.js version</HeaderCell>
         </Row>
       </TableHead>
       <tbody>
@@ -29,6 +30,7 @@ export const ReactNativeCompatibilityTable = () => {
             <Cell>{version['react-native']}</Cell>
             <Cell>{version['react']}</Cell>
             <Cell>{version['react-native-web']}</Cell>
+            <Cell>{version['node']}</Cell>
           </Row>
         ))}
       </tbody>
