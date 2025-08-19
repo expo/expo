@@ -11,18 +11,38 @@ declare module '@expo/metro/metro-transform-worker' {
   }
 }
 
+const defaultBabelTransformerPaths = [
+  require.resolve('@expo/metro-config/babel-transformer'),
+  require.resolve('@expo/metro-config/build/babel-transformer'),
+];
+
 export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroConfig {
   const originalTransformerPath = config.transformerPath;
-  if (originalTransformerPath === unstable_transformerPath) {
+  const hasOriginalTransformPath = originalTransformerPath === unstable_transformerPath;
+  const hasOriginalBabelTransformerPath = defaultBabelTransformerPaths.includes(
+    config.transformer.babelTransformerPath
+  );
+  if (hasOriginalTransformPath && hasOriginalBabelTransformerPath) {
     return config;
+  } else if (!hasOriginalBabelTransformerPath && hasOriginalTransformPath) {
+    debug(
+      'Detected customized "transformerPath" and "transformer.babelTransformerPath": Wrapping transformer with supervisor'
+    );
+  } else if (!hasOriginalBabelTransformerPath) {
+    debug(
+      'Detected customized "transformer.babelTransformerPath": Wrapping transformer with supervisor'
+    );
+  } else if (!hasOriginalBabelTransformerPath) {
+    debug('Detected customized "transformerPath": Wrapping transformer with supervisor');
   }
-  debug('Detected customized "transformerPath": Wrapping transformer with supervisor');
   return {
     ...config,
     transformerPath: internal_supervisingTransformerPath,
     transformer: {
       ...config.transformer,
-      expo_customTransformerPath: originalTransformerPath,
+      // Only pass the custom transformer path, if the user has set one, otherwise we're only applying
+      // the supervisor for the Babel transformer
+      expo_customTransformerPath: !hasOriginalTransformPath ? originalTransformerPath : undefined,
     },
   };
 }
