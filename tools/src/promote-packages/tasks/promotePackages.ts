@@ -48,20 +48,6 @@ export const promotePackages = new Task<TaskArgs>(
             stdio: requiresOTP ? 'inherit' : undefined,
           });
         }
-        if (pkg.isTemplate()) {
-          const sdkTag = `sdk-${semver.major(pkg.packageVersion)}`;
-          batch.log(
-            '    ',
-            action,
-            yellow(sdkTag),
-            formatVersionChange(versionToReplace, currentVersion)
-          );
-          if (!options.dry) {
-            await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, sdkTag, {
-              stdio: requiresOTP ? 'inherit' : undefined,
-            });
-          }
-        }
 
         // If the local version had any tags assigned, we can drop the old ones.
         if (options.drop && state.distTags && !state.distTags.includes(options.tag)) {
