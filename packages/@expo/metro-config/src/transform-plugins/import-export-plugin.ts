@@ -644,11 +644,14 @@ export function importExportPlugin({
                 const localModule = getLocalModule();
 
                 if (importedName !== 'default') {
+                  // NOTE(@krystofwoldrich): Imported identifiers are exported as live bindings
+                  // the plugin currently doesn't support live bindings for default imports
                   state.importedIdentifiers.set(local.name, {
                     source: localModule.name,
                     imported: importedName,
                   });
                 }
+
                 if (importedName === 'default') {
                   state.imports.push({
                     node: withLocation(
