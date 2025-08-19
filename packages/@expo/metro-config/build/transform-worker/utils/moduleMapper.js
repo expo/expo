@@ -3,34 +3,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStickyModuleMapper = exports.moduleRootPaths = void 0;
+exports.createStickyModuleMapper = void 0;
 const path_1 = __importDefault(require("path"));
-exports.moduleRootPaths = [
-    path_1.default.dirname(require.resolve('../../../package.json')),
-    path_1.default.dirname(require.resolve('@expo/metro/package.json')),
-    path_1.default.dirname(require.resolve('expo/package.json')),
-];
+const requireResolveBasepath = (request, params) => path_1.default.dirname(require.resolve(`${request}/package.json`, params));
+const expoMetroBasepath = requireResolveBasepath('@expo/metro');
+const MODULE_RESOLUTIONS = {
+    metro: expoMetroBasepath,
+    'metro-babel-transformer': expoMetroBasepath,
+    'metro-cache': expoMetroBasepath,
+    'metro-cache-key': expoMetroBasepath,
+    'metro-config': expoMetroBasepath,
+    'metro-core': expoMetroBasepath,
+    'metro-file-map': expoMetroBasepath,
+    'metro-resolver': expoMetroBasepath,
+    'metro-runtime': expoMetroBasepath,
+    'metro-source-map': expoMetroBasepath,
+    'metro-transform-plugins': expoMetroBasepath,
+    'metro-transform-worker': expoMetroBasepath,
+    '@expo/metro-config': requireResolveBasepath('expo'),
+};
 const escapeDependencyName = (dependency) => dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
 const dependenciesToRegex = (dependencies) => new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
-const isInModuleRootPath = (targetPath) => exports.moduleRootPaths.some((moduleRootPath) => targetPath.startsWith(moduleRootPath));
-const createStickyModuleMapper = (moduleNames) => {
-    const modulePathMap = moduleNames.reduce((modulePaths, moduleName) => {
-        try {
-            modulePaths[moduleName] = path_1.default.dirname(require.resolve(`${moduleName}/package.json`, { paths: exports.moduleRootPaths }));
-        }
-        catch { }
-        return modulePaths;
-    }, {});
-    const moduleTestRe = dependenciesToRegex(Object.keys(modulePathMap));
+const createStickyModuleMapper = () => {
+    const moduleTestRe = dependenciesToRegex(Object.keys(MODULE_RESOLUTIONS));
     return (request, parentId) => {
-        if (!parentId || isInModuleRootPath(parentId)) {
+        if (!parentId) {
             return null;
         }
         const moduleMatch = moduleTestRe.exec(request);
         if (moduleMatch) {
-            const targetModulePath = modulePathMap[moduleMatch[1]];
-            if (targetModulePath) {
-                return `${targetModulePath}${moduleMatch[2] || ''}`;
+            const moduleSearchPath = MODULE_RESOLUTIONS[moduleMatch[1]];
+            if (moduleSearchPath) {
+                return require.resolve(request, { paths: [moduleSearchPath] });
             }
         }
         return null;

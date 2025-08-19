@@ -41,43 +41,33 @@ const module_1 = __importDefault(require("module"));
 const worker = __importStar(require("./metro-transform-worker"));
 const moduleMapper_1 = require("./utils/moduleMapper");
 const defaultTransformer = require('./transform-worker');
-const STICKY_PACKAGES = [
-    'metro',
-    'metro-babel-transformer',
-    'metro-cache',
-    'metro-cache-key',
-    'metro-config',
-    'metro-core',
-    'metro-file-map',
-    'metro-resolver',
-    'metro-runtime',
-    'metro-source-map',
-    'metro-transform-plugins',
-    'metro-transform-worker',
-    '@expo/metro-config',
-    '@expo/metro',
-];
 const debug = require('debug')('expo:metro-config:supervising-transform-worker');
 let _initModuleInterceptDone = false;
-const initModuleIntercept = (moduleNames) => {
+const initModuleIntercept = () => {
     if (_initModuleInterceptDone) {
         return;
     }
     _initModuleInterceptDone = true;
     const Module = module.constructor.length > 1 ? module.constructor : module_1.default;
     const originalResolveFilename = Module._resolveFilename;
-    const stickyModuleMapper = (0, moduleMapper_1.createStickyModuleMapper)(moduleNames);
+    const stickyModuleMapper = (0, moduleMapper_1.createStickyModuleMapper)();
+    let isInCustomResolver = false;
     Module._resolveFilename = function (request, parent, isMain, options) {
-        const parentId = typeof parent === 'string' ? parent : parent?.id;
-        const redirectedRequest = stickyModuleMapper(request, parentId);
-        if (redirectedRequest) {
+        if (!isInCustomResolver) {
             try {
-                const resolution = require.resolve(redirectedRequest);
-                debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
-                return resolution;
+                isInCustomResolver = true;
+                const parentId = typeof parent === 'string' ? parent : parent?.id;
+                const redirectedRequest = stickyModuleMapper(request, parentId);
+                if (redirectedRequest) {
+                    debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
+                    return redirectedRequest;
+                }
             }
             catch (error) {
                 debug(`Could not redirect request "${request}": ${error}`);
+            }
+            finally {
+                isInCustomResolver = false;
             }
         }
         return originalResolveFilename.call(this, request, parent, isMain, options);
@@ -94,7 +84,7 @@ const getCustomTransform = (() => {
             _transformerPath !== config.expo_customTransformerPath) {
             throw new Error('expo_customTransformerPath must not be modified after initialization');
         }
-        initModuleIntercept(STICKY_PACKAGES);
+        // initModuleIntercept();
         if (_transformer == null && _transformerPath != null) {
             debug(`Loading custom transformer at "${_transformerPath}"`);
             try {
