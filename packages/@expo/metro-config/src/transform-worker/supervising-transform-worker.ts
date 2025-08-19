@@ -31,9 +31,18 @@ declare module '@expo/metro/metro-transform-worker' {
 }
 
 const STICKY_PACKAGES = [
-  'metro-transform-worker',
-  'metro-babel-transformer',
   'metro',
+  'metro-babel-transformer',
+  'metro-cache',
+  'metro-cache-key',
+  'metro-config',
+  'metro-core',
+  'metro-file-map',
+  'metro-resolver',
+  'metro-runtime',
+  'metro-source-map',
+  'metro-transform-plugins',
+  'metro-transform-worker',
   '@expo/metro-config',
   '@expo/metro',
 ];
