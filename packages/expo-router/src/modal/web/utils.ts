@@ -9,6 +9,31 @@ import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
  * @internal
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
+export type DetentOptions = Partial<
+  Pick<ExtendedStackNavigationOptions, 'sheetAllowedDetents' | 'sheetInitialDetentIndex'>
+>;
+
+/**
+ * Helper to determine the detent index from the given `sheetInitialDetentIndex` option.
+ *
+ * @param options - The navigation options.
+ * @returns The actual detent index.
+ */
+export function getInitialDetentIndex(options?: DetentOptions | null) {
+  const sheetAllowedDetents = options?.sheetAllowedDetents;
+  const sheetInitialDetentIndex = options?.sheetInitialDetentIndex ?? 0;
+
+  if (Array.isArray(sheetAllowedDetents)) {
+    const resolvedDetentIndex =
+      sheetInitialDetentIndex === 'last' ? sheetAllowedDetents.length - 1 : sheetInitialDetentIndex;
+
+    if (resolvedDetentIndex >= 0 && resolvedDetentIndex <= sheetAllowedDetents.length) {
+      return resolvedDetentIndex;
+    }
+  }
+
+  return 0;
+}
 
 /**
  * Helper to determine if a given screen should be treated as a modal-type presentation

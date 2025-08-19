@@ -131,6 +131,7 @@ function FormsheetDetentsDemo() {
       <Modal
         visible={isOpen}
         detents={[0.25, 0.5, 0.75, 1]}
+        initialDetentIndex={1}
         onClose={() => setIsOpen(false)}
         closeOnNavigation={shouldCloseOnNavigation}
         presentationStyle="formSheet">
