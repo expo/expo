@@ -642,10 +642,13 @@ export function importExportPlugin({
                 const importedName =
                   imported.type === 'StringLiteral' ? imported.value : imported.name;
                 const localModule = getLocalModule();
-                state.importedIdentifiers.set(local.name, {
-                  source: localModule.name,
-                  imported: importedName,
-                });
+
+                if (importedName !== 'default') {
+                  state.importedIdentifiers.set(local.name, {
+                    source: localModule.name,
+                    imported: importedName,
+                  });
+                }
                 if (importedName === 'default') {
                   state.imports.push({
                     node: withLocation(

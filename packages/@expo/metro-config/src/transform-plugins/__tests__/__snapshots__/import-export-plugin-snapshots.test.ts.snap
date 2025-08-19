@@ -128,12 +128,7 @@ exports[`with live bindings transforms export import default specifier as local 
   value: true
 });
 var local = _$$_IMPORT_DEFAULT('apple-icons');
-Object.defineProperty(exports, "local", {
-  enumerable: true,
-  get: function () {
-    return _apple_icons.default;
-  }
-});"
+exports.local = local;"
 `;
 
 exports[`with live bindings transforms export import default specifier as local, and default 1`] = `
@@ -143,12 +138,7 @@ exports[`with live bindings transforms export import default specifier as local,
 var _AppleIcons = _$$_IMPORT_DEFAULT('apple-icons');
 var local = _$$_IMPORT_DEFAULT('apple-icons');
 exports._AppleIcons = _AppleIcons;
-Object.defineProperty(exports, "local", {
-  enumerable: true,
-  get: function () {
-    return _apple_icons.default;
-  }
-});"
+exports.local = local;"
 `;
 
 exports[`with live bindings transforms export import specifier 1`] = `
