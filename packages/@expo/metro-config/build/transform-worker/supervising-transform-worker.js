@@ -38,46 +38,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = transform;
 const module_1 = __importDefault(require("module"));
-const path_1 = __importDefault(require("path"));
 const worker = __importStar(require("./metro-transform-worker"));
+const moduleMapper_1 = require("./utils/moduleMapper");
 const defaultTransformer = require('./transform-worker');
 const STICKY_PACKAGES = [
-    'metro-transform-worker',
-    'metro-babel-transformer',
     'metro',
+    'metro-babel-transformer',
+    'metro-cache',
+    'metro-cache-key',
+    'metro-config',
+    'metro-core',
+    'metro-file-map',
+    'metro-resolver',
+    'metro-runtime',
+    'metro-source-map',
+    'metro-transform-plugins',
+    'metro-transform-worker',
     '@expo/metro-config',
     '@expo/metro',
 ];
 const debug = require('debug')('expo:metro-config:supervising-transform-worker');
-const escapeDependencyName = (dependency) => dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
-const dependenciesToRegex = (dependencies) => new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
-const moduleRootPaths = [
-    path_1.default.dirname(require.resolve('../../package.json')),
-    path_1.default.dirname(require.resolve('@expo/metro/package.json')),
-    path_1.default.dirname(require.resolve('expo/package.json')),
-];
-const createStickyModuleMapper = (moduleNames) => {
-    const modulePathMap = moduleNames.reduce((modulePaths, moduleName) => {
-        try {
-            modulePaths[moduleName] = path_1.default.dirname(require.resolve(`${moduleName}/package.json`, { paths: moduleRootPaths }));
-        }
-        catch {
-            debug(`Could not resolve module "${moduleNames}"`);
-        }
-        return modulePaths;
-    }, {});
-    const moduleTestRe = dependenciesToRegex(Object.keys(modulePathMap));
-    return (request) => {
-        const moduleMatch = moduleTestRe.exec(request);
-        if (moduleMatch) {
-            const targetModulePath = modulePathMap[moduleMatch[1]];
-            if (targetModulePath) {
-                return `${targetModulePath}${moduleMatch[2] || ''}`;
-            }
-        }
-        return null;
-    };
-};
 let _initModuleInterceptDone = false;
 const initModuleIntercept = (moduleNames) => {
     if (_initModuleInterceptDone) {
@@ -86,21 +66,18 @@ const initModuleIntercept = (moduleNames) => {
     _initModuleInterceptDone = true;
     const Module = module.constructor.length > 1 ? module.constructor : module_1.default;
     const originalResolveFilename = Module._resolveFilename;
-    const stickyModuleMapper = createStickyModuleMapper(moduleNames);
+    const stickyModuleMapper = (0, moduleMapper_1.createStickyModuleMapper)(moduleNames);
     Module._resolveFilename = function (request, parent, isMain, options) {
         const parentId = typeof parent === 'string' ? parent : parent?.id;
-        if (!parentId ||
-            moduleRootPaths.every((moduleRootPath) => !parentId.startsWith(moduleRootPath))) {
-            const redirectedRequest = stickyModuleMapper(request);
-            if (redirectedRequest) {
-                try {
-                    const resolution = require.resolve(redirectedRequest);
-                    debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
-                    return resolution;
-                }
-                catch (error) {
-                    debug(`Could not redirect request "${request}": ${error}`);
-                }
+        const redirectedRequest = stickyModuleMapper(request, parentId);
+        if (redirectedRequest) {
+            try {
+                const resolution = require.resolve(redirectedRequest);
+                debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
+                return resolution;
+            }
+            catch (error) {
+                debug(`Could not redirect request "${request}": ${error}`);
             }
         }
         return originalResolveFilename.call(this, request, parent, isMain, options);
