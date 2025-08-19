@@ -59,8 +59,8 @@ describe.each([
     test('re-export default')`
       export { default } from 'apple-icons';
     `,
-    test('re-export default with local')`
-      export { default as test } from 'apple-icons';
+    test('re-export default as local')`
+      export { default as local } from 'apple-icons';
     `,
     test('re-export combined cases (1)')`
       export { default as _test, default, test } from 'apple-icons';
@@ -94,25 +94,25 @@ describe.each([
       import { test } from 'apple-icons';
       test(test);
     `,
-    test('import specifier with local')`
+    test('import specifier as local')`
       import { test as local } from 'apple-icons';
       test(local);
     `,
-    test('import default specifier with local')`
-      import { default as AppleIcons } from 'apple-icons';
-      test(AppleIcons);
+    test('import default specifier as local')`
+      import { default as local } from 'apple-icons';
+      test(local);
     `,
-    test('import specifier and default')`
+    test('import specifier, and default')`
       import AppleIcons, { test } from 'apple-icons';
       test(AppleIcons, test);
     `,
-    test('import specifier with local and default')`
+    test('import specifier as local, and default')`
       import AppleIcons, { test as local } from 'apple-icons';
       test(AppleIcons, local);
     `,
-    test('import default specifier with local and default')`
-      import _AppleIcons, { default as test } from 'apple-icons';
-      test(_AppleIcons, test);
+    test('import default specifier as local, and default')`
+      import _AppleIcons, { default as local } from 'apple-icons';
+      test(_AppleIcons, local);
     `,
     test('import combined cases (1)')`
       import a, { b, default as c, test as d } from 'apple-icons';
@@ -148,21 +148,21 @@ describe.each([
       import { test as local } from 'apple-icons';
       export { local };
     `,
-    test('export import default specifier with local')`
-      import { default as AppleIcons } from 'apple-icons';
-      export { AppleIcons };
+    test('export import default specifier as local')`
+      import { default as local } from 'apple-icons';
+      export { local };
     `,
     test('export import specifier and default')`
       import AppleIcons, { test } from 'apple-icons';
       export { AppleIcons, test };
     `,
-    test('export import specifier with local and default')`
+    test('export import specifier as local, and default')`
       import AppleIcons, { test as local } from 'apple-icons';
       export { AppleIcons, local };
     `,
-    test('export import default specifier with local and default')`
-      import _AppleIcons, { default as test } from 'apple-icons';
-      export { _AppleIcons, test };
+    test('export import default specifier as local, and default')`
+      import _AppleIcons, { default as local } from 'apple-icons';
+      export { _AppleIcons, local };
     `,
 
     // Import then export default
@@ -182,9 +182,9 @@ describe.each([
       import { test as local } from 'apple-icons';
       export default local;
     `,
-    test('export import default specifier with local')`
-      import { default as AppleIcons } from 'apple-icons';
-      export default AppleIcons;
+    test('export import default specifier as local')`
+      import { default as local } from 'apple-icons';
+      export default local;
     `,
 
     // Export variable declaration
@@ -204,9 +204,9 @@ describe.each([
       import { test as local } from 'apple-icons';
       export const test = local;
     `,
-    test('export import default specifier with local')`
-      import { default as _AppleIcons } from 'apple-icons';
-      export const AppleIcons = AppleIcons;
+    test('export import default specifier as local')`
+      import { default as local } from 'apple-icons';
+      export const _local = local;
     `,
 
     // Export destructure object
@@ -244,13 +244,13 @@ describe.each([
       import { test } from 'apple-icons';
       export const [a, b] = test;
     `,
-    test('export import specifier with local')`
+    test('export destructured import specifier as local')`
       import { test as local } from 'apple-icons';
       export const [a, b] = local;
     `,
-    test('export import default specifier with local')`
-      import { default as AppleIcons } from 'apple-icons';
-      export const [a, b] = AppleIcons;
+    test('export destructured import default specifier as local')`
+      import { default as local } from 'apple-icons';
+      export const [a, b] = local;
     `,
   ])('transforms %s', (_name, code) => {
     expect(getExpected(code)).toMatchSnapshot();
