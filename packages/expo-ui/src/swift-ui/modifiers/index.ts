@@ -304,6 +304,11 @@ export const glassEffect = (params?: {
   shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
 }) => createModifier('glassEffect', params);
 
+export const animation = (params: {
+  curve: 'easeInOut' | 'easeIn' | 'easeOut' | 'linear';
+  animatedValue: number | boolean;
+}) => createModifier('animation', params);
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -347,7 +352,8 @@ export type BuiltInModifier =
   | ReturnType<typeof backgroundOverlay>
   | ReturnType<typeof aspectRatio>
   | ReturnType<typeof clipped>
-  | ReturnType<typeof glassEffect>;
+  | ReturnType<typeof glassEffect>
+  | ReturnType<typeof animation>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

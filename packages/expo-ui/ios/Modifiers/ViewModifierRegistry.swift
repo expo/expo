@@ -423,6 +423,33 @@ internal struct GlassEffectModifier: ViewModifier {
   #endif
 }
 
+internal struct AnimationModifier: ViewModifier {
+  let curve: String
+  let animatedValue: AnyHashable?
+
+  func body(content: Content) -> some View {
+    let animationValue = parseAnimationCurve(curve)
+    if let value = animatedValue {
+      content.animation(animationValue, value: value)
+    } else {
+      content
+    }
+  }
+
+  private func parseAnimationCurve(_ curveString: String) -> Animation {
+    switch curveString {
+    case "easeIn":
+      return .easeIn
+    case "easeOut":
+      return .easeOut
+    case "linear":
+      return .linear
+    default:
+      return .easeInOut
+    }
+  }
+}
+
 // MARK: - Registry
 
 /**
@@ -720,6 +747,13 @@ extension ViewModifierRegistry {
         tint: tintColor,
         shape: shape
       )
+    }
+
+    register("animation") { params, _ in
+      let curve = params["curve"] as? String ?? "easeInOut"
+      let animatedValue = params["animatedValue"] as? AnyHashable
+
+      return AnimationModifier(curve: curve, animatedValue: animatedValue)
     }
   }
 }
