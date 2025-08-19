@@ -1,3 +1,4 @@
+import { act, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -5,7 +6,7 @@ import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, screen, renderRouter, testRouter } from '../testing-library';
+import { renderRouter, testRouter } from '../testing-library';
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *

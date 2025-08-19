@@ -1,9 +1,10 @@
 import { TabRouter, TabRouterOptions } from '@react-navigation/native';
+import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
 import { Navigator, Slot } from '../index';
-import { screen, renderRouter } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('can render a custom navigator', () => {
   // The default <Stack /> doesn't have any routerOptions, so we use TabRouter

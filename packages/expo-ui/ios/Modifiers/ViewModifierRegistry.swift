@@ -212,14 +212,15 @@ internal struct ClipShapeModifier: ViewModifier {
   let shape: String
   let cornerRadius: CGFloat
 
+  @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
     case "circle":
-      return AnyView(content.clipShape(Circle()))
+      content.clipShape(Circle())
     case "roundedRectangle":
-      return AnyView(content.clipShape(RoundedRectangle(cornerRadius: cornerRadius)))
+      content.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     default:
-      return AnyView(content.clipShape(Rectangle()))
+      content.clipShape(Rectangle())
     }
   }
 }
@@ -322,14 +323,15 @@ internal struct MaskModifier: ViewModifier {
   let shape: String
   let cornerRadius: CGFloat
 
+  @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
     case "circle":
-      return AnyView(content.mask(Circle()))
+      content.mask(Circle())
     case "roundedRectangle":
-      return AnyView(content.mask(RoundedRectangle(cornerRadius: cornerRadius)))
+      content.mask(RoundedRectangle(cornerRadius: cornerRadius))
     default:
-      return AnyView(content.mask(Rectangle()))
+      content.mask(Rectangle())
     }
   }
 }
@@ -375,6 +377,50 @@ internal struct AnyViewModifier: ViewModifier {
   func body(content: Content) -> some View {
     _body(content)
   }
+}
+
+internal struct GlassEffectModifier: ViewModifier {
+  let glassVariant: String
+  let interactive: Bool
+  let tint: Color?
+  let shape: String
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      let glass = parseGlassVariant(glassVariant)
+      switch shape {
+      case "capsule":
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
+      case "circle":
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
+      case "ellipse":
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
+      default:
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
+      }
+      #else
+      content
+      #endif
+    } else {
+      content
+    }
+  }
+
+  #if compiler(>=6.2) // Xcode 26
+  @available(iOS 26.0, *)
+  private func parseGlassVariant(_ glassString: String) -> Glass {
+    switch glassString {
+    case "regular":
+      return .regular
+    case "clear":
+      return .clear
+    default:
+      return .identity
+    }
+  }
+  #endif
 }
 
 // MARK: - Registry
@@ -659,6 +705,21 @@ extension ViewModifierRegistry {
       let alignmentString = params["alignment"] as? String ?? "center"
       let alignment = parseAlignment(alignmentString)
       return BackgroundOverlayModifier(color: color, alignment: alignment)
+    }
+
+    register("glassEffect") { params, _ in
+      let glassDict = params["glass"] as? [String: Any]
+      let glassVariant = glassDict?["variant"] as? String ?? "regular"
+      let interactive = glassDict?["interactive"] as? Bool ?? false
+      let tintColor = (glassDict?["tint"] as? String).map { Color(hex: $0) }
+      let shape = params["shape"] as? String ?? "capsule"
+
+      return GlassEffectModifier(
+        glassVariant: glassVariant,
+        interactive: interactive,
+        tint: tintColor,
+        shape: shape
+      )
     }
   }
 }

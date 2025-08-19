@@ -1,9 +1,9 @@
-import { act } from '@testing-library/react-native';
+import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 
 import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';
-import { screen, renderRouter } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('should go back to a previous route in the same stack', () => {
   renderRouter({

@@ -53,6 +53,9 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let AnyEitherType = T.self as? AnyEither.Type {
     return AnyEitherType.getDynamicType()
   }
+  if let AnyValueOrUndefinedType = T.self as? AnyValueOrUndefined.Type {
+    return AnyValueOrUndefinedType.getDynamicType()
+  }
   return DynamicRawType(innerType: T.self)
 }
 

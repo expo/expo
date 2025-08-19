@@ -6,9 +6,24 @@
 
 ### 🎉 New features
 
+- Render errors with multiple stacks in Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.25.2 — 2025-08-16
+
+### 💡 Others
+
+- Reuse `expo/internal/unstable-autolinking-exports` for `DevToolsPluginManager` ([#38913](https://github.com/expo/expo/pull/38913) by [@kitten](https://github.com/kitten))
+
+## 0.25.1 — 2025-08-15
+
+### 💡 Others
+
+- use relative paths in missing imports errors ([#38853](https://github.com/expo/expo/pull/38853) by [@EvanBacon](https://github.com/EvanBacon))
+- Reuse `derefSchema` from `@expo/schema-utils` ([#38863](https://github.com/expo/expo/pull/38863) by [@kitten](https://github.com/kitten))
 
 ## 0.25.0 — 2025-08-13
 
@@ -32,6 +47,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix caching across devices. ([#38476](https://github.com/expo/expo/pull/38476) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix DOM component metadata overwriting causing WebView 404s after EAS updates. ([#38290](https://github.com/expo/expo/pull/38290) by [@danoc](https://github.com/danoc))
 - Support `--output-dir` being a directory outside of the project root. ([#38260](https://github.com/expo/expo/pull/38260) by [@EvanBacon](https://github.com/EvanBacon))
 - Update error message for ngrok ([#22469](https://github.com/expo/expo/pull/22469) by [@russorat](https://github.com/russorat))

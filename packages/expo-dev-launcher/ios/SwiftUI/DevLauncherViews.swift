@@ -111,9 +111,7 @@ struct RecentlyOpenedAppRow: View {
           .foregroundColor(.secondary)
       }
       .padding()
-#if !os(tvOS)
-      .background(Color(.secondarySystemBackground))
-#endif
+      .background(Color.expoSecondarySystemBackground)
       .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     .buttonStyle(PlainButtonStyle())

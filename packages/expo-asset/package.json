@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "12.0.0",
+  "version": "12.0.2",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -48,14 +48,14 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/image-utils": "^0.8.0",
-    "expo-constants": "~18.0.0"
+    "@expo/image-utils": "^0.8.2",
+    "expo-constants": "~18.0.2"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.1.0",
+    "@testing-library/react-native": "^13.2.0",
     "@types/node": "^22.14.0",
     "@types/react-native__assets": "^1.0.3",
-    "expo-module-scripts": "^5.0.0"
+    "expo-module-scripts": "^5.0.2"
   },
   "peerDependencies": {
     "expo": "*",

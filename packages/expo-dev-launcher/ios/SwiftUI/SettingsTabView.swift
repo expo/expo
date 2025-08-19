@@ -68,9 +68,7 @@ struct SettingsTabView: View {
       Toggle("Show menu at launch", isOn: $viewModel.showOnLaunch)
     }
     .padding()
-#if !os(tvOS)
-    .background(Color(.secondarySystemBackground))
-#endif
+    .background(Color.expoSecondarySystemBackground)
     .cornerRadius(12)
   }
 
@@ -118,9 +116,7 @@ struct SettingsTabView: View {
         }
         .padding()
       }
-#if !os(tvOS)
-      .background(Color(.secondarySystemBackground))
-#endif
+      .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)
     }
   }

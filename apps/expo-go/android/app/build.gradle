@@ -54,7 +54,7 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     versionCode 227
-    versionName '2.34.21'
+    versionName '2.34.22'
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth

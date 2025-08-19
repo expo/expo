@@ -23,34 +23,21 @@ If you are looking to install a specific version of Expo Go, visit [expo.dev/go]
 Install the new version of the Expo package:
 
 <Tabs>
-<Tab label="npm">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ npx expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ npx expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ yarn expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ yarn expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
+  <Tab label="npm">
+    <Terminal cmd={['$ npm install expo@^53.0.0']} />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal cmd={['$ yarn add expo@^53.0.0']} />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal cmd={['$ pnpm add expo@^53.0.0']} />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal cmd={['$ bun install expo@^53.0.0']} />
+  </Tab>
 </Tabs>
+
+Depending on which SDK you're upgrading to, substitute the `expo@^53.0.0` with the version range of the Expo SDK version you're targeting. For example, `expo@^53.0.0` stands for SDK 53.
 
 </Step>
 
@@ -58,9 +45,9 @@ Install the new version of the Expo package:
 
 ### Upgrade dependencies
 
-Upgrade all dependencies to match the installed SDK version.
+Upgrade all dependencies to match the installed SDK version. Then run [`expo-doctor`](/develop/tools/#expo-doctor) command to check for common problems.
 
-<Terminal cmd={['$ npx expo install --fix']} />
+<Terminal cmd={['$ npx expo install --fix', '', '$ npx expo-doctor']} />
 
 </Step>
 
@@ -69,7 +56,7 @@ Upgrade all dependencies to match the installed SDK version.
 ### Update native projects
 
 - **If you use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Delete the **android** and **ios** directories if you generated them for a previous SDK version in your local project directory. They'll be re-generated next time you run a build, either with `npx expo run:ios`, `npx expo prebuild`, or with EAS Build.
-- **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an `ios` directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
+- **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an **ios** directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
 
 </Step>
 
@@ -77,7 +64,7 @@ Upgrade all dependencies to match the installed SDK version.
 
 ### Follow the release notes for any other instructions
 
-Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading to. They contain important information about breaking changes, deprecations, and other changes that may affect your app. Refer to tue "Upgrading your app" section at the bottom of the release notes page for any additional instructions.
+Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading to. They contain important information about breaking changes, deprecations, and other changes that may affect your app. Refer to the "Upgrading your app" section at the bottom of the release notes page for any additional instructions.
 
 </Step>
 

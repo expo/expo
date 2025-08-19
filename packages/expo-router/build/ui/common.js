@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
+exports.ViewSlot = void 0;
 exports.triggersToScreens = triggersToScreens;
 exports.stateToAction = stateToAction;
 const href_1 = require("../link/href");
@@ -8,9 +8,7 @@ const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
 const Slot_1 = require("./Slot");
 const constants_1 = require("../constants");
-// Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 exports.ViewSlot = Slot_1.Slot;
-exports.SafeAreaViewSlot = Slot_1.Slot;
 function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey) {
     const configs = [];
     for (const trigger of triggers) {

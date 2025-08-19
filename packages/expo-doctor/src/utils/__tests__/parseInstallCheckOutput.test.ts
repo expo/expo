@@ -23,7 +23,7 @@ describe('parseInstallCheckOutput', () => {
 
   it('should handle empty stdout', () => {
     const issues: string[] = [];
-    parseInstallCheckOutput('', issues);
+    parseInstallCheckOutput('', issues, 54);
     expect(issues).toHaveLength(0);
   });
 
@@ -33,7 +33,7 @@ describe('parseInstallCheckOutput', () => {
       dependencies: [],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
     expect(issues).toHaveLength(0);
   });
 
@@ -49,7 +49,7 @@ describe('parseInstallCheckOutput', () => {
       ],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     const output = issues[0];
@@ -72,7 +72,7 @@ describe('parseInstallCheckOutput', () => {
       ],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     const output = issues[0];
@@ -94,7 +94,7 @@ describe('parseInstallCheckOutput', () => {
       ],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     const output = issues[0];
@@ -121,13 +121,13 @@ describe('parseInstallCheckOutput', () => {
       ],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     const output = issues[0];
     expect(output).toContain('Changelogs:');
     expect(output).toContain(
-      'expo-image → https://github.com/expo/expo/blob/main/packages/expo-image/CHANGELOG.md'
+      'expo-image → https://github.com/expo/expo/blob/sdk-54/packages/expo-image/CHANGELOG.md'
     );
     expect(output).not.toContain('react →');
     expect(output).toContain('2 packages out of date');
@@ -160,7 +160,7 @@ describe('parseInstallCheckOutput', () => {
       ],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     const output = issues[0];
@@ -203,7 +203,7 @@ describe('parseInstallCheckOutput', () => {
       ],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     const output = issues[0];
@@ -220,7 +220,7 @@ Another warning line
 More text after JSON
     `;
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     const output = issues[0];
@@ -232,7 +232,7 @@ More text after JSON
   it('should fallback to raw output when JSON parsing fails', () => {
     const stdout = 'This is not JSON output';
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(1);
     expect(issues[0]).toBe('This is not JSON output');
@@ -244,7 +244,7 @@ More text after JSON
       dependencies: [],
     });
     const issues: string[] = [];
-    parseInstallCheckOutput(stdout, issues);
+    parseInstallCheckOutput(stdout, issues, 54);
 
     expect(issues).toHaveLength(0);
   });

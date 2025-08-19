@@ -126,7 +126,7 @@ export interface LinkPreviewProps {
  * <Link href="/about">
  *   <Link.Preview>
  *     <Text>Custom Preview Content</Text>
- *   </Link.Trigger>
+ *   </Link.Preview>
  * </Link>
  * ```
  *

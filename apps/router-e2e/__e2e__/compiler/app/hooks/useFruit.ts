@@ -1,7 +1,12 @@
+/* eslint-disable import/export */
+// To allow overlapping exports.
+
 import { useBananas } from './useBananas';
 
+export * from './useApples';
+
 export function useFruit() {
-  console.log(`${FruitLabelPrefix} Fruits are delicious!`);
+  return `${FruitLabelPrefix} Fruits are delicious!`;
 }
 
 export const FruitLabelPrefix = 'Fresh';

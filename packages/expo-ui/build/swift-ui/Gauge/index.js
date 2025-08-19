@@ -1,27 +1,11 @@
 import { requireNativeView } from 'expo';
-import { Platform } from 'react-native';
-import { Host } from '../Host';
-let GaugeNativeView;
-if (Platform.OS === 'ios') {
-    GaugeNativeView = requireNativeView('ExpoUI', 'GaugeView');
-}
-/**
- * `<Gauge>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function GaugePrimitive({ type = 'default', ...props }) {
-    if (!GaugeNativeView) {
-        return null;
-    }
-    return <GaugeNativeView type={type} {...props}/>;
-}
+import { createViewModifierEventListener } from '../modifiers/utils';
+const GaugeNativeView = requireNativeView('ExpoUI', 'GaugeView');
 /**
  * Renders a native `Gauge` component.
  * @platform ios
  */
-export function Gauge(props) {
-    return (<Host style={props.style} matchContents>
-      <GaugePrimitive {...props}/>
-    </Host>);
+export function Gauge({ type = 'default', modifiers, ...props }) {
+    return (<GaugeNativeView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} type={type} {...props}/>);
 }
 //# sourceMappingURL=index.js.map

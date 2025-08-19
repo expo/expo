@@ -58,9 +58,7 @@ struct DevLauncherNavigationHeader: View {
         } else {
           ZStack {
             Circle()
-            #if !os(tvOS)
-              .fill(Color(.systemGray6))
-            #endif
+              .fill(Color.expoSystemGray6)
               .frame(width: 36, height: 36)
 
             Image("user-icon", bundle: getDevLauncherBundle())
@@ -72,9 +70,7 @@ struct DevLauncherNavigationHeader: View {
     }
     .padding(.horizontal)
     .padding(.vertical, 8)
-    #if !os(tvOS)
-    .background(Color(.systemBackground))
-    #endif
+    .background(Color.expoSystemBackground)
   }
 
   @ViewBuilder
@@ -103,9 +99,7 @@ struct DevLauncherNavigationHeader: View {
           .aspectRatio(contentMode: .fill)
       } placeholder: {
         Circle()
-        #if !os(tvOS)
-          .fill(Color(.systemGray5))
-        #endif
+          .fill(Color.expoSystemGray5)
           .overlay(
             Image(systemName: "person")
               .font(.system(size: 16))

@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type CircularProgressProps = {
   /**
@@ -12,7 +13,7 @@ export type CircularProgressProps = {
    * Progress color.
    */
   color?: ColorValue;
-};
+} & CommonViewModifierProps;
 
 export type LinearProgressProps = {
   /**
@@ -23,7 +24,7 @@ export type LinearProgressProps = {
    * Progress color.
    */
   color?: ColorValue;
-};
+} & CommonViewModifierProps;
 
 type NativeProgressProps =
   | CircularProgressProps
@@ -37,39 +38,31 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
 );
 
 /**
- * `<CircularProgress>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function CircularProgressPrimitive(props: CircularProgressProps) {
-  return <NativeProgressView {...props} variant="circular" />;
-}
-
-/**
- * `<LinearProgress>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function LinearProgressPrimitive(props: LinearProgressProps) {
-  return <NativeProgressView {...props} variant="linear" />;
-}
-
-/**
  * Renders a `CircularProgress` component.
  */
-export function CircularProgress(props: CircularProgressProps & { style?: StyleProp<ViewStyle> }) {
+export function CircularProgress(props: CircularProgressProps) {
+  const { modifiers, ...restProps } = props;
   return (
-    <Host style={props.style} matchContents>
-      <CircularProgressPrimitive {...props} />
-    </Host>
+    <NativeProgressView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      variant="circular"
+    />
   );
 }
 
 /**
  * Renders a `LinearProgress` component.
  */
-export function LinearProgress(props: LinearProgressProps & { style?: StyleProp<ViewStyle> }) {
+export function LinearProgress(props: LinearProgressProps) {
+  const { modifiers, ...restProps } = props;
   return (
-    <Host style={props.style} matchContents>
-      <LinearProgressPrimitive {...props} />
-    </Host>
+    <NativeProgressView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      variant="linear"
+    />
   );
 }

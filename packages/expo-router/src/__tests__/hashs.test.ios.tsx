@@ -1,8 +1,9 @@
+import { act, screen } from '@testing-library/react-native';
 import React, { Text } from 'react-native';
 
 import { router } from '../exports';
 import { store } from '../global-state/router-store';
-import { act, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('can push a hash url', () => {
   renderRouter({

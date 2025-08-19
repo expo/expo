@@ -77,6 +77,13 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
     source?: string;
     target?: string;
 } | {
+    type: "REPLACE_PARAMS";
+    payload: {
+        params?: object;
+    };
+    source?: string;
+    target?: string;
+} | {
     type: "PRELOAD";
     payload: {
         name: string;

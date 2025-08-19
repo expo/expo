@@ -1,17 +1,10 @@
 import { requireNativeView } from 'expo';
 import { Children, useMemo } from 'react';
-import { Host } from '../Host';
 import { transformChildrenToElementArray } from './utils';
+export * from './Submenu';
 const MenuNativeView = requireNativeView('ExpoUI', 'ContextMenu');
 const MenuNativeTriggerView = requireNativeView('ExpoUI', 'ContextMenuActivationElement');
 const MenuNativePreviewView = requireNativeView('ExpoUI', 'ContextMenuPreview');
-/**
- * The `Submenu` component is used to create a nested context menu. Submenus can be infinitely nested.
- * Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple titled sections.
- */
-export function Submenu(props) {
-    return <></>;
-}
 /**
  * Items visible inside the context menu. Pass input components as immidiate children of the tag.
  * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
@@ -38,7 +31,16 @@ export function Preview(props) {
  * `<ContextMenu>` component without a host view.
  * You should use this with a `Host` component in ancestor.
  */
-function ContextMenuPrimitive(props) {
+/**
+ * `ContextMenu` allows you to create a context menu, which can be used to provide additional options to the user.
+ *
+ * There are some platform-specific differences in the behavior of the context menu:
+ * - On Android, the expansion of the context menu is controlled by the `expanded` prop. iOS, does not allow for manual control of the expansion state.
+ * - On iOS, the context menu can be triggered by a single press or a long press. The `activationMethod` prop allows you to choose between these two options.
+ * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
+ * - Android does not support showing a `Picker` element in the context menu.
+ */
+function ContextMenu(props) {
     const eventHandlersMap = {};
     const initialChildren = Children.map(props.children, (c) => c.type.tag === Items.tag ? c.props.children : null);
     const processedElements = useMemo(() => transformChildrenToElementArray(initialChildren, eventHandlersMap), [initialChildren]);
@@ -48,25 +50,8 @@ function ContextMenuPrimitive(props) {
     };
     return (<MenuNativeView elements={processedElements} onContextMenuButtonPressed={createEventHandler('onPress')} onContextMenuSwitchValueChanged={createEventHandler('onValueChange')} onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')} {...props}/>);
 }
-/**
- * `ContextMenuPrimitive` allows you to create a context menu, which can be used to provide additional options to the user.
- *
- * There are some platform-specific differences in the behavior of the context menu:
- * - On Android, the expansion of the context menu is controlled by the `expanded` prop. iOS, does not allow for manual control of the expansion state.
- * - On iOS, the context menu can be triggered by a single press or a long press. The `activationMethod` prop allows you to choose between these two options.
- * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
- * - Android does not support showing a `Picker` element in the context menu.
- */
-function ContextMenu(props) {
-    return (<Host style={props.style} matchContents>
-      <ContextMenuPrimitive {...props}/>
-    </Host>);
-}
-ContextMenuPrimitive.Trigger = Trigger;
-ContextMenuPrimitive.Preview = Preview;
-ContextMenuPrimitive.Items = Items;
 ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
-export { ContextMenuPrimitive, ContextMenu };
+export { ContextMenu };
 //# sourceMappingURL=index.js.map

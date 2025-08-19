@@ -1,3 +1,5 @@
+import type { NavigationContainerRef, ParamListBase } from '@react-navigation/native';
+import { type RefObject } from 'react';
 import { NavigationOptions } from './global-state/routing';
 import { Href, Route, RouteInputParams } from './types';
 /**
@@ -80,5 +82,5 @@ export type Router = {
  * @hidden
  */
 export declare const router: Router;
-export declare function ImperativeApiEmitter(): null;
+export declare function useImperativeApiEmitter(ref: RefObject<NavigationContainerRef<ParamListBase> | null>): null;
 //# sourceMappingURL=imperative-api.d.ts.map

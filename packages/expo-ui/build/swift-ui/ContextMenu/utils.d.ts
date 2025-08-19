@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import { ContextMenuElementBase, EventHandlers } from './index';
-import { NativeButtonProps } from '../Button';
-import { PickerProps } from '../Picker';
-import { SwitchProps } from '../Switch';
+import { type ContextMenuElementBase, type EventHandlers } from './types';
+import { type NativeButtonProps } from '../Button';
+import { type PickerProps } from '../Picker';
+import { type SwitchProps } from '../Switch';
 type ButtonMenuElement = {
     button: NativeButtonProps;
 } & ContextMenuElementBase;
