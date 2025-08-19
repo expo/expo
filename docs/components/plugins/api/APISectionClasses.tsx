@@ -54,12 +54,19 @@ const isProp = (child: PropData) => {
   );
 };
 
-const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
-  child.kind &&
-  [TypeDocKind.Method, TypeDocKind.Function].includes(child.kind) &&
-  (allowOverwrites || !child.overwrites) &&
-  !child.name.startsWith('_') &&
-  !child?.implementationOf;
+const isMethod = (child: PropData, allowOverwrites: boolean = false) => {
+  const isImplementationOfBlobInterface =
+    child.implementationOf?.type === 'reference' &&
+    child.implementationOf?.name?.startsWith('Blob.');
+
+  return (
+    child.kind &&
+    [TypeDocKind.Method, TypeDocKind.Function].includes(child.kind) &&
+    (allowOverwrites || !child.overwrites) &&
+    !child.name.startsWith('_') &&
+    (!child?.implementationOf || isImplementationOfBlobInterface)
+  );
+};
 
 // This is intended to filter out inherited properties from some
 // common classes that are documented inside the `expo` package docs.
