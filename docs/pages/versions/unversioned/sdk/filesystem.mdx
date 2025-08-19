@@ -11,13 +11,31 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`expo-file-system` provides access to the file system stored locally on the device. It can also download files from the network.
+`expo-file-system` provides access to files and directories stored on device or bundled as assets into the native project. It also allows downloading files from the network.
 
 ## Installation
 
 <APIInstallSection />
 
 ## Usage
+
+```js
+import { File, Directory, Paths } from 'expo-file-system';
+```
+
+The `File` and `Directory` instances hold a reference to a file, content or asset URI.
+
+The file or directory does not need to exist – an error will be thrown from the constructor only if the wrong class is used to represent an existing path (so if you try create a `File` instance passing a path to an already existing directory).
+
+Features:
+
+- Both synchronous and asynchronous, read and write access to file contents
+- Creation, modification and deletion
+- Properties such as `type`, `size`, `creationDate` ect.
+- Ability to read and write files as streams or using the `FileHandle` class
+- Easy file download/upload using `downloadFileAsync` or `expo/fetch`
+
+## Examples
 
 ### Writing and reading text files
 
@@ -29,6 +47,36 @@ try {
   file.create(); // can throw an error if the file already exists or no permission to create it
   file.write('Hello, world!');
   console.log(file.textSync()); // Hello, world!
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Picking files using system pickers
+
+Usage with `expo-document-picker`
+
+```ts example.ts
+import { File } from 'expo-file-system';
+import * as DocumentPicker from 'expo-document-picker';
+
+try {
+  const result = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+  const file = new File(result.assets[0]);
+  console.log(file.textSync());
+} catch (error) {
+  console.error(error);
+}
+```
+
+Using the built-in `pickFileAsync` or `pickDirectoryAsync` method on Android:
+
+```ts example.ts
+import { File } from 'expo-file-system';
+
+try {
+  const file = new File.pickFileAsync();
+  console.log(file.textSync());
 } catch (error) {
   console.error(error);
 }
