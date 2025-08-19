@@ -40,12 +40,19 @@ const CLASSES_TO_IGNORE_INHERITED_PROPS = [
   'SharedRef',
 ] as const;
 
-const isProp = (child: PropData) =>
-  child.kind &&
-  [TypeDocKind.Property, TypeDocKind.Accessor].includes(child.kind) &&
-  !child.overwrites &&
-  !child.name.startsWith('_') &&
-  !child.implementationOf;
+const isProp = (child: PropData) => {
+  const isImplementationOfBlobInterface =
+    child.implementationOf?.type === 'reference' &&
+    child.implementationOf?.name?.startsWith('Blob.');
+
+  return (
+    child.kind &&
+    [TypeDocKind.Property, TypeDocKind.Accessor].includes(child.kind) &&
+    !child.overwrites &&
+    !child.name.startsWith('_') &&
+    (!child.implementationOf || isImplementationOfBlobInterface)
+  );
+};
 
 const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   child.kind &&
