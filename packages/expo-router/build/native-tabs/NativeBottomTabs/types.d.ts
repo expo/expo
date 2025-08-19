@@ -22,22 +22,24 @@ export interface NativeTabOptions extends DefaultRouterOptions {
      */
     selectedIcon?: SfSymbolOrImageSource;
     /**
-     * @summary Title of the tab screen, displayed in the tab bar item.
+     * Title of the tab screen, displayed in the tab bar item.
      *
-     * @platform android, ios
+     * @platform android
+     * @platform iOS
      */
     title?: string;
     /**
-     * @summary Specifies content of tab bar item badge.
+     * Specifies content of tab bar item badge.
+     *
+     * On Android, the value is interpreted in the following order:
+     * - If the string can be parsed to integer, displays the value as a number
+     * - Otherwise if the string is empty, displays "small dot" badge
+     * - Otherwise, displays the value as a text
      *
      * On iOS, badge is displayed as regular string.
      *
-     * On Android, the value is interpreted in the following order:
-     * - if the string can be parsed to integer, displays the value as a number;
-     * - otherwise if the string is empty, displays "small dot" badge;
-     * - otherwise, displays the value as a text.
-     *
-     * @platform android, ios
+     * @platform android
+     * @platform ios
      */
     badgeValue?: string;
 }
@@ -85,7 +87,7 @@ export interface NativeTabsStyleType {
         vertical?: number;
     };
     /**
-     * @summary Specifies the blur effect applied to the tab bar.
+     * Specifies the blur effect applied to the tab bar.
      *
      * Works with backgroundColor's alpha < 1.
      *
@@ -93,12 +95,12 @@ export interface NativeTabsStyleType {
      *
      * The following values are currently supported:
      *
-     * - `none` - disables blur effect
-     * - `systemDefault` - uses UIKit's default tab bar blur effect
-     * - one of styles mapped from UIKit's UIBlurEffectStyle, e.g. `systemUltraThinMaterial`
+     * - `none`: disables blur effect
+     * - `systemDefault`: uses UIKit's default tab bar blur effect
+     * - one of styles mapped from UIKit's UIBlurEffectStyle. For example, `systemUltraThinMaterial`
      *
      * Complete list of possible blur effect styles is available in the official UIKit documentation:
-     * @see {@link https://developer.apple.com/documentation/uikit/uiblureffect/style|UIBlurEffect.Style}
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiblureffect/style)
      *
      * @default systemDefault
      *
@@ -122,18 +124,17 @@ export interface NativeTabsStyleType {
      */
     rippleColor?: ColorValue;
     /**
-     * @summary Specifies the label visibility mode.
+     * Specifies the label visibility mode.
      *
      * The label visibility mode defines when the labels of each item bar should be displayed.
      *
      * The following values are available:
-     * - `auto` - the label behaves as in “labeled” mode when there are 3 items or less, or as in “selected” mode when there are 4 items or more
-     * - `selected` - the label is only shown on the selected navigation item
-     * - `labeled` - the label is shown on all navigation items
-     * - `unlabeled` - the label is hidden for all navigation items
+     * - `auto`: the label behaves as in "labeled" mode when there are 3 items or less, or as in "selected" mode when there are 4 items or more
+     * - `selected`: the label is only shown on the selected navigation item
+     * - `labeled`: the label is shown on all navigation items
+     * - `unlabeled`: the label is hidden for all navigation items
      *
-     * The supported values correspond to the official Material Components documentation:
-     * @see {@link https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible|Material Components documentation}
+     * @see The supported values correspond to the official [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible).
      *
      * @default auto
      * @platform android
@@ -147,9 +148,13 @@ export interface NativeTabsStyleType {
 }
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];
 /**
- * @see {@link https://developer.apple.com/documentation/uikit/uiblureffect/style|UIBlurEffect.Style}
+ * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiblureffect/style)
  */
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
+/**
+ * @platform android
+ * @platform web
+ */
 export interface NativeTabsActiveStyleType {
     /**
      * @platform android
@@ -174,7 +179,7 @@ export interface NativeTabsActiveStyleType {
 export interface NativeTabsProps extends PropsWithChildren {
     style?: NativeTabsStyleType;
     /**
-     * @summary Specifies the minimize behavior for the tab bar.
+     * Specifies the minimize behavior for the tab bar.
      *
      * Available starting from iOS 26.
      *
@@ -187,10 +192,9 @@ export interface NativeTabsProps extends PropsWithChildren {
      * - `onScrollUp` - the tab bar minimizes when scrolling up and expands
      *   when scrolling back down
      *
-     * The supported values correspond to the official UIKit documentation:
-     * @see {@link https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior|UITabBarController.MinimizeBehavior}
+     * @see The supported values correspond to the official [UIKit documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
      *
-     * @default Defaults to `automatic`.
+     * @default automatic
      *
      * @platform iOS 26+
      */
@@ -214,14 +218,14 @@ export interface NativeTabsViewProps extends NativeTabsProps {
 }
 export declare const SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES: readonly ["auto", "selected", "labeled", "unlabeled"];
 /**
- * @see {@link https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible|Material Components documentation}
+ * @see [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible)
  *
  * @platform android
  */
 export type NativeTabsTabBarItemLabelVisibilityMode = (typeof SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)[number];
 export declare const SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS: readonly ["automatic", "never", "onScrollDown", "onScrollUp"];
 /**
- * @see {@link https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior|UITabBarController.MinimizeBehavior}
+ * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior)
  *
  * @platform iOS 26
  */
@@ -247,16 +251,16 @@ export interface NativeTabTriggerProps {
     options?: NativeTabOptions;
     /**
      * If true, the tab will not pop stack to the root when selected again.
-     * @default false
      *
-     * @platform ios
+     * @default false
+     * @platform iOS
      */
     disablePopToTop?: boolean;
     /**
      * If true, the tab will not scroll to the top when selected again.
      * @default false
      *
-     * @platform ios
+     * @platform iOS
      */
     disableScrollToTop?: boolean;
     /**
