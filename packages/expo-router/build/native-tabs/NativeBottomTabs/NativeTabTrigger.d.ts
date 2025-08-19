@@ -36,8 +36,9 @@ import type { ExtendedNativeTabOptions, NativeTabTriggerProps } from './types';
  *     </View>
  *   );
  * }
+ * ```
  *
- * **Note:** You can use the alias `NativeTabs.Trigger` for this component.
+ * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 export declare function NativeTabTrigger(props: NativeTabTriggerProps): null;
 export declare function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, disableScrollToTop, }: NativeTabTriggerProps): ExtendedNativeTabOptions;

@@ -44,8 +44,9 @@ import { Icon, Badge, Label } from '../common/elements';
  *     </View>
  *   );
  * }
+ * ```
  *
- * **Note:** You can use the alias `NativeTabs.Trigger` for this component.
+ * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 export function NativeTabTrigger(props: NativeTabTriggerProps) {
   const route = useRoute();
