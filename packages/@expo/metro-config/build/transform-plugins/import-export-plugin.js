@@ -284,7 +284,9 @@ function importExportPlugin({ types: t, }) {
                             state.opts.liveBindings ? path.node.source : local);
                             if (local.name === 'default') {
                                 path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: t.cloneNode(state.importDefault),
+                                    IMPORT: s.type !== 'ExportNamespaceSpecifier'
+                                        ? t.cloneNode(state.importDefault)
+                                        : t.cloneNode(state.importAll),
                                     FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                     LOCAL: temp,
                                 }), loc));
