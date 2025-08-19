@@ -11,7 +11,7 @@ isNew: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`expo-file-system` provides access to files and directories stored on device or bundled as assets into the native project. It also allows downloading files from the network.
+`expo-file-system` provides access to files and directories stored on a device or bundled as assets into the native project. It also allows downloading files from the network.
 
 ## Installation
 
@@ -23,15 +23,15 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { File, Directory, Paths } from 'expo-file-system';
 ```
 
-The `File` and `Directory` instances hold a reference to a file, content or asset URI.
+The `File` and `Directory` instances hold a reference to a file, content, or asset URI.
 
-The file or directory does not need to exist – an error will be thrown from the constructor only if the wrong class is used to represent an existing path (so if you try create a `File` instance passing a path to an already existing directory).
+The file or directory does not need to exist &mdash; an error will be thrown from the constructor only if the wrong class is used to represent an existing path (so if you try to create a `File` instance passing a path to an already existing directory).
 
 ## Features
 
 - Both synchronous and asynchronous, read and write access to file contents
 - Creation, modification and deletion
-- Properties such as `type`, `size`, `creationDate` ect.
+- Available properties, such as `type`, `size`, `creationDate`, and more
 - Ability to read and write files as streams or using the `FileHandle` class
 - Easy file download/upload using `downloadFileAsync` or `expo/fetch`
 
@@ -54,7 +54,7 @@ try {
 
 ### Picking files using system pickers
 
-Usage with `expo-document-picker`
+Usage with `expo-document-picker`:
 
 ```ts example.ts
 import { File } from 'expo-file-system';

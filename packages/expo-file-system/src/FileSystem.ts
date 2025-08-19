@@ -62,7 +62,7 @@ export class Paths extends PathUtilities {
  *
  * A `File` instance can be created for any path, and does not need to exist on the filesystem during creation.
  *
- * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a Directory instance (like Paths.cache) or a File instance (which creates a new reference to the same file).
+ * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
  * @example
  * ```ts
  * const file = new File(File.cache, "subdirName", "file.txt");
@@ -72,8 +72,8 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
-   * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a Directory instance (like Paths.cache) or a File instance (which creates a new reference to the same file).
-   * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system.
+   * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
+   * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
    * @example
    * ```ts
    * const file = new File(File.cache, "subdirName", "file.txt");
@@ -148,7 +148,7 @@ File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
  *
  * A `Directory` instance can be created for any path, and does not need to exist on the filesystem during creation.
  *
- * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a Directory instance (like Paths.cache).
+ * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a `Directory` instance (like `Paths.cache`).
  * @example
  * ```ts
  * const directory = new Directory(File.cache, "subdirName");
@@ -158,8 +158,8 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
   /**
    * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
-   * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a Directory instance (like Paths.cache).
-   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system.
+   * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a `Directory` instance (like `Paths.cache`).
+   * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
    * @example
    * ```ts
    * const directory = new Directory(File.cache, "subdirName");
