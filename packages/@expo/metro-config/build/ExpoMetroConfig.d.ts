@@ -38,5 +38,6 @@ export declare function createStableModuleIdFactory(root: string): (path: string
 export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): InputConfigT;
 /** Use to access the Expo Metro transformer path */
 export declare const unstable_transformerPath: string;
+export declare const internal_supervisingTransformerPath: string;
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 export declare const EXPO_DEBUG: boolean;
