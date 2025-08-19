@@ -10,6 +10,7 @@ import {
   StackRouter as RNStackRouter,
   StackActionType,
   StackNavigationState,
+  type RouteProp,
 } from '@react-navigation/native';
 import {
   NativeStackNavigationEventMap,
@@ -17,11 +18,11 @@ import {
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
 import { ComponentProps, useMemo } from 'react';
-import { StackAnimationTypes } from 'react-native-screens';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
+import { getInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
 import { Protected } from '../views/Protected';
 
@@ -79,10 +80,7 @@ type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
 type RNPreloadAction = Extract<CommonNavigationAction, { type: 'PRELOAD' }>;
 type ExpoNavigationAction = Omit<RNNavigationAction, 'payload'> & {
   payload: Omit<RNNavigationAction['payload'], 'params'> & {
-    params: {
-      __internal__expoRouterIsPreviewNavigation?: boolean;
-      params?: Record<string, unknown>;
-    };
+    params: RNNavigationAction['payload']['params'] & InternalExpoRouterParams;
   };
 };
 
@@ -102,10 +100,10 @@ function isStackAction(
 const isPreviewAction = (action: NavigationAction): action is ExpoNavigationAction =>
   !!action.payload &&
   'params' in action.payload &&
-  !!action.payload.params &&
-  typeof action.payload === 'object' &&
-  '__internal__expoRouterIsPreviewNavigation' in (action.payload.params as any) &&
-  !!(action.payload.params as any).__internal__expoRouterIsPreviewNavigation;
+  typeof action.payload.params === 'object' &&
+  !!getInternalExpoRouterParams(action.payload?.params ?? undefined)[
+    '__internal__expo_router_is_preview_navigation'
+  ];
 
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
@@ -191,7 +189,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           }
 
           // START FORK
-          if (isPreviewAction(action)) {
+          if (isPreviewAction(action) && !route) {
             route = state.preloadedRoutes.find(
               (route) => route.name === action.payload.name && id === route.key
             );
@@ -490,11 +488,11 @@ function filterSingular<
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
+
     const screenOptions = useMemo(() => {
-      if (isStackAnimationDisabled) {
-        return disableAnimationInScreenOptions(props.screenOptions);
-      }
-      return props.screenOptions;
+      const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
+
+      return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
 
     return (
@@ -512,28 +510,35 @@ const Stack = Object.assign(
 type NativeStackScreenOptions = ComponentProps<typeof RNStack>['screenOptions'];
 
 function disableAnimationInScreenOptions(
-  options: NativeStackScreenOptions | undefined
+  options: NativeStackScreenOptions | undefined,
+  condition: (route: RouteProp<ParamListBase, string>) => boolean
 ): NativeStackScreenOptions {
-  const animationNone: StackAnimationTypes = 'none';
-  if (options) {
-    if (typeof options === 'function') {
-      const newOptions: typeof options = (...args) => {
-        const oldResult = options(...args);
+  if (options && typeof options === 'function') {
+    return (props) => {
+      const oldOptions = options(props);
+      if (condition(props.route)) {
         return {
-          ...oldResult,
-          animation: animationNone,
+          ...oldOptions,
+          animation: 'none',
         };
-      };
-      return newOptions;
-    }
-    return {
-      ...options,
-      animation: animationNone,
+      }
+      return oldOptions ?? {};
     };
   }
-  return {
-    animation: animationNone,
+  return (props) => {
+    if (condition(props.route)) {
+      return {
+        ...(options ?? {}),
+        animation: 'none',
+      };
+    }
+    return options ?? {};
   };
+}
+
+function shouldDisableAnimationBasedOnParams(route: RouteProp<ParamListBase, string>): boolean {
+  const expoParams = getInternalExpoRouterParams(route.params);
+  return !!expoParams.__internal_expo_router_no_animation;
 }
 
 export default Stack;

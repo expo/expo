@@ -246,10 +246,6 @@ export declare const glassEffectId: (id: string, namespace: string) => ModifierC
  * This provides type safety for the modifiers array.
  */
 export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId>;
-/**
- * Main ViewModifier type that supports both built-in and 3rd party modifiers.
- * 3rd party modifiers should return ModifierConfig objects with their own type strings.
- */
 export type ViewModifier = BuiltInModifier | ModifierConfig;
 /**
  * Creates a custom modifier for 3rd party libraries.
@@ -271,4 +267,5 @@ export declare const isModifier: (value: any) => value is ModifierConfig;
  * Filters an array to only include valid modifiers.
  */
 export declare const filterModifiers: (modifiers: unknown[]) => ModifierConfig[];
+export * from './animation';
 //# sourceMappingURL=index.d.ts.map

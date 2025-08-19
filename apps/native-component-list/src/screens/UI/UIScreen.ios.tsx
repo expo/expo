@@ -138,6 +138,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./GlassEffect'));
     },
   },
+  {
+    name: 'Animation Modifier',
+    route: 'ui/animation-modifier',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AnimationModifierScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

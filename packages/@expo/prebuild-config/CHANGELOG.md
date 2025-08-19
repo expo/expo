@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.0.3 — 2025-08-18
+
+### 💡 Others
+
 - Use React Native's `edgeToEdgeEnabled` Gradle property to provide edge-to-edge support. ([#38767](https://github.com/expo/expo/pull/38767) by [@behenate](https://github.com/behenate))
 
 ## 10.0.2 — 2025-08-16

@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu": "7.0.2",
+    "expo-dev-menu": "7.0.3",
     "expo-manifests": "~1.0.2"
   },
   "peerDependencies": {

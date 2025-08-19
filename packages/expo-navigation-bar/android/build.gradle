@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '5.0.2'
+version = '5.0.3'
 
 android {
   namespace "expo.modules.navigationbar"
   defaultConfig {
     versionCode 1
-    versionName '5.0.2'
+    versionName '5.0.3'
   }
 }
 

@@ -3,6 +3,8 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
+import { animation } from './animation';
+
 /**
  * Base interface for all view modifiers.
  * All modifiers must have a type field and can include arbitrary parameters.
@@ -354,7 +356,8 @@ export type BuiltInModifier =
   | ReturnType<typeof aspectRatio>
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
-  | ReturnType<typeof glassEffectId>;
+  | ReturnType<typeof glassEffectId>
+  | ReturnType<typeof animation>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -392,3 +395,5 @@ export const isModifier = (value: any): value is ModifierConfig => {
 export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
   return modifiers.filter(isModifier);
 };
+
+export * from './animation';

@@ -229,4 +229,5 @@ export const isModifier = (value) => {
 export const filterModifiers = (modifiers) => {
     return modifiers.filter(isModifier);
 };
+export * from './animation';
 //# sourceMappingURL=index.js.map

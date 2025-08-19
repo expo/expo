@@ -57,6 +57,7 @@ const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
 const matchers_1 = require("../matchers");
+const navigationParams_1 = require("../navigationParams");
 const url_1 = require("../utils/url");
 function assertIsReady() {
     if (!router_store_1.store.navigationRef.isReady()) {
@@ -254,10 +255,13 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
          */
         rootPayload.params.initial = !withAnchor;
     }
-    const previewKeyParams = isPreviewNavigation
-        ? { __internal__expoRouterIsPreviewNavigation: isPreviewNavigation }
+    const expoParams = isPreviewNavigation
+        ? {
+            __internal__expo_router_is_preview_navigation: true,
+            __internal_expo_router_no_animation: true,
+        }
         : {};
-    const params = { ...rootPayload.params, ...previewKeyParams };
+    const params = (0, navigationParams_1.appendInternalExpoRouterParams)(rootPayload.params, expoParams);
     return {
         type,
         target: navigationState.key,

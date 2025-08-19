@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/splash-screen/",
   "dependencies": {
-    "@expo/prebuild-config": "^10.0.2"
+    "@expo/prebuild-config": "^10.0.3"
   },
   "devDependencies": {
     "expo-module-scripts": "^5.0.2"

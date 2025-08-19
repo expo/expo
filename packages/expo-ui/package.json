@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "0.2.0-alpha.2",
+  "version": "0.2.0-alpha.3",
   "description": "A collection of UI components",
   "scripts": {
     "build": "expo-module build",

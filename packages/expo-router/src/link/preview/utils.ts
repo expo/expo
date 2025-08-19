@@ -11,6 +11,7 @@ import { findDivergentState, getPayloadFromStateRoute } from '../../global-state
 import { Href } from '../../types';
 import { resolveHref } from '../href';
 import { TabPath } from './native';
+import { removeInternalExpoRouterParams } from '../../navigationParams';
 
 export function getTabPathFromRootStateByHref(
   href: Href,
@@ -70,7 +71,12 @@ export function getPreloadedRouteFromRootStateByHref(
     const payload = getPayloadFromStateRoute(actionStateRoute);
 
     const preloadedRoute = stackState.preloadedRoutes.find(
-      (route) => route.name === actionStateRoute.name && deepEqual(route.params, payload.params)
+      (route) =>
+        route.name === actionStateRoute.name &&
+        deepEqual(
+          removeInternalExpoRouterParams(route.params),
+          removeInternalExpoRouterParams(payload.params)
+        )
     );
     return preloadedRoute;
   }
@@ -91,6 +97,6 @@ export function deepEqual(
   if (typeof a !== 'object' || typeof b !== 'object') {
     return false;
   }
-  const keys = Object.keys(a).filter((key) => key !== '__internal__expoRouterIsPreviewNavigation');
+  const keys = Object.keys(a);
   return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
 }

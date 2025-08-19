@@ -430,6 +430,103 @@ internal struct GlassEffectModifier: ViewModifier {
   #endif
 }
 
+internal struct AnimationModifier: ViewModifier {
+  let animationConfig: [String: Any]
+  let animatedValue: AnyHashable?
+
+  func body(content: Content) -> some View {
+    let animationValue = parseAnimation(animationConfig)
+    if let value = animatedValue {
+      content.animation(animationValue, value: value)
+    } else {
+      content
+    }
+  }
+
+  private func parseAnimation(_ config: [String: Any]) -> Animation {
+    let type = config["type"] as? String ?? "default"
+
+    var animation: Animation
+
+    switch type {
+    case "easeIn":
+      if let duration = config["duration"] as? Double {
+        animation = .easeIn(duration: duration)
+      } else {
+        animation = .easeIn
+      }
+
+    case "easeOut":
+      if let duration = config["duration"] as? Double {
+        animation = .easeOut(duration: duration)
+      } else {
+        animation = .easeOut
+      }
+
+    case "linear":
+      if let duration = config["duration"] as? Double {
+        animation = .linear(duration: duration)
+      } else {
+        animation = .linear
+      }
+
+    case "easeInOut":
+      if let duration = config["duration"] as? Double {
+        animation = .easeInOut(duration: duration)
+      } else {
+        animation = .easeInOut
+      }
+
+    case "spring":
+      let duration = config["duration"] as? Double
+      let bounce = config["bounce"] as? Double
+      let response = config["response"] as? Double
+      let dampingFraction = config["dampingFraction"] as? Double
+      let blendDuration = config["blendDuration"] as? Double
+
+      if response != nil || dampingFraction != nil {
+        animation = .spring(response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825, blendDuration: blendDuration ?? 0.0)
+      } else if duration != nil || bounce != nil {
+        animation = .spring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, blendDuration: blendDuration ?? 0.0)
+      } else if let blendDuration = blendDuration {
+        animation = .spring(blendDuration: blendDuration)
+      } else {
+        animation = .spring
+      }
+
+    case "interpolatingSpring":
+      let duration = config["duration"] as? Double
+      let bounce = config["bounce"] as? Double
+      let mass = config["mass"] as? Double
+      let stiffness = config["stiffness"] as? Double
+      let damping = config["damping"] as? Double
+      let initialVelocity = config["initialVelocity"] as? Double
+
+      if duration != nil || bounce != nil {
+        animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
+      } else if let stiffness = stiffness, let damping = damping {
+        animation = .interpolatingSpring(mass: mass ?? 1.0, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity ?? 0.0)
+      } else {
+        animation = .interpolatingSpring
+      }
+
+    default:
+      animation = .default
+    }
+
+    if let delay = config["delay"] as? Double {
+      animation = animation.delay(delay)
+    }
+
+    if let repeatCount = config["repeatCount"] as? Int {
+      let autoreverses = config["autoreverses"] as? Bool ?? false
+      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
+    }
+
+    return animation
+  }
+}
+
 /**
  * A type-erased wrapper for `ViewModifier`
  */
@@ -750,6 +847,13 @@ extension ViewModifierRegistry {
       let id = params["id"] as? String
       let namespace = params["namespace"] as? String
       return GlassEffectIdModifier(id: id, namespace: namespace)
+    }
+    
+    register("animation") { params, _ in
+      let animationConfig = params["animation"] as? [String: Any] ?? ["type": "default"]
+      let animatedValue = params["animatedValue"] as? AnyHashable
+
+      return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
     }
   }
 }
