@@ -167,6 +167,7 @@ function LinkTrigger(props) {
         }
         return props.children;
     }
-    return <Slot_1.Slot {...props}/>;
+    const { asChild, ...rest } = props;
+    return <Slot_1.Slot {...rest}/>;
 }
 //# sourceMappingURL=elements.js.map

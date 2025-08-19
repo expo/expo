@@ -1,11 +1,12 @@
 'use client';
 
 import Constants from 'expo-constants';
-import React, { Children, isValidElement } from 'react';
+import React, { Children, isValidElement, type ComponentProps, type ReactElement } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { LinkWithPreview } from './LinkWithPreview';
-import { LinkMenu, LinkPreview } from './elements';
+import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { LinkProps } from './useLinkHooks';
 import { shouldLinkExternally } from '../utils/url';
@@ -20,15 +21,22 @@ export function ExpoLink(props: LinkProps) {
   ) {
     return <LinkWithPreview {...props} />;
   }
-  let children = props.children;
-  if (React.Children.count(props.children) > 1) {
-    const arrayChildren = React.Children.toArray(props.children).filter(
+  let { children, asChild, style, ...rest } = props;
+  if (React.Children.count(children) > 1) {
+    const arrayChildren = React.Children.toArray(children).filter(
       (child) => !isValidElement(child) || (child.type !== LinkPreview && child.type !== LinkMenu)
     );
-    children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
+    children = arrayChildren.length === 1 ? arrayChildren[0] : children;
+  } else {
+    if (isValidElement(children) && children.type === LinkTrigger) {
+      const trigger = children as ReactElement<ComponentProps<typeof LinkTrigger>>;
+      children = trigger.props.children;
+      style = StyleSheet.flatten([trigger.props.style, style]);
+      asChild = asChild === undefined ? trigger.props.asChild : asChild;
+    }
   }
 
-  return <BaseExpoRouterLink {...props} children={children} />;
+  return <BaseExpoRouterLink {...rest} style={style} asChild={asChild} children={children} />;
 }
 
 function isLinkWithPreview(props: LinkProps): boolean {

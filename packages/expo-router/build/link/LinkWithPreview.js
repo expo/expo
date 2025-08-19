@@ -46,7 +46,7 @@ const native_1 = require("./preview/native");
 const useNextScreenId_1 = require("./preview/useNextScreenId");
 const url_1 = require("../utils/url");
 const isPad = react_native_1.Platform.OS === 'ios' && react_native_1.Platform.isPad;
-function LinkWithPreview({ children, ...rest }) {
+function LinkWithPreview({ children, style, asChild, ...rest }) {
     const router = (0, hooks_1.useRouter)();
     const { setOpenPreviewKey } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
@@ -85,7 +85,6 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
-    const highlightBorderRadius = rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
     const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
@@ -95,6 +94,14 @@ function LinkWithPreview({ children, ...rest }) {
     if (rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
     }
+    if (asChild) {
+        if (process.env.NODE_ENV !== 'production') {
+            throw new Error('When using Link in preview mode, you can only use `asChild` prop on Link.Trigger component');
+        }
+        console.warn('When using Link in preview mode, you can only use `asChild` prop on Link.Trigger component');
+    }
+    const triggerAsChild = triggerElement?.props.asChild;
+    const triggerStyle = triggerElement?.props.style;
     return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
             if (hasPreview) {
                 isPreviewTapped.current = false;
@@ -119,9 +126,9 @@ function LinkWithPreview({ children, ...rest }) {
             if (!isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
-        }} style={{ borderRadius: highlightBorderRadius }}>
+        }} style={style}>
       <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
+        <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} style={triggerStyle} children={trigger} asChild={triggerAsChild} ref={rest.ref}/>
         {preview}
         {menuElement}
       </InternalLinkPreviewContext_1.InternalLinkPreviewContext>

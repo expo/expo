@@ -1,4 +1,5 @@
-import React, { type PropsWithChildren, type ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
+import type { TextStyle, ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export interface LinkMenuActionProps {
     /**
@@ -142,7 +143,44 @@ export interface LinkPreviewProps {
  * @platform ios
  */
 export declare function LinkPreview(props: LinkPreviewProps): React.JSX.Element | null;
-export type LinkTriggerProps = PropsWithChildren;
+export interface LinkTriggerProps {
+    children?: React.ReactNode;
+    /**
+     * The style of the trigger element.
+     *
+     * **Note**: When used on a link without a preview or context menu,
+     * the styles will be merged with the link’s styles.
+     */
+    style?: ViewStyle | TextStyle;
+    /**
+     * Used to customize the `Link.Trigger` component. It will forward all props to the
+     * first child of the `Link.Trigger`.
+     *
+     * Note that the child component must accept `onPress` or `onClick` props.
+     * The Link's `href` and `role` are also passed to the child.
+     *
+     * @example
+     * ```tsx
+     * import { Link } from 'expo-router';
+     * import { Pressable, Text } from 'react-native';
+     *
+     * export default function Route() {
+     *  return (
+     *   <View>
+     *    <Link href="/home">
+     *      <Link.Trigger asChild>
+     *       <Pressable>
+     *        <Text>Home</Text>
+     *       </Pressable>
+     *     </Link.Trigger>
+     *    </Link>
+     *   </View>
+     *  );
+     *}
+     * ```
+     */
+    asChild?: boolean;
+}
 /**
  * Serves as the trigger for a link.
  * The content inside this component will be rendered as part of the base link.

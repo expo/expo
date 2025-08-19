@@ -3,8 +3,8 @@ import { Pressable, Text, View } from 'react-native';
 
 export function Post(props: { title: string; href: Href }) {
   return (
-    <Link href={props.href} asChild>
-      <Link.Trigger>
+    <Link href={props.href}>
+      <Link.Trigger asChild>
         <Pressable
           style={{
             flex: 1,

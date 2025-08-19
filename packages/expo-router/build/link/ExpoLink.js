@@ -40,6 +40,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoLink = ExpoLink;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const LinkWithPreview_1 = require("./LinkWithPreview");
 const elements_1 = require("./elements");
@@ -53,12 +54,20 @@ function ExpoLink(props) {
         expo_constants_1.default?.expoConfig?.newArchEnabled !== false) {
         return <LinkWithPreview_1.LinkWithPreview {...props}/>;
     }
-    let children = props.children;
-    if (react_1.default.Children.count(props.children) > 1) {
-        const arrayChildren = react_1.default.Children.toArray(props.children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== elements_1.LinkPreview && child.type !== elements_1.LinkMenu));
-        children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
+    let { children, asChild, style, ...rest } = props;
+    if (react_1.default.Children.count(children) > 1) {
+        const arrayChildren = react_1.default.Children.toArray(children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== elements_1.LinkPreview && child.type !== elements_1.LinkMenu));
+        children = arrayChildren.length === 1 ? arrayChildren[0] : children;
     }
-    return <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} children={children}/>;
+    else {
+        if ((0, react_1.isValidElement)(children) && children.type === elements_1.LinkTrigger) {
+            const trigger = children;
+            children = trigger.props.children;
+            style = react_native_1.StyleSheet.flatten([trigger.props.style, style]);
+            asChild = asChild === undefined ? trigger.props.asChild : asChild;
+        }
+    }
+    return <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} style={style} asChild={asChild} children={children}/>;
 }
 function isLinkWithPreview(props) {
     const isExternal = (0, url_1.shouldLinkExternally)(String(props.href));
