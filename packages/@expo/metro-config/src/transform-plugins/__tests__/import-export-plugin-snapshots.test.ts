@@ -188,23 +188,23 @@ describe.each([
     `,
 
     // Export variable declaration
-    test('export named imported namespace by specifier')`
+    test('export-named imported namespace by specifier')`
       import * as _AppleIcons from 'apple-icons';
       export const AppleIcons = _AppleIcons;
     `,
-    test('export named destructured import default')`
+    test('export-named import default')`
       import _AppleIcons from 'apple-icons';
       export const AppleIcons = _AppleIcons;
     `,
-    test('export import specifier')`
+    test('export-named import specifier')`
       import { test } from 'apple-icons';
       export const _test = test;
     `,
-    test('export import specifier as local')`
+    test('export-named import specifier as local')`
       import { test as local } from 'apple-icons';
       export const test = local;
     `,
-    test('export import default specifier as local')`
+    test('export-named import default specifier as local')`
       import { default as local } from 'apple-icons';
       export const _local = local;
     `,
