@@ -1,9 +1,9 @@
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import BuiltinModule from 'module';
-import path from 'path';
 
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
+import { createStickyModuleMapper } from './utils/moduleMapper';
 
 const defaultTransformer: typeof import('./transform-worker') = require('./transform-worker');
 
@@ -42,44 +42,6 @@ const debug = require('debug')(
   'expo:metro-config:supervising-transform-worker'
 ) as typeof console.log;
 
-const escapeDependencyName = (dependency: string) =>
-  dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
-const dependenciesToRegex = (dependencies: string[]) =>
-  new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
-
-const moduleRootPaths = [
-  path.dirname(require.resolve('../../package.json')),
-  path.dirname(require.resolve('@expo/metro/package.json')),
-  path.dirname(require.resolve('expo/package.json')),
-];
-
-const createStickyModuleMapper = (moduleNames: string[]) => {
-  const modulePathMap = moduleNames.reduce(
-    (modulePaths, moduleName) => {
-      try {
-        modulePaths[moduleName] = path.dirname(
-          require.resolve(`${moduleName}/package.json`, { paths: moduleRootPaths })
-        );
-      } catch {
-        debug(`Could not resolve module "${moduleNames}"`);
-      }
-      return modulePaths;
-    },
-    {} as Record<string, string>
-  );
-  const moduleTestRe = dependenciesToRegex(Object.keys(modulePathMap));
-  return (request: string): string | null => {
-    const moduleMatch = moduleTestRe.exec(request);
-    if (moduleMatch) {
-      const targetModulePath = modulePathMap[moduleMatch[1]];
-      if (targetModulePath) {
-        return `${targetModulePath}${moduleMatch[2] || ''}`;
-      }
-    }
-    return null;
-  };
-};
-
 let _initModuleInterceptDone = false;
 
 const initModuleIntercept = (moduleNames: string[]) => {
@@ -93,19 +55,14 @@ const initModuleIntercept = (moduleNames: string[]) => {
   const stickyModuleMapper = createStickyModuleMapper(moduleNames);
   Module._resolveFilename = function (request, parent, isMain, options) {
     const parentId = typeof parent === 'string' ? parent : parent?.id;
-    if (
-      !parentId ||
-      moduleRootPaths.every((moduleRootPath) => !parentId.startsWith(moduleRootPath))
-    ) {
-      const redirectedRequest = stickyModuleMapper(request);
-      if (redirectedRequest) {
-        try {
-          const resolution = require.resolve(redirectedRequest);
-          debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
-          return resolution;
-        } catch (error) {
-          debug(`Could not redirect request "${request}": ${error}`);
-        }
+    const redirectedRequest = stickyModuleMapper(request, parentId);
+    if (redirectedRequest) {
+      try {
+        const resolution = require.resolve(redirectedRequest);
+        debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
+        return resolution;
+      } catch (error) {
+        debug(`Could not redirect request "${request}": ${error}`);
       }
     }
     return originalResolveFilename.call(this, request, parent, isMain, options);
