@@ -20,23 +20,22 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
   const originalTransformerPath = config.transformerPath;
   const originalBabelTransformerPath = config.transformer?.babelTransformerPath;
 
-  const hasOriginalTransformPath = originalTransformerPath === unstable_transformerPath;
-  const hasOriginalBabelTransformerPath =
+  const hasDefaultTransformerPath = originalTransformerPath === unstable_transformerPath;
+  const hasDefaultBabelTransformerPath =
     !originalBabelTransformerPath ||
     defaultBabelTransformerPaths.includes(originalBabelTransformerPath);
-  if (hasOriginalTransformPath && hasOriginalBabelTransformerPath) {
+  if (hasDefaultTransformerPath && hasDefaultBabelTransformerPath) {
     return config;
-  } else if (!hasOriginalBabelTransformerPath && hasOriginalTransformPath) {
-    debug(
-      'Detected customized "transformerPath" and "transformer.babelTransformerPath": Wrapping transformer with supervisor'
-    );
-  } else if (!hasOriginalBabelTransformerPath) {
-    debug(
-      'Detected customized "transformer.babelTransformerPath": Wrapping transformer with supervisor'
-    );
-  } else if (!hasOriginalBabelTransformerPath) {
-    debug('Detected customized "transformerPath": Wrapping transformer with supervisor');
   }
+
+  if (!hasDefaultTransformerPath) {
+    debug('Detected customized "transformerPath"');
+  }
+  if (!hasDefaultBabelTransformerPath) {
+    debug('Detected customized "transformer.babelTransformerPath"');
+  }
+
+  debug('Applying transform worker supervisor to "transformerPath"');
   return {
     ...config,
     transformerPath: internal_supervisingTransformerPath,
@@ -44,7 +43,7 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
       ...config.transformer,
       // Only pass the custom transformer path, if the user has set one, otherwise we're only applying
       // the supervisor for the Babel transformer
-      expo_customTransformerPath: !hasOriginalTransformPath ? originalTransformerPath : undefined,
+      expo_customTransformerPath: !hasDefaultTransformerPath ? originalTransformerPath : undefined,
     },
   };
 }
