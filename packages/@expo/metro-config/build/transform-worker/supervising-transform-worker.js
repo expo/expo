@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = transform;
 const module_1 = __importDefault(require("module"));
+const path_1 = __importDefault(require("path"));
 const worker = __importStar(require("./metro-transform-worker"));
 const moduleMapper_1 = require("./utils/moduleMapper");
 const defaultTransformer = require('./transform-worker');
@@ -76,7 +77,7 @@ const initModuleIntercept = () => {
 const getCustomTransform = (() => {
     let _transformerPath;
     let _transformer;
-    return (config) => {
+    return (config, projectRoot) => {
         if (_transformer == null && _transformerPath == null) {
             _transformerPath = config.expo_customTransformerPath;
         }
@@ -91,7 +92,8 @@ const getCustomTransform = (() => {
                 _transformer = require.call(null, _transformerPath);
             }
             catch (error) {
-                throw new Error(`Your custom Metro transformer has failed to initialize. Check: "${_transformerPath}"\n` +
+                const relativeTransformerPath = path_1.default.relative(projectRoot, _transformerPath);
+                throw new Error(`Your custom Metro transformer has failed to initialize. Check: "${relativeTransformerPath}"\n` +
                     (typeof error.message === 'string' ? error.message : `${error}`));
             }
         }
@@ -104,7 +106,7 @@ const removeCustomTransformPathFromConfig = (config) => {
     }
 };
 function transform(config, projectRoot, filename, data, options) {
-    const customWorker = getCustomTransform(config) ?? defaultTransformer;
+    const customWorker = getCustomTransform(config, projectRoot) ?? defaultTransformer;
     removeCustomTransformPathFromConfig(config);
     return customWorker.transform(config, projectRoot, filename, data, options);
 }

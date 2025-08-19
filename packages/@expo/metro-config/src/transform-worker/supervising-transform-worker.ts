@@ -1,5 +1,6 @@
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import BuiltinModule from 'module';
+import path from 'path';
 
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
@@ -69,7 +70,7 @@ const initModuleIntercept = () => {
 const getCustomTransform = (() => {
   let _transformerPath: string | undefined;
   let _transformer: typeof import('./transform-worker') | undefined;
-  return (config: JsTransformerConfig) => {
+  return (config: JsTransformerConfig, projectRoot: string) => {
     if (_transformer == null && _transformerPath == null) {
       _transformerPath = config.expo_customTransformerPath;
     } else if (
@@ -84,8 +85,9 @@ const getCustomTransform = (() => {
       try {
         _transformer = require.call(null, _transformerPath);
       } catch (error: any) {
+        const relativeTransformerPath = path.relative(projectRoot, _transformerPath);
         throw new Error(
-          `Your custom Metro transformer has failed to initialize. Check: "${_transformerPath}"\n` +
+          `Your custom Metro transformer has failed to initialize. Check: "${relativeTransformerPath}"\n` +
             (typeof error.message === 'string' ? error.message : `${error}`)
         );
       }
@@ -107,7 +109,7 @@ export function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const customWorker = getCustomTransform(config) ?? defaultTransformer;
+  const customWorker = getCustomTransform(config, projectRoot) ?? defaultTransformer;
   removeCustomTransformPathFromConfig(config);
   return customWorker.transform(config, projectRoot, filename, data, options);
 }
