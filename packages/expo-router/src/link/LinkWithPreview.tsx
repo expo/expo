@@ -22,7 +22,7 @@ import { shouldLinkExternally } from '../utils/url';
 
 const isPad = Platform.OS === 'ios' && Platform.isPad;
 
-export function LinkWithPreview({ children, ...rest }: LinkProps) {
+export function LinkWithPreview({ children, style, asChild, ...rest }: LinkProps) {
   const router = useRouter();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
@@ -80,8 +80,6 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     () => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>,
     [triggerElement, children]
   );
-  const highlightBorderRadius =
-    rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
 
   const preview = React.useMemo(
     () => (shouldLinkExternally(String(rest.href)) || !previewElement ? null : previewElement),
@@ -102,6 +100,20 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   if (rest.replace) {
     return <BaseExpoRouterLink children={children} {...rest} />;
   }
+
+  if (asChild) {
+    if (process.env.NODE_ENV !== 'production') {
+      throw new Error(
+        'When using Link in preview mode, you can only use `asChild` prop on Link.Trigger component'
+      );
+    }
+    console.warn(
+      'When using Link in preview mode, you can only use `asChild` prop on Link.Trigger component'
+    );
+  }
+
+  const triggerAsChild = triggerElement?.props.asChild;
+  const triggerStyle = triggerElement?.props.style;
 
   return (
     <NativeLinkPreview
@@ -135,9 +147,15 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
-      style={{ borderRadius: highlightBorderRadius }}>
+      style={style}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
+        <BaseExpoRouterLink
+          {...rest}
+          style={triggerStyle}
+          children={trigger}
+          asChild={triggerAsChild}
+          ref={rest.ref}
+        />
         {preview}
         {menuElement}
       </InternalLinkPreviewContext>

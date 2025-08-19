@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import { use } from 'react';
-import { ScrollView, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 
 import { Post } from '../components/Post';
 import { Faces } from '../components/faces';
@@ -35,8 +35,39 @@ export default function Index() {
 
       <Text style={{ color: '#fff', fontSize: 24, fontWeight: 'bold' }}>Latest news</Text>
       <Post title="New watches in August" href="/explore/news/new-watches-august" />
-      <Link href="/explore" style={{ color: '#fff', fontSize: 18 }}>
-        <Link.Trigger>See all news</Link.Trigger>
+      <Link href="/explore">
+        <Link.Trigger style={{ color: '#fff', fontSize: 18 }}>See all news</Link.Trigger>
+        <Link.Preview />
+      </Link>
+
+      <Text style={{ color: '#fff', fontSize: 24, fontWeight: 'bold' }}>History</Text>
+      <Link href="/explore/news/new-watches-august">
+        <Link.Trigger asChild>
+          <Pressable>
+            <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+              <Text style={{ color: '#fff', fontSize: 48, fontWeight: 600 }}>08</Text>
+              <Link style={{ flex: 1 }} href="/explore/news/new-watches-august">
+                <Link.Trigger asChild>
+                  <Pressable style={{ flex: 1 }}>
+                    <View
+                      style={{
+                        flex: 1,
+                        aspectRatio: 1,
+                        backgroundColor: '#9ca3af',
+                        borderRadius: 16,
+                      }}
+                    />
+                  </Pressable>
+                </Link.Trigger>
+                <Link.Preview />
+              </Link>
+            </View>
+          </Pressable>
+        </Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/explore">
+        <Link.Trigger style={{ color: '#fff', fontSize: 18 }}>See all</Link.Trigger>
         <Link.Preview />
       </Link>
 
