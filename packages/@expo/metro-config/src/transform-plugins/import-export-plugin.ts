@@ -60,7 +60,7 @@ type State = {
  * "var _a = require(a)" call which needs to be followed by
  * update of the "x" references to "_a.x".
  */
-const importTemplate = template.statement(`
+const requireTemplate = template.statement(`
   var LOCAL = require(FILE);
 `);
 
@@ -69,7 +69,7 @@ const importTemplate = template.statement(`
  * "import x from ..." call into a "const x = importAll(...)" call with the
  * corresponding id in it.
  */
-const importAllTemplate = template.statement(`
+const importTemplate = template.statement(`
   var LOCAL = IMPORT(FILE);
 `);
 
@@ -77,7 +77,7 @@ const importAllTemplate = template.statement(`
  * Produces a Babel template that transforms an "import {x as y} from ..." into
  * "const y = require(...).x" call with the corresponding id in it.
  */
-const importNamedTemplate = template.statement(`
+const requireNamedTemplate = template.statement(`
   var LOCAL = require(FILE).REMOTE;
 `);
 
@@ -85,7 +85,7 @@ const importNamedTemplate = template.statement(`
  * Produces a Babel template that transforms an "import ..." into
  * "require(...)", which is considered a side-effect call.
  */
-const importSideEffectTemplate = template.statement(`
+const requireSideEffectTemplate = template.statement(`
   require(FILE);
 `);
 
@@ -142,6 +142,20 @@ const liveBindExportTemplate = template.statement(`
     enumerable: true,
     get: function () {
       return REQUIRED.LOCAL;
+    }
+  });
+`);
+
+/**
+ * Produces a live binding export default template that creates a getter.
+ */
+const liveBindExportDefaultTemplate = template.statement(`
+  Object.defineProperty(exports, "REMOTE", {
+    enumerable: true,
+    get: function () {
+      return (function (m) {
+        return m && m.__esModule ? m.default : m
+      })(REQUIRED);
     }
   });
 `);
@@ -353,16 +367,12 @@ export function importExportPlugin({
             // meaning no shared imports for `export from`
             this.opts.liveBindings &&
             path.node.source &&
-            specifiers.filter(
-              (s) =>
-                s.type === 'ExportSpecifier' &&
-                (s.exported.type === 'StringLiteral' || s.local.name !== 'default')
-            ).length > 1
+            specifiers.filter((s) => s.type === 'ExportSpecifier').length > 1
           ) {
             sharedModuleExportFrom = path.scope.generateUidIdentifierBasedOnNode(path.node.source);
             path.insertBefore(
               withLocation(
-                importTemplate({
+                requireTemplate({
                   FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                   LOCAL: sharedModuleExportFrom,
                 }),
@@ -399,36 +409,78 @@ export function importExportPlugin({
                 state.opts.liveBindings ? path.node.source : local
               );
 
-              if (local.name === 'default') {
-                path.insertBefore(
-                  withLocation(
-                    importAllTemplate({
-                      IMPORT:
-                        s.type !== 'ExportNamespaceSpecifier'
-                          ? t.cloneNode(state.importDefault)
-                          : t.cloneNode(state.importAll),
-                      FILE: resolvePath(
-                        t.cloneNode(nullthrows(path.node.source)),
-                        state.opts.resolve
-                      ),
-                      LOCAL: temp,
-                    }),
-                    loc
-                  )
-                );
-
+              if (s.type === 'ExportNamespaceSpecifier') {
+                if (!sharedModuleExportFrom) {
+                  path.insertBefore(
+                    withLocation(
+                      importTemplate({
+                        IMPORT: t.cloneNode(state.importAll),
+                        FILE: resolvePath(
+                          t.cloneNode(nullthrows(path.node.source)),
+                          state.opts.resolve
+                        ),
+                        LOCAL: temp,
+                      }),
+                      loc
+                    )
+                  );
+                }
                 state.exportNamed.push({
-                  local: temp.name,
+                  local: sharedModuleExportFrom?.name ?? temp.name,
                   remote: remote.name,
                   loc,
                 });
+              } else if (local.name === 'default') {
+                if (state.opts.liveBindings) {
+                  if (!sharedModuleExportFrom) {
+                    path.insertBefore(
+                      withLocation(
+                        requireTemplate({
+                          FILE: resolvePath(
+                            t.cloneNode(nullthrows(path.node.source)),
+                            state.opts.resolve
+                          ),
+                          LOCAL: temp,
+                        }),
+                        loc
+                      )
+                    );
+                  }
+
+                  state.exportNamed.push({
+                    namespace: sharedModuleExportFrom?.name ?? temp.name,
+                    local: 'default',
+                    remote: remote.name,
+                    loc,
+                  });
+                } else {
+                  path.insertBefore(
+                    withLocation(
+                      importTemplate({
+                        IMPORT: t.cloneNode(state.importDefault),
+                        FILE: resolvePath(
+                          t.cloneNode(nullthrows(path.node.source)),
+                          state.opts.resolve
+                        ),
+                        LOCAL: temp,
+                      }),
+                      loc
+                    )
+                  );
+
+                  state.exportNamed.push({
+                    local: temp.name,
+                    remote: remote.name,
+                    loc,
+                  });
+                }
               } else if (remote.name === 'default') {
                 if (state.opts.liveBindings) {
                   if (!sharedModuleExportFrom) {
                     // Only insert the require statement if not using the shared require
                     path.insertBefore(
                       withLocation(
-                        importTemplate({
+                        requireTemplate({
                           FILE: resolvePath(
                             t.cloneNode(nullthrows(path.node.source)),
                             state.opts.resolve
@@ -447,7 +499,7 @@ export function importExportPlugin({
                 } else {
                   path.insertBefore(
                     withLocation(
-                      importNamedTemplate({
+                      requireNamedTemplate({
                         FILE: resolvePath(
                           t.cloneNode(nullthrows(path.node.source)),
                           state.opts.resolve
@@ -460,34 +512,13 @@ export function importExportPlugin({
                   );
                   state.exportDefault.push({ local: temp.name, loc });
                 }
-              } else if (s.type === 'ExportNamespaceSpecifier') {
-                if (!sharedModuleExportFrom) {
-                  path.insertBefore(
-                    withLocation(
-                      importAllTemplate({
-                        IMPORT: t.cloneNode(state.importAll),
-                        FILE: resolvePath(
-                          t.cloneNode(nullthrows(path.node.source)),
-                          state.opts.resolve
-                        ),
-                        LOCAL: temp,
-                      }),
-                      loc
-                    )
-                  );
-                }
-                state.exportNamed.push({
-                  local: sharedModuleExportFrom?.name ?? temp.name,
-                  remote: remote.name,
-                  loc,
-                });
               } else {
                 if (state.opts.liveBindings) {
                   if (!sharedModuleExportFrom) {
                     // Only insert the require statement if not using the shared require
                     path.insertBefore(
                       withLocation(
-                        importTemplate({
+                        requireTemplate({
                           FILE: resolvePath(
                             t.cloneNode(nullthrows(path.node.source)),
                             state.opts.resolve
@@ -507,7 +538,7 @@ export function importExportPlugin({
                 } else {
                   path.insertBefore(
                     withLocation(
-                      importNamedTemplate({
+                      requireNamedTemplate({
                         FILE: resolvePath(
                           t.cloneNode(nullthrows(path.node.source)),
                           state.opts.resolve
@@ -573,7 +604,7 @@ export function importExportPlugin({
         if (!specifiers.length) {
           state.imports.push({
             node: withLocation(
-              importSideEffectTemplate({
+              requireSideEffectTemplate({
                 FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
               }),
               loc
@@ -617,7 +648,7 @@ export function importExportPlugin({
               case 'ImportNamespaceSpecifier':
                 state.imports.push({
                   node: withLocation(
-                    importAllTemplate({
+                    importTemplate({
                       IMPORT: t.cloneNode(state.importAll),
                       FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
                       LOCAL: t.cloneNode(local),
@@ -630,7 +661,7 @@ export function importExportPlugin({
               case 'ImportDefaultSpecifier':
                 state.imports.push({
                   node: withLocation(
-                    importAllTemplate({
+                    importTemplate({
                       IMPORT: t.cloneNode(state.importDefault),
                       FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
                       LOCAL: t.cloneNode(local),
@@ -658,7 +689,7 @@ export function importExportPlugin({
                 if (importedName === 'default') {
                   state.imports.push({
                     node: withLocation(
-                      importAllTemplate({
+                      importTemplate({
                         IMPORT: t.cloneNode(state.importDefault),
                         FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
                         LOCAL: t.cloneNode(local),
@@ -687,7 +718,7 @@ export function importExportPlugin({
                   if (state.opts.liveBindings) {
                     state.imports.push({
                       node: withLocation(
-                        importTemplate({
+                        requireTemplate({
                           FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
                           LOCAL: t.cloneNode(localModule),
                         }),
@@ -701,7 +732,7 @@ export function importExportPlugin({
                   } else {
                     state.imports.push({
                       node: withLocation(
-                        importNamedTemplate({
+                        requireNamedTemplate({
                           FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
                           LOCAL: t.cloneNode(local),
                           REMOTE: t.cloneNode(imported),
@@ -814,16 +845,28 @@ export function importExportPlugin({
 
           state.exportNamed.forEach((e) => {
             if (e.namespace) {
-              body.push(
-                withLocation(
-                  liveBindExportTemplate({
-                    REQUIRED: t.identifier(e.namespace),
-                    LOCAL: t.identifier(e.local),
-                    REMOTE: e.remote,
-                  }),
-                  e.loc
-                )
-              );
+              if (e.local === 'default') {
+                body.push(
+                  withLocation(
+                    liveBindExportDefaultTemplate({
+                      REQUIRED: t.identifier(e.namespace),
+                      REMOTE: e.remote,
+                    }),
+                    e.loc
+                  )
+                );
+              } else {
+                body.push(
+                  withLocation(
+                    liveBindExportTemplate({
+                      REQUIRED: t.identifier(e.namespace),
+                      LOCAL: t.identifier(e.local),
+                      REMOTE: e.remote,
+                    }),
+                    e.loc
+                  )
+                );
+              }
             } else {
               body.push(
                 withLocation(

@@ -1034,7 +1034,14 @@ export { Worm as default };
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.AArrowDown = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
+      Object.defineProperty(exports, "AArrowDown", {
+        enumerable: true,
+        get: function () {
+          return function (m) {
+            return m && m.__esModule ? m.default : m;
+          }(_$$_REQUIRE(_dependencyMap[0]));
+        }
+      });
     },"/app/lucide.js",["/app/a-arrow-down.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";

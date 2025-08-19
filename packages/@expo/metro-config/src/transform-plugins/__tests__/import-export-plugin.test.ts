@@ -511,8 +511,15 @@ it('transforms export default as local with live binding', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var _bar = _$$_IMPORT_DEFAULT('bar');
-    exports.foo = _bar;
+    var _bar = require('bar');
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return function (m) {
+          return m && m.__esModule ? m.default : m;
+        }(_bar);
+      }
+    });
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -530,8 +537,14 @@ it('transforms export default as local then >1 locals with live binding', () => 
       value: true
     });
     var _bar = require('bar');
-    var _bar2 = _$$_IMPORT_DEFAULT('bar');
-    exports.b = _bar2;
+    Object.defineProperty(exports, "b", {
+      enumerable: true,
+      get: function () {
+        return function (m) {
+          return m && m.__esModule ? m.default : m;
+        }(_bar);
+      }
+    });
     Object.defineProperty(exports, "c", {
       enumerable: true,
       get: function () {
