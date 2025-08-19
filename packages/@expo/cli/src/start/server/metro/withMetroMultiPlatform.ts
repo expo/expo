@@ -671,7 +671,7 @@ export function withExtendedResolver(
             )
           ) {
             throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
+              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
             );
           }
 
@@ -907,10 +907,6 @@ export async function withMetroMultiPlatformAsync(
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
     }
   }
-
-  // TODO: Remove this
-  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
-  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
   let tsconfig: null | TsConfigPaths = null;
 

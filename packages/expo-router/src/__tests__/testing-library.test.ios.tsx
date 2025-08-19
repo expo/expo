@@ -1,5 +1,7 @@
+import { act, screen } from '@testing-library/react-native';
+
 import { router } from '../imperative-api';
-import { act, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 /*
  * Smoke Tests for the Testing Library. While we use these functions in the other tests, we want to make sure they work as expected.

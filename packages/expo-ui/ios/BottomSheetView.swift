@@ -3,7 +3,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class BottomSheetProps: ExpoSwiftUI.ViewProps {
+final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var isOpened: Bool = false
   var onIsOpenedChange = EventDispatcher()
 }
@@ -73,6 +79,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
             }
             .presentationDetents([.height(self.height)])
         }
+        .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
             return
@@ -92,6 +99,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
         .sheet(isPresented: $isOpened) {
           Children()
         }
+        .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
             return

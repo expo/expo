@@ -71,8 +71,8 @@ if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
 
   source $ROOT_DIR/secrets/expotools.env
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    notify_slack "Successful Expo Go Android APK build. Run `et eas android-apk-upload` to upload to GitHub" "$MESSAGE"
+    notify_slack "Successful Expo Go Android APK build. Run \`et eas android-apk-upload\` to upload to GitHub" "$MESSAGE"
   elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
-    notify_slack "Successful Expo Go iOS simulator build. Run et `eas ios-simulator-upload` to upload to GitHub" "$MESSAGE"
+    notify_slack "Successful Expo Go iOS simulator build. Run \`et eas ios-simulator-upload\` to upload to GitHub" "$MESSAGE"
   fi
 fi

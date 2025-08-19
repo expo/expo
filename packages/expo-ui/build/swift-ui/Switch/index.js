@@ -1,12 +1,12 @@
 import { requireNativeView } from 'expo';
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const SwitchNativeView = requireNativeView('ExpoUI', 'SwitchView');
-/**
- * @hidden
- */
-export function transformSwitchProps(props) {
+function transformSwitchProps(props) {
+    const { modifiers, ...restProps } = props;
     return {
-        ...props,
+        modifiers,
+        ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+        ...restProps,
         variant: props.variant ?? 'switch',
         color: props.color,
         onValueChange: ({ nativeEvent: { value } }) => {
@@ -15,18 +15,9 @@ export function transformSwitchProps(props) {
     };
 }
 /**
- * `<Switch>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function SwitchPrimitive(props) {
-    return <SwitchNativeView {...transformSwitchProps(props)}/>;
-}
-/**
  * Displays a native switch component.
  */
 export function Switch(props) {
-    return (<Host style={props.style} matchContents>
-      <SwitchPrimitive {...props}/>
-    </Host>);
+    return <SwitchNativeView {...transformSwitchProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

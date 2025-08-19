@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import {
   BottomTabs,
   BottomTabsScreen,
-  enableFreeze,
   featureFlags,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
@@ -14,10 +13,6 @@ import { shouldTabBeVisible } from './utils';
 // Otherwise user may see glitches when switching between tabs.
 featureFlags.experiment.controlledBottomTabs = false;
 
-// TODO: ENG-16896: Enable freeze globally and disable only for NativeTabsView
-enableFreeze(false);
-
-// TODO: Add support for dynamic params inside a route
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { builder, style, minimizeBehavior, disableIndicator, focusedIndex } = props;
   const { state, descriptors, navigation } = builder;
@@ -53,10 +48,14 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         <BottomTabsScreen
           key={route.key}
           {...descriptor.options}
+          tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor}
+          tabBarItemBadgeTextColor={style?.badgeTextColor}
+          tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment}
           iconResourceName={descriptor.options.icon?.drawable}
           icon={convertOptionsIconToPropsIcon(descriptor.options.icon)}
           selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
           title={title}
+          freezeContents={false}
           tabKey={route.key}
           isFocused={isFocused}>
           {descriptor.render()}
@@ -72,7 +71,12 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       tabBarItemTitleFontColor={style?.color}
       tabBarItemTitleFontFamily={style?.fontFamily}
       tabBarItemTitleFontSize={style?.fontSize}
-      tabBarItemTitleFontWeight={style?.fontWeight}
+      // Only string values are accepted by screens
+      tabBarItemTitleFontWeight={
+        style?.fontWeight
+          ? (String(style.fontWeight) as `${NonNullable<(typeof style)['fontWeight']>}`)
+          : undefined
+      }
       tabBarItemTitleFontStyle={style?.fontStyle}
       tabBarBackgroundColor={style?.backgroundColor}
       tabBarBlurEffect={style?.blurEffect}

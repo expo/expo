@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const schema_utils_1 = require("@expo/schema-utils");
 const config_plugins_1 = require("expo/config-plugins");
-const schema_utils_1 = require("schema-utils");
 const schema = require('../options.json');
 const withExpoHeadIos = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {

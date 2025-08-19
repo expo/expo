@@ -8,16 +8,6 @@ struct ErrorView: View {
   let onReload: () -> Void
   let onGoHome: () -> Void
 
-#if os(tvOS)
-  let systemGray6 = Color(.systemGray)
-  let systemGray4 = Color(.systemGray)
-  let systemBackground = Color(.white)
-#else
-  let systemGray6 = Color(.systemGray6)
-  let systemGray4 = Color(.systemGray4)
-  let systemBackground = Color(.systemBackground)
-#endif
-
   var body: some View {
     VStack(spacing: 0) {
       VStack(alignment: .leading, spacing: 12) {
@@ -38,7 +28,7 @@ struct ErrorView: View {
 
       actions
     }
-    .background(systemBackground)
+    .background(Color.expoSystemBackground)
     .navigationBarHidden(true)
   }
 
@@ -59,7 +49,7 @@ struct ErrorView: View {
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
     }
-    .background(systemGray6)
+    .background(Color.expoSystemGray6)
     .cornerRadius(8)
   }
 
@@ -81,14 +71,12 @@ struct ErrorView: View {
           .foregroundColor(.black)
           .frame(maxWidth: .infinity)
           .padding()
-#if !os(tvOS)
-          .background(Color(.systemGray5))
-#endif
+          .background(Color.expoSystemGray5)
           .cornerRadius(8)
       }
     }
     .padding(.horizontal, 20)
     .padding(.vertical, 20)
-    .background(systemBackground)
+    .background(Color.expoSystemBackground)
   }
 }

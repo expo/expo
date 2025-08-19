@@ -12,6 +12,13 @@ export class Paths extends PathUtilities {
   }
 
   /**
+   * A property containing the bundle directory – the directory where assets bundled with the application are stored.
+   */
+  static get bundle() {
+    return new Directory(ExpoFileSystem.bundleDirectory);
+  }
+
+  /**
    * A property containing the document directory – a place to store files that are safe from being deleted by the system.
    */
   static get document() {
@@ -118,6 +125,11 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
+File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
+  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
+  return new File(file);
+};
+
 /**
  * Represents a directory on the filesystem.
  *
@@ -172,3 +184,8 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return new Directory(super.createDirectory(name).uri);
   }
 }
+
+Directory.pickDirectoryAsync = async function (initialUri?: string) {
+  const directory = (await ExpoFileSystem.pickDirectoryAsync(initialUri)).uri;
+  return new Directory(directory);
+};

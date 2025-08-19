@@ -1,12 +1,12 @@
 import { Asset } from 'expo-asset';
 import { Platform } from 'expo-modules-core';
-import resolveAssetSource from './resolveAssetSource';
 export function resolveSource(source) {
     if (typeof source === 'string') {
         return { uri: source };
     }
     if (typeof source === 'number') {
-        return resolveAssetSource(source);
+        const asset = Asset.fromModule(source);
+        return { uri: asset.uri, assetId: source };
     }
     return source ?? null;
 }

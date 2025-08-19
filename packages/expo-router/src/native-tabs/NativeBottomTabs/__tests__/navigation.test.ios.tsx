@@ -1,10 +1,11 @@
+import { screen, fireEvent } from '@testing-library/react-native';
 import React, { act } from 'react';
 import { View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
 import { router } from '../../../imperative-api';
 import { Link } from '../../../link/Link';
-import { screen, renderRouter, fireEvent } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 
 jest.mock('react-native-screens', () => {
@@ -19,6 +20,10 @@ jest.mock('react-native-screens', () => {
 const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
 
 describe('Native Bottom Tabs Navigation', () => {
+  function expectNoRenders() {
+    expect(BottomTabsScreen).not.toHaveBeenCalled();
+  }
+
   function expectOneRender() {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
   }
@@ -43,20 +48,27 @@ describe('Native Bottom Tabs Navigation', () => {
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
           <NativeTabs.Trigger name="second" />
+          <NativeTabs.Trigger name="hidden" hidden />
         </NativeTabs>
       ),
       index: () => (
         <View testID="index">
           <Link href="/" testID="index-index-link" />
           <Link href="/second" testID="index-second-link" />
+          <Link href="/hidden" testID="index-hidden-link" />
+          <Link href="/not-specified" testID="index-not-specified-link" />
         </View>
       ),
       second: () => (
         <View testID="second">
           <Link href="/" testID="second-index-link" />
           <Link href="/second" testID="second-second-link" />
+          <Link href="/hidden" testID="second-hidden-link" />
+          <Link href="/not-specified" testID="second-not-specified-link" />
         </View>
       ),
+      hidden: () => <View testID="hidden" />,
+      notSpecified: () => <View testID="not-specified" />,
     });
     expectOneRender();
     expectIndexTabFocused();
@@ -102,5 +114,31 @@ describe('Native Bottom Tabs Navigation', () => {
     act(() => fireEvent.press(screen.getByTestId('second-second-link'))); // link to same tab
     expectOneRender();
     expectSecondTabFocused();
+  });
+
+  it('when Link is pressed to a hidden tab, no navigation occurs', () => {
+    act(() => fireEvent.press(screen.getByTestId('index-hidden-link')));
+    expectNoRenders();
+
+    BottomTabsScreen.mockClear();
+    act(() => router.push('/second'));
+    expectSecondTabFocused();
+
+    BottomTabsScreen.mockClear();
+    act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));
+    expectNoRenders();
+  });
+
+  it('when Link is pressed to a not-specified tab, no navigation occurs', () => {
+    act(() => fireEvent.press(screen.getByTestId('index-not-specified-link')));
+    expectNoRenders();
+
+    BottomTabsScreen.mockClear();
+    act(() => router.push('/second'));
+    expectSecondTabFocused();
+
+    BottomTabsScreen.mockClear();
+    act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));
+    expectNoRenders();
   });
 });

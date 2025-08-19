@@ -1,8 +1,9 @@
 import { requireNativeView } from 'expo';
 import { useCallback } from 'react';
-import { NativeSyntheticEvent, processColor, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, processColor } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type ColorPickerProps = {
   /**
@@ -21,7 +22,7 @@ export type ColorPickerProps = {
    * Whether the color picker should support opacity.
    */
   supportsOpacity?: boolean;
-};
+} & CommonViewModifierProps;
 
 type OnValueChangedEvent = NativeSyntheticEvent<{ value: string }>;
 
@@ -33,12 +34,13 @@ const ColorPickerNativeView: React.ComponentType<
 > = requireNativeView('ExpoUI', 'ColorPickerView');
 
 /**
- * `<ColorPicker>` component without a host view.
- * You should use this with a `Host` component in ancestor.
+ * Renders a `ColorPicker` component using SwiftUI.
+ * @platform ios
  */
-export function ColorPickerPrimitive({
+export function ColorPicker({
   selection,
   onValueChanged,
+  modifiers,
   ...restProps
 }: ColorPickerProps) {
   const onNativeValueChanged = useCallback(
@@ -49,21 +51,11 @@ export function ColorPickerPrimitive({
   );
   return (
     <ColorPickerNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       selection={processColor(selection || '')}
       onValueChanged={onNativeValueChanged}
       {...restProps}
     />
-  );
-}
-
-/**
- * Renders a `ColorPicker` component using SwiftUI.
- * @platform ios
- */
-export function ColorPicker(props: ColorPickerProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <ColorPickerPrimitive {...props} />
-    </Host>
   );
 }

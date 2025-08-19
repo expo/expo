@@ -1,5 +1,6 @@
 package expo.modules.devlauncher.compose.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -21,22 +23,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
+import com.composeunstyled.Icon
 import expo.modules.devlauncher.R
+import expo.modules.devlauncher.compose.DefaultScreenContainer
 import expo.modules.devlauncher.compose.Update
 import expo.modules.devlauncher.compose.models.BranchAction
 import expo.modules.devlauncher.compose.primitives.CircularProgressBar
-import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.utils.DateFormat
-import expo.modules.devmenu.compose.primitives.DayNighIcon
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Divider
-import expo.modules.devmenu.compose.primitives.Heading
+import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
@@ -48,157 +52,176 @@ fun BranchScreen(
   onAction: (BranchAction) -> Unit = {}
 ) {
   Column(modifier = Modifier.fillMaxSize()) {
-    ScreenHeaderContainer {
-      Box(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(Theme.spacing.small)
-      ) {
-        RoundedSurface(
-          color = Color.Transparent,
-          modifier = Modifier.align(Alignment.CenterStart)
-        ) {
-          Button(
-            onClick = goBack
-          ) {
-            DayNighIcon(
-              R.drawable.chevron_right_icon,
-              contentDescription = "Back icon",
-              modifier = Modifier
-                .rotate(180f)
-                .size(Theme.sizing.icon.small)
-            )
-          }
-        }
-
-        Heading(branchName, modifier = Modifier.align(Alignment.Center))
-      }
-    }
-
-    Divider()
-
-    Spacer(Theme.spacing.small)
-
-    val lazyListState = rememberLazyListState()
-
-    val reachedBottom: Boolean by remember {
-      derivedStateOf {
-        val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
-        val index = lastVisibleItem?.index ?: 0
-        index != 0 && index > lazyListState.layoutInfo.totalItemsCount - 5
-      }
-    }
-
-    LaunchedEffect(reachedBottom, isLoading) {
-      if (reachedBottom && !isLoading) {
-        onAction(BranchAction.LoadMoreUpdates)
-      }
-    }
-
-    RoundedSurface(
-      modifier = Modifier.padding(Theme.spacing.small)
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(NewAppTheme.spacing.`4`)
     ) {
-      LazyColumn(
-        state = lazyListState
+      RoundedSurface(
+        color = Color.Transparent,
+        modifier = Modifier.align(Alignment.CenterStart)
       ) {
-        itemsIndexed(items = updates) { index, update ->
-          val formatedTime = DateFormat.formatUpdateDate(update.createdAt)
+        Button(
+          onClick = goBack
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.chevron_right_icon),
+            contentDescription = "Back icon",
+            tint = NewAppTheme.colors.icon.default,
+            modifier = Modifier
+              .rotate(180f)
+              .size(20.dp)
+          )
+        }
+      }
 
-          Button(onClick = {
-            onAction(BranchAction.OpenUpdate(update))
-          }) {
-            Column(modifier = Modifier.padding(Theme.spacing.small)) {
+      NewText(
+        branchName,
+        style = NewAppTheme.font.xxl.merge(
+          fontWeight = FontWeight.Bold
+        ),
+        modifier = Modifier.align(Alignment.Center)
+      )
+    }
+
+    Divider(
+      thickness = 0.5.dp,
+      color = NewAppTheme.colors.border.default
+    )
+
+    Spacer(NewAppTheme.spacing.`4`)
+
+    Column(
+      modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)
+    ) {
+      val lazyListState = rememberLazyListState()
+
+      val reachedBottom: Boolean by remember {
+        derivedStateOf {
+          val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
+          val index = lastVisibleItem?.index ?: 0
+          index != 0 && index > lazyListState.layoutInfo.totalItemsCount - 5
+        }
+      }
+
+      LaunchedEffect(reachedBottom, isLoading) {
+        if (reachedBottom && !isLoading) {
+          onAction(BranchAction.LoadMoreUpdates)
+        }
+      }
+
+      RoundedSurface(
+        color = NewAppTheme.colors.background.subtle
+      ) {
+        LazyColumn(
+          state = lazyListState
+        ) {
+          itemsIndexed(items = updates) { index, update ->
+            val formatedTime = DateFormat.formatUpdateDate(update.createdAt)
+
+            Button(
+              modifier = Modifier
+                .background(
+                  NewAppTheme.colors.background.subtle,
+                  shape = RoundedCornerShape(NewAppTheme.borderRadius.xl)
+                ),
+              onClick = {
+                onAction(BranchAction.OpenUpdate(update))
+              }
+            ) {
               Row(
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(NewAppTheme.spacing.`3`)
               ) {
-                DayNighIcon(
+                Icon(
                   painter = painterResource(R.drawable.update_icon),
                   contentDescription = "Update Icon",
-                  modifier = Modifier.size(Theme.sizing.icon.medium)
+                  tint = NewAppTheme.colors.icon.tertiary,
+                  modifier = Modifier.size(20.dp)
                 )
 
-                Spacer(Theme.spacing.small)
-
-                Heading(
-                  "Update: \"${update.name}\"",
-                  fontSize = Theme.typography.medium,
-                  maxLines = 1,
-                  overflow = TextOverflow.Ellipsis,
+                Column(
+                  verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
                   modifier = Modifier.weight(1f)
-                )
-
-                Spacer(Theme.spacing.small)
-
-                DayNighIcon(
-                  painter = painterResource(R.drawable.chevron_right_icon),
-                  contentDescription = "Chevron Right Icon",
-                  modifier = Modifier.size(Theme.sizing.icon.extraSmall)
-                )
-              }
-
-              Spacer(Theme.spacing.tiny)
-
-              Text(
-                "Published: $formatedTime",
-                color = Theme.colors.text.secondary,
-                modifier = Modifier
-                  .padding(
-                    start = Theme.sizing.icon.medium + Theme.spacing.small,
-                    end = Theme.sizing.icon.medium + Theme.spacing.small
+                ) {
+                  NewText(
+                    "Update: \"${update.name}\"",
+                    style = NewAppTheme.font.md.merge(
+                      fontWeight = FontWeight.Medium
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                   )
-              )
 
-              if (!update.isCompatible) {
-                Spacer(Theme.spacing.tiny)
+                  NewText(
+                    "Published: $formatedTime",
+                    style = NewAppTheme.font.sm,
+                    color = NewAppTheme.colors.text.secondary
+                  )
 
-                Text(
-                  "Incompatible update",
-                  color = Theme.colors.text.warning,
-                  modifier = Modifier
-                    .padding(
-                      start = Theme.sizing.icon.medium + Theme.spacing.small,
-                      end = Theme.sizing.icon.medium + Theme.spacing.small
+                  if (!update.isCompatible) {
+                    NewText(
+                      "Incompatible update",
+                      color = NewAppTheme.colors.text.warning,
+                      style = NewAppTheme.font.sm.merge(
+                        fontWeight = FontWeight.Medium
+                      )
                     )
+                  }
+                }
+
+                Icon(
+                  painter = painterResource(R.drawable.chevron_right),
+                  contentDescription = "Chevron Icon",
+                  tint = NewAppTheme.colors.icon.tertiary,
+                  modifier = Modifier.size(16.dp)
                 )
               }
             }
-          }
 
-          if (index < updates.size - 1) {
-            Divider()
-          }
-        }
-
-        if (isLoading) {
-          item {
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(Theme.spacing.medium),
-              horizontalArrangement = Arrangement.Center,
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-              CircularProgressBar(
-                size = Theme.sizing.icon.large
+            if (index < updates.size - 1) {
+              Divider(
+                thickness = 0.5.dp,
+                color = NewAppTheme.colors.border.default
               )
             }
           }
-        }
 
-        if (!isLoading && updates.isEmpty()) {
-          item {
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(Theme.spacing.medium),
-              horizontalArrangement = Arrangement.Center,
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-              Text(
-                "No updates available.",
-                color = Theme.colors.text.secondary,
-                textAlign = TextAlign.Center
-              )
+          if (isLoading) {
+            item {
+              Row(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(vertical = NewAppTheme.spacing.`2`),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+              ) {
+                CircularProgressBar(
+                  size = Theme.sizing.icon.large
+                )
+              }
+            }
+          } else if (updates.isEmpty()) {
+            item {
+              Row(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(NewAppTheme.spacing.`3`),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+              ) {
+                NewText(
+                  "No updates available.",
+                  style = NewAppTheme.font.lg.merge(
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium
+                  ),
+                  color = NewAppTheme.colors.text.secondary
+                )
+              }
             }
           }
         }
@@ -210,31 +233,33 @@ fun BranchScreen(
 @Preview(showBackground = true)
 @Composable
 fun BranchScreenPreview() {
-  BranchScreen(
-    isLoading = true,
-    branchName = "main",
-    updates = listOf(
-      Update(
-        id = "1",
-        name = "Update 1 with a very long name that should be truncated",
-        createdAt = "2023-10-01T12:00:00Z",
-        isCompatible = true,
-        permalink = ""
-      ),
-      Update(
-        id = "2",
-        name = "Update 2",
-        createdAt = "2023-10-02T12:00:00Z",
-        isCompatible = false,
-        permalink = ""
-      ),
-      Update(
-        id = "3",
-        name = "Update 3",
-        createdAt = "2023-10-03T12:00:00Z",
-        isCompatible = true,
-        permalink = ""
+  DefaultScreenContainer {
+    BranchScreen(
+      isLoading = true,
+      branchName = "main",
+      updates = listOf(
+        Update(
+          id = "1",
+          name = "Update 1 with a very long name that should be truncated",
+          createdAt = "2023-10-01T12:00:00Z",
+          isCompatible = true,
+          permalink = ""
+        ),
+        Update(
+          id = "2",
+          name = "Update 2",
+          createdAt = "2023-10-02T12:00:00Z",
+          isCompatible = false,
+          permalink = ""
+        ),
+        Update(
+          id = "3",
+          name = "Update 3",
+          createdAt = "2023-10-03T12:00:00Z",
+          isCompatible = true,
+          permalink = ""
+        )
       )
     )
-  )
+  }
 }

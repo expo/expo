@@ -72,6 +72,12 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
         'Use the [SQLCipher](https://www.zetetic.net/sqlcipher/) implementations rather than the default SQLite.',
       default: 'false',
     },
+    {
+      name: 'withSQLiteVecExtension',
+      description:
+        'Include the [sqlite-vec](https://github.com/asg017/sqlite-vec) extension to [`bundledExtensions`](#sqlitebundledextensions).',
+      default: 'false',
+    },
   ]}
 />
 
@@ -481,6 +487,19 @@ If you're currently using `@react-native-async-storage/async-storage` in your pr
 ```diff
 - import AsyncStorage from '@react-native-async-storage/async-storage';
 + import AsyncStorage from 'expo-sqlite/kv-store';
+```
+
+### The `localStorage` API
+
+The `expo-sqlite/localStorage/install` module provides a drop-in implementation for the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) API. If you're already familiar with this API from the web, or you would like to be able to share storage code between web and other platforms, this may be useful. To use it, you just need to import the `expo-sqlite/localStorage/install` module:
+
+> **Note:** `import 'expo-sqlite/localStorage/install';` is a no-op on web and will be excluded from the production JS bundle.
+
+```ts Install globalThis.localStorage
+import 'expo-sqlite/localStorage/install';
+
+globalThis.localStorage.setItem('key', 'value');
+console.log(globalThis.localStorage.getItem('key')); // 'value'
 ```
 
 ## Security

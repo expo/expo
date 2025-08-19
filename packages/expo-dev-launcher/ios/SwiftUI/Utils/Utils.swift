@@ -51,11 +51,7 @@ extension Text {
 
 extension View {
   func systemGroupedBackground() -> some View {
-    #if os(tvOS)
-    return self
-    #else
-    return self.background(Color(.systemGroupedBackground))
-    #endif
+    return self.background(Color.expoSystemGroupedBackground)
   }
 }
 
