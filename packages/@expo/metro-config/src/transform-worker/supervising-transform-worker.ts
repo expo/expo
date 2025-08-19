@@ -5,6 +5,8 @@ import path from 'path';
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
 
+const defaultTransformer: typeof import('./transform-worker') = require('./transform-worker');
+
 declare module 'module' {
   namespace Module {
     interface ModuleExtensionFunction {
@@ -28,7 +30,13 @@ declare module '@expo/metro/metro-transform-worker' {
   }
 }
 
-const STICKY_PACKAGES = ['metro-transform-worker', 'metro', '@expo/metro-config', '@expo/metro'];
+const STICKY_PACKAGES = [
+  'metro-transform-worker',
+  'metro-babel-transformer',
+  'metro',
+  '@expo/metro-config',
+  '@expo/metro',
+];
 
 const debug = require('debug')(
   'expo:metro-config:supervising-transform-worker'
@@ -72,7 +80,13 @@ const createStickyModuleMapper = (moduleNames: string[]) => {
   };
 };
 
+let _initModuleInterceptDone = false;
+
 const initModuleIntercept = (moduleNames: string[]) => {
+  if (_initModuleInterceptDone) {
+    return;
+  }
+  _initModuleInterceptDone = true;
   const Module: typeof BuiltinModule =
     module.constructor.length > 1 ? (module.constructor as any) : BuiltinModule;
   const originalResolveFilename = Module._resolveFilename;
@@ -102,20 +116,18 @@ const getCustomTransform = (() => {
   let _transformerPath: string | undefined;
   let _transformer: typeof import('./transform-worker') | undefined;
   return (config: JsTransformerConfig) => {
-    if (!config.expo_customTransformerPath) {
-      throw new Error('expo_customTransformerPath was expected to be set');
-    } else if (_transformerPath == null) {
+    if (_transformer == null && _transformerPath == null) {
       _transformerPath = config.expo_customTransformerPath;
     } else if (
       config.expo_customTransformerPath != null &&
       _transformerPath !== config.expo_customTransformerPath
     ) {
-      throw new Error('expo_customTransformerPath must not be modified');
+      throw new Error('expo_customTransformerPath must not be modified after initialization');
     }
-    if (_transformer == null) {
+    initModuleIntercept(STICKY_PACKAGES);
+    if (_transformer == null && _transformerPath != null) {
       debug(`Loading custom transformer at "${_transformerPath}"`);
       try {
-        initModuleIntercept(STICKY_PACKAGES);
         _transformer = require.call(null, _transformerPath);
       } catch (error: any) {
         throw new Error(
@@ -124,7 +136,7 @@ const getCustomTransform = (() => {
         );
       }
     }
-    return _transformer!;
+    return _transformer;
   };
 })();
 
@@ -141,7 +153,7 @@ export function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const customWorker = getCustomTransform(config);
+  const customWorker = getCustomTransform(config) ?? defaultTransformer;
   removeCustomTransformPathFromConfig(config);
   return customWorker.transform(config, projectRoot, filename, data, options);
 }
