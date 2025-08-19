@@ -3,10 +3,17 @@ import {
   BottomTabs,
   BottomTabsScreen,
   featureFlags,
+  type BottomTabsProps,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
 
-import type { NativeTabOptions, NativeTabsViewProps } from './types';
+import {
+  SUPPORTED_BLUR_EFFECTS,
+  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
+  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
+  type NativeTabOptions,
+  type NativeTabsViewProps,
+} from './types';
 import { shouldTabBeVisible } from './utils';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
@@ -67,7 +74,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   isDuringNativeTransition.current = false;
 
   return (
-    <BottomTabs
+    <BottomTabsWrapper
       tabBarItemTitleFontColor={style?.color}
       tabBarItemTitleFontFamily={style?.fontFamily}
       tabBarItemTitleFontSize={style?.fontSize}
@@ -104,7 +111,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         isDuringNativeTransition.current = true;
       }}>
       {children}
-    </BottomTabs>
+    </BottomTabsWrapper>
   );
 }
 
@@ -120,4 +127,42 @@ function convertOptionsIconToPropsIcon(
     return { templateSource: icon.src };
   }
   return undefined;
+}
+
+const supportedTabBarMinimizeBehaviorsSet = new Set<string>(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
+const supportedTabBarItemLabelVisibilityModesSet = new Set<string>(
+  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES
+);
+const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
+
+function BottomTabsWrapper(props: BottomTabsProps) {
+  const { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, tabBarBlurEffect, ...rest } =
+    props;
+  if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
+    throw new Error(
+      `Unsupported minimizeBehavior: ${tabBarMinimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((behavior) => `"${behavior}"`).join(', ')}`
+    );
+  }
+  if (
+    tabBarItemLabelVisibilityMode &&
+    !supportedTabBarItemLabelVisibilityModesSet.has(tabBarItemLabelVisibilityMode)
+  ) {
+    throw new Error(
+      `Unsupported labelVisibilityMode: ${tabBarItemLabelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`
+    );
+  }
+  if (tabBarBlurEffect && !supportedBlurEffectsSet.has(tabBarBlurEffect)) {
+    throw new Error(
+      `Unsupported blurEffect: ${tabBarBlurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
+    );
+  }
+
+  return (
+    <BottomTabs
+      tabBarBlurEffect={tabBarBlurEffect}
+      tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode}
+      tabBarMinimizeBehavior={tabBarMinimizeBehavior}
+      {...rest}
+    />
+  );
 }
