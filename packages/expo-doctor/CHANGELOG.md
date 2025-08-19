@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 🎉 New features
+
+- Add check for lock-files. ([#38963](https://github.com/expo/expo/pull/38963) by [@entiendonull](https://github.com/entiendonull))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
