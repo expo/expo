@@ -46,6 +46,7 @@ _This version does not introduce any user-facing changes._
 - Add `SecureField` component. ([#37642](https://github.com/expo/expo/pull/37642) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Add `AlertDialog` component. ([#38266](https://github.com/expo/expo/pull/38266) by [@mateoguzmana](https://github.com/mateoguzmana))
 - Added SwiftUI view modifiers support. ([#38543](https://github.com/expo/expo/pull/38543) by [@kudo](https://github.com/kudo))
+- [iOS] Add SwiftUI Chart component. ([#38128](https://github.com/expo/expo/pull/38517) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 🐛 Bug fixes
 
