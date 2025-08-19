@@ -50,7 +50,7 @@ describe('static loader', () => {
       expect(loaderScript).not.toBeNull();
       expect(loaderScript!.textContent).toEqual(
         // eslint-disable-next-line no-useless-escape
-        'window.__EXPO_ROUTER_LOADER_DATA__ = {\"\\u002F\":{\"params\":{}}};'
+        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(\"{\\\"\\\\u002F\\\":{\\\"params\\\":{}}}\");'
       );
 
       // Ensure the loader data is rendered in the HTML
@@ -70,7 +70,7 @@ describe('static loader', () => {
       expect(loaderScript).not.toBeNull();
       expect(loaderScript.textContent).toEqual(
         // eslint-disable-next-line no-useless-escape
-        'window.__EXPO_ROUTER_LOADER_DATA__ = {\"\\u002Fposts\\u002Fstatic-post-1\":{\"params\":{\"postId\":\"static-post-1\"}}};'
+        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(\"{\\\"\\\\u002Fposts\\\\u002Fstatic-post-1\\\":{\\\"params\\\":{\\\"postId\\\":\\\"static-post-1\\\"}}}\");'
       );
 
       // Ensure the loader data is rendered in the HTML

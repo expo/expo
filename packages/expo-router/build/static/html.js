@@ -28,7 +28,8 @@ function ScrollViewStyleReset() {
 function LoaderDataScript({ data }) {
     const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
     return (<script type="module" data-testid="loader-script" dangerouslySetInnerHTML={{
-            __html: `window.__EXPO_ROUTER_LOADER_DATA__ = ${safeJson};`,
+            // The double serialization used here doesn't hurt us much on the server-side, but allows the client-side to parse it much faster using native `JSON.parse()`
+            __html: `window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`,
         }}/>);
 }
 function Html({ children }) {
