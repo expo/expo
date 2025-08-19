@@ -1,41 +1,42 @@
 import path from 'path';
 
-export const moduleRootPaths = [
-  path.dirname(require.resolve('../../../package.json')),
-  path.dirname(require.resolve('@expo/metro/package.json')),
-  path.dirname(require.resolve('expo/package.json')),
-];
+const requireResolveBasepath = (request: string, params?: { paths?: string[] }) =>
+  path.dirname(require.resolve(`${request}/package.json`, params));
+
+const expoMetroBasepath = requireResolveBasepath('@expo/metro');
+
+const MODULE_RESOLUTIONS: Record<string, string> = {
+  metro: expoMetroBasepath,
+  'metro-babel-transformer': expoMetroBasepath,
+  'metro-cache': expoMetroBasepath,
+  'metro-cache-key': expoMetroBasepath,
+  'metro-config': expoMetroBasepath,
+  'metro-core': expoMetroBasepath,
+  'metro-file-map': expoMetroBasepath,
+  'metro-resolver': expoMetroBasepath,
+  'metro-runtime': expoMetroBasepath,
+  'metro-source-map': expoMetroBasepath,
+  'metro-transform-plugins': expoMetroBasepath,
+  'metro-transform-worker': expoMetroBasepath,
+  '@expo/metro-config': requireResolveBasepath('expo'),
+};
 
 const escapeDependencyName = (dependency: string) =>
   dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
 const dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
 
-const isInModuleRootPath = (targetPath: string) =>
-  moduleRootPaths.some((moduleRootPath) => targetPath.startsWith(moduleRootPath));
-
-export const createStickyModuleMapper = (moduleNames: string[]) => {
-  const modulePathMap = moduleNames.reduce(
-    (modulePaths, moduleName) => {
-      try {
-        modulePaths[moduleName] = path.dirname(
-          require.resolve(`${moduleName}/package.json`, { paths: moduleRootPaths })
-        );
-      } catch {}
-      return modulePaths;
-    },
-    {} as Record<string, string>
-  );
-  const moduleTestRe = dependenciesToRegex(Object.keys(modulePathMap));
+export const createStickyModuleMapper = () => {
+  const moduleTestRe = dependenciesToRegex(Object.keys(MODULE_RESOLUTIONS));
   return (request: string, parentId?: string): string | null => {
-    if (!parentId || isInModuleRootPath(parentId)) {
+    if (!parentId) {
       return null;
     }
     const moduleMatch = moduleTestRe.exec(request);
     if (moduleMatch) {
-      const targetModulePath = modulePathMap[moduleMatch[1]];
-      if (targetModulePath) {
-        return `${targetModulePath}${moduleMatch[2] || ''}`;
+      const moduleSearchPath = MODULE_RESOLUTIONS[moduleMatch[1] as string];
+      if (moduleSearchPath) {
+        return require.resolve(request, { paths: [moduleSearchPath] });
       }
     }
     return null;
