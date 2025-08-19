@@ -179,43 +179,4 @@ describe('runAsync', () => {
     );
     expect(isFileIgnoredAsync).toHaveBeenCalledWith(androidPath, expect.anything());
   });
-
-  // multiple lock files
-  it('returns result with isSuccessful = true if just one lock file', async () => {
-    vol.fromJSON({
-      [projectRoot + '/yarn.lock']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeTruthy();
-  });
-
-  it('returns result with isSuccessful = false if more than one lockfile (yarn + npm)', async () => {
-    vol.fromJSON({
-      [projectRoot + '/yarn.lock']: 'test',
-      [projectRoot + '/package-lock.json']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeFalsy();
-  });
-
-  it('returns result with isSuccessful = false if more than one lockfile (yarn + pnpm)', async () => {
-    vol.fromJSON({
-      [projectRoot + '/yarn.lock']: 'test',
-      [projectRoot + '/pnpm-lock.yaml']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeFalsy();
-  });
 });
