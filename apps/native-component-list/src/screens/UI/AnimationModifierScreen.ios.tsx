@@ -3,7 +3,6 @@ import {
   background,
   cornerRadius,
   shadow,
-  padding,
   frame,
   opacity,
   scaleEffect,
@@ -21,7 +20,6 @@ import { ScrollView, StyleSheet } from 'react-native';
 export default function AnimationModifierScreen() {
   const [isScaled, setIsScaled] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
-  const [isOffset, setIsOffset] = useState(false);
   const [animationCounter, setAnimationCounter] = useState(0);
   const [springValue, setSpringValue] = useState(false);
   const [interpolatingSpringValue, setInterpolatingSpringValue] = useState(false);
@@ -32,11 +30,10 @@ export default function AnimationModifierScreen() {
     <ScrollView style={styles.container}>
       <Host matchContents useViewportSizeMeasurement>
         <Form>
-          
           <Section title="🎯 Basic Timing Curves">
             <VStack spacing={16}>
               <Text>Tap boxes to see different timing curves</Text>
-              
+
               <HStack spacing={16}>
                 <VStack spacing={8}>
                   <Text>EaseInOut (2s)</Text>
@@ -52,7 +49,7 @@ export default function AnimationModifierScreen() {
                     ]}
                   />
                 </VStack>
-                
+
                 <VStack spacing={8}>
                   <Text>Linear (0.5s)</Text>
                   <HStack
@@ -74,7 +71,7 @@ export default function AnimationModifierScreen() {
           <Section title="🌸 Spring Animations">
             <VStack spacing={16}>
               <Text>Experience the bouncy spring physics</Text>
-              
+
               <HStack spacing={16}>
                 <VStack spacing={8}>
                   <Text>Default Spring</Text>
@@ -90,7 +87,7 @@ export default function AnimationModifierScreen() {
                     ]}
                   />
                 </VStack>
-                
+
                 <VStack spacing={8}>
                   <Text>Custom Spring</Text>
                   <HStack
@@ -112,7 +109,7 @@ export default function AnimationModifierScreen() {
           <Section title="⚡ Interpolating Spring">
             <VStack spacing={16}>
               <Text>Physics-based spring with mass, stiffness & damping</Text>
-              
+
               <HStack spacing={16}>
                 <VStack spacing={8}>
                   <Text>Bouncy</Text>
@@ -123,12 +120,15 @@ export default function AnimationModifierScreen() {
                       cornerRadius(12),
                       shadow({ radius: 8, x: 0, y: 4, color: '#E74C3C40' }),
                       scaleEffect(interpolatingSpringValue ? 1.5 : 1.0),
-                      animation(Animation.interpolatingSpring(0.5, 200, 5), interpolatingSpringValue),
+                      animation(
+                        Animation.interpolatingSpring(0.5, 200, 5),
+                        interpolatingSpringValue
+                      ),
                       onTapGesture(() => setInterpolatingSpringValue(!interpolatingSpringValue)),
                     ]}
                   />
                 </VStack>
-                
+
                 <VStack spacing={8}>
                   <Text>Smooth</Text>
                   <HStack
@@ -138,7 +138,10 @@ export default function AnimationModifierScreen() {
                       cornerRadius(12),
                       shadow({ radius: 8, x: 0, y: 4, color: '#2ECC7140' }),
                       rotationEffect(interpolatingSpringValue ? 360 : 0),
-                      animation(Animation.interpolatingSpring(1.0, 100, 20), interpolatingSpringValue),
+                      animation(
+                        Animation.interpolatingSpring(1.0, 100, 20),
+                        interpolatingSpringValue
+                      ),
                       onTapGesture(() => setInterpolatingSpringValue(!interpolatingSpringValue)),
                     ]}
                   />
@@ -150,7 +153,7 @@ export default function AnimationModifierScreen() {
           <Section title="⏰ Delay & Repeat">
             <VStack spacing={16}>
               <Text>Advanced animation timing controls</Text>
-              
+
               <HStack spacing={16}>
                 <VStack spacing={8}>
                   <Text>1s Delay</Text>
@@ -166,7 +169,7 @@ export default function AnimationModifierScreen() {
                     ]}
                   />
                 </VStack>
-                
+
                 <VStack spacing={8}>
                   <Text>Repeat 3x</Text>
                   <HStack
@@ -188,7 +191,7 @@ export default function AnimationModifierScreen() {
           <Section title="🎪 Complex Combinations">
             <VStack spacing={16}>
               <Text>Multiple effects with different animations</Text>
-              
+
               <HStack
                 modifiers={[
                   frame({ width: 120, height: 120 }),
@@ -206,66 +209,6 @@ export default function AnimationModifierScreen() {
             </VStack>
           </Section>
 
-          <Section title="🔬 Animation Laboratory">
-            <VStack spacing={12}>
-              <Text>Experiment with different animation types</Text>
-              
-              {[
-                { 
-                  label: 'EaseIn (1.5s)', 
-                  color: '#FF6B6B',
-                  animation: Animation.easeIn(1.5),
-                  effect: 'scale'
-                },
-                { 
-                  label: 'EaseOut (1s)', 
-                  color: '#4ECDC4',
-                  animation: Animation.easeOut(1.0),
-                  effect: 'rotate'
-                },
-                { 
-                  label: 'Default Spring', 
-                  color: '#9B59B6',
-                  animation: Animation.spring(),
-                  effect: 'scale'
-                },
-                { 
-                  label: 'Fast Spring', 
-                  color: '#F39C12',
-                  animation: Animation.spring(0.4, 0.9),
-                  effect: 'offset'
-                },
-              ].map(({ label, color, animation: anim, effect }) => (
-                <HStack key={label} spacing={16}>
-                  <Text
-                    modifiers={[
-                      frame({ minWidth: 120 }),
-                      padding({ horizontal: 8, vertical: 4 }),
-                    ]}>
-                    {label}
-                  </Text>
-                  <HStack
-                    modifiers={[
-                      frame({ width: 60, height: 60 }),
-                      background(color),
-                      cornerRadius(12),
-                      shadow({ radius: 6, x: 0, y: 3, color: `${color}40` }),
-                      ...(effect === 'scale' ? [scaleEffect(isScaled ? 1.4 : 1.0)] : []),
-                      ...(effect === 'rotate' ? [rotationEffect(isRotated ? 180 : 0)] : []),
-                      ...(effect === 'offset' ? [offset({ x: isOffset ? 40 : 0, y: 0 })] : []),
-                      animation(anim, effect === 'scale' ? isScaled : effect === 'rotate' ? isRotated : isOffset),
-                      onTapGesture(() => {
-                        if (effect === 'scale') setIsScaled(!isScaled);
-                        else if (effect === 'rotate') setIsRotated(!isRotated);
-                        else setIsOffset(!isOffset);
-                      }),
-                    ]}
-                  />
-                </HStack>
-              ))}
-            </VStack>
-          </Section>
-
           <Section title="🎮 Reset Controls">
             <VStack spacing={16}>
               <HStack
@@ -278,7 +221,6 @@ export default function AnimationModifierScreen() {
                     setAnimationCounter(0);
                     setIsRotated(false);
                     setIsScaled(false);
-                    setIsOffset(false);
                     setSpringValue(false);
                     setInterpolatingSpringValue(false);
                     setDelayValue(false);
@@ -289,7 +231,6 @@ export default function AnimationModifierScreen() {
               <Text>Reset All Animations</Text>
             </VStack>
           </Section>
-
         </Form>
       </Host>
     </ScrollView>
