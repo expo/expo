@@ -38,8 +38,21 @@ describe('static loader', () => {
       await server.stopAsync();
     });
 
-    it(`loads and renders the data correctly for a static route`, async () => {
+    it(`loads and renders a route without a loader`, async () => {
       const path = '/';
+      const response = await server.fetchAsync(path);
+      expect(response.status).toBe(200);
+
+      const html = getHtml(await response.text());
+
+      // Ensure the loader script is injected and escaped correctly
+      const loaderScript = html.querySelector('[data-testid=loader-script]');
+      expect(loaderScript).not.toBeNull();
+      expect(loaderScript!.textContent).toEqual('window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"\\\\u002F\\":{}}");');
+    });
+
+    it(`loads and renders the data correctly for a static route`, async () => {
+      const path = '/second';
       const response = await server.fetchAsync(path);
       expect(response.status).toBe(200);
 
@@ -50,7 +63,7 @@ describe('static loader', () => {
       expect(loaderScript).not.toBeNull();
       expect(loaderScript!.textContent).toEqual(
         // eslint-disable-next-line no-useless-escape
-        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(\"{\\\"\\\\u002F\\\":{\\\"params\\\":{}}}\");'
+        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(\"{\\\"\\\\u002Fsecond\\\":{\\\"params\\\":{}}}\");'
       );
 
       // Ensure the loader data is rendered in the HTML
@@ -103,7 +116,7 @@ describe('static loader', () => {
   it('generates loader data modules during static export', async () => {
     const files = findProjectFiles(path.join(projectRoot, outputName));
 
-    expect(files).toContain('_expo/loaders/index.js');
+    expect(files).toContain('_expo/loaders/second.js');
     expect(files).toContain('_expo/loaders/posts/static-post-1.js');
     expect(files).toContain('_expo/loaders/posts/static-post-2.js');
     // Should also generate loader module for dynamic route template
@@ -112,12 +125,11 @@ describe('static loader', () => {
 
   it('loader modules contain only JSON data without server code', async () => {
     const fs = require('fs');
-    const loaderModulePath = path.join(projectRoot, outputName, '_expo/loaders/index.js');
+    const loaderModulePath = path.join(projectRoot, outputName, '_expo/loaders/second.js');
     const moduleContent = fs.readFileSync(loaderModulePath, 'utf-8');
 
     expect(moduleContent).toMatch(/^export default /);
     expect(moduleContent).toContain('"params":{}');
-
 
     expect(moduleContent).not.toContain('function');
     expect(moduleContent).not.toContain('async');

@@ -32,7 +32,7 @@ test.describe('server loader in development', () => {
     await expoStart.stopAsync();
   });
 
-  test('loader loads and renders data', async ({ page }) => {
+  test('loads and renders a route without a loader', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     await page.goto(expoStart.url.href);
 
@@ -40,8 +40,25 @@ test.describe('server loader in development', () => {
       return window.__EXPO_ROUTER_LOADER_DATA__;
     });
     expect(loaderDataScript).toBeDefined();
-    expect(loaderDataScript!['/']).toEqual({ params: {} });
+    expect(loaderDataScript).toEqual({"/": {}});
 
+    // Index route doesn't have a loader, so no loader-result element should exist
+    const loaderResult = page.locator('[data-testid="loader-result"]');
+    await expect(loaderResult).toHaveCount(0);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('loads and renders a route with a loader', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+    await page.goto(expoStart.url.href + 'second');
+
+    const loaderDataScript = await page.evaluate(() => {
+      return window.__EXPO_ROUTER_LOADER_DATA__;
+    });
+    expect(loaderDataScript).toBeDefined();
+
+    // In dev mode, loader data is fetched dynamically, so we just verify the loader result renders
     await page.waitForSelector('[data-testid="loader-result"]');
     const loaderDataElement = await page.locator('[data-testid="loader-result"]');
     await expect(loaderDataElement).toHaveText('{"params":{}}');
@@ -82,15 +99,19 @@ test.describe('server loader in development', () => {
 
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
-    const firstRequestCount = loaderRequests.length;
 
     await page.click('a[href="/"]');
+
+    await page.click('a[href="/posts/static-post-2"]');
     await page.waitForSelector('[data-testid="loader-result"]');
+
+    await page.click('a[href="/"]');
 
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    expect(loaderRequests.length).toBe(firstRequestCount);
+    // Should not make additional requests for cached static-post-1
+    expect(loaderRequests.length).toBe(2);
   });
 
   test('handles loader module fetch errors gracefully', async ({ page }) => {
@@ -146,6 +167,22 @@ test.describe('server loader in development', () => {
 
     const loaderData = page.locator('[data-testid="loader-result"]');
     await expect(loaderData).toContainText('"postId":"dynamic-post-1"');
+  });
+
+  test('navigates from route without loader to route with loader', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    // Start at index route (no loader)
+    await page.goto(expoStart.url.href);
+
+    // Navigate to second route (has loader) - this was previously broken
+    await page.click('a[href="/second"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+
+    const loaderData = page.locator('[data-testid="loader-result"]');
+    await expect(loaderData).toHaveText('{"params":{}}');
+
+    expect(pageErrors.all).toEqual([]);
   });
 
   test('handles multiple dynamic routes with fallback', async ({ page }) => {

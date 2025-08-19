@@ -40,7 +40,10 @@ export default function Index() {
       <Text testID="loader-result">{JSON.stringify(data)}</Text>
 
       <Link href="/">
-        <Text>Back to Index</Text>
+        <Text>Go to Index</Text>
+      </Link>
+      <Link href="/second">
+        <Text>Go to Second</Text>
       </Link>
     </View>
   );

@@ -69,8 +69,9 @@ export async function getStaticContent(
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const wrappedLoaderData =
-    options?.loaderData != null ? { [location.pathname]: options.loaderData } : null;
+  const wrappedLoaderData = { 
+    [location.pathname]: options?.loaderData ?? {} 
+  };
 
   const html = await ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
@@ -93,13 +94,11 @@ export async function getStaticContent(
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
 
-  // Inject loader data if provided
-  if (wrappedLoaderData) {
-    const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
-      <LoaderDataScript data={wrappedLoaderData} />
-    );
-    output = output.replace('</head>', `${loaderDataScript}</head>`);
-  }
+  // Inject loader data
+  const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
+    <LoaderDataScript data={wrappedLoaderData} />
+  );
+  output = output.replace('</head>', `${loaderDataScript}</head>`);
 
   return '<!DOCTYPE html>' + output;
 }

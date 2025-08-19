@@ -1,10 +1,17 @@
 import { Text, View } from "react-native";
-import { Link, useLocalSearchParams, usePathname, useSegments } from 'expo-router';
+import { Link, useLoaderData, useLocalSearchParams, usePathname, useSegments } from 'expo-router';
+
+export async function loader({ params }) {
+  return Promise.resolve({
+    params,
+  });
+}
 
 export default function Index() {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
   const segments = useSegments();
+  const data = useLoaderData(loader);
 
   return (
     <View
@@ -17,9 +24,10 @@ export default function Index() {
       <Text testID="pathname-result">{JSON.stringify(pathname)}</Text>
       <Text testID="localparams-result">{JSON.stringify(localParams)}</Text>
       <Text testID="segments-result">{JSON.stringify(segments)}</Text>
+      <Text testID="loader-result">{JSON.stringify(data)}</Text>
 
-      <Link href="/second">
-        <Text>Go to Second</Text>
+      <Link href="/">
+        <Text>Go to Index</Text>
       </Link>
       <Link href="/posts/static-post-1">
         <Text>Go to static Post 1</Text>
