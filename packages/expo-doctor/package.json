@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.15.1",
+  "version": "1.16.0",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -33,7 +33,7 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~12.0.2",
+    "@expo/config": "~12.0.3",
     "@expo/env": "~2.0.2",
     "@expo/json-file": "~10.0.2",
     "@expo/schemer": "2.0.2",

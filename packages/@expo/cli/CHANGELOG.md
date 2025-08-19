@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Render errors with multiple stacks in Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.26.0 — 2025-08-19
+
+### 🎉 New features
+
+- Render errors with multiple stacks in Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 0.25.2 — 2025-08-16
 

@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.32.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.0-preview.3):
+  - Expo (54.0.0-preview.4):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -110,7 +110,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (15.0.2):
     - ExpoModulesCore
-  - ExpoHead (6.0.0-beta.3):
+  - ExpoHead (6.0.0-beta.4):
     - ExpoModulesCore
   - ExpoImage (3.0.2):
     - ExpoModulesCore
@@ -158,7 +158,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (0.4.2):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.3):
+  - ExpoModulesCore (3.0.4):
     - boost
     - DoubleConversion
     - fast_float
@@ -187,7 +187,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (3.0.3):
+  - ExpoModulesCore/Tests (3.0.4):
     - boost
     - DoubleConversion
     - ExpoModulesTestCore
@@ -4208,7 +4208,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 1d8efad9ec5cae1cb462d1e8d99e30cd678ef0e1
   EXNotifications: d766183339df1b19e364b05f14eeddec2180834d
-  Expo: dd821c66f4d3e9cde14157b7db635e58c12a380d
+  Expo: 1eab7954a167db1cc3c26eba622c84c720a8b13e
   ExpoAppleAuthentication: 5567f8d51139053c68f40d5834817893b52a8a08
   ExpoAsset: 477a3eb77985846fe5e7e13e1266009541faf67b
   ExpoAudio: 509a11441a776be5a616aae728f7f5b869e87c11
@@ -4230,7 +4230,7 @@ SPEC CHECKSUMS:
   ExpoFont: 8c6851743bec4214612ab0a5cdc070d28d508ed7
   ExpoGL: b067bb9a2de1ad44238b9ea8e41ee15fac226ec7
   ExpoHaptics: 1616b0f93c0bc9ac7d2a49cbacc083de3a2c7297
-  ExpoHead: 7ed924c6271cfe26e0d98f837a3e6dc2a8292dd8
+  ExpoHead: 4c3e8fc7e93757537974e756a9ed1ae44a3e46dd
   ExpoImage: 954191a08191f645cb76393d07eb57b2a83e80bf
   ExpoImageManipulator: 40197585392b2faaa1cba254feb9570c915a3e17
   ExpoImagePicker: 710f192999d081990691e855e093caed3c7afb1b
@@ -4244,7 +4244,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: e647bd8876a89974109a93bf471eb16244370a72
   ExpoMediaLibrary: beb199ac423208388d54056b7118eb8e1ef54636
   ExpoMeshGradient: 3dced705d5794e054d93e67f33bdb862c8498645
-  ExpoModulesCore: fb228e8ffbe03aee5006638f801818fe2a41dee4
+  ExpoModulesCore: e96140753acda2c0285016078a5fd6d60ee944f1
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 4a85aec0d7104d6cb0b11d487484da4c5dadbffd
   ExpoPrint: c1fddae9490e4fb28c3eba917b356735e42c6bbc

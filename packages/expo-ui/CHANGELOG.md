@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.0-alpha.4 — 2025-08-19
+
+_This version does not introduce any user-facing changes._
+
 ## 0.2.0-alpha.3 — 2025-08-18
 
 _This version does not introduce any user-facing changes._
