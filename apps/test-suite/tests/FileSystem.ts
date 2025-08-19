@@ -12,9 +12,13 @@ import { isDeviceFarm } from '../utils/Environment';
 export const name = 'FileSystem';
 
 export async function test({ describe, expect, it, ...t }) {
-  const shouldSkipTestsRequiringPermissions =
-    (await TestUtils.shouldSkipTestsRequiringPermissionsAsync()) || isDeviceFarm();
-  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
+  const shouldSkipTestsRequiringPermissionsAndroidOnly =
+    (await TestUtils.shouldSkipTestsRequiringPermissionsAsync()) ||
+    isDeviceFarm() ||
+    Platform.OS !== 'android';
+  const describeWithPermissionsAndroidOnly = shouldSkipTestsRequiringPermissionsAndroidOnly
+    ? t.xdescribe
+    : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
   t.beforeEach(async () => {
@@ -44,7 +48,7 @@ export async function test({ describe, expect, it, ...t }) {
       });
     }
 
-    describeWithPermissions('picker operations', () => {
+    describeWithPermissionsAndroidOnly('picker operations', () => {
       let originalTimeout;
       t.beforeAll(async () => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
