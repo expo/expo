@@ -228,6 +228,8 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
+      makePage('brownfield/integration-with-existing-apps.mdx'),
+      makePage('brownfield/package-react-native-app.mdx'),
       makePage('brownfield/installing-expo-modules.mdx'),
     ]),
     makeGroup(
