@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import * as semver from 'semver';
 
 import { findPackagesToPromote } from './findPackagesToPromote';
 import { prepareParcels } from './prepareParcels';
