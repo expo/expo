@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix live binding export deduplication failing to trigger ([#38951](https://github.com/expo/expo/pull/38951) by [@kitten](https://github.com/kitten))
+- Fix undeclared namespace when exporting default imports ([#38975](https://github.com/expo/expo/pull/38975) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
