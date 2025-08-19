@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Apply supervisor transformer that wraps a user-configured custom transformer. This annotates initialization errors and enforces a single Metro version ([#38961](https://github.com/expo/expo/pull/38961) by [@kitten](https://github.com/kitten))
+
 ## 0.25.2 — 2025-08-16
 
 ### 💡 Others
