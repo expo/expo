@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve `unexpected ',' separator Refer to "Xcode Logs" below for additional, more detailed logs` issue. ([#38998](https://github.com/expo/expo/pull/38998) by [@Phil9l](https://github.com/Phil9l))
+
 ### 💡 Others
 
 ## 6.0.0-beta.4 — 2025-08-19
