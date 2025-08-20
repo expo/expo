@@ -84,7 +84,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
       if let identifier {
         if let foundContact = try? getContact(withId: identifier) {
-          controller = ContactsViewController.init(for: foundContact)
+          controller = ContactsViewController(for: foundContact)
         }
       } else {
         var contact = CNMutableContact()
