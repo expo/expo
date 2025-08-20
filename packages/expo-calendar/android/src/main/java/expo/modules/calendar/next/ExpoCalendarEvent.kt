@@ -69,7 +69,7 @@ class ExpoCalendarEvent : SharedObject {
       calendarId = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.CALENDAR_ID),
       title = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.TITLE),
       notes = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION),
-      alarms = if (eventId != null) serializeAlarms(eventId).toList() else emptyList(),
+      alarms = if (eventId != null) serializeAlarms(eventId)?.toList() else null,
       recurrenceRule = extractRecurrenceRuleFromString(CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.RRULE)),
       startDate = CalendarNextUtils.dateToString(startDate.toLongOrNull()),
       endDate = CalendarNextUtils.dateToString(endDate.toLongOrNull()),
@@ -207,8 +207,8 @@ class ExpoCalendarEvent : SharedObject {
       val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
       contentResolver.update(updateUri, eventBuilder.build(), null, null)
       removeRemindersForEvent(contentResolver, eventID)
-      if (this.eventRecord?.alarms != null) {
-        createRemindersForEvent( eventID, this.eventRecord!!.alarms!!)
+      if (eventRecord.alarms != null) {
+        createRemindersForEvent( eventID, eventRecord.alarms)
       }
       return eventID
     } else {
@@ -221,8 +221,8 @@ class ExpoCalendarEvent : SharedObject {
       val eventUri = contentResolver.insert(eventsUri, eventBuilder.build())
         ?: throw EventNotSavedException()
       val eventID = eventUri.lastPathSegment!!.toInt()
-      if (this.eventRecord?.alarms != null) {
-        createRemindersForEvent(eventID, this.eventRecord!!.alarms!!)
+      if (eventRecord.alarms != null) {
+        createRemindersForEvent(eventID, eventRecord.alarms)
       }
       return eventID
     }
@@ -325,7 +325,7 @@ class ExpoCalendarEvent : SharedObject {
     }
   }
 
-  private fun serializeAlarms(eventId: String): ArrayList<AlarmRecord> {
+  private fun serializeAlarms(eventId: String): ArrayList<AlarmRecord>? {
     val alarms = ArrayList<AlarmRecord>()
     val cursor = CalendarContract.Reminders.query(
       contentResolver,

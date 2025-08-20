@@ -1097,7 +1097,7 @@ export async function test(t) {
             defaultEventData.endDate,
             event.id
           );
-          t.expect(fetchedEvent.alarms).toBeNull();
+          t.expect(fetchedEvent.alarms).toEqual([]);
         });
 
         t.it('clears recurrenceRule when set to null', async () => {
