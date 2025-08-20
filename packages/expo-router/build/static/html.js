@@ -13,6 +13,7 @@ exports.Html = Html;
  * LICENSE file in the root directory of this source tree.
  */
 const react_1 = __importDefault(require("react"));
+const html_1 = require("../utils/html");
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */
@@ -26,9 +27,10 @@ function ScrollViewStyleReset() {
  * The data is serialized as JSON and made available on window.__EXPO_ROUTER_LOADER_DATA__.
  */
 function LoaderDataScript({ data }) {
-    const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+    const safeJson = (0, html_1.escapeUnsafeCharacters)(JSON.stringify(data));
     return (<script type="module" data-testid="loader-script" dangerouslySetInnerHTML={{
-            // The double serialization used here doesn't hurt us much on the server-side, but allows the client-side to parse it much faster using native `JSON.parse()`
+            // NOTE(@hassankhan): The double serialization used here isn't as much of a problem server-side, but allows faster
+            // client-side parsing using native `JSON.parse()`
             __html: `window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`,
         }}/>);
 }
@@ -42,25 +44,5 @@ function Html({ children }) {
       </head>
       <body>{children}</body>
     </html>);
-}
-// @see https://github.com/yahoo/serialize-javascript/blob/79ac5da98ecdb5fbc20912a2d3ba5cd34949e0e9/index.js#L19
-// eslint-disable-next-line no-useless-escape
-const UNSAFE_CHARACTERS_REGEXP = /[<>\/\u2028\u2029]/g;
-// @see https://github.com/yahoo/serialize-javascript/blob/79ac5da98ecdb5fbc20912a2d3ba5cd34949e0e9/index.js#L25-L31
-const ESCAPED_CHARACTERS = {
-    '<': '\\u003C',
-    '>': '\\u003E',
-    '/': '\\u002F',
-    '\u2028': '\\u2028',
-    '\u2029': '\\u2029',
-};
-/**
- * Replaces unsafe characters in a string with their escaped equivalents. This is to safely
- * embed data in an HTML context to prevent XSS.
- */
-function escapeUnsafeCharacters(str) {
-    return str.replace(UNSAFE_CHARACTERS_REGEXP, (unsafeChar) => {
-        return ESCAPED_CHARACTERS[unsafeChar];
-    });
 }
 //# sourceMappingURL=html.js.map

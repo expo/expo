@@ -48,7 +48,9 @@ describe('static loader', () => {
       // Ensure the loader script is injected and escaped correctly
       const loaderScript = html.querySelector('[data-testid=loader-script]');
       expect(loaderScript).not.toBeNull();
-      expect(loaderScript!.textContent).toEqual('window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"\\\\u002F\\":{}}");');
+      expect(loaderScript!.textContent).toEqual(
+        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/\\":{}}");'
+      );
     });
 
     it(`loads and renders the data correctly for a static route`, async () => {
@@ -62,8 +64,7 @@ describe('static loader', () => {
       const loaderScript = html.querySelector('[data-testid=loader-script]');
       expect(loaderScript).not.toBeNull();
       expect(loaderScript!.textContent).toEqual(
-        // eslint-disable-next-line no-useless-escape
-        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(\"{\\\"\\\\u002Fsecond\\\":{\\\"params\\\":{}}}\");'
+        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/second\\":{\\"params\\":{}}}");'
       );
 
       // Ensure the loader data is rendered in the HTML
@@ -82,8 +83,7 @@ describe('static loader', () => {
       const loaderScript = html.querySelector('[data-testid=loader-script]')!;
       expect(loaderScript).not.toBeNull();
       expect(loaderScript.textContent).toEqual(
-        // eslint-disable-next-line no-useless-escape
-        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(\"{\\\"\\\\u002Fposts\\\\u002Fstatic-post-1\\\":{\\\"params\\\":{\\\"postId\\\":\\\"static-post-1\\\"}}}\");'
+        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/posts/static-post-1\\":{\\"params\\":{\\"postId\\":\\"static-post-1\\"}}}");'
       );
 
       // Ensure the loader data is rendered in the HTML

@@ -13,9 +13,7 @@ describe('<LoaderDataScript>', () => {
     expect(scriptElement).not.toBeNull();
     expect(scriptElement?.getAttribute('type')).toBe('module');
     expect(scriptElement?.innerHTML).toContain('window.__EXPO_ROUTER_LOADER_DATA__');
-    expect(scriptElement?.innerHTML).toContain(
-      'JSON.parse(\"{\\\"\\\\u002F\\\":{\\\"foo\\\":\\\"bar\\\"}}\");'
-    );
+    expect(scriptElement?.innerHTML).toContain('JSON.parse("{\\"/\\":{\\"foo\\":\\"bar\\"}}")');
   });
 
   it('handles special characters', () => {
@@ -37,17 +35,16 @@ describe('<LoaderDataScript>', () => {
 
     expect(content).not.toContain('<script>');
     expect(content).not.toContain('</script>');
-    expect(content).toContain('\\\\u003Cscript');
-    expect(content).toContain('\\\\u003C\\\\u002Fscript');
+    expect(content).toContain('\\\\u003cscript');
+    expect(content).toContain('\\\\u003c/script\\\\u003e\\');
 
-    const unescapedMatches = content.match(/(?<!\\u003C)</g);
+    const unescapedMatches = content.match(/(?<!\\u003c)</g);
     expect(unescapedMatches).toBeNull();
-    expect(content).toContain('\\\\u003C\\\\u003C\\\\u003Cmultiple');
-    expect(content).toContain('\\\\u003Ctag');
-    expect(content).toContain('\\\\u003C\\\\u002Ftag');
-
-    expect(content).toContain('\\\\\\\"Hello\\\\\\\"');
-    expect(content).toContain('"C:\\\\\\\\Users\\\\\\\\test\\\"');
+    expect(content).toContain('\\\\u003c\\\\u003c\\\\u003cmultiple');
+    expect(content).toContain('\\\\u003ctag');
+    expect(content).toContain('\\\\u003c/tag\\\\u003e\\');
+    expect(content).toContain('\\\\\\"Hello\\\\\\"');
+    expect(content).toContain('"C:\\\\\\\\Users\\\\\\\\test\\"');
     expect(content).toContain('\\n');
     expect(content).toContain('你好世界');
   });
