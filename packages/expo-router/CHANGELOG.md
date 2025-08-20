@@ -17,6 +17,7 @@
 ### 🐛 Bug fixes
 
 - fix link preview error, when preview is open to a tab without a Stack ([#38969](https://github.com/expo/expo/pull/38969) by [@Ubax](https://github.com/Ubax))
+- Fix useFocusEffect being called twice when tapping a tab or going back in a stack. ([#38856](https://github.com/expo/expo/pull/38856) by [@desii101](https://github.com/desii101))
 
 ### 💡 Others
 
