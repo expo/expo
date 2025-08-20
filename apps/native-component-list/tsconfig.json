@@ -11,6 +11,7 @@
     },
     "types": ["jest"],
     "typeRoots": ["./ts-declarations", "./node_modules/@types", "../../node_modules/@types"],
+    "customConditions": ["react-native"],
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
