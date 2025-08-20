@@ -563,31 +563,35 @@ function importExportPlugin({ types: t, }) {
                 exit(path, state) {
                     const body = path.node.body;
                     // state.imports = [node1, node2, node3, ...nodeN]
-                    state.imports.reverse().forEach((e) => {
-                        // import nodes are added to the top of the program body
-                        body.unshift(e.node);
-                    });
-                    // NOTE(@krystofwoldrich): Export all must be first as exports without live bindings
-                    // rely on overwriting the exports object by default and named exports.
+                    const imports = state.imports.map((i) => i.node);
+                    // this will preserve discovery order for non-live bindings
+                    const exports = state.opts.liveBindings ? [] : body;
+                    const exportsAll = state.opts.liveBindings ? [] : body;
+                    const exportedNamesIdentifier = path.scope.generateUidIdentifier('_exportedNames');
+                    if (state.opts.liveBindings && state.exportAll.length) {
+                        // Generate a static list of exported names to runtime overwrites
+                        const exportedNames = exportedNamesTemplate({
+                            t,
+                            IDENTIFIER: exportedNamesIdentifier.name,
+                            NAMES: state.exportNamed.map((e) => e.remote),
+                        });
+                        exports.push(exportedNames);
+                    }
                     state.exportAll.forEach((e) => {
                         if (state.opts.liveBindings) {
-                            // Generate a static list of exported names to runtime overwrites
-                            const exportedNamesIdentifier = path.scope.generateUidIdentifier('_exportedNames');
-                            const exportedNames = exportedNamesTemplate({
-                                t,
-                                IDENTIFIER: exportedNamesIdentifier.name,
-                                NAMES: state.exportNamed.map((e) => e.remote),
-                            });
-                            body.push(exportedNames);
-                            body.push(...withLocation(liveBindExportAllTemplate({
+                            // NOTE: live binded export all statements must be placed after all other live binded exports,
+                            // because they need to load the exported module first
+                            exportsAll.push(...withLocation(liveBindExportAllTemplate({
                                 FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
                                 REQUIRED: path.scope.generateUidIdentifier(e.file),
                                 KEY: path.scope.generateUidIdentifier('key'),
-                                EXPORTED_NAMES: exportedNamesIdentifier,
+                                EXPORTED_NAMES: t.cloneNode(exportedNamesIdentifier),
                             }), e.loc));
                         }
                         else {
-                            body.push(...withLocation(exportAllTemplate({
+                            // NOTE(@krystofwoldrich): Export all must be first as exports without live bindings
+                            // rely on overwriting the exports object by default and named exports.
+                            exportsAll.push(...withLocation(exportAllTemplate({
                                 FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
                                 REQUIRED: path.scope.generateUidIdentifier(e.file),
                                 KEY: path.scope.generateUidIdentifier('key'),
@@ -596,7 +600,7 @@ function importExportPlugin({ types: t, }) {
                     });
                     state.exportDefault.forEach((e) => {
                         if (e.namespace) {
-                            body.push(withLocation(liveBindExportTemplate({
+                            exports.push(withLocation(liveBindExportTemplate({
                                 REQUIRED: t.identifier(e.namespace),
                                 LOCAL: t.identifier(e.local),
                                 REMOTE: 'default',
@@ -612,13 +616,13 @@ function importExportPlugin({ types: t, }) {
                     state.exportNamed.forEach((e) => {
                         if (e.namespace) {
                             if (e.local === 'default') {
-                                body.push(withLocation(liveBindExportDefaultTemplate({
+                                exports.push(withLocation(liveBindExportDefaultTemplate({
                                     REQUIRED: t.identifier(e.namespace),
                                     REMOTE: e.remote,
                                 }), e.loc));
                             }
                             else {
-                                body.push(withLocation(liveBindExportTemplate({
+                                exports.push(withLocation(liveBindExportTemplate({
                                     REQUIRED: t.identifier(e.namespace),
                                     LOCAL: t.identifier(e.local),
                                     REMOTE: e.remote,
@@ -632,6 +636,24 @@ function importExportPlugin({ types: t, }) {
                             }), e.loc));
                         }
                     });
+                    if (state.opts.liveBindings) {
+                        body.unshift(...exportsAll);
+                        body.unshift(...imports);
+                        body.unshift(...exports);
+                        // 1. live binded exports
+                        // 2. live binded export all
+                        // 3. imports
+                        // 4. program
+                        // 5. static exports
+                    }
+                    else {
+                        body.unshift(...imports);
+                        // NOTE(@krystofwoldrich): exports and exportsAll is body in this case to preserve the order of discovery
+                        // 1. imports
+                        // 2. program
+                        // 3. export All
+                        // 4. static exports
+                    }
                     path.traverse({
                         ReferencedIdentifier(path, state) {
                             const localName = path.node.name;

@@ -33,6 +33,10 @@ describe.each([
     test('re-export all')`
       export * from 'apple-icons';
     `,
+    test('re-export all (multiple)')`
+      export * from 'apple-icons';
+      export * from 'android-icons';
+    `,
     test('re-export namespaces combined cases (1)')`
       export * from 'apple-icons';
       export * as AppleIcons from 'apple-icons';
@@ -77,6 +81,14 @@ describe.each([
     test('re-export all + namespaces')`
       export { test, default as _test } from 'apple-icons';
       export * from 'apple-icons';
+      export * as AppleIcons from 'apple-icons';
+      export * as default from 'apple-icons';
+    `,
+    test('re-export all multiple + namespaces')`
+      export { test, default as _test } from 'apple-icons';
+      export * from 'apple-icons';
+      export * from 'android-icons';
+      export * from 'windows-icons';
       export * as AppleIcons from 'apple-icons';
       export * as default from 'apple-icons';
     `,

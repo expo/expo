@@ -776,36 +776,41 @@ export function importExportPlugin({
           const body = path.node.body;
 
           // state.imports = [node1, node2, node3, ...nodeN]
-          state.imports.reverse().forEach((e: { node: t.Statement }) => {
-            // import nodes are added to the top of the program body
-            body.unshift(e.node);
-          });
+          const imports = state.imports.map((i) => i.node);
+          // this will preserve discovery order for non-live bindings
+          const exports: t.Statement[] = state.opts.liveBindings ? [] : body;
+          const exportsAll: t.Statement[] = state.opts.liveBindings ? [] : body;
 
-          // NOTE(@krystofwoldrich): Export all must be first as exports without live bindings
-          // rely on overwriting the exports object by default and named exports.
+          const exportedNamesIdentifier = path.scope.generateUidIdentifier('_exportedNames');
+          if (state.opts.liveBindings && state.exportAll.length) {
+            // Generate a static list of exported names to runtime overwrites
+            const exportedNames = exportedNamesTemplate({
+              t,
+              IDENTIFIER: exportedNamesIdentifier.name,
+              NAMES: state.exportNamed.map((e) => e.remote),
+            });
+            exports.push(exportedNames);
+          }
+
           state.exportAll.forEach((e) => {
             if (state.opts.liveBindings) {
-              // Generate a static list of exported names to runtime overwrites
-              const exportedNamesIdentifier = path.scope.generateUidIdentifier('_exportedNames');
-              const exportedNames = exportedNamesTemplate({
-                t,
-                IDENTIFIER: exportedNamesIdentifier.name,
-                NAMES: state.exportNamed.map((e) => e.remote),
-              });
-              body.push(exportedNames);
-              body.push(
+              // NOTE: live binded export all statements must be placed after all other live binded exports,
+              // because they need to load the exported module first
+              exportsAll.push(
                 ...withLocation(
                   liveBindExportAllTemplate({
                     FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
                     REQUIRED: path.scope.generateUidIdentifier(e.file),
                     KEY: path.scope.generateUidIdentifier('key'),
-                    EXPORTED_NAMES: exportedNamesIdentifier,
+                    EXPORTED_NAMES: t.cloneNode(exportedNamesIdentifier),
                   }),
                   e.loc
                 )
               );
             } else {
-              body.push(
+              // NOTE(@krystofwoldrich): Export all must be first as exports without live bindings
+              // rely on overwriting the exports object by default and named exports.
+              exportsAll.push(
                 ...withLocation(
                   exportAllTemplate({
                     FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
@@ -820,7 +825,7 @@ export function importExportPlugin({
 
           state.exportDefault.forEach((e) => {
             if (e.namespace) {
-              body.push(
+              exports.push(
                 withLocation(
                   liveBindExportTemplate({
                     REQUIRED: t.identifier(e.namespace),
@@ -846,7 +851,7 @@ export function importExportPlugin({
           state.exportNamed.forEach((e) => {
             if (e.namespace) {
               if (e.local === 'default') {
-                body.push(
+                exports.push(
                   withLocation(
                     liveBindExportDefaultTemplate({
                       REQUIRED: t.identifier(e.namespace),
@@ -856,7 +861,7 @@ export function importExportPlugin({
                   )
                 );
               } else {
-                body.push(
+                exports.push(
                   withLocation(
                     liveBindExportTemplate({
                       REQUIRED: t.identifier(e.namespace),
@@ -879,6 +884,24 @@ export function importExportPlugin({
               );
             }
           });
+
+          if (state.opts.liveBindings) {
+            body.unshift(...exportsAll);
+            body.unshift(...imports);
+            body.unshift(...exports);
+            // 1. live binded exports
+            // 2. live binded export all
+            // 3. imports
+            // 4. program
+            // 5. static exports
+          } else {
+            body.unshift(...imports);
+            // NOTE(@krystofwoldrich): exports and exportsAll is body in this case to preserve the order of discovery
+            // 1. imports
+            // 2. program
+            // 3. export All
+            // 4. static exports
+          }
 
           // Inspired by https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-helper-module-transforms/src/rewrite-live-references.ts#L99
           // Live bindings implementation:
