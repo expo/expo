@@ -248,7 +248,7 @@ export declare class File {
    * @param initialUri An optional uri pointing to an initial folder on which the file picker is opened.
    * @param mimeType A mime type that is used to filter out files that can be picked out.
    *
-   * @returns a `File` instance.
+   * @returns A `File` instance.
    */
   static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
 
