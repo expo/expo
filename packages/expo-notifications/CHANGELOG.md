@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fix `setBadgeCountAsync(0)` also cleared notifications ([#39009](https://github.com/expo/expo/pull/39009) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 0.31.4 — 2025-07-05
