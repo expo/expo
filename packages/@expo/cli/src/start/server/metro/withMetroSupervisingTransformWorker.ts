@@ -7,7 +7,7 @@ const debug = require('debug')(
 
 declare module '@expo/metro/metro-transform-worker' {
   export interface JsTransformerConfig {
-    expo_customTransformerPath?: string;
+    expo_customTransformerPath?: string | false;
   }
 }
 
@@ -51,6 +51,12 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
     !originalBabelTransformerPath ||
     defaultBabelTransformerPaths.includes(originalBabelTransformerPath);
   if (hasDefaultTransformerPath && hasDefaultBabelTransformerPath) {
+    return config;
+  }
+
+  // DEBUGGING: When set to false the supervisor is disabled for debugging
+  if (config.transformer?.expo_customTransformerPath === false) {
+    debug('Skipping transform worker supervisor: transformer.expo_customTransformerPath is false');
     return config;
   }
 
