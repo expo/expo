@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix `CNContactViewController` presentation ([#39004](https://github.com/expo/expo/pull/39004) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 14.2.5 — 2025-06-04
