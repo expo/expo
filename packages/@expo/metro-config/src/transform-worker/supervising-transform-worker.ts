@@ -6,6 +6,7 @@ import type { TransformResponse } from './transform-worker';
 import { patchNodeModuleResolver } from './utils/moduleMapper';
 
 const defaultTransformer: typeof import('./transform-worker') = require('./transform-worker');
+const defaultTransformerPath = require.resolve('./transform-worker');
 
 declare module '@expo/metro/metro-transform-worker' {
   export interface JsTransformerConfig {
@@ -38,8 +39,12 @@ const getCustomTransform = (() => {
     // This is done by patching Node.js' module resolution function
     patchNodeModuleResolver();
 
-    if (_transformer == null && _transformerPath != null) {
-      // We only laod the user transformer once and cache it
+    if (
+      _transformer == null &&
+      _transformerPath != null &&
+      _transformerPath !== defaultTransformerPath
+    ) {
+      // We only load the user transformer once and cache it
       // If the user didn't add a custom transformer, we don't load it,
       // but the user maybe has a custom Babel transformer
       debug(`Loading custom transformer at "${_transformerPath}"`);
