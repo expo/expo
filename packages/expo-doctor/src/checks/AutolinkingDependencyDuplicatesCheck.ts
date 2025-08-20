@@ -127,7 +127,12 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
         // copies of the same version are installed
         if (dependency.version) {
           const areVersionsIdentical = dependency.duplicates.every((duplicate) => {
-            return duplicate.version && duplicate.version === dependency.version;
+            return (
+              duplicate.version &&
+              duplicate.version === dependency.version &&
+              /* NOTE(@kitten): We shouldn't have to compare here, but this is just in case there are weirder corruptions I can't think of */
+              duplicate.originPath !== dependency.originPath
+            );
           });
           if (areVersionsIdentical) corruptedInstallations.push(dependency);
         }
