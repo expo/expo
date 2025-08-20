@@ -19,6 +19,7 @@ describe('static loader', () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'server-loader',
         E2E_ROUTER_SERVER_LOADERS: 'true',
+        TEST_SECRET_KEY: 'test-secret-key',
       },
     });
   });
@@ -70,6 +71,18 @@ describe('static loader', () => {
       // Ensure the loader data is rendered in the HTML
       const loaderData = html.querySelector('[data-testid=loader-result]')!;
       expect(loaderData.textContent).toEqual('{"params":{}}');
+    });
+
+    it(`can access environment variables`, async () => {
+      const path = '/env';
+      const response = await server.fetchAsync(path);
+      expect(response.status).toBe(200);
+
+      const html = getHtml(await response.text());
+
+      // Ensure the loader data is rendered in the HTML
+      const loaderData = html.querySelector('[data-testid=loader-result]')!;
+      expect(loaderData.textContent).toContain('"TEST_SECRET_KEY":"test-secret-key"');
     });
 
     it(`loads and renders the data correctly for a dynamic route using generateStaticParams()`, async () => {
