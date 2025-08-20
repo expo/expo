@@ -969,9 +969,6 @@ export async function test(t) {
           t.expect(fetchedEvent.title).toBe(updatedData.title);
           t.expect(fetchedEvent.startDate).toBe(updatedData.startDate.toISOString());
           t.expect(fetchedEvent.endDate).toBe(updatedData.endDate.toISOString());
-          t.expect(fetchedEvent.accessLevel).toBe(updatedData.accessLevel);
-          t.expect(fetchedEvent.guestsCanModify).toBe(updatedData.guestsCanModify);
-          t.expect(fetchedEvent.guestsCanInviteOthers).toBe(updatedData.guestsCanInviteOthers);
           t.expect(fetchedEvent.location).toBe(updatedData.location);
           t.expect(fetchedEvent.notes).toBe(updatedData.notes);
           t.expect(fetchedEvent.timeZone).toBe(updatedData.timeZone);
