@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Emit state update after reload.
+
 ### 💡 Others
 
 ## 1.0.3 — 2025-08-18
