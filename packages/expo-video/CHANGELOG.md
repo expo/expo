@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `sourceLoad` event not being emitted. ([#39023](https://github.com/expo/expo/pull/39023) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 - [Android] Keep the screen on while playback is running by default. ([#37137](https://github.com/expo/expo/pull/37137) by [@behenate](https://github.com/behenate))
