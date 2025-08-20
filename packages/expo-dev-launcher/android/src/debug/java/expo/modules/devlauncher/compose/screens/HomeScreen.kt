@@ -1,11 +1,12 @@
 package expo.modules.devlauncher.compose.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -18,10 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,8 +33,10 @@ import com.composables.core.DialogState
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
+import com.composeunstyled.Icon
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.R
+import expo.modules.devlauncher.compose.DefaultScreenContainer
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
@@ -42,21 +44,19 @@ import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.AppLoadingErrorDialog
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
-import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
-import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devlauncher.compose.ui.ServerUrlInput
-import expo.modules.devlauncher.compose.utils.withIsLast
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
+import expo.modules.devlauncher.services.PackagerInfo
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
-import expo.modules.devmenu.compose.primitives.RoundedSurface
+import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.primitives.pulseEffect
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.ui.Warning
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -72,8 +72,9 @@ fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
       modifier = Modifier
         .displayCutoutPadding()
         .systemBarsPadding()
-        .clip(RoundedCornerShape(12.dp))
-        .background(Theme.colors.background.default)
+        .padding(horizontal = NewAppTheme.spacing.`3`)
+        .clip(RoundedCornerShape(NewAppTheme.borderRadius.xl))
+        .background(NewAppTheme.colors.background.default)
     ) {
       Column {
         RowLayout(
@@ -87,14 +88,14 @@ fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
               )
             }
           },
-          modifier = Modifier.padding(Theme.spacing.medium)
+          modifier = Modifier.padding(NewAppTheme.spacing.`3`)
         ) {
           Heading("Development servers")
         }
 
         Divider()
 
-        Row(modifier = Modifier.padding(Theme.spacing.medium)) {
+        Row(modifier = Modifier.padding(NewAppTheme.spacing.`3`)) {
           DevelopmentSessionHelper()
         }
       }
@@ -111,15 +112,12 @@ fun CrashReport(
     return
   }
 
-  Spacer(Theme.spacing.large)
-
-  RoundedSurface {
+  Row(modifier = Modifier.padding(top = NewAppTheme.spacing.`6` - NewAppTheme.spacing.`4`)) {
     Button(onClick = {
       onClick(crashReport)
     }) {
-      Text(
-        "The last time you tried to open an app the development build crashed. Tap to get more information.",
-        modifier = Modifier.padding(Theme.spacing.medium)
+      Warning(
+        "The last time you tried to open an app the development build crashed. Tap to get more information."
       )
     }
   }
@@ -150,258 +148,242 @@ fun HomeScreen(
   }
 
   HowToStartDevelopmentServerDialog(howToStartDevelopmentDialogState)
+
   AppLoadingErrorDialog(
     errorDialogState,
     currentError = state.loadingError
   )
 
-  Column {
-    ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
-      AppHeader(
-        onProfileClick = onProfileClick
-      )
-    }
+  Column(
+    modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)
+  ) {
+    AppHeader(
+      onProfileClick = onProfileClick,
+      modifier = Modifier.padding(vertical = NewAppTheme.spacing.`4`)
+    )
+
+    val crashReport = state.crashReport
+    CrashReport(
+      crashReport = crashReport,
+      onClick = {
+        onAction(HomeAction.NavigateToCrashReport(it))
+      }
+    )
 
     Column(
       modifier = Modifier
+        .padding(vertical = NewAppTheme.spacing.`6`)
         .verticalScroll(scrollState)
-        .padding(horizontal = Theme.spacing.medium)
     ) {
-      val crashReport = state.crashReport
-      CrashReport(
-        crashReport = crashReport,
-        onClick = {
-          onAction(HomeAction.NavigateToCrashReport(it))
-        }
-      )
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+      ) {
+        NewText(
+          "DEVELOPMENT SERVERS",
+          style = NewAppTheme.font.sm.merge(
+            fontWeight = FontWeight.Medium,
+            fontFamily = NewAppTheme.font.mono
+          ),
+          color = NewAppTheme.colors.text.quaternary
+        )
 
-      Spacer(Theme.spacing.large)
-
-      Row {
-        Spacer(Theme.spacing.small)
-
-        SectionHeader(
-          "Development servers",
-          leftIcon = {
-            Image(
-              painter = painterResource(R.drawable.terminal_icon),
-              contentDescription = "Terminal Icon"
-            )
-          },
-          rightIcon = {
-            if (hasPackager) {
-              Row {
-                Button(onClick = {
-                  howToStartDevelopmentDialogState.visible = true
-                }) {
-                  Theme.colors.icon
-                  DayNighIcon(
-                    id = R.drawable.info_icon,
-                    contentDescription = "Info Icon"
-                  )
-                }
-
-                Spacer(Theme.spacing.small)
-              }
-            }
+        NewText(
+          "INFO",
+          style = NewAppTheme.font.sm.merge(
+            fontWeight = FontWeight.Medium,
+            fontFamily = NewAppTheme.font.mono
+          ),
+          color = NewAppTheme.colors.text.link,
+          modifier = Modifier.clickable {
+            howToStartDevelopmentDialogState.visible = true
           }
         )
       }
 
-      Spacer(Theme.spacing.small)
+      Spacer(NewAppTheme.spacing.`3`)
 
-      RoundedSurface {
-        Column {
-          if (hasPackager) {
-            for (packager in state.runningPackagers) {
-              RunningAppCard(
-                appIp = packager.url,
-                appName = packager.description
-              ) {
-                onAction(HomeAction.OpenApp(packager.url))
-              }
-              Divider()
-            }
-          } else {
-            Box(modifier = Modifier.padding(Theme.spacing.medium)) {
-              DevelopmentSessionHelper()
-            }
-            Divider()
-          }
-
-          val infoColor = Theme.colors.status.info
-          val defaultColor = Theme.colors.status.default
-          val isFetching = state.isFetchingPackagers
-          var isFetchingUIState by remember { mutableStateOf(isFetching) }
-          var fetchStartTime by remember { mutableStateOf<Instant?>(null) }
-
-          LaunchedEffect(isFetching) {
-            if (isFetching) {
-              isFetchingUIState = true
-              fetchStartTime = Clock.System.now()
-              return@LaunchedEffect
-            }
-
-            if (!isFetchingUIState) {
-              return@LaunchedEffect
-            }
-
-            val startTime = fetchStartTime
-            if (startTime == null) {
-              isFetchingUIState = false
-              return@LaunchedEffect
-            }
-
-            val elapsedTime = startTime - Clock.System.now()
-            val remainingTime = 2.seconds - elapsedTime
-
-            delay(remainingTime)
-
-            if (!state.isFetchingPackagers) {
-              isFetchingUIState = false
-            }
-          }
-
-          Button(
-            onClick = {
-              onAction(HomeAction.RefetchRunningApps)
-            },
-            enabled = !isFetchingUIState
-          ) {
-            RowLayout(
-              modifier = Modifier.padding(Theme.spacing.medium),
-              leftComponent = {
-                Box(
-                  modifier = Modifier
-                    .size(Theme.spacing.small)
-                    .drawBehind {
-                      drawCircle(
-                        color = defaultColor,
-                        radius = size.minDimension / 2f
-                      )
-                    }
-                    .then(
-                      if (isFetchingUIState) {
-                        Modifier.pulseEffect(
-                          initialScale = 0.95f,
-                          targetScale = 2f,
-                          brush = SolidColor(infoColor)
-                        )
-                      } else {
-                        Modifier
-                      }
-                    )
-                )
-              }
+      if (hasPackager) {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+        ) {
+          for (packager in state.runningPackagers) {
+            RunningAppCard(
+              appIp = packager.url,
+              appName = packager.description
             ) {
-              Text(
+              onAction(HomeAction.OpenApp(packager.url))
+            }
+          }
+        }
+      } else {
+        DevelopmentSessionHelper()
+        Spacer(NewAppTheme.spacing.`2`)
+      }
+
+      val isFetching = state.isFetchingPackagers
+      var isFetchingUIState by remember { mutableStateOf(isFetching) }
+      var fetchStartTime by remember { mutableStateOf<Instant?>(null) }
+
+      LaunchedEffect(isFetching) {
+        if (isFetching) {
+          isFetchingUIState = true
+          fetchStartTime = Clock.System.now()
+          return@LaunchedEffect
+        }
+
+        if (!isFetchingUIState) {
+          return@LaunchedEffect
+        }
+
+        val startTime = fetchStartTime
+        if (startTime == null) {
+          isFetchingUIState = false
+          return@LaunchedEffect
+        }
+
+        val elapsedTime = startTime - Clock.System.now()
+        val remainingTime = 2.seconds - elapsedTime
+
+        delay(remainingTime)
+
+        isFetchingUIState = state.isFetchingPackagers
+      }
+
+      Button(
+        onClick = {
+          onAction(HomeAction.RefetchRunningApps)
+        },
+        enabled = !isFetchingUIState
+      ) {
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.signal),
+            contentDescription = "Signal Icon",
+            tint = NewAppTheme.colors.text.link,
+            modifier = Modifier
+              .size(16.dp)
+              .then(
                 if (isFetchingUIState) {
-                  "Searching for development servers..."
-                } else {
-                  "Fetch development servers"
-                }
-              )
-            }
-          }
-
-          Divider()
-
-          if (!EmulatorUtilities.isRunningOnEmulator()) {
-            Button(
-              onClick = {
-                onAction(HomeAction.ScanQRCode)
-              }
-            ) {
-              RowLayout(
-                modifier = Modifier.padding(Theme.spacing.medium),
-                leftComponent = {
-                  Image(
-                    painter = painterResource(R.drawable.qr_code),
-                    contentDescription = "QR Code Icon",
-                    modifier = Modifier.size(Theme.spacing.medium)
+                  Modifier.pulseEffect(
+                    initialScale = 0.2f,
+                    brush = SolidColor(NewAppTheme.colors.text.link.copy(alpha = 0.4f))
                   )
-                }
-              ) {
-                Text("Scan QR code")
-              }
-            }
-
-            Divider()
-          }
-
-          Accordion("Enter URL manually", initialState = false) {
-            Column {
-              Spacer(Theme.spacing.tiny)
-
-              ServerUrlInput(
-                openApp = { urlValue ->
-                  onAction(HomeAction.OpenApp(urlValue))
+                } else {
+                  Modifier
                 }
               )
+          )
 
-              Spacer(Theme.spacing.small)
-            }
+          NewText(
+            if (isFetchingUIState) {
+              "Searching for development servers..."
+            } else {
+              "Fetch development servers"
+            },
+            style = NewAppTheme.font.sm,
+            color = NewAppTheme.colors.text.link
+          )
+        }
+      }
+
+      if (!EmulatorUtilities.isRunningOnEmulator()) {
+        Button(
+          onClick = {
+            onAction(HomeAction.ScanQRCode)
           }
+        ) {
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(vertical = 12.dp)
+          ) {
+            Icon(
+              painter = painterResource(R.drawable.scan),
+              contentDescription = "QR code",
+              tint = NewAppTheme.colors.text.link,
+              modifier = Modifier
+                .size(16.dp)
+            )
+
+            NewText(
+              "Scan QR code",
+              style = NewAppTheme.font.sm,
+              color = NewAppTheme.colors.text.link
+            )
+          }
+        }
+      }
+
+      Accordion(
+        "Enter URL manually",
+        initialState = false,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(vertical = 12.dp)
+      ) {
+        Column {
+          Spacer(NewAppTheme.spacing.`1`)
+          ServerUrlInput(
+            openApp = { urlValue ->
+              onAction(HomeAction.OpenApp(urlValue))
+            }
+          )
         }
       }
 
       if (state.recentlyOpenedApps.isNotEmpty()) {
-        Spacer(Theme.spacing.large)
+        Spacer(NewAppTheme.spacing.`6`)
 
-        Row {
-          Spacer(Theme.spacing.small)
+        Row(
+          horizontalArrangement = Arrangement.SpaceBetween,
+          modifier = Modifier.fillMaxWidth()
+        ) {
+          NewText(
+            "RECENTLY OPEND",
+            style = NewAppTheme.font.sm.merge(
+              fontWeight = FontWeight.Medium,
+              fontFamily = NewAppTheme.font.mono
+            ),
+            color = NewAppTheme.colors.text.quaternary
+          )
 
-          SectionHeader(
-            "Recently",
-            rightIcon = {
-              Row {
-                RoundedSurface(color = Color.Unspecified, borderRadius = Theme.sizing.borderRadius.extraSmall) {
-                  Button(
-                    onClick = {
-                      onAction(HomeAction.ResetRecentlyOpenedApps)
-                    }
-                  ) {
-                    Text(
-                      "Reset",
-                      color = Theme.colors.text.secondary,
-                      fontSize = Theme.typography.small,
-                      fontWeight = FontWeight.Bold,
-                      modifier = Modifier
-                        .padding(horizontal = Theme.spacing.tiny, vertical = Theme.spacing.micro)
-                    )
-                  }
-                }
-
-                Spacer(Theme.spacing.small - Theme.spacing.tiny)
-              }
+          NewText(
+            "RESET",
+            style = NewAppTheme.font.sm.merge(
+              fontWeight = FontWeight.Medium,
+              fontFamily = NewAppTheme.font.mono
+            ),
+            color = NewAppTheme.colors.text.link,
+            modifier = Modifier.clickable {
+              onAction(HomeAction.ResetRecentlyOpenedApps)
             }
           )
         }
 
-        Spacer(Theme.spacing.small)
+        Spacer(NewAppTheme.spacing.`3`)
 
-        RoundedSurface {
-          Column {
-            for ((packager, isLast) in state.recentlyOpenedApps.withIsLast()) {
-              val url = packager.url
-              val description = packager.name
-
-              RunningAppCard(
-                appIp = url,
-                appName = description
-              ) {
-                onAction(HomeAction.OpenApp(url))
-              }
-
-              if (!isLast) {
-                Divider()
-              }
+        Column(
+          verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+        ) {
+          for (packager in state.recentlyOpenedApps) {
+            RunningAppCard(
+              appIp = packager.url,
+              appName = packager.name
+            ) {
+              onAction(HomeAction.OpenApp(packager.url))
             }
           }
         }
       }
-
-      Spacer(Theme.spacing.large)
     }
   }
 }
@@ -409,20 +391,34 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-  HomeScreen(
-    state = HomeState(
-      recentlyOpenedApps = listOf(
-        DevLauncherAppEntry(
-          timestamp = 1752249592809L,
-          name = "BareExpo",
-          url = "http://10.0.2.2:8081",
-          isEASUpdate = false,
-          updateMessage = null,
-          branchName = null
+  DefaultScreenContainer {
+    HomeScreen(
+      state = HomeState(
+        runningPackagers = setOf(
+          PackagerInfo(
+            description = "BareExpo",
+            url = "http://localhost:8081",
+            isDevelopmentSession = true
+          ),
+          PackagerInfo(
+            description = "Another App",
+            url = "http://localhost:8081",
+            isDevelopmentSession = true
+          )
+        ),
+        recentlyOpenedApps = listOf(
+          DevLauncherAppEntry(
+            timestamp = 1752249592809L,
+            name = "BareExpo",
+            url = "http://10.0.2.2:8081",
+            isEASUpdate = false,
+            updateMessage = null,
+            branchName = null
+          )
         )
-      )
-    ),
-    onAction = {},
-    onProfileClick = {}
-  )
+      ),
+      onAction = {},
+      onProfileClick = {}
+    )
+  }
 }

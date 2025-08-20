@@ -38,12 +38,7 @@ declare const BottomTabNavigator: React.ComponentType<Omit<import("@react-naviga
         navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
     }) => BottomTabNavigationOptions) | undefined;
-    screenLayout?: ((props: {
-        route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
-        navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
-        theme: ReactNavigation.Theme;
-        children: React.ReactElement;
-    }) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("@react-navigation/native").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
@@ -92,12 +87,7 @@ declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react
         navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
     }) => BottomTabNavigationOptions) | undefined;
-    screenLayout?: ((props: {
-        route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
-        navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
-        theme: ReactNavigation.Theme;
-        children: React.ReactElement;
-    }) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("@react-navigation/native").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
@@ -141,12 +131,7 @@ declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react
         navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
     }) => BottomTabNavigationOptions) | undefined;
-    screenLayout?: ((props: {
-        route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
-        navigation: import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>;
-        theme: ReactNavigation.Theme;
-        children: React.ReactElement;
-    }) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("@react-navigation/native").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;

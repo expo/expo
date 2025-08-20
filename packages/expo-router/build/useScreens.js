@@ -79,11 +79,13 @@ function getSortedChildren(children, order = [], initialRouteName) {
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-function useSortedScreens(order, protectedScreens) {
+function useSortedScreens(order, protectedScreens, useOnlyUserDefinedScreens = false) {
     const node = (0, Route_1.useRouteNode)();
-    const sorted = node?.children?.length
-        ? getSortedChildren(node.children, order, node.initialRouteName)
-        : [];
+    const nodeChildren = node?.children ?? [];
+    const children = useOnlyUserDefinedScreens
+        ? nodeChildren.filter((child) => order.some((userDefinedScreen) => userDefinedScreen.name === child.route))
+        : nodeChildren;
+    const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
     return react_1.default.useMemo(() => sorted
         .filter((item) => !protectedScreens.has(item.route.route))
         .map((value) => {

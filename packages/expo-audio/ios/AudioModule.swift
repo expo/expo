@@ -21,9 +21,9 @@ public class AudioModule: Module {
       self.appContext?.permissions?.register([
         AudioRecordingRequester()
       ])
+      #endif
 
       setupInterruptionHandling()
-      #endif
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
@@ -135,7 +135,11 @@ public class AudioModule: Module {
       }
 
       Property("playbackRate") { player in
-        player.ref.rate
+        return if player.isPlaying {
+          player.ref.rate
+        } else {
+          player.currentRate
+        }
       }
 
       Property("paused") { player in

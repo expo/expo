@@ -1,7 +1,5 @@
-import fs from 'fs';
-
-import { mergeLinkingOptionsAsync } from './mergeLinkingOptions';
 import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
 import {
   type DependencyResolution,
   scanDependenciesRecursively,
@@ -9,9 +7,9 @@ import {
   filterMapResolutionResult,
   mergeResolutionResults,
 } from '../dependencies';
-import { PackageRevision, SearchOptions, SearchResults, SupportedPlatform } from '../types';
+import { PackageRevision, SearchResults, SupportedPlatform } from '../types';
 
-async function resolveExpoModule(
+export async function resolveExpoModule(
   resolution: DependencyResolution,
   platform: SupportedPlatform,
   excludeNames: Set<string>
@@ -28,9 +26,9 @@ async function resolveExpoModule(
       config: expoModuleConfig,
       duplicates:
         resolution.duplicates?.map((duplicate) => ({
-          name: resolution.name,
-          path: duplicate,
-          version: '', // NOTE: Are we actually using this?
+          name: duplicate.name,
+          path: duplicate.path,
+          version: duplicate.version,
         })) ?? [],
     };
   } else {
@@ -38,26 +36,30 @@ async function resolveExpoModule(
   }
 }
 
-/**
- * Searches for modules to link based on given config.
- */
-export async function findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults> {
-  const options = await mergeLinkingOptionsAsync(providedOptions);
-  const excludeNames = new Set(options.exclude);
+interface FindModulesParams {
+  appRoot: string;
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
+}
+
+/** Searches for modules to link based on given config. */
+export async function findModulesAsync({
+  appRoot,
+  autolinkingOptions,
+}: FindModulesParams): Promise<SearchResults> {
+  const excludeNames = new Set(autolinkingOptions.exclude);
 
   // custom native modules should be resolved first so that they can override other modules
-  const searchPaths =
-    options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
-      ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
-      : (options.searchPaths ?? []);
+  const searchPaths = autolinkingOptions.nativeModulesDir
+    ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
+    : autolinkingOptions.searchPaths;
 
   return filterMapResolutionResult(
     mergeResolutionResults(
       await Promise.all([
         ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
-        scanDependenciesRecursively(options.projectRoot),
+        scanDependenciesRecursively(appRoot),
       ])
     ),
-    (resolution) => resolveExpoModule(resolution, options.platform, excludeNames)
+    (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames)
   );
 }

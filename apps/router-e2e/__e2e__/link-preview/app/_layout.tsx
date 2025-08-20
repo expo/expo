@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-const isAllowed = true;
+const isAllowed = false;
 
 export default function Layout() {
   return (

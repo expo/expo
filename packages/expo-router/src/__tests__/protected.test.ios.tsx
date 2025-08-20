@@ -1,3 +1,4 @@
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { createContext, Dispatch, SetStateAction, use, useState } from 'react';
 import { Text } from 'react-native';
 
@@ -5,7 +6,7 @@ import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, fireEvent, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('should protect routes during the initial load', () => {
   let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];

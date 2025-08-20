@@ -25,6 +25,15 @@ public class DevMenuPreferences: Module {
    and applying some preferences to static classes like interceptors.
    */
   static func setup() {
+    #if os(tvOS)
+    UserDefaults.standard.register(defaults: [
+      motionGestureEnabledKey: false,
+      touchGestureEnabledKey: false,
+      keyCommandsEnabledKey: true,
+      showsAtLaunchKey: false,
+      isOnboardingFinishedKey: true
+    ])
+    #else
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: true,
       touchGestureEnabledKey: true,
@@ -32,6 +41,7 @@ public class DevMenuPreferences: Module {
       showsAtLaunchKey: false,
       isOnboardingFinishedKey: false
     ])
+    #endif
 
     /*
      We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.

@@ -14,9 +14,7 @@ struct DevMenuRNDevMenu: View {
       }
       .padding()
     }
-#if !os(tvOS)
-    .background(Color(.secondarySystemBackground))
-#endif
+    .background(Color.expoSecondarySystemBackground)
     .cornerRadius(18)
   }
 }

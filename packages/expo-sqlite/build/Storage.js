@@ -1,11 +1,14 @@
 import AwaitLock from 'await-lock';
 import { openDatabaseAsync, openDatabaseSync } from './index';
+import { normalizeStorageIndex } from './paramUtils';
 const DATABASE_VERSION = 1;
 const STATEMENT_GET = 'SELECT value FROM storage WHERE key = ?;';
 const STATEMENT_SET = 'INSERT INTO storage (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value;';
 const STATEMENT_REMOVE = 'DELETE FROM storage WHERE key = ?;';
 const STATEMENT_GET_ALL_KEYS = 'SELECT key FROM storage;';
 const STATEMENT_CLEAR = 'DELETE FROM storage;';
+const STATEMENT_LENGTH = 'SELECT COUNT(*) as count FROM storage;';
+const STATEMENT_GET_KEY_BY_INDEX = 'SELECT key FROM storage LIMIT 1 OFFSET ?;';
 const MIGRATION_STATEMENT_0 = 'CREATE TABLE IF NOT EXISTS storage (key TEXT PRIMARY KEY NOT NULL, value TEXT);';
 /**
  * Key-value store backed by SQLite. This class accepts a `databaseName` parameter in its constructor, which is the name of the database file to use for the storage.
@@ -86,6 +89,26 @@ export class SQLiteStorage {
             this.awaitLock.release();
         }
     }
+    /**
+     * Retrieves the number of key-value pairs stored in the storage asynchronously.
+     */
+    async getLengthAsync() {
+        const db = await this.getDbAsync();
+        const result = await db.getFirstAsync(STATEMENT_LENGTH);
+        return result?.count ?? 0;
+    }
+    /**
+     * Retrieves the key at the given index asynchronously.
+     */
+    async getKeyByIndexAsync(index) {
+        const db = await this.getDbAsync();
+        const offset = normalizeStorageIndex(index);
+        if (offset == null) {
+            return null;
+        }
+        const result = await db.getFirstAsync(STATEMENT_GET_KEY_BY_INDEX, offset);
+        return result?.key ?? null;
+    }
     //#endregion
     //#region Synchronous API
     /**
@@ -149,6 +172,26 @@ export class SQLiteStorage {
             this.db.closeSync();
             this.db = null;
         }
+    }
+    /**
+     * Retrieves the number of key-value pairs stored in the storage synchronously.
+     */
+    getLengthSync() {
+        const db = this.getDbSync();
+        const result = db.getFirstSync(STATEMENT_LENGTH);
+        return result.count ?? 0;
+    }
+    /**
+     * Retrieves the key at the given index synchronously.
+     */
+    getKeyByIndexSync(index) {
+        const db = this.getDbSync();
+        const offset = normalizeStorageIndex(index);
+        if (offset == null) {
+            return null;
+        }
+        const result = db.getFirstSync(STATEMENT_GET_KEY_BY_INDEX, offset);
+        return result?.key ?? null;
     }
     //#endregion
     //#region react-native-async-storage compatible API

@@ -3,18 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._resolveReactNativeModule = _resolveReactNativeModule;
+exports.resolveReactNativeModule = resolveReactNativeModule;
 exports.createReactNativeConfigAsync = createReactNativeConfigAsync;
 exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
-const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
 const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
-const autolinking_1 = require("../autolinking");
 const dependencies_1 = require("../dependencies");
-async function _resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
+async function resolveReactNativeModule(resolution, projectConfig, platform, excludeNames) {
     if (excludeNames.has(resolution.name)) {
         return null;
     }
@@ -66,29 +64,29 @@ async function _resolveReactNativeModule(resolution, projectConfig, platform, ex
 /**
  * Create config for react-native core autolinking.
  */
-async function createReactNativeConfigAsync(providedOptions) {
-    const options = await (0, autolinking_1.mergeLinkingOptionsAsync)(providedOptions);
-    const excludeNames = new Set(options.exclude);
-    const projectConfig = await (0, config_1.loadConfigAsync)(options.projectRoot);
+async function createReactNativeConfigAsync({ appRoot, sourceDir, autolinkingOptions, }) {
+    const excludeNames = new Set(autolinkingOptions.exclude);
+    const projectConfig = await (0, config_1.loadConfigAsync)(appRoot);
     // custom native modules should be resolved first so that they can override other modules
-    const searchPaths = options.nativeModulesDir && fs_1.default.existsSync(options.nativeModulesDir)
-        ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
-        : (options.searchPaths ?? []);
-    const limitDepth = options.legacy_shallowReactNativeLinking ? 1 : undefined;
+    const searchPaths = autolinkingOptions.nativeModulesDir
+        ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
+        : autolinkingOptions.searchPaths;
+    const limitDepth = autolinkingOptions.legacy_shallowReactNativeLinking ? 1 : undefined;
     const resolutions = (0, dependencies_1.mergeResolutionResults)(await Promise.all([
-        (0, dependencies_1.scanDependenciesFromRNProjectConfig)(options.projectRoot, projectConfig),
+        (0, dependencies_1.scanDependenciesFromRNProjectConfig)(appRoot, projectConfig),
         ...searchPaths.map((searchPath) => (0, dependencies_1.scanDependenciesInSearchPath)(searchPath)),
-        (0, dependencies_1.scanDependenciesRecursively)(options.projectRoot, { limitDepth }),
+        (0, dependencies_1.scanDependenciesRecursively)(appRoot, { limitDepth }),
     ]));
-    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => _resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames));
+    const dependencies = await (0, dependencies_1.filterMapResolutionResult)(resolutions, (resolution) => resolveReactNativeModule(resolution, projectConfig, autolinkingOptions.platform, excludeNames));
     return {
-        root: options.projectRoot,
+        root: appRoot,
         reactNativePath: resolutions['react-native']?.path,
         dependencies,
-        project: await resolveAppProjectConfigAsync(options.projectRoot, options.platform, options.sourceDir),
+        project: await resolveAppProjectConfigAsync(appRoot, autolinkingOptions.platform, sourceDir),
     };
 }
 async function resolveAppProjectConfigAsync(projectRoot, platform, sourceDir) {
+    // TODO(@kitten): use the commandRoot here to find these files in non <projectRoot>/<platform> folders
     if (platform === 'android') {
         const androidDir = path_1.default.join(projectRoot, 'android');
         const { gradle, manifest } = await (0, androidResolver_1.findGradleAndManifestAsync)({ androidDir, isLibrary: false });

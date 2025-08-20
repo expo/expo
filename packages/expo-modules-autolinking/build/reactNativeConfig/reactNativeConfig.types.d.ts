@@ -1,27 +1,4 @@
-import type { SupportedPlatform } from '../types';
-/**
- * Options for 'react-native-config' command.
- */
-export interface RNConfigCommandOptions {
-    platform: SupportedPlatform;
-    projectRoot: string;
-    searchPaths?: string[];
-    transitiveLinkingDependencies: string[];
-    sourceDir?: string;
-    nativeModulesDir?: string | null;
-    /** Only scan direct "dependencies" of a project for React Native modules, rather than including transitive dependencies.
-     * @remarks
-     * Before SDK 54, React Native modules would only be linked if they were listed as dependencies
-     * of a project. However, in SDK 54+ transitive React Native modules dependencies are also
-     * auto-linked, unless this flag is enabled.
-     * @privateRemarks
-     * This is not an argument, but can only be specified on `expo.autolinking`
-     */
-    legacy_shallowReactNativeLinking?: boolean;
-}
-/**
- * Dependency configuration for Android platform.
- */
+/** Dependency configuration for Android platform. */
 export interface RNConfigDependencyAndroid {
     sourceDir: string;
     packageImportPath: string | null;
@@ -36,18 +13,14 @@ export interface RNConfigDependencyAndroid {
     cxxModuleHeaderName?: string | null;
     isPureCxxDependency?: boolean;
 }
-/**
- * Dependency configuration for iOS platform.
- */
+/** Dependency configuration for iOS platform. */
 export interface RNConfigDependencyIos {
     podspecPath: string;
     version: string;
     configurations: string[];
     scriptPhases: any[];
 }
-/**
- * Dependency configuration.
- */
+/** Dependency configuration. */
 export interface RNConfigDependency {
     root: string;
     name: string;
@@ -56,9 +29,7 @@ export interface RNConfigDependency {
         ios?: RNConfigDependencyIos;
     };
 }
-/**
- * Result of 'react-native-config' command.
- */
+/** Result of 'react-native-config' command. */
 export interface RNConfigResult {
     root: string;
     reactNativePath: string;

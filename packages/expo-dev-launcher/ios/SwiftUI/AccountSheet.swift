@@ -7,24 +7,28 @@ struct AccountSheet: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
 
   var body: some View {
-    ScrollView {
-      VStack(spacing: 0) {
-        accountScreenHeader
+    VStack(spacing: 0) {
+      accountScreenHeader
 
-        Spacer(minLength: 16)
-
-        VStack(spacing: 0) {
-          if viewModel.isAuthenticated {
-            userAccountSelector
-          } else {
-            loginSignupCard
-          }
-        }
-        .padding(.horizontal, 16)
-
+      if !viewModel.isAuthenticated {
+        Spacer()
+        Image("expo-go-logo", bundle: getDevLauncherBundle())
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(width: 180)
         Spacer()
       }
+
+      VStack(spacing: 0) {
+        if viewModel.isAuthenticated {
+          userAccountSelector
+        } else {
+          loginSignupCard
+        }
+      }
+      .padding(.horizontal, 16)
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if !os(tvOS)
     .background(Color(.systemGroupedBackground))
     #endif
@@ -55,27 +59,28 @@ struct AccountSheet: View {
   }
 
   private var userAccountSelector: some View {
-    VStack(spacing: 16) {
-      if let userData = viewModel.user, !userData.accounts.isEmpty {
-        VStack(spacing: 0) {
-          ForEach(Array(userData.accounts.enumerated()), id: \.element.id) { index, account in
-            accountRow(account: account)
-            if index < userData.accounts.count - 1 {
-              Divider()
+    VStack(spacing: 0) {
+      ScrollView {
+        VStack(spacing: 16) {
+          if let userData = viewModel.user, !userData.accounts.isEmpty {
+            VStack(spacing: 0) {
+              ForEach(Array(userData.accounts.enumerated()), id: \.element.id) { index, account in
+                accountRow(account: account)
+                if index < userData.accounts.count - 1 {
+                  Divider()
+                }
+              }
             }
+            .cornerRadius(12)
           }
         }
-        #if !os(tvOS)
-        .background(Color(.systemBackground))
-        #endif
-        .clipShape(RoundedRectangle(cornerRadius: 12))
       }
 
       Button {
         viewModel.signOut()
       }
       label: {
-        Text("Log Out")
+        Text("Logout")
           .font(.headline)
           .fontWeight(.bold)
           .foregroundColor(.white)
@@ -83,7 +88,7 @@ struct AccountSheet: View {
           .padding(.vertical, 12)
       }
       .background(Color.black)
-      .cornerRadius(8)
+      .cornerRadius(12)
     }
   }
 
@@ -92,8 +97,6 @@ struct AccountSheet: View {
       Text("Log in or create an account to view local development servers and more.")
         .font(.system(size: 14))
         .foregroundColor(.secondary)
-        .multilineTextAlignment(.leading)
-        .frame(maxWidth: .infinity, alignment: .leading)
 
       #if os(tvOS)
       VStack(spacing: 8) {
@@ -111,11 +114,6 @@ struct AccountSheet: View {
           .scaleEffect(0.8)
       }
     }
-    .padding(16)
-    #if !os(tvOS)
-    .background(Color(.systemBackground))
-    #endif
-    .cornerRadius(12)
   }
 
   private var signInButton: some View {
@@ -133,7 +131,7 @@ struct AccountSheet: View {
         .padding(.vertical, 12)
     }
     .background(Color.black)
-    .cornerRadius(8)
+    .cornerRadius(12)
     .disabled(viewModel.isAuthenticating)
   }
 
@@ -147,14 +145,12 @@ struct AccountSheet: View {
       Text("Sign Up")
         .font(.headline)
         .fontWeight(.semibold)
-        .foregroundColor(.black)
+        .foregroundColor(.black.opacity(0.7))
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
     }
-    #if !os(tvOS)
-    .background(Color(.systemGray5))
-    #endif
-    .cornerRadius(8)
+    .background(Color(.white))
+    .cornerRadius(12)
     .disabled(viewModel.isAuthenticating)
   }
 
@@ -176,9 +172,9 @@ struct AccountSheet: View {
         Spacer()
 
         if viewModel.selectedAccountId == account.id {
-          Image(systemName: "checkmark")
+          Image(systemName: "checkmark.circle.fill")
             .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.gray)
+            .foregroundColor(.green)
         }
       }
       .padding(.horizontal, 16)

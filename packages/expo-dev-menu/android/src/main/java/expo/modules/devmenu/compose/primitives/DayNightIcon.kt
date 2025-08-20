@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.composeunstyled.Icon
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
 @Composable
 fun DayNighIcon(
@@ -31,6 +31,6 @@ fun DayNighIcon(
     painter = painter,
     contentDescription = contentDescription,
     modifier = modifier,
-    tint = Theme.colors.icon.default
+    tint = NewAppTheme.colors.icon.tertiary
   )
 }

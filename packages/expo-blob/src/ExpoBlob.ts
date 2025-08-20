@@ -89,7 +89,7 @@ export class Blob extends NativeBlobModule.Blob {
 
         const chunkSize = DEFAULT_CHUNK_SIZE;
         const end = Math.min(offset + chunkSize, cachedBytes.length);
-        controller.enqueue(cachedBytes.subarray(offset, end));
+        controller.enqueue(cachedBytes.subarray(offset, end) as ArrayBufferView<ArrayBuffer>);
         offset = end;
       },
     });

@@ -1,6 +1,10 @@
+import { Terminal } from '@expo/metro/metro-core';
+import arg = require('arg');
+import { stripVTControlCharacters } from 'node:util';
+
 import { stripAnsi } from '../../../../utils/ansi';
 import {
-  maybeSymbolicateAndFormatReactErrorLogAsync,
+  maybeSymbolicateAndFormatJSErrorStackLogAsync,
   parseErrorStringToObject,
 } from '../../serverLogLikeMetro';
 import {
@@ -10,48 +14,65 @@ import {
   stripMetroInfo,
 } from '../MetroTerminalReporter';
 import { BundleDetails } from '../TerminalReporter.types';
-import { LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED } from './fixtures/terminal-logs';
+import {
+  LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_52,
+  LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_54,
+  LOG_MULTIPLE_ERRORS_AND_OTHER_VALUES_SDK_54,
+} from './fixtures/terminal-logs';
 
 const asBundleDetails = (value: any) => value as BundleDetails;
+
+jest.useFakeTimers();
 
 jest.mock('../../serverLogLikeMetro', () => {
   const original = jest.requireActual('../../serverLogLikeMetro');
   return {
     ...original,
     parseErrorStringToObject: jest.fn(original.parseErrorStringToObject),
-    maybeSymbolicateAndFormatReactErrorLogAsync: jest.fn(),
+    maybeSymbolicateAndFormatJSErrorStackLogAsync: jest.fn(),
   };
 });
 
 describe('symbolicate React stacks', () => {
   const buildID = '1';
-  const reporter = new MetroTerminalReporter('/', {
+
+  const terminal = {
+    // Only the bare minimum to pass the tests.
     log: jest.fn(),
     persistStatus: jest.fn(),
     status: jest.fn(),
     flush: jest.fn(),
     _update: jest.fn(),
-  } as any);
+  } satisfies Partial<Terminal>;
+
+  const reporter = new MetroTerminalReporter('/', terminal as any);
   reporter._getElapsedTime = jest.fn(() => BigInt(100));
   reporter._bundleTimers.set(buildID, BigInt(0));
 
-  it(`should symbolicate a react error stack`, () => {
+  beforeEach(() => {
+    terminal.log.mockReset();
+  });
+
+  it(`should symbolicate a react error stack - SDK 52 style`, async () => {
     let parsedError: any;
     jest
-      .mocked(maybeSymbolicateAndFormatReactErrorLogAsync)
-      .mockImplementationOnce((projectRoot, level, error) => {
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockImplementationOnce((_projectRoot, _level, error) => {
         parsedError = error;
-        return Promise.resolve('Symbolicated error message\n\n  at App.js:1:1\n  at index.js:2:2');
+        return Promise.resolve({
+          isFallback: false,
+          stack: '\n\n  at App.js:1:1\n  at index.js:2:2',
+        });
       });
 
-    reporter._log(LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED as any);
+    reporter._log(LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_52 as any);
     expect(parseErrorStringToObject).toHaveBeenCalledWith(
       expect.stringMatching(
         /http:\/\/192.168.1.245:8081\/packages\/expo-router\/entry.bundle\/\/&platform=ios/
       )
     );
 
-    expect(maybeSymbolicateAndFormatReactErrorLogAsync).toHaveBeenCalledTimes(1);
+    expect(maybeSymbolicateAndFormatJSErrorStackLogAsync).toHaveBeenCalledTimes(1);
 
     expect(parsedError.message).toEqual(
       'Warning: Text strings must be rendered within a <Text> component.'
@@ -63,6 +84,115 @@ describe('symbolicate React stacks', () => {
       lineNumber: 62489,
       methodName: 'View',
     });
+
+    // Wait for mocked symbolication promise to resolve.
+    await jest.runAllTimersAsync();
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+" ERROR 
+
+  at App.js:1:1
+  at index.js:2:2"
+`);
+  });
+
+  it(`should symbolicate a react error stack - SDK 54 style`, async () => {
+    const parsedErrorsSentToSymbolication: any[] = [];
+    jest
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockImplementationOnce((_projectRoot, _level, error) => {
+        parsedErrorsSentToSymbolication.push(error);
+        return Promise.resolve({
+          isFallback: false,
+          stack: '\n\n  at App.js:1:1\n  at index.js:2:2',
+        });
+      })
+      .mockImplementationOnce((_projectRoot, _level, error) => {
+        parsedErrorsSentToSymbolication.push(error);
+        return Promise.resolve({
+          isFallback: false,
+          stack: '\n\n  at App2.js:1:1\n  at index2.js:2:2',
+        });
+      });
+
+    reporter._log(LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_54 as any);
+    expect(parseErrorStringToObject).toHaveBeenCalledWith(
+      expect.stringMatching(
+        /http:\/\/localhost:8081\/packages\/expo-router\/entry.bundle\/\/&platform=ios/
+      )
+    );
+
+    expect(maybeSymbolicateAndFormatJSErrorStackLogAsync).toHaveBeenCalledTimes(2);
+
+    // Only data string items containing a stack should be sent for symbolication.
+    expect(parsedErrorsSentToSymbolication).toHaveLength(2);
+    expect(parsedErrorsSentToSymbolication[0].message).toEqual('');
+    expect(parsedErrorsSentToSymbolication[0].stack[2]).toEqual({
+      arguments: [],
+      column: 66,
+      file: 'http://localhost:8081/packages/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.expo.routere2e&transform.routerRoot=__e2e__%2Fstatic-rendering%2Fapp&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable',
+      lineNumber: 5517,
+      methodName: '_construct',
+    });
+    expect(parsedErrorsSentToSymbolication[1].message).toEqual('');
+    expect(parsedErrorsSentToSymbolication[1].stack[1]).toEqual({
+      arguments: [],
+      column: 72,
+      file: 'http://localhost:8081/packages/expo-router/entry.bundle//&platform=ios&dev=true&lazy=true&minify=false&inlineSourceMap=false&modulesOnly=false&runModule=true&excludeSource=true&sourcePaths=url-server&app=com.expo.routere2e&transform.routerRoot=__e2e__%2Fstatic-rendering%2Fapp&transform.engine=hermes&transform.bytecode=1&unstable_transformProfile=hermes-stable',
+      lineNumber: 63388,
+      methodName: 'View',
+    });
+
+    await jest.runAllTimersAsync();
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+" ERROR Text strings must be rendered within a <Text> component.
+
+  at App.js:1:1
+  at index.js:2:2
+
+  at App2.js:1:1
+  at index2.js:2:2"
+`);
+  });
+
+  it(`should symbolicate multiple errors stacks - SDK 54 style`, async () => {
+    jest
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockResolvedValueOnce({
+        // First error in console.error call
+        isFallback: false,
+        stack: '\n\n  at App.js:1:1\n  at index.js:2:2',
+      })
+      .mockResolvedValueOnce({
+        // Second error in console.error call
+        isFallback: false,
+        stack: '\n\n  at App2.js:1:1\n  at index2.js:2:2',
+      })
+      .mockResolvedValueOnce({
+        // Owner stack generated for the call
+        isFallback: false,
+        stack: '\n\n  at App3.js:1:1\n  at index3.js:2:2',
+      });
+
+    reporter._log(LOG_MULTIPLE_ERRORS_AND_OTHER_VALUES_SDK_54 as any);
+    await jest.runAllTimersAsync();
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+" ERROR [Error: Err1][Error: Err2]String
+
+  at App.js:1:1
+  at index.js:2:2
+
+  at App2.js:1:1
+  at index2.js:2:2
+
+  at App3.js:1:1
+  at index3.js:2:2"
+`);
   });
 });
 

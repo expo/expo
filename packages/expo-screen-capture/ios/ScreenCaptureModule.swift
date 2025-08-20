@@ -115,43 +115,38 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func preventScreenshots() {
-    guard let keyWindow = keyWindow,
-      let visibleView = keyWindow.subviews.first else { return }
+    guard let keyWindow = keyWindow else {
+      return
+    }
 
     let textField = UITextField()
     textField.isSecureTextEntry = true
     textField.isUserInteractionEnabled = false
-    textField.backgroundColor = UIColor.black
+    textField.backgroundColor = UIColor.clear
+    textField.frame = UIScreen.main.bounds
 
-    originalParent = visibleView.layer.superlayer
+    originalParent = keyWindow.layer.superlayer
 
-    if let viewSuperlayer = visibleView.layer.superlayer {
-      viewSuperlayer.addSublayer(textField.layer)
+    keyWindow.layer.superlayer?.addSublayer(textField.layer)
 
-      if let firstTextFieldSublayer = textField.layer.sublayers?.first {
-        visibleView.layer.removeFromSuperlayer()
-        visibleView.layer.position = CGPoint(x: visibleView.bounds.width / 2, y: visibleView.bounds.height / 2)
-        firstTextFieldSublayer.addSublayer(visibleView.layer)
-      }
+    if let firstTextFieldSublayer = textField.layer.sublayers?.first {
+      keyWindow.layer.removeFromSuperlayer()
+      firstTextFieldSublayer.addSublayer(keyWindow.layer)
     }
 
     protectionTextField = textField
   }
 
   private func allowScreenshots() {
-    guard let textField = protectionTextField else {
+    guard let textField = protectionTextField,
+      let window = keyWindow,
+      let originalParentLayer = originalParent else {
       return
     }
 
-    if let protectedLayer = textField.layer.sublayers?.first?.sublayers?.first {
-      protectedLayer.removeFromSuperlayer()
-      if let parent = originalParent {
-        parent.addSublayer(protectedLayer)
-      }
-    }
-
+    window.layer.removeFromSuperlayer()
+    originalParentLayer.addSublayer(window.layer)
     textField.layer.removeFromSuperlayer()
-
     protectionTextField = nil
     originalParent = nil
   }

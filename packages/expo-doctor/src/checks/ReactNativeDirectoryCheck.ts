@@ -5,6 +5,7 @@ import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
 } from '../utils/doctorConfig';
+import { checkLibraries } from '../utils/reactNativeDirectoryApi';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
 export const DEFAULT_PACKAGES_TO_IGNORE = [
@@ -50,73 +51,72 @@ export class ReactNativeDirectoryCheck implements DoctorCheck {
       ...userDefinedIgnoredPackages,
     ]);
 
-    try {
-      const response = await fetch('https://reactnative.directory/api/libraries/check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ packages: packageNames }),
-      });
-
-      if (!response.ok) {
-        return {
-          isSuccessful: false,
-          issues: [
-            `Directory check failed with unexpected server response: ${response.statusText}`,
-          ],
-          advice: [],
-        };
-      }
-
-      const packageMetadata = (await response.json()) as Record<
-        string,
-        ReactNativeDirectoryCheckResult
-      >;
-
-      packageNames.forEach((packageName) => {
-        const metadata = packageMetadata[packageName];
-        if (!metadata) {
-          unknownPackages.push(packageName);
-          return;
-        }
-
-        if (metadata.unmaintained) {
-          unmaintainedPackages.push(packageName);
-        }
-
-        if (metadata.newArchitecture === 'untested') {
-          newArchUntestedPackages.push(packageName);
-        }
-
-        if (metadata.newArchitecture === 'unsupported') {
-          newArchUnsupportedPackages.push(packageName);
-        }
-      });
-    } catch (error) {
+    const packageMetadata = await checkLibraries(packageNames);
+    if (!packageMetadata) {
       return {
         isSuccessful: false,
-        issues: [`Directory check failed with error: ${error}`],
+        issues: ['Directory check failed with unexpected server response'],
         advice: [],
       };
     }
 
+    packageNames.forEach((packageName) => {
+      const metadata = packageMetadata[packageName];
+      if (!metadata) {
+        unknownPackages.push(packageName);
+        return;
+      }
+
+      if (metadata.unmaintained) {
+        unmaintainedPackages.push(packageName);
+      }
+
+      if (metadata.newArchitecture === 'untested') {
+        newArchUntestedPackages.push(packageName);
+      }
+
+      if (metadata.newArchitecture === 'unsupported') {
+        newArchUnsupportedPackages.push(packageName);
+      }
+    });
+
+    let hasCriticalIssues = false;
+
     if (newArchUnsupportedPackages.length > 0) {
+      hasCriticalIssues = true;
       issues.push(
         `${chalk.bold(`  Unsupported on New Architecture:`)} ${newArchUnsupportedPackages.join(', ')}`
       );
     }
 
     if (newArchUntestedPackages.length > 0) {
+      hasCriticalIssues = true;
       issues.push(
         `${chalk.bold(`  Untested on New Architecture:`)} ${newArchUntestedPackages.join(', ')}`
       );
     }
 
     if (unmaintainedPackages.length > 0) {
+      hasCriticalIssues = true;
       issues.push(`${chalk.bold(`  Unmaintained:`)} ${unmaintainedPackages.join(', ')}`);
     }
 
-    if (listUnknownPackagesEnabled && unknownPackages.length > 0) {
+    if (
+      (listUnknownPackagesEnabled === null || listUnknownPackagesEnabled) &&
+      unknownPackages.length > 0
+    ) {
       issues.push(`${chalk.bold(`  No metadata available`)}: ${unknownPackages.join(', ')}`);
+    }
+
+    if (!hasCriticalIssues && listUnknownPackagesEnabled === null) {
+      // NOTE(@kitten): We shouldn't output just "no metadata available" packages with no other
+      // issues, if the user hasn't explicitly opted-in or opted-out, since it adds to the output
+      // noise of doctor
+      return {
+        isSuccessful: true,
+        issues: [],
+        advice: [],
+      };
     }
 
     if (issues.length) {
@@ -157,10 +157,3 @@ export class ReactNativeDirectoryCheck implements DoctorCheck {
     };
   }
 }
-
-// See: https://github.com/react-native-community/directory/blob/1fb5e7b899e021a18f14b3c32b79d8d5995022d6/pages/api/libraries/check.ts#L8-L17
-type ReactNativeDirectoryCheckResult = {
-  unmaintained: boolean;
-  // See: https://github.com/react-native-community/directory/blob/1fb5e7b899e021a18f14b3c32b79d8d5995022d6/util/newArchStatus.ts#L3-L7
-  newArchitecture: 'supported' | 'unsupported' | 'untested';
-};

@@ -41,8 +41,18 @@ export default function Index() {
       </Link>
 
       <Text style={{ color: '#fff', fontSize: 24, fontWeight: 'bold' }}>Additional links</Text>
+      <Link href="/dynamic" style={{ color: '#fff', fontSize: 18 }}>
+        <Link.Trigger>Dynamic</Link.Trigger>
+        <Link.Preview />
+      </Link>
       <Link href="/404" style={{ color: '#fff', fontSize: 18 }}>
         Try and go to 404
+      </Link>
+      <Link href="/tab-1" style={{ color: '#fff', fontSize: 18 }}>
+        Try and go to Tab 1
+      </Link>
+      <Link href="/tab-2" style={{ color: '#fff', fontSize: 18 }}>
+        Try and go to Tab 2
       </Link>
       <Link href="/faces" style={{ color: '#fff', fontSize: 18 }}>
         Try and go to Faces

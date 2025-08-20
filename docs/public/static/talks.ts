@@ -362,6 +362,16 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'Top 5 Expo SDK Features You’re Not Using',
+    event: 'Expo Tutorials',
+    videoId: 'HQ_xzbq_BnQ',
+  },
+  {
+    title: 'Repack Workflow Demo | Speed up CI builds by ~80%',
+    event: 'EAS Tutorials',
+    videoId: 'peZ36U87k-M',
+  },
+  {
     title: 'How to Add In-App Subscriptions with RevenueCat + Expo',
     event: 'Expo Tutorials',
     videoId: 'R3fLKC-2Qh0',

@@ -726,6 +726,34 @@ This job outputs the following properties:
 }
 ```
 
+#### `testflight`
+
+Distributes iOS builds to TestFlight internal and external testing groups. See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: testflight
+    # @end #
+    params:
+      build_id: string # required
+      profile: string # optional, default: production
+      internal_groups: string[] # optional
+      external_groups: string[] # optional
+      changelog: string # optional
+      submit_beta_review: boolean # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
+  "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+}
+```
+
 #### `update`
 
 Publishes an update using [EAS Update](/eas-update/introduction/). See [Update job documentation](/eas/workflows/pre-packaged-jobs#update) for detailed information and examples.

@@ -51,10 +51,17 @@ extension Text {
 
 extension View {
   func systemGroupedBackground() -> some View {
-    #if os(tvOS)
-    return self
-    #else
-    return self.background(Color(.systemGroupedBackground))
-    #endif
+    return self.background(Color.expoSystemGroupedBackground)
   }
+}
+
+func getDevLauncherBundle() -> Bundle? {
+  if let bundleURL = Bundle.main.url(forResource: "EXDevLauncher", withExtension: "bundle") {
+    if let bundle = Bundle(url: bundleURL) {
+      return bundle
+    }
+  }
+
+  // fallback to the main bundle
+  return .main
 }

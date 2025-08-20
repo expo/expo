@@ -9,15 +9,14 @@ internal class FileSystemPath: SharedObject {
     self.url = standardizedUrl
   }
 
-  func validatePermission(_ flag: EXFileSystemPermissionFlags) throws {
-    try ensurePathPermission(appContext, path: url.path, flag: flag)
+  func validatePermission(_ flag: FileSystemPermissionFlags) throws {
+    if !checkPermission(flag) {
+      throw MissingPermissionException(url.absoluteString)
+    }
   }
 
-  func checkPermission(_ flag: EXFileSystemPermissionFlags) -> Bool {
-    guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
-      return false
-    }
-    return permissionsManager.getPathPermissions(url.path).contains(flag)
+  func checkPermission(_ flag: FileSystemPermissionFlags) -> Bool {
+    return FileSystemUtilities.permissions(appContext, for: url).contains(flag)
   }
 
   func validateCanCreate(_ options: CreateOptions) throws {

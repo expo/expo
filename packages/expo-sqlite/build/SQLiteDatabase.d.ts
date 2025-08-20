@@ -45,6 +45,27 @@ export declare class SQLiteDatabase {
      */
     createSessionAsync(dbName?: string): Promise<SQLiteSession>;
     /**
+     * Load a SQLite extension.
+     * @param libPath The path to the extension library file.
+     * @param entryPoint The entry point of the extension. If not provided, the default entry point is inferred by [`sqlite3_load_extension`](https://www.sqlite.org/c3ref/load_extension.html).
+     *
+     * @platform android
+     * @platform ios
+     * @platform macos
+     * @platform tvos
+     *
+     * @example
+     * ```ts
+     * // Load `sqlite-vec` from `bundledExtensions`. You need to enable `withSQLiteVecExtension` to include `sqlite-vec`.
+     * const extension = SQLite.bundledExtensions['sqlite-vec'];
+     * await db.loadExtensionAsync(extension.libPath, extension.entryPoint);
+     *
+     * // You can also load a custom extension.
+     * await db.loadExtensionAsync('/path/to/extension');
+     * ```
+     */
+    loadExtensionAsync(libPath: string, entryPoint?: string): Promise<void>;
+    /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
      * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
@@ -84,6 +105,7 @@ export declare class SQLiteDatabase {
      * @platform android
      * @platform ios
      * @platform macos
+     * @platform tvos
      *
      * @example
      * ```ts
@@ -136,6 +158,28 @@ export declare class SQLiteDatabase {
      * @param dbName The name of the database to create a session for. The default value is `main`.
      */
     createSessionSync(dbName?: string): SQLiteSession;
+    /**
+     * Load a SQLite extension.
+     * @param libPath The path to the extension library file.
+     * @param entryPoint The entry point of the extension. If not provided, the default entry point is inferred by [`sqlite3_load_extension`](https://www.sqlite.org/c3ref/load_extension.html).
+     *
+     * @platform android
+     * @platform ios
+     * @platform macos
+     * @platform tvos
+     *
+     * @example
+     * ```ts
+     * // Load `sqlite-vec` from `bundledExtensions`. You need to enable `withSQLiteVecExtension` to include `sqlite-vec`.
+     * const extension = SQLite.bundledExtensions['sqlite-vec'];
+     * db.loadExtensionSync(extension.libPath, extension.entryPoint);
+     *
+     * // You can also load a custom extension.
+     * db.loadExtensionSync('/path/to/extension');
+     * ```
+  
+     */
+    loadExtensionSync(libPath: string, entryPoint?: string): void;
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
@@ -251,6 +295,13 @@ export declare class SQLiteDatabase {
  * The default directory for SQLite databases.
  */
 export declare const defaultDatabaseDirectory: any;
+/**
+ * The pre-bundled SQLite extensions.
+ */
+export declare const bundledExtensions: Record<string, {
+    libPath: string;
+    entryPoint: string;
+} | undefined>;
 /**
  * Open a database.
  *

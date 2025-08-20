@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import * as semver from 'semver';
 
 import { findPackagesToPromote } from './findPackagesToPromote';
 import { prepareParcels } from './prepareParcels';
@@ -47,20 +46,6 @@ export const promotePackages = new Task<TaskArgs>(
           await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, options.tag, {
             stdio: requiresOTP ? 'inherit' : undefined,
           });
-        }
-        if (pkg.packageName === 'expo-template-bare-minimum') {
-          const sdkTag = `sdk-${semver.major(pkg.packageVersion)}`;
-          batch.log(
-            '    ',
-            action,
-            yellow(sdkTag),
-            formatVersionChange(versionToReplace, currentVersion)
-          );
-          if (!options.dry) {
-            await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, sdkTag, {
-              stdio: requiresOTP ? 'inherit' : undefined,
-            });
-          }
         }
 
         // If the local version had any tags assigned, we can drop the old ones.

@@ -38,6 +38,6 @@ exports[`renders NativeTabs 1`] = `
 `;
 
 exports[`renders NativeTabs.Trigger 1`] = `
-"1:I["src/native-tabs/NativeBottomTabs/TabOptions.tsx",[],"TabTrigger",1]
+"1:I["src/native-tabs/NativeBottomTabs/NativeTabTrigger.tsx",[],"NativeTabTrigger",1]
 0:["$","$L1",null,{"name":"test"},null]"
 `;

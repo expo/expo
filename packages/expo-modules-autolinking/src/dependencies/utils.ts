@@ -3,6 +3,8 @@ import path from 'path';
 
 import type { DependencyResolution, ResolutionResult } from './types';
 
+const NODE_MODULES_PATTERN = `${path.sep}node_modules${path.sep}`;
+
 // The default dependencies we exclude don't contain dependency chains leading to autolinked modules
 export function defaultShouldIncludeDependency(dependencyName: string): boolean {
   const scopeName =
@@ -76,13 +78,35 @@ export function mergeWithDuplicate(
     target = b;
     duplicate = a;
   } else {
-    target = a;
-    duplicate = b;
+    // If both are equal, then the shallowest path wins
+    const pathDepthA = a.originPath.split(NODE_MODULES_PATTERN).length;
+    const pathDepthB = b.originPath.split(NODE_MODULES_PATTERN).length;
+    if (pathDepthA < pathDepthB) {
+      target = a;
+      duplicate = b;
+    } else if (pathDepthB < pathDepthA) {
+      target = b;
+      duplicate = a;
+    } else {
+      target = a;
+      duplicate = b;
+    }
   }
   const duplicates = target.duplicates || (target.duplicates = []);
-  duplicates.push(duplicate.path);
-  if (duplicate.duplicates) {
-    duplicates.push(...duplicate.duplicates.filter((path) => !duplicates.includes(path)));
+  if (target.path !== duplicate.path) {
+    duplicates.push({
+      name: duplicate.name,
+      version: duplicate.version,
+      path: duplicate.path,
+      originPath: duplicate.originPath,
+    });
+  }
+  if (duplicate.duplicates?.length) {
+    duplicates.push(
+      ...duplicate.duplicates.filter((child) =>
+        duplicates.every((parent) => parent.path !== child.path)
+      )
+    );
   }
   return target;
 }

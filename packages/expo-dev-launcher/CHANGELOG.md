@@ -6,6 +6,30 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.3 — 2025-08-18
+
+### 💡 Others
+
+- [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+
+## 6.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- [ios] Fix tvOS and Swiftlint after UI refresh. ([#38808](https://github.com/expo/expo/pull/38808) by [@douglowder](https://github.com/douglowder))
+
+## 6.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - [iOS] Reimplement UI in SwiftUI. ([#37413](https://github.com/expo/expo/pull/37413) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Add floating action button option in the settings menu. ([#38247](https://github.com/expo/expo/pull/38247) by [@behenate](https://github.com/behenate))
 - [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))

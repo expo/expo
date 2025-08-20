@@ -8,6 +8,7 @@ import {
 import { env } from './env';
 import { Log } from './log';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
+import { AutolinkingDependencyDuplicatesCheck } from '../checks/AutolinkingDependencyDuplicatesCheck';
 import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
@@ -24,6 +25,7 @@ import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
+import { LockfileCheck } from '../checks/LockfileCheck';
 
 /**
  * Resolves the checks that should be run for a given project.
@@ -37,6 +39,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     // Project Structure Checks
     new ProjectSetupCheck(),
     new PackageJsonCheck(),
+    new LockfileCheck(),
     new ExpoConfigSchemaCheck(),
     new ExpoConfigCommonIssueCheck(),
     new MetroConfigCheck(),
@@ -47,6 +50,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new GlobalPackageInstalledLocallyCheck(),
     new DirectPackageInstallCheck(),
     new PeerDependencyChecks(),
+    new AutolinkingDependencyDuplicatesCheck(),
 
     // Version Checks
     new SupportPackageVersionCheck(),

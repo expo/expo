@@ -147,4 +147,8 @@ public class DisabledAppController: InternalAppControllerInterface {
   public func setUpdateURLAndRequestHeadersOverride(_ configOverride: UpdatesConfigOverride?) throws {
     throw UpdatesDisabledException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported when expo-updates is not enabled.")
   }
+
+  public func setUpdateRequestHeadersOverride(_ requestHeaders: [String: String]?) throws {
+    throw UpdatesDisabledException("Updates.setUpdateRequestHeadersOverride() is not supported when expo-updates is not enabled.")
+  }
 }

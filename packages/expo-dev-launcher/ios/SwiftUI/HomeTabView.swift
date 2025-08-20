@@ -1,4 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+// swiftlint:disable closure_body_length
 
 import SwiftUI
 
@@ -20,26 +21,29 @@ struct HomeTabView: View {
           DevServersView(showingInfoDialog: $showingInfoDialog)
 
           if !viewModel.recentlyOpenedApps.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 0) {
               HStack {
-                Text("Recently opened")
-                  .font(.headline)
+                Text("recently opened".uppercased())
+                  .font(.caption)
+                  .foregroundColor(.primary.opacity(0.6))
                 Spacer()
-                Button("Reset") {
+                Button("reset".uppercased()) {
                   viewModel.clearRecentlyOpenedApps()
                 }
-                .font(.system(size: 12, weight: .semibold))
+                #if os(tvOS)
+                .font(.system(size: 24))
+                #else
+                .font(.system(size: 12))
+                #endif
               }
 
-              LazyVStack(spacing: 0) {
+              LazyVStack(spacing: 6) {
                 ForEach(viewModel.recentlyOpenedApps) { app in
                   RecentlyOpenedAppRow(app: app) {
                     viewModel.openApp(url: app.url)
                   }
-                  Divider()
                 }
               }
-              .clipShape(RoundedRectangle(cornerRadius: 8))
               .padding(.top)
             }
           }
@@ -47,7 +51,6 @@ struct HomeTabView: View {
         .padding()
       }
     }
-    .systemGroupedBackground()
     .overlay(
       DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
     )
@@ -66,7 +69,7 @@ struct HomeTabView: View {
         .padding()
     }
     .buttonStyle(PlainButtonStyle())
-    .background(Color(.secondarySystemGroupedBackground))
+    .background(Color.expoSecondarySystemGroupedBackground)
     .cornerRadius(18)
   }
 }
@@ -74,3 +77,4 @@ struct HomeTabView: View {
 #Preview {
   HomeTabView()
 }
+// swiftlint:enable closure_body_length

@@ -66,12 +66,12 @@ export interface PluginConfigTypeAndroid {
    */
   kotlinVersion?: string;
   /**
-   * Enable [Proguard or R8](https://developer.android.com/studio/build/shrink-code) in release builds to obfuscate Java code and reduce app size.
+   * Enable [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) in release builds to obfuscate Java code and reduce app size.
    */
-  enableProguardInReleaseBuilds?: boolean;
+  enableMinifyInReleaseBuilds?: boolean;
   /**
    * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
-   * This property should be used in combination with `enableProguardInReleaseBuilds`.
+   * This property should be used in combination with `enableMinifyInReleaseBuilds`.
    */
   enableShrinkResourcesInReleaseBuilds?: boolean;
   /**
@@ -208,6 +208,14 @@ export interface PluginConfigTypeAndroid {
    * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
    */
   exclusiveMavenMirror?: string;
+
+  /**
+   * The React Native release level to use for the project.
+   * This can be used to enable different sets of internal React Native feature flags.
+   *
+   * @default 'stable'
+   */
+  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 // @docsMissing
@@ -382,11 +390,12 @@ export interface PluginConfigTypeIos {
   buildReactNativeFromSource?: boolean;
 
   /**
-   * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-   * This feature is available from React Native 0.80 and later.
-   * @deprecated Use `buildReactNativeFromSource` instead.
+   * The React Native release level to use for the project.
+   * This can be used to enable different sets of internal React Native feature flags.
+   *
+   * @default 'stable'
    */
-  buildFromSource?: boolean;
+  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 /**
@@ -584,7 +593,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         buildToolsVersion: { type: 'string', nullable: true },
         kotlinVersion: { type: 'string', nullable: true },
 
-        enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+        enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
@@ -699,6 +708,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
         exclusiveMavenMirror: { type: 'string', nullable: true },
+        reactNativeReleaseLevel: {
+          type: 'string',
+          enum: ['stable', 'canary', 'experimental'],
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -736,7 +750,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
-        buildFromSource: { type: 'boolean', nullable: true },
+        reactNativeReleaseLevel: {
+          type: 'string',
+          enum: ['stable', 'canary', 'experimental'],
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -803,6 +821,13 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
  */
 export function validateConfig(config: any): PluginConfigType {
   const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
+  // handle deprecated enableProguardInReleaseBuilds
+  if (
+    config.android?.enableProguardInReleaseBuilds !== undefined &&
+    config.android?.enableMinifyInReleaseBuilds === undefined
+  ) {
+    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
+  }
   if (!validate(config)) {
     throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
   }
@@ -811,10 +836,10 @@ export function validateConfig(config: any): PluginConfigType {
 
   if (
     config.android?.enableShrinkResourcesInReleaseBuilds === true &&
-    config.android?.enableProguardInReleaseBuilds !== true
+    config.android?.enableMinifyInReleaseBuilds !== true
   ) {
     throw new Error(
-      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.'
+      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.'
     );
   }
 

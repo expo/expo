@@ -96,6 +96,11 @@ function addSplashScreenStyle(styles, isLegacyConfig) {
         name: 'postSplashScreenTheme'
       },
       _: '@style/AppTheme'
+    }, {
+      $: {
+        name: 'android:windowSplashScreenBehavior'
+      },
+      _: 'icon_preferred'
     }];
   }
   styles.resources.style = [...style.filter(({

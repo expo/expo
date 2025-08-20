@@ -1,94 +1,92 @@
 package expo.modules.devmenu.compose.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
+import com.composeunstyled.Icon
 import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuActionHandler
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.AppIcon
-import expo.modules.devmenu.compose.primitives.DayNighIcon
-import expo.modules.devmenu.compose.primitives.Heading
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.primitives.NewText
+import expo.modules.devmenu.compose.primitives.Spacer
 
 @Composable
 fun AppInfo(
   appName: String,
+  modifier: Modifier = Modifier,
   runtimeVersion: String? = null,
   sdkVersion: String? = null,
   onAction: DevMenuActionHandler = {}
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-      .background(color = Theme.colors.background.default)
-      .padding(vertical = Theme.spacing.medium)
+    horizontalArrangement = Arrangement.Center,
+    modifier = modifier
   ) {
-    Spacer(Modifier.size(Theme.spacing.medium))
+    AppIcon(size = 44.dp)
 
-    AppIcon()
-
-    Spacer(Modifier.size(Theme.spacing.small))
+    Spacer(NewAppTheme.spacing.`3`)
 
     Column {
-      Heading(
-        appName
+      NewText(
+        appName,
+        style = NewAppTheme.font.lg.merge(fontWeight = FontWeight.SemiBold)
       )
 
       if (runtimeVersion != null) {
-        Spacer(Modifier.size(Theme.spacing.tiny))
-        Text(
+        Spacer(NewAppTheme.spacing.`1`)
+        NewText(
           "Runtime version: $runtimeVersion",
-          fontSize = Theme.typography.small,
-          color = Theme.colors.text.secondary
+          style = NewAppTheme.font.md,
+          color = NewAppTheme.colors.text.secondary
         )
-      }
-
-      if (sdkVersion != null) {
-        Spacer(Modifier.size(Theme.spacing.tiny))
-        Text(
+      } else if (sdkVersion != null) {
+        Spacer(NewAppTheme.spacing.`1`)
+        NewText(
           "SDK version: $sdkVersion",
-          fontSize = Theme.typography.small,
-          color = Theme.colors.text.secondary
+          style = NewAppTheme.font.md,
+          color = NewAppTheme.colors.text.secondary
         )
       }
     }
 
-    Spacer(Modifier.weight(1f))
+    Spacer(modifier = Modifier.weight(1f))
 
     Button(
       onClick = {
         onAction(DevMenuAction.Close)
       },
-      shape = RoundedCornerShape(Theme.sizing.borderRadius.full),
+      shape = RoundedCornerShape(NewAppTheme.borderRadius.full),
+      backgroundColor = NewAppTheme.colors.background.element,
       modifier = Modifier
-        .align(Alignment.Top)
+        .align(Alignment.CenterVertically)
+        .size(36.dp)
     ) {
-      DayNighIcon(
-        painterResource(R.drawable.x_icon),
+      Icon(
+        painter = painterResource(R.drawable.x_close),
         contentDescription = "Close",
+        tint = NewAppTheme.colors.icon.tertiary,
         modifier = Modifier
-          .size(Theme.sizing.icon.small)
+          .size(16.dp)
       )
     }
-    Spacer(Modifier.size(Theme.spacing.medium))
   }
 }
 
 @Composable
-@Preview(widthDp = 300, showBackground = false)
+@Preview(widthDp = 300, showBackground = true, backgroundColor = 0xFFFFFF)
 fun AppInfoPreview() {
   Column {
     AppInfo(
@@ -96,7 +94,7 @@ fun AppInfoPreview() {
       runtimeVersion = "1.0.0"
     )
 
-    Spacer(Modifier.size(30.dp))
+    Spacer(modifier = Modifier.size(30.dp))
 
     AppInfo(
       appName = "Expo App",
