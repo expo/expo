@@ -359,10 +359,13 @@ export default class NotificationScreen extends React.Component<
   };
 
   _incrementIconBadgeNumberAsync = async () => {
-    const currentNumber = await Notifications.getBadgeCountAsync();
-    await Notifications.setBadgeCountAsync(currentNumber + 1);
+    const previousNumber = await Notifications.getBadgeCountAsync();
+    const didIncrement = await Notifications.setBadgeCountAsync(previousNumber + 1);
     const actualNumber = await Notifications.getBadgeCountAsync();
-    Alert.alert(`Set the badge number to ${actualNumber}`);
+    const message = didIncrement
+      ? `Incremented from ${previousNumber} to ${actualNumber} (expected: ${previousNumber + 1}).`
+      : "You don't have notification permissions.";
+    Alert.alert(message);
   };
 
   _clearIconBadgeAsync = async () => {
