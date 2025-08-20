@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Emit state update after reload. ([#39003](https://github.com/expo/expo/pull/39003) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 1.0.3 — 2025-08-18
