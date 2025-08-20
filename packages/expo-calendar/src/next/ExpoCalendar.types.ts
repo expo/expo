@@ -232,6 +232,11 @@ export declare class ExpoCalendarEvent {
    */
   timeZone: string;
   /**
+   * Time zone for the end date of the event.
+   * @platform android
+   */
+  endTimeZone?: string;
+  /**
    * URL for the event.
    * @platform ios
    */

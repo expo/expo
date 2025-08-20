@@ -89,22 +89,18 @@ class CalendarNextModule : Module() {
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
     }
 
-    AsyncFunction("listEvents") { calendarIds: List<String>, startDate: Any, endDate: Any, promise: Promise ->
+    AsyncFunction("listEvents") { calendarIds: List<String>, startDate: String, endDate: String, promise: Promise ->
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {
           try {
             val allEvents = mutableListOf<ExpoCalendarEvent>()
-            
-            for (calendarId in calendarIds) {
-              val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, listOf(calendarId))
-              cursor.use {
-                while (it.moveToNext()) {
-                  val event = ExpoCalendarEvent(appContext, it)
-                  allEvents.add(event)
-                }
+            val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, calendarIds)
+            cursor.use {
+              while (it.moveToNext()) {
+                val event = ExpoCalendarEvent(appContext, it)
+                allEvents.add(event)
               }
             }
-            
             promise.resolve(allEvents)
           } catch (e: Exception) {
             promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
@@ -195,7 +191,7 @@ class CalendarNextModule : Module() {
         expoCalendar.calendarRecord?.accessLevel
       }
 
-      AsyncFunction("listEvents") { expoCalendar: ExpoCalendar, startDate: Any, endDate: Any, promise: Promise ->
+      AsyncFunction("listEvents") { expoCalendar: ExpoCalendar, startDate: String, endDate: String, promise: Promise ->
         withPermissions(promise) {
           launchAsyncWithModuleScope(promise) {
             if (expoCalendar.calendarRecord?.id == null) {

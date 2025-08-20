@@ -51,20 +51,12 @@ class ExpoCalendarEvent : SharedObject {
 
   constructor(appContext: AppContext, cursor: Cursor) {
     this.localAppContext = appContext;
-    var foundStartDate: String? = null;
-    var foundEndDate: String? = null;
 
 
 
     // may be CalendarContract.Instances.BEGIN or CalendarContract.Events.DTSTART (which have different string values)
     val startDate = cursor.getString(3)
-    if (startDate != null) {
-      foundStartDate = CalendarUtils.sdf.format(Date(startDate.toLong()));
-    }
     val endDate = cursor.getString(4)
-    if (endDate != null) {
-      foundEndDate = CalendarUtils.sdf.format(Date(endDate.toLong()));
-    }
 
     val eventId = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Instances.EVENT_ID)
 
@@ -79,8 +71,8 @@ class ExpoCalendarEvent : SharedObject {
       notes = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION),
       alarms = if (eventId != null) serializeAlarms(eventId).toList() else emptyList(),
       recurrenceRule = extractRecurrenceRuleFromString(CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.RRULE)),
-      startDate = foundStartDate,
-      endDate = foundEndDate,
+      startDate = CalendarNextUtils.dateToString(startDate.toLongOrNull()),
+      endDate = CalendarNextUtils.dateToString(endDate.toLongOrNull()),
       allDay = CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0,
       location = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION),
       availability = EventAvailability.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)),
@@ -102,20 +94,16 @@ class ExpoCalendarEvent : SharedObject {
     val eventBuilder = CalendarEventBuilderNext()
 
     if (eventRecord.startDate != null) {
-      val parsedDate = sdf.parse(eventRecord.startDate)
-      if (parsedDate != null) {
-        val startCal = Calendar.getInstance()
-        startCal.time = parsedDate
-        eventBuilder.put(CalendarContract.Events.DTSTART, startCal.timeInMillis)
+      val timeInMillis = CalendarNextUtils.dateToMilliseconds(eventRecord.startDate)
+      if (timeInMillis != null) {
+        eventBuilder.put(CalendarContract.Events.DTSTART, timeInMillis)
       }
     }
 
     if (eventRecord.endDate != null) {
-      val parsedDate = sdf.parse(eventRecord.endDate)
-      if (parsedDate != null) {
-        val endCal = Calendar.getInstance()
-        endCal.time = parsedDate
-        eventBuilder.put(CalendarContract.Events.DTEND, endCal.timeInMillis)
+      val timeInMillis = CalendarNextUtils.dateToMilliseconds(eventRecord.endDate)
+      if (timeInMillis != null) {
+        eventBuilder.put(CalendarContract.Events.DTEND, timeInMillis)
       }
     }
 
@@ -153,7 +141,6 @@ class ExpoCalendarEvent : SharedObject {
     if (eventRecord.notes != null) {
       eventBuilder.put(CalendarContract.Events.DESCRIPTION, eventRecord.notes)
     }
-
     if (eventRecord.location != null) {
       eventBuilder.put(CalendarContract.Events.EVENT_LOCATION, eventRecord.location)
     }
@@ -162,6 +149,53 @@ class ExpoCalendarEvent : SharedObject {
       eventBuilder.put(CalendarContract.Events.EVENT_TIMEZONE, eventRecord.timeZone)
     } else {
       eventBuilder.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
+    }
+
+    if (eventRecord.endTimeZone != null) {
+      eventBuilder.put(CalendarContract.Events.EVENT_END_TIMEZONE, eventRecord.endTimeZone)
+    } else {
+      eventBuilder.put(CalendarContract.Events.EVENT_END_TIMEZONE, TimeZone.getDefault().id)
+    }
+
+    if (eventRecord.allDay != null) {
+      eventBuilder.put(CalendarContract.Events.ALL_DAY, if (eventRecord.allDay) 1 else 0)
+    }
+
+    if (eventRecord.availability != null) {
+      val availabilityValue = eventRecord.availability.toAndroidValue(eventRecord.availability)
+      if (availabilityValue != null) {
+        eventBuilder.put(CalendarContract.Events.AVAILABILITY, availabilityValue)
+      }
+    }
+
+    if (eventRecord.status != null) {
+      val statusValue = eventRecord.status.toAndroidValue(eventRecord.status)
+      if (statusValue != null) {
+        eventBuilder.put(CalendarContract.Events.STATUS, statusValue)
+      }
+    }
+
+    if (eventRecord.organizerEmail != null) {
+      eventBuilder.put(CalendarContract.Events.ORGANIZER, eventRecord.organizerEmail)
+    }
+
+    if (eventRecord.accessLevel != null) {
+      val accessLevelValue = eventRecord.accessLevel.toAndroidValue(eventRecord.accessLevel)
+      if (accessLevelValue != null) {
+        eventBuilder.put(CalendarContract.Events.ACCESS_LEVEL, accessLevelValue)
+      }
+    }
+
+    if (eventRecord.guestsCanModify != null) {
+      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_MODIFY, if (eventRecord.guestsCanModify) 1 else 0)
+    }
+
+    if (eventRecord.guestsCanInviteOthers != null) {
+      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, if (eventRecord.guestsCanInviteOthers) 1 else 0)
+    }
+
+    if (eventRecord.guestsCanSeeGuests != null) {
+      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, if (eventRecord.guestsCanSeeGuests) 1 else 0)
     }
 
     if (this.eventRecord?.id != null) {
