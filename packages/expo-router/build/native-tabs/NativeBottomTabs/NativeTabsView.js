@@ -110,20 +110,57 @@ function NativeTabsView(props) {
       {children}
     </BottomTabsWrapper>);
 }
+// TODO: remove after fix is merged in screens
+const rolesIcons = {
+    bookmarks: 'book.fill',
+    contacts: 'person.crop.circle.fill',
+    downloads: 'square.and.arrow.down.fill',
+    favorites: 'star.fill',
+    featured: 'star.fill',
+    history: 'clock.fill',
+    more: 'ellipsis',
+    mostRecent: 'clock.fill',
+    mostViewed: 'list.number',
+    recents: 'clock.fill',
+    search: 'magnifyingglass',
+    topRated: 'star.fill',
+};
 function Screen(props) {
     const { routeKey, name, descriptor, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, } = props;
     const title = descriptor.options.title ?? name;
-    let icon = convertOptionsIconToPropsIcon(descriptor.options.icon);
+    let icon = useAwaitedScreensIcon(descriptor.options.icon);
+    let selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
     // Fix for an issue in screens
     if (descriptor.options.role) {
-        switch (descriptor.options.role) {
-            case 'search':
-                icon = { sfSymbolName: 'magnifyingglass' };
+        if (descriptor.options.role && descriptor.options.role in rolesIcons) {
+            icon = { sf: rolesIcons[descriptor.options.role] };
+            selectedIcon = icon;
         }
     }
-    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(descriptor.options.icon)} iconResource={getAndroidIconResource(descriptor.options.icon)} icon={icon} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
+    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={convertOptionsIconToPropsIcon(icon)} selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
       {descriptor.render()}
     </react_native_screens_1.BottomTabsScreen>);
+}
+function useAwaitedScreensIcon(icon) {
+    const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+    const [awaitedIcon, setAwaitedIcon] = (0, react_1.useState)(undefined);
+    (0, react_1.useEffect)(() => {
+        const loadIcon = async () => {
+            if (src && src instanceof Promise) {
+                const currentAwaitedIcon = { src: await src };
+                setAwaitedIcon(currentAwaitedIcon);
+            }
+        };
+        loadIcon();
+        // Checking `src` rather then icon here, to avoid unnecessary re-renders
+        // The icon object can be recreated, while src should stay the same
+        // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
+        // So we should be safe with promise resolving
+    }, [src]);
+    return (0, react_1.useMemo)(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
+}
+function isAwaitedIcon(icon) {
+    return !icon || !('src' in icon && icon.src instanceof Promise);
 }
 function convertOptionsIconToPropsIcon(icon) {
     if (!icon) {
