@@ -1,29 +1,11 @@
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
-import BuiltinModule from 'module';
 import path from 'path';
 
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
-import { createStickyModuleMapper } from './utils/moduleMapper';
+import { patchNodeModuleResolver } from './utils/moduleMapper';
 
 const defaultTransformer: typeof import('./transform-worker') = require('./transform-worker');
-
-declare module 'module' {
-  namespace Module {
-    interface ModuleExtensionFunction {
-      (module: NodeJS.Module, filename: string): void;
-    }
-    const _extensions: {
-      [ext: string]: ModuleExtensionFunction;
-    };
-    export function _resolveFilename(
-      request: string,
-      parent: { id: string; filename: string; paths: string[] } | string | null,
-      isMain?: boolean,
-      options?: { paths?: string[] }
-    ): string;
-  }
-}
 
 declare module '@expo/metro/metro-transform-worker' {
   export interface JsTransformerConfig {
@@ -35,42 +17,12 @@ const debug = require('debug')(
   'expo:metro-config:supervising-transform-worker'
 ) as typeof console.log;
 
-let _initModuleInterceptDone = false;
-
-const initModuleIntercept = () => {
-  if (_initModuleInterceptDone) {
-    return;
-  }
-  _initModuleInterceptDone = true;
-  const Module: typeof BuiltinModule =
-    module.constructor.length > 1 ? (module.constructor as any) : BuiltinModule;
-  const originalResolveFilename = Module._resolveFilename;
-  const stickyModuleMapper = createStickyModuleMapper();
-  let isInCustomResolver = false;
-  Module._resolveFilename = function (request, parent, isMain, options) {
-    if (!isInCustomResolver) {
-      try {
-        isInCustomResolver = true;
-        const parentId = typeof parent === 'string' ? parent : parent?.id;
-        const redirectedRequest = stickyModuleMapper(request, parentId);
-        if (redirectedRequest) {
-          debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
-          return redirectedRequest;
-        }
-      } catch (error) {
-        debug(`Could not redirect request "${request}": ${error}`);
-      } finally {
-        isInCustomResolver = false;
-      }
-    }
-    return originalResolveFilename.call(this, request, parent, isMain, options);
-  };
-};
-
 const getCustomTransform = (() => {
   let _transformerPath: string | undefined;
   let _transformer: typeof import('./transform-worker') | undefined;
   return (config: JsTransformerConfig, projectRoot: string) => {
+    // The user's original `transformerPath` is stored on `config.transformer.expo_customTransformerPath`
+    // by @expo/cli in `withMetroSupervisingTransformWorker()`
     if (_transformer == null && _transformerPath == null) {
       _transformerPath = config.expo_customTransformerPath;
     } else if (
@@ -79,12 +31,24 @@ const getCustomTransform = (() => {
     ) {
       throw new Error('expo_customTransformerPath must not be modified after initialization');
     }
-    // initModuleIntercept();
+
+    // We override require calls in the user transformer to use *our* version
+    // of Metro and this version of @expo/metro-config forcefully.
+    // Versions of Metro must be aligned to the ones that Expo is using
+    // This is done by patching Node.js' module resolution function
+    patchNodeModuleResolver();
+
     if (_transformer == null && _transformerPath != null) {
+      // We only laod the user transformer once and cache it
+      // If the user didn't add a custom transformer, we don't load it,
+      // but the user maybe has a custom Babel transformer
       debug(`Loading custom transformer at "${_transformerPath}"`);
       try {
         _transformer = require.call(null, _transformerPath);
       } catch (error: any) {
+        // If the user's transformer throws and fails initialization, we customize the
+        // error and output a path to the user to clarify that it's the transformer that
+        // failed to initialize
         const relativeTransformerPath = path.relative(projectRoot, _transformerPath);
         throw new Error(
           `Your custom Metro transformer has failed to initialize. Check: "${relativeTransformerPath}"\n` +
@@ -96,12 +60,6 @@ const getCustomTransform = (() => {
   };
 })();
 
-const removeCustomTransformPathFromConfig = (config: JsTransformerConfig) => {
-  if (config.expo_customTransformerPath != null) {
-    config.expo_customTransformerPath = undefined;
-  }
-};
-
 export function transform(
   config: JsTransformerConfig,
   projectRoot: string,
@@ -110,7 +68,12 @@ export function transform(
   options: JsTransformOptions
 ): Promise<TransformResponse> {
   const customWorker = getCustomTransform(config, projectRoot) ?? defaultTransformer;
-  removeCustomTransformPathFromConfig(config);
+  // Delete this custom property before we call the custom transform worker
+  // The supervising-transform-worker should be transparent, and the user's transformer
+  // shouldn't know it's been called by it
+  if (config.expo_customTransformerPath != null) {
+    config.expo_customTransformerPath = undefined;
+  }
   return customWorker.transform(config, projectRoot, filename, data, options);
 }
 
