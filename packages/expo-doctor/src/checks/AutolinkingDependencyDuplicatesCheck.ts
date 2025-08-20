@@ -136,8 +136,8 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
     if (issues.length) {
       if (corruptedInstallations.length) {
         advice.push(
-          `Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}\n` +
-            'Try deleting your node_modules folders and reinstall your dependencies after.'
+          `Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
+            '- Try deleting your node_modules folders and reinstall your dependencies after.'
         );
       }
       advice.push(
