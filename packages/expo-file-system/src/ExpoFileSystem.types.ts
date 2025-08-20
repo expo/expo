@@ -98,9 +98,9 @@ export declare class Directory {
    *
    * @platform android
    *
-   * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
+   * @param initialUri An optional URI pointing to an initial folder on which the directory picker is opened.
    *
-   * @returns A `Directory` instance. The underlying uri will be a content uri on Android.
+   * @returns A `Directory` instance. The underlying URI will be a content URI on Android.
    */
   static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
