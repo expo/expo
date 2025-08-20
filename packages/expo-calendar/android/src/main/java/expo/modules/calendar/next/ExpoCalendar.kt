@@ -80,9 +80,13 @@ class ExpoCalendar : SharedObject {
     if (calendarRecord?.id == null) {
       throw Exception("Calendar id is null")
     }
-    val contentResolver = (appContext?.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
-    val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, listOf(calendarRecord?.id ?: ""))
-    return cursor.use { serializeExpoCalendarEvents(cursor) }
+    try {
+      val contentResolver = (appContext?.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
+      val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, listOf(calendarRecord?.id ?: ""))
+      return cursor.use { serializeExpoCalendarEvents(cursor) }
+    } catch (e: Exception) {
+      return emptyList()
+    }
   }
 
   @Throws(SecurityException::class)

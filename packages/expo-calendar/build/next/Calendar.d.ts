@@ -13,7 +13,7 @@ export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendar
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(recurringEventOptions?: RecurringEventOptions): Promise<ExpoCalendarAttendee[]>;
     update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): Promise<void>;
-    delete(options?: RecurringEventOptions): void;
+    delete(options?: RecurringEventOptions): Promise<void>;
 }
 /**
  * Represents a calendar reminder object that can be accessed and modified using the Expo Calendar Next API.
@@ -32,7 +32,7 @@ export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     createReminder(details: Partial<Reminder>): ExpoCalendarReminder;
     listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
     listReminders(startDate?: Date | null, endDate?: Date | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
-    update(details: Partial<ModifiableCalendarProperties>): void;
+    update(details: Partial<ModifiableCalendarProperties>): Promise<void>;
 }
 /**
  * Gets an instance of the default calendar object.

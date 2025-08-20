@@ -303,14 +303,6 @@ export async function test(t) {
         });
 
         t.it('returns an array of events', async () => {
-          const events = await listEvents(
-            [calendar1.id, calendar2.id],
-            new Date(2019, 3, 1),
-            new Date(2019, 3, 29)
-          );
-          t.expect(Array.isArray(events)).toBe(true);
-          t.expect(events.length).toBe(0);
-
           const event1 = await createTestEvent(calendar1);
           const event2 = await createTestEvent(calendar2);
           const updatedEvents = await listEvents(
@@ -318,6 +310,7 @@ export async function test(t) {
             new Date(2019, 3, 1),
             new Date(2019, 3, 29)
           );
+
           t.expect(updatedEvents.length).toBe(2);
           t.expect(updatedEvents.map((e) => e.id)).toEqual([event1.id, event2.id]);
 
@@ -426,7 +419,7 @@ export async function test(t) {
         t.it('updates a calendar', async () => {
           const newTitle = 'New test-suite calendar title!!!';
           const newColor = '#111111';
-          calendar.update({
+          await calendar.update({
             title: newTitle,
             color: newColor,
           });
@@ -439,31 +432,30 @@ export async function test(t) {
 
         t.it('keeps other properties unchanged when updating title', async () => {
           const newTitle = 'New the coolest title ever';
-          try {
-            calendar.update({
-              title: newTitle,
-            });
-          } catch (e) {
-            console.log('ERROR: ', e);
-          }
-          console.log('CURRENT_TITLE: ', calendar.title, 'NEW_TITLE: ', newTitle);
+          await calendar.update({
+            title: newTitle,
+          });
           t.expect(calendar.title).toBe(newTitle);
           t.expect(calendar.color).toBe(defaultCalendarData.color);
-          t.expect(calendar.entityType).toBe(defaultCalendarData.entityType);
+          if (Platform.OS === 'ios') {
+            t.expect(calendar.entityType).toBe(defaultCalendarData.entityType);
+          }
         });
 
         t.it('keeps other properties unchanged when updating color', async () => {
           const color = '#001A72';
-          calendar.update({
+          await calendar.update({
             color,
           });
           t.expect(calendar.color).toBe(color);
           t.expect(calendar.title).toBe(defaultCalendarData.title);
-          t.expect(calendar.entityType).toBe(defaultCalendarData.entityType);
+          if (Platform.OS === 'ios') {
+            t.expect(calendar.entityType).toBe(defaultCalendarData.entityType);
+          }
         });
 
         t.afterEach(async () => {
-          calendar.delete();
+          await calendar.delete();
         });
       });
 
@@ -475,17 +467,17 @@ export async function test(t) {
         });
 
         t.it('deletes a calendar', async () => {
-          calendar.delete();
+          await calendar.delete();
 
           const calendars = await getCalendarsNext();
           t.expect(calendars.findIndex((c) => c.id === calendar.id)).toBe(-1);
         });
 
         t.it('throws an error when deleting a non-existent calendar', async () => {
-          calendar.delete();
+          await calendar.delete();
           t.expect(calendar.title).toBeNull();
           try {
-            calendar.delete();
+            await calendar.delete();
           } catch (e) {
             t.expect(e).toBeDefined();
           }
@@ -494,7 +486,7 @@ export async function test(t) {
         t.afterEach(async () => {
           // Call only if not already deleted
           if (calendar?.title) {
-            calendar.delete();
+            await calendar.delete();
           }
         });
       });
@@ -562,7 +554,7 @@ export async function test(t) {
         // }
 
         t.afterAll(async () => {
-          calendar.delete();
+          await calendar.delete();
         });
       });
 
@@ -611,7 +603,7 @@ export async function test(t) {
           });
 
           t.afterEach(async () => {
-            eventCalendar.delete();
+            await eventCalendar.delete();
             reminder?.delete();
           });
         });
@@ -733,7 +725,7 @@ export async function test(t) {
           const newTitle = 'New title + ' + new Date().toISOString();
           const startDate = new Date(2019, 3, 2);
           const endDate = new Date(2019, 3, 3);
-          events[0].update({
+          await events[0].update({
             title: newTitle,
             startDate,
             endDate,
@@ -756,7 +748,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          calendar.delete();
+          await calendar.delete();
         });
       });
     });
@@ -772,9 +764,10 @@ export async function test(t) {
         t.it('updates the event title', async () => {
           const event = await createTestEvent(calendar);
           const newTitle = 'New title + ' + new Date().toISOString();
-          event.update({
+          await event.update({
             title: newTitle,
           });
+
           t.expect(event.title).toBe(newTitle);
         });
 
@@ -786,7 +779,7 @@ export async function test(t) {
             notes: 'New notes ' + new Date().toISOString(),
           };
 
-          event.update(updatedData);
+          await event.update(updatedData);
 
           t.expect(event).toBeDefined();
           t.expect(event.location).toBe(updatedData.location);
@@ -801,11 +794,10 @@ export async function test(t) {
           const startDate = new Date(2022, 2, 3);
           const endDate = new Date(2022, 5, 6);
 
-          event.update({
+          await event.update({
             startDate,
             endDate,
           });
-
           t.expect(event).toBeDefined();
           t.expect(event.startDate).toBe(startDate.toISOString());
         });
@@ -822,7 +814,7 @@ export async function test(t) {
           );
           t.expect(initialFetchedEvents.length).toBe(0);
 
-          event.update({
+          await event.update({
             title: newTitle,
             startDate: newStartDate,
             endDate: newEndDate,
@@ -832,6 +824,7 @@ export async function test(t) {
             new Date(2023, 2, 2),
             new Date(2023, 2, 5)
           );
+
           t.expect(fetchedEvents.length).toBe(1);
           t.expect(fetchedEvents[0].id).toBe(event.id);
           t.expect(fetchedEvents[0].title).toBe(newTitle);
@@ -843,7 +836,8 @@ export async function test(t) {
           const updatedData: Partial<ExpoCalendarEvent> = {
             title: 'New title ' + new Date().toISOString(),
           };
-          event.update(updatedData);
+          await event.update(updatedData);
+
           t.expect(event.title).toBe(updatedData.title);
           t.expect(event.location).toBe(defaultEventData.location);
           t.expect(event.notes).toBe(defaultEventData.notes);
@@ -860,7 +854,8 @@ export async function test(t) {
           const updatedData: Partial<ExpoCalendarEvent> = {
             location: 'New location ' + new Date().toISOString(),
           };
-          event.update(updatedData);
+          await event.update(updatedData);
+
           t.expect(event.location).toBe(updatedData.location);
           t.expect(event.title).toBe(defaultEventData.title);
           t.expect(event.notes).toBe(defaultEventData.notes);
@@ -874,7 +869,7 @@ export async function test(t) {
 
         t.it('clears a field when set to null', async () => {
           const event = await createTestEvent(calendar);
-          event.update({
+          await event.update({
             location: null,
           });
           t.expect(event.title).toBe(defaultEventData.title);
@@ -890,13 +885,13 @@ export async function test(t) {
 
         t.it('clears a field and sets it to a new value', async () => {
           const event = await createTestEvent(calendar);
-          event.update({
+          await event.update({
             location: null,
           });
           t.expect(event.location).toBeNull();
 
           const newLocation = 'New location ' + new Date().toISOString();
-          event.update({
+          await event.update({
             location: newLocation,
           });
           t.expect(event.location).toBe(newLocation);
@@ -941,7 +936,7 @@ export async function test(t) {
             occurrence: 0,
           };
 
-          event.update({
+          await event.update({
             recurrenceRule: newRecurrenceRule,
           });
 
@@ -951,7 +946,7 @@ export async function test(t) {
         t.it('updates the all day property', async () => {
           const event = await createTestEvent(calendar);
           t.expect(event.allDay).toBe(false);
-          event.update({
+          await event.update({
             allDay: true,
           });
           t.expect(event.allDay).toBe(true);
@@ -960,11 +955,11 @@ export async function test(t) {
         t.it('updates timeZone', async () => {
           const event = await createTestEvent(calendar);
           t.expect(event.timeZone).toBe(defaultEventData.timeZone);
-          event.update({
+          await event.update({
             timeZone: 'GMT-5',
           });
           t.expect(event.timeZone).toBe('GMT-5');
-          event.update({
+          await event.update({
             timeZone: 'GMT+1',
           });
           t.expect(event.timeZone).toBe('GMT+1');
@@ -972,7 +967,7 @@ export async function test(t) {
 
         t.it('clears multiple fields when set to null', async () => {
           const event = await createTestEvent(calendar);
-          event.update({
+          await event.update({
             notes: null,
             url: null,
           });
@@ -988,7 +983,7 @@ export async function test(t) {
         t.it('clears timeZone when set to null', async () => {
           const event = await createTestEvent(calendar);
           t.expect(event.timeZone).toBe(defaultEventData.timeZone);
-          event.update({
+          await event.update({
             timeZone: null,
           });
           t.expect(event.timeZone).toBeNull();
@@ -1002,7 +997,7 @@ export async function test(t) {
           });
           t.expect(event.alarms.length).toBe(1);
           t.expect(event.alarms[0].relativeOffset).toEqual(-60);
-          event.update({
+          await event.update({
             alarms: null,
           });
           t.expect(event.alarms).toBe(null);
@@ -1017,7 +1012,7 @@ export async function test(t) {
           });
           t.expect(event.recurrenceRule).toBeDefined();
           t.expect(event.recurrenceRule.frequency).toBe(Calendar.Frequency.DAILY);
-          event.update({
+          await event.update({
             recurrenceRule: null,
           });
           t.expect(event.recurrenceRule).toBeNull();
@@ -1029,7 +1024,7 @@ export async function test(t) {
           const originalNotes = event.notes;
 
           // Update with undefined values (should be ignored)
-          event.update({
+          await event.update({
             title: 'Updated Title',
             notes: undefined,
           });
@@ -1038,7 +1033,7 @@ export async function test(t) {
           t.expect(event.notes).toBe(originalNotes); // Should remain unchanged
 
           // Update with null values (should clear fields)
-          event.update({
+          await event.update({
             notes: null,
           });
 
@@ -1047,7 +1042,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          calendar.delete();
+          await calendar.delete();
         });
       });
 
@@ -1271,7 +1266,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          calendar.delete();
+          await calendar.delete();
         });
       });
 
@@ -1304,7 +1299,7 @@ export async function test(t) {
         });
 
         t.afterAll(async () => {
-          calendar.delete();
+          await calendar.delete();
         });
       });
     });

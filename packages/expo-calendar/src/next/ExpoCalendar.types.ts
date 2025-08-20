@@ -191,12 +191,12 @@ export declare class ExpoCalendar {
    * explicitly set it to `null` in `details`.
    * @param details A map of properties to be updated.
    */
-  update(details: Partial<ModifiableCalendarProperties>): void;
+  update(details: Partial<ModifiableCalendarProperties>): Promise<void>;
 
   /**
    * Deletes the calendar.
    */
-  delete(): void;
+  delete(): Promise<void>;
 }
 
 export declare class ExpoCalendarEvent {
@@ -372,7 +372,7 @@ export declare class ExpoCalendarEvent {
    * Deletes the event.
    * @param recurringEventOptions A map of options for recurring events, available only on iOS.
    */
-  delete(recurringEventOptions?: RecurringEventOptions): void;
+  delete(recurringEventOptions?: RecurringEventOptions): Promise<void>;
 
   /**
    * Creates a new attendee and adds it to this event.

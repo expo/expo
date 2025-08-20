@@ -24,7 +24,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
         await super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
     }
     delete(options = {}) {
-        super.delete(stringifyDateValues(options));
+        return super.delete(stringifyDateValues(options));
     }
 }
 /**
@@ -76,7 +76,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     update(details) {
         const color = details.color ? processColor(details.color) : undefined;
         const newDetails = { ...details, color: color || undefined };
-        super.update(newDetails);
+        return super.update(newDetails);
     }
 }
 /**
@@ -130,8 +130,6 @@ export async function createCalendarNext(details = {}) {
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
 export async function listEvents(calendarIds, startDate, endDate) {
-    if (Platform.OS === 'android')
-        return [];
     if (!InternalExpoCalendar.listEvents) {
         throw new UnavailabilityError('Calendar', 'listEvents');
     }

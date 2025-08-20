@@ -9,6 +9,7 @@ import android.util.Log
 import expo.modules.calendar.CalendarModule.Companion.TAG
 import expo.modules.calendar.ModuleDestroyedException
 import expo.modules.calendar.availabilityConstantMatchingString
+import expo.modules.calendar.CalendarUtils
 import expo.modules.calendar.dialogs.CreateEventContract
 import expo.modules.calendar.dialogs.CreateEventIntentResult
 import expo.modules.calendar.dialogs.CreatedEventOptions
@@ -18,6 +19,7 @@ import expo.modules.calendar.dialogs.ViewedEventOptions
 import expo.modules.calendar.findCalendarsQueryParameters
 import expo.modules.calendar.next.records.CalendarRecord
 import expo.modules.calendar.next.records.CalendarAccessLevel
+import expo.modules.calendar.next.ExpoCalendarEvent
 import expo.modules.calendar.next.records.AttendeeType
 import expo.modules.calendar.next.records.AlarmMethod
 import expo.modules.kotlin.Promise
@@ -85,6 +87,30 @@ class CalendarNextModule : Module() {
 
     AsyncFunction("requestCalendarPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+    }
+
+    AsyncFunction("listEvents") { calendarIds: List<String>, startDate: Any, endDate: Any, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          try {
+            val allEvents = mutableListOf<ExpoCalendarEvent>()
+            
+            for (calendarId in calendarIds) {
+              val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, listOf(calendarId))
+              cursor.use {
+                while (it.moveToNext()) {
+                  val event = ExpoCalendarEvent(appContext, it)
+                  allEvents.add(event)
+                }
+              }
+            }
+            
+            promise.resolve(allEvents)
+          } catch (e: Exception) {
+            promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
+          }
+        }
+      }
     }
 
     AsyncFunction("createCalendarNext") { calendarRecord: CalendarRecord, promise: Promise ->
@@ -375,17 +401,18 @@ class CalendarNextModule : Module() {
         }
       }
 
-      Function("update") { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, _: Any, nullableFields: List<String> ->
-        withPermissions {
-          try {
-            val updatedRecord = expoCalendarEvent.eventRecord?.getUpdatedRecord(eventRecord, nullableFields)
-            if (updatedRecord == null) {
-              throw Exception("Event record is null")
+      AsyncFunction("update") { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, _: Any, nullableFields: List<String>, promise: Promise ->
+        withPermissions(promise) {
+          launchAsyncWithModuleScope(promise) {
+            try {
+              val updatedRecord = expoCalendarEvent.eventRecord?.getUpdatedRecord(eventRecord, nullableFields)
+                ?: throw Exception("Event record is null")
+              expoCalendarEvent.saveEvent(updatedRecord)
+              expoCalendarEvent.eventRecord = updatedRecord
+              promise.resolve(null)
+            } catch (e: Exception) {
+              promise.reject("E_EVENT_UPDATE_FAILED", "Failed to update event", e)
             }
-            expoCalendarEvent.saveEvent(updatedRecord)
-            expoCalendarEvent.eventRecord = updatedRecord
-          } catch (e: Exception) {
-            throw Exception("Event could not be updated", e)
           }
         }
       }

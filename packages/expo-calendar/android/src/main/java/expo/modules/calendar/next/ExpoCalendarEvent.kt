@@ -54,6 +54,8 @@ class ExpoCalendarEvent : SharedObject {
     var foundStartDate: String? = null;
     var foundEndDate: String? = null;
 
+
+
     // may be CalendarContract.Instances.BEGIN or CalendarContract.Events.DTSTART (which have different string values)
     val startDate = cursor.getString(3)
     if (startDate != null) {
@@ -117,6 +119,14 @@ class ExpoCalendarEvent : SharedObject {
       }
     }
 
+    if (eventRecord.title != null) {
+      eventBuilder.put(CalendarContract.Events.TITLE, eventRecord.title)
+    }
+
+    if (eventRecord.allDay != null) {
+      eventBuilder.put(CalendarContract.Events.ALL_DAY, if (eventRecord.allDay) 1 else 0)
+    }
+
     if (eventRecord.recurrenceRule != null) {
       val recurrenceRule = eventRecord.recurrenceRule.toRrFormat()
       if (recurrenceRule?.frequency != null) {
@@ -142,6 +152,10 @@ class ExpoCalendarEvent : SharedObject {
     }
     if (eventRecord.notes != null) {
       eventBuilder.put(CalendarContract.Events.DESCRIPTION, eventRecord.notes)
+    }
+
+    if (eventRecord.location != null) {
+      eventBuilder.put(CalendarContract.Events.EVENT_LOCATION, eventRecord.location)
     }
 
     if (eventRecord.timeZone != null) {
