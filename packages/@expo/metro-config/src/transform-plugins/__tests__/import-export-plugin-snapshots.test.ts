@@ -164,8 +164,14 @@ describe.each([
       import { default as local } from 'apple-icons';
       export { local };
     `,
-    test('export import specifier and default')`
+    test('export import specifier and default (0)')`
       import AppleIcons, { test } from 'apple-icons';
+      export { AppleIcons, test };
+      test(AppleIcons);
+    `,
+    test('export import specifier and default (1)')`
+      import AppleIcons, { test } from 'apple-icons';
+      test(AppleIcons);
       export { AppleIcons, test };
     `,
     test('export import specifier as local, and default')`

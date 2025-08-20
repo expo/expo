@@ -325,6 +325,7 @@ it('places export all with live bindings above export default and named', () => 
   const code = `
     export * from 'foo';
     export { baz } from 'bar';
+    const bax = 'bax';
     export default bax;
   `;
 
@@ -354,6 +355,7 @@ it('places export all with live bindings above export default and named', () => 
       });
     });
     var _bar = require('bar');
+    const bax = 'bax';
     var _default = bax;
     exports.default = _default;
   `;
@@ -365,6 +367,7 @@ it('places export all above export default and named', () => {
   const code = `
     export * from 'foo';
     export { baz } from 'bar';
+    const bax = 'bax';
     export default bax;
   `;
 
@@ -373,6 +376,7 @@ it('places export all above export default and named', () => {
       value: true
     });
     var _baz = require('bar').baz;
+    const bax = 'bax';
     var _default = bax;
     var _foo = require("foo");
     for (var _key in _foo) {
