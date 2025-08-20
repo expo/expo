@@ -23,6 +23,8 @@ export interface VideoViewProps extends ViewProps {
     player: VideoPlayer;
     /**
      * Determines whether native controls should be displayed or not.
+     *
+     * > Note: Due to platform limitations the native controls are always enabled in fullscreen mode.
      * @default true
      */
     nativeControls?: boolean;

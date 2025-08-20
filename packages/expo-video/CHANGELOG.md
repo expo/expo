@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Always keep the native controls always enabled in fullscreen mode to mimic iOS. ([#39015](https://github.com/expo/expo/pull/39015) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 - [Web] Add `useAudioNodePlayback` prop. ([#39039](https://github.com/expo/expo/pull/39039) by [@behenate](https://github.com/behenate))
