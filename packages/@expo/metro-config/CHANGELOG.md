@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix live binding of default exports ([#38976](https://github.com/expo/expo/pull/38976) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 0.21.3 — 2025-08-19
