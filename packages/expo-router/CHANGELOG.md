@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Resolve `unexpected ',' separator Refer to "Xcode Logs" below for additional, more detailed logs` issue.
+- Resolve `unexpected ',' separator Refer to "Xcode Logs" below for additional, more detailed logs` issue. ([#38998](https://github.com/expo/expo/pull/38998) by [@Phil9l](https://github.com/Phil9l))
 
 ### 💡 Others
 
