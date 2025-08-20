@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix useFocusEffect being called twice when tapping a tab or going back in a stack. ([#38856](https://github.com/expo/expo/pull/38856) by [@desii101](https://github.com/desii101))
+
 ### 💡 Others
 
 ## 5.1.5 — 2025-08-22
