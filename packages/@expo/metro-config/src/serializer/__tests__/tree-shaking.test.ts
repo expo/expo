@@ -1496,13 +1496,13 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
           return _$$_REQUIRE(_dependencyMap[0]).z1;
         }
       });
+      exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";

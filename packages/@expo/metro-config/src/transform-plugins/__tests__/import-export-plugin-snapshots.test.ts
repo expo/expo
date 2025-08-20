@@ -30,8 +30,34 @@ describe.each([
     test('export namespace as default')`
       export * as default from 'apple-icons';
     `,
+    test('export default')`
+      const local = 'local';
+      export default local;
+    `,
+    test('export default + import namespace')`
+      import * as Test from 'test';
+      test(Test);
+      const local = 'local';
+      export default local;
+    `,
+    test('export default + import default')`
+      import Test from 'test';
+      test(Test);
+      const local = 'local';
+      export default local;
+    `,
+    test('export default + import named')`
+      import { Test } from 'test';
+      test(Test);
+      const local = 'local';
+      export default local;
+    `,
     test('re-export all')`
       export * from 'apple-icons';
+    `,
+    test('re-export all (multiple)')`
+      export * from 'apple-icons';
+      export * from 'android-icons';
     `,
     test('re-export namespaces combined cases (1)')`
       export * from 'apple-icons';
@@ -77,6 +103,14 @@ describe.each([
     test('re-export all + namespaces')`
       export { test, default as _test } from 'apple-icons';
       export * from 'apple-icons';
+      export * as AppleIcons from 'apple-icons';
+      export * as default from 'apple-icons';
+    `,
+    test('re-export all multiple + namespaces')`
+      export { test, default as _test } from 'apple-icons';
+      export * from 'apple-icons';
+      export * from 'android-icons';
+      export * from 'windows-icons';
       export * as AppleIcons from 'apple-icons';
       export * as default from 'apple-icons';
     `,
@@ -152,8 +186,14 @@ describe.each([
       import { default as local } from 'apple-icons';
       export { local };
     `,
-    test('export import specifier and default')`
+    test('export import specifier and default (0)')`
       import AppleIcons, { test } from 'apple-icons';
+      export { AppleIcons, test };
+      test(AppleIcons);
+    `,
+    test('export import specifier and default (1)')`
+      import AppleIcons, { test } from 'apple-icons';
+      test(AppleIcons);
       export { AppleIcons, test };
     `,
     test('export import specifier as local, and default')`
