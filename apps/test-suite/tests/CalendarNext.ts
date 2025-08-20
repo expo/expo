@@ -15,6 +15,7 @@ import {
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'Calendar@next';
 
@@ -369,65 +370,65 @@ export async function test(t) {
       }
     });
 
-    // t.describe('Calendar UI Integration', () => {
-    //   let originalTimeout;
-    //   const dontStartNewTask = {
-    //     startNewActivityTask: false,
-    //   };
-    //   let calendar: ExpoCalendar;
+    t.describe('Calendar UI Integration', () => {
+      let originalTimeout;
+      const dontStartNewTask = {
+        startNewActivityTask: false,
+      };
+      let calendar: ExpoCalendar;
 
-    //   t.beforeEach(async () => {
-    //     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
-    //     calendar = await createTestCalendarAsync();
-    //   });
+      t.beforeEach(async () => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+        calendar = await createTestCalendarAsync();
+      });
 
-    //   t.it('creates an event via UI', async () => {
-    //     const eventData = createEventData();
-    //     await alertAndWaitForResponse('Please confirm the event creation dialog.');
-    //     const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
-    //     if (Platform.OS === 'ios') {
-    //       t.expect(result.action).toBe('saved');
-    //       t.expect(typeof result.id).toBe('string');
-    //       const storedEvent = await Calendar.getEventAsync(result.id);
+      t.it('creates an event via UI', async () => {
+        const eventData = createEventData();
+        await alertAndWaitForResponse('Please confirm the event creation dialog.');
+        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+        if (Platform.OS === 'ios') {
+          t.expect(result.action).toBe('saved');
+          t.expect(typeof result.id).toBe('string');
+          const storedEvent = await Calendar.getEventAsync(result.id);
 
-    //       t.expect(storedEvent).toEqual(
-    //         t.jasmine.objectContaining({
-    //           title: eventData.title,
-    //           allDay: eventData.allDay,
-    //           location: eventData.location,
-    //           notes: eventData.notes,
-    //         })
-    //       );
-    //     }
-    //   });
+          t.expect(storedEvent).toEqual(
+            t.jasmine.objectContaining({
+              title: eventData.title,
+              allDay: eventData.allDay,
+              location: eventData.location,
+              notes: eventData.notes,
+            })
+          );
+        }
+      });
 
-    //   t.it('can preview an event', async () => {
-    //     const event = await createTestEvent(calendar);
-    //     await alertAndWaitForResponse(
-    //       'Please verify event details are shown and close the dialog.'
-    //     );
-    //     const result = await event.openInCalendarAsync({
-    //       ...dontStartNewTask,
-    //       allowsEditing: true,
-    //       allowsCalendarPreview: true,
-    //     });
-    //     t.expect(result).toEqual({ action: 'done' });
-    //   });
+      t.it('can preview an event', async () => {
+        const event = await createTestEvent(calendar);
+        await alertAndWaitForResponse(
+          'Please verify event details are shown and close the dialog.'
+        );
+        const result = await event.openInCalendarAsync({
+          ...dontStartNewTask,
+          allowsEditing: true,
+          allowsCalendarPreview: true,
+        });
+        t.expect(result).toEqual({ action: 'done' });
+      });
 
-    //   t.it('can edit an event', async () => {
-    //     const event = await createTestEvent(calendar);
-    //     await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
-    //     const result = await event.editInCalendarAsync(dontStartNewTask);
-    //     t.expect(typeof result.action).toBe('string'); // done or canceled
-    //     t.expect(result.id).toBe(null);
-    //   });
+      t.it('can edit an event', async () => {
+        const event = await createTestEvent(calendar);
+        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+        const result = await event.editInCalendarAsync(dontStartNewTask);
+        t.expect(typeof result.action).toBe('string'); // done or canceled
+        t.expect(result.id).toBe(null);
+      });
 
-    //   t.afterEach(() => {
-    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    //     calendar.delete();
-    //   });
-    // });
+      t.afterEach(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+        calendar.delete();
+      });
+    });
 
     t.describe('Calendar', () => {
       t.describe('Calendar.update()', () => {
