@@ -33,24 +33,16 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     .map(({ route, index }) => {
       const descriptor = descriptors[route.key];
       const isFocused = index === deferredFocusedIndex;
-      const title = descriptor.options.title ?? route.name;
 
       return (
-        <BottomTabsScreen
+        <Screen
           key={route.key}
-          {...descriptor.options}
-          tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor}
-          tabBarItemBadgeTextColor={style?.badgeTextColor}
-          tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment}
-          iconResourceName={descriptor.options.icon?.drawable}
-          icon={convertOptionsIconToPropsIcon(descriptor.options.icon)}
-          selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
-          title={title}
-          freezeContents={false}
-          tabKey={route.key}
-          isFocused={isFocused}>
-          {descriptor.render()}
-        </BottomTabsScreen>
+          routeKey={route.key}
+          name={route.name}
+          descriptor={descriptor}
+          isFocused={isFocused}
+          style={style}
+        />
       );
     });
 
@@ -95,6 +87,34 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   );
 }
 
+function Screen(props: {
+  routeKey: string;
+  name: string;
+  descriptor: NativeTabsViewProps['builder']['descriptors'][string];
+  isFocused: boolean;
+  style: NativeTabsViewProps['style'];
+}) {
+  const { routeKey, name, descriptor, isFocused, style } = props;
+  const title = descriptor.options.title ?? name;
+
+  return (
+    <BottomTabsScreen
+      {...descriptor.options}
+      tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor}
+      tabBarItemBadgeTextColor={style?.badgeTextColor}
+      tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment}
+      iconResourceName={descriptor.options.icon?.drawable}
+      icon={convertOptionsIconToPropsIcon(descriptor.options.icon)}
+      selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
+      title={title}
+      freezeContents={false}
+      tabKey={routeKey}
+      isFocused={isFocused}>
+      {descriptor.render()}
+    </BottomTabsScreen>
+  );
+}
+
 function convertOptionsIconToPropsIcon(
   icon: NativeTabOptions['icon']
 ): BottomTabsScreenProps['icon'] {
@@ -116,25 +136,27 @@ const supportedTabBarItemLabelVisibilityModesSet = new Set<string>(
 const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
 function BottomTabsWrapper(props: BottomTabsProps) {
-  const { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, tabBarBlurEffect, ...rest } =
-    props;
+  let { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, tabBarBlurEffect, ...rest } = props;
   if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
-    throw new Error(
+    console.warn(
       `Unsupported minimizeBehavior: ${tabBarMinimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((behavior) => `"${behavior}"`).join(', ')}`
     );
+    tabBarMinimizeBehavior = undefined;
   }
   if (
     tabBarItemLabelVisibilityMode &&
     !supportedTabBarItemLabelVisibilityModesSet.has(tabBarItemLabelVisibilityMode)
   ) {
-    throw new Error(
+    console.warn(
       `Unsupported labelVisibilityMode: ${tabBarItemLabelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`
     );
+    tabBarItemLabelVisibilityMode = undefined;
   }
   if (tabBarBlurEffect && !supportedBlurEffectsSet.has(tabBarBlurEffect)) {
-    throw new Error(
+    console.warn(
       `Unsupported blurEffect: ${tabBarBlurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
     );
+    tabBarBlurEffect = undefined;
   }
 
   return (
