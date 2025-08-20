@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty
 @OptIn(UnstableApi::class)
 class VideoPlayerKeepAwake(player: VideoPlayer, val appContext: AppContext, enableOnInit: Boolean = true) : ReadWriteProperty<Any?, Boolean> {
   private val videoPlayer: WeakReference<VideoPlayer?> = WeakReference(player)
-  var enabled = false
+  var enabled = enableOnInit
     set(value) {
       if (value) {
         enable()
