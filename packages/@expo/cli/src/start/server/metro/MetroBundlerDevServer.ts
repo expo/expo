@@ -1053,6 +1053,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
+    // Error early when server loaders are used with `web.output: "server"`
+    if (exp?.extra?.router?.unstable_useServerDataLoaders && exp.web?.output === 'server') {
+      throw new CommandError(
+        'LOADERS_NOT_SUPPORTED',
+        'Server data loaders are not currently supported when using `web.output: "server"`).'
+      );
+    }
+
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
