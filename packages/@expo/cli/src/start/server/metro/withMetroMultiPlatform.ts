@@ -30,6 +30,7 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
+import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
@@ -822,7 +823,9 @@ export function withExtendedResolver(
     }
   );
 
-  return withMetroErrorReportingResolver(metroConfigWithCustomContext);
+  return withMetroErrorReportingResolver(
+    withMetroSupervisingTransformWorker(metroConfigWithCustomContext)
+  );
 }
 
 /** @returns `true` if the incoming resolution should be swapped. */
