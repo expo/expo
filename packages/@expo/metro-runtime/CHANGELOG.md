@@ -4,11 +4,33 @@
 
 ### 🛠 Breaking changes
 
-- Move async-require and fast refresh to `expo`. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.1.0 — 2025-08-19
+
+### 🎉 New features
+
+- Pass errors, synthetic and owners stacks to Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 6.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- Show `console.error` and LogBox for unhandled promise rejection in development ([#38834](https://github.com/expo/expo/pull/38834) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 6.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Move async-require and fast refresh to `expo`. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

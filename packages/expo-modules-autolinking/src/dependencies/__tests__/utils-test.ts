@@ -1,4 +1,4 @@
-import type { DependencyResolution } from '../types';
+import { DependencyResolutionSource, type DependencyResolution } from '../types';
 import {
   defaultShouldIncludeDependency,
   filterMapResolutionResult,
@@ -27,6 +27,7 @@ describe(defaultShouldIncludeDependency, () => {
 
 describe(mergeWithDuplicate, () => {
   const BASE_RESOLUTION: DependencyResolution = {
+    source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
     name: 'test',
     version: '',
     path: '/fake/path',
@@ -44,6 +45,13 @@ describe(mergeWithDuplicate, () => {
     b.depth = 3;
     expect(mergeWithDuplicate(a, b)).toBe(b);
     expect(mergeWithDuplicate(b, a)).toBe(b);
+  });
+
+  it('prefers shortest node_modules path first', () => {
+    const a = { ...BASE_RESOLUTION, originPath: '/node_modules/test' };
+    const b = { ...BASE_RESOLUTION, originPath: '/node_modules/parent/node_modules/path' };
+    expect(mergeWithDuplicate(a, b).originPath).toBe('/node_modules/test');
+    expect(mergeWithDuplicate(b, a).originPath).toBe('/node_modules/test');
   });
 
   it('copies duplicate path to returned resolution', () => {
@@ -96,6 +104,7 @@ describe(mergeWithDuplicate, () => {
 
 describe(mergeResolutionResults, () => {
   const BASE_RESOLUTION: DependencyResolution = {
+    source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
     name: 'test',
     version: '',
     path: '/fake/path',
@@ -125,6 +134,7 @@ describe(mergeResolutionResults, () => {
 
 describe(filterMapResolutionResult, () => {
   const BASE_RESOLUTION: DependencyResolution = {
+    source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
     name: 'test',
     version: '',
     path: '/fake/path',

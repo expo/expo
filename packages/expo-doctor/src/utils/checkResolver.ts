@@ -25,6 +25,7 @@ import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
+import { LockfileCheck } from '../checks/LockfileCheck';
 
 /**
  * Resolves the checks that should be run for a given project.
@@ -38,6 +39,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     // Project Structure Checks
     new ProjectSetupCheck(),
     new PackageJsonCheck(),
+    new LockfileCheck(),
     new ExpoConfigSchemaCheck(),
     new ExpoConfigCommonIssueCheck(),
     new MetroConfigCheck(),

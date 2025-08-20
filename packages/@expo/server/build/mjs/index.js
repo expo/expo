@@ -2,7 +2,7 @@ import { ImmutableRequest } from './ImmutableRequest';
 import { ExpoError } from './error';
 import { getRedirectRewriteLocation, isResponse, parseParams } from './utils';
 export { ExpoError } from './error';
-function noopBeforeResponse(_route, responseInit) {
+function noopBeforeResponse(responseInit, _route) {
     return responseInit;
 }
 export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleRouteError, getMiddleware, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
@@ -15,7 +15,7 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
             // NOTE(@EvanBacon): Development error when Expo Router is not setup.
             // NOTE(@kitten): If the manifest is not found, we treat this as
             // an SSG deployment and do nothing
-            return createResponse(null, 'Not found', {
+            return createResponse(null, null, 'Not found', {
                 status: 404,
                 headers: {
                     'Content-Type': 'text/plain',
@@ -113,32 +113,50 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
             }
         }
         // 404
-        return createResponse(null, 'Not found', {
+        return createResponse(null, null, 'Not found', {
             status: 404,
             headers: { 'Content-Type': 'text/plain' },
         });
     }
-    function createResponse(route, bodyInit, responseInit, routeType = null) {
+    function createResponse(routeType = null, route, bodyInit, responseInit) {
         const originalStatus = responseInit.status;
+        let callbackRoute;
+        if (route && routeType) {
+            route.type = routeType;
+            callbackRoute = route;
+        }
+        else {
+            callbackRoute = { type: null };
+        }
         let modifiedResponseInit = responseInit;
         // Callback call order matters, general rule is to call more specific callbacks first.
         if (routeType === 'html') {
-            modifiedResponseInit = beforeHTMLResponse(route, modifiedResponseInit);
+            modifiedResponseInit = beforeHTMLResponse(modifiedResponseInit, callbackRoute);
         }
         if (routeType === 'api') {
-            modifiedResponseInit = beforeAPIResponse(route, modifiedResponseInit);
+            modifiedResponseInit = beforeAPIResponse(modifiedResponseInit, callbackRoute);
         }
         // Second to last is error response callback
         if (originalStatus && originalStatus > 399) {
-            modifiedResponseInit = beforeErrorResponse(route, modifiedResponseInit);
+            modifiedResponseInit = beforeErrorResponse(modifiedResponseInit, callbackRoute);
         }
         // Generic before response callback last
-        modifiedResponseInit = beforeResponse(route, modifiedResponseInit);
+        modifiedResponseInit = beforeResponse(modifiedResponseInit, callbackRoute);
         return new Response(bodyInit, modifiedResponseInit);
+    }
+    function createResponseFrom(routeType = null, route, response) {
+        const modifiedResponseInit = {
+            headers: Object.fromEntries(response.headers.entries()),
+            status: response.status,
+            statusText: response.statusText,
+            cf: response.cf,
+            webSocket: response.webSocket,
+        };
+        return createResponse(routeType, route, response.body, modifiedResponseInit);
     }
     async function respondNotFoundHTML(html, route) {
         if (typeof html === 'string') {
-            return createResponse(route, html, {
+            return createResponse('notFoundHtml', route, html, {
                 status: 404,
                 headers: {
                     'Content-Type': 'text/html',
@@ -161,28 +179,28 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         }
         const handler = mod[request.method];
         if (!handler || typeof handler !== 'function') {
-            return createResponse(route, 'Method not allowed', {
+            return createResponse('notAllowedApi', route, 'Method not allowed', {
                 status: 405,
                 headers: {
                     'Content-Type': 'text/plain',
                 },
-            }, 'api');
+            });
         }
         const params = parseParams(request, route);
         const response = await handler(request, params);
         if (!isResponse(response)) {
             throw new ExpoError(`API route ${request.method} handler ${route.page} resolved to a non-Response result`);
         }
-        return response;
+        return createResponseFrom('api', route, response);
     }
     function respondHTML(html, route) {
         if (typeof html === 'string') {
-            return createResponse(route, html, {
+            return createResponse('html', route, html, {
                 status: 200,
                 headers: {
                     'Content-Type': 'text/html',
                 },
-            }, 'html');
+            });
         }
         if (isResponse(html)) {
             // Only used for development error responses

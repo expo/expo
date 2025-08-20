@@ -31,7 +31,8 @@ data class TextInputProps(
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
-  val autoCapitalize: MutableState<String> = mutableStateOf("none")
+  val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -90,7 +91,8 @@ class TextInputView(context: Context, appContext: AppContext) :
           keyboardType = props.keyboardType.value.keyboardType(),
           autoCorrectEnabled = props.autocorrection.value,
           capitalization = props.autoCapitalize.value.autoCapitalize()
-        )
+        ),
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
       )
     }
   }

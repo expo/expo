@@ -216,9 +216,11 @@ For example, with the `--platform apple` option, it returns an object in JSON fo
 </PaddedAPIBox>
 <PaddedAPIBox header="verify">
 
-Verifies the search results by checking for duplicate Expo modules. Warnings are shown for each conflicting, duplicate installation.
+Verifies the autolinked native modules by checking for duplicates. Warnings are shown for each conflicting, duplicate installation.
 
 <Terminal cmd={['$ npx expo-modules-autolinking verify']} />
+
+Pass the `--verbose` option to list all autolinked native modules.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="react-native-config">

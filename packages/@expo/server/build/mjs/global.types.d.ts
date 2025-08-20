@@ -5,5 +5,9 @@ declare global {
     interface Request {
         duplex?: 'half';
     }
+    interface Response {
+        cf?: unknown;
+        webSocket?: unknown;
+    }
 }
 export {};

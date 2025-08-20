@@ -4,6 +4,24 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
 - [web] Update default crossOrigin value to "anonymous" to prevent common CORS issues ([#38341](https://github.com/expo/expo/pull/38341) by [@hirbod](https://github.com/hirbod))
 
 ### 🎉 New features
@@ -20,6 +38,7 @@
 - [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
 - [Android] Fix: Respect accessibility settings for HLS subtitle sizing and system settings, added listener ([#38591](https://github.com/expo/expo/pull/38591) by [@hirbod](https://github.com/hirbod))
 - [iOS] Fix inconsistent behavior of "replay" on iOS by calling "play()" after seeking to position 0. ([#38590](https://github.com/expo/expo/pull/38590)) by [@saviocmc](https://github.com/saviocmc)
+- [web] Revert crossOrigin property for video to `undefined` ([#38818](https://github.com/expo/expo/pull/38818) by [@hirbod](https://github.com/hirbod)
 
 ### 💡 Others
 

@@ -6,6 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 29.0.3 — 2025-08-18
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.1 — 2025-08-15
+
+### 💡 Others
+
+- Bump `@vercel/ncc` build ([#38801](https://github.com/expo/expo/pull/38801) by [@kitten](https://github.com/kitten))
+
+## 29.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add support for a customisable reloading view when `reloadAsync` is called. ([#38074](https://github.com/expo/expo/pull/38074) by [@alanjhughes](https://github.com/alanjhughes)), ([#38362](https://github.com/expo/expo/pull/38362) by [@alanjhughes](https://github.com/alanjhughes)) and ([#38409](https://github.com/expo/expo/pull/38409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add `downloadProgress` state to the `useUpdates` hook to support listening to overall asset download progress. ([#38307](https://github.com/expo/expo/pull/38307)) by [@nishan](https://github.com/intergalacticspacehighway)

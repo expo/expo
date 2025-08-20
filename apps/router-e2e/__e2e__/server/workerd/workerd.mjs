@@ -9,20 +9,24 @@ export default {
         build: '.',
       },
       {
-        beforeResponse: (_router, response) => {
-          response.headers['Custom-All-Header'] = 'all';
+        beforeResponse: (response, route) => {
+          response.headers['custom-all-type'] = route.type ?? 'unknown';
+          response.headers['custom-all-route'] = route.page ?? 'unknown';
           return response;
         },
-        beforeErrorResponse: (_router, response) => {
-          response.headers['Custom-Error-Header'] = 'error';
+        beforeErrorResponse: (response, route) => {
+          response.headers['custom-error-type'] = route.type ?? 'unknown';
+          response.headers['custom-error-route'] = route.page ?? 'unknown';
           return response;
         },
-        beforeAPIResponse(route, response) {
-          response.headers['Custom-Api-Header'] = 'api';
+        beforeAPIResponse(response, route) {
+          response.headers['custom-api-type'] = route.type ?? 'unknown';
+          response.headers['custom-api-route'] = route.page ?? 'unknown';
           return response;
         },
-        beforeHTMLResponse(route, response) {
-          response.headers['Custom-Html-Header'] = 'html';
+        beforeHTMLResponse(response, route) {
+          response.headers['custom-html-type'] = route.type ?? 'unknown';
+          response.headers['custom-html-route'] = route.page ?? 'unknown';
           return response;
         },
       }

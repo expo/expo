@@ -1,4 +1,4 @@
-import { Picker, PickerPrimitive, Section as NativeSection } from '@expo/ui/swift-ui';
+import { Host, Picker, Section as NativeSection } from '@expo/ui/swift-ui';
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 
@@ -14,64 +14,70 @@ export default function PickerScreen() {
           <Text>{[...options, 'unset'][selectedIndex ?? options.length]}</Text>
         </Section>
         <Section title="Segmented picker">
-          <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="segmented"
-          />
-        </Section>
-        <Section title="Menu picker">
-          <NativeSection style={{ height: 100 }}>
+          <Host matchContents>
             <Picker
               options={options}
               selectedIndex={selectedIndex}
               onOptionSelected={({ nativeEvent: { index } }) => {
                 setSelectedIndex(index);
               }}
-              label="Cost"
-              variant="menu"
+              variant="segmented"
             />
-          </NativeSection>
+          </Host>
+        </Section>
+        <Section title="Menu picker">
+          <Host style={{ height: 100 }}>
+            <NativeSection>
+              <Picker
+                options={options}
+                selectedIndex={selectedIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setSelectedIndex(index);
+                }}
+                label="Cost"
+                variant="menu"
+              />
+            </NativeSection>
+          </Host>
         </Section>
         <Section title="Inline picker">
-          <NativeSection style={{ height: 300 }}>
-            <PickerPrimitive
+          <Host style={{ height: 300 }}>
+            <NativeSection>
+              <Picker
+                options={options}
+                selectedIndex={selectedIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  setSelectedIndex(index);
+                }}
+                label="Cost"
+                variant="inline"
+              />
+            </NativeSection>
+          </Host>
+        </Section>
+        <Section title="Wheel picker">
+          <Host style={{ width: 300, height: 200 }}>
+            <Picker
               options={options}
               selectedIndex={selectedIndex}
               onOptionSelected={({ nativeEvent: { index } }) => {
                 setSelectedIndex(index);
               }}
-              label="Cost"
-              variant="inline"
+              variant="wheel"
             />
-          </NativeSection>
-        </Section>
-        <Section title="Wheel picker">
-          <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="wheel"
-            style={{
-              width: 300,
-              height: 200,
-            }}
-          />
+          </Host>
         </Section>
         <Section title="Tinted picker">
-          <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            color="#ff5500"
-          />
+          <Host matchContents>
+            <Picker
+              options={options}
+              selectedIndex={selectedIndex}
+              onOptionSelected={({ nativeEvent: { index } }) => {
+                setSelectedIndex(index);
+              }}
+              color="#ff5500"
+            />
+          </Host>
         </Section>
       </Page>
     </ScrollView>

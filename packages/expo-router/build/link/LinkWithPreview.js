@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkWithPreview = LinkWithPreview;
 const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
@@ -44,6 +45,7 @@ const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
 const native_1 = require("./preview/native");
 const useNextScreenId_1 = require("./preview/useNextScreenId");
 const url_1 = require("../utils/url");
+const isPad = react_native_1.Platform.OS === 'ios' && react_native_1.Platform.isPad;
 function LinkWithPreview({ children, ...rest }) {
     const router = (0, hooks_1.useRouter)();
     const { setOpenPreviewKey } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
@@ -62,14 +64,6 @@ function LinkWithPreview({ children, ...rest }) {
     }, [hrefWithoutQuery]);
     const [{ nextScreenId, tabPath }, prefetch] = (0, useNextScreenId_1.useNextScreenId)();
     (0, react_1.useEffect)(() => {
-        if ((0, url_1.shouldLinkExternally)(String(rest.href))) {
-            if (process.env.NODE_ENV !== 'production') {
-                throw new Error('External links previews are not supported');
-            }
-            else {
-                console.warn('External links previews are not supported');
-            }
-        }
         if (rest.replace) {
             if (process.env.NODE_ENV !== 'production') {
                 throw new Error('Using replace links with preview is not supported');
@@ -91,31 +85,43 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
-    const preview = react_1.default.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
+    const highlightBorderRadius = rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
+    const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
         path: tabPath,
     }), [tabPath]);
-    if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
+    const hasPreview = !!previewElement;
+    if (rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
     }
-    return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} tabPath={tabPathValue} onWillPreviewOpen={() => {
-            isPreviewTapped.current = false;
-            prefetch(rest.href);
-            setIsCurrenPreviewOpen(true);
+    return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
+            if (hasPreview) {
+                isPreviewTapped.current = false;
+                prefetch(rest.href);
+                setIsCurrenPreviewOpen(true);
+            }
         }} onPreviewWillClose={() => {
-            setIsCurrenPreviewOpen(false);
-            // When preview was not tapped, then we need to enable the screen stack animation
-            // Otherwise this will happen in StackNavigator, when new screen is opened
-            if (!isPreviewTapped.current) {
-                setOpenPreviewKey(undefined);
+            if (hasPreview) {
+                setIsCurrenPreviewOpen(false);
+                // When preview was not tapped, then we need to enable the screen stack animation
+                // Otherwise this will happen in StackNavigator, when new screen is opened
+                if (!isPreviewTapped.current || isPad) {
+                    setOpenPreviewKey(undefined);
+                }
+            }
+        }} onPreviewDidClose={() => {
+            if (hasPreview && isPreviewTapped.current && isPad) {
+                router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
         }} onPreviewTapped={() => {
             isPreviewTapped.current = true;
-            router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+            if (!isPad) {
+                router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+            }
         }}>
       <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <native_1.NativeLinkPreviewTrigger>
+        <native_1.NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>
           <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
         </native_1.NativeLinkPreviewTrigger>
         {preview}

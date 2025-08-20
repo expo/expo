@@ -1,7 +1,6 @@
-import fs from 'fs';
 import path from 'path';
 
-import type { SearchOptions, SupportedPlatform } from '../types';
+import type { SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
   parsePackageNameAsync,
@@ -10,7 +9,6 @@ import {
 import { loadConfigAsync } from './config';
 import { resolveDependencyConfigImplIosAsync } from './iosResolver';
 import type {
-  RNConfigCommandOptions,
   RNConfigDependency,
   RNConfigDependencyAndroid,
   RNConfigDependencyIos,
@@ -20,7 +18,7 @@ import type {
   RNConfigResult,
 } from './reactNativeConfig.types';
 import { discoverExpoModuleConfigAsync, ExpoModuleConfig } from '../ExpoModuleConfig';
-import { mergeLinkingOptionsAsync } from '../autolinking';
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
 import {
   DependencyResolution,
   filterMapResolutionResult,
@@ -96,49 +94,47 @@ export async function resolveReactNativeModule(
   );
 }
 
+interface CreateRNConfigParams {
+  appRoot: string;
+  sourceDir: string | undefined;
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
+}
+
 /**
  * Create config for react-native core autolinking.
  */
-export async function createReactNativeConfigAsync(
-  providedOptions: RNConfigCommandOptions
-): Promise<RNConfigResult> {
-  const options = await mergeLinkingOptionsAsync<SearchOptions & RNConfigCommandOptions>(
-    providedOptions
-  );
-  const excludeNames = new Set(options.exclude);
-  const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(
-    options.projectRoot
-  );
+export async function createReactNativeConfigAsync({
+  appRoot,
+  sourceDir,
+  autolinkingOptions,
+}: CreateRNConfigParams): Promise<RNConfigResult> {
+  const excludeNames = new Set(autolinkingOptions.exclude);
+  const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(appRoot);
 
   // custom native modules should be resolved first so that they can override other modules
-  const searchPaths =
-    options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
-      ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
-      : (options.searchPaths ?? []);
+  const searchPaths = autolinkingOptions.nativeModulesDir
+    ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
+    : autolinkingOptions.searchPaths;
 
-  const limitDepth = options.legacy_shallowReactNativeLinking ? 1 : undefined;
+  const limitDepth = autolinkingOptions.legacy_shallowReactNativeLinking ? 1 : undefined;
 
   const resolutions = mergeResolutionResults(
     await Promise.all([
-      scanDependenciesFromRNProjectConfig(options.projectRoot, projectConfig),
+      scanDependenciesFromRNProjectConfig(appRoot, projectConfig),
       ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
-      scanDependenciesRecursively(options.projectRoot, { limitDepth }),
+      scanDependenciesRecursively(appRoot, { limitDepth }),
     ])
   );
 
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
-    resolveReactNativeModule(resolution, projectConfig, options.platform, excludeNames)
+    resolveReactNativeModule(resolution, projectConfig, autolinkingOptions.platform, excludeNames)
   );
 
   return {
-    root: options.projectRoot,
+    root: appRoot,
     reactNativePath: resolutions['react-native']?.path!,
     dependencies,
-    project: await resolveAppProjectConfigAsync(
-      options.projectRoot,
-      options.platform,
-      options.sourceDir
-    ),
+    project: await resolveAppProjectConfigAsync(appRoot, autolinkingOptions.platform, sourceDir),
   };
 }
 
@@ -147,6 +143,7 @@ export async function resolveAppProjectConfigAsync(
   platform: SupportedPlatform,
   sourceDir?: string
 ): Promise<RNConfigReactNativeAppProjectConfig> {
+  // TODO(@kitten): use the commandRoot here to find these files in non <projectRoot>/<platform> folders
   if (platform === 'android') {
     const androidDir = path.join(projectRoot, 'android');
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: false });

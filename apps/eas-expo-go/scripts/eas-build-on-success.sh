@@ -34,7 +34,7 @@ upload_crashlytics_symbols() {
 
 if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "Release"
+    upload_crashlytics_symbols "MobileRelease"
   fi
 
   SLUG="release-client"
@@ -57,7 +57,7 @@ fi
 
 if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "Release"
+    upload_crashlytics_symbols "MobileRelease"
   fi
 
   SLUG="publish-client"
@@ -71,10 +71,8 @@ if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
 
   source $ROOT_DIR/secrets/expotools.env
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    et eas android-apk-publish
-    notify_slack "Successful Expo Go Android APK build. Published to S3 and updated staging versions endpoint" "$MESSAGE"
+    notify_slack "Successful Expo Go Android APK build. Run \`et eas android-apk-upload\` to upload to GitHub" "$MESSAGE"
   elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
-    et eas ios-simulator-publish
-    notify_slack "Successful Expo Go iOS simulator build. Published to S3 and updated staging versions endpoint" "$MESSAGE"
+    notify_slack "Successful Expo Go iOS simulator build. Run \`et eas ios-simulator-upload\` to upload to GitHub" "$MESSAGE"
   fi
 fi

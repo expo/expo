@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.1 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
 - Mock Expo's default async-require messaging socket. ([#37524](https://github.com/expo/expo/pull/37524) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others

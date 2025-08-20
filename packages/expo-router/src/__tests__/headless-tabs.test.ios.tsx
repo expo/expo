@@ -1,10 +1,11 @@
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { forwardRef, Ref, useState } from 'react';
 import { ViewProps, View, Text, Button } from 'react-native';
 
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
-import { RenderRouterOptions, act, fireEvent, renderRouter, screen } from '../testing-library';
+import { type RenderRouterOptions, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs } from '../ui';
 import { Pressable, PressableProps } from '../views/Pressable';
 

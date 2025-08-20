@@ -23,16 +23,21 @@ export { type MiddlewareFunction } from './types';
 
 type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
   headers: Record<string, string>;
+  // Cloudflare specific response properties
+  cf?: unknown;
+  webSocket?: unknown;
 };
+type CallbackRouteType = 'html' | 'api' | 'notFoundHtml' | 'notAllowedApi';
+type CallbackRoute = (Route & { type: CallbackRouteType }) | { type: null };
 // NOTE(@krystofwoldrich): For better general usability of the callback bodyInit could be also passed as arg.
 // But we don't have a use case for it now, same for full HeaderInit type.
 type BeforeResponseCallback = (
-  route: Route | null,
-  responseInit: ResponseInitLike
+  responseInit: ResponseInitLike,
+  route: CallbackRoute
 ) => ResponseInitLike;
 function noopBeforeResponse(
-  _route: Route | null,
-  responseInit: ResponseInitLike
+  responseInit: ResponseInitLike,
+  _route: CallbackRoute
 ): ResponseInitLike {
   return responseInit;
 }
@@ -53,9 +58,13 @@ export function createRequestHandler({
   getApiRoute: (route: Route) => Promise<any>;
   getMiddleware: (route: Middleware) => Promise<any>;
   handleRouteError: (error: Error) => Promise<Response>;
+  /** Before handler response 4XX, not before unhandled error */
   beforeErrorResponse?: BeforeResponseCallback;
+  /** Before handler responses */
   beforeResponse?: BeforeResponseCallback;
+  /** Before handler HTML responses, not before 404 HTML */
   beforeHTMLResponse?: BeforeResponseCallback;
+  /** Before handler API responses */
   beforeAPIResponse?: BeforeResponseCallback;
 }) {
   return async function handler(request: Request): Promise<Response> {
@@ -68,7 +77,7 @@ export function createRequestHandler({
       // NOTE(@EvanBacon): Development error when Expo Router is not setup.
       // NOTE(@kitten): If the manifest is not found, we treat this as
       // an SSG deployment and do nothing
-      return createResponse(null, 'Not found', {
+      return createResponse(null, null, 'Not found', {
         status: 404,
         headers: {
           'Content-Type': 'text/plain',
@@ -178,35 +187,57 @@ export function createRequestHandler({
     }
 
     // 404
-    return createResponse(null, 'Not found', {
+    return createResponse(null, null, 'Not found', {
       status: 404,
       headers: { 'Content-Type': 'text/plain' },
     });
   }
 
   function createResponse(
-    route: Route | null,
+    routeType: CallbackRouteType | null = null,
+    route: (Route & { type?: CallbackRouteType }) | null,
     bodyInit: BodyInit | null,
-    responseInit: ResponseInitLike,
-    routeType: 'html' | 'api' | null = null
+    responseInit: ResponseInitLike
   ): Response {
     const originalStatus = responseInit.status;
+    let callbackRoute: CallbackRoute;
+    if (route && routeType) {
+      route.type = routeType;
+      callbackRoute = route as CallbackRoute;
+    } else {
+      callbackRoute = { type: null };
+    }
 
     let modifiedResponseInit = responseInit;
     // Callback call order matters, general rule is to call more specific callbacks first.
     if (routeType === 'html') {
-      modifiedResponseInit = beforeHTMLResponse(route, modifiedResponseInit);
+      modifiedResponseInit = beforeHTMLResponse(modifiedResponseInit, callbackRoute);
     }
     if (routeType === 'api') {
-      modifiedResponseInit = beforeAPIResponse(route, modifiedResponseInit);
+      modifiedResponseInit = beforeAPIResponse(modifiedResponseInit, callbackRoute);
     }
     // Second to last is error response callback
     if (originalStatus && originalStatus > 399) {
-      modifiedResponseInit = beforeErrorResponse(route, modifiedResponseInit);
+      modifiedResponseInit = beforeErrorResponse(modifiedResponseInit, callbackRoute);
     }
     // Generic before response callback last
-    modifiedResponseInit = beforeResponse(route, modifiedResponseInit);
+    modifiedResponseInit = beforeResponse(modifiedResponseInit, callbackRoute);
     return new Response(bodyInit, modifiedResponseInit);
+  }
+
+  function createResponseFrom(
+    routeType: CallbackRouteType | null = null,
+    route: (Route & { type?: CallbackRouteType }) | null,
+    response: Response
+  ): Response {
+    const modifiedResponseInit: ResponseInitLike = {
+      headers: Object.fromEntries(response.headers.entries()),
+      status: response.status,
+      statusText: response.statusText,
+      cf: response.cf,
+      webSocket: response.webSocket,
+    };
+    return createResponse(routeType, route, response.body, modifiedResponseInit);
   }
 
   async function respondNotFoundHTML(
@@ -214,7 +245,7 @@ export function createRequestHandler({
     route: Route
   ): Promise<Response> {
     if (typeof html === 'string') {
-      return createResponse(route, html, {
+      return createResponse('notFoundHtml', route, html, {
         status: 404,
         headers: {
           'Content-Type': 'text/html',
@@ -242,17 +273,12 @@ export function createRequestHandler({
 
     const handler = mod[request.method];
     if (!handler || typeof handler !== 'function') {
-      return createResponse(
-        route,
-        'Method not allowed',
-        {
-          status: 405,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
+      return createResponse('notAllowedApi', route, 'Method not allowed', {
+        status: 405,
+        headers: {
+          'Content-Type': 'text/plain',
         },
-        'api'
-      );
+      });
     }
 
     const params = parseParams(request, route);
@@ -263,22 +289,17 @@ export function createRequestHandler({
       );
     }
 
-    return response;
+    return createResponseFrom('api', route, response);
   }
 
   function respondHTML(html: string | Response | null, route: Route): Response {
     if (typeof html === 'string') {
-      return createResponse(
-        route,
-        html,
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'text/html',
-          },
+      return createResponse('html', route, html, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html',
         },
-        'html'
-      );
+      });
     }
 
     if (isResponse(html)) {

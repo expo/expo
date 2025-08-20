@@ -1,5 +1,7 @@
 import SwiftUI
 
+// swiftlint:disable closure_body_length
+
 struct DevMenuDeveloperTools: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
 
@@ -46,9 +48,7 @@ struct DevMenuDeveloperTools: View {
           disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
         )
       }
-#if !os(tvOS)
-      .background(Color(.systemBackground))
-#endif
+      .background(Color.expoSystemBackground)
       .cornerRadius(18)
     }
   }
@@ -57,3 +57,5 @@ struct DevMenuDeveloperTools: View {
 #Preview {
   DevMenuDeveloperTools()
 }
+
+// swiftlint:enable closure_body_length

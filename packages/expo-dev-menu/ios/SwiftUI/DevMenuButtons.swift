@@ -30,9 +30,7 @@ struct DevMenuActionButton: View {
       .padding()
     }
     .disabled(disabled)
-#if !os(tvOS)
-    .background(Color(.secondarySystemBackground))
-#endif
+    .background(Color.expoSecondarySystemBackground)
     .opacity(disabled ? 0.6 : 1.0)
   }
 }
@@ -71,9 +69,7 @@ struct DevMenuToggleButton: View {
       .disabled(disabled)
     }
     .padding()
-#if !os(tvOS)
-    .background(Color(.secondarySystemBackground))
-#endif
+    .background(Color.expoSecondarySystemBackground)
     .opacity(disabled ? 0.6 : 1.0)
   }
 }

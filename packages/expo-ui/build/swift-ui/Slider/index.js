@@ -1,12 +1,12 @@
 import { requireNativeView } from 'expo';
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const SliderNativeView = requireNativeView('ExpoUI', 'SliderView');
-/**
- * @hidden
- */
-export function transformSliderProps(props) {
+function transformSliderProps(props) {
+    const { modifiers, ...restProps } = props;
     return {
-        ...props,
+        modifiers,
+        ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+        ...restProps,
         min: props.min ?? 0,
         max: props.max ?? 1,
         steps: props.steps ?? 0,
@@ -17,12 +17,7 @@ export function transformSliderProps(props) {
         color: props.color,
     };
 }
-export function SliderPrimitive(props) {
-    return <SliderNativeView {...transformSliderProps(props)}/>;
-}
 export function Slider(props) {
-    return (<Host style={props.style} matchContents>
-      <SliderPrimitive {...props}/>
-    </Host>);
+    return <SliderNativeView {...transformSliderProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

@@ -177,6 +177,13 @@ export interface PluginConfigTypeAndroid {
      * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
      */
     exclusiveMavenMirror?: string;
+    /**
+     * The React Native release level to use for the project.
+     * This can be used to enable different sets of internal React Native feature flags.
+     *
+     * @default 'stable'
+     */
+    reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 /**
  * @platform android
@@ -327,11 +334,12 @@ export interface PluginConfigTypeIos {
      */
     buildReactNativeFromSource?: boolean;
     /**
-     * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-     * This feature is available from React Native 0.80 and later.
-     * @deprecated Use `buildReactNativeFromSource` instead.
+     * The React Native release level to use for the project.
+     * This can be used to enable different sets of internal React Native feature flags.
+     *
+     * @default 'stable'
      */
-    buildFromSource?: boolean;
+    reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 /**
  * Interface representing extra CocoaPods dependency.

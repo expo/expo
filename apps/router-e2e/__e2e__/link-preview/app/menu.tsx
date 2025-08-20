@@ -181,6 +181,34 @@ const Menus = () => {
           </Link.Menu>
         </Link.Menu>
       </Link>
+      <Link href="https://expo.dev">
+        <Link.Trigger>Link.Menu no preview: https://expo.dev</Link.Trigger>
+        <Link.Menu title="Actions" icon="ellipsis">
+          <Link.MenuAction
+            title="Share"
+            icon="square.and.arrow.up"
+            onPress={() => {
+              console.log('Share Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Copy"
+            icon="doc.on.doc"
+            disabled
+            onPress={() => {
+              console.log('Copy Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Delete"
+            icon="trash"
+            destructive
+            onPress={() => {
+              console.log('Delete Pressed');
+            }}
+          />
+        </Link.Menu>
+      </Link>
     </ScrollView>
   );
 };

@@ -1,11 +1,21 @@
+import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
-import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
+import {
+  BottomTabsScreen as _BottomTabsScreen,
+  BottomTabs as _BottomTabs,
+} from 'react-native-screens';
 
 import { usePathname } from '../../../hooks';
 import { Redirect } from '../../../link/Redirect';
-import { screen, renderRouter, waitFor } from '../../../testing-library';
+import { renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
+import { NativeTabsView } from '../NativeTabsView';
+import {
+  SUPPORTED_BLUR_EFFECTS,
+  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
+  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
+} from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -16,7 +26,16 @@ jest.mock('react-native-screens', () => {
   };
 });
 
+jest.mock('../NativeTabsView', () => {
+  const originalModule = jest.requireActual('../NativeTabsView');
+  return {
+    ...originalModule,
+    NativeTabsView: jest.fn((props) => <originalModule.NativeTabsView {...props} />),
+  };
+});
+
 const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
+const BottomTabs = _BottomTabs as jest.MockedFunction<typeof _BottomTabs>;
 
 const warn = jest.fn();
 const error = jest.fn();
@@ -159,8 +178,8 @@ describe('First focused tab', () => {
     expect(BottomTabsScreen.mock.calls[1][0].tabKey).toMatch(/^index-[-\w]+/);
   });
 
-  it('Error is thrown, when index is hidden', () => {
-    expect(() =>
+  describe('First tab is used, when index is hidden', () => {
+    it('by not specifying an index route', () => {
       renderRouter({
         _layout: () => (
           <NativeTabs>
@@ -171,10 +190,45 @@ describe('First focused tab', () => {
         index: () => <View testID="index" />,
         first: () => <View testID="first" />,
         second: () => <View testID="second" />,
-      })
-    ).toThrow(
-      'The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "/index"'
-    );
+      });
+    });
+
+    it('by using hidden: true', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" hidden />
+            <NativeTabs.Trigger name="first" />
+            <NativeTabs.Trigger name="second" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        first: () => <View testID="first" />,
+        second: () => <View testID="second" />,
+      });
+    });
+
+    afterEach(() => {
+      expect(screen.getByTestId('first')).toBeVisible();
+      expect(screen.getByTestId('second')).toBeVisible();
+      expect(screen.queryByTestId('index')).toBeNull();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      expect((NativeTabsView as jest.Mock).mock.calls[0][0].builder.state).toMatchObject({
+        type: 'tab',
+        routeNames: ['first', 'second'],
+        index: 0,
+        routes: [
+          expect.objectContaining({
+            key: expect.any(String),
+            name: 'first',
+          }),
+          expect.objectContaining({
+            key: expect.any(String),
+            name: 'second',
+          }),
+        ],
+      });
+    });
   });
 
   it('404 is shown, when index does not exist', () => {
@@ -276,5 +330,134 @@ describe('First focused tab', () => {
     expect(screen.queryByTestId('first')).toBeNull();
     expect(screen.queryByTestId('second')).toBeNull();
     expect(BottomTabsScreen).not.toHaveBeenCalled();
+  });
+});
+
+it('when nesting NativeTabs, it throws an Error', () => {
+  expect(() =>
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="nested" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'nested/_layout': () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      'nested/index': () => <View testID="index-nested" />,
+    })
+  ).toThrow(
+    'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
+  );
+});
+
+describe('Native props validation', () => {
+  it.each(SUPPORTED_BLUR_EFFECTS)('supports %s blur effect', (blurEffect) => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs style={{ blurEffect }}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].tabBarBlurEffect).toBe(blurEffect);
+  });
+  it.each(['test', 'wrongValue', ...SUPPORTED_BLUR_EFFECTS.map((x) => x.toUpperCase())])(
+    'throws error for unsupported %s blur effect',
+    (blurEffect) => {
+      expect(() =>
+        renderRouter({
+          _layout: () => (
+            // @ts-expect-error
+            <NativeTabs style={{ blurEffect }}>
+              <NativeTabs.Trigger name="index" />
+            </NativeTabs>
+          ),
+          index: () => <View testID="index" />,
+        })
+      ).toThrow(
+        `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
+      );
+    }
+  );
+  it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
+    'supports %s label visibility mode',
+    (labelVisibilityMode) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs style={{ labelVisibilityMode }}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabs).toHaveBeenCalledTimes(1);
+      expect(BottomTabs.mock.calls[0][0].tabBarItemLabelVisibilityMode).toBe(labelVisibilityMode);
+    }
+  );
+  it.each([
+    'test',
+    'wrongValue',
+    ...SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((x) => x.toUpperCase()),
+  ])('throws error for unsupported %s label visibility mode', (labelVisibilityMode) => {
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          // @ts-expect-error
+          <NativeTabs style={{ labelVisibilityMode }}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      })
+    ).toThrow(
+      `Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((effect) => `"${effect}"`).join(', ')}`
+    );
+  });
+  it.each(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS)(
+    'supports %s minimize behavior',
+    (minimizeBehavior) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs minimizeBehavior={minimizeBehavior}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabs).toHaveBeenCalledTimes(1);
+      expect(BottomTabs.mock.calls[0][0].tabBarMinimizeBehavior).toBe(minimizeBehavior);
+    }
+  );
+  it.each([
+    'test',
+    'wrongValue',
+    ...SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((x) => x.toUpperCase()),
+  ])('throws error for unsupported %s minimize behavior', (minimizeBehavior) => {
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          // @ts-expect-error
+          <NativeTabs minimizeBehavior={minimizeBehavior}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      })
+    ).toThrow(
+      `Unsupported minimizeBehavior: ${minimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((effect) => `"${effect}"`).join(', ')}`
+    );
   });
 });

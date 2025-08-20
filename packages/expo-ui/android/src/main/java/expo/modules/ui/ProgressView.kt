@@ -33,7 +33,8 @@ data class ProgressProps(
   val variant: MutableState<ProgressVariant> = mutableStateOf(ProgressVariant.CIRCULAR),
   val progress: MutableState<Float?> = mutableStateOf(null),
   val color: MutableState<Color?> = mutableStateOf(null),
-  val elementColors: MutableState<ProgressColors> = mutableStateOf(ProgressColors())
+  val elementColors: MutableState<ProgressColors> = mutableStateOf(ProgressColors()),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 class ProgressView(context: Context, appContext: AppContext) :
@@ -57,7 +58,8 @@ class ProgressView(context: Context, appContext: AppContext) :
                 progress = { progress },
                 color = composeColor,
                 trackColor = trackColor,
-                drawStopIndicator = {}
+                drawStopIndicator = {},
+                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
               )
             } else {
               LinearProgressIndicator(color = composeColor, trackColor = trackColor)
@@ -70,12 +72,14 @@ class ProgressView(context: Context, appContext: AppContext) :
               CircularProgressIndicator(
                 progress = { progress },
                 color = composeColor,
-                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor
+                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor,
+                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
               )
             } else {
               CircularProgressIndicator(
                 color = composeColor,
-                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor
+                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
               )
             }
           }

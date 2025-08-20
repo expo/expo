@@ -6,11 +6,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,11 +19,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.composeunstyled.Icon
 import expo.modules.devlauncher.R
-import expo.modules.devmenu.compose.primitives.DayNighIcon
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun Accordion(
@@ -39,52 +41,45 @@ fun Accordion(
     label = "accordion-arrow"
   )
 
-  Box(
-    modifier = modifier
-  ) {
-    Column {
-      Box(
-        modifier = Modifier
-          .clickable { expanded = !expanded }
+  Column {
+    Box(
+      modifier = Modifier
+        .clickable { expanded = !expanded }
+    ) {
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
       ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
+        Icon(
+          painter = painterResource(R.drawable.arrow_right),
+          contentDescription = "Accordion Arrow",
+          tint = NewAppTheme.colors.text.link,
           modifier = Modifier
-            .padding(Theme.spacing.medium)
-        ) {
-          DayNighIcon(
-            id = R.drawable.chevron_right_icon,
-            contentDescription = "Accordion Arrow",
-            modifier = Modifier
-              .rotate(arrowRotation)
-              .size(Theme.sizing.icon.extraSmall)
-          )
-          Spacer(Modifier.size(Theme.spacing.small))
-          Text(
-            text = text,
-            modifier = Modifier.weight(1f)
-          )
-        }
-      }
-
-      AnimatedVisibility(
-        visible = expanded,
-        enter = expandVertically(
-          expandFrom = Alignment.Top,
-          animationSpec = tween()
-        ),
-        exit = shrinkVertically(
-          shrinkTowards = Alignment.Top,
-          animationSpec = tween()
+            .rotate(arrowRotation)
+            .size(16.dp)
         )
-      ) {
-        Box(
-          modifier = Modifier
-            .padding(horizontal = Theme.spacing.small)
-        ) {
-          accordionContent()
-        }
+
+        NewText(
+          text = text,
+          style = NewAppTheme.font.sm,
+          color = NewAppTheme.colors.text.link
+        )
       }
+    }
+
+    AnimatedVisibility(
+      visible = expanded,
+      enter = expandVertically(
+        expandFrom = Alignment.Top,
+        animationSpec = tween()
+      ),
+      exit = shrinkVertically(
+        shrinkTowards = Alignment.Top,
+        animationSpec = tween()
+      )
+    ) {
+      accordionContent()
     }
   }
 }

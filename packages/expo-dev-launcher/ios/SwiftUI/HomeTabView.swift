@@ -1,4 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+// swiftlint:disable closure_body_length
 
 import SwiftUI
 
@@ -29,7 +30,11 @@ struct HomeTabView: View {
                 Button("reset".uppercased()) {
                   viewModel.clearRecentlyOpenedApps()
                 }
+                #if os(tvOS)
+                .font(.system(size: 24))
+                #else
                 .font(.system(size: 12))
+                #endif
               }
 
               LazyVStack(spacing: 6) {
@@ -64,7 +69,7 @@ struct HomeTabView: View {
         .padding()
     }
     .buttonStyle(PlainButtonStyle())
-    .background(Color(.secondarySystemGroupedBackground))
+    .background(Color.expoSecondarySystemGroupedBackground)
     .cornerRadius(18)
   }
 }
@@ -72,3 +77,4 @@ struct HomeTabView: View {
 #Preview {
   HomeTabView()
 }
+// swiftlint:enable closure_body_length

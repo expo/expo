@@ -7,6 +7,10 @@ export declare class Paths extends PathUtilities {
      */
     static get cache(): Directory;
     /**
+     * A property containing the bundle directory – the directory where assets bundled with the application are stored.
+     */
+    static get bundle(): Directory;
+    /**
      * A property containing the document directory – a place to store files that are safe from being deleted by the system.
      */
     static get document(): Directory;
@@ -44,10 +48,10 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
      * File name. Includes the extension.
      */
     get name(): string;
-    readableStream(): ReadableStream<Uint8Array<ArrayBufferLike>>;
+    readableStream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     writableStream(): WritableStream<Uint8Array<ArrayBufferLike>>;
     arrayBuffer(): Promise<ArrayBuffer>;
-    stream(): ReadableStream<Uint8Array>;
+    stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
 }
 /**

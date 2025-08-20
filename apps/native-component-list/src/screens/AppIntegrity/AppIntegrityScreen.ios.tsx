@@ -79,6 +79,7 @@ export default function AppIntegrityIOSScreen() {
       <View style={{ gap: 4 }}>
         <Text style={styles.title}>iOS App Integrity Test</Text>
         <Text style={styles.subtitle}>Uses DeviceCheck App Attest API</Text>
+        <Text style={styles.subtitle}>isSupported: {AppIntegrity.isSupported.toString()}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <Pressable style={styles.button} onPress={testGenerateKey} disabled={isLoading}>

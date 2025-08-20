@@ -72,7 +72,13 @@ public class LinkPreviewNativeModule: Module {
       Events("onSelected")
     }
 
-    View(NativeLinkPreviewTrigger.self) {}
+    View(NativeLinkPreviewTrigger.self) {
+      Prop("borderRadius") { (view, borderRadius: Double?) in
+        if let borderRadius = borderRadius {
+          view.triggerBorderRadius = borderRadius
+        }
+      }
+    }
   }
 }
 

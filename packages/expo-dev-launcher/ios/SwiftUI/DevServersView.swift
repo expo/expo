@@ -3,6 +3,8 @@
 import SwiftUI
 import Combine
 
+// swiftlint:disable closure_body_length
+
 private func sanitizeUrlString(_ urlString: String) -> String? {
   var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -64,7 +66,11 @@ struct DevServersView: View {
           Image(systemName: showingURLInput ? "chevron.down" : "chevron.right")
             .font(.headline)
           Text("Enter URL manually")
+            #if os(tvOS)
+            .font(.system(size: 28))
+            #else
             .font(.system(size: 14))
+            #endif
           Spacer()
         }
       }
@@ -79,7 +85,7 @@ struct DevServersView: View {
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
-              .stroke(Color(.systemGray4), lineWidth: 1)
+              .stroke(Color.expoSystemGray4, lineWidth: 1)
           )
         #endif
           .clipShape(RoundedRectangle(cornerRadius: 5))
@@ -89,9 +95,9 @@ struct DevServersView: View {
     }
     .animation(.easeInOut, value: showingURLInput)
     .padding()
-#if !os(tvOS)
-    .background(Color(showingURLInput ? .systemGroupedBackground : .systemBackground))
-#endif
+    .background(showingURLInput ?
+      Color.expoSecondarySystemBackground :
+      Color.expoSystemBackground)
     .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 
@@ -107,7 +113,11 @@ struct DevServersView: View {
         showingInfoDialog = true
       } label: {
         Text("info".uppercased())
+          #if os(tvOS)
+          .font(.system(size: 24))
+          #else
           .font(.system(size: 12))
+          #endif
       }
       .buttonStyle(.automatic)
     }
@@ -172,11 +182,10 @@ struct DevServerRow: View {
           .foregroundColor(.secondary)
       }
       .padding()
-#if !os(tvOS)
-      .background(Color(.systemGroupedBackground))
-#endif
+      .background(Color.expoSecondarySystemBackground)
       .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     .buttonStyle(PlainButtonStyle())
   }
 }
+// swiftlint:enable closure_body_length

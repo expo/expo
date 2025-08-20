@@ -19,7 +19,7 @@ export default function Page() {
           </Link>
 
           <Link testID="open-sheet-radius" href="/sheet-radius" style={styles.button}>
-            Sheet (border radius 24)
+            Sheet (border radius 40)
           </Link>
 
           <Link testID="open-sheet-bg" href="/sheet-bg" style={styles.button}>
