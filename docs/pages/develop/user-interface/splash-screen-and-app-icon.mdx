@@ -202,7 +202,20 @@ You may also want to provide a separate icon for older Android devices that do n
 
 #### iOS
 
-For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/). You should also:
+For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/).
+You can use the [icon composer](https://developer.apple.com/icon-composer/) app to create your app icon. This will output a `.icon` directory that you can add to your projects `assets`. You can then provide the path to this directory in your app config. Adding support for dark mode is handled in icon composer, you do not need to provide variants when using this approach.
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "icon": "./assets/app.icon"
+    }
+  }
+}
+```
+
+Alternatively, the previous approach of providing an image is still supported. You should:
 
 - Use a **.png** file.
 - 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. In case of a bare React Native project, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
