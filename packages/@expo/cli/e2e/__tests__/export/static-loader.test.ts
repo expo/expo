@@ -49,7 +49,7 @@ describe('static loader', () => {
       const loaderScript = html.querySelector('[data-testid=loader-script]');
       expect(loaderScript).not.toBeNull();
       expect(loaderScript!.textContent).toEqual(
-        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/\\":{}}");'
+        'globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/\\":{}}");'
       );
     });
 
@@ -64,7 +64,7 @@ describe('static loader', () => {
       const loaderScript = html.querySelector('[data-testid=loader-script]');
       expect(loaderScript).not.toBeNull();
       expect(loaderScript!.textContent).toEqual(
-        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/second\\":{\\"params\\":{}}}");'
+        'globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/second\\":{\\"params\\":{}}}");'
       );
 
       // Ensure the loader data is rendered in the HTML
@@ -83,7 +83,7 @@ describe('static loader', () => {
       const loaderScript = html.querySelector('[data-testid=loader-script]')!;
       expect(loaderScript).not.toBeNull();
       expect(loaderScript.textContent).toEqual(
-        'window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/posts/static-post-1\\":{\\"params\\":{\\"postId\\":\\"static-post-1\\"}}}");'
+        'globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/posts/static-post-1\\":{\\"params\\":{\\"postId\\":\\"static-post-1\\"}}}");'
       );
 
       // Ensure the loader data is rendered in the HTML

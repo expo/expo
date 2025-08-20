@@ -2,11 +2,6 @@ import { useRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
 export { useRouteInfo };
-declare global {
-    interface Window {
-        __EXPO_ROUTER_LOADER_DATA__?: Record<string, any>;
-    }
-}
 /**
  * Returns the data loaded by the route's loader function. This hook only works
  * when `web.output: "server" | "static"` is configured in your app config.

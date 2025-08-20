@@ -53,40 +53,37 @@ function useLoaderData(loader) {
     if (loaderDataContext && pathname in loaderDataContext) {
         return loaderDataContext[pathname];
     }
-    if (typeof window !== 'undefined') {
-        if (!window.__EXPO_ROUTER_LOADER_DATA__) {
-            throw new Error('Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your `expo-router` plugin config.');
-        }
-        // This is used when first loading a page in the browser as the preloaded data should be
-        // available as a `<script>` tag in the HTML
-        const preloadedData = window.__EXPO_ROUTER_LOADER_DATA__[pathname];
-        if (preloadedData !== undefined) {
-            return preloadedData;
-        }
-        // If client-side navigation has already triggered a load for this route, we can re-use the data
-        if (loaderDataCache.has(pathname)) {
-            return loaderDataCache.get(pathname);
-        }
-        // Check if a fetch is already in-progress for this route. This is to prevent duplicate network
-        // requests when multiple requests for the same route data are received, but before the first
-        // fetch has completed
-        if (!loaderPromiseCache.has(pathname)) {
-            const promise = (0, utils_1.fetchLoaderModule)(pathname, segments)
-                .then((data) => {
-                loaderDataCache.set(pathname, data);
-                loaderPromiseCache.delete(pathname);
-                return data;
-            })
-                .catch((error) => {
-                loaderPromiseCache.delete(pathname);
-                console.error(`Failed to load loader data for route: ${pathname}:`, error);
-                throw new Error(`Failed to load loader data for route: ${pathname}`, { cause: error });
-            });
-            loaderPromiseCache.set(pathname, promise);
-        }
-        return react_1.default.use(loaderPromiseCache.get(pathname));
+    if (globalThis.__EXPO_ROUTER_LOADER_DATA__ === undefined) {
+        throw new Error('Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your `expo-router` plugin config.');
     }
-    throw new Error('Server data loaders do not work on the client. They only work with `web.output` set to `static` or `server` in your app config');
+    // This is used when first loading a page in the browser as the preloaded data should be
+    // available as a `<script>` tag in the HTML
+    const preloadedData = globalThis.__EXPO_ROUTER_LOADER_DATA__[pathname];
+    if (preloadedData !== undefined) {
+        return preloadedData;
+    }
+    // If client-side navigation has already triggered a load for this route, we can re-use the data
+    if (loaderDataCache.has(pathname)) {
+        return loaderDataCache.get(pathname);
+    }
+    // Check if a fetch is already in-progress for this route. This is to prevent duplicate network
+    // requests when multiple requests for the same route data are received, but before the first
+    // fetch has completed
+    if (!loaderPromiseCache.has(pathname)) {
+        const promise = (0, utils_1.fetchLoaderModule)(pathname, segments)
+            .then((data) => {
+            loaderDataCache.set(pathname, data);
+            loaderPromiseCache.delete(pathname);
+            return data;
+        })
+            .catch((error) => {
+            loaderPromiseCache.delete(pathname);
+            console.error(`Failed to load loader data for route: ${pathname}:`, error);
+            throw new Error(`Failed to load loader data for route: ${pathname}`, { cause: error });
+        });
+        loaderPromiseCache.set(pathname, promise);
+    }
+    return react_1.default.use(loaderPromiseCache.get(pathname));
 }
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)

@@ -44,7 +44,7 @@ test.describe('static loader in production', () => {
     await page.goto(expoServe.url.href);
 
     const loaderDataScript = await page.evaluate(() => {
-      return window.__EXPO_ROUTER_LOADER_DATA__;
+      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
     });
     expect(loaderDataScript).toBeDefined();
     expect(loaderDataScript).toEqual({ '/': {} });
@@ -61,7 +61,7 @@ test.describe('static loader in production', () => {
     await page.goto(expoServe.url.href + 'second');
 
     const loaderDataScript = await page.evaluate(() => {
-      return window.__EXPO_ROUTER_LOADER_DATA__;
+      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
     });
     expect(loaderDataScript).toBeDefined();
 

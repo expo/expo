@@ -704,8 +704,8 @@ describe(useLoaderData, () => {
     jest.clearAllMocks();
     global.window = {
       location: { origin: 'http://localhost:8081' },
-      __EXPO_ROUTER_LOADER_DATA__: {},
     } as any;
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {};
   });
 
   afterEach(() => {
@@ -718,6 +718,7 @@ describe(useLoaderData, () => {
 
   it('throws an error when the feature is disabled', () => {
     global.window = {} as any;
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = undefined;
 
     expect(() => {
       renderHookOnce(() => useLoaderData(mockLoader), ['test'], { initialUrl: '/test' });
@@ -727,10 +728,10 @@ describe(useLoaderData, () => {
   it('retrieves data from window.__EXPO_ROUTER_LOADER_DATA__', () => {
     global.window = {
       ...originalWindow,
-      __EXPO_ROUTER_LOADER_DATA__: {
-        '/': { window: 'data' },
-      },
     } as any;
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/': { window: 'data' },
+    };
 
     const { result } = renderHook(() => useLoaderData(mockLoader), ['index'], {
       initialUrl: '/',
@@ -746,10 +747,10 @@ describe(useLoaderData, () => {
 
     global.window = {
       ...global.window,
-      __EXPO_ROUTER_LOADER_DATA__: {
-        '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
-      },
     } as any;
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+    };
 
     type AsyncResult = Awaited<ReturnType<typeof asyncLoader>>;
     const result = renderHookOnce(() => useLoaderData<AsyncResult>(asyncLoader), ['index'], {

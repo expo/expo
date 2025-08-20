@@ -24,14 +24,14 @@ function ScrollViewStyleReset() {
 }
 /**
  * Injects loader data into the HTML as a script tag for client-side hydration.
- * The data is serialized as JSON and made available on window.__EXPO_ROUTER_LOADER_DATA__.
+ * The data is serialized as JSON and made available on the `globalThis.__EXPO_ROUTER_LOADER_DATA__` global.
  */
 function LoaderDataScript({ data }) {
     const safeJson = (0, html_1.escapeUnsafeCharacters)(JSON.stringify(data));
     return (<script type="module" data-testid="loader-script" dangerouslySetInnerHTML={{
             // NOTE(@hassankhan): The double serialization used here isn't as much of a problem server-side, but allows faster
             // client-side parsing using native `JSON.parse()`
-            __html: `window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`,
+            __html: `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`,
         }}/>);
 }
 function Html({ children }) {

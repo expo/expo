@@ -8,16 +8,6 @@ import React, { type PropsWithChildren } from 'react';
 
 import { escapeUnsafeCharacters } from '../utils/html';
 
-// TODO(@hassankhan): Add this to global types
-declare global {
-  interface Window {
-    /**
-     * Data injected by the Expo Router loader for the current route.
-     */
-    __EXPO_ROUTER_LOADER_DATA__?: Record<string, any>;
-  }
-}
-
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */
@@ -34,7 +24,7 @@ export function ScrollViewStyleReset() {
 
 /**
  * Injects loader data into the HTML as a script tag for client-side hydration.
- * The data is serialized as JSON and made available on window.__EXPO_ROUTER_LOADER_DATA__.
+ * The data is serialized as JSON and made available on the `globalThis.__EXPO_ROUTER_LOADER_DATA__` global.
  */
 export function LoaderDataScript({ data }: { data: Record<string, unknown> }) {
   const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
@@ -46,7 +36,7 @@ export function LoaderDataScript({ data }: { data: Record<string, unknown> }) {
       dangerouslySetInnerHTML={{
         // NOTE(@hassankhan): The double serialization used here isn't as much of a problem server-side, but allows faster
         // client-side parsing using native `JSON.parse()`
-        __html: `window.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`,
+        __html: `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`,
       }}
     />
   );
