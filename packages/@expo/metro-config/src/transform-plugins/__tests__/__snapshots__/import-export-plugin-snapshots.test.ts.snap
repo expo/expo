@@ -1,5 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`with live bindings transforms export default + import default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var Test = _$$_IMPORT_DEFAULT('test');
+test(Test);
+const local = 'local';
+var _default = local;
+exports.default = _default;"
+`;
+
+exports[`with live bindings transforms export default + import named 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _test = require('test');
+test(_test.Test);
+const local = 'local';
+var _default = local;
+exports.default = _default;"
+`;
+
+exports[`with live bindings transforms export default + import namespace 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var Test = _$$_IMPORT_ALL('test');
+test(Test);
+const local = 'local';
+var _default = local;
+exports.default = _default;"
+`;
+
+exports[`with live bindings transforms export default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+const local = 'local';
+var _default = local;
+exports.default = _default;"
+`;
+
 exports[`with live bindings transforms export destructured array from import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -820,6 +862,48 @@ Object.defineProperty(exports, "test", {
   }
 });
 var _appleIcons = require('apple-icons');"
+`;
+
+exports[`without live bindings transforms export default + import default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var Test = _$$_IMPORT_DEFAULT('test');
+test(Test);
+const local = 'local';
+var _default = local;
+exports.default = _default;"
+`;
+
+exports[`without live bindings transforms export default + import named 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var Test = require('test').Test;
+test(Test);
+const local = 'local';
+var _default = local;
+exports.default = _default;"
+`;
+
+exports[`without live bindings transforms export default + import namespace 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var Test = _$$_IMPORT_ALL('test');
+test(Test);
+const local = 'local';
+var _default = local;
+exports.default = _default;"
+`;
+
+exports[`without live bindings transforms export default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+const local = 'local';
+var _default = local;
+exports.default = _default;"
 `;
 
 exports[`without live bindings transforms export destructured array from import default 1`] = `

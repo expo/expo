@@ -30,6 +30,28 @@ describe.each([
     test('export namespace as default')`
       export * as default from 'apple-icons';
     `,
+    test('export default')`
+      const local = 'local';
+      export default local;
+    `,
+    test('export default + import namespace')`
+      import * as Test from 'test';
+      test(Test);
+      const local = 'local';
+      export default local;
+    `,
+    test('export default + import default')`
+      import Test from 'test';
+      test(Test);
+      const local = 'local';
+      export default local;
+    `,
+    test('export default + import named')`
+      import { Test } from 'test';
+      test(Test);
+      const local = 'local';
+      export default local;
+    `,
     test('re-export all')`
       export * from 'apple-icons';
     `,
