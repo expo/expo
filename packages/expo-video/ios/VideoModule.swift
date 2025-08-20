@@ -313,6 +313,13 @@ public final class VideoModule: Module {
         return player.ref.isExternalPlaybackActive
       }
 
+      Property("keepScreenOnWhilePlaying") { player -> Bool in
+        return player.ref.preventsDisplaySleepDuringVideoPlayback
+      }
+      .set { player, keepScreenOnWhilePlaying in
+        player.ref.preventsDisplaySleepDuringVideoPlayback = keepScreenOnWhilePlaying
+      }
+
       Function("play") { player in
         player.ref.play()
       }
