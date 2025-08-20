@@ -245,7 +245,7 @@ export declare class File {
    *
    * @platform android
    *
-   * @param initialUri An optional uri pointing to an initial folder on which the file picker is opened.
+   * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
    * @param mimeType A mime type that is used to filter out files that can be picked out.
    *
    * @returns A `File` instance.
