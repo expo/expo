@@ -125,10 +125,12 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
         // - expo-constants@18.0.2 (at: node_modules/expo-asset/node_modules/expo-constants)
         // Note that in this example, all versions are identical, but multiple
         // copies of the same version are installed
-        const areVersionsIdentical = versions.every((resolution, _idx, versions) => {
-          return resolution.version && versions[0].version === resolution.version;
-        });
-        if (areVersionsIdentical) corruptedInstallations.push(dependency);
+        if (dependency.version) {
+          const areVersionsIdentical = dependency.duplicates.every((duplicate) => {
+            return duplicate.version && duplicate.version === dependency.version;
+          });
+          if (areVersionsIdentical) corruptedInstallations.push(dependency);
+        }
       }
     }
 
