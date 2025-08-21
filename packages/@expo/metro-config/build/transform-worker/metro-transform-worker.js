@@ -453,6 +453,18 @@ async function transformAsset(file, context) {
     };
     return transformJS(jsFile, context);
 }
+const originBabelTransformer = (() => {
+    let babelTransformerImport;
+    const getBabelTransformer = () => babelTransformerImport || (babelTransformerImport = require('../babel-transformer'));
+    return {
+        get transform() {
+            return getBabelTransformer().transform;
+        },
+        get getCacheKey() {
+            return getBabelTransformer().getCacheKey;
+        },
+    };
+})();
 /**
  * Transforms a JavaScript file with Babel before processing the file with
  * the generic JavaScript transformation.
@@ -476,7 +488,7 @@ async function transformJSWithBabel(file, context) {
         metro_source_map_1.functionMapBabelPlugin,
         // importLocationsPlugin populates metadata.metro.unstable_importDeclarationLocs
         importLocationsPlugin_1.importLocationsPlugin,
-    ]));
+    ]), originBabelTransformer);
     const jsFile = {
         ...file,
         ast: transformResult.ast,
