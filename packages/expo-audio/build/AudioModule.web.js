@@ -289,11 +289,11 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         return [];
     }
     getCurrentInput() {
-        return {
+        return Promise.resolve({
             type: 'Default',
             name: 'Default',
             uid: 'Default',
-        };
+        });
     }
     async prepareToRecordAsync() {
         return this.setup();
