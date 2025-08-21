@@ -1,8 +1,9 @@
 import { vol } from 'memfs';
 import * as path from 'path';
+
+import { env } from '../../utils/env';
 import { existsAndIsNotIgnoredAsync } from '../../utils/files';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../AppConfigFieldsNotSyncedToNativeProjectsCheck';
-import { env } from '../../utils/env';
 
 jest.mock('fs');
 jest.mock('../../utils/files');

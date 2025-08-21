@@ -3,8 +3,8 @@ import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
-import { existsAndIsNotIgnoredAsync } from '../utils/files';
 import { env } from '../utils/env';
+import { existsAndIsNotIgnoredAsync } from '../utils/files';
 
 const appConfigFieldsToSyncWithNative = [
   'ios',
