@@ -34,11 +34,13 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabsNavigatorWithContext = exports.NativeTabsContext = void 0;
+exports.NativeTabsContext = void 0;
 exports.NativeTabsNavigator = NativeTabsNavigator;
+exports.NativeTabsNavigatorWrapper = NativeTabsNavigatorWrapper;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
+const NativeTabsScrollEdgeAppearance_1 = require("./NativeTabsScrollEdgeAppearance");
 const NativeTabsView_1 = require("./NativeTabsView");
 const __1 = require("../..");
 const utils_1 = require("./utils");
@@ -72,5 +74,10 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...
     </exports.NativeTabsContext>);
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
-exports.NativeTabsNavigatorWithContext = (0, __1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
+const NativeTabsNavigatorWithContext = (0, __1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
+function NativeTabsNavigatorWrapper({ children, ...rest }) {
+    const filteredChildren = react_1.default.Children.toArray(children).filter((x) => !(0, utils_1.isChildOfType)(x, NativeTabsScrollEdgeAppearance_1.NativeTabsScrollEdgeAppearance));
+    const scrollEdgeAppearance = react_1.default.Children.toArray(children).find((x) => (0, utils_1.isChildOfType)(x, NativeTabsScrollEdgeAppearance_1.NativeTabsScrollEdgeAppearance));
+    return (<NativeTabsNavigatorWithContext {...rest} children={filteredChildren} scrollEdgeAppearanceProps={scrollEdgeAppearance?.props}/>);
+}
 //# sourceMappingURL=NativeBottomTabsNavigator.js.map

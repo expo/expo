@@ -2,7 +2,8 @@ export * from './common/elements';
 export type {
   NativeTabsProps,
   NativeTabTriggerProps,
-  NativeTabsStyleType,
+  NativeTabsLabelStyle,
+  NativeTabsScrollEdgeAppearanceProps,
   NativeTabsActiveStyleType,
   NativeTabOptions,
   SfSymbolOrImageSource,
@@ -12,3 +13,4 @@ export type {
 } from './NativeBottomTabs/types';
 export { NativeTabTrigger } from './NativeBottomTabs/NativeTabTrigger';
 export { NativeTabs } from './NativeBottomTabs/NativeTabs';
+export { NativeTabsScrollEdgeAppearance } from './NativeBottomTabs/NativeTabsScrollEdgeAppearance';

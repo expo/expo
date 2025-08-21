@@ -41,7 +41,7 @@ import type { ExtendedNativeTabOptions, NativeTabTriggerProps } from './types';
  * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 export declare function NativeTabTrigger(props: NativeTabTriggerProps): null;
-export declare function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, disableScrollToTop, }: NativeTabTriggerProps): ExtendedNativeTabOptions;
+export declare function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }: NativeTabTriggerProps): ExtendedNativeTabOptions;
 export declare function isNativeTabTrigger(child: ReactNode, contextKey?: string): child is ReactElement<NativeTabTriggerProps & {
     name: string;
 }>;

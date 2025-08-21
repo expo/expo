@@ -12,10 +12,11 @@ import {
 import React, { use } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
+import { NativeTabsScrollEdgeAppearance } from './NativeTabsScrollEdgeAppearance';
 import { NativeTabsView } from './NativeTabsView';
 import { withLayoutContext } from '../..';
-import type { NativeTabOptions, NativeTabsProps } from './types';
-import { shouldTabBeVisible } from './utils';
+import type { NativeTabOptions, NativeTabsProps, NativeTabsViewProps } from './types';
+import { isChildOfType, shouldTabBeVisible } from './utils';
 import { getPathFromState } from '../../link/linking';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
@@ -26,7 +27,7 @@ export function NativeTabsNavigator({
   children,
   backBehavior = defaultBackBehavior,
   ...rest
-}: NativeTabsProps) {
+}: Omit<NativeTabsViewProps, 'focusedIndex' | 'builder'>) {
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
@@ -70,9 +71,26 @@ export function NativeTabsNavigator({
 
 const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
 
-export const NativeTabsNavigatorWithContext = withLayoutContext<
+const NativeTabsNavigatorWithContext = withLayoutContext<
   NativeTabOptions,
   typeof NativeTabsNavigator,
   NavigationState,
   EventMapBase
 >(createNativeTabNavigator().Navigator, undefined, true);
+
+export function NativeTabsNavigatorWrapper({ children, ...rest }: NativeTabsProps) {
+  const scrollEdgeAppearance = React.Children.toArray(children).find((x) =>
+    isChildOfType(x, NativeTabsScrollEdgeAppearance)
+  );
+  const filteredChildren = React.Children.toArray(children).filter(
+    (x) => !isChildOfType(x, NativeTabsScrollEdgeAppearance)
+  );
+
+  return (
+    <NativeTabsNavigatorWithContext
+      {...rest}
+      children={filteredChildren}
+      scrollEdgeAppearanceProps={scrollEdgeAppearance?.props}
+    />
+  );
+}

@@ -49,6 +49,63 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    * @platform ios
    */
   badgeValue?: string;
+  /**
+   * @platform ios
+   */
+  selectedLabelStyle?: NativeTabsLabelStyle;
+  /**
+   * @platform ios
+   */
+  labelStyle?: NativeTabsLabelStyle;
+  /**
+   * System-provided tab bar item with predefined icon and title
+   *
+   * Uses Apple's built-in tab bar items (e.g., bookmarks, contacts, downloads) with
+   * standard iOS styling and localized titles. Custom `icon` or `selectedIcon`
+   * properties will override the system icon, but the system-defined title cannot
+   * be customized.
+   *
+   * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
+   * @platform ios
+   */
+  role?: NativeTabsTabBarItemRole;
+  /**
+   * The color of the icon when the tab is selected.
+   */
+  selectedIconColor?: ColorValue;
+  /**
+   * The color of the badge when the tab is selected.
+   */
+  selectedBadgeBackgroundColor?: ColorValue;
+  /**
+   * The color of all the badges when the tab is selected.
+   */
+  badgeBackgroundColor?: ColorValue;
+  /**
+   * The color of the background when the tab is selected.
+   */
+  backgroundColor?: TypeOrRecord<ColorValue, 'default' | 'scrollEdge'>;
+  /**
+   * The blur effect to apply when the tab is selected.
+   *
+   * @platform iOS
+   */
+  blurEffect?: TypeOrRecord<ColorValue, 'default' | 'scrollEdge'>;
+  /**
+   * The color of the icon when the tab is selected.
+   *
+   * On iOS 26+ you can change the icon color in the scroll edge state.
+   */
+  iconColor?: ColorValue;
+  /**
+   * The position adjustment for the title when the tab is selected.
+   *
+   * @platform iOS
+   */
+  selectedTitlePositionAdjustment?: {
+    horizontal?: number;
+    vertical?: number;
+  };
 }
 
 export type SfSymbolOrImageSource =
@@ -77,87 +134,27 @@ export interface ExtendedNativeTabOptions extends NativeTabOptions {
 
 type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 
-export interface NativeTabsStyleType {
+export interface NativeTabsLabelStyle {
+  /**
+   * The font family of the tab label.
+   */
   fontFamily?: TextStyle['fontFamily'];
+  /**
+   * The font size of the tab label.
+   */
   fontSize?: TextStyle['fontSize'];
+  /**
+   * The font weight of the tab label.
+   */
   fontWeight?: NumericFontWeight | `${NumericFontWeight}`;
+  /**
+   * The font style of the tab label.
+   */
   fontStyle?: TextStyle['fontStyle'];
+  /**
+   * The color of the tab label.
+   */
   color?: TextStyle['color'];
-  /**
-   * @platform android
-   * @platform iOS
-   * @platform tvOS
-   */
-  iconColor?: ColorValue;
-  backgroundColor?: ColorValue;
-  /**
-   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
-   *
-   * @platform iOS
-   */
-  titlePositionAdjustment?: {
-    horizontal?: number;
-    vertical?: number;
-  };
-  /**
-   * Specifies the blur effect applied to the tab bar.
-   *
-   * Works with backgroundColor's alpha < 1.
-   *
-   * This property does not affect the tab bar starting from iOS 26.
-   *
-   * The following values are currently supported:
-   *
-   * - `none`: disables blur effect
-   * - `systemDefault`: uses UIKit's default tab bar blur effect
-   * - one of styles mapped from UIKit's UIBlurEffectStyle. For example, `systemUltraThinMaterial`
-   *
-   * Complete list of possible blur effect styles is available in the official UIKit documentation:
-   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiblureffect/style)
-   *
-   * @default systemDefault
-   *
-   * @platform iOS ≤ 18
-   */
-  blurEffect?: NativeTabsBlurEffect;
-  /**
-   * @platform android
-   * @platform iOS
-   * @platform web
-   */
-  tintColor?: ColorValue;
-  badgeBackgroundColor?: ColorValue;
-  /**
-   * @platform android
-   * @platform web
-   */
-  badgeTextColor?: ColorValue;
-  /**
-   * @platform android
-   */
-  rippleColor?: ColorValue;
-  /**
-   * Specifies the label visibility mode.
-   *
-   * The label visibility mode defines when the labels of each item bar should be displayed.
-   *
-   * The following values are available:
-   * - `auto`: the label behaves as in "labeled" mode when there are 3 items or less, or as in "selected" mode when there are 4 items or more
-   * - `selected`: the label is only shown on the selected navigation item
-   * - `labeled`: the label is shown on all navigation items
-   * - `unlabeled`: the label is hidden for all navigation items
-   *
-   * @see The supported values correspond to the official [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible).
-   *
-   * @default auto
-   * @platform android
-   */
-  labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
-  /**
-   * @platform android
-   * @platform web
-   */
-  '&:active'?: NativeTabsActiveStyleType;
 }
 
 export const SUPPORTED_BLUR_EFFECTS = [
@@ -216,8 +213,39 @@ export interface NativeTabsActiveStyleType {
   indicatorColor?: ColorValue;
 }
 
+export type TypeOrRecord<T, K extends string> =
+  | T
+  | {
+      [key in K]?: T;
+    };
+
 export interface NativeTabsProps extends PropsWithChildren {
-  style?: NativeTabsStyleType;
+  // #region common props
+  /**
+   * The style of the every tab label in the tab bar.
+   */
+  labelStyle?: NativeTabsLabelStyle;
+  // disabledLabelStyle?: NativeTabsLabelStyle;
+  /**
+   * The color of every tab icon in the tab bar.
+   */
+  iconColor?: ColorValue;
+  /**
+   * The tint color of the tab icon.
+   *
+   * Can be overridden by icon color and label color for each tab individually.
+   */
+  tintColor?: ColorValue;
+  /**
+   * The background color of the tab bar.
+   */
+  backgroundColor?: ColorValue | null;
+  /**
+   * The background color of every badge in the tab bar.
+   */
+  badgeBackgroundColor?: ColorValue;
+  // #endregion common props
+  // #region iOS props
   /**
    * Specifies the minimize behavior for the tab bar.
    *
@@ -240,6 +268,23 @@ export interface NativeTabsProps extends PropsWithChildren {
    */
   minimizeBehavior?: NativeTabsTabBarMinimizeBehavior;
   /**
+   * The blur effect applied to the tab bar.
+   *
+   * @platform iOS
+   */
+  blurEffect?: NativeTabsBlurEffect;
+  /**
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
+   *
+   * @platform iOS
+   */
+  titlePositionAdjustment?: {
+    horizontal?: number;
+    vertical?: number;
+  };
+  // #endregion iOS props
+  // #region android props
+  /**
    * Disables the active indicator for the tab bar.
    *
    * @platform android
@@ -251,9 +296,37 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform android
    */
   backBehavior?: 'none' | 'initialRoute' | 'history';
+  /**
+   * The visibility mode of the tab item label.
+   *
+   * @see [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible)
+   *
+   * @platform android
+   */
+  labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
+  /**
+   * The color of the ripple effect when the tab is pressed.
+   *
+   * @platform android
+   */
+  rippleColor?: ColorValue;
+  /**
+   * The color of the tab indicator.
+   *
+   * @platform android
+   */
+  indicatorColor?: ColorValue;
+  /**
+   * The color of the badge text.
+   *
+   * @platform android
+   */
+  badgeTextColor?: ColorValue;
+  // #endregion android props
 }
 export interface NativeTabsViewProps extends NativeTabsProps {
   focusedIndex: number;
+  scrollEdgeAppearanceProps: NativeTabsScrollEdgeAppearanceProps | undefined;
   builder: ReturnType<
     typeof useNavigationBuilder<
       TabNavigationState<ParamListBase>,
@@ -333,5 +406,91 @@ export interface NativeTabTriggerProps {
    *
    * Use `Icon`, `Label`, and `Badge` components to customize the tab.
    */
+  children?: React.ReactNode;
+  /**
+   * System-provided tab bar item with predefined icon and title
+   *
+   * Uses Apple's built-in tab bar items (e.g., bookmarks, contacts, downloads) with
+   * standard iOS styling and localized titles. Custom `icon` or `selectedIcon`
+   * properties will override the system icon, but the system-defined title cannot
+   * be customized.
+   *
+   * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
+   * @platform ios
+   */
+  role?: NativeTabsTabBarItemRole;
+}
+
+const SUPPORTED_TAB_BAR_ITEM_ROLES = [
+  'bookmarks',
+  'contacts',
+  'downloads',
+  'favorites',
+  'featured',
+  'history',
+  'more',
+  'mostRecent',
+  'mostViewed',
+  'recents',
+  'search',
+  'topRated',
+] as const;
+
+export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];
+
+export interface NativeTabsScrollEdgeAppearanceProps {
+  // This props work inconsistently before iOS 26
+  // TODO: find better prefix then ios26
+  /**
+   * The style of the tab label in the scroll edge state.
+   *
+   * @platform iOS 26+
+   */
+  ios26LabelStyle?: NativeTabsLabelStyle;
+  // disabledLabelStyle?: NativeTabsLabelStyle;
+  /**
+   * The color of the tab icon in the scroll edge state.
+   *
+   * @platform iOS 26+
+   */
+  ios26IconColor?: ColorValue;
+  /**
+   * The blur effect applied to the tab in the scroll edge state.
+   *
+   * @platform iOS 26+
+   */
+  blurEffect?: NativeTabsBlurEffect;
+  /**
+   * The background color of the tab in the scroll edge state.
+   *
+   * Use `null` to reset the background color
+   *
+   * @platform iOS
+   */
+  backgroundColor?: ColorValue | null;
+  /**
+   * The color of the badge in the scroll edge state.
+   *
+   * @platform iOS 26+
+   */
+  ios26BadgeBackgroundColor?: ColorValue;
+}
+
+export interface NativeTabsTriggerTabBarProps {
+  /**
+   * The background color of the tab bar, when the tab is selected
+   */
+  backgroundColor?: ColorValue;
+  /**
+   * The color of every tab icon, when the tab is selected
+   */
+  iconColor?: ColorValue;
+  /**
+   * The blur effect applied to the tab bar, when the tab is selected
+   *
+   * @platform iOS
+   */
+  blurEffect?: NativeTabsBlurEffect;
+  // ScrollEdgeAppearance
   children?: React.ReactNode;
 }

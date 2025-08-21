@@ -1,7 +1,7 @@
 import type { DefaultRouterOptions, ParamListBase, TabNavigationState, TabRouterOptions, useNavigationBuilder } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
 import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
-import type { BottomTabsScreenProps } from 'react-native-screens';
+import type { BottomTabsScreenProps, BottomTabsSystemItem } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export interface NativeTabOptions extends DefaultRouterOptions {
     /**
@@ -42,6 +42,21 @@ export interface NativeTabOptions extends DefaultRouterOptions {
      * @platform ios
      */
     badgeValue?: string;
+    /**
+     * @platform ios
+     */
+    selectedLabelStyle?: NativeTabsLabelStyle;
+    /**
+     * @platform ios
+     */
+    role?: BottomTabsSystemItem;
+    selectedIconColor?: TypeOrRecord<ColorValue, 'standard' | 'scrollEdge'>;
+    selectedBadgeBackgroundColor?: TypeOrRecord<ColorValue, 'standard' | 'scrollEdge'>;
+    selectedBackgroundColor?: TypeOrRecord<ColorValue, 'standard' | 'scrollEdge'>;
+    selectedTitlePositionAdjustment?: TypeOrRecord<{
+        horizontal?: number;
+        vertical?: number;
+    }, 'standard' | 'scrollEdge'>;
 }
 export type SfSymbolOrImageSource = {
     /**
@@ -64,87 +79,12 @@ export interface ExtendedNativeTabOptions extends NativeTabOptions {
     specialEffects?: BottomTabsScreenProps['specialEffects'];
 }
 type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
-export interface NativeTabsStyleType {
+export interface NativeTabsLabelStyle {
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
     fontWeight?: NumericFontWeight | `${NumericFontWeight}`;
     fontStyle?: TextStyle['fontStyle'];
     color?: TextStyle['color'];
-    /**
-     * @platform android
-     * @platform iOS
-     * @platform tvOS
-     */
-    iconColor?: ColorValue;
-    backgroundColor?: ColorValue;
-    /**
-     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
-     *
-     * @platform iOS
-     */
-    titlePositionAdjustment?: {
-        horizontal?: number;
-        vertical?: number;
-    };
-    /**
-     * Specifies the blur effect applied to the tab bar.
-     *
-     * Works with backgroundColor's alpha < 1.
-     *
-     * This property does not affect the tab bar starting from iOS 26.
-     *
-     * The following values are currently supported:
-     *
-     * - `none`: disables blur effect
-     * - `systemDefault`: uses UIKit's default tab bar blur effect
-     * - one of styles mapped from UIKit's UIBlurEffectStyle. For example, `systemUltraThinMaterial`
-     *
-     * Complete list of possible blur effect styles is available in the official UIKit documentation:
-     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiblureffect/style)
-     *
-     * @default systemDefault
-     *
-     * @platform iOS ≤ 18
-     */
-    blurEffect?: NativeTabsBlurEffect;
-    /**
-     * @platform android
-     * @platform iOS
-     * @platform web
-     */
-    tintColor?: ColorValue;
-    badgeBackgroundColor?: ColorValue;
-    /**
-     * @platform android
-     * @platform web
-     */
-    badgeTextColor?: ColorValue;
-    /**
-     * @platform android
-     */
-    rippleColor?: ColorValue;
-    /**
-     * Specifies the label visibility mode.
-     *
-     * The label visibility mode defines when the labels of each item bar should be displayed.
-     *
-     * The following values are available:
-     * - `auto`: the label behaves as in "labeled" mode when there are 3 items or less, or as in "selected" mode when there are 4 items or more
-     * - `selected`: the label is only shown on the selected navigation item
-     * - `labeled`: the label is shown on all navigation items
-     * - `unlabeled`: the label is hidden for all navigation items
-     *
-     * @see The supported values correspond to the official [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible).
-     *
-     * @default auto
-     * @platform android
-     */
-    labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
-    /**
-     * @platform android
-     * @platform web
-     */
-    '&:active'?: NativeTabsActiveStyleType;
 }
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];
 /**
@@ -176,8 +116,15 @@ export interface NativeTabsActiveStyleType {
      */
     indicatorColor?: ColorValue;
 }
+export type TypeOrRecord<T, K extends string> = T | {
+    [key in K]: T;
+};
 export interface NativeTabsProps extends PropsWithChildren {
-    style?: NativeTabsStyleType;
+    labelStyle?: NativeTabsLabelStyle;
+    iconColor?: TypeOrRecord<ColorValue, 'standard' | 'disabled'>;
+    tintColor?: ColorValue;
+    backgroundColor?: ColorValue | null;
+    badgeBackgroundColor?: TypeOrRecord<ColorValue, 'standard' | 'disabled'>;
     /**
      * Specifies the minimize behavior for the tab bar.
      *
@@ -199,6 +146,16 @@ export interface NativeTabsProps extends PropsWithChildren {
      * @platform iOS 26+
      */
     minimizeBehavior?: NativeTabsTabBarMinimizeBehavior;
+    blurEffect?: NativeTabsBlurEffect;
+    /**
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
+     *
+     * @platform iOS
+     */
+    titlePositionAdjustment?: {
+        horizontal?: number;
+        vertical?: number;
+    };
     /**
      * Disables the active indicator for the tab bar.
      *
@@ -211,9 +168,14 @@ export interface NativeTabsProps extends PropsWithChildren {
      * @platform android
      */
     backBehavior?: 'none' | 'initialRoute' | 'history';
+    labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
+    rippleColor?: ColorValue;
+    indicatorColor?: ColorValue;
+    badgeTextColor?: ColorValue;
 }
 export interface NativeTabsViewProps extends NativeTabsProps {
     focusedIndex: number;
+    scrollEdgeAppearanceProps: NativeTabsScrollEdgeAppearanceProps | undefined;
     builder: ReturnType<typeof useNavigationBuilder<TabNavigationState<ParamListBase>, TabRouterOptions, Record<string, (...args: any) => void>, NativeTabOptions, Record<string, any>>>;
 }
 export declare const SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES: readonly ["auto", "selected", "labeled", "unlabeled"];
@@ -269,6 +231,14 @@ export interface NativeTabTriggerProps {
      * Use `Icon`, `Label`, and `Badge` components to customize the tab.
      */
     children?: React.ReactNode;
+    role?: BottomTabsSystemItem;
+}
+export interface NativeTabsScrollEdgeAppearanceProps {
+    ios26LabelStyle?: NativeTabsLabelStyle;
+    ios26IconColor?: TypeOrRecord<ColorValue, 'standard' | 'disabled'>;
+    blurEffect?: NativeTabsBlurEffect;
+    backgroundColor?: ColorValue | null;
+    ios26BadgeBackgroundColor?: TypeOrRecord<ColorValue, 'standard' | 'disabled'>;
 }
 export {};
 //# sourceMappingURL=types.d.ts.map

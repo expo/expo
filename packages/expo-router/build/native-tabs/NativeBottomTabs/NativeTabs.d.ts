@@ -1,4 +1,5 @@
 import { NativeTabTrigger } from './NativeTabTrigger';
+import { NativeTabsScrollEdgeAppearance } from './NativeTabsScrollEdgeAppearance';
 import type { NativeTabsProps } from './types';
 /**
  * The component used to create native tabs layout.
@@ -20,5 +21,6 @@ import type { NativeTabsProps } from './types';
  */
 export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JSX.Element) & {
     Trigger: typeof NativeTabTrigger;
+    ScrollEdgeAppearance: typeof NativeTabsScrollEdgeAppearance;
 };
 //# sourceMappingURL=NativeTabs.d.ts.map
