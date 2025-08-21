@@ -84,7 +84,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
       if let identifier {
         if let foundContact = try? getContact(withId: identifier) {
-          controller = ContactsViewController.init(forNewContact: foundContact)
+          controller = ContactsViewController(for: foundContact)
         }
       } else {
         var contact = CNMutableContact()
@@ -131,18 +131,21 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         controller.parentGroup = try group(with: groupId)
       }
 
-      let parent = appContext?.utilities?.currentViewController()
-      let navController = UINavigationController(rootViewController: controller)
-      presentingViewController = navController
-      let animated = options.preventAnimation == true ? false : true
+      if let parent = appContext?.utilities?.currentViewController() {
+        let navController = UINavigationController(rootViewController: controller)
+        presentingViewController = navController
 
-      controller.onViewDisappeared = {
-        promise.resolve()
-        self.contactManipulationPromise = nil
+        controller.onViewDisappeared = {
+          promise.resolve()
+          self.contactManipulationPromise = nil
+        }
+
+        contactManipulationPromise = promise
+        parent.present(navController, animated: options.preventAnimation != true)
+      } else {
+        contactManipulationPromise = nil
+        promise.reject(MissingViewControllerException())
       }
-
-      contactManipulationPromise = promise
-      parent?.present(navController, animated: animated)
     }.runOnQueue(.main)
 
     AsyncFunction("presentContactPickerAsync") { (promise: Promise) in

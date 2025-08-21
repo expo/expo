@@ -45,8 +45,9 @@ const elements_1 = require("../common/elements");
  *     </View>
  *   );
  * }
+ * ```
  *
- * **Note:** You can use the alias `NativeTabs.Trigger` for this component.
+ * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 function NativeTabTrigger(props) {
     const route = (0, native_1.useRoute)();

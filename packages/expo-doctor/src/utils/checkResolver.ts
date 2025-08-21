@@ -15,6 +15,7 @@ import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
 import { GlobalPackageInstalledLocallyCheck } from '../checks/GlobalPackageInstalledLocallyCheck';
 import { IllegalPackageCheck } from '../checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
+import { LockfileCheck } from '../checks/LockfileCheck';
 import { MetroConfigCheck } from '../checks/MetroConfigCheck';
 import { NativeToolingVersionCheck } from '../checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from '../checks/PackageJsonCheck';
@@ -38,6 +39,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     // Project Structure Checks
     new ProjectSetupCheck(),
     new PackageJsonCheck(),
+    new LockfileCheck(),
     new ExpoConfigSchemaCheck(),
     new ExpoConfigCommonIssueCheck(),
     new MetroConfigCheck(),

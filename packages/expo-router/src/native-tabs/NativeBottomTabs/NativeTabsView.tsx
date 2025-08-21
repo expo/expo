@@ -1,12 +1,19 @@
-import React, { useRef } from 'react';
+import React, { useDeferredValue } from 'react';
 import {
   BottomTabs,
   BottomTabsScreen,
   featureFlags,
+  type BottomTabsProps,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
 
-import type { NativeTabOptions, NativeTabsViewProps } from './types';
+import {
+  SUPPORTED_BLUR_EFFECTS,
+  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
+  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
+  type NativeTabOptions,
+  type NativeTabsViewProps,
+} from './types';
 import { shouldTabBeVisible } from './utils';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
@@ -18,30 +25,14 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const { state, descriptors, navigation } = builder;
   const { routes } = state;
 
-  // This is flag that is set to true, when the transition is executed by native tab change
-  // In this case we don't need to change the isFocused of the screens, because the transition will happen on native side
-  const isDuringNativeTransition = useRef<boolean>(false);
-  // This is the last index that was not part of a native transition, e.g navigation from link
-  const lastNotNativeTransitionIndex = useRef<number>(focusedIndex);
-
-  // If the flag was set in the onNativeFocusChange handler, it will be still true here
-  // It is set to false, later in this function
-  // Thus if it is false, we know that the transition was not triggered by a native tab change
-  // and we need to reset the lastNotNativeTransitionIndex
-  if (!isDuringNativeTransition.current) {
-    lastNotNativeTransitionIndex.current = focusedIndex;
-  }
+  const deferredFocusedIndex = useDeferredValue(focusedIndex);
 
   const children = routes
     .map((route, index) => ({ route, index }))
     .filter(({ route: { key } }) => shouldTabBeVisible(descriptors[key].options))
     .map(({ route, index }) => {
       const descriptor = descriptors[route.key];
-      // In case of native transition we want to keep the last focused index
-      // Otherwise the lastNotNativeTransitionIndex is set to focusedIndex in the if above this statement
-      const isFocused = index === focusedIndex;
-      // TODO: Find a proper fix, that allows for proper JS navigation
-      //lastNotNativeTransitionIndex.current;
+      const isFocused = index === deferredFocusedIndex;
       const title = descriptor.options.title ?? route.name;
 
       return (
@@ -63,11 +54,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       );
     });
 
-  // The native render is over, we can reset the flag
-  isDuringNativeTransition.current = false;
-
   return (
-    <BottomTabs
+    <BottomTabsWrapper
       tabBarItemTitleFontColor={style?.color}
       tabBarItemTitleFontFamily={style?.fontFamily}
       tabBarItemTitleFontSize={style?.fontSize}
@@ -101,10 +89,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
             name: route.name,
           },
         });
-        isDuringNativeTransition.current = true;
       }}>
       {children}
-    </BottomTabs>
+    </BottomTabsWrapper>
   );
 }
 
@@ -120,4 +107,42 @@ function convertOptionsIconToPropsIcon(
     return { templateSource: icon.src };
   }
   return undefined;
+}
+
+const supportedTabBarMinimizeBehaviorsSet = new Set<string>(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
+const supportedTabBarItemLabelVisibilityModesSet = new Set<string>(
+  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES
+);
+const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
+
+function BottomTabsWrapper(props: BottomTabsProps) {
+  const { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, tabBarBlurEffect, ...rest } =
+    props;
+  if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
+    throw new Error(
+      `Unsupported minimizeBehavior: ${tabBarMinimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((behavior) => `"${behavior}"`).join(', ')}`
+    );
+  }
+  if (
+    tabBarItemLabelVisibilityMode &&
+    !supportedTabBarItemLabelVisibilityModesSet.has(tabBarItemLabelVisibilityMode)
+  ) {
+    throw new Error(
+      `Unsupported labelVisibilityMode: ${tabBarItemLabelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`
+    );
+  }
+  if (tabBarBlurEffect && !supportedBlurEffectsSet.has(tabBarBlurEffect)) {
+    throw new Error(
+      `Unsupported blurEffect: ${tabBarBlurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
+    );
+  }
+
+  return (
+    <BottomTabs
+      tabBarBlurEffect={tabBarBlurEffect}
+      tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode}
+      tabBarMinimizeBehavior={tabBarMinimizeBehavior}
+      {...rest}
+    />
+  );
 }

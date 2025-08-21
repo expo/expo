@@ -16,7 +16,7 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "expo-dev-menu": "7.0.3",
-    "expo-manifests": "~1.0.2"
+    "expo-manifests": "~1.0.3"
   },
   "peerDependencies": {
     "expo": "*"

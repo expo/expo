@@ -115,6 +115,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Chart component',
+    route: 'ui/chart',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ChartScreen'));
+    },
+  },
+  {
     name: 'Hosting RN Views',
     route: 'ui/hosting-rn-views',
     options: {},

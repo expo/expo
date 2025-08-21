@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.26.1 — 2025-08-21
+
+### 💡 Others
+
+- Apply supervisor transformer that wraps a user-configured custom transformer. This annotates initialization errors and enforces a single Metro version ([#38961](https://github.com/expo/expo/pull/38961) by [@kitten](https://github.com/kitten))
+
+## 0.26.0 — 2025-08-19
+
+### 🎉 New features
+
+- Render errors with multiple stacks in Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 0.25.2 — 2025-08-16
 
 ### 💡 Others

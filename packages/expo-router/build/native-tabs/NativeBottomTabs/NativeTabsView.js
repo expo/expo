@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
 const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
+const types_1 = require("./types");
 const utils_1 = require("./utils");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
@@ -44,36 +45,19 @@ function NativeTabsView(props) {
     const { builder, style, minimizeBehavior, disableIndicator, focusedIndex } = props;
     const { state, descriptors, navigation } = builder;
     const { routes } = state;
-    // This is flag that is set to true, when the transition is executed by native tab change
-    // In this case we don't need to change the isFocused of the screens, because the transition will happen on native side
-    const isDuringNativeTransition = (0, react_1.useRef)(false);
-    // This is the last index that was not part of a native transition, e.g navigation from link
-    const lastNotNativeTransitionIndex = (0, react_1.useRef)(focusedIndex);
-    // If the flag was set in the onNativeFocusChange handler, it will be still true here
-    // It is set to false, later in this function
-    // Thus if it is false, we know that the transition was not triggered by a native tab change
-    // and we need to reset the lastNotNativeTransitionIndex
-    if (!isDuringNativeTransition.current) {
-        lastNotNativeTransitionIndex.current = focusedIndex;
-    }
+    const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     const children = routes
         .map((route, index) => ({ route, index }))
         .filter(({ route: { key } }) => (0, utils_1.shouldTabBeVisible)(descriptors[key].options))
         .map(({ route, index }) => {
         const descriptor = descriptors[route.key];
-        // In case of native transition we want to keep the last focused index
-        // Otherwise the lastNotNativeTransitionIndex is set to focusedIndex in the if above this statement
-        const isFocused = index === focusedIndex;
-        // TODO: Find a proper fix, that allows for proper JS navigation
-        //lastNotNativeTransitionIndex.current;
+        const isFocused = index === deferredFocusedIndex;
         const title = descriptor.options.title ?? route.name;
         return (<react_native_screens_1.BottomTabsScreen key={route.key} {...descriptor.options} tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor} tabBarItemBadgeTextColor={style?.badgeTextColor} tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment} iconResourceName={descriptor.options.icon?.drawable} icon={convertOptionsIconToPropsIcon(descriptor.options.icon)} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={route.key} isFocused={isFocused}>
           {descriptor.render()}
         </react_native_screens_1.BottomTabsScreen>);
     });
-    // The native render is over, we can reset the flag
-    isDuringNativeTransition.current = false;
-    return (<react_native_screens_1.BottomTabs tabBarItemTitleFontColor={style?.color} tabBarItemTitleFontFamily={style?.fontFamily} tabBarItemTitleFontSize={style?.fontSize} 
+    return (<BottomTabsWrapper tabBarItemTitleFontColor={style?.color} tabBarItemTitleFontFamily={style?.fontFamily} tabBarItemTitleFontSize={style?.fontSize} 
     // Only string values are accepted by screens
     tabBarItemTitleFontWeight={style?.fontWeight
             ? String(style.fontWeight)
@@ -87,10 +71,9 @@ function NativeTabsView(props) {
                     name: route.name,
                 },
             });
-            isDuringNativeTransition.current = true;
         }}>
       {children}
-    </react_native_screens_1.BottomTabs>);
+    </BottomTabsWrapper>);
 }
 function convertOptionsIconToPropsIcon(icon) {
     if (!icon) {
@@ -103,5 +86,22 @@ function convertOptionsIconToPropsIcon(icon) {
         return { templateSource: icon.src };
     }
     return undefined;
+}
+const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
+const supportedTabBarItemLabelVisibilityModesSet = new Set(types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES);
+const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
+function BottomTabsWrapper(props) {
+    const { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, tabBarBlurEffect, ...rest } = props;
+    if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
+        throw new Error(`Unsupported minimizeBehavior: ${tabBarMinimizeBehavior}. Supported values are: ${types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((behavior) => `"${behavior}"`).join(', ')}`);
+    }
+    if (tabBarItemLabelVisibilityMode &&
+        !supportedTabBarItemLabelVisibilityModesSet.has(tabBarItemLabelVisibilityMode)) {
+        throw new Error(`Unsupported labelVisibilityMode: ${tabBarItemLabelVisibilityMode}. Supported values are: ${types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`);
+    }
+    if (tabBarBlurEffect && !supportedBlurEffectsSet.has(tabBarBlurEffect)) {
+        throw new Error(`Unsupported blurEffect: ${tabBarBlurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+    }
+    return (<react_native_screens_1.BottomTabs tabBarBlurEffect={tabBarBlurEffect} tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode} tabBarMinimizeBehavior={tabBarMinimizeBehavior} {...rest}/>);
 }
 //# sourceMappingURL=NativeTabsView.js.map

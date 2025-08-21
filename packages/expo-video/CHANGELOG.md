@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.0.3 — 2025-08-21
+
+### 🎉 New features
+
+- [Android][iOS] Add `keepScreenOnWhilePlaying` property to the player. ([#37137](https://github.com/expo/expo/pull/37137) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Keep the screen on while playback is running by default. ([#37137](https://github.com/expo/expo/pull/37137) by [@behenate](https://github.com/behenate))
+
 ## 3.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

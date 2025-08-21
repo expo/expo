@@ -7,9 +7,8 @@
  */
 import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import type { JsTransformerConfig, JsTransformOptions, JsOutput } from '@expo/metro/metro-transform-worker';
-interface TransformResponse {
+export interface TransformResponse {
     readonly dependencies: readonly TransformResultDependency[];
     readonly output: readonly JsOutput[];
 }
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
-export {};

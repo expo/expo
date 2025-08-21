@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 0.21.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Fix live binding of default exports ([#38976](https://github.com/expo/expo/pull/38976) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 💡 Others
+
+- Add supervisor transformer that loads a custom configured transformer, annotates initialization errors, and enforces a single Metro version ([#38961](https://github.com/expo/expo/pull/38961) by [@kitten](https://github.com/kitten))
+
+## 0.21.3 — 2025-08-19
+
+### 🐛 Bug fixes
+
+- Fix live binding export deduplication failing to trigger ([#38951](https://github.com/expo/expo/pull/38951) by [@kitten](https://github.com/kitten))
+- Fix undeclared namespace when exporting default imports ([#38975](https://github.com/expo/expo/pull/38975) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 0.21.2 — 2025-08-16
 
 ### 🐛 Bug fixes

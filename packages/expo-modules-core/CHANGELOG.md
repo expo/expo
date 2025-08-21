@@ -10,11 +10,22 @@
 
 ### 💡 Others
 
+## 3.0.5 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.4 — 2025-08-19
+
+### 🐛 Bug fixes
+
+- [Android] Fix invalid array buffer offset in typed arrays. ([#38958](https://github.com/expo/expo/pull/38958) by [@aleqsio](https://github.com/aleqsio))
+
 ## 3.0.3 — 2025-08-18
 
 ### 💡 Others
 
 - [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+- [Android] Update min, target, and compile SDK versions. ([#38938](https://github.com/expo/expo/pull/38938) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 3.0.2 — 2025-08-16
 
