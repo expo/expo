@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Enable [React Native Strict TypeScript API typings](https://reactnative.dev/docs/strict-typescript-api) by default. This is not a breaking change unless you've used internal APIs in your TypeScript code. ([#39018](https://github.com/expo/expo/pull/39018) by [@kitten](https://github.com/kitten))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 54.0.0-preview.5 — 2025-08-21
+
+### 🛠 Breaking changes
+
+- Enable [React Native Strict TypeScript API typings](https://reactnative.dev/docs/strict-typescript-api) by default. This is not a breaking change unless you've used internal APIs in your TypeScript code. ([#39018](https://github.com/expo/expo/pull/39018) by [@kitten](https://github.com/kitten))
 
 ## 54.0.0-preview.4 — 2025-08-19
 
