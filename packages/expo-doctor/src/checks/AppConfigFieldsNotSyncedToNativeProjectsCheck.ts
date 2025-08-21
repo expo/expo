@@ -4,6 +4,7 @@ import path from 'path';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { existsAndIsNotIgnoredAsync } from '../utils/files';
+import { env } from '../utils/env';
 
 const appConfigFieldsToSyncWithNative = [
   'ios',
@@ -69,20 +70,24 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
         `This project contains native project folders but also has native configuration properties in ${configFileName}, indicating it is configured to use Prebuild. When the android/ios folders are present, ${prebuildMessage} ${unsyncedFields.join(', ')}. \n`
       );
 
-      if (isBuildingOnEAS) {
-        const gradleDir = await existsAndIsNotIgnoredAsync(
-          path.join(projectRoot, 'android', '.gradle'),
-          isBuildingOnEAS
-        );
+      const easPlatform = env.EAS_BUILD_PLATFORM;
 
+      if (easPlatform && isBuildingOnEAS) {
         advice.push(
-          `- Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`
+          `Add '/${easPlatform}' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`
         );
 
-        if (gradleDir) {
-          advice.push(
-            `- Add '/android/.gradle' to your ${ignoreFile} to avoid committing Gradle caches`
+        if (easPlatform === 'android') {
+          const gradleDir = await existsAndIsNotIgnoredAsync(
+            path.join(projectRoot, 'android', '.gradle'),
+            isBuildingOnEAS
           );
+
+          if (gradleDir) {
+            advice.push(
+              `If you intend to not use CNG, add '/android/.gradle' to your ${ignoreFile} to avoid committing Gradle caches`
+            );
+          }
         }
       }
     }

@@ -1,7 +1,8 @@
 import { vol } from 'memfs';
-
+import * as path from 'path';
 import { existsAndIsNotIgnoredAsync } from '../../utils/files';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../AppConfigFieldsNotSyncedToNativeProjectsCheck';
+import { env } from '../../utils/env';
 
 jest.mock('fs');
 jest.mock('../../utils/files');
@@ -82,6 +83,86 @@ describe('runAsync', () => {
       },
     });
     expect(result.isSuccessful).toBeTruthy();
+  });
+
+  it('does not add Android Gradle cache advice during EAS iOS builds', async () => {
+    jest.spyOn(env, 'EAS_BUILD_PLATFORM', 'get').mockReturnValue('ios');
+
+    vol.fromJSON({
+      [path.resolve('eas.json')]: '{}',
+    });
+
+    jest.mocked(existsAndIsNotIgnoredAsync).mockImplementation(async (p, _checkEasignore) => {
+      if (p === path.join(projectRoot, 'android', 'build.gradle')) return true;
+      if (p === path.join(projectRoot, 'android', '.gradle')) return false;
+      return false;
+    });
+
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+      exp: { name: 'name', slug: 'slug', android: {} },
+    });
+
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.advice).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("Add '/ios' to your .gitignore file"),
+        expect.not.stringContaining(".gradle' to your .gitignore"),
+      ])
+    );
+  });
+
+  it('does not add Android Gradle cache advice when android/.gradle is not tracked during EAS Android builds', async () => {
+    jest.spyOn(env, 'EAS_BUILD_PLATFORM', 'get').mockReturnValue('android');
+
+    vol.fromJSON({
+      [path.resolve('eas.json')]: '{}',
+    });
+
+    jest.mocked(existsAndIsNotIgnoredAsync).mockImplementation(async (p, _checkEasignore) => {
+      if (p === path.join(projectRoot, 'android', 'build.gradle')) return true;
+      if (p === path.join(projectRoot, 'android', '.gradle')) return false;
+      return false;
+    });
+
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+      exp: { name: 'name', slug: 'slug', android: {} },
+    });
+
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.advice).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("Add '/android' to your .gitignore file"),
+        expect.not.stringContaining("add '/android/.gradle' to your .gitignore"),
+      ])
+    );
+  });
+
+  it('adds Android Gradle cache advice when android/.gradle is tracked during EAS Android builds', async () => {
+    jest.spyOn(env, 'EAS_BUILD_PLATFORM', 'get').mockReturnValue('android');
+
+    vol.fromJSON({
+      [path.resolve('eas.json')]: '{}',
+    });
+
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
+
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+      exp: { name: 'name', slug: 'slug', android: {} },
+    });
+
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.advice).toEqual(
+      expect.arrayContaining([expect.stringContaining("add '/android/.gradle' to your .gitignore")])
+    );
   });
 
   it('mentions app.config.ts in issue when dynamic config is used', async () => {
