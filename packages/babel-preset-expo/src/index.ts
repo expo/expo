@@ -2,6 +2,7 @@ import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
 import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
 import {
+  getBabelRuntimeVersion,
   getBaseUrl,
   getBundler,
   getInlineEnvVarsEnabled,
@@ -24,15 +25,6 @@ import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
-
-// NOTE(@kitten): This shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
-// (the lowest version constraint we have).
-// TODO(@kitten): This is a hotfix! In theory, we should pass an absolute runtime path
-// and skip the internal resolution, which would mean we'd be able to guarantee a version here,
-// but for now, we don't
-// WARN: This does not reproduce in the expo/expo monorepo and we're not sure why. If you're changing this, run `expo export -p android` against this reproduction:
-// - https://github.com/kitten/expo-bug-nested-async-generator-function-repro
-const BABEL_RUNTIME_RANGE = '^7.20.0';
 
 type BabelPresetExpoPlatformOptions = {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -59,7 +51,7 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-  enableBabelRuntime?: boolean;
+  enableBabelRuntime?: boolean | string;
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 
@@ -367,11 +359,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         const presetOpts = {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
-          // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-          // Passed on unchanged in most cases, except when `true` where we pass `BABEL_RUNTIME_RANGE` to avoid the 7.0.0-beta.0 default
+          // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
+          // Set to `false` to disable `@babel/plugin-transform-runtime`
           enableBabelRuntime:
+            platformOptions.enableBabelRuntime == null ||
             platformOptions.enableBabelRuntime === true
-              ? BABEL_RUNTIME_RANGE
+              ? getBabelRuntimeVersion()
               : platformOptions.enableBabelRuntime,
           // This reduces the amount of transforms required, as Hermes supports many modern language features.
           unstable_transformProfile: platformOptions.unstable_transformProfile,
