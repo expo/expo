@@ -136,6 +136,33 @@ export async function listEvents(calendarIds, startDate, endDate) {
     return InternalExpoCalendar.listEvents(calendarIds, stringifyIfDate(startDate), stringifyIfDate(endDate));
 }
 /**
+ * Gets an event by its ID.
+ * @param eventId The ID of the event to get.
+ * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
+ */
+export async function getEventById(eventId) {
+    if (!InternalExpoCalendar.getEventById) {
+        throw new UnavailabilityError('Calendar', 'getEventById');
+    }
+    const event = await InternalExpoCalendar.getEventById(eventId);
+    Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
+    return event;
+}
+/**
+ * Gets a reminder by its ID.
+ * @param reminderId The ID of the reminder to get.
+ * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
+ * @platform ios
+ */
+export async function getReminderById(reminderId) {
+    if (!InternalExpoCalendar.getReminderById) {
+        throw new UnavailabilityError('Calendar', 'getReminderById');
+    }
+    const reminder = await InternalExpoCalendar.getReminderById(reminderId);
+    Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+    return reminder;
+}
+/**
  * Asks the user to grant permissions for accessing user's calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */

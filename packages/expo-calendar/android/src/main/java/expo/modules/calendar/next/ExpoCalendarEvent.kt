@@ -379,4 +379,29 @@ class ExpoCalendarEvent : SharedObject {
     attendee.attendeeRecord?.id = newEventId
     return attendee
   }
+
+  companion object {
+    fun findEventById(eventID: String, localAppContext: AppContext): ExpoCalendarEvent? {
+      val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toInt().toLong())
+      val selection = "((${CalendarContract.Events.DELETED} != 1))"
+      val contentResolver = localAppContext.reactContext?.contentResolver
+        ?: throw Exceptions.ReactContextLost()
+      val cursor = contentResolver.query(
+        uri,
+        findEventByIdQueryParameters,
+        selection,
+        null,
+        null
+      )
+      requireNotNull(cursor) { "Cursor shouldn't be null" }
+      return cursor.use {
+        if (cursor.count > 0) {
+          cursor.moveToFirst()
+          ExpoCalendarEvent(localAppContext, cursor)
+        } else {
+          null
+        }
+      }
+    }
+  }
 }

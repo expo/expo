@@ -101,6 +101,15 @@ class CalendarNextModule : Module() {
       }
     }
 
+    AsyncFunction("getEventById") { eventId: String, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          val event = ExpoCalendarEvent.findEventById(eventId, appContext)
+          promise.resolve(event)
+        }
+      }
+    }
+
     AsyncFunction("createCalendarNext") { calendarRecord: CalendarRecord, promise: Promise ->
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {

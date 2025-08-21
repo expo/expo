@@ -11,6 +11,8 @@ import {
   listEvents,
   ExpoCalendarReminder,
   ExpoCalendarAttendee,
+  getEventById,
+  getReminderById,
 } from 'expo-calendar/next';
 import { Platform } from 'react-native';
 
@@ -351,7 +353,69 @@ export async function test(t) {
         });
       });
 
+      t.describe('getEventById()', () => {
+        let calendar: ExpoCalendar;
+
+        t.beforeEach(async () => {
+          calendar = await createTestCalendarAsync();
+        });
+
+        t.it('returns an event by its ID', async () => {
+          const event = await createTestEvent(calendar);
+          const event2 = await getEventById(event.id);
+          t.expect(event2).toBeDefined();
+          t.expect(event2).toEqual(event);
+        });
+
+        t.it('returns a modified event', async () => {
+          const event = await createTestEvent(calendar);
+          await event.update({
+            title: 'New title',
+            location: 'New location',
+          });
+
+          const event2 = await getEventById(event.id);
+          t.expect(event2).toBeDefined();
+          t.expect(event2.title).toBe('New title');
+          t.expect(event2.location).toBe('New location');
+        });
+
+        t.afterEach(async () => {
+          calendar.delete();
+        });
+      });
+
       if (Platform.OS === 'ios') {
+        t.describe('getReminderById()', () => {
+          let calendar: ExpoCalendar;
+          let reminder: ExpoCalendarReminder;
+
+          t.beforeEach(async () => {
+            calendar = await getReminderCalendar();
+            reminder = await createTestReminder(calendar);
+          });
+
+          t.it('returns a reminder by its ID', async () => {
+            const fetchedReminder = await getReminderById(reminder.id);
+            t.expect(fetchedReminder).toBeDefined();
+            t.expect(fetchedReminder).toEqual(reminder);
+          });
+
+          t.it('returns a modified reminder', async () => {
+            await reminder.update({
+              title: 'New title',
+            });
+
+            const fetchedReminder = await getReminderById(reminder.id);
+            t.expect(fetchedReminder).toBeDefined();
+            t.expect(fetchedReminder.title).toBe('New title');
+          });
+
+          t.afterEach(async () => {
+            reminder.delete();
+          });
+        });
+
         t.describe('getDefaultCalendarNext()', () => {
           t.it('get default calendar', async () => {
             const calendar = getDefaultCalendarNext();
@@ -956,7 +1020,7 @@ export async function test(t) {
 
           await event.update(updatedData);
 
-          // Force fetch the event from the Android database
+          // Force fetch the event from the device database
           const fetchedEvents = await calendar.listEvents(
             new Date(2023, 2, 1),
             new Date(2023, 2, 5)
