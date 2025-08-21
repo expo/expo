@@ -71,6 +71,9 @@ export async function loadMetroConfigAsync(
 ) {
   let reportEvent: ((event: any) => void) | undefined;
 
+  const autolinkingModuleResolutionEnabled =
+    exp.experiments?.autolinkingModuleResolution ?? env.EXPO_USE_STICKY_RESOLVER;
+
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
 
@@ -147,6 +150,9 @@ export async function loadMetroConfigAsync(
   if (env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
   }
+  if (autolinkingModuleResolutionEnabled) {
+    Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
+  }
 
   if (serverActionsEnabled) {
     Log.warn(
@@ -159,7 +165,7 @@ export async function loadMetroConfigAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
-    isStickyResolverEnabled: env.EXPO_USE_STICKY_RESOLVER,
+    isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled,

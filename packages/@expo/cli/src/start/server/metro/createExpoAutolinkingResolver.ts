@@ -4,7 +4,9 @@ import type { ResolutionResult as AutolinkingResolutionResult } from 'expo-modul
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
-const debug = require('debug')('expo:start:server:metro:sticky-resolver') as typeof console.log;
+const debug = require('debug')(
+  'expo:start:server:metro:autolinking-resolver'
+) as typeof console.log;
 
 // This is a list of known modules we want to always include in sticky resolution
 // Specifying these skips platform- and module-specific checks and always includes them in the output
@@ -73,17 +75,17 @@ const toPlatformModuleDescription = (
   };
 };
 
-export type StickyModuleResolverInput = {
+export type AutolinkingModuleResolverInput = {
   [platform in AutolinkingPlatform]?: PlatformModuleDescription;
 };
 
-export async function createStickyModuleResolverInput({
+export async function createAutolinkingModuleResolverInput({
   platforms,
   projectRoot,
 }: {
   projectRoot: string;
   platforms: string[];
-}): Promise<StickyModuleResolverInput> {
+}): Promise<AutolinkingModuleResolverInput> {
   const autolinking = getAutolinkingExports();
   const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
 
@@ -106,11 +108,11 @@ export async function createStickyModuleResolverInput({
           ];
         })
     )
-  ) as StickyModuleResolverInput;
+  ) as AutolinkingModuleResolverInput;
 }
 
-export function createStickyModuleResolver(
-  input: StickyModuleResolverInput | undefined,
+export function createAutolinkingModuleResolver(
+  input: AutolinkingModuleResolverInput | undefined,
   { getStrictResolver }: { getStrictResolver: StrictResolverFactory }
 ): ExpoCustomMetroResolver | undefined {
   if (!input) {

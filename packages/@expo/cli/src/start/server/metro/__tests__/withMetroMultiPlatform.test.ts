@@ -5,7 +5,7 @@ import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-reso
 import { vol } from 'memfs';
 import assert from 'node:assert';
 
-import { StickyModuleResolverInput } from '../createExpoStickyResolver';
+import { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
 import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 
@@ -1207,18 +1207,18 @@ describe(withExtendedResolver, () => {
     });
   });
 
-  describe('with sticky module resolver', () => {
-    function getModifiedConfig(input: StickyModuleResolverInput) {
+  describe('with autolinking module resolver', () => {
+    function getModifiedConfig(input: AutolinkingModuleResolverInput) {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         tsconfig: {},
-        stickyModuleResolverInput: input,
+        autolinkingModuleResolverInput: input,
         isTsconfigPathsEnabled: false,
         isReactCanaryEnabled: true,
         getMetroBundler: getMetroBundlerGetter() as any,
       });
     }
 
-    it('resolves redirect path for sticky module input', () => {
+    it('resolves redirect path for autolinking module input', () => {
       const platform = 'ios';
       const modified = getModifiedConfig({
         ios: {

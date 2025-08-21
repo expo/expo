@@ -1,4 +1,4 @@
-import { _dependenciesToRegex } from '../createExpoStickyResolver';
+import { _dependenciesToRegex } from '../createExpoAutolinkingResolver';
 
 // NOTE(@kitten): This tests converting and matching dependencies from a generated regex
 // To see a more complete test for `createStickyModuleResolver` itself, see: withMetroMultiPlatform.test.ts
