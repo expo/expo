@@ -11,7 +11,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@expo/vector-icons": "^14.1.0",
+    "@expo/vector-icons": "^15.0.0",
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.0-preview.5",
     "expo-constants": "~18.0.3",
