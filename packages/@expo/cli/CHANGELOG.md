@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused `@babel/runtime` dependency from CLI ([#39040](https://github.com/expo/expo/pull/39040) by [@kitten](https://github.com/kitten))
+
 ## 0.26.3 — 2025-08-25
 
 ### 💡 Others
