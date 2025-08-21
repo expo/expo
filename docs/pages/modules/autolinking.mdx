@@ -263,7 +263,7 @@ Autolinking and Node resolution have different goals and the module resolution a
 
 This is an especially common problem with isolated dependencies or monorepos, and you should [check for and deduplicate native modules in your dependencies](/guides/monorepos/#duplicate-native-packages-within-monorepos).
 
-From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true` in your **app.json** to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that **autolinking** resolves.
+From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true` in your [app config](/workflow/configuration/) to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that **autolinking** resolves.
 
 ## Common questions
 
