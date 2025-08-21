@@ -47,6 +47,6 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.2"
+    "expo-module-scripts": "^5.0.3"
   }
 }

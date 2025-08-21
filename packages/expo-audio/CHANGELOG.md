@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.0.5 — 2025-08-21
+
+### 🐛 Bug fixes
+
 - Correctly export enum values. ([#38940](https://github.com/expo/expo/pull/38940) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others

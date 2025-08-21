@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `unexpected ',' separator` issue ([#39027](https://github.com/expo/expo/pull/39027) by [@phil9l](https://github.com/phil9l))
-
 ### 💡 Others
+
+## 29.0.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Fix `unexpected ',' separator` issue ([#39027](https://github.com/expo/expo/pull/39027) by [@phil9l](https://github.com/phil9l))
 
 ## 29.0.3 — 2025-08-18
 
