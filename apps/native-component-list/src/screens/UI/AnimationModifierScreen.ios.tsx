@@ -13,7 +13,7 @@ import {
   Animation,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default function AnimationModifierScreen() {
   const [animationState1, setAnimationState1] = useState(false);
@@ -265,10 +265,3 @@ export default function AnimationModifierScreen() {
     </Host>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F2F2F7',
-  },
-});
