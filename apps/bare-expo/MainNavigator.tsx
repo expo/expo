@@ -11,8 +11,10 @@ import TestSuite from 'test-suite/AppNavigator';
 
 type NavigationRouteConfigMap = React.ComponentType;
 
+const testSuiteRouteName = 'test-suite';
+
 type RoutesConfig = {
-  'test-suite': NavigationRouteConfigMap;
+  [testSuiteRouteName]: NavigationRouteConfigMap;
   apis?: NavigationRouteConfigMap;
   components?: NavigationRouteConfigMap;
 };
@@ -31,9 +33,8 @@ export function optionalRequire(requirer: () => { default: React.ComponentType }
     return null;
   }
 }
-
 const routes: RoutesConfig = {
-  'test-suite': TestSuite,
+  [testSuiteRouteName]: TestSuite,
 };
 
 // We'd like to get rid of `native-component-list` being a part of the final bundle.
@@ -70,10 +71,10 @@ const linking: LinkingOptions<object> = {
   config: {
     screens: {
       main: {
-        initialRouteName: 'test-suite',
+        initialRouteName: testSuiteRouteName,
         screens: {
-          'test-suite': {
-            path: 'test-suite',
+          [testSuiteRouteName]: {
+            path: testSuiteRouteName,
             screens: {
               select: '',
               run: '/run',
