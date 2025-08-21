@@ -108,6 +108,23 @@ export function getMetroSourceType(caller?: any) {
   return caller?.metroSourceType;
 }
 
+export function getBabelRuntimeVersion(caller?: any) {
+  assertExpoBabelCaller(caller);
+  let babelRuntimeVersion: string | undefined;
+  if (typeof caller?.babelRuntimeVersion === 'string') {
+    babelRuntimeVersion = caller.babelRuntimeVersion;
+  } else {
+    try {
+      babelRuntimeVersion = require('@babel/runtime/package.json').version;
+    } catch (error: any) {
+      if (error.code !== 'MODULE_NOT_FOUND') throw error;
+    }
+  }
+  // NOTE(@kitten): The default shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
+  // or `babel-preset-expo/package.json`'s peer dependency range for `@babel/runtime`
+  return babelRuntimeVersion ?? '^7.20.0';
+}
+
 export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
   assertExpoBabelCaller(caller);
   const rootModuleId = caller?.routerRoot ?? './app';

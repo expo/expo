@@ -10,6 +10,7 @@
  * https://github.com/facebook/react-native/blob/2af1da42ff517232f1309efed7565fe9ddbbac77/packages/react-native-babel-preset/src/configs/main.js#L1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+const common_1 = require("./common");
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 const defaultPlugins = [
@@ -38,14 +39,14 @@ module.exports = function (babel, options) {
         ]);
     }
     if (!options || options.enableBabelRuntime !== false) {
-        // Allows configuring a specific runtime version to optimize output
-        const isVersion = typeof options?.enableBabelRuntime === 'string';
         extraPlugins.push([
             require('@babel/plugin-transform-runtime'),
             {
                 helpers: true,
                 regenerator: false,
-                ...(isVersion && { version: options.enableBabelRuntime }),
+                enableBabelRuntime: options.enableBabelRuntime == null || options.enableBabelRuntime === true
+                    ? (0, common_1.getBabelRuntimeVersion)()
+                    : options.enableBabelRuntime,
             },
         ]);
     }

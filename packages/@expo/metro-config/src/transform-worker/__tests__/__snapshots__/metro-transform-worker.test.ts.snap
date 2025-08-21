@@ -2,14 +2,13 @@
 
 exports[`allows the constantFoldingPlugin to not remove used helpers when \`dev: false\` 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+  var _interopRequireWildcard = _$$_REQUIRE(_dependencyMap[0]).default;
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   exports.test = undefined;
-  var test = _interopRequireWildcard(_$$_REQUIRE(_dependencyMap[0]));
+  var test = _interopRequireWildcard(_$$_REQUIRE(_dependencyMap[1]));
   exports.test = test;
-  function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(e) { return e ? t : r; })(e); }
-  function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 });"
 `;
 
@@ -44,7 +43,7 @@ exports[`transforms a simple script 1`] = `
 
 exports[`transforms an es module with asyncToGenerator 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
+  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault").default;
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
@@ -72,7 +71,7 @@ exports[`transforms an es module with asyncToGenerator 2`] = `
 
 exports[`transforms async generators 1`] = `
 "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");
+  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault").default;
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
