@@ -10,6 +10,12 @@ export type HostProps = {
         horizontal?: boolean;
     };
     /**
+     * When true and no explicit size is provided, the host will use the viewport size as the proposed size for SwiftUI layout.
+     * This is particularly useful for SwiftUI views that need to fill their available space, such as `Form`.
+     * @default false
+     */
+    useViewportSizeMeasurement?: boolean;
+    /**
      * Callback function that is triggered when the SwiftUI content completes its layout.
      * Provides the current dimensions of the content, which may change as the content updates.
      */
