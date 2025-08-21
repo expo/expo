@@ -229,8 +229,10 @@ internal struct OnTapGestureModifier: ViewModifier {
   let eventDispatcher: EventDispatcher
 
   func body(content: Content) -> some View {
-    content.onTapGesture {
-      eventDispatcher(["onTapGesture": [:]])
+    if #available(iOS 15.0, tvOS 16.0, *) {
+      content.onTapGesture {
+        eventDispatcher(["onTapGesture": [:]])
+      }
     }
   }
 }

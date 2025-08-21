@@ -72,26 +72,26 @@ final class ChartProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
 struct ChartView: ExpoSwiftUI.View {
   @ObservedObject var props: ChartProps
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, tvOS 16.0, *)
   private func createBaseBarMark(for dataPoint: ChartDataPoint) -> BarMark {
     props.barStyle?.width != nil ?
       BarMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y), width: .fixed(CGFloat(props.barStyle?.width ?? 0))) :
       BarMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
   }
 
-  @available(iOS 17.0, *)
+  @available(iOS 17.0, tvOS 17.0, *)
   private func createBasePieMark(for dataPoint: ChartDataPoint) -> SectorMark {
     let style = props.pieStyle ?? PieChartStyle()
     return SectorMark(angle: .value("Value", dataPoint.y), innerRadius: .ratio(style.innerRadius), angularInset: style.angularInset)
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, tvOS 16.0, *)
   private func createAreaMark(for dataPoint: ChartDataPoint) -> some ChartContent {
     AreaMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
       .foregroundStyle(props.areaStyle?.color ?? .blue)
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, tvOS 16.0, *)
   private func createLineMark(for dataPoint: ChartDataPoint) -> some ChartContent {
     LineMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
       .foregroundStyle(props.lineStyle?.color ?? .blue)
@@ -101,7 +101,7 @@ struct ChartView: ExpoSwiftUI.View {
       .lineStyle(.init(lineWidth: CGFloat(props.lineStyle?.width ?? 2.0)))
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, tvOS 16.0, *)
   private func createPointMark(for dataPoint: ChartDataPoint) -> some ChartContent {
     PointMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
       .foregroundStyle(dataPoint.color ?? .blue)
@@ -110,7 +110,7 @@ struct ChartView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       let hasIndividualColors = props.data.contains { $0.color != nil }
 
       Chart(props.data, id: \.x) { dataPoint in
@@ -128,7 +128,7 @@ struct ChartView: ExpoSwiftUI.View {
         case .area:
           createAreaMark(for: dataPoint)
         case .pie:
-          if #available(iOS 17.0, *) {
+          if #available(iOS 17.0, tvOS 17.0, *) {
             if hasIndividualColors {
               createBasePieMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).opacity(0.8)
             } else {
@@ -152,7 +152,7 @@ struct ChartView: ExpoSwiftUI.View {
     }
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, tvOS 16.0, *)
   private func getSymbol(_ pointStyle: PointStyle) -> BasicChartSymbolShape {
     switch pointStyle {
     case .circle:
