@@ -14,6 +14,7 @@ export declare function getBaseUrl(caller?: any): string;
 export declare function getReactCompiler(caller?: any): boolean;
 export declare function getIsServer(caller?: any): boolean;
 export declare function getMetroSourceType(caller?: any): "script" | "module" | "asset" | undefined;
+export declare function getBabelRuntimeVersion(caller?: any): string;
 export declare function getExpoRouterAbsoluteAppRoot(caller?: any): string;
 export declare function getInlineEnvVarsEnabled(caller?: any): boolean;
 export declare function getAsyncRoutes(caller?: any): boolean;
