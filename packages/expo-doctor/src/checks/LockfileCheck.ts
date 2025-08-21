@@ -1,4 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
+import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
@@ -11,13 +13,40 @@ export class LockfileCheck implements DoctorCheck {
     const issues: string[] = [];
     const advice: string[] = [];
 
-    const lockfileCheckResults = await Promise.all(
-      ['pnpm-lock.yaml', 'yarn.lock', 'package-lock.json', 'bun.lockb', 'bun.lock'].map(
-        (lockfile) => {
-          return { lockfile, exists: fs.existsSync(`${projectRoot}/${lockfile}`) };
-        }
-      )
-    );
+    const workspaceRoot = await spawnAsync('npm', ['root'], {
+      stdio: 'pipe',
+      cwd: projectRoot,
+    })
+      .then(({ stdout }) => path.dirname(stdout))
+      .catch(() => {
+        // Fall back to project root if `npm root` fails.
+        return projectRoot;
+      });
+
+    const lockfileCheckResults = [
+      'pnpm-lock.yaml',
+      'yarn.lock',
+      'package-lock.json',
+      'bun.lockb',
+      'bun.lock',
+    ].map((lockfile) => ({
+      lockfile,
+      exists: fs.existsSync(`${workspaceRoot}/${lockfile}`),
+    }));
+
+    const pnpmWorkspaceRoot = await spawnAsync('pnpm', ['root', '-w'], {
+      stdio: 'pipe',
+      cwd: projectRoot,
+    })
+      .then(({ stdout }) => path.dirname(stdout))
+      .catch(() => null);
+
+    if (pnpmWorkspaceRoot && path.relative(pnpmWorkspaceRoot, workspaceRoot) !== '') {
+      lockfileCheckResults.push({
+        lockfile: 'pnpm-lock.yaml',
+        exists: fs.existsSync(`${pnpmWorkspaceRoot}/pnpm-lock.yaml`),
+      });
+    }
 
     const lockfiles = lockfileCheckResults
       .filter((result) => result.exists)

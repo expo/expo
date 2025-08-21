@@ -3,6 +3,8 @@ import { vol } from 'memfs';
 
 import { isFileIgnoredAsync } from '../../utils/files';
 import { LockfileCheck } from '../LockfileCheck';
+import spawnAsync from '@expo/spawn-async';
+import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 
 jest.mock('fs');
 jest.mock('glob');
@@ -36,6 +38,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if no lockfile', async () => {
+    jest.mocked(spawnAsync).mockImplementation(() => mockSpawnPromise(Promise.reject(new Error())));
     vol.fromJSON({});
     const check = new LockfileCheck();
     const result = await check.runAsync({
@@ -47,6 +50,7 @@ describe('runAsync', () => {
 
   // multiple lock files
   it('returns result with isSuccessful = true if just one lock file', async () => {
+    jest.mocked(spawnAsync).mockImplementation(() => mockSpawnPromise(Promise.reject(new Error())));
     vol.fromJSON({
       [projectRoot + '/yarn.lock']: 'test',
     });
@@ -59,6 +63,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if more than one lockfile (yarn + npm)', async () => {
+    jest.mocked(spawnAsync).mockImplementation(() => mockSpawnPromise(Promise.reject(new Error())));
     vol.fromJSON({
       [projectRoot + '/yarn.lock']: 'test',
       [projectRoot + '/package-lock.json']: 'test',
@@ -72,6 +77,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if more than one lockfile (yarn + pnpm)', async () => {
+    jest.mocked(spawnAsync).mockImplementation(() => mockSpawnPromise(Promise.reject(new Error())));
     vol.fromJSON({
       [projectRoot + '/yarn.lock']: 'test',
       [projectRoot + '/pnpm-lock.yaml']: 'test',
