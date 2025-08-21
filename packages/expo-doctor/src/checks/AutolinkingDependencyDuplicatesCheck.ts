@@ -105,6 +105,7 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
         : `${dependency.name} at: ${relative}`;
     }
 
+    const corruptedInstallations: BaseDependencyResolution[] = [];
     for (const dependency of packagesWithIssues.values()) {
       if (dependency.duplicates?.length) {
         const line = [`Found duplicates for ${dependency.name}:`];
@@ -115,17 +116,46 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
           line.push(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
         }
         issues.push(line.join('\n'));
+
+        // If all versions are identical then the node_modules folder is corrupted
+        // This can happen if a package manager fails to clean up after itself when updating
+        // and may look like this:
+        // - expo-constants@18.0.2 (at: node_modules/expo-constants)
+        // - expo-constants@18.0.2 (at: node_modules/expo/node_modules/expo-constants)
+        // - expo-constants@18.0.2 (at: node_modules/expo-asset/node_modules/expo-constants)
+        // Note that in this example, all versions are identical, but multiple
+        // copies of the same version are installed
+        if (dependency.version) {
+          const areVersionsIdentical = dependency.duplicates.every((duplicate) => {
+            return (
+              duplicate.version &&
+              duplicate.version === dependency.version &&
+              /* NOTE(@kitten): We shouldn't have to compare here, but this is just in case there are weirder corruptions I can't think of */
+              duplicate.originPath !== dependency.originPath
+            );
+          });
+          if (areVersionsIdentical) corruptedInstallations.push(dependency);
+        }
       }
+    }
+
+    const advice: string[] = [];
+    if (issues.length) {
+      if (corruptedInstallations.length) {
+        advice.push(
+          `Multiple copies of the same version exist for: ${corruptedInstallations.map((x) => x.name).join(', ')}.\n` +
+            '- Try deleting your node_modules folders and reinstall your dependencies after.'
+        );
+      }
+      advice.push(
+        `Resolve your dependency issues and deduplicate your dependencies. ${learnMore('https://expo.fyi/resolving-dependency-issues')}`
+      );
     }
 
     return {
       isSuccessful: issues.length === 0,
       issues,
-      advice: issues.length
-        ? [
-            `Resolve your dependency issues and deduplicate your dependencies. ${learnMore('https://expo.fyi/resolving-dependency-issues')}`,
-          ]
-        : [],
+      advice,
     };
   }
 }

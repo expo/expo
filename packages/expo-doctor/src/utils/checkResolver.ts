@@ -15,6 +15,7 @@ import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
 import { GlobalPackageInstalledLocallyCheck } from '../checks/GlobalPackageInstalledLocallyCheck';
 import { IllegalPackageCheck } from '../checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
+import { LockfileCheck } from '../checks/LockfileCheck';
 import { MetroConfigCheck } from '../checks/MetroConfigCheck';
 import { NativeToolingVersionCheck } from '../checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from '../checks/PackageJsonCheck';
@@ -25,7 +26,6 @@ import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
-import { LockfileCheck } from '../checks/LockfileCheck';
 
 /**
  * Resolves the checks that should be run for a given project.

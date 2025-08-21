@@ -1,4 +1,5 @@
 import fs from 'fs';
+
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class LockfileCheck implements DoctorCheck {
