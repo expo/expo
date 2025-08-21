@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Apple TV fixes. ([#39060](https://github.com/expo/expo/pull/39060) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.2.0-alpha.4 — 2025-08-19
