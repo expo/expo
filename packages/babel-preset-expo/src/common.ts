@@ -108,10 +108,6 @@ export function getMetroSourceType(caller?: any) {
   return caller?.metroSourceType;
 }
 
-// NOTE(@kitten): This shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
-// or `babel-preset-expo/package.json`'s peer dependency range for `@babel/runtime`
-const BABEL_RUNTIME_FALLBACK_MINIMUM = '^7.20.0';
-
 export function getBabelRuntimeVersion(caller?: any) {
   assertExpoBabelCaller(caller);
   let babelRuntimeVersion: string | undefined;
@@ -124,9 +120,9 @@ export function getBabelRuntimeVersion(caller?: any) {
       if (error.code !== 'MODULE_NOT_FOUND') throw error;
     }
   }
-  return babelRuntimeVersion
-    ? `^${babelRuntimeVersion[0] === '^' ? babelRuntimeVersion.slice(1) : babelRuntimeVersion}`
-    : BABEL_RUNTIME_FALLBACK_MINIMUM;
+  // NOTE(@kitten): The default shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
+  // or `babel-preset-expo/package.json`'s peer dependency range for `@babel/runtime`
+  return babelRuntimeVersion ?? '^7.20.0';
 }
 
 export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
