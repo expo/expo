@@ -9,7 +9,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** Native tabs are an experimental feature available in SDK 54 and above, and their API is subject to change.
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
 
 Tabs are a common way to navigate between different sections of an app. In Expo Router, you can use different tab layouts, depending on your needs. This guide covers the native tabs. Unlike the [other tabs layout](/router/advanced/tabs), native tabs use the native system tab bar.
 
@@ -92,7 +92,7 @@ The tab file named **index.tsx** is the default tab when the app loads. The seco
 
 ## Customizing tab bar items
 
-> **important** Native tabs are an experimental feature available in SDK 54 and above, and their API is subject to change.
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
 
 When you want to customize the tab bar item, we recommend using the components API designed for this purpose. Currently, you can customize:
 
@@ -102,7 +102,7 @@ When you want to customize the tab bar item, we recommend using the components A
 
 ### Icon
 
-> **important** Native tabs are an experimental feature available in SDK 54 and above, and their API is subject to change.
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
 
 You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `drawable` prop for Android drawables, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
@@ -139,19 +139,18 @@ import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
 export default function TabLayout() {
   return (
     <NativeTabs
-        style={{
-          // For the text color
-          color: DynamicColorIOS({
-            dark: "white",
-            light: "black",
-          }),
-          // For the selected icon color
-          tintColor: DynamicColorIOS({
-            dark: "white",
-            light: "black",
-          }),
-        }}
-      >
+      style={{
+        // For the text color
+        color: DynamicColorIOS({
+          dark: 'white',
+          light: 'black',
+        }),
+        // For the selected icon color
+        tintColor: DynamicColorIOS({
+          dark: 'white',
+          light: 'black',
+        }),
+      }}>
       <NativeTabs.Trigger name="index">
         <Icon sf="house" selectedSf="house.fill" drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
@@ -162,7 +161,7 @@ export default function TabLayout() {
         />
       </NativeTabs.Trigger>
     </NativeTabs>
-  )
+  );
 }
 ```
 
@@ -193,7 +192,7 @@ export default function TabLayout() {
 
 ### Badge
 
-> **important** Native tabs are an experimental feature available in SDK 54 and above, and their API is subject to change.
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
 
 You can use the `Badge` component to customize the badge displayed for the tab bar item. The badge is an additional mark on top of the tab and useful for showing notification or unread message counts.
 
