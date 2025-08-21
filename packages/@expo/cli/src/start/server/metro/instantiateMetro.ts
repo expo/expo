@@ -132,7 +132,7 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   if (exp.experiments?.reactCompiler) {
-    Log.warn(`Experimental React Compiler is enabled.`);
+    Log.log(chalk.gray`React Compiler enabled`);
   }
 
   if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
@@ -431,6 +431,7 @@ function pruneCustomTransformOptions(
     // Set to the default value.
     transformOptions.customTransformOptions.routerRoot = 'app';
   }
+
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
     // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
