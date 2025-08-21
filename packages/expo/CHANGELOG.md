@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add `expo/internal/babel-transformer` reexport from `@expo/metro-config/babel-transformer`. Similarly, Expo's transformer is now available on `require('expo/metro-config').unstable_transformerPath`. These are only meant for third-party packages that need to extend the transformers. ([#39036](https://github.com/expo/expo/pull/39036) by [@kitten](https://github.com/kitten))
+
 ## 54.0.0-preview.9 — 2025-08-26
 
 _This version does not introduce any user-facing changes._
