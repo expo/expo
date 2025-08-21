@@ -165,7 +165,7 @@ export async function loadMetroConfigAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
-    isStickyResolverEnabled: autolinkingModuleResolutionEnabled,
+    isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled,
