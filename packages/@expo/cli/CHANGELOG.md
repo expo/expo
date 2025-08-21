@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace `EXPO_USE_STICKY_RESOLVER` with `experiments.autolinkingModuleResolution` in app config ([#39044](https://github.com/expo/expo/pull/39044) by [@kitten](https://github.com/kitten))
+
 ## 0.26.1 — 2025-08-21
 
 ### 💡 Others
