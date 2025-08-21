@@ -10,6 +10,7 @@
  */
 import { types as t } from '@babel/core';
 import type { ParseResult } from '@babel/core';
+import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import type { MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { InvalidRequireCallError as InternalInvalidRequireCallError, CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
@@ -38,6 +39,10 @@ export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { f
     ast: TFile;
     metadata?: any;
 };
+type BabelTransformResult = ReturnType<BabelTransformer['transform']>;
+export interface CustomBabelTransformer extends Omit<BabelTransformer, 'transform'> {
+    transform(babelTransformerArgs: BabelTransformerArgs, parentTransformer?: BabelTransformer): BabelTransformResult | PromiseLike<BabelTransformResult>;
+}
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;
 export declare function collectDependenciesForShaking(ast: ParseResult, options: CollectDependenciesOptions): Readonly<{
