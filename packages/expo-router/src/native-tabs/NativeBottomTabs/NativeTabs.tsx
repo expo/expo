@@ -1,6 +1,5 @@
-import { NativeTabsNavigatorWrapper } from './NativeBottomTabsNavigator';
+import { NativeTabsNavigatorWithContext } from './NativeBottomTabsNavigator';
 import { NativeTabTrigger } from './NativeTabTrigger';
-import { NativeTabsScrollEdgeAppearance } from './NativeTabsScrollEdgeAppearance';
 import type { NativeTabsProps } from './types';
 
 /**
@@ -23,7 +22,7 @@ import type { NativeTabsProps } from './types';
  */
 export const NativeTabs = Object.assign(
   (props: NativeTabsProps) => {
-    return <NativeTabsNavigatorWrapper {...props} />;
+    return <NativeTabsNavigatorWithContext {...props} />;
   },
-  { Trigger: NativeTabTrigger, ScrollEdgeAppearance: NativeTabsScrollEdgeAppearance }
+  { Trigger: NativeTabTrigger }
 );

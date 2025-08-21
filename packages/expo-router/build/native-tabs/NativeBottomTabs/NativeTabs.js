@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabs = void 0;
 const NativeBottomTabsNavigator_1 = require("./NativeBottomTabsNavigator");
 const NativeTabTrigger_1 = require("./NativeTabTrigger");
-const NativeTabsScrollEdgeAppearance_1 = require("./NativeTabsScrollEdgeAppearance");
 /**
  * The component used to create native tabs layout.
  *
@@ -23,6 +22,6 @@ const NativeTabsScrollEdgeAppearance_1 = require("./NativeTabsScrollEdgeAppearan
  * ```
  */
 exports.NativeTabs = Object.assign((props) => {
-    return <NativeBottomTabsNavigator_1.NativeTabsNavigatorWrapper {...props}/>;
-}, { Trigger: NativeTabTrigger_1.NativeTabTrigger, ScrollEdgeAppearance: NativeTabsScrollEdgeAppearance_1.NativeTabsScrollEdgeAppearance });
+    return <NativeBottomTabsNavigator_1.NativeTabsNavigatorWithContext {...props}/>;
+}, { Trigger: NativeTabTrigger_1.NativeTabTrigger });
 //# sourceMappingURL=NativeTabs.js.map

@@ -106,7 +106,7 @@ When you want to customize the tab bar item, we recommend using the components A
 
 You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `drawable` prop for Android drawables, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
-Additionally, you can use the `selectedSf` or `selectedSrc` props to specify a different icon when the tab is selected.
+Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` or `src` prop to specify different icons for the default and selected states.
 
 > **warning** The custom images API is currently not available on Android, but we plan to add it to soon.
 
@@ -119,12 +119,11 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon sf="house" selectedSf="house.fill" drawable="custom_home_drawable" />
+        <Icon sf={{ default: "house", selected: "house.fill" }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon
           src={require('../../../assets/setting_icon.png')}
-          selectedSrc={require('../../../assets/selected_setting_icon.png')}
         />
       </NativeTabs.Trigger>
   </NativeTabs>
@@ -152,7 +151,7 @@ export default function TabLayout() {
         }),
       }}>
       <NativeTabs.Trigger name="index">
-        <Icon sf="house" selectedSf="house.fill" drawable="custom_home_drawable" />
+        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon

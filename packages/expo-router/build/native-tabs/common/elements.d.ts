@@ -1,6 +1,6 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import type { NativeTabsBlurEffect, NativeTabsLabelStyle, TypeOrRecord } from '../NativeBottomTabs/types';
+import type { NativeTabsLabelStyle, TypeOrRecord } from '../NativeBottomTabs/types';
 export interface LabelProps {
     /**
      * The text to display as the label for the tab.
@@ -62,7 +62,7 @@ export interface NamedIconCombination {
      *
      * @platform iOS
      */
-    sf?: Required<TypeOrRecord<SFSymbol, 'default' | 'selected'>>;
+    sf?: TypeOrRecord<SFSymbol, 'default' | 'selected'>;
     /**
      * The name of the drawable resource to use as an icon.
      * @platform android
@@ -71,7 +71,7 @@ export interface NamedIconCombination {
     src?: never;
 }
 export type IconProps = {
-    selectedColor?: TypeOrRecord<ColorValue, 'standard' | 'scrollEdge'>;
+    selectedColor?: ColorValue;
 } & (NamedIconCombination | SourceIconCombination);
 /**
  * Renders an icon for the tab.
@@ -91,14 +91,7 @@ export interface BadgeProps {
      * @default false
      */
     hidden?: boolean;
-    selectedBackgroundColor?: TypeOrRecord<ColorValue, 'standard' | 'scrollEdge'>;
+    selectedBackgroundColor?: ColorValue;
 }
 export declare function Badge(props: BadgeProps): null;
-export interface TabBarProps {
-    backgroundColor?: ColorValue;
-    iconColor?: TypeOrRecord<ColorValue, 'standard' | 'disabled'>;
-    blurEffect?: NativeTabsBlurEffect;
-    children?: React.ReactNode;
-}
-export declare function TabBar(props: TabBarProps): null;
 //# sourceMappingURL=elements.d.ts.map

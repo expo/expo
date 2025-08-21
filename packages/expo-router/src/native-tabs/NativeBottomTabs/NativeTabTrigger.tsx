@@ -2,13 +2,11 @@
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { isValidElement, type ReactElement, type ReactNode } from 'react';
-import React from 'react';
 import type { ImageSourcePropType } from 'react-native';
 
-import { NativeTabsScrollEdgeAppearance } from './NativeTabsScrollEdgeAppearance';
+import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
 import type {
   ExtendedNativeTabOptions,
-  NativeTabOptions,
   NativeTabsTriggerTabBarProps,
   NativeTabTriggerProps,
 } from './types';
@@ -83,10 +81,6 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
     }
   }, [isFocused, props]);
 
-  return null;
-}
-
-export function NativeTabsTriggerTabBar(props: NativeTabsTriggerTabBarProps) {
   return null;
 }
 
@@ -185,6 +179,7 @@ function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) 
               sf: props.sf,
             }
           : undefined;
+        options.selectedIcon = undefined;
       } else if (props.sf) {
         options.icon = props.sf.default
           ? {
@@ -210,48 +205,44 @@ function appendTabBarOptions(
   options: ExtendedNativeTabOptions,
   props: NativeTabsTriggerTabBarProps
 ) {
-  let backgroundColor: NativeTabOptions['backgroundColor'] = props.backgroundColor;
-  let blurEffect: NativeTabOptions['blurEffect'] = props.blurEffect;
-  let iconColor: NativeTabOptions['iconColor'] = props.iconColor;
-
-  if (props.children) {
-    const scrollEdgeAppearance = React.Children.toArray(props.children).find((child) =>
-      isChildOfType(child, NativeTabsScrollEdgeAppearance)
-    );
-    if (scrollEdgeAppearance) {
-      const scrollEdgeProps = scrollEdgeAppearance.props;
-      if (scrollEdgeProps.ios26LabelStyle) {
-        // options.labelStyle = ;
-      }
-      if (scrollEdgeProps.ios26IconColor) {
-        iconColor = {
-          standard: iconColor,
-          scrollEdge: scrollEdgeProps.ios26IconColor,
-        };
-      }
-      if (scrollEdgeProps.blurEffect) {
-        blurEffect = {
-          standard: blurEffect,
-          scrollEdge: scrollEdgeProps.blurEffect,
-        };
-      }
-      if (scrollEdgeProps.backgroundColor) {
-        backgroundColor = {
-          standard: backgroundColor,
-          scrollEdge: scrollEdgeProps.backgroundColor,
-        };
-      }
-    }
-  }
+  const {
+    backgroundColor,
+    blurEffect,
+    iconColor,
+    disableTransparentOnScrollEdge,
+    badgeBackgroundColor,
+    badgeTextColor,
+    indicatorColor,
+    labelStyle,
+  } = props;
 
   if (backgroundColor) {
     options.backgroundColor = backgroundColor;
   }
-  if (blurEffect) {
-    options.blurEffect = blurEffect;
-  }
-  if (iconColor) {
-    options.iconColor = iconColor;
+  // We need better native integration of this on Android
+  // Simulating from JS side creates ugly transitions
+  if (process.env.EXPO_OS !== 'android') {
+    if (blurEffect) {
+      options.blurEffect = blurEffect;
+    }
+    if (iconColor) {
+      options.iconColor = iconColor;
+    }
+    if (disableTransparentOnScrollEdge !== undefined) {
+      options.disableTransparentOnScrollEdge = disableTransparentOnScrollEdge;
+    }
+    if (badgeBackgroundColor) {
+      options.badgeBackgroundColor = badgeBackgroundColor;
+    }
+    if (badgeTextColor) {
+      options.badgeTextColor = badgeTextColor;
+    }
+    if (indicatorColor) {
+      options.indicatorColor = indicatorColor;
+    }
+    if (labelStyle) {
+      options.labelStyle = labelStyle;
+    }
   }
 }
 

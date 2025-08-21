@@ -2,7 +2,7 @@
 import * as React from 'react';
 
 import { NativeTabs } from '../NativeBottomTabs/NativeTabs';
-import { NativeTabsScrollEdgeAppearance } from '../NativeBottomTabs/NativeTabsScrollEdgeAppearance';
+import { NativeTabsTriggerTabBar } from '../NativeBottomTabs/NativeTabsTriggerTabBar';
 import { Badge, Icon, Label } from '../common/elements';
 
 it(`renders NativeTabs`, async () => {
@@ -33,6 +33,6 @@ it(`renders Label`, async () => {
   await expect(<Label>Test</Label>).toMatchFlightSnapshot();
 });
 
-it(`renders NativeTabsScrollEdgeAppearance`, async () => {
-  await expect(<NativeTabsScrollEdgeAppearance />).toMatchFlightSnapshot();
+it(`renders NativeTabsTriggerTabBar`, async () => {
+  await expect(<NativeTabsTriggerTabBar />).toMatchFlightSnapshot();
 });

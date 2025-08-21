@@ -70,7 +70,7 @@ export interface NamedIconCombination {
    *
    * @platform iOS
    */
-  sf?: Required<TypeOrRecord<SFSymbol, 'default' | 'selected'>>;
+  sf?: TypeOrRecord<SFSymbol, 'default' | 'selected'>;
   /**
    * The name of the drawable resource to use as an icon.
    * @platform android

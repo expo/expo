@@ -1,11 +1,12 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabTrigger = NativeTabTrigger;
+exports.NativeTabTrigger = void 0;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
+const NativeTabsTriggerTabBar_1 = require("./NativeTabsTriggerTabBar");
 const utils_1 = require("./utils");
 const useSafeLayoutEffect_1 = require("../../views/useSafeLayoutEffect");
 const elements_1 = require("../common/elements");
@@ -49,7 +50,7 @@ const elements_1 = require("../common/elements");
  *
  * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
-function NativeTabTrigger(props) {
+function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
     const navigation = (0, native_1.useNavigation)();
     const isFocused = navigation.isFocused();
@@ -67,6 +68,9 @@ function NativeTabTrigger(props) {
     }, [isFocused, props]);
     return null;
 }
+exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
+    TabBar: NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
+});
 function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }) {
     const initialOptions = {
         ...options,
@@ -79,7 +83,12 @@ function convertTabPropsToOptions({ options, hidden, children, role, disablePopT
         },
         role: role ?? options?.role,
     };
-    const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [elements_1.Badge, elements_1.Label, elements_1.Icon]);
+    const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
+        elements_1.Badge,
+        elements_1.Label,
+        elements_1.Icon,
+        NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
+    ]);
     return allowedChildren.reduce((acc, child) => {
         if ((0, utils_1.isChildOfType)(child, elements_1.Badge)) {
             appendBadgeOptions(acc, child.props);
@@ -89,6 +98,9 @@ function convertTabPropsToOptions({ options, hidden, children, role, disablePopT
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Icon)) {
             appendIconOptions(acc, child.props);
+        }
+        else if ((0, utils_1.isChildOfType)(child, NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar)) {
+            appendTabBarOptions(acc, child.props);
         }
         return acc;
     }, { ...initialOptions });
@@ -144,6 +156,7 @@ function appendIconOptions(options, props) {
                         sf: props.sf,
                     }
                     : undefined;
+                options.selectedIcon = undefined;
             }
             else if (props.sf) {
                 options.icon = props.sf.default
@@ -165,8 +178,39 @@ function appendIconOptions(options, props) {
     }
     options.selectedIconColor = props.selectedColor;
 }
+function appendTabBarOptions(options, props) {
+    const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, } = props;
+    if (backgroundColor) {
+        options.backgroundColor = backgroundColor;
+    }
+    // We need better native integration of this on Android
+    // Simulating from JS side creates ugly transitions
+    if (process.env.EXPO_OS !== 'android') {
+        if (blurEffect) {
+            options.blurEffect = blurEffect;
+        }
+        if (iconColor) {
+            options.iconColor = iconColor;
+        }
+        if (disableTransparentOnScrollEdge !== undefined) {
+            options.disableTransparentOnScrollEdge = disableTransparentOnScrollEdge;
+        }
+        if (badgeBackgroundColor) {
+            options.badgeBackgroundColor = badgeBackgroundColor;
+        }
+        if (badgeTextColor) {
+            options.badgeTextColor = badgeTextColor;
+        }
+        if (indicatorColor) {
+            options.indicatorColor = indicatorColor;
+        }
+        if (labelStyle) {
+            options.labelStyle = labelStyle;
+        }
+    }
+}
 function isNativeTabTrigger(child, contextKey) {
-    if ((0, react_1.isValidElement)(child) && child && child.type === NativeTabTrigger) {
+    if ((0, react_1.isValidElement)(child) && child && child.type === exports.NativeTabTrigger) {
         if (typeof child.props === 'object' &&
             child.props &&
             'name' in child.props &&

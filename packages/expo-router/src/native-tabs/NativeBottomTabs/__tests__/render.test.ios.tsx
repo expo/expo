@@ -363,7 +363,7 @@ describe('Native props validation', () => {
   it.each(SUPPORTED_BLUR_EFFECTS)('supports %s blur effect', (blurEffect) => {
     renderRouter({
       _layout: () => (
-        <NativeTabs style={{ blurEffect }}>
+        <NativeTabs blurEffect={blurEffect}>
           <NativeTabs.Trigger name="index" />
         </NativeTabs>
       ),
@@ -371,8 +371,9 @@ describe('Native props validation', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabs).toHaveBeenCalledTimes(1);
-    expect(BottomTabs.mock.calls[0][0].tabBarBlurEffect).toBe(blurEffect);
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0].standardAppearance.tabBarBlurEffect).toBe(blurEffect);
+    expect(BottomTabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarBlurEffect).toBe('none');
   });
   it.each(['test', 'wrongValue', ...SUPPORTED_BLUR_EFFECTS.map((x) => x.toUpperCase())])(
     'warns when unsupported %s blur effect is used',
@@ -380,7 +381,7 @@ describe('Native props validation', () => {
       renderRouter({
         _layout: () => (
           // @ts-expect-error
-          <NativeTabs style={{ blurEffect }}>
+          <NativeTabs blurEffect={blurEffect}>
             <NativeTabs.Trigger name="index" />
           </NativeTabs>
         ),
@@ -390,8 +391,9 @@ describe('Native props validation', () => {
       expect(warn).toHaveBeenCalledWith(
         `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
       );
-      expect(BottomTabs).toHaveBeenCalledTimes(1);
-      expect(BottomTabs.mock.calls[0][0].tabBarBlurEffect).toBe(undefined);
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+      expect(BottomTabsScreen.mock.calls[0][0].standardAppearance.tabBarBlurEffect).toBe(undefined);
+      expect(BottomTabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarBlurEffect).toBe('none');
     }
   );
   it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
@@ -399,7 +401,7 @@ describe('Native props validation', () => {
     (labelVisibilityMode) => {
       renderRouter({
         _layout: () => (
-          <NativeTabs style={{ labelVisibilityMode }}>
+          <NativeTabs labelVisibilityMode={labelVisibilityMode}>
             <NativeTabs.Trigger name="index" />
           </NativeTabs>
         ),
@@ -419,7 +421,7 @@ describe('Native props validation', () => {
     renderRouter({
       _layout: () => (
         // @ts-expect-error
-        <NativeTabs style={{ labelVisibilityMode }}>
+        <NativeTabs labelVisibilityMode={labelVisibilityMode}>
           <NativeTabs.Trigger name="index" />
         </NativeTabs>
       ),
