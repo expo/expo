@@ -15,6 +15,25 @@ import { BoxLink } from '~/ui/components/BoxLink';
 
 It makes submitting your apps simple and easy by creating and handling submission credentials and running the submission process. You can trigger a submission from a CLI command, after a build is finished, or from a CI/CD service. It's the fastest way to take Android and iOS builds and submit them to the app stores.
 
+### What does "Submit" mean in EAS?
+
+"Submit" is not the same as releasing your app directly to production. Instead, it delivers your app to the stores distribution pipelines (TestFlight for iOS, or a chosen track on Google Play), following the [default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores).
+
+**Android (Google Play Store)**
+
+- Where it goes: EAS Submit uploads the build to Google Play Console.
+- What happens then: The build is placed in the track you specify (internal, alpha, beta, or production).
+- Does this mean production?
+  - If you use internal, alpha, or beta, the app is only available to testers in that track.
+  - If you explicitly choose `production`, then yes - once Google approves the release, it will be available to all users.
+
+**iOS (App Store Connect / TestFlight)**
+
+- Where it goes: EAS Submit uploads the build to App Store Connect.
+- What happens then: The build becomes available in TestFlight.
+- Does this mean production?: No - a TestFlight build is not automatically released to the Apple App Store.
+- How production happens: You must log into Apple App Store Connect, choose the build, and submit it for App Review before it can be released to production.
+
 ### Get started
 
 <BoxLink
