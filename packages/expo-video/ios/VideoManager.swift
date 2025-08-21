@@ -54,6 +54,7 @@ class VideoManager {
       if player.staysActiveInBackground == true {
         player.pointer.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
       } else if !videoView.isInPictureInPicture {
+        player.ref.audiovisualBackgroundPlaybackPolicy = .pauses
         player.pointer.pause()
       }
     }
