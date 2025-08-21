@@ -171,30 +171,27 @@ function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) 
           }
         : undefined;
     }
-  } else if ('sf' in props) {
-    if (process.env.EXPO_OS === 'ios') {
-      if (typeof props.sf === 'string') {
-        options.icon = props.sf
-          ? {
-              sf: props.sf,
-            }
-          : undefined;
-        options.selectedIcon = undefined;
-      } else if (props.sf) {
-        options.icon = props.sf.default
-          ? {
-              sf: props.sf.default,
-            }
-          : undefined;
-        options.selectedIcon = props.sf.selected
-          ? {
-              sf: props.sf.selected,
-            }
-          : undefined;
-      }
+  } else if ('sf' in props && process.env.EXPO_OS === 'ios') {
+    if (typeof props.sf === 'string') {
+      options.icon = props.sf
+        ? {
+            sf: props.sf,
+          }
+        : undefined;
+      options.selectedIcon = undefined;
+    } else if (props.sf) {
+      options.icon = props.sf.default
+        ? {
+            sf: props.sf.default,
+          }
+        : undefined;
+      options.selectedIcon = props.sf.selected
+        ? {
+            sf: props.sf.selected,
+          }
+        : undefined;
     }
-  }
-  if (process.env.EXPO_OS === 'android') {
+  } else if ('drawable' in props && process.env.EXPO_OS === 'android') {
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
   }

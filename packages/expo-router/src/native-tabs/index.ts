@@ -5,7 +5,7 @@ export type {
   NativeTabsLabelStyle,
   NativeTabsActiveStyleType,
   NativeTabOptions,
-  SfSymbolOrImageSource,
+  SymbolOrImageSource,
   NativeTabsTabBarItemLabelVisibilityMode,
   NativeTabsBlurEffect,
   NativeTabsTabBarMinimizeBehavior,
