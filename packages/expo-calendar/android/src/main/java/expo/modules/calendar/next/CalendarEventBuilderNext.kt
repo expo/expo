@@ -1,9 +1,6 @@
 package expo.modules.calendar.next
 
 import android.content.ContentValues
-import android.text.TextUtils
-import expo.modules.core.arguments.ReadableArguments
-import java.util.*
 
 class CalendarEventBuilderNext() {
   private val eventValues = ContentValues()
@@ -29,5 +26,6 @@ class CalendarEventBuilderNext() {
   fun putNull(key: String) = apply {
     eventValues.putNull(key)
   }
+
   fun build() = eventValues
 }

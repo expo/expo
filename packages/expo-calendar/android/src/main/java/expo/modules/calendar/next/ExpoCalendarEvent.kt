@@ -12,22 +12,24 @@ import expo.modules.calendar.EventNotSavedException
 import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
 import expo.modules.calendar.findAttendeesByEventIdQueryParameters
 import expo.modules.calendar.findEventByIdQueryParameters
-import expo.modules.calendar.next.records.EventRecord
-import expo.modules.calendar.next.records.RecurrenceRuleRecord
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.calendar.next.records.RecurringEventOptions
-import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.calendar.next.records.AlarmMethod
 import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.EventAccessLevel
 import expo.modules.calendar.next.records.EventAvailability
+import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.EventStatus
-import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.calendar.next.records.RecurrenceRuleRecord
+import expo.modules.calendar.next.records.RecurringEventOptions
+import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.text.ParseException
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 
 @OptIn(EitherType::class)
@@ -51,7 +53,6 @@ class ExpoCalendarEvent : SharedObject {
 
   constructor(appContext: AppContext, cursor: Cursor) {
     this.localAppContext = appContext;
-
 
 
     // may be CalendarContract.Instances.BEGIN or CalendarContract.Events.DTSTART (which have different string values)
@@ -208,7 +209,7 @@ class ExpoCalendarEvent : SharedObject {
       contentResolver.update(updateUri, eventBuilder.build(), null, null)
       removeRemindersForEvent(contentResolver, eventID)
       if (eventRecord.alarms != null) {
-        createRemindersForEvent( eventID, eventRecord.alarms)
+        createRemindersForEvent(eventID, eventRecord.alarms)
       }
       return eventID
     } else {

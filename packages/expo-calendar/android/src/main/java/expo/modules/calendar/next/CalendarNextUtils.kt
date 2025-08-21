@@ -2,7 +2,6 @@ package expo.modules.calendar.next
 
 import expo.modules.calendar.CalendarUtils
 import java.util.Calendar
-import java.util.Date
 
 object CalendarNextUtils {
   val sdf = CalendarUtils.sdf

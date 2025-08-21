@@ -3,7 +3,7 @@ package expo.modules.calendar.next.records
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
-data class CalendarRecord (
+data class CalendarRecord(
   @Field
   var id: String? = null,
   @Field
@@ -37,7 +37,7 @@ data class CalendarRecord (
   @Field
   val accessLevel: CalendarAccessLevel? = null,
 ) : Record {
-  
+
   fun getUpdatedRecord(other: CalendarRecord, nullableFields: List<String>? = null): CalendarRecord {
     val nullableSet = nullableFields?.toSet() ?: emptySet()
 
@@ -55,11 +55,14 @@ data class CalendarRecord (
       allowedAvailabilities = if ("allowedAvailabilities" in nullableSet) this.allowedAvailabilities else other.allowedAvailabilities,
       allowedReminders = if ("allowedReminders" in nullableSet) this.allowedReminders else other.allowedReminders,
       allowedAttendeeTypes = if ("allowedAttendeeTypes" in nullableSet) this.allowedAttendeeTypes else other.allowedAttendeeTypes,
-      ownerAccount = if ("ownerAccount" in nullableSet) null else other.ownerAccount ?: this.ownerAccount,
-      accessLevel = if ("accessLevel" in nullableSet) null else other.accessLevel ?: this.accessLevel,
+      ownerAccount = if ("ownerAccount" in nullableSet) null else other.ownerAccount
+        ?: this.ownerAccount,
+      accessLevel = if ("accessLevel" in nullableSet) null else other.accessLevel
+        ?: this.accessLevel,
     )
   }
 }
+
 enum class CalendarAccessLevel(val value: String) {
   CONTRIBUTOR("contributor"),
   EDITOR("editor"),
@@ -72,7 +75,7 @@ enum class CalendarAccessLevel(val value: String) {
   NONE("none")
 }
 
-data class Source (
+data class Source(
   @Field
   val id: String? = null,
   @Field

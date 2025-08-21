@@ -54,8 +54,10 @@ public final class CalendarNextModule: Module {
       let calendar: EKCalendar
       switch calendarRecord.entityType {
       case .event:
+        try checkCalendarPermissions()
         calendar = EKCalendar(for: .event, eventStore: eventStore)
       case .reminder:
+        try checkRemindersPermissions()
         calendar = EKCalendar(for: .reminder, eventStore: eventStore)
       case .none:
         throw EntityNotSupportedException(calendarRecord.entityType?.rawValue)

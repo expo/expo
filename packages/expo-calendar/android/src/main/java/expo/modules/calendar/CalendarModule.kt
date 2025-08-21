@@ -755,17 +755,11 @@ class CalendarModule : Module() {
     putString("status", attendeeStatusStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)))
   }
 
-  private fun optStringFromCursor(cursor: Cursor, columnName: String): String? {
-    return CalendarUtils.optStringFromCursor(cursor, columnName);
-  }
+  private fun optStringFromCursor(cursor: Cursor, columnName: String) = CalendarUtils.optStringFromCursor(cursor, columnName)
 
-  private fun stringFromCursor(cursor: Cursor, columnName: String): String {
-    return CalendarUtils.stringFromCursor(cursor, columnName)
-  }
+  private fun stringFromCursor(cursor: Cursor, columnName: String) = CalendarUtils.stringFromCursor(cursor, columnName)
 
-  private fun optIntFromCursor(cursor: Cursor, columnName: String): Int {
-    return CalendarUtils.optIntFromCursor(cursor, columnName);
-  }
+  private fun optIntFromCursor(cursor: Cursor, columnName: String) = CalendarUtils.optIntFromCursor(cursor, columnName)
 
   private fun checkPermissions(promise: Promise): Boolean {
     if (appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) != true) {

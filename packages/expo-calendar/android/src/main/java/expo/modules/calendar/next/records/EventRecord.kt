@@ -2,6 +2,7 @@ package expo.modules.calendar.next.records
 
 import android.provider.CalendarContract
 import expo.modules.calendar.CalendarUtils.sdf
+import expo.modules.calendar.EventRecurrenceUtils.rrFormat
 import expo.modules.calendar.accessConstantMatchingString
 import expo.modules.calendar.availabilityConstantMatchingString
 import expo.modules.kotlin.records.Field
@@ -112,7 +113,6 @@ data class RecurrenceRuleRecord(
   fun toRrFormat(): RecurrenceRuleRecord? {
     if (endDate == null) return this
     return try {
-      val rrFormat = java.text.SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
       val date = sdf.parse(endDate)
       if (date != null) {
         return RecurrenceRuleRecord(
@@ -209,7 +209,7 @@ enum class AlarmMethod(val value: String) : Enumerable {
   SMS("sms"),
   DEFAULT("default");
 
-  fun toAndroidValue(): Int? =  when (this) {
+  fun toAndroidValue(): Int? = when (this) {
     ALERT -> CalendarContract.Reminders.METHOD_ALERT
     ALARM -> CalendarContract.Reminders.METHOD_ALARM
     EMAIL -> CalendarContract.Reminders.METHOD_EMAIL

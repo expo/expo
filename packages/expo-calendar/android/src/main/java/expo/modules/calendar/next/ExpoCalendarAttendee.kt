@@ -1,6 +1,5 @@
 package expo.modules.calendar.next
 
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.database.Cursor
@@ -8,16 +7,12 @@ import android.provider.CalendarContract
 import expo.modules.calendar.CalendarUtils
 import expo.modules.calendar.EventNotSavedException
 import expo.modules.calendar.attendeeRelationshipConstantMatchingString
-import expo.modules.calendar.attendeeRelationshipStringMatchingConstant
 import expo.modules.calendar.attendeeStatusConstantMatchingString
-import expo.modules.calendar.attendeeStatusStringMatchingConstant
 import expo.modules.calendar.attendeeTypeConstantMatchingString
-import expo.modules.calendar.attendeeTypeStringMatchingConstant
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.AttendeeRole
 import expo.modules.calendar.next.records.AttendeeStatus
 import expo.modules.calendar.next.records.AttendeeType
-import expo.modules.calendar.next.records.EventRecord
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions

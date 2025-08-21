@@ -38,7 +38,7 @@ data class AttendeeRecord(
   }
 }
 
-enum class AttendeeRole(val value: String): Enumerable {
+enum class AttendeeRole(val value: String) : Enumerable {
   ATTENDEE("attendee"),
   ORGANIZER("organizer"),
   PERFORMER("performer"),
@@ -63,50 +63,50 @@ enum class AttendeeRole(val value: String): Enumerable {
   }
 }
 
-  enum class AttendeeStatus(val value: String): Enumerable {
-    ACCEPTED("accepted"),
-    DECLINED("declined"),
-    INVITED("invited"),
-    TENTATIVE("tentative"),
-    NONE("none"),
+enum class AttendeeStatus(val value: String) : Enumerable {
+  ACCEPTED("accepted"),
+  DECLINED("declined"),
+  INVITED("invited"),
+  TENTATIVE("tentative"),
+  NONE("none"),
 
-    // iOS only, not supported on Android:
-    UNKNOWN("unknown"),
-    PENDING("pending"),
-    DELEGATED("delegated"),
-    COMPLETED("completed"),
-    IN_PROCESS("inProcess");
+  // iOS only, not supported on Android:
+  UNKNOWN("unknown"),
+  PENDING("pending"),
+  DELEGATED("delegated"),
+  COMPLETED("completed"),
+  IN_PROCESS("inProcess");
 
-    fun toAndroidValue(status: AttendeeStatus?): Int? {
-      return status?.value?.let { attendeeStatusConstantMatchingString(it) }
-    }
-
-    companion object {
-      fun fromAndroidValue(value: Int): AttendeeStatus? = entries.find {
-        it.value == attendeeStatusStringMatchingConstant(value)
-      }
-    }
+  fun toAndroidValue(status: AttendeeStatus?): Int? {
+    return status?.value?.let { attendeeStatusConstantMatchingString(it) }
   }
 
-  enum class AttendeeType(val value: String): Enumerable {
-    RESOURCE("resource"),
-    OPTIONAL("optional"),
-    REQUIRED("required"),
-    NONE("none"),
-
-    // iOS only, not supported on Android:
-    UNKNOWN("unknown"),
-    PERSON("person"),
-    ROOM("room"),
-    GROUP("group");
-
-    fun toAndroidValue(type: AttendeeType?): Int? {
-      return type?.value?.let { attendeeTypeConstantMatchingString(it) }
-    }
-
-    companion object {
-      fun fromAndroidValue(value: Int): AttendeeType? = entries.find {
-        it.value == attendeeTypeStringMatchingConstant(value)
-      }
+  companion object {
+    fun fromAndroidValue(value: Int): AttendeeStatus? = entries.find {
+      it.value == attendeeStatusStringMatchingConstant(value)
     }
   }
+}
+
+enum class AttendeeType(val value: String) : Enumerable {
+  RESOURCE("resource"),
+  OPTIONAL("optional"),
+  REQUIRED("required"),
+  NONE("none"),
+
+  // iOS only, not supported on Android:
+  UNKNOWN("unknown"),
+  PERSON("person"),
+  ROOM("room"),
+  GROUP("group");
+
+  fun toAndroidValue(type: AttendeeType?): Int? {
+    return type?.value?.let { attendeeTypeConstantMatchingString(it) }
+  }
+
+  companion object {
+    fun fromAndroidValue(value: Int): AttendeeType? = entries.find {
+      it.value == attendeeTypeStringMatchingConstant(value)
+    }
+  }
+}

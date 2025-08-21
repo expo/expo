@@ -1,15 +1,12 @@
 package expo.modules.calendar.next
 
 import android.Manifest
-import android.content.ContentValues
 import android.database.Cursor
 import android.provider.CalendarContract
-import android.text.TextUtils
 import android.util.Log
 import expo.modules.calendar.CalendarModule.Companion.TAG
-import expo.modules.calendar.ModuleDestroyedException
-import expo.modules.calendar.availabilityConstantMatchingString
 import expo.modules.calendar.CalendarUtils
+import expo.modules.calendar.ModuleDestroyedException
 import expo.modules.calendar.dialogs.CreateEventContract
 import expo.modules.calendar.dialogs.CreateEventIntentResult
 import expo.modules.calendar.dialogs.CreatedEventOptions
@@ -17,27 +14,22 @@ import expo.modules.calendar.dialogs.ViewEventContract
 import expo.modules.calendar.dialogs.ViewEventIntentResult
 import expo.modules.calendar.dialogs.ViewedEventOptions
 import expo.modules.calendar.findCalendarsQueryParameters
+import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.CalendarRecord
-import expo.modules.calendar.next.records.CalendarAccessLevel
-import expo.modules.calendar.next.ExpoCalendarEvent
-import expo.modules.calendar.next.records.AttendeeType
-import expo.modules.calendar.next.records.AlarmMethod
+import expo.modules.calendar.next.records.EventRecord
+import expo.modules.calendar.next.records.RecurringEventOptions
+import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import expo.modules.calendar.next.records.EventRecord
-import expo.modules.calendar.next.records.RecurringEventOptions
-import expo.modules.kotlin.functions.Coroutine
-import kotlinx.coroutines.cancel
-import expo.modules.calendar.next.records.AttendeeRecord
-import expo.modules.interfaces.permissions.Permissions
-import kotlinx.coroutines.cancel
 
 class CalendarNextModule : Module() {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
