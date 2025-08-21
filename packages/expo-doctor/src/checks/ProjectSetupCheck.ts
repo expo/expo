@@ -3,7 +3,7 @@ import { glob, GlobOptions } from 'glob';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { isFileIgnoredAsync } from '../utils/files';
+import { existsAndIsNotIgnoredAsync, isFileIgnoredAsync } from '../utils/files';
 
 export class ProjectSetupCheck implements DoctorCheck {
   description = 'Check for common project setup issues';
@@ -38,6 +38,18 @@ export class ProjectSetupCheck implements DoctorCheck {
         advice.push(
           `Use patterns like "/android" and "/ios" in your .gitignore file to exclude only the top-level "android" and "ios" directories, and not those in the modules directory.`
         );
+      }
+    }
+
+    // Check that the .expo directory IS gitignored
+    const expoDir = path.join(projectRoot, '.expo');
+    if (fs.existsSync(expoDir)) {
+      const isIgnored = await isFileIgnoredAsync(expoDir, false);
+      if (!isIgnored) {
+        issues.push(
+          `The .expo directory is not ignored by Git. It contains machine-specific device history and development server settings and should not be committed.`
+        );
+        advice.push(`Add ".expo/" to your .gitignore to avoid committing local Expo state.`);
       }
     }
 

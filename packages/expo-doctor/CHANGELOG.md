@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 🎉 New features
+
+- Add EAS platform detection, Android gitignore validation, and .expo gitignore check to project setup. ([#39007](https://github.com/expo/expo/pull/39007) by [@entiendonull](https://github.com/entiendonull))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
