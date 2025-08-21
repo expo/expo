@@ -1,45 +1,51 @@
-import { createModifier } from '.';
+import { createModifier } from './createModifier';
 export const Animation = {
-    easeInOut: (duration) => ({ type: 'easeInOut', duration }),
-    easeIn: (duration) => ({ type: 'easeIn', duration }),
-    easeOut: (duration) => ({ type: 'easeOut', duration }),
-    linear: (duration) => ({ type: 'linear', duration }),
-    // spring animations - response/dampingFraction variant
-    spring: (response, dampingFraction, blendDuration) => ({
+    // timing animations
+    easeInOut: (params) => ({
+        type: 'easeInOut',
+        duration: params?.duration,
+    }),
+    easeIn: (params) => ({
+        type: 'easeIn',
+        duration: params?.duration,
+    }),
+    easeOut: (params) => ({
+        type: 'easeOut',
+        duration: params?.duration,
+    }),
+    linear: (params) => ({
+        type: 'linear',
+        duration: params?.duration,
+    }),
+    // spring animations
+    spring: (params) => ({
         type: 'spring',
-        response,
-        dampingFraction,
-        blendDuration,
+        response: params?.response,
+        dampingFraction: params?.dampingFraction,
+        blendDuration: params?.blendDuration,
+        duration: params?.duration,
+        bounce: params?.bounce,
     }),
-    // spring animations - duration/bounce variant
-    springDuration: (duration, bounce, blendDuration) => ({
-        type: 'spring',
-        duration,
-        bounce,
-        blendDuration,
-    }),
-    // interpolating spring - physics-based variant (mass/stiffness/damping)
-    interpolatingSpring: (mass, stiffness, damping, initialVelocity) => ({
+    interpolatingSpring: (params) => ({
         type: 'interpolatingSpring',
-        mass,
-        stiffness,
-        damping,
-        initialVelocity,
+        mass: params?.mass,
+        stiffness: params?.stiffness,
+        damping: params?.damping,
+        initialVelocity: params?.initialVelocity,
+        duration: params?.duration,
+        bounce: params?.bounce,
     }),
-    // interpolating spring - duration/bounce variant
-    interpolatingSpringDuration: (duration, bounce, initialVelocity) => ({
-        type: 'interpolatingSpring',
-        duration,
-        bounce,
-        initialVelocity,
+    // animation modifiers
+    repeat: (animation, params) => ({
+        ...animation,
+        repeatCount: params.repeatCount,
+        autoreverses: params.autoreverses,
+    }),
+    delay: (animation, delay) => ({
+        ...animation,
+        delay,
     }),
     default: { type: 'default' },
 };
 export const animation = (animationObject, animatedValue) => createModifier('animation', { animation: animationObject, animatedValue });
-export const withDelay = (animation, delay) => ({ ...animation, delay });
-export const withRepeat = (animation, count, autoreverses) => ({
-    ...animation,
-    repeatCount: count,
-    autoreverses,
-});
 //# sourceMappingURL=animation.js.map

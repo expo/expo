@@ -478,8 +478,10 @@ internal struct AnimationModifier: ViewModifier {
       let blendDuration = config["blendDuration"] as? Double
 
       if response != nil || dampingFraction != nil {
+        // default values are 0.5, 0.825, 0.0
         animation = .spring(response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825, blendDuration: blendDuration ?? 0.0)
       } else if duration != nil || bounce != nil {
+        // default values are 0.5, 0.0, 0.0
         animation = .spring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, blendDuration: blendDuration ?? 0.0)
       } else if let blendDuration = blendDuration {
         animation = .spring(blendDuration: blendDuration)

@@ -1,4 +1,4 @@
-import { createModifier } from '.';
+import { createModifier } from './createModifier';
 
 export type TimingAnimation = {
   type: 'easeInOut' | 'easeIn' | 'easeOut' | 'linear';
@@ -34,60 +34,82 @@ export type AnimationObject =
   | InterpolatingSpringAnimation
   | DefaultAnimation;
 
+export type TimingAnimationParams = {
+  duration?: number;
+};
+
+export type SpringAnimationParams = {
+  response?: number;
+  dampingFraction?: number;
+  blendDuration?: number;
+  duration?: number;
+  bounce?: number;
+};
+
+export type InterpolatingSpringAnimationParams = {
+  duration?: number;
+  mass?: number;
+  stiffness?: number;
+  damping?: number;
+  initialVelocity?: number;
+  bounce?: number;
+};
+
 export const Animation = {
-  easeInOut: (duration?: number): TimingAnimation => ({ type: 'easeInOut', duration }),
-  easeIn: (duration?: number): TimingAnimation => ({ type: 'easeIn', duration }),
-  easeOut: (duration?: number): TimingAnimation => ({ type: 'easeOut', duration }),
-  linear: (duration?: number): TimingAnimation => ({ type: 'linear', duration }),
-
-  // spring animations - response/dampingFraction variant
-  spring: (
-    response?: number,
-    dampingFraction?: number,
-    blendDuration?: number
-  ): SpringAnimation => ({
-    type: 'spring',
-    response,
-    dampingFraction,
-    blendDuration,
+  // timing animations
+  easeInOut: (params?: TimingAnimationParams): TimingAnimation => ({
+    type: 'easeInOut',
+    duration: params?.duration,
+  }),
+  easeIn: (params?: TimingAnimationParams): TimingAnimation => ({
+    type: 'easeIn',
+    duration: params?.duration,
+  }),
+  easeOut: (params?: TimingAnimationParams): TimingAnimation => ({
+    type: 'easeOut',
+    duration: params?.duration,
+  }),
+  linear: (params?: TimingAnimationParams): TimingAnimation => ({
+    type: 'linear',
+    duration: params?.duration,
   }),
 
-  // spring animations - duration/bounce variant
-  springDuration: (
-    duration?: number,
-    bounce?: number,
-    blendDuration?: number
-  ): SpringAnimation => ({
+  // spring animations
+  spring: (params?: SpringAnimationParams): SpringAnimation => ({
     type: 'spring',
-    duration,
-    bounce,
-    blendDuration,
+    response: params?.response,
+    dampingFraction: params?.dampingFraction,
+    blendDuration: params?.blendDuration,
+    duration: params?.duration,
+    bounce: params?.bounce,
   }),
-
-  // interpolating spring - physics-based variant (mass/stiffness/damping)
   interpolatingSpring: (
-    mass?: number,
-    stiffness?: number,
-    damping?: number,
-    initialVelocity?: number
+    params?: InterpolatingSpringAnimationParams
   ): InterpolatingSpringAnimation => ({
     type: 'interpolatingSpring',
-    mass,
-    stiffness,
-    damping,
-    initialVelocity,
+    mass: params?.mass,
+    stiffness: params?.stiffness,
+    damping: params?.damping,
+    initialVelocity: params?.initialVelocity,
+    duration: params?.duration,
+    bounce: params?.bounce,
   }),
 
-  // interpolating spring - duration/bounce variant
-  interpolatingSpringDuration: (
-    duration?: number,
-    bounce?: number,
-    initialVelocity?: number
-  ): InterpolatingSpringAnimation => ({
-    type: 'interpolatingSpring',
-    duration,
-    bounce,
-    initialVelocity,
+  // animation modifiers
+  repeat: (
+    animation: AnimationObject,
+    params: {
+      repeatCount: number;
+      autoreverses?: boolean;
+    }
+  ) => ({
+    ...animation,
+    repeatCount: params.repeatCount,
+    autoreverses: params.autoreverses,
+  }),
+  delay: (animation: AnimationObject, delay: number) => ({
+    ...animation,
+    delay,
   }),
 
   default: { type: 'default' } as DefaultAnimation,
@@ -95,18 +117,3 @@ export const Animation = {
 
 export const animation = (animationObject: AnimationObject, animatedValue: number | boolean) =>
   createModifier('animation', { animation: animationObject, animatedValue });
-
-export const withDelay = <T extends AnimationObject>(
-  animation: T,
-  delay: number
-): T & { delay: number } => ({ ...animation, delay });
-
-export const withRepeat = <T extends AnimationObject>(
-  animation: T,
-  count: number,
-  autoreverses?: boolean
-): T & { repeatCount: number; autoreverses?: boolean } => ({
-  ...animation,
-  repeatCount: count,
-  autoreverses,
-});

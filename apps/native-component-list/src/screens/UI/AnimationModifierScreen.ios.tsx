@@ -11,8 +11,6 @@ import {
   onTapGesture,
   animation,
   Animation,
-  withDelay,
-  withRepeat,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
@@ -45,7 +43,7 @@ export default function AnimationModifierScreen() {
                       cornerRadius(16),
                       shadow({ radius: 8, x: 0, y: 4, color: '#FF6B6B40' }),
                       scaleEffect(isScaled ? 1.3 : 1.0),
-                      animation(Animation.easeInOut(2.0), isScaled),
+                      animation(Animation.easeInOut({ duration: 2.0 }), isScaled),
                       onTapGesture(() => setIsScaled(!isScaled)),
                     ]}
                   />
@@ -61,7 +59,7 @@ export default function AnimationModifierScreen() {
                       cornerRadius(16),
                       shadow({ radius: 8, x: 0, y: 4, color: '#4ECDC440' }),
                       rotationEffect(isRotated ? 180 : 0),
-                      animation(Animation.linear(0.5), isRotated),
+                      animation(Animation.linear({ duration: 0.5 }), isRotated),
                       onTapGesture(() => setIsRotated(!isRotated)),
                     ]}
                   />
@@ -101,7 +99,10 @@ export default function AnimationModifierScreen() {
                       cornerRadius(20),
                       shadow({ radius: 10, x: 0, y: 6, color: '#F39C1240' }),
                       offset({ x: springValue ? 60 : 0, y: 0 }),
-                      animation(Animation.spring(0.8, 0.6), springValue),
+                      animation(
+                        Animation.spring({ response: 0.8, dampingFraction: 0.6 }),
+                        springValue
+                      ),
                       onTapGesture(() => setSpringValue(!springValue)),
                     ]}
                   />
@@ -126,7 +127,11 @@ export default function AnimationModifierScreen() {
                       shadow({ radius: 8, x: 0, y: 4, color: '#E74C3C40' }),
                       scaleEffect(interpolatingSpringValue ? 1.5 : 1.0),
                       animation(
-                        Animation.interpolatingSpring(0.5, 200, 5),
+                        Animation.interpolatingSpring({
+                          mass: 0.5,
+                          stiffness: 200,
+                          damping: 5,
+                        }),
                         interpolatingSpringValue
                       ),
                       onTapGesture(() => setInterpolatingSpringValue(!interpolatingSpringValue)),
@@ -145,7 +150,11 @@ export default function AnimationModifierScreen() {
                       shadow({ radius: 8, x: 0, y: 4, color: '#2ECC7140' }),
                       rotationEffect(interpolatingSpringValue ? 360 : 0),
                       animation(
-                        Animation.interpolatingSpring(1.0, 100, 20),
+                        Animation.interpolatingSpring({
+                          mass: 1.0,
+                          stiffness: 100,
+                          damping: 20,
+                        }),
                         interpolatingSpringValue
                       ),
                       onTapGesture(() => setInterpolatingSpringValue(!interpolatingSpringValue)),
@@ -171,7 +180,10 @@ export default function AnimationModifierScreen() {
                       cornerRadius(16),
                       shadow({ radius: 8, x: 0, y: 4, color: '#3498DB40' }),
                       scaleEffect(delayValue ? 1.3 : 1.0),
-                      animation(withDelay(Animation.easeInOut(0.8), 1.0), delayValue),
+                      animation(
+                        Animation.delay(Animation.easeInOut({ duration: 0.8 }), 1.0),
+                        delayValue
+                      ),
                       onTapGesture(() => setDelayValue(!delayValue)),
                     ]}
                   />
@@ -187,7 +199,13 @@ export default function AnimationModifierScreen() {
                       cornerRadius(16),
                       shadow({ radius: 8, x: 0, y: 4, color: '#E67E2240' }),
                       rotationEffect(repeatValue ? 180 : 0),
-                      animation(withRepeat(Animation.easeInOut(0.6), 3, true), repeatValue),
+                      animation(
+                        Animation.repeat(Animation.easeInOut({ duration: 0.6 }), {
+                          repeatCount: 3,
+                          autoreverses: true,
+                        }),
+                        repeatValue
+                      ),
                       onTapGesture(() => setRepeatValue(!repeatValue)),
                     ]}
                   />
@@ -210,7 +228,10 @@ export default function AnimationModifierScreen() {
                   scaleEffect(animationCounter % 2 === 0 ? 1.0 : 1.2),
                   rotationEffect(animationCounter * 45),
                   opacity(animationCounter % 4 === 0 ? 1.0 : 0.7),
-                  animation(Animation.spring(0.7, 0.8), animationCounter),
+                  animation(
+                    Animation.spring({ response: 0.7, dampingFraction: 0.8 }),
+                    animationCounter
+                  ),
                   onTapGesture(() => setAnimationCounter(animationCounter + 1)),
                 ]}
               />

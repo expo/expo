@@ -2,13 +2,7 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
-/**
- * Factory function to create modifier configuration objects.
- * This is used internally by all modifier functions.
- */
-function createModifier(type, params = {}) {
-    return { $type: type, ...params };
-}
+import { createModifier } from './createModifier';
 /**
  * Creates a modifier with an event listener.
  */
