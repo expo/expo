@@ -8,19 +8,19 @@ public class ApplicationModule: Module {
     Name("ExpoApplication")
 
     Constant("applicationName") {
-      infoPlist?["CFBundleDisplayName"] as? String?
+      infoPlist?["CFBundleDisplayName"] as? String
     }
 
     Constant("applicationId") {
-      infoPlist?["CFBundleIdentifier"] as? String?
+      infoPlist?["CFBundleIdentifier"] as? String
     }
 
     Constant("nativeApplicationVersion") {
-      infoPlist?["CFBundleShortVersionString"] as? String?
+      infoPlist?["CFBundleShortVersionString"] as? String
     }
 
     Constant("nativeBuildVersion") {
-      infoPlist?["CFBundleVersion"] as? String?
+      infoPlist?["CFBundleVersion"] as? String
     }
 
     AsyncFunction("getIosIdForVendorAsync") { () -> String? in
