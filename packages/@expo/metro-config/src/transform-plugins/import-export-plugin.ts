@@ -41,7 +41,6 @@ type State = {
   importDefault: t.Node;
   importAll: t.Node;
   opts: Options;
-  [key: string]: unknown;
   originalImportOrder: Set<string>;
   exportAllFrom: Map<string, { loc: t.SourceLocation | null | undefined }>;
   importAllFromAs: MapToArray<string, { loc: t.SourceLocation | null | undefined; as: string }>;
@@ -59,6 +58,7 @@ type State = {
   exportNamed: { loc: t.SourceLocation | null | undefined; name: string; as: string }[];
   importedIdentifiers: MapToArray<string, { module: string; name: string }>;
   importSideEffect: Map<string, { loc: t.SourceLocation | null | undefined }>;
+  [key: string]: unknown;
 };
 
 /**
@@ -397,18 +397,24 @@ export function importExportPlugin({
                 });
                 break;
               case 'ExportDefaultSpecifier':
-                state.exportNamedFrom.getOrDefault(nullthrows(source)).push({
-                  name: 'default',
-                  as: s.exported.name,
+                state.exportDefault.push({
+                  name: s.exported.name,
                   loc: path.node.loc,
                 });
                 break;
               case 'ExportNamespaceSpecifier':
                 // export * as b from 'a'
-                state.exportAllFromAs.getOrDefault(nullthrows(source)).push({
-                  as: s.exported.name,
-                  loc: path.node.loc,
-                });
+                if (s.exported.name === 'default') {
+                  state.exportDefault.push({
+                    name: s.exported.name,
+                    loc: path.node.loc,
+                  });
+                } else {
+                  state.exportAllFromAs.getOrDefault(nullthrows(source)).push({
+                    as: s.exported.name,
+                    loc: path.node.loc,
+                  });
+                }
                 break;
               default:
                 debug(
@@ -557,11 +563,6 @@ export function importExportPlugin({
 
             for (const module of state.originalImportOrder) {
               const exportAllFrom = state.exportAllFrom.get(module);
-              const importAllAsFrom = state.importAllFromAs.getOrDefault(module);
-              const exportAllAsFrom = state.exportAllFromAs.getOrDefault(module);
-              const importDefaultAsFrom = state.importDefaultFromAs.getOrDefault(module);
-              const exportNamedFrom = state.exportNamedFrom.getOrDefault(module);
-              const importNamedFrom = state.importNamedFrom.getOrDefault(module);
 
               let namespace: t.Identifier | null = null;
 
@@ -580,7 +581,7 @@ export function importExportPlugin({
                 );
               }
 
-              for (const { as, loc } of exportAllAsFrom) {
+              for (const { as, loc } of state.exportAllFromAs.getOrDefault(module)) {
                 const importAllNamespace = path.scope.generateUidIdentifier(module);
                 imports.push(
                   withLocation(
@@ -603,7 +604,7 @@ export function importExportPlugin({
                 );
               }
 
-              for (const { name, as, loc } of exportNamedFrom) {
+              for (const { name, as, loc } of state.exportNamedFrom.getOrDefault(module)) {
                 if (!namespace) {
                   namespace = path.scope.generateUidIdentifier(module);
                   imports.push(
@@ -617,31 +618,19 @@ export function importExportPlugin({
                   );
                 }
 
-                if (name === 'default') {
-                  liveExports.push(
-                    withLocation(
-                      liveBindExportDefaultTemplate({
-                        REQUIRED: t.cloneNode(namespace),
-                        REMOTE: as,
-                      }),
-                      loc
-                    )
-                  );
-                } else {
-                  liveExports.push(
-                    withLocation(
-                      liveBindExportTemplate({
-                        REQUIRED: t.cloneNode(namespace),
-                        LOCAL: t.identifier(name),
-                        REMOTE: as,
-                      }),
-                      loc
-                    )
-                  );
-                }
+                liveExports.push(
+                  withLocation(
+                    liveBindExportTemplate({
+                      REQUIRED: t.cloneNode(namespace),
+                      LOCAL: t.identifier(name),
+                      REMOTE: as,
+                    }),
+                    loc
+                  )
+                );
               }
 
-              for (const { name, as, loc } of importNamedFrom) {
+              for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module)) {
                 if (name === 'default') {
                   imports.push(
                     withLocation(
@@ -687,7 +676,7 @@ export function importExportPlugin({
                 );
               }
 
-              for (const { as, loc } of importAllAsFrom) {
+              for (const { as, loc } of state.importAllFromAs.getOrDefault(module)) {
                 imports.push(
                   withLocation(
                     importTemplate({
@@ -700,7 +689,7 @@ export function importExportPlugin({
                 );
               }
 
-              for (const { as, loc } of importDefaultAsFrom) {
+              for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module)) {
                 imports.push(
                   withLocation(
                     importTemplate({
@@ -1017,7 +1006,7 @@ export function importExportPlugin({
             }
 
             body.unshift(...imports);
-            body.unshift(...exportAll);
+            body.push(...exportAll);
             body.push(...staticExports);
           }
 
