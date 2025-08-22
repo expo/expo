@@ -36,9 +36,9 @@
     "@expo/config": "~12.0.3",
     "@expo/env": "~2.0.2",
     "@expo/json-file": "~10.0.2",
+    "@expo/metro": "~0.1.1",
     "@expo/schemer": "2.0.2",
     "@expo/spawn-async": "^1.7.2",
-    "@expo/metro": "~0.1.1",
     "@types/debug": "^4.1.8",
     "@vercel/ncc": "0.38.3",
     "chalk": "^4.0.0",
@@ -49,6 +49,7 @@
     "ignore": "^5.3.2",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
+    "resolve-workspace-root": "^2.0.0",
     "semver": "7.5.4",
     "terminal-link": "^2.1.1"
   }
