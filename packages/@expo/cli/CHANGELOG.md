@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Reuse `derefSchema` from `@expo/schema-utils` ([#38863](https://github.com/expo/expo/pull/38863) by [@kitten](https://github.com/kitten))
+
 ## 0.24.20 — 2025-07-08
 
 _This version does not introduce any user-facing changes._

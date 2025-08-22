@@ -53,6 +53,7 @@
     "@expo/package-manager": "^1.8.6",
     "@expo/plist": "^0.3.5",
     "@expo/prebuild-config": "^9.0.11",
+    "@expo/schema-utils": "^0.1.0",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",
     "@expo/xcpretty": "^4.3.0",

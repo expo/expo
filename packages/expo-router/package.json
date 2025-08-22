@@ -106,6 +106,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "5.0.4",
+    "@expo/schema-utils": "^0.1.0",
     "@expo/server": "^0.6.3",
     "@radix-ui/react-slot": "1.2.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
@@ -115,7 +116,6 @@
     "invariant": "^2.2.4",
     "react-fast-compare": "^3.2.2",
     "react-native-is-edge-to-edge": "^1.1.6",
-    "schema-utils": "^4.0.1",
     "semver": "~7.6.3",
     "server-only": "^0.0.1",
     "shallowequal": "^1.1.0"
