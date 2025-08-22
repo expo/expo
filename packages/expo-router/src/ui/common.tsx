@@ -1,5 +1,4 @@
 import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
-import { ViewProps, View, SafeAreaView } from 'react-native';
 
 import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';
@@ -11,14 +10,7 @@ import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 
-// Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
-export const ViewSlot = Slot as React.ForwardRefExoticComponent<
-  ViewProps & React.RefAttributes<View>
->;
-
-export const SafeAreaViewSlot = Slot as React.ForwardRefExoticComponent<
-  ViewProps & React.RefAttributes<SafeAreaView>
->;
+export const ViewSlot = Slot;
 
 export type ScreenTrigger =
   | {

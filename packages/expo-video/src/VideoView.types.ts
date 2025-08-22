@@ -28,6 +28,8 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines whether native controls should be displayed or not.
+   *
+   * > **Note**: Due to platform limitations, the native controls are always enabled in fullscreen mode.
    * @default true
    */
   nativeControls?: boolean;
@@ -172,6 +174,18 @@ export interface VideoViewProps extends ViewProps {
    * @default undefined
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
+
+  /**
+   * Use Audio Nodes for sound playback. When the same player is playing in multiple video views the audio won't increase in volume
+   * as the number of players increases.
+   *
+   * > **Note**: This property is experimental, when enabled it is known to break audio for some sources. Do not change this property at runtime.
+   *
+   * @experimental
+   * @default false
+   * @platform web
+   */
+  useAudioNodePlayback?: boolean;
 }
 
 /**

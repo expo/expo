@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 31.0.4 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 31.0.3 — 2025-08-19
+
+_This version does not introduce any user-facing changes._
+
+## 31.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 31.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
 ## 31.0.0 — 2025-08-13
 
 ### 🐛 Bug fixes

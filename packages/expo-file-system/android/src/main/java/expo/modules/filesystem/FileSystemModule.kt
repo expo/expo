@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
 import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
@@ -30,7 +31,7 @@ class FileSystemModule : Module() {
     Constants(
       "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
       "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
-      "bundleDirectory" to "asset:///"
+      "bundleDirectory" to "asset://"
     )
 
     Property("totalDiskSpace") {
@@ -78,6 +79,30 @@ class FileSystemModule : Module() {
         }
       }
       return@Coroutine destination.toURI()
+    }
+
+    lateinit var filePickerLauncher: AppContextActivityResultLauncher<FilePickerContractOptions, FilePickerContractResult>
+
+    RegisterActivityContracts {
+      filePickerLauncher = registerForActivityResult(
+        FilePickerContract(this@FileSystemModule)
+      )
+    }
+
+    AsyncFunction("pickDirectoryAsync") Coroutine { initialUri: Uri? ->
+      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY))
+      when (result) {
+        is FilePickerContractResult.Success -> result.path as FileSystemDirectory
+        is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
+      }
+    }
+
+    AsyncFunction("pickFileAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
+      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, mimeType, PickerType.FILE))
+      when (result) {
+        is FilePickerContractResult.Success -> result.path as FileSystemFile
+        is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
+      }
     }
 
     Function("info") { url: URI ->

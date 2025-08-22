@@ -1,5 +1,7 @@
 import SwiftUI
 
+// swiftlint:disable closure_body_length
+
 struct DevMenuAppInfo: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
 
@@ -41,9 +43,7 @@ struct DevMenuAppInfo: View {
           .disabled(viewModel.clipboardMessage != nil)
         }
       }
-#if !os(tvOS)
-      .background(Color(.systemBackground))
-#endif
+      .background(Color.expoSystemBackground)
       .cornerRadius(18)
     }
   }
@@ -67,3 +67,4 @@ struct InfoRow: View {
     .padding(.vertical)
   }
 }
+// swiftlint:enable closure_body_length

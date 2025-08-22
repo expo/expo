@@ -21,17 +21,27 @@ import {
   grayscale,
   colorInvert,
   clipShape,
+  glassEffect,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
+import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
   const [playSounds, setPlaySounds] = useState(true);
+  const dimensions = useWindowDimensions();
+  const safeAreaInsets = useSafeAreaInsets();
 
   return (
     <ScrollView>
-      <Host matchContents useViewportSizeMeasurement>
-        <Form>
+      <Host matchContents>
+        <Form
+          modifiers={[
+            frame({
+              height: dimensions.height - safeAreaInsets.top - safeAreaInsets.bottom,
+              width: dimensions.width,
+            }),
+          ]}>
           {/* New Modifier System Demo Section */}
           <Section title="SwiftUI Modifiers Demo">
             {/* Basic Appearance Modifiers */}
@@ -246,6 +256,18 @@ export default function ModifiersScreen() {
             ]}>
             🚀 Tap this layout demo!
           </Text>
+          <HStack
+            modifiers={[
+              padding({ all: 16 }),
+              glassEffect({
+                glass: {
+                  variant: 'regular',
+                  interactive: true,
+                },
+              }),
+            ]}>
+            <Text modifiers={[foregroundColor('#000000')]}>Hello world</Text>
+          </HStack>
         </VStack>
       </Host>
     </ScrollView>

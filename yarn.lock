@@ -1762,10 +1762,10 @@
   resolved "https://registry.yarnpkg.com/@expo/sudo-prompt/-/sudo-prompt-9.3.2.tgz#0fd2813402a42988e49145cab220e25bea74b308"
   integrity sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw==
 
-"@expo/vector-icons@^14.0.0":
-  version "14.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-14.1.0.tgz#d3dddad8b6ea60502e0fe5485b86751827606ce4"
-  integrity sha512-7T09UE9h8QDTsUeMGymB4i+iqvtEeaO5VvUjryFB4tugDTG/bkzViWA74hm5pfjjDEhYMXWaX112mcvhccmIwQ==
+"@expo/vector-icons@^15.0.0":
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-15.0.0.tgz#3e4e30eb17b44b7b44a559f9c7fabcaf9794bc77"
+  integrity sha512-tWmVdNzmpfoffC0MQzwUs5C/uaZDtgrUk+SMpegBcVaSKmR5B/uN0O7B7KvnZwkzWoODsATYx9U4wUyogTcMyw==
 
 "@expo/ws-tunnel@^1.0.1":
   version "1.0.1"
@@ -3492,10 +3492,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.4.1.tgz#a3c247aceab35f75dd0aa4bfa85d2be5a4508688"
   integrity sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==
 
-"@react-native-community/slider@5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-5.0.0.tgz#81b5205408315a34d6c76ab303ded449610d35d7"
-  integrity sha512-D7raJNcG6CID5JQO0V+VhHkLtWLdvPSosPGtE+azSgoPDJmp16gFhW4gBltP0GVECri3Xm+a+pfz49kDuBAlcQ==
+"@react-native-community/slider@5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-5.0.1.tgz#478789e526af31e0660c6f49fa5c5429d8d4287b"
+  integrity sha512-K3JRWkIW4wQ79YJ6+BPZzp1SamoikxfPRw7Yw4B4PElEQmqZFrmH9M5LxvIo460/3QSrZF/wCgi3qizJt7g/iw==
 
 "@react-native-masked-view/masked-view@0.3.2":
   version "0.3.2"
@@ -13891,10 +13891,10 @@ react-native-screens@4.11.1-nightly-20250611-8b82e081e:
     react-native-is-edge-to-edge "^1.1.7"
     warn-once "^0.1.0"
 
-react-native-screens@4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.14.0.tgz#585c84954f2c0a60b8726deb5940c2c0b20b0f1b"
-  integrity sha512-BMTQ30IozI8ZkqqPw71LbiaEcU+F5wDmfXDFlVn0wupZnxt0l7x7lUh2nljxR7rNHQneNIZoRTlu0ExK0R0xmA==
+react-native-screens@4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.15.0.tgz#8b34056b72a2c92da4de2f77419a116154c88e81"
+  integrity sha512-LPz+9qWDfwY3pPKojrWPcQnb2sAq9cy/qA8ZAS14ksSdzqFkTTUbs1as2WGBo7xBtdx5Ht78bF9nNh8libX1Xw==
   dependencies:
     react-freeze "^1.0.0"
     react-native-is-edge-to-edge "^1.2.1"

@@ -1,3 +1,4 @@
+import { Asset } from 'expo-asset';
 import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 import {
@@ -14,7 +15,6 @@ import {
 import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 import { RecordingPresets } from './RecordingConstants';
-import resolveAssetSource from './utils/resolveAssetSource';
 
 const nextId = (() => {
   let id = 0;
@@ -302,10 +302,12 @@ function getSourceUri(source: AudioSource): string | undefined {
     return source;
   }
   if (typeof source === 'number') {
-    return resolveAssetSource(source)?.uri ?? undefined;
+    const asset = Asset.fromModule(source);
+    return asset.uri;
   }
   if (typeof source?.assetId === 'number' && !source?.uri) {
-    return resolveAssetSource(source.assetId)?.uri ?? undefined;
+    const asset = Asset.fromModule(source.assetId);
+    return asset.uri;
   }
 
   return source?.uri ?? undefined;
@@ -375,12 +377,12 @@ export class AudioRecorderWeb
     return [];
   }
 
-  getCurrentInput(): RecordingInput {
-    return {
+  getCurrentInput(): Promise<RecordingInput> {
+    return Promise.resolve({
       type: 'Default',
       name: 'Default',
       uid: 'Default',
-    };
+    });
   }
 
   async prepareToRecordAsync(): Promise<void> {

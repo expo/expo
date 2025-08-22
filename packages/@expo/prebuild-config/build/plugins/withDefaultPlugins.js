@@ -57,6 +57,13 @@ function _ReactNative78CompatPlugin() {
   };
   return data;
 }
+function _withEdgeToEdge() {
+  const data = _interopRequireDefault(require("./unversioned/edge-to-edge/withEdgeToEdge"));
+  _withEdgeToEdge = function () {
+    return data;
+  };
+  return data;
+}
 function _expoAdsAdmob() {
   const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
   _expoAdsAdmob = function () {
@@ -116,13 +123,6 @@ function _expoSystemUi() {
 function _expoUpdates() {
   const data = _interopRequireDefault(require("./unversioned/expo-updates"));
   _expoUpdates = function () {
-    return data;
-  };
-  return data;
-}
-function _withEdgeToEdge() {
-  const data = _interopRequireDefault(require("./unversioned/react-native-edge-to-edge/withEdgeToEdge"));
-  _withEdgeToEdge = function () {
     return data;
   };
   return data;

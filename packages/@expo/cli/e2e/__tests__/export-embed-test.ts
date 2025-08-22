@@ -113,7 +113,6 @@ it('runs `npx expo export:embed`', async () => {
         E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     }
   );
@@ -176,7 +175,6 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: '1',
       },
     }
   );
@@ -234,7 +232,6 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
         NODE_ENV: 'production',
         E2E_ROUTER_SRC: 'react-native-canary',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: '1',
 
         // Most important part:
         // NOTE(EvanBacon): This is a robot user token for an expo-managed account that can authenticate with view-only permission.
@@ -301,7 +298,6 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: '1',
       },
     }
   );
@@ -367,7 +363,6 @@ it('runs `npx expo export:embed --bytecode`', async () => {
         E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     }
   );

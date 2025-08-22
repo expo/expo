@@ -10,6 +10,33 @@
 
 ### 💡 Others
 
+## 0.21.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Fix live binding of default exports ([#38976](https://github.com/expo/expo/pull/38976) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 💡 Others
+
+- Add supervisor transformer that loads a custom configured transformer, annotates initialization errors, and enforces a single Metro version ([#38961](https://github.com/expo/expo/pull/38961) by [@kitten](https://github.com/kitten))
+
+## 0.21.3 — 2025-08-19
+
+### 🐛 Bug fixes
+
+- Fix live binding export deduplication failing to trigger ([#38951](https://github.com/expo/expo/pull/38951) by [@kitten](https://github.com/kitten))
+- Fix undeclared namespace when exporting default imports ([#38975](https://github.com/expo/expo/pull/38975) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 0.21.2 — 2025-08-16
+
+### 🐛 Bug fixes
+
+- Export all expression should not overwrite named exports of a module when import export plugin with live bindings is used (default) ([#38894](https://github.com/expo/expo/pull/38894) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 0.21.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.21.0 — 2025-08-13
 
 ### 🎉 New features
@@ -23,6 +50,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix caching across devices. ([#38476](https://github.com/expo/expo/pull/38476) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure react-native projects without Expo code-loading can use async routes. ([#38587](https://github.com/expo/expo/pull/38587) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Fast Refresh on web by calling `module.hot.accept()` in the transformer. ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
 - Fix failing build with tree shaking due to missing import location ([#37916](https://github.com/expo/expo/pull/37916) by [@krystofwoldrich](https://github.com/krystofwoldrich))

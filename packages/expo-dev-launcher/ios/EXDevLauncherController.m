@@ -699,7 +699,10 @@
 -(NSString *)getAppIcon
 {
   NSString *appIcon = @"";
-  NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
+  NSString *appIconName = nil;
+  @try {
+    appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
+  } @catch(NSException *_e) {}
 
   if (appIconName != nil) {
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];

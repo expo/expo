@@ -64,14 +64,6 @@ function LinkWithPreview({ children, ...rest }) {
     }, [hrefWithoutQuery]);
     const [{ nextScreenId, tabPath }, prefetch] = (0, useNextScreenId_1.useNextScreenId)();
     (0, react_1.useEffect)(() => {
-        if ((0, url_1.shouldLinkExternally)(String(rest.href))) {
-            if (process.env.NODE_ENV !== 'production') {
-                throw new Error('External links previews are not supported');
-            }
-            else {
-                console.warn('External links previews are not supported');
-            }
-        }
         if (rest.replace) {
             if (process.env.NODE_ENV !== 'production') {
                 throw new Error('Using replace links with preview is not supported');
@@ -94,27 +86,32 @@ function LinkWithPreview({ children, ...rest }) {
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
     const highlightBorderRadius = rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
-    const preview = react_1.default.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
+    const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
         path: tabPath,
     }), [tabPath]);
-    if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
+    const hasPreview = !!previewElement;
+    if (rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
     }
     return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
-            isPreviewTapped.current = false;
-            prefetch(rest.href);
-            setIsCurrenPreviewOpen(true);
+            if (hasPreview) {
+                isPreviewTapped.current = false;
+                prefetch(rest.href);
+                setIsCurrenPreviewOpen(true);
+            }
         }} onPreviewWillClose={() => {
-            setIsCurrenPreviewOpen(false);
-            // When preview was not tapped, then we need to enable the screen stack animation
-            // Otherwise this will happen in StackNavigator, when new screen is opened
-            if (!isPreviewTapped.current || isPad) {
-                setOpenPreviewKey(undefined);
+            if (hasPreview) {
+                setIsCurrenPreviewOpen(false);
+                // When preview was not tapped, then we need to enable the screen stack animation
+                // Otherwise this will happen in StackNavigator, when new screen is opened
+                if (!isPreviewTapped.current || isPad) {
+                    setOpenPreviewKey(undefined);
+                }
             }
         }} onPreviewDidClose={() => {
-            if (isPreviewTapped.current && isPad) {
+            if (hasPreview && isPreviewTapped.current && isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
         }} onPreviewTapped={() => {

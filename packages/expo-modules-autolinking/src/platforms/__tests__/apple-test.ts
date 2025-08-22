@@ -9,7 +9,7 @@ import {
   getSwiftModuleNames,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
-} from '../apple';
+} from '../apple/apple';
 
 jest.mock('glob');
 

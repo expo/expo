@@ -69,15 +69,28 @@ export declare class Directory {
      */
     list(): (Directory | File)[];
     /**
-     * Retrieves an object containing properties of a directory
+     * Retrieves an object containing properties of a directory.
+     *
      * @throws Error If the application does not have read access to the directory, or if the path does not point to a directory (e.g., it points to a file).
-     * @returns An object with directory metadata (e.g., size, creation date, etc.).
+     *
+     * @returns An object with directory metadata (for example, size, creation date, and so on).
      */
     info(): DirectoryInfo;
     /**
      * A size of the directory in bytes. Null if the directory does not exist, or it cannot be read.
      */
     size: number | null;
+    /**
+     *
+     * A static method that opens a file picker to select a directory.
+     *
+     * @platform android
+     *
+     * @param initialUri An optional URI pointing to an initial folder on which the directory picker is opened.
+     *
+     * @returns A `Directory` instance. The underlying URI will be a content URI on Android.
+     */
+    static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
 export type DownloadOptions = {
     /**
@@ -115,7 +128,7 @@ export declare class File {
      * Retrieves text from the file.
      * @returns The contents of the file as string.
      */
-    textSync(): Promise<string>;
+    textSync(): string;
     /**
      * Retrieves content of the file as base64.
      * @returns A promise that resolves with the contents of the file as a base64 string.
@@ -149,8 +162,8 @@ export declare class File {
     delete(): void;
     /**
      * Retrieves an object containing properties of a file
-     * @throws Error If the application does not have read access to the file, or if the path does not point to a file (e.g., it points to a directory).
-     * @returns An object with file metadata (e.g., size, creation date, etc.).
+     * @throws Error If the application does not have read access to the file, or if the path does not point to a file (for example, it points to a directory).
+     * @returns An object with file metadata (for example, size, creation date, and so on).
      */
     info(options?: InfoOptions): FileInfo;
     /**
@@ -173,21 +186,35 @@ export declare class File {
      */
     move(destination: Directory | File): void;
     /**
-     * Returns a FileHandle object that can be used to read and write data to the file.
+     * Returns A `FileHandle` object that can be used to read and write data to the file.
      * @throws Error if the file does not exist or cannot be opened.
      */
     open(): FileHandle;
     /**
      * A static method that downloads a file from the network.
+     *
      * @param url - The URL of the file to download.
      * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
+     *
      * @returns A promise that resolves to the downloaded file.
+     *
      * @example
      * ```ts
      * const file = await File.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
      * ```
      */
     static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
+    /**
+     * A static method that opens a file picker to select a single file of specified type.
+     *
+     * @platform android
+     *
+     * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
+     * @param mimeType A mime type that is used to filter out files that can be picked out.
+     *
+     * @returns A `File` instance.
+     */
+    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */
@@ -245,6 +272,7 @@ export type FileInfo = {
 export type InfoOptions = {
     /**
      * Whether to return the MD5 hash of the file.
+     *
      * @default false
      */
     md5?: boolean;

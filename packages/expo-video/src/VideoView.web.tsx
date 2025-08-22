@@ -44,6 +44,15 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   const audioContextRef = useRef<null | AudioContext>(null);
   const zeroGainNodeRef = useRef<null | GainNode>(null);
 
+  useEffect(() => {
+    if (props.useAudioNodePlayback) {
+      maybeSetupAudioContext();
+      attachAudioNodes();
+    } else {
+      detachAudioNodes();
+    }
+  }, [props.useAudioNodePlayback]);
+
   useImperativeHandle(ref, () => ({
     enterFullscreen: async () => {
       if (!props.allowsFullscreen) {
@@ -102,6 +111,9 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
   // player only one will emit audio).
   function attachAudioNodes() {
+    if (!props.useAudioNodePlayback) {
+      return;
+    }
     const audioContext = audioContextRef.current;
     const zeroGainNode = zeroGainNodeRef.current;
     const mediaNode = mediaNodeRef.current;
@@ -116,6 +128,9 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   }
 
   function detachAudioNodes() {
+    if (!props.useAudioNodePlayback) {
+      return;
+    }
     const audioContext = audioContextRef.current;
     const mediaNode = mediaNodeRef.current;
     if (audioContext && mediaNode && videoRef.current) {
@@ -127,7 +142,8 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     if (
       !hasToSetupAudioContext.current ||
       !navigator.userActivation.hasBeenActive ||
-      !videoRef.current
+      !videoRef.current ||
+      !props.useAudioNodePlayback
     ) {
       return;
     }
@@ -200,7 +216,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
         // we can't assign null to videoRef if we want to unmount it from the player.
         if (newRef && !newRef.isEqualNode(videoRef.current)) {
           videoRef.current = newRef;
-          hasToSetupAudioContext.current = true;
+          hasToSetupAudioContext.current = props.useAudioNodePlayback ?? false;
           maybeSetupAudioContext();
         }
       }}

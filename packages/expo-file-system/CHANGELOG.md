@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 19.0.4 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.3 — 2025-08-18
+
+### 🐛 Bug fixes
+
+- Fixed type definition for `textSync()` to return `string` instead of `Promise<string>` ([#38898](https://github.com/expo/expo/pull/38898) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+
+## 19.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.1 — 2025-08-15
+
+### 💡 Others
+
 - Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
 
 ## 19.0.0 — 2025-08-13
@@ -20,6 +38,7 @@
 
 ### 🎉 New features
 
+- [android] Add file and directory pickers. ([#38455](https://github.com/expo/expo/pull/38455) by [@aleqsio](https://github.com/aleqsio))
 - Add support for asset uris. ([#38785](https://github.com/expo/expo/pull/38785) by [@aleqsio](https://github.com/aleqsio))
 - Make file implement blob interface directly. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))
 - Add directory info function ([#37910](https://github.com/expo/expo/pull/37910) by [@Wenszel](https://github.com/Wenszel))

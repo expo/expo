@@ -34,6 +34,15 @@ export const VideoView = forwardRef((props, ref) => {
      */
     const audioContextRef = useRef(null);
     const zeroGainNodeRef = useRef(null);
+    useEffect(() => {
+        if (props.useAudioNodePlayback) {
+            maybeSetupAudioContext();
+            attachAudioNodes();
+        }
+        else {
+            detachAudioNodes();
+        }
+    }, [props.useAudioNodePlayback]);
     useImperativeHandle(ref, () => ({
         enterFullscreen: async () => {
             if (!props.allowsFullscreen) {
@@ -91,6 +100,9 @@ export const VideoView = forwardRef((props, ref) => {
     // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
     // player only one will emit audio).
     function attachAudioNodes() {
+        if (!props.useAudioNodePlayback) {
+            return;
+        }
         const audioContext = audioContextRef.current;
         const zeroGainNode = zeroGainNodeRef.current;
         const mediaNode = mediaNodeRef.current;
@@ -102,6 +114,9 @@ export const VideoView = forwardRef((props, ref) => {
         }
     }
     function detachAudioNodes() {
+        if (!props.useAudioNodePlayback) {
+            return;
+        }
         const audioContext = audioContextRef.current;
         const mediaNode = mediaNodeRef.current;
         if (audioContext && mediaNode && videoRef.current) {
@@ -111,7 +126,8 @@ export const VideoView = forwardRef((props, ref) => {
     function maybeSetupAudioContext() {
         if (!hasToSetupAudioContext.current ||
             !navigator.userActivation.hasBeenActive ||
-            !videoRef.current) {
+            !videoRef.current ||
+            !props.useAudioNodePlayback) {
             return;
         }
         const audioContext = createAudioContext();
@@ -170,7 +186,7 @@ export const VideoView = forwardRef((props, ref) => {
             // we can't assign null to videoRef if we want to unmount it from the player.
             if (newRef && !newRef.isEqualNode(videoRef.current)) {
                 videoRef.current = newRef;
-                hasToSetupAudioContext.current = true;
+                hasToSetupAudioContext.current = props.useAudioNodePlayback ?? false;
                 maybeSetupAudioContext();
             }
         }} disablePictureInPicture={!props.allowsPictureInPicture} playsInline={props.playsInline} src={getSourceUri(props.player?.src) ?? ''}/>);
