@@ -17,46 +17,40 @@ export type Options = Readonly<{
         [key: string]: unknown;
     };
 }>;
-declare class MapToArray<K, V> extends Map<K, V[]> {
-    getOrDefault(key: K): V[];
-}
-declare class MapToFirst<K, V> extends Map<K, V> {
-    setFirst(key: K, value: V): this;
-}
 type State = {
     importDefault: t.Node;
     importAll: t.Node;
     opts: Options;
-    originalImportOrder: MapToFirst<string, t.StringLiteral>;
+    originalImportOrder: Map<string, t.StringLiteral>;
     exportAllFrom: Map<string, {
         loc: t.SourceLocation | null | undefined;
     }>;
-    importAllFromAs: MapToArray<string, {
+    importAllFromAs: Map<string, {
         loc: t.SourceLocation | null | undefined;
         as: string;
-    }>;
-    exportAllFromAs: MapToArray<string, {
+    }[]>;
+    exportAllFromAs: Map<string, {
         loc: t.SourceLocation | null | undefined;
         as: string;
-    }>;
-    importDefaultFromAs: MapToArray<string, {
+    }[]>;
+    importDefaultFromAs: Map<string, {
         loc: t.SourceLocation | null | undefined;
         as: t.Identifier;
-    }>;
+    }[]>;
     exportDefault: {
         loc: t.SourceLocation | null | undefined;
         name: string;
     }[];
-    exportNamedFrom: MapToArray<string, {
+    exportNamedFrom: Map<string, {
         loc: t.SourceLocation | null | undefined;
         name: string;
         as: string;
-    }>;
-    importNamedFrom: MapToArray<string, {
+    }[]>;
+    importNamedFrom: Map<string, {
         loc: t.SourceLocation | null | undefined;
         name: string;
         as: string;
-    }>;
+    }[]>;
     exportNamed: {
         loc: t.SourceLocation | null | undefined;
         name: string;
