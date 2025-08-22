@@ -220,6 +220,8 @@ data class RecurrenceRuleRecord(
 data class RecurringEventOptions(
   @Field
   val instanceStartDate: String? = null,
+  @Field
+  var futureEvents: Boolean?
 ) : Record
 
 enum class EventAvailability(val value: String) : Enumerable {

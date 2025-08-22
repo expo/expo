@@ -31,7 +31,7 @@ public final class CalendarNextModule: Module {
       return ExpoCalendar(calendar: defaultCalendar)
     }
 
-    Function("getCalendars") { (type: CalendarEntity?) -> [ExpoCalendar] in
+    AsyncFunction("getCalendars") { (type: CalendarEntity?) -> [ExpoCalendar] in
       let calendars: [EKCalendar]
       switch type {
       case nil:
@@ -44,8 +44,6 @@ public final class CalendarNextModule: Module {
       case .reminder:
         try checkRemindersPermissions()
         calendars = eventStore.calendars(for: .reminder)
-      default:
-        throw InvalidCalendarEntityException(type?.rawValue)
       }
       return calendars.map { ExpoCalendar(calendar: $0) }
     }
@@ -58,7 +56,7 @@ public final class CalendarNextModule: Module {
       return ExpoCalendar(calendar: calendar)
     }
 
-    Function("createCalendarNext") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
+    Function("createCalendar") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
       let calendar: EKCalendar
       switch calendarRecord.entityType {
       case .event:
@@ -476,22 +474,23 @@ public final class CalendarNextModule: Module {
         guard let ekEvent = try expoEvent.getOccurrence(options: options) else {
           throw EventNotFoundException(options?.instanceStartDate ?? "")
         }
-        return ExpoCalendarEvent(event: ekEvent)
+        let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent
+        return ExpoCalendarEvent(event: ekEvent, span: span)
       }
 
-      AsyncFunction("getAttendees") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions?, promise: Promise) throws in
+      AsyncFunction("getAttendeesAsync") { (expoEvent: ExpoCalendarEvent) throws in
         try checkCalendarPermissions()
-        promise.resolve(try expoEvent.getAttendees(options: options))
+        return try expoEvent.getAttendees()
       }
 
-      Function("update") { (expoEvent: ExpoCalendarEvent, eventRecord: EventNext, options: RecurringEventOptions?, nullableFields: [String]?) throws in
+      Function("update") { (expoEvent: ExpoCalendarEvent, eventRecord: EventNext, nullableFields: [String]?) throws in
         try checkCalendarPermissions()
-        try expoEvent.update(eventRecord: eventRecord, options: options, nullableFields: nullableFields)
+        try expoEvent.update(eventRecord: eventRecord, nullableFields: nullableFields)
       }
 
-      Function("delete") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions) in
+      Function("delete") { (expoEvent: ExpoCalendarEvent) in
         try checkCalendarPermissions()
-        try expoEvent.delete(options: options)
+        try expoEvent.delete()
       }
     }
 

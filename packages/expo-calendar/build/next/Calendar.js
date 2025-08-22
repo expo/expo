@@ -24,15 +24,15 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
         Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);
         return result;
     }
-    async getAttendees(recurringEventOptions = {}) {
-        return super.getAttendees(stringifyDateValues(recurringEventOptions));
+    async getAttendeesAsync() {
+        return super.getAttendeesAsync();
     }
-    async update(details, options = {}) {
+    update(details) {
         const nullableDetailsFields = getNullableDetailsFields(details);
-        return await super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
+        return super.update(stringifyDateValues(details), nullableDetailsFields);
     }
-    delete(options = {}) {
-        return super.delete(stringifyDateValues(options));
+    delete() {
+        super.delete();
     }
     static get(eventId) {
         const event = InternalExpoCalendar.getEventById(eventId);
@@ -61,8 +61,8 @@ export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarRemin
  * such as retrieving its events, updating its details, and accessing its metadata.
  */
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
-    async createEvent(details) {
-        const newEvent = await super.createEvent(stringifyDateValues(details));
+    createEvent(details) {
+        const newEvent = super.createEvent(stringifyDateValues(details));
         Object.setPrototypeOf(newEvent, ExpoCalendarEvent.prototype);
         return newEvent;
     }
@@ -137,25 +137,28 @@ export async function getCalendarsNext(type) {
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export async function createCalendarNext(details = {}) {
+export function createCalendar(details = {}) {
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, id: undefined, color: color || undefined };
-    const createdCalendar = await InternalExpoCalendar.createCalendarNext(newDetails);
+    const createdCalendar = InternalExpoCalendar.createCalendar(newDetails);
     Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
     return createdCalendar;
 }
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
- * @param calendarIds An array of calendar IDs to search for events.
+ * @param calendars An array of calendar IDs to search for events or [`ExpoCalendar`](#expocalendar) objects.
  * @param startDate The start date of the time range to search for events.
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export async function listEvents(calendarIds, startDate, endDate) {
+export async function listEvents(calendars, startDate, endDate) {
     if (!InternalExpoCalendar.listEvents) {
         throw new UnavailabilityError('Calendar', 'listEvents');
     }
+    const calendarIds = Array.isArray(calendars) && calendars.length > 0 && typeof calendars[0] !== 'string'
+        ? calendars.map((calendar) => calendar.id)
+        : calendars;
     return InternalExpoCalendar.listEvents(calendarIds, stringifyIfDate(startDate), stringifyIfDate(endDate));
 }
 /**
@@ -163,11 +166,11 @@ export async function listEvents(calendarIds, startDate, endDate) {
  * @param eventId The ID of the event to get.
  * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
  */
-export async function getEventById(eventId) {
+export function getEventById(eventId) {
     if (!InternalExpoCalendar.getEventById) {
         throw new UnavailabilityError('Calendar', 'getEventById');
     }
-    const event = await InternalExpoCalendar.getEventById(eventId);
+    const event = InternalExpoCalendar.getEventById(eventId);
     Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
     return event;
 }
@@ -177,11 +180,11 @@ export async function getEventById(eventId) {
  * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
  * @platform ios
  */
-export async function getReminderById(reminderId) {
+export function getReminderById(reminderId) {
     if (!InternalExpoCalendar.getReminderById) {
         throw new UnavailabilityError('Calendar', 'getReminderById');
     }
-    const reminder = await InternalExpoCalendar.getReminderById(reminderId);
+    const reminder = InternalExpoCalendar.getReminderById(reminderId);
     Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
     return reminder;
 }

@@ -13,9 +13,9 @@ export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendar
     openInCalendarAsync(params?: CalendarDialogOpenParamsNext): Promise<OpenEventDialogResult>;
     editInCalendarAsync(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
-    getAttendees(recurringEventOptions?: RecurringEventOptions): Promise<ExpoCalendarAttendee[]>;
-    update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): Promise<ExpoCalendarEvent>;
-    delete(options?: RecurringEventOptions): Promise<void>;
+    getAttendeesAsync(): Promise<ExpoCalendarAttendee[]>;
+    update(details: Partial<ModifiableEventProperties>): void;
+    delete(): void;
     static get(eventId: string): ExpoCalendarEvent;
 }
 /**
@@ -32,11 +32,11 @@ export declare class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalen
  * such as retrieving its events, updating its details, and accessing its metadata.
  */
 export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
-    createEvent(details: Partial<Omit<Event, 'creationDate' | 'lastModifiedDate' | 'originalStartDate' | 'isDetached' | 'status' | 'organizer'>>): Promise<ExpoCalendarEvent>;
+    createEvent(details: Partial<Omit<Event, 'creationDate' | 'lastModifiedDate' | 'originalStartDate' | 'isDetached' | 'status' | 'organizer'>>): ExpoCalendarEvent;
     createReminder(details: Partial<Reminder>): ExpoCalendarReminder;
     listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
     listReminders(startDate?: Date | null, endDate?: Date | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
-    update(details: Partial<ModifiableCalendarProperties>): Promise<void>;
+    update(details: Partial<ModifiableCalendarProperties>): void;
     static get(calendarId: string): ExpoCalendar;
 }
 /**
@@ -58,29 +58,29 @@ export declare function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalend
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export declare function createCalendarNext(details?: Partial<Calendar>): Promise<ExpoCalendar>;
+export declare function createCalendar(details?: Partial<Calendar>): ExpoCalendar;
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
- * @param calendarIds An array of calendar IDs to search for events.
+ * @param calendars An array of calendar IDs to search for events or [`ExpoCalendar`](#expocalendar) objects.
  * @param startDate The start date of the time range to search for events.
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export declare function listEvents(calendarIds: string[], startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
+export declare function listEvents(calendars: string[] | ExpoCalendar[], startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
 /**
  * Gets an event by its ID.
  * @param eventId The ID of the event to get.
  * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
  */
-export declare function getEventById(eventId: string): Promise<ExpoCalendarEvent>;
+export declare function getEventById(eventId: string): ExpoCalendarEvent;
 /**
  * Gets a reminder by its ID.
  * @param reminderId The ID of the reminder to get.
  * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
  * @platform ios
  */
-export declare function getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
+export declare function getReminderById(reminderId: string): ExpoCalendarReminder;
 /**
  * Asks the user to grant permissions for accessing user's calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).

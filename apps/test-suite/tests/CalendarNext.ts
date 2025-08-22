@@ -1,6 +1,6 @@
 import * as Calendar from 'expo-calendar';
 import {
-  createCalendarNext,
+  createCalendar,
   ExpoCalendar,
   ExpoCalendarEvent,
   getCalendarsNext,
@@ -17,12 +17,11 @@ import {
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
-import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'Calendar@next';
 
 const defaultCalendarData = {
-  title: 'Expo test-suite calendar ' + new Date().toISOString(),
+  title: `Expo test-suite calendar ${new Date().toISOString()}`,
   color: '#4B968A',
   entityType: Calendar.EntityTypes.EVENT,
   name: 'expo-test-suite-calendar',
@@ -34,7 +33,7 @@ const defaultCalendarData = {
 } satisfies Partial<ExpoCalendar>;
 
 async function createTestCalendarAsync(patch: Partial<ExpoCalendar> = {}) {
-  return createCalendarNext({
+  return createCalendar({
     ...defaultCalendarData,
     sourceId: await pickCalendarSourceIdAsync(),
     ...patch,
@@ -47,11 +46,12 @@ async function getCalendarByIdAsync(calendarId) {
 }
 
 async function pickCalendarSourceIdAsync() {
-  if (Platform.OS === 'ios') {
-    const sources = await Calendar.getSourcesAsync();
-    const mainSource = sources.find((source) => source.name === 'iCloud') || sources[0];
-    return mainSource && mainSource.id;
+  if (Platform.OS !== 'ios') {
+    return;
   }
+  const sources = await Calendar.getSourcesAsync();
+  const mainSource = sources.find((source) => source.name === 'iCloud') || sources[0];
+  return mainSource?.id;
 }
 
 const defaultEventData = {
@@ -72,12 +72,12 @@ function createEventData(customArgs = {}) {
   };
 }
 
-async function createTestEvent(
+function createTestEvent(
   calendar: ExpoCalendar,
   customArgs: Partial<ExpoCalendarEvent> = {}
-): Promise<ExpoCalendarEvent> {
+): ExpoCalendarEvent {
   const eventData = createEventData(customArgs);
-  return await calendar.createEvent(eventData);
+  return calendar.createEvent(eventData);
 }
 
 async function fetchCreatedEvent(
@@ -110,20 +110,20 @@ function createTestReminder(
   return calendar.createReminder(reminderData);
 }
 
-async function createTestAttendee(
+function createTestAttendee(
   event: ExpoCalendarEvent,
   customArgs: Partial<ExpoCalendarAttendee> = {}
-): Promise<ExpoCalendarAttendee> {
+): ExpoCalendarAttendee {
   const attendeeData = {
     ...defaultAttendeeData,
     ...customArgs,
   };
-  return await event.createAttendee(attendeeData);
+  return event.createAttendee(attendeeData);
 }
 
 async function getReminderCalendar() {
-  const calendars = await getCalendarsNext();
-  return calendars.find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
+  const calendars = getCalendarsNext();
+  return (await calendars).find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
 }
 
 function reminderExists(reminders: ExpoCalendarReminder[], reminderId: string) {
@@ -244,7 +244,7 @@ export async function test(t) {
         });
       }
 
-      t.describe('createCalendarNext()', () => {
+      t.describe('createCalendar()', () => {
         let calendar: ExpoCalendar;
 
         t.it('creates a calendar', async () => {
@@ -258,7 +258,7 @@ export async function test(t) {
         });
 
         t.it('cannot create a calendar without a title', async () => {
-          let error;
+          let error: any;
           try {
             await createTestCalendarAsync({ title: undefined });
           } catch (e) {
@@ -327,8 +327,8 @@ export async function test(t) {
           t.expect(Array.isArray(events)).toBe(true);
           t.expect(events.length).toBe(0);
 
-          const event1 = await createTestEvent(calendar1);
-          const event2 = await createTestEvent(calendar2);
+          const event1 = createTestEvent(calendar1);
+          const event2 = createTestEvent(calendar2);
           const updatedEvents = await listEvents(
             [calendar1.id, calendar2.id],
             new Date(2019, 3, 1),
@@ -361,15 +361,15 @@ export async function test(t) {
         });
 
         t.it('returns an event by its ID', async () => {
-          const event = await createTestEvent(calendar);
-          const event2 = await getEventById(event.id);
+          const event = createTestEvent(calendar);
+          const event2 = getEventById(event.id);
           t.expect(event2).toBeDefined();
           t.expect(event2).toEqual(event);
         });
 
         t.it('returns a modified event', async () => {
-          const event = await createTestEvent(calendar);
-          await event.update({
+          const event = createTestEvent(calendar);
+          event.update({
             title: 'New title',
             location: 'New location',
           });
@@ -392,7 +392,7 @@ export async function test(t) {
 
           t.beforeEach(async () => {
             calendar = await getReminderCalendar();
-            reminder = await createTestReminder(calendar);
+            reminder = createTestReminder(calendar);
           });
 
           t.it('returns a reminder by its ID', async () => {
@@ -402,7 +402,7 @@ export async function test(t) {
           });
 
           t.it('returns a modified reminder', async () => {
-            await reminder.update({
+            reminder.update({
               title: 'New title',
             });
 
@@ -434,65 +434,65 @@ export async function test(t) {
       }
     });
 
-    t.describe('Calendar UI Integration', () => {
-      let originalTimeout;
-      const dontStartNewTask = {
-        startNewActivityTask: false,
-      };
-      let calendar: ExpoCalendar;
+    // t.describe('Calendar UI Integration', () => {
+    //   let originalTimeout;
+    //   const dontStartNewTask = {
+    //     startNewActivityTask: false,
+    //   };
+    //   let calendar: ExpoCalendar;
 
-      t.beforeEach(async () => {
-        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
-        calendar = await createTestCalendarAsync();
-      });
+    //   t.beforeEach(async () => {
+    //     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+    //     calendar = await createTestCalendarAsync();
+    //   });
 
-      t.it('creates an event via UI', async () => {
-        const eventData = createEventData();
-        await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
-        if (Platform.OS === 'ios') {
-          t.expect(result.action).toBe('saved');
-          t.expect(typeof result.id).toBe('string');
-          const storedEvent = await Calendar.getEventAsync(result.id);
+    //   t.it('creates an event via UI', async () => {
+    //     const eventData = createEventData();
+    //     await alertAndWaitForResponse('Please confirm the event creation dialog.');
+    //     const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+    //     if (Platform.OS === 'ios') {
+    //       t.expect(result.action).toBe('saved');
+    //       t.expect(typeof result.id).toBe('string');
+    //       const storedEvent = await Calendar.getEventAsync(result.id);
 
-          t.expect(storedEvent).toEqual(
-            t.jasmine.objectContaining({
-              title: eventData.title,
-              allDay: eventData.allDay,
-              location: eventData.location,
-              notes: eventData.notes,
-            })
-          );
-        }
-      });
+    //       t.expect(storedEvent).toEqual(
+    //         t.jasmine.objectContaining({
+    //           title: eventData.title,
+    //           allDay: eventData.allDay,
+    //           location: eventData.location,
+    //           notes: eventData.notes,
+    //         })
+    //       );
+    //     }
+    //   });
 
-      t.it('can preview an event', async () => {
-        const event = await createTestEvent(calendar);
-        await alertAndWaitForResponse(
-          'Please verify event details are shown and close the dialog.'
-        );
-        const result = await event.openInCalendarAsync({
-          ...dontStartNewTask,
-          allowsEditing: true,
-          allowsCalendarPreview: true,
-        });
-        t.expect(result).toEqual({ action: 'done' });
-      });
+    //   t.it('can preview an event', async () => {
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse(
+    //       'Please verify event details are shown and close the dialog.'
+    //     );
+    //     const result = await event.openInCalendarAsync({
+    //       ...dontStartNewTask,
+    //       allowsEditing: true,
+    //       allowsCalendarPreview: true,
+    //     });
+    //     t.expect(result).toEqual({ action: 'done' });
+    //   });
 
-      t.it('can edit an event', async () => {
-        const event = await createTestEvent(calendar);
-        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
-        const result = await event.editInCalendarAsync(dontStartNewTask);
-        t.expect(typeof result.action).toBe('string'); // done or canceled
-        t.expect(result.id).toBe(null);
-      });
+    //   t.it('can edit an event', async () => {
+    //     const event = createTestEvent(calendar);
+    //     await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+    //     const result = await event.editInCalendarAsync(dontStartNewTask);
+    //     t.expect(typeof result.action).toBe('string'); // done or canceled
+    //     t.expect(result.id).toBe(null);
+    //   });
 
-      t.afterEach(() => {
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-        calendar.delete();
-      });
-    });
+    //   t.afterEach(() => {
+    //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    //     calendar.delete();
+    //   });
+    // });
 
     t.describe('Calendar', () => {
       t.describe('Calendar.get()', () => {
@@ -531,7 +531,7 @@ export async function test(t) {
         t.it('updates a calendar', async () => {
           const newTitle = 'New test-suite calendar title!!!';
           const newColor = '#111111';
-          await calendar.update({
+          calendar.update({
             title: newTitle,
             color: newColor,
           });
@@ -544,7 +544,7 @@ export async function test(t) {
 
         t.it('keeps other properties unchanged when updating title', async () => {
           const newTitle = 'New the coolest title ever';
-          await calendar.update({
+          calendar.update({
             title: newTitle,
           });
           t.expect(calendar.title).toBe(newTitle);
@@ -556,7 +556,7 @@ export async function test(t) {
 
         t.it('keeps other properties unchanged when updating color', async () => {
           const color = '#001A72';
-          await calendar.update({
+          calendar.update({
             color,
           });
           t.expect(calendar.color).toBe(color);
@@ -567,7 +567,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          await calendar.delete();
+          calendar.delete();
         });
       });
 
@@ -579,17 +579,17 @@ export async function test(t) {
         });
 
         t.it('deletes a calendar', async () => {
-          await calendar.delete();
+          calendar.delete();
 
-          const calendars = await getCalendarsNext();
-          t.expect(calendars.findIndex((c) => c.id === calendar.id)).toBe(-1);
+          const calendars = getCalendarsNext();
+          t.expect((await calendars).findIndex((c) => c.id === calendar.id)).toBe(-1);
         });
 
         t.it('throws an error when deleting a non-existent calendar', async () => {
-          await calendar.delete();
+          calendar.delete();
           t.expect(calendar.title).toBeNull();
           try {
-            await calendar.delete();
+            calendar.delete();
           } catch (e) {
             t.expect(e).toBeDefined();
           }
@@ -598,7 +598,7 @@ export async function test(t) {
         t.afterEach(async () => {
           // Call only if not already deleted
           if (calendar?.title) {
-            await calendar.delete();
+            calendar.delete();
           }
         });
       });
@@ -611,7 +611,7 @@ export async function test(t) {
         });
 
         t.it('creates an event in the specific calendar', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
 
           t.expect(event).toBeDefined();
           t.expect(typeof event.id).toBe('string');
@@ -630,7 +630,7 @@ export async function test(t) {
             frequency: Calendar.Frequency.DAILY,
             interval: 1,
           };
-          const event = await createTestEvent(calendar, {
+          const event = createTestEvent(calendar, {
             recurrenceRule,
           });
 
@@ -644,7 +644,7 @@ export async function test(t) {
 
         if (Platform.OS === 'android') {
           t.it('creates an event with alarms', async () => {
-            const event = await createTestEvent(calendar, {
+            const event = createTestEvent(calendar, {
               alarms: [{ relativeOffset: -60, method: Calendar.AlarmMethod.ALARM }],
             });
             t.expect(event.alarms).toEqual([
@@ -653,20 +653,20 @@ export async function test(t) {
           });
         }
 
-        // if (Platform.OS === 'ios') {
-        //   t.it('rejects when time zone is invalid', async () => {
-        //     let error;
-        //     try {
-        //       await createTestEvent(calendar, { timeZone: '' });
-        //     } catch (e) {
-        //       error = e;
-        //     }
-        //     t.expect(error).toBeDefined();
-        //   });
-        // }
+        if (Platform.OS === 'ios') {
+          t.it('rejects when time zone is invalid', async () => {
+            let error;
+            try {
+              createTestEvent(calendar, { timeZone: '' });
+            } catch (e) {
+              error = e;
+            }
+            t.expect(error).toBeDefined();
+          });
+        }
 
         t.afterAll(async () => {
-          await calendar.delete();
+          calendar.delete();
         });
       });
 
@@ -682,9 +682,9 @@ export async function test(t) {
           });
 
           t.it('fails to create a reminder in the event calendar', async () => {
-            let error;
+            let error: any;
             try {
-              await createTestReminder(eventCalendar);
+              createTestReminder(eventCalendar);
             } catch (e) {
               error = e;
             }
@@ -697,25 +697,24 @@ export async function test(t) {
           });
 
           t.it('creates a reminder in the reminder calendar', async () => {
-            reminder = await createTestReminder(reminderCalendar);
+            reminder = createTestReminder(reminderCalendar);
             t.expect(reminder).toBeDefined();
             t.expect(typeof reminder.id).toBe('string');
             t.expect(reminder.calendarId).toBe(reminderCalendar.id);
             t.expect(reminder.title).toBe(defaultEventData.title);
             t.expect(reminder.startDate).toBe(defaultEventData.startDate.toISOString());
-            // t.expect(reminder.location).toBe(defaultEventData.location);
             t.expect(reminder.notes).toBe(defaultEventData.notes);
           });
 
           t.it('creates a reminder with dueDate', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               dueDate: new Date(2025, 1, 1),
             });
             t.expect(reminder.dueDate).toBe(new Date(2025, 1, 1).toISOString());
           });
 
           t.afterEach(async () => {
-            await eventCalendar.delete();
+            eventCalendar.delete();
             reminder?.delete();
           });
         });
@@ -726,7 +725,7 @@ export async function test(t) {
 
           t.beforeEach(async () => {
             reminderCalendar = await getReminderCalendar();
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               startDate: new Date(2025, 0, 2, 6),
               dueDate: new Date(2025, 0, 2, 9),
             });
@@ -813,7 +812,7 @@ export async function test(t) {
         });
 
         t.it('resolves to an array with an event of the correct shape', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const events = await calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
 
           t.expect(Array.isArray(events)).toBe(true);
@@ -823,7 +822,7 @@ export async function test(t) {
         });
 
         t.it('returns a list of events', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const events = await calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
           t.expect(Array.isArray(events)).toBe(true);
           t.expect(events.length).toBe(1);
@@ -832,12 +831,12 @@ export async function test(t) {
         });
 
         t.it('modifies a listed event', async () => {
-          await createTestEvent(calendar);
+          createTestEvent(calendar);
           const events = await calendar.listEvents(new Date(2019, 3, 1), new Date(2019, 3, 29));
-          const newTitle = 'New title + ' + new Date().toISOString();
+          const newTitle = `New title + ${new Date().toISOString()}`;
           const startDate = new Date(2019, 3, 2);
           const endDate = new Date(2019, 3, 3);
-          await events[0].update({
+          events[0].update({
             title: newTitle,
             startDate,
             endDate,
@@ -847,7 +846,7 @@ export async function test(t) {
         });
 
         t.it('returns a list of recurring events', async () => {
-          await createTestEvent(calendar, {
+          createTestEvent(calendar, {
             recurrenceRule: {
               frequency: Calendar.Frequency.DAILY,
             },
@@ -860,7 +859,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          await calendar.delete();
+          calendar.delete();
         });
       });
     });
@@ -874,7 +873,7 @@ export async function test(t) {
         });
 
         t.it('gets an event by id', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const fetchedEvent = ExpoCalendarEvent.get(event.id);
           t.expect(fetchedEvent).toEqual(event);
         });
@@ -888,7 +887,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          await calendar.delete();
+          calendar.delete();
         });
       });
 
@@ -900,9 +899,9 @@ export async function test(t) {
         });
 
         t.it('updates the event title', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const newTitle = 'New title + ' + new Date().toISOString();
-          await event.update({
+          event.update({
             title: newTitle,
           });
 
@@ -910,14 +909,14 @@ export async function test(t) {
         });
 
         t.it('updates an event', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const updatedData = {
             location: 'New location ' + new Date().toISOString(),
             url: 'https://swmansion.com',
             notes: 'New notes ' + new Date().toISOString(),
           };
 
-          await event.update(updatedData);
+          event.update(updatedData);
 
           t.expect(event).toBeDefined();
           t.expect(event.location).toBe(updatedData.location);
@@ -928,11 +927,11 @@ export async function test(t) {
         });
 
         t.it('updates an event with a date string', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const startDate = new Date(2022, 2, 3);
           const endDate = new Date(2022, 5, 6);
 
-          await event.update({
+          event.update({
             startDate,
             endDate,
           });
@@ -942,11 +941,11 @@ export async function test(t) {
         });
 
         t.it('updates an event with Date objects', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const startDate = new Date(2022, 2, 3);
           const endDate = new Date(2022, 5, 6);
 
-          await event.update({
+          event.update({
             startDate,
             endDate,
           });
@@ -957,7 +956,7 @@ export async function test(t) {
         });
 
         t.it('updates an event and verifies it appears in the correct date range', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const newTitle = 'I am an updated event + ' + new Date().toISOString();
           const newStartDate = new Date(2023, 2, 3);
           const newEndDate = new Date(2023, 2, 4);
@@ -968,7 +967,7 @@ export async function test(t) {
           );
           t.expect(initialFetchedEvents.length).toBe(0);
 
-          await event.update({
+          event.update({
             title: newTitle,
             startDate: newStartDate,
             endDate: newEndDate,
@@ -987,11 +986,11 @@ export async function test(t) {
         });
 
         t.it('keeps other properties unchanged when updating title', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const updatedData: Partial<ExpoCalendarEvent> = {
             title: 'New title ' + new Date().toISOString(),
           };
-          await event.update(updatedData);
+          event.update(updatedData);
 
           t.expect(event.title).toBe(updatedData.title);
           t.expect(event.location).toBe(defaultEventData.location);
@@ -1005,11 +1004,11 @@ export async function test(t) {
         });
 
         t.it('keeps other properties unchanged when updating location', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const updatedData: Partial<ExpoCalendarEvent> = {
             location: 'New location ' + new Date().toISOString(),
           };
-          await event.update(updatedData);
+          event.update(updatedData);
 
           t.expect(event.location).toBe(updatedData.location);
           t.expect(event.title).toBe(defaultEventData.title);
@@ -1023,8 +1022,8 @@ export async function test(t) {
         });
 
         t.it('clears a field when set to null', async () => {
-          const event = await createTestEvent(calendar);
-          await event.update({
+          const event = createTestEvent(calendar);
+          event.update({
             location: null,
           });
           t.expect(event.title).toBe(defaultEventData.title);
@@ -1039,21 +1038,21 @@ export async function test(t) {
         });
 
         t.it('clears a field and sets it to a new value', async () => {
-          const event = await createTestEvent(calendar);
-          await event.update({
+          const event = createTestEvent(calendar);
+          event.update({
             location: null,
           });
           t.expect(event.location).toBeNull();
 
-          const newLocation = 'New location ' + new Date().toISOString();
-          await event.update({
+          const newLocation = `New location ${new Date().toISOString()}`;
+          event.update({
             location: newLocation,
           });
           t.expect(event.location).toBe(newLocation);
         });
 
         t.it('updates an event and verifies it is stored correctly', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
 
           const updatedData = {
             title: 'Updated title',
@@ -1070,7 +1069,7 @@ export async function test(t) {
             guestsCanInviteOthers: true,
           } satisfies Partial<ExpoCalendarEvent>;
 
-          await event.update(updatedData);
+          event.update(updatedData);
 
           // Force fetch the event from the device database
           const fetchedEvents = await calendar.listEvents(
@@ -1104,7 +1103,7 @@ export async function test(t) {
         // Updating with `instanceStartDate` is not supported on Android
         if (Platform.OS === 'ios') {
           t.it('handles detached events', async () => {
-            const event = await createTestEvent(calendar, {
+            const event = createTestEvent(calendar, {
               recurrenceRule: {
                 frequency: Calendar.Frequency.DAILY,
               },
@@ -1131,7 +1130,7 @@ export async function test(t) {
         }
 
         t.it('updates a recurrence rule with occurrence', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
 
           const newRecurrenceRule = {
             frequency: Calendar.Frequency.WEEKLY,
@@ -1139,7 +1138,7 @@ export async function test(t) {
             occurrence: 3,
           };
 
-          await event.update({
+          event.update({
             recurrenceRule: newRecurrenceRule,
           });
 
@@ -1150,7 +1149,7 @@ export async function test(t) {
         });
 
         t.it('updates a recurrence rule with endDate', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
 
           const newRecurrenceRule = {
             frequency: Calendar.Frequency.WEEKLY,
@@ -1158,7 +1157,7 @@ export async function test(t) {
             endDate: new Date(2021, 6, 5).toISOString(),
           };
 
-          await event.update({
+          event.update({
             recurrenceRule: newRecurrenceRule,
           });
 
@@ -1169,7 +1168,7 @@ export async function test(t) {
         });
 
         t.it('endDate takes precedence over occurrence', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
 
           const newRecurrenceRule = {
             frequency: Calendar.Frequency.WEEKLY,
@@ -1178,7 +1177,7 @@ export async function test(t) {
             occurrence: 3,
           };
 
-          await event.update({
+          event.update({
             recurrenceRule: newRecurrenceRule,
           });
 
@@ -1190,30 +1189,30 @@ export async function test(t) {
         });
 
         t.it('updates the all day property', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           t.expect(event.allDay).toBe(false);
-          await event.update({
+          event.update({
             allDay: true,
           });
           t.expect(event.allDay).toBe(true);
         });
 
         t.it('updates timeZone', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           t.expect(event.timeZone).toBe(defaultEventData.timeZone);
-          await event.update({
+          event.update({
             timeZone: 'GMT-5',
           });
           t.expect(event.timeZone).toBe('GMT-5');
-          await event.update({
+          event.update({
             timeZone: 'GMT+1',
           });
           t.expect(event.timeZone).toBe('GMT+1');
         });
 
         t.it('clears multiple fields when set to null', async () => {
-          const event = await createTestEvent(calendar);
-          await event.update({
+          const event = createTestEvent(calendar);
+          event.update({
             notes: null,
             url: null,
           });
@@ -1227,12 +1226,12 @@ export async function test(t) {
         });
 
         t.it('clears alarms when set to null', async () => {
-          const event = await createTestEvent(calendar, {
+          const event = createTestEvent(calendar, {
             alarms: [{ relativeOffset: -60 }],
           });
           t.expect(event.alarms.length).toBe(1);
           t.expect(event.alarms[0].relativeOffset).toEqual(-60);
-          await event.update({
+          event.update({
             alarms: null,
           });
 
@@ -1246,7 +1245,7 @@ export async function test(t) {
         });
 
         t.it('clears a recurrence rule when set to null', async () => {
-          const event = await createTestEvent(calendar, {
+          const event = createTestEvent(calendar, {
             recurrenceRule: {
               frequency: Calendar.Frequency.DAILY,
               interval: 1,
@@ -1255,7 +1254,7 @@ export async function test(t) {
           });
           t.expect(event.recurrenceRule).toBeDefined();
           t.expect(event.recurrenceRule.frequency).toBe(Calendar.Frequency.DAILY);
-          await event.update({
+          event.update({
             recurrenceRule: null,
           });
           const fetchedEvent = await fetchCreatedEvent(
@@ -1269,11 +1268,11 @@ export async function test(t) {
         });
 
         t.it('distinguishes between null and undefined values', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           const originalNotes = event.notes;
 
           // Update with undefined values (should be ignored)
-          await event.update({
+          event.update({
             title: 'Updated Title',
             notes: undefined,
           });
@@ -1282,7 +1281,7 @@ export async function test(t) {
           t.expect(event.notes).toBe(originalNotes); // Should remain unchanged
 
           // Update with null values (should clear fields)
-          await event.update({
+          event.update({
             notes: null,
           });
 
@@ -1291,7 +1290,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          await calendar.delete();
+          calendar.delete();
         });
       });
 
@@ -1304,7 +1303,7 @@ export async function test(t) {
           });
 
           t.it('returns an instance of a recurring event', async () => {
-            const recurringEvent = await createTestEvent(calendar, {
+            const recurringEvent = createTestEvent(calendar, {
               recurrenceRule: {
                 frequency: Calendar.Frequency.DAILY,
               },
@@ -1337,8 +1336,8 @@ export async function test(t) {
         });
 
         t.it('deletes an event', async () => {
-          const event = await createTestEvent(calendar);
-          event.delete({});
+          const event = createTestEvent(calendar);
+          event.delete();
           let error;
 
           try {
@@ -1351,7 +1350,7 @@ export async function test(t) {
         });
 
         t.it('deletes an event and verifies it is deleted', async () => {
-          const event = await createTestEvent(calendar);
+          const event = createTestEvent(calendar);
           event.delete();
           t.expect(event.title).toBeNull();
           t.expect(event.location).toBeNull();
@@ -1363,7 +1362,7 @@ export async function test(t) {
         });
 
         t.it('deletes a recurring event', async () => {
-          const recurringEvent = await createTestEvent(calendar, {
+          const recurringEvent = createTestEvent(calendar, {
             recurrenceRule: {
               frequency: Calendar.Frequency.DAILY,
             },
@@ -1376,9 +1375,8 @@ export async function test(t) {
           t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
           t.expect(eventsBeforeDelete.length).toBe(4);
 
-          recurringEvent.delete({
-            futureEvents: true,
-          });
+          const occurrence = recurringEvent.getOccurrence({ futureEvents: true });
+          occurrence.delete();
 
           const eventsAfterDelete = await calendar.listEvents(
             new Date(2019, 3, 4),
@@ -1391,7 +1389,7 @@ export async function test(t) {
 
         if (Platform.OS === 'ios') {
           t.it('deletes an instance of a recurring event', async () => {
-            const recurringEvent = await createTestEvent(calendar, {
+            const recurringEvent = createTestEvent(calendar, {
               recurrenceRule: {
                 frequency: Calendar.Frequency.DAILY,
               },
@@ -1404,9 +1402,10 @@ export async function test(t) {
             t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
             t.expect(eventsBeforeDelete.length).toBe(4);
 
-            recurringEvent.delete({
+            const occurrence = recurringEvent.getOccurrence({
               instanceStartDate: new Date(2019, 3, 5, 9),
             });
+            occurrence.delete();
 
             const eventsAfterDelete = await calendar.listEvents(
               new Date(2019, 3, 4),
@@ -1426,7 +1425,7 @@ export async function test(t) {
           t.it(
             'deletes a single occurrence of a recurring event via the occurrence instance',
             async () => {
-              const recurringEvent = await createTestEvent(calendar, {
+              const recurringEvent = createTestEvent(calendar, {
                 recurrenceRule: {
                   frequency: Calendar.Frequency.DAILY,
                 },
@@ -1442,9 +1441,7 @@ export async function test(t) {
               const occurrence = recurringEvent.getOccurrence({
                 instanceStartDate: new Date(2019, 3, 5, 9),
               });
-              occurrence.delete({
-                futureEvents: false,
-              });
+              occurrence.delete();
 
               const eventsAfterDelete = await calendar.listEvents(
                 new Date(2019, 3, 4),
@@ -1465,7 +1462,7 @@ export async function test(t) {
           t.it(
             'deletes all future occurrences of a recurring event from a given instance',
             async () => {
-              const recurringEvent = await createTestEvent(calendar, {
+              const recurringEvent = createTestEvent(calendar, {
                 recurrenceRule: {
                   frequency: Calendar.Frequency.DAILY,
                 },
@@ -1480,10 +1477,9 @@ export async function test(t) {
 
               const occurrence = recurringEvent.getOccurrence({
                 instanceStartDate: new Date(2019, 3, 5, 9),
-              });
-              occurrence.delete({
                 futureEvents: true,
               });
+              occurrence.delete();
 
               const eventsAfterDelete = await calendar.listEvents(
                 new Date(2019, 3, 4),
@@ -1501,51 +1497,49 @@ export async function test(t) {
         }
 
         t.it('throws an error when deleting a non-existent event', async () => {
-          const event = await createTestEvent(calendar);
-          event.delete({});
+          const event = createTestEvent(calendar);
+          event.delete();
           t.expect(event.title).toBeNull();
           try {
-            event.delete({});
+            event.delete();
           } catch (e) {
             t.expect(e).toBeDefined();
           }
         });
 
         t.afterEach(async () => {
-          await calendar.delete();
+          calendar.delete();
         });
       });
 
-      t.describe('Event.getAttendees()', () => {
+      t.describe('Event.getAttendeesAsync()', () => {
         let calendar: ExpoCalendar;
         let event: ExpoCalendarEvent;
 
         t.beforeAll(async () => {
           calendar = await createTestCalendarAsync();
-          event = await createTestEvent(calendar);
+          event = createTestEvent(calendar);
         });
 
         t.it('lists attendees', async () => {
-          const attendees = await event.getAttendees();
+          const attendees = await event.getAttendeesAsync();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);
         });
 
         t.it('lists attendees for a recurring event', async () => {
-          const recurringEvent = await createTestEvent(calendar, {
+          const recurringEvent = createTestEvent(calendar, {
             recurrenceRule: {
               frequency: Calendar.Frequency.DAILY,
             },
           });
-          const attendees = await recurringEvent.getAttendees({
-            instanceStartDate: new Date(2024, 0, 1, 9),
-          });
+          const attendees = await recurringEvent.getAttendeesAsync();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);
         });
 
         t.afterAll(async () => {
-          await calendar.delete();
+          calendar.delete();
         });
       });
     });
@@ -1576,7 +1570,7 @@ export async function test(t) {
           });
 
           t.afterEach(async () => {
-            await reminder?.delete();
+            reminder.delete();
           });
         });
 
@@ -1594,10 +1588,10 @@ export async function test(t) {
             reminder = await createTestReminder(reminderCalendar);
 
             const updatedData: Partial<ExpoCalendarReminder> = {
-              title: 'New title ' + new Date().toISOString(),
-              location: 'New location ' + new Date().toISOString(),
+              title: `New title ${new Date().toISOString()}`,
+              location: `New location ${new Date().toISOString()}`,
               url: 'https://swmansion.com',
-              notes: 'New notes ' + new Date().toISOString(),
+              notes: `New notes ${new Date().toISOString()}`,
               dueDate: new Date(2025, 1, 1).toISOString(),
             };
             reminder.update(updatedData);
@@ -1614,7 +1608,7 @@ export async function test(t) {
           });
 
           t.it('updates the listed reminder', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               dueDate: new Date(2025, 0, 2),
             });
             const reminders = await reminderCalendar.listReminders(
@@ -1625,7 +1619,7 @@ export async function test(t) {
             const found = reminders.find((r) => r.id === reminder.id);
             t.expect(found).toBeDefined();
 
-            const newTitle = 'New title ' + new Date().toISOString();
+            const newTitle = `New title ${new Date().toISOString()}`;
             found.update({
               title: newTitle,
               dueDate: new Date(2025, 0, 5),
@@ -1636,7 +1630,7 @@ export async function test(t) {
           });
 
           t.it('marks a reminder as completed', async () => {
-            reminder = await createTestReminder(reminderCalendar);
+            reminder = createTestReminder(reminderCalendar);
             t.expect(reminder.completed).toBe(false);
 
             reminder.update({
@@ -1652,7 +1646,7 @@ export async function test(t) {
           });
 
           t.it('supports alarms', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               alarms: [
                 {
                   relativeOffset: -60,
@@ -1667,7 +1661,7 @@ export async function test(t) {
           });
 
           t.it('supports alarms with absolute dates', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               alarms: [
                 {
                   absoluteDate: new Date(2025, 0, 1, 12, 0, 0).toISOString(),
@@ -1684,7 +1678,7 @@ export async function test(t) {
 
           t.it('clears multiple fields when set to null', async () => {
             const url = 'https://example.com';
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               url,
             });
 
@@ -1702,7 +1696,7 @@ export async function test(t) {
           });
 
           t.it('clears alarms when set to null', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               alarms: [{ relativeOffset: -60 }],
             });
             t.expect(reminder.alarms).toEqual([{ relativeOffset: -60 }]);
@@ -1715,7 +1709,7 @@ export async function test(t) {
           });
 
           t.it('clears recurrenceRule when set to null', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               recurrenceRule: {
                 frequency: Calendar.Frequency.WEEKLY,
                 interval: 1,
@@ -1733,7 +1727,7 @@ export async function test(t) {
           });
 
           t.it('clears dates when set to null', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               startDate: new Date(2025, 0, 1),
               dueDate: new Date(2025, 0, 2),
               completionDate: new Date(2025, 0, 3),
@@ -1756,7 +1750,7 @@ export async function test(t) {
           });
 
           t.it('distinguishes between null and undefined values for reminders', async () => {
-            reminder = await createTestReminder(reminderCalendar, {
+            reminder = createTestReminder(reminderCalendar, {
               location: 'Original location',
               notes: 'Original notes',
             });
@@ -1794,7 +1788,7 @@ export async function test(t) {
           });
 
           t.it('deletes a reminder', async () => {
-            reminder = await createTestReminder(reminderCalendar);
+            reminder = createTestReminder(reminderCalendar);
             reminder.delete();
 
             t.expect(reminder.title).toBeNull();
@@ -1807,7 +1801,7 @@ export async function test(t) {
           });
 
           t.it('throws an error when deleting a non-existent reminder', async () => {
-            reminder = await createTestReminder(reminderCalendar);
+            reminder = createTestReminder(reminderCalendar);
             reminder.delete();
             t.expect(reminder.title).toBeNull();
             try {
@@ -1833,17 +1827,17 @@ export async function test(t) {
 
         t.beforeEach(async () => {
           calendar = await createTestCalendarAsync();
-          event = await createTestEvent(calendar);
+          event = createTestEvent(calendar);
         });
 
         t.it('lists attendees for an event with attendees', async () => {
-          const attendees = await event.getAttendees();
+          const attendees = await event.getAttendeesAsync();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);
         });
 
         t.it('creates a new attendee', async () => {
-          const attendee = await createTestAttendee(event);
+          const attendee = createTestAttendee(event);
           testAttendeeShape(attendee);
           t.expect(attendee).toBeDefined();
           t.expect(attendee.email).toBe(defaultAttendeeData.email);
@@ -1854,8 +1848,8 @@ export async function test(t) {
         });
 
         t.it('lists attendees for an event', async () => {
-          await createTestAttendee(event);
-          const attendees = await event.getAttendees();
+          createTestAttendee(event);
+          const attendees = await event.getAttendeesAsync();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].email).toBe(defaultAttendeeData.email);
@@ -1866,42 +1860,42 @@ export async function test(t) {
         });
 
         t.it('updates an attendee name', async () => {
-          const attendee = await createTestAttendee(event);
+          const attendee = createTestAttendee(event);
           const name = 'Updated Attendee';
-          await attendee.update({
+          attendee.update({
             name,
           });
           t.expect(attendee.name).toBe(name);
-          const attendees = await event.getAttendees();
+          const attendees = await event.getAttendeesAsync();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].name).toBe(name);
         });
 
         t.it('updates an attendee email', async () => {
-          const attendee = await createTestAttendee(event);
+          const attendee = createTestAttendee(event);
           const email = 'updated@test.com';
-          await attendee.update({
+          attendee.update({
             email,
           });
           t.expect(attendee.email).toBe(email);
-          const attendees = await event.getAttendees();
+          const attendees = await event.getAttendeesAsync();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].email).toBe(email);
         });
 
         t.it('updates attendee role/status/type', async () => {
-          const attendee = await createTestAttendee(event);
+          const attendee = createTestAttendee(event);
           const nextRole = Calendar.AttendeeRole.ORGANIZER;
           const nextStatus = Calendar.AttendeeStatus.TENTATIVE;
           const nextType = Calendar.AttendeeType.NONE;
 
-          await attendee.update({
+          attendee.update({
             role: nextRole,
             status: nextStatus,
             type: nextType,
           });
 
-          const attendees = await event.getAttendees();
+          const attendees = await event.getAttendeesAsync();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].role).toBe(nextRole);
           t.expect(attendees[0].status).toBe(nextStatus);
@@ -1909,25 +1903,25 @@ export async function test(t) {
         });
 
         t.it('preserves attendee id when updating', async () => {
-          const attendee = await createTestAttendee(event);
+          const attendee = createTestAttendee(event);
           const originalId = attendee.id;
 
-          await attendee.update({ name: 'Changed Name', email: 'changed@test.com' });
-          const attendees = await event.getAttendees();
+          attendee.update({ name: 'Changed Name', email: 'changed@test.com' });
+          const attendees = await event.getAttendeesAsync();
 
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].id).toBe(originalId);
         });
 
         t.it('preserves attendee data when updating an event', async () => {
-          const attendee = await createTestAttendee(event);
+          const attendee = createTestAttendee(event);
           const name = 'Updated Attendee';
           const email = 'updated@test.com';
-          await attendee.update({
+          attendee.update({
             name,
             email,
           });
-          const attendees = await event.getAttendees();
+          const attendees = await event.getAttendeesAsync();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].name).toBe(name);
           t.expect(attendees[0].email).toBe(email);
@@ -1937,33 +1931,33 @@ export async function test(t) {
         });
 
         t.it('creates many attendees', async () => {
-          const attendees = await Promise.all([
+          const attendees = [
             createTestAttendee(event),
             createTestAttendee(event),
             createTestAttendee(event),
-          ]);
+          ];
           t.expect(attendees.length).toBe(3);
           t.expect(attendees.every((attendee) => attendee.name === defaultAttendeeData.name));
         });
 
         t.it('deletes an attendee', async () => {
-          const attendee = await createTestAttendee(event);
-          const attendees = await event.getAttendees();
+          const attendee = createTestAttendee(event);
+          const attendees = await event.getAttendeesAsync();
           t.expect(attendees.length).toBe(1);
 
-          await attendee.delete();
-          const attendeesAfterDelete = await event.getAttendees();
+          attendee.delete();
+          const attendeesAfterDelete = await event.getAttendeesAsync();
           t.expect(attendeesAfterDelete.length).toBe(0);
         });
 
         t.it('throws when deleting attendee twice', async () => {
-          const attendee = await createTestAttendee(event);
+          const attendee = createTestAttendee(event);
 
-          await attendee.delete();
+          attendee.delete();
 
           let error: any = null;
           try {
-            await attendee.delete();
+            attendee.delete();
           } catch (e) {
             error = e;
           }

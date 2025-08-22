@@ -3,7 +3,6 @@ import {
   AttendeeStatus,
   AttendeeType,
   Source,
-  Event,
   RecurringEventOptions,
   CalendarType,
   Availability,
@@ -12,8 +11,6 @@ import {
   EventStatus,
   Organizer,
   ReminderStatus,
-  Calendar,
-  Reminder,
   CalendarDialogParams,
   DialogEventResult,
   OpenEventPresentationOptions,
@@ -29,10 +26,10 @@ export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & Presen
 
 export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
-export type ModifiableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
+export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 
 export type ModifiableEventProperties = Pick<
-  Event,
+  ExpoCalendarEvent,
   | 'title'
   | 'location'
   | 'timeZone'
@@ -47,7 +44,7 @@ export type ModifiableEventProperties = Pick<
 >;
 
 export type ModifiableReminderProperties = Pick<
-  Reminder,
+  ExpoCalendarReminder,
   | 'title'
   | 'location'
   | 'timeZone'
@@ -178,26 +175,28 @@ export declare class ExpoCalendar {
    * @param eventData A map of details for the event to be created.
    * @return An instance of the created event.
    */
-  createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): Promise<ExpoCalendarEvent>;
+  createEvent(eventData: Omit<Partial<ExpoCalendarEvent>, 'id' | 'organizer'>): ExpoCalendarEvent;
 
   /**
    * Creates a new reminder in the calendar.
    * @param reminderData A map of details for the reminder to be created.
    * @return An instance of the created reminder.
    */
-  createReminder(reminderData: Omit<Partial<Reminder>, 'id' | 'calendarId'>): ExpoCalendarReminder;
+  createReminder(
+    reminderData: Omit<Partial<ExpoCalendarReminder>, 'id' | 'calendarId'>
+  ): ExpoCalendarReminder;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,
    * explicitly set it to `null` in `details`.
    * @param details A map of properties to be updated.
    */
-  update(details: Partial<ModifiableCalendarProperties>): Promise<void>;
+  update(details: Partial<ModifiableCalendarProperties>): void;
 
   /**
    * Deletes the calendar.
    */
-  delete(): Promise<void>;
+  delete(): void;
 
   /**
    * Gets a calendar by its ID. Throws an error if the calendar with the given ID does not exist.
@@ -366,42 +365,32 @@ export declare class ExpoCalendarEvent {
 
   /**
    * Gets all attendees for a given event (or instance of a recurring event).
-   * @param recurringEventOptions A map of options for recurring events, available only on iOS.
    * @return An array of [`Attendee`](#attendee) associated with the specified event.
    */
-  getAttendees(recurringEventOptions?: RecurringEventOptions): Promise<ExpoCalendarAttendee[]>;
+  getAttendeesAsync(): Promise<ExpoCalendarAttendee[]>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,
    * explicitly set it to `null` in `details`.
    * @param details A map of properties to be updated.
-   * @param recurringEventOptions A map of options for recurring events, available only on iOS.
+   * @param nullableFields A list of fields that can be set to `null`.
    */
   update(
     details: Partial<ModifiableEventProperties>,
-    recurringEventOptions?: RecurringEventOptions,
     nullableFields?: (keyof ModifiableEventProperties)[]
-  ): Promise<ExpoCalendarEvent>;
+  ): void;
 
   /**
    * Deletes the event.
-   * @param recurringEventOptions A map of options for recurring events, available only on iOS.
    */
-  delete(recurringEventOptions?: RecurringEventOptions): Promise<void>;
+  delete(): void;
 
   /**
    * Creates a new attendee and adds it to this event.
    */
   createAttendee(
     attendee: Pick<NonNullable<ExpoCalendarAttendee>, 'email'> & Partial<ExpoCalendarAttendee>
-  ): Promise<ExpoCalendarAttendee>;
-
-  /**
-   * Updates an existing attendee of this event.
-   */
-  updateAttendee(
-    attendee: Partial<ExpoCalendarAttendee> & { id: string }
-  ): Promise<ExpoCalendarAttendee>;
+  ): ExpoCalendarAttendee;
 
   /**
    * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
@@ -494,6 +483,7 @@ export declare class ExpoCalendarReminder {
 
 /**
  * Represents a calendar attendee object.
+ * @platform android
  */
 export declare class ExpoCalendarAttendee {
   /**
@@ -512,7 +502,6 @@ export declare class ExpoCalendarAttendee {
   name: string;
   /**
    * Role of the attendee at the event.
-   * @required
    */
   role: AttendeeRole;
   /**
@@ -530,7 +519,6 @@ export declare class ExpoCalendarAttendee {
   url?: string;
   /**
    * Email of the attendee.
-   * @required
    * @platform android
    */
   email: string;

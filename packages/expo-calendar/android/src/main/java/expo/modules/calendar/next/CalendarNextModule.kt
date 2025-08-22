@@ -94,6 +94,18 @@ class CalendarNextModule : Module() {
       }
     }
 
+    Function("createCalendar") { calendarRecord: CalendarRecord ->
+      withPermissions {
+        try {
+          val calendarId = ExpoCalendar.saveCalendar(calendarRecord, appContext)
+          val newCalendarRecord = calendarRecord.copy(id = calendarId.toString())
+          ExpoCalendar(appContext, newCalendarRecord)
+        } catch (e: Exception) {
+          throw Exception("Failed to create calendar", e)
+        }
+      }
+    }
+
     Function("getEventById") { eventId: String ->
       withPermissions {
         val event = ExpoCalendarEvent.findEventById(eventId, appContext)
@@ -101,19 +113,6 @@ class CalendarNextModule : Module() {
           throw Exception("Event with id $eventId not found")
         }
         return@Function event
-      }
-    }
-
-    AsyncFunction("createCalendarNext") { calendarRecord: CalendarRecord, promise: Promise ->
-      withPermissions(promise) {
-        try {
-          val calendarId = ExpoCalendar.saveCalendar(calendarRecord, appContext)
-          val newCalendarRecord = calendarRecord.copy(id = calendarId.toString())
-          val newCalendar = ExpoCalendar(appContext, newCalendarRecord)
-          promise.resolve(newCalendar)
-        } catch (e: Exception) {
-          promise.reject("E_CALENDAR_CREATION_FAILED", "Failed to create calendar", e)
-        }
       }
     }
 
@@ -198,42 +197,38 @@ class CalendarNextModule : Module() {
         }
       }
 
-      AsyncFunction("createEvent") { expoCalendar: ExpoCalendar, record: EventRecord, promise: Promise ->
-        withPermissions(promise) {
+      Function("createEvent") { expoCalendar: ExpoCalendar, record: EventRecord ->
+        withPermissions {
           try {
-            val expoCalendarEvent = expoCalendar.createEvent(record)
-            promise.resolve(expoCalendarEvent)
+            expoCalendar.createEvent(record) ?: throw Exception("Event could not be created")
           } catch (e: Exception) {
-            promise.reject("E_EVENT_NOT_CREATED", "Event could not be created", e)
+            throw Exception("Event could not be created", e)
           }
         }
       }
 
-      AsyncFunction("update") { expoCalendar: ExpoCalendar, details: CalendarRecord, promise: Promise ->
-        withPermissions(promise) {
+      Function("update") { expoCalendar: ExpoCalendar, details: CalendarRecord ->
+        withPermissions {
           try {
             val updatedRecord = expoCalendar.calendarRecord?.getUpdatedRecord(details)
               ?: throw Exception("Calendar record is null")
             ExpoCalendar.updateCalendar(updatedRecord, appContext, isNew = false)
             expoCalendar.calendarRecord = updatedRecord
-            promise.resolve(null)
           } catch (e: Exception) {
-            promise.reject("E_CALENDAR_UPDATE_FAILED", "Failed to update calendar", e)
+            throw Exception("Failed to update calendar", e)
           }
         }
       }
 
-      AsyncFunction("delete") { expoCalendar: ExpoCalendar, promise: Promise ->
-        withPermissions(promise) {
+      Function("delete") { expoCalendar: ExpoCalendar ->
+        withPermissions {
           try {
             val successful = expoCalendar.deleteCalendar()
-            if (successful) {
-              promise.resolve(null)
-            } else {
-              promise.reject("E_CALENDAR_NOT_DELETED", "Calendar could not be deleted", null)
+            if (!successful) {
+              throw Exception("Calendar could not be deleted")
             }
           } catch (e: Exception) {
-            promise.reject("E_CALENDAR_NOT_DELETED", "An error occurred while deleting calendar", e)
+            throw Exception("An error occurred while deleting calendar", e)
           }
         }
       }
@@ -244,14 +239,12 @@ class CalendarNextModule : Module() {
         ExpoCalendarEvent(appContext)
       }
 
-      AsyncFunction("createAttendee")
-      { expoCalendarEvent: ExpoCalendarEvent, record: AttendeeRecord, promise: Promise ->
-        withPermissions(promise) {
+      Function("createAttendee") { expoCalendarEvent: ExpoCalendarEvent, record: AttendeeRecord ->
+        withPermissions {
           try {
-            val attendee = expoCalendarEvent.createAttendee(record)
-            promise.resolve(attendee)
+            expoCalendarEvent.createAttendee(record) ?: throw Exception("Attendee could not be created")
           } catch (e: Exception) {
-            promise.reject("E_ATTENDEE_NOT_CREATED", "Attendee could not be created", e)
+            throw Exception("Attendee could not be created", e)
           }
         }
       }
@@ -341,10 +334,7 @@ class CalendarNextModule : Module() {
       }
 
       AsyncFunction("openInCalendarAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions ->
-        val eventId = expoCalendarEvent.eventRecord?.id;
-        if (eventId == null) {
-          throw Exception("Event id is null")
-        }
+        val eventId = expoCalendarEvent.eventRecord?.id ?: throw Exception("Event id is null");
         val params = ViewedEventOptions(
           id = eventId,
           startNewActivityTask = rawParams.startNewActivityTask
@@ -354,10 +344,7 @@ class CalendarNextModule : Module() {
       }
 
       AsyncFunction("editInCalendarAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions? ->
-        val eventId = expoCalendarEvent.eventRecord?.id;
-        if (eventId == null) {
-          throw Exception("Event id is null")
-        }
+        val eventId = expoCalendarEvent.eventRecord?.id ?: throw Exception("Event id is null");
         val params = ViewedEventOptions(
           id = eventId,
           startNewActivityTask = rawParams?.startNewActivityTask ?: true
@@ -367,7 +354,7 @@ class CalendarNextModule : Module() {
         return@Coroutine editResult
       }
 
-      AsyncFunction("getAttendees") { expoCalendarEvent: ExpoCalendarEvent, _: RecurringEventOptions, promise: Promise ->
+      AsyncFunction("getAttendeesAsync") { expoCalendarEvent: ExpoCalendarEvent, promise: Promise ->
         withPermissions(promise) {
           try {
             val attendees = expoCalendarEvent.getAttendees()
@@ -378,22 +365,31 @@ class CalendarNextModule : Module() {
         }
       }
 
-      AsyncFunction("update") { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, _: Any, nullableFields: List<String>, promise: Promise ->
-        withPermissions(promise) {
+      Function("getOccurrence") { expoCalendarEvent: ExpoCalendarEvent, options: RecurringEventOptions? ->
+        withPermissions {
           try {
-            expoCalendarEvent.saveEvent(eventRecord, nullableFields = nullableFields)
-            expoCalendarEvent.reloadEvent()
-            promise.resolve(expoCalendarEvent)
+            expoCalendarEvent.getOccurrence(options)
           } catch (e: Exception) {
-            promise.reject("E_EVENT_UPDATE_FAILED", "Failed to update event", e)
+            throw Exception( "Failed to get occurrence", e)
           }
         }
       }
 
-      Function("delete") { expoCalendarEvent: ExpoCalendarEvent, recurringEventOptions: RecurringEventOptions ->
+      Function("update") { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, nullableFields: List<String> ->
         withPermissions {
           try {
-            expoCalendarEvent.deleteEvent(recurringEventOptions)
+            expoCalendarEvent.saveEvent(eventRecord, nullableFields = nullableFields)
+            expoCalendarEvent.reloadEvent()
+          } catch (e: Exception) {
+            throw Exception("Failed to update event", e)
+          }
+        }
+      }
+
+      Function("delete") { expoCalendarEvent: ExpoCalendarEvent ->
+        withPermissions {
+          try {
+            expoCalendarEvent.deleteEvent()
           } catch (e: Exception) {
             throw Exception("Event could not be deleted", e)
           }
@@ -430,33 +426,30 @@ class CalendarNextModule : Module() {
         expoCalendarAttendee.attendeeRecord?.email
       }
 
-      AsyncFunction("update") { expoCalendarAttendee: ExpoCalendarAttendee, attendeeRecord: AttendeeRecord, promise: Promise ->
-        withPermissions(promise) {
+
+
+      Function("update") { expoCalendarAttendee: ExpoCalendarAttendee, attendeeRecord: AttendeeRecord ->
+        withPermissions {
           try {
             val updatedRecord = expoCalendarAttendee.attendeeRecord?.getUpdatedRecord(attendeeRecord, emptyList())
-            if (updatedRecord == null) {
-              throw Exception("Event record is null")
-            }
+              ?: throw Exception("Event record is null")
             expoCalendarAttendee.saveAttendee(updatedRecord)
             expoCalendarAttendee.attendeeRecord = updatedRecord
-            promise.resolve()
           } catch (e: Exception) {
-            promise.reject("E_ATTENDEE_NOT_UPDATED", "Attendee could not be updated", e)
+            throw Exception("Attendee could not be updated", e)
           }
         }
       }
 
-      AsyncFunction("delete") { expoCalendarAttendee: ExpoCalendarAttendee, promise: Promise ->
-        withPermissions(promise) {
+      Function("delete") { expoCalendarAttendee: ExpoCalendarAttendee ->
+        withPermissions {
           try {
             val successful = expoCalendarAttendee.deleteAttendee()
-            if (successful) {
-              promise.resolve(null)
-            } else {
-              promise.reject("E_ATTENDEE_NOT_DELETED", "Attendee could not be deleted", null)
+            if (!successful) {
+              throw Exception("Attendee could not be deleted")
             }
           } catch (e: Exception) {
-            promise.reject("E_ATTENDEE_NOT_DELETED", "An error occurred while deleting attendee", e)
+            throw Exception("An error occurred while deleting attendee", e)
           }
         }
       }
@@ -524,10 +517,10 @@ class CalendarNextModule : Module() {
     block()
   }
 
-  private inline fun withPermissions(block: () -> Unit) {
+  private inline fun <T> withPermissions(block: () -> T): T {
     if (!checkPermissions()) {
-      return
+      throw Exception("CALENDAR permission is required to do this operation.")
     }
-    block()
+    return block()
   }
 }

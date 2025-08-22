@@ -50,26 +50,17 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     return result;
   }
 
-  override async getAttendees(
-    recurringEventOptions: RecurringEventOptions = {}
-  ): Promise<ExpoCalendarAttendee[]> {
-    return super.getAttendees(stringifyDateValues(recurringEventOptions));
+  override async getAttendeesAsync(): Promise<ExpoCalendarAttendee[]> {
+    return super.getAttendeesAsync();
   }
 
-  override async update(
-    details: Partial<ModifiableEventProperties>,
-    options: RecurringEventOptions = {}
-  ): Promise<ExpoCalendarEvent> {
+  override update(details: Partial<ModifiableEventProperties>): void {
     const nullableDetailsFields = getNullableDetailsFields(details);
-    return await super.update(
-      stringifyDateValues(details),
-      stringifyDateValues(options),
-      nullableDetailsFields
-    );
+    return super.update(stringifyDateValues(details), nullableDetailsFields);
   }
 
-  override delete(options: RecurringEventOptions = {}): Promise<void> {
-    return super.delete(stringifyDateValues(options));
+  override delete(): void {
+    super.delete();
   }
 
   static override get(eventId: string): ExpoCalendarEvent {
@@ -102,7 +93,7 @@ export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarRemin
  * such as retrieving its events, updating its details, and accessing its metadata.
  */
 export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
-  override async createEvent(
+  override createEvent(
     details: Partial<
       Omit<
         Event,
@@ -114,8 +105,8 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         | 'organizer'
       >
     >
-  ): Promise<ExpoCalendarEvent> {
-    const newEvent = await super.createEvent(stringifyDateValues(details));
+  ): ExpoCalendarEvent {
+    const newEvent = super.createEvent(stringifyDateValues(details));
     Object.setPrototypeOf(newEvent, ExpoCalendarEvent.prototype);
     return newEvent;
   }
@@ -156,10 +147,10 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     });
   }
 
-  override update(details: Partial<ModifiableCalendarProperties>): Promise<void> {
+  override update(details: Partial<ModifiableCalendarProperties>): void {
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, color: color || undefined };
-    return super.update(newDetails);
+    return super.update(newDetails as Partial<ModifiableCalendarProperties>);
   }
 
   static override get(calendarId: string): ExpoCalendar {
@@ -206,10 +197,10 @@ export async function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalendar
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export async function createCalendarNext(details: Partial<Calendar> = {}): Promise<ExpoCalendar> {
+export function createCalendar(details: Partial<Calendar> = {}): ExpoCalendar {
   const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color: color || undefined };
-  const createdCalendar = await InternalExpoCalendar.createCalendarNext(newDetails);
+  const createdCalendar = InternalExpoCalendar.createCalendar(newDetails);
   Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
   return createdCalendar;
 }
@@ -217,19 +208,23 @@ export async function createCalendarNext(details: Partial<Calendar> = {}): Promi
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
- * @param calendarIds An array of calendar IDs to search for events.
+ * @param calendars An array of calendar IDs to search for events or [`ExpoCalendar`](#expocalendar) objects.
  * @param startDate The start date of the time range to search for events.
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
 export async function listEvents(
-  calendarIds: string[],
+  calendars: string[] | ExpoCalendar[],
   startDate: Date,
   endDate: Date
 ): Promise<ExpoCalendarEvent[]> {
   if (!InternalExpoCalendar.listEvents) {
     throw new UnavailabilityError('Calendar', 'listEvents');
   }
+  const calendarIds: string[] =
+    Array.isArray(calendars) && calendars.length > 0 && typeof calendars[0] !== 'string'
+      ? (calendars as ExpoCalendar[]).map((calendar) => calendar.id)
+      : (calendars as string[]);
   return InternalExpoCalendar.listEvents(
     calendarIds,
     stringifyIfDate(startDate),
@@ -242,11 +237,11 @@ export async function listEvents(
  * @param eventId The ID of the event to get.
  * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
  */
-export async function getEventById(eventId: string): Promise<ExpoCalendarEvent> {
+export function getEventById(eventId: string): ExpoCalendarEvent {
   if (!InternalExpoCalendar.getEventById) {
     throw new UnavailabilityError('Calendar', 'getEventById');
   }
-  const event = await InternalExpoCalendar.getEventById(eventId);
+  const event = InternalExpoCalendar.getEventById(eventId);
   Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
   return event;
 }
@@ -257,11 +252,11 @@ export async function getEventById(eventId: string): Promise<ExpoCalendarEvent> 
  * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
  * @platform ios
  */
-export async function getReminderById(reminderId: string): Promise<ExpoCalendarReminder> {
+export function getReminderById(reminderId: string): ExpoCalendarReminder {
   if (!InternalExpoCalendar.getReminderById) {
     throw new UnavailabilityError('Calendar', 'getReminderById');
   }
-  const reminder = await InternalExpoCalendar.getReminderById(reminderId);
+  const reminder = InternalExpoCalendar.getReminderById(reminderId);
   Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
   return reminder;
 }
