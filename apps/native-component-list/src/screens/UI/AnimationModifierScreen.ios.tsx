@@ -33,7 +33,7 @@ export default function AnimationModifierScreen() {
             <HStack spacing={16}>
               <VStack spacing={8}>
                 <Text>EaseInOut (2s)</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 80, height: 80 }),
@@ -49,7 +49,7 @@ export default function AnimationModifierScreen() {
 
               <VStack spacing={8}>
                 <Text>Linear (0.5s)</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 80, height: 80 }),
@@ -73,7 +73,7 @@ export default function AnimationModifierScreen() {
             <HStack spacing={16}>
               <VStack spacing={8}>
                 <Text>Default Spring</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 90, height: 90 }),
@@ -89,7 +89,7 @@ export default function AnimationModifierScreen() {
 
               <VStack spacing={8}>
                 <Text>Custom Spring</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 90, height: 90 }),
@@ -116,7 +116,7 @@ export default function AnimationModifierScreen() {
             <HStack spacing={16}>
               <VStack spacing={8}>
                 <Text>Bouncy</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 80, height: 80 }),
@@ -139,7 +139,7 @@ export default function AnimationModifierScreen() {
 
               <VStack spacing={8}>
                 <Text>Smooth</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 80, height: 80 }),
@@ -170,7 +170,7 @@ export default function AnimationModifierScreen() {
             <HStack spacing={16}>
               <VStack spacing={8}>
                 <Text>1s Delay</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 80, height: 80 }),
@@ -186,7 +186,7 @@ export default function AnimationModifierScreen() {
 
               <VStack spacing={8}>
                 <Text>Repeat 3x</Text>
-                {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+                {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
                 <HStack
                   modifiers={[
                     frame({ width: 80, height: 80 }),
@@ -213,7 +213,7 @@ export default function AnimationModifierScreen() {
           <VStack spacing={16}>
             <Text>Multiple effects with different animations</Text>
 
-            {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+            {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
             <HStack
               modifiers={[
                 frame({ width: 120, height: 120 }),
@@ -236,7 +236,7 @@ export default function AnimationModifierScreen() {
 
         <Section title="🎮 Reset Controls">
           <VStack spacing={16}>
-            {/* @ts-expect-error - we need a rectable box here. remove once we have a rectangle component */}
+            {/* @ts-expect-error - we need a rectangle box here. remove once we have a rectangle component */}
             <HStack
               modifiers={[
                 frame({ width: 250, height: 50 }),
