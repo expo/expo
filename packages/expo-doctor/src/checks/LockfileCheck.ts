@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
@@ -11,10 +12,12 @@ export class LockfileCheck implements DoctorCheck {
     const issues: string[] = [];
     const advice: string[] = [];
 
+    const root = resolveWorkspaceRoot(projectRoot) ?? projectRoot;
+
     const lockfileCheckResults = await Promise.all(
       ['pnpm-lock.yaml', 'yarn.lock', 'package-lock.json', 'bun.lockb', 'bun.lock'].map(
         (lockfile) => {
-          return { lockfile, exists: fs.existsSync(`${projectRoot}/${lockfile}`) };
+          return { lockfile, exists: fs.existsSync(`${root}/${lockfile}`) };
         }
       )
     );
