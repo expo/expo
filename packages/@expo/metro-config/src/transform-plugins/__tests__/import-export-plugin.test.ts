@@ -43,8 +43,8 @@ it('correctly transforms "export * as" combined with other ESM imports and expor
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
 
-    var React = _$$_IMPORT_DEFAULT('react');
     var Component = require('react').Component;
+    var React = _$$_IMPORT_DEFAULT('react');
     var _Icons = _$$_IMPORT_ALL('icons');
     var _default = _$$_IMPORT_DEFAULT('button');
     const MyComponent = () => React.createElement('div');
@@ -57,10 +57,10 @@ it('correctly transforms "export * as" combined with other ESM imports and expor
 
   expect(showTransformedDeps(code, [importExportPlugin])).toMatchInlineSnapshot(`
     "
-    > 2 |     import React from 'react';
-        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (react)
     > 3 |     import { Component } from 'react';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (react)
+    > 2 |     import React from 'react';
+        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (react)
     > 4 |     export * as Icons from 'icons';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #1 (icons)
     > 5 |     export { default as Button } from 'button';
@@ -196,6 +196,14 @@ it('imports multiple members from another module and export them in separate sta
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
+    Object.defineProperty(exports, "bar", {
+      enumerable: true,
+      get: function () {
+        return function (m) {
+          return m && m.__esModule ? m.default : m;
+        }(_bar);
+      }
+    });
     Object.defineProperty(exports, "foo", {
       enumerable: true,
       get: function () {
@@ -210,7 +218,6 @@ it('imports multiple members from another module and export them in separate sta
     });
     var _bar = require('bar');
     var bar = _$$_IMPORT_DEFAULT('bar');
-    exports.bar = bar;
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -297,7 +304,7 @@ it('transforms export all as live bindings (no named exports)', () => {
       value: true
     });
     var _exportedNames = {};
-    var _foo = require("foo");
+    var _foo = require('foo');
     Object.keys(_foo).forEach(function (_key) {
       if (_key === "default" || _key === "__esModule") return;
       if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
@@ -342,7 +349,7 @@ it('places export all with live bindings above export default and named', () => 
         return _bar.baz;
       }
     });
-    var _foo = require("foo");
+    var _foo = require('foo');
     Object.keys(_foo).forEach(function (_key) {
       if (_key === "default" || _key === "__esModule") return;
       if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
@@ -378,12 +385,12 @@ it('places export all above export default and named', () => {
     var _baz = require('bar').baz;
     const bax = 'bax';
     var _default = bax;
-    var _foo = require("foo");
+    var _foo = require('foo');
     for (var _key in _foo) {
       exports[_key] = _foo[_key];
     }
-    exports.default = _default;
     exports.baz = _baz;
+    exports.default = _default;
   `;
 
   compare([importExportPlugin], code, expected, { ...opts });
@@ -597,8 +604,8 @@ it('transforms import default and named as local with live binding', () => {
   `;
 
   const expected = `
-    var foo = _$$_IMPORT_DEFAULT('bar');
     var _bar = require('bar');
+    var foo = _$$_IMPORT_DEFAULT('bar');
     console.log(foo, _bar.baz);
   `;
 

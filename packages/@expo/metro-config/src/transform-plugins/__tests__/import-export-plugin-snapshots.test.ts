@@ -292,6 +292,11 @@ describe.each([
       import { default as local } from 'apple-icons';
       export const [a, b] = local;
     `,
+
+    // Side effects
+    test('import side effect')`
+      import 'apple-icons';
+    `,
   ])('transforms %s', (_name, code) => {
     expect(getExpected(code)).toMatchSnapshot();
   });
