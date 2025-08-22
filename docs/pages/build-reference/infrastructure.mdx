@@ -55,7 +55,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://10.4.0.19:4873
+  registry=http://npm.production.caches.eas-build.internal
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -63,7 +63,7 @@ Android builders run on virtual machines in an isolated environment. Every build
   ```yaml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'http://10.4.0.19:4873'
+  npmRegistryServer: 'http://npm.production.caches.eas-build.internal'
   enableImmutableInstalls: false
   ```
 
@@ -275,7 +275,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://10.94.183.70:4873
+  registry=http://npm.caches.eas-build.internal
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -283,7 +283,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
   ```yaml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'http://10.94.183.70:4873'
+  npmRegistryServer: 'http://npm.caches.eas-build.internal'
   enableImmutableInstalls: false
   ```
 
