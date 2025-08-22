@@ -15,12 +15,12 @@ This module is a stopgap solution to provide modules with a way to access Scoped
 // The class needs to be 'open', because it's inherited in expoview
 open class AppDirectoriesModule(private val context: Context) : AppDirectoriesModuleInterface, InternalModule {
 
-    override fun getExportedInterfaces(): List<Class<*>> =
-        listOf(AppDirectoriesModuleInterface::class.java)
+  override fun getExportedInterfaces(): List<Class<*>> =
+    listOf(AppDirectoriesModuleInterface::class.java)
 
-    override val cacheDirectory: File
-        get() = context.cacheDir
+  override val cacheDirectory: File
+    get() = context.cacheDir
 
-    override val persistentFilesDirectory: File
-        get() = context.filesDir
+  override val persistentFilesDirectory: File
+    get() = context.filesDir
 }
