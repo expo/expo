@@ -18,7 +18,7 @@ internal final class NamespaceProviderProps: ExpoSwiftUI.ViewProps {}
 
 private final class NamespaceCache {
   private var cache: [String: Namespace.ID] = [:]
-  
+
   func getOrCreate(for identifier: String) -> Namespace.ID {
     if let existingNamespace = cache[identifier] {
       return existingNamespace
@@ -39,7 +39,7 @@ internal struct NamespaceProvider: ExpoSwiftUI.View {
   init(props: NamespaceProviderProps) {
     self.props = props
   }
-  
+
   var body: some View {
     Children()
       .environment(\.namespaceProvider, provideNamespace)
