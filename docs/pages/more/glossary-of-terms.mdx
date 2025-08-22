@@ -58,7 +58,7 @@ This is in contrast to using [app config and prebuild](/workflow/prebuild), wher
 
 ### Bun
 
-A JavaScript runtime and a drop-in alternative for Node.js. For more information about usage with Expo and EAS, see [using Bun](/guides/using-bun/) guide.
+A JavaScript runtime and a drop-in alternative for Node.js. Bun can also be used as a [package manager for JavaScript](#package-manager). For more information about usage with Expo and EAS, see [using Bun](/guides/using-bun/) guide.
 
 ### CocoaPods
 
@@ -273,11 +273,15 @@ A native application containing a [JavaScript engine](#javascript-engine), and i
 
 ### npm
 
-[npm](https://www.npmjs.com/) is a package manager for JavaScript and the registry where the packages are stored. An alternative package manager, which we use internally at Expo, is [Yarn](#yarn).
+[npm](https://www.npmjs.com/) is a [package manager for JavaScript](#package-manager) and the registry where the packages are stored.
 
 ### Package manager
 
-Automates the process of installing, upgrading, configuring, and removing libraries, also known as dependencies, from your project. See [npm](#npm) and [Yarn](#yarn).
+Automates the process of installing, upgrading, configuring, and removing libraries, also known as dependencies, from your project. See [npm](#npm), [pnpm](#pnpm), and [Yarn](#yarn).
+
+### Package manager workspaces
+
+The [monorepo](#monorepo) solution we recommend for Expo users. See [Working with Monorepos](/guides/monorepos) for more information on how to configure workspaces with supported package managers.
 
 ### Platform extensions
 
@@ -290,6 +294,10 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 - Web: **\*.web.js**, **\*.js**
 
 {/* TODO: Multi-Resolution Asset Extensions */}
+
+### pnpm
+
+[pnpm](https://pnpm.io/) is [package manager for JavaScript](#package-manager), focused on disk space efficiency.
 
 ### Prebuild
 
@@ -377,11 +385,7 @@ The deprecated bundler used by [Expo CLI](#expo-cli) for developing [`react-nati
 
 ### Yarn
 
-A package manager for JavaScript. For more information, see [Yarn](https://yarnpkg.com/) documentation.
-
-### Yarn workspaces
-
-The [monorepo](#monorepo) solution we recommend for Expo users. See [Working with Monorepos](/guides/monorepos) for more information on how to configure Yarn workspaces.
+[Yarn](https://yarnpkg.com/) is a [package manager for JavaScript](#package-manager), created at Meta. It has two mainline versions [Yarn v1 (Classic)](https://classic.yarnpkg.com/lang/en/) and [Yarn Berry](https://github.com/yarnpkg/berry)
 
 ### Yoga
 
