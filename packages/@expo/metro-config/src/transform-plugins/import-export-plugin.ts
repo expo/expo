@@ -148,6 +148,18 @@ const resolveTemplate = template.expression(`
   require.resolve(NODE)
 `);
 
+// Q?: Metro import all caches the module creation
+// NOTE: The current for requires the module multiple time when inlining requires
+const importAllTemplate = template.statement(`
+  var %%namespaceId%% = %%moduleId%% && %%moduleId%%.__esModule ? %%moduleId%% : {
+  ...%%moduleId%%, default: %%moduleId%%.default,
+};
+`);
+
+const importDefaultTemplate = template.statement(`
+  var %%asId%% = %%moduleId%% && %%moduleId%%.__esModule ? %%moduleId%% : { default: %%moduleId%% };
+`);
+
 /**
  * Creates static exported names array for the module.
  *
@@ -551,19 +563,24 @@ export function importExportPlugin({
                 );
               }
 
+              let importAllNamespace: t.Identifier | null = null;
               for (const { as, loc } of getArray(state.exportAllFromAs, module.value)) {
                 // export * as name from 'module'
-                const importAllNamespace = path.scope.generateUidIdentifier(module.value);
-                imports.push(
-                  withLocation(
-                    importTemplate({
-                      importHelperId: t.cloneNode(state.importAll),
-                      moduleStr: t.cloneNode(resolved),
-                      asId: t.cloneNode(importAllNamespace),
-                    }),
-                    loc
-                  )
-                );
+                if (!namespace) {
+                  namespace = importModuleNamespace(loc);
+                }
+                if (!importAllNamespace) {
+                  importAllNamespace = path.scope.generateUidIdentifier(`${module.value}All`);
+                  imports.push(
+                    withLocation(
+                      importAllTemplate({
+                        namespaceId: importAllNamespace,
+                        moduleId: t.cloneNode(namespace),
+                      }),
+                      loc
+                    )
+                  );
+                }
                 staticExports.push(
                   withLocation(
                     staticExportTemplate({
@@ -631,12 +648,15 @@ export function importExportPlugin({
 
               for (const { as, loc } of getArray(state.importAllFromAs, module.value)) {
                 // import * as name from 'module'
+                // TODO: reuse importAllNamespace
+                if (!namespace) {
+                  namespace = importModuleNamespace(loc);
+                }
                 imports.push(
                   withLocation(
-                    importTemplate({
-                      importHelperId: t.cloneNode(state.importAll),
-                      moduleStr: t.cloneNode(resolved),
-                      asId: t.identifier(as),
+                    importAllTemplate({
+                      namespaceId: as,
+                      moduleId: t.cloneNode(namespace),
                     }),
                     loc
                   )
@@ -645,10 +665,10 @@ export function importExportPlugin({
 
               for (const { as, loc } of getArray(state.importDefaultFromAs, module.value)) {
                 // import name from 'module' (or import { default as name } from 'module')
+                if (!namespace) {
+                  namespace = importModuleNamespace(loc);
+                }
                 if (exportedNames.has(as.name)) {
-                  if (!namespace) {
-                    namespace = importModuleNamespace(loc);
-                  }
 
                   _namespaceForLocal.set(as.name, {
                     namespace: namespace.name,
@@ -659,10 +679,9 @@ export function importExportPlugin({
                 // We need this to preserve the local default variable in case it's used
                 imports.push(
                   withLocation(
-                    importTemplate({
-                      importHelperId: t.cloneNode(state.importDefault),
-                      moduleStr: t.cloneNode(resolved),
+                    importDefaultTemplate({
                       asId: as,
+                      moduleId: t.cloneNode(namespace),
                     }),
                     loc
                   )

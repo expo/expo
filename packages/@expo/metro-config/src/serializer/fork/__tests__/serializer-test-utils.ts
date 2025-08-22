@@ -102,6 +102,7 @@ export async function serializeOptimizeAsync(
     minify?: boolean;
     dev?: boolean;
     mockRuntime?: boolean;
+    inlineRequires?: boolean;
   } = {}
 ) {
   return await serializeToWithGraph(

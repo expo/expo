@@ -56,14 +56,17 @@ console.log(run);
 });
 
 it(`traces multiple imports with namespace export to the same module`, async () => {
-  const result = await serializeOptimizeAsync({
-    'index.js': `
+  const result = await serializeOptimizeAsync(
+    {
+      'index.js': `
 import {run} from "./b";
 export * as bar from "./b";
 console.log(run, bar);
             `,
-    'b.js': ``,
-  });
+      'b.js': ``,
+    },
+    { inlineRequires: false }
+  );
 
   const [[, , graph]] = result;
 
@@ -74,10 +77,10 @@ console.log(run, bar);
         data: {
           asyncType: null,
           exportNames: ['*'],
-          imports: 2,
+          imports: 1,
           isESMImport: true,
           key: '5fes4Bo7aGIJwD57FkocPfA5U68=',
-          locs: [AnyPosition, AnyPosition],
+          locs: [AnyPosition],
         },
         name: './b',
       },
