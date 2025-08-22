@@ -3,8 +3,10 @@ import { Platform, processColor } from 'react-native';
 
 import {
   Calendar,
+  DialogEventResult,
   EntityTypes,
   Event,
+  OpenEventDialogResult,
   RecurringEventOptions,
   Reminder,
   ReminderStatus,
@@ -15,6 +17,8 @@ import {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
+  CalendarDialogOpenParamsNext,
+  CalendarDialogParamsNext,
 } from './ExpoCalendar.types';
 
 /**
@@ -26,6 +30,20 @@ export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAtten
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+  override async openInCalendarAsync(
+    params?: CalendarDialogOpenParamsNext
+  ): Promise<OpenEventDialogResult> {
+    // We have to pass null here because the core doesn't support skipping the first param
+    return super.openInCalendarAsync(params ?? null);
+  }
+
+  override async editInCalendarAsync(
+    params?: CalendarDialogParamsNext
+  ): Promise<DialogEventResult> {
+    // We have to pass null here because the core doesn't support skipping the first param
+    return super.editInCalendarAsync(params ?? null);
+  }
+
   override getOccurrence(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarEvent {
     const result = super.getOccurrence(stringifyDateValues(recurringEventOptions));
     Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);
@@ -53,6 +71,12 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   override delete(options: RecurringEventOptions = {}): Promise<void> {
     return super.delete(stringifyDateValues(options));
   }
+
+  static override get(eventId: string): ExpoCalendarEvent {
+    const event = InternalExpoCalendar.getEventById(eventId);
+    Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
+    return event;
+  }
 }
 
 /**
@@ -62,6 +86,12 @@ export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarRemin
   override update(details: Partial<ModifiableReminderProperties>): void {
     const nullableDetailsFields = getNullableDetailsFields(details);
     super.update(stringifyDateValues(details), nullableDetailsFields);
+  }
+
+  static override get(reminderId: string): ExpoCalendarReminder {
+    const reminder = InternalExpoCalendar.getReminderById(reminderId);
+    Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+    return reminder;
   }
 }
 
@@ -130,6 +160,12 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, color: color || undefined };
     return super.update(newDetails);
+  }
+
+  static override get(calendarId: string): ExpoCalendar {
+    const calendar = InternalExpoCalendar.getCalendarById(calendarId);
+    Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+    return calendar;
   }
 }
 

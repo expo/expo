@@ -22,11 +22,12 @@ import {
   EventAccessLevel,
   CalendarAccessLevel,
   AlarmMethod,
+  OpenEventDialogResult,
 } from '../Calendar';
 
-type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
+export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 
-type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
+export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
 export type ModifiableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
 
@@ -197,6 +198,13 @@ export declare class ExpoCalendar {
    * Deletes the calendar.
    */
   delete(): Promise<void>;
+
+  /**
+   * Gets a calendar by its ID. Throws an error if the calendar with the given ID does not exist.
+   * @param calendarId The ID of the calendar to get.
+   * @returns An [`ExpoCalendar`](#expocalendar) object representing the calendar.
+   */
+  static get(calendarId: string): ExpoCalendar;
 }
 
 export declare class ExpoCalendarEvent {
@@ -334,8 +342,8 @@ export declare class ExpoCalendarEvent {
    * @header systemProvidedUI
    */
   openInCalendarAsync(
-    params: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
-  ): Promise<void>;
+    params?: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
+  ): Promise<OpenEventDialogResult>;
 
   /**
    * Launches the calendar UI provided by the OS to edit or delete an event.
@@ -343,7 +351,7 @@ export declare class ExpoCalendarEvent {
    * @header systemProvidedUI
    */
   editInCalendarAsync(
-    params: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
+    params?: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
   /**
@@ -392,6 +400,13 @@ export declare class ExpoCalendarEvent {
   updateAttendee(
     attendee: Partial<ExpoCalendarAttendee> & { id: string }
   ): Promise<ExpoCalendarAttendee>;
+
+  /**
+   * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
+   * @param eventId The ID of the event to get.
+   * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
+   */
+  static get(eventId: string): ExpoCalendarEvent;
 }
 
 export declare class ExpoCalendarReminder {
@@ -466,6 +481,13 @@ export declare class ExpoCalendarReminder {
    * Deletes the reminder.
    */
   delete(): void;
+
+  /**
+   * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
+   * @param reminderId The ID of the reminder to get.
+   * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
+   */
+  static get(reminderId: string): ExpoCalendarReminder;
 }
 
 /**
