@@ -84,7 +84,6 @@ export async function loadMetroConfigAsync(
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
   if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
-    process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
 
   const isReactCanaryEnabled =
@@ -92,11 +91,6 @@ export async function loadMetroConfigAsync(
       serverActionsEnabled ||
       exp.experiments?.reactCanary) ??
     false;
-
-  if (isReactCanaryEnabled) {
-    // The fast resolver is required for React canary to work as it can switch the node_modules location for react imports.
-    process.env.EXPO_USE_FAST_RESOLVER = '1';
-  }
 
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
@@ -144,6 +138,9 @@ export async function loadMetroConfigAsync(
     );
   }
 
+  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+    Log.warn(`Experimental fast resolver is enabled.`);
+  }
   if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
