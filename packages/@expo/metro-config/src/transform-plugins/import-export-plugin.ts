@@ -37,11 +37,20 @@ class MapToArray<K, V> extends Map<K, V[]> {
   }
 }
 
+class MapToFirst<K, V> extends Map<K, V> {
+  public setFirst(key: K, value: V): this {
+    if (!this.has(key)) {
+      this.set(key, value);
+    }
+    return this;
+  }
+}
+
 type State = {
   importDefault: t.Node;
   importAll: t.Node;
   opts: Options;
-  originalImportOrder: Set<string>;
+  originalImportOrder: MapToFirst<string, t.StringLiteral>;
   exportAllFrom: Map<string, { loc: t.SourceLocation | null | undefined }>;
   importAllFromAs: MapToArray<string, { loc: t.SourceLocation | null | undefined; as: string }>;
   exportAllFromAs: MapToArray<string, { loc: t.SourceLocation | null | undefined; as: string }>;
@@ -63,122 +72,80 @@ type State = {
   [key: string]: unknown;
 };
 
-/**
- * Produces a Babel template that transforms an "import { x } from a" into
- * "var _a = require(a)" call which needs to be followed by
- * update of the "x" references to "_a.x".
- */
 const requireTemplate = template.statement(`
-  var LOCAL = require(FILE);
+  var %%asId%% = require(%%moduleStr%%);
 `);
 
-/**
- * Produces a Babel template that transforms an "import * as x from ..." or an
- * "import x from ..." call into a "const x = importAll(...)" call with the
- * corresponding id in it.
- */
 const importTemplate = template.statement(`
-  var LOCAL = IMPORT(FILE);
+  var %%asId%% = %%importHelperId%%(%%moduleStr%%);
 `);
 
-/**
- * Produces a Babel template that transforms an "import {x as y} from ..." into
- * "const y = require(...).x" call with the corresponding id in it.
- */
-const requireNamedTemplate = template.statement(`
-  var LOCAL = require(FILE).REMOTE;
+const requireNameTemplate = template.statement(`
+  var %%asId%% = require(%%moduleStr%%).%%nameId%%;
 `);
 
-/**
- * Produces a Babel template that transforms an "import ..." into
- * "require(...)", which is considered a side-effect call.
- */
 const requireSideEffectTemplate = template.statement(`
-  require(FILE);
+  require(%%moduleStr%%);
 `);
 
 // NOTE(@krystofwoldrich): Export all template doesn't have to check for export existence
 // because it always runs before default and named exports which overwrite the exports object.
 // NOTE(@krystofwoldrich): This also re-exports `default` and `__esModule` properties
 // we might want to remove that in the future to align with the spec.
-/**
- * Produces an "export all" template that traverses all exported symbols and
- * re-exposes them.
- */
-const exportAllTemplate = template.statements(`
-  var REQUIRED = require(FILE);
+const staticExportAllTemplate = template.statements(`
+  var %%namespaceId%% = require(%%moduleStr%%);
 
-  for (var KEY in REQUIRED) {
-    exports[KEY] = REQUIRED[KEY];
+  for (var %%keyId%% in %%namespaceId%%) {
+    exports[%%keyId%%] = %%namespaceId%%[%%keyId%%];
   }
 `);
 
-/**
- * Produces a "named export" or "default export" template to export a single
- * symbol.
- */
-const exportTemplate = template.statement(`
-  exports.REMOTE = LOCAL;
+const staticExportTemplate = template.statement(`
+  exports.%%asId%% = %%nameId%%;
 `);
 
 // NOTE(krystofwoldrich): for (var KEY in REQUIRED) { doesn't work here
-/**
- * Produces an "export all" template that traverses all exported symbols and
- * re-exposes them.
- */
 const liveBindExportAllTemplate = template.statements(`
-  var REQUIRED = require(FILE);
+  var %%namespaceId%% = require(%%moduleStr%%);
 
-  Object.keys(REQUIRED).forEach(function (KEY) {
-    if (KEY === "default" || KEY === "__esModule") return;
-    if (Object.prototype.hasOwnProperty.call(EXPORTED_NAMES, KEY)) return;
-    if (KEY in exports && exports[KEY] === REQUIRED[KEY]) return;
-    Object.defineProperty(exports, KEY, {
+  Object.keys(%%namespaceId%%).forEach(function (%%keyId%%) {
+    if (%%keyId%% === "default" || %%keyId%% === "__esModule") return;
+    if (Object.prototype.hasOwnProperty.call(%%exportedNamesId%%, %%keyId%%)) return;
+    if (%%keyId%% in exports && exports[%%keyId%%] === %%namespaceId%%[%%keyId%%]) return;
+    Object.defineProperty(exports, %%keyId%%, {
       enumerable: true,
       get: function () {
-        return REQUIRED[KEY];
+        return %%namespaceId%%[%%keyId%%];
       }
     });
   });
 `);
 
-/**
- * Produces a live binding export template that creates a getter.
- */
 const liveBindExportTemplate = template.statement(`
-  Object.defineProperty(exports, "REMOTE", {
+  Object.defineProperty(exports, %%asStr%%, {
     enumerable: true,
     get: function () {
-      return REQUIRED.LOCAL;
+      return %%namespaceId%%.%%namespaceNameId%%;
     }
   });
 `);
 
-/**
- * Produces a live binding export default template that creates a getter.
- */
 const liveBindExportDefaultTemplate = template.statement(`
-  Object.defineProperty(exports, "REMOTE", {
+  Object.defineProperty(exports, %%asStr%%, {
     enumerable: true,
     get: function () {
       return (function (m) {
         return m && m.__esModule ? m.default : m
-      })(REQUIRED);
+      })(%%namespaceId%%);
     }
   });
 `);
 
-/**
- * Flags the exported module as a transpiled ES module. Needs to be kept in 1:1
- * compatibility with Babel.
- */
+// Needs to be kept in 1:1 compatibility with Babel.
 const esModuleExportTemplate = template.statement(`
   Object.defineProperty(exports, '__esModule', {value: true});
 `);
 
-/**
- * Resolution template in case it is requested.
- */
 const resolveTemplate = template.expression(`
   require.resolve(NODE)
 `);
@@ -186,7 +153,7 @@ const resolveTemplate = template.expression(`
 /**
  * Creates static exported names array for the module.
  *
- * @example var _exportedNames = ['name1', 'name2', ...];
+ * @example var _exportedNames = {'name1': true, 'name2': true, ...};
  */
 const exportedNamesTemplate = ({
   t: b,
@@ -253,7 +220,7 @@ export function importExportPlugin({
   return {
     visitor: {
       ExportAllDeclaration(path: NodePath<t.ExportAllDeclaration>, state: State): void {
-        state.originalImportOrder.add(path.node.source.value);
+        state.originalImportOrder.setFirst(path.node.source.value, path.node.source);
         state.exportAllFrom.set(path.node.source.value, {
           loc: path.node.loc,
         });
@@ -382,8 +349,8 @@ export function importExportPlugin({
 
         const specifiers = path.node.specifiers;
         if (specifiers && specifiers.length) {
-          const source = path.node.source?.value;
-          if (source) state.originalImportOrder.add(source);
+          const source = path.node.source;
+          if (source) state.originalImportOrder.setFirst(source.value, source);
           specifiers.forEach((s) => {
             if (s.exported.type === 'StringLiteral') {
               // https://babeljs.io/docs/en/babel-plugin-syntax-module-string-names
@@ -391,7 +358,10 @@ export function importExportPlugin({
             }
             switch (s.type) {
               case 'ExportSpecifier':
-                (source ? state.exportNamedFrom.getOrDefault(source) : state.exportNamed).push({
+                (source
+                  ? state.exportNamedFrom.getOrDefault(source.value)
+                  : state.exportNamed
+                ).push({
                   name: s.local.name,
                   as: s.exported.name,
                   loc: path.node.loc,
@@ -405,7 +375,7 @@ export function importExportPlugin({
                 break;
               case 'ExportNamespaceSpecifier':
                 // export * as b from 'a'
-                state.exportAllFromAs.getOrDefault(nullthrows(source)).push({
+                state.exportAllFromAs.getOrDefault(nullthrows(source?.value)).push({
                   as: s.exported.name,
                   loc: path.node.loc,
                 });
@@ -431,7 +401,7 @@ export function importExportPlugin({
         const specifiers = path.node.specifiers;
         const loc = path.node.loc;
 
-        state.originalImportOrder.add(file.value);
+        state.originalImportOrder.setFirst(file.value, file);
         if (!specifiers.length) {
           state.importSideEffect.set(file.value, { loc });
         } else {
@@ -487,7 +457,7 @@ export function importExportPlugin({
           state.importAll = t.identifier(state.opts.importAll);
           state.importDefault = t.identifier(state.opts.importDefault);
 
-          state.originalImportOrder = new Set();
+          state.originalImportOrder = new MapToFirst();
           state.exportAllFrom = new Map();
           state.importAllFromAs = new MapToArray();
           state.exportAllFromAs = new MapToArray();
@@ -549,80 +519,89 @@ export function importExportPlugin({
               );
             }
 
-            for (const module of state.originalImportOrder) {
-              const exportAllFrom = state.exportAllFrom.get(module);
+            for (const [, module] of state.originalImportOrder) {
+              const resolved = resolvePath(module, state.opts.resolve);
 
               let namespace: t.Identifier | null = null;
+              const importModuleNamespace = (
+                loc: t.SourceLocation | null | undefined
+              ): t.Identifier => {
+                const _namespace = path.scope.generateUidIdentifierBasedOnNode(module);
+                imports.push(
+                  withLocation(
+                    requireTemplate({
+                      moduleStr: t.cloneNode(resolved),
+                      asId: t.cloneNode(_namespace),
+                    }),
+                    loc
+                  )
+                );
+                return _namespace;
+              };
 
+              const exportAllFrom = state.exportAllFrom.get(module.value);
               if (exportAllFrom) {
-                namespace = path.scope.generateUidIdentifier(module);
+                namespace = path.scope.generateUidIdentifier(module.value);
                 exportAll.push(
                   ...withLocation(
                     liveBindExportAllTemplate({
-                      FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                      REQUIRED: t.cloneNode(namespace),
-                      KEY: path.scope.generateUidIdentifier('key'),
-                      EXPORTED_NAMES: t.cloneNode(exportedNamesIdentifier),
+                      keyId: path.scope.generateUidIdentifier('key'),
+                      moduleStr: t.cloneNode(resolved),
+                      namespaceId: t.cloneNode(namespace),
+                      exportedNamesId: t.cloneNode(exportedNamesIdentifier),
                     }),
                     exportAllFrom.loc
                   )
                 );
               }
 
-              for (const { as, loc } of state.exportAllFromAs.getOrDefault(module)) {
-                const importAllNamespace = path.scope.generateUidIdentifier(module);
+              for (const { as, loc } of state.exportAllFromAs.getOrDefault(module.value)) {
+                const importAllNamespace = path.scope.generateUidIdentifier(module.value);
                 imports.push(
                   withLocation(
                     importTemplate({
-                      IMPORT: t.cloneNode(state.importAll),
-                      FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                      LOCAL: t.cloneNode(importAllNamespace),
+                      importHelperId: t.cloneNode(state.importAll),
+                      moduleStr: t.cloneNode(resolved),
+                      asId: t.cloneNode(importAllNamespace),
                     }),
                     loc
                   )
                 );
                 staticExports.push(
                   withLocation(
-                    exportTemplate({
-                      LOCAL: t.cloneNode(importAllNamespace),
-                      REMOTE: t.identifier(as),
+                    staticExportTemplate({
+                      nameId: t.cloneNode(importAllNamespace),
+                      asId: t.identifier(as),
                     }),
                     loc
                   )
                 );
               }
 
-              for (const { name, as, loc } of state.exportNamedFrom.getOrDefault(module)) {
+              for (const { name, as, loc } of state.exportNamedFrom.getOrDefault(module.value)) {
                 if (!namespace) {
-                  namespace = path.scope.generateUidIdentifier(module);
-                  imports.push(
-                    withLocation(
-                      requireTemplate({
-                        FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                        LOCAL: t.cloneNode(namespace),
-                      }),
-                      loc
-                    )
-                  );
+                  namespace = importModuleNamespace(loc);
                 }
 
                 if (name === 'default') {
+                  // export { default as name } from 'module'
                   liveExports.push(
                     withLocation(
                       liveBindExportDefaultTemplate({
-                        REQUIRED: t.cloneNode(namespace),
-                        REMOTE: as,
+                        namespaceId: t.cloneNode(namespace),
+                        asStr: t.stringLiteral(as),
                       }),
                       loc
                     )
                   );
                 } else {
+                  // export { old as new } from 'module'
                   liveExports.push(
                     withLocation(
                       liveBindExportTemplate({
-                        REQUIRED: t.cloneNode(namespace),
-                        LOCAL: t.identifier(name),
-                        REMOTE: as,
+                        namespaceId: t.cloneNode(namespace),
+                        namespaceNameId: t.identifier(name),
+                        asStr: t.stringLiteral(as),
                       }),
                       loc
                     )
@@ -630,78 +609,44 @@ export function importExportPlugin({
                 }
               }
 
-              for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module)) {
-                if (name === 'default' && !exportedNames.has(as)) {
-                  imports.push(
-                    withLocation(
-                      importTemplate({
-                        IMPORT: t.cloneNode(state.importDefault),
-                        FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                        LOCAL: t.identifier(as),
-                      }),
-                      loc
-                    )
-                  );
-                  // For default imports we don't want to create a namespace
-                  continue;
-                }
-
+              for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module.value)) {
                 if (!namespace) {
-                  namespace = path.scope.generateUidIdentifier(module);
-                  imports.push(
-                    withLocation(
-                      requireTemplate({
-                        FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                        LOCAL: t.cloneNode(namespace),
-                      }),
-                      loc
-                    )
-                  );
+                  namespace = importModuleNamespace(loc);
                 }
-
                 _namespaceForLocal.set(as, {
                   namespace: namespace.name,
                   name,
                 });
               }
 
-              if (!namespace && state.importSideEffect.has(module)) {
+              if (!namespace && state.importSideEffect.has(module.value)) {
                 imports.push(
                   withLocation(
                     requireSideEffectTemplate({
-                      FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
+                      moduleStr: t.cloneNode(resolved),
                     }),
-                    state.importSideEffect.get(module)?.loc
+                    state.importSideEffect.get(module.value)?.loc
                   )
                 );
               }
 
-              for (const { as, loc } of state.importAllFromAs.getOrDefault(module)) {
+              for (const { as, loc } of state.importAllFromAs.getOrDefault(module.value)) {
                 imports.push(
                   withLocation(
                     importTemplate({
-                      IMPORT: t.cloneNode(state.importAll),
-                      FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                      LOCAL: t.identifier(as),
+                      importHelperId: t.cloneNode(state.importAll),
+                      moduleStr: t.cloneNode(resolved),
+                      asId: t.identifier(as),
                     }),
                     loc
                   )
                 );
               }
 
-              for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module)) {
+              for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module.value)) {
                 if (exportedNames.has(as.name)) {
                   if (!namespace) {
-                    namespace = path.scope.generateUidIdentifier(module);
-                    imports.push(
-                      withLocation(
-                        requireTemplate({
-                          FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                          LOCAL: t.cloneNode(namespace),
-                        }),
-                        loc
-                      )
-                    );
+                    namespace = importModuleNamespace(loc);
                   }
 
                   _namespaceForLocal.set(as.name, {
@@ -714,9 +659,9 @@ export function importExportPlugin({
                 imports.push(
                   withLocation(
                     importTemplate({
-                      IMPORT: t.cloneNode(state.importDefault),
-                      FILE: resolvePath(t.stringLiteral(module), state.opts.resolve),
-                      LOCAL: as,
+                      importHelperId: t.cloneNode(state.importDefault),
+                      moduleStr: t.cloneNode(resolved),
+                      asId: as,
                     }),
                     loc
                   )
@@ -727,12 +672,13 @@ export function importExportPlugin({
             for (const { name, as, loc } of state.exportNamed) {
               const namespace = _namespaceForLocal.get(name);
               if (namespace && namespace.name === 'default') {
-                _namespaceForLocal.delete(name); // To avoid overwriting local use of the import default variable
+                // To avoid overwriting local use of the import default variable
+                _namespaceForLocal.delete(name);
                 liveExports.push(
                   withLocation(
                     liveBindExportDefaultTemplate({
-                      REQUIRED: t.identifier(namespace.namespace),
-                      REMOTE: as,
+                      namespaceId: t.identifier(namespace.namespace),
+                      asStr: t.stringLiteral(as),
                     }),
                     loc
                   )
@@ -741,9 +687,9 @@ export function importExportPlugin({
                 liveExports.push(
                   withLocation(
                     liveBindExportTemplate({
-                      REQUIRED: t.identifier(namespace.namespace),
-                      LOCAL: t.identifier(namespace.name),
-                      REMOTE: as,
+                      namespaceId: t.identifier(namespace.namespace),
+                      namespaceNameId: t.identifier(namespace.name),
+                      asStr: t.stringLiteral(as),
                     }),
                     loc
                   )
@@ -751,9 +697,9 @@ export function importExportPlugin({
               } else {
                 staticExports.push(
                   withLocation(
-                    exportTemplate({
-                      LOCAL: t.identifier(name),
-                      REMOTE: t.identifier(as),
+                    staticExportTemplate({
+                      nameId: t.identifier(name),
+                      asId: t.identifier(as),
                     }),
                     loc
                   )
@@ -764,9 +710,9 @@ export function importExportPlugin({
             for (const { name, loc } of state.exportDefault) {
               defaultStaticExports.push(
                 withLocation(
-                  exportTemplate({
-                    LOCAL: t.identifier(name),
-                    REMOTE: t.identifier('default'),
+                  staticExportTemplate({
+                    nameId: t.identifier(name),
+                    asId: t.identifier('default'),
                   }),
                   loc
                 )
@@ -838,31 +784,32 @@ export function importExportPlugin({
             const staticExports: t.Statement[] = [];
             const defaultStaticExports: t.Statement[] = [];
 
-            for (const module of state.originalImportOrder) {
-              const resolved = resolvePath(t.stringLiteral(module), state.opts.resolve);
+            for (const [, module] of state.originalImportOrder) {
+              const resolved = resolvePath(module, state.opts.resolve);
 
-              const exportAllFrom = state.exportAllFrom.get(module);
+              const exportAllFrom = state.exportAllFrom.get(module.value);
               if (exportAllFrom) {
                 exportAll.push(
                   ...withLocation(
-                    exportAllTemplate({
-                      FILE: t.cloneNode(resolved),
-                      REQUIRED: path.scope.generateUidIdentifier(module),
-                      KEY: path.scope.generateUidIdentifier('key'),
+                    staticExportAllTemplate({
+                      keyId: path.scope.generateUidIdentifier('key'),
+                      moduleStr: t.cloneNode(resolved),
+                      namespaceId: path.scope.generateUidIdentifier(module.value),
                     }),
                     exportAllFrom.loc
                   )
                 );
               }
 
-              for (const { as, loc } of state.exportAllFromAs.getOrDefault(module)) {
-                const ns = path.scope.generateUidIdentifier(module);
+              for (const { as, loc } of state.exportAllFromAs.getOrDefault(module.value)) {
+                // NOTE: Maybe switch to module based name, but keeping original export based for now
+                const ns = path.scope.generateUidIdentifier(as);
                 imports.push(
                   withLocation(
                     importTemplate({
-                      IMPORT: t.cloneNode(state.importAll),
-                      FILE: t.cloneNode(resolved),
-                      LOCAL: t.cloneNode(ns),
+                      importHelperId: t.cloneNode(state.importAll),
+                      moduleStr: t.cloneNode(resolved),
+                      asId: t.cloneNode(ns),
                     }),
                     loc
                   )
@@ -871,54 +818,56 @@ export function importExportPlugin({
                 // but the original plugin doesn't do that.
                 staticExports.push(
                   withLocation(
-                    exportTemplate({
-                      LOCAL: t.cloneNode(ns),
-                      REMOTE: t.identifier(as),
+                    staticExportTemplate({
+                      nameId: t.cloneNode(ns),
+                      asId: t.identifier(as),
                     }),
                     loc
                   )
                 );
               }
 
-              for (const { name, as, loc } of state.exportNamedFrom.getOrDefault(module)) {
+              for (const { name, as, loc } of state.exportNamedFrom.getOrDefault(module.value)) {
                 if (name === 'default' && as === 'default') {
-                  const tmp = path.scope.generateUidIdentifier(module);
+                  // NOTE: Maybe switch to module based name, but keeping original name based for now
+                  const tmp = path.scope.generateUidIdentifier(name);
                   imports.push(
                     withLocation(
                       importTemplate({
-                        IMPORT: t.cloneNode(state.importDefault),
-                        FILE: t.cloneNode(resolved),
-                        LOCAL: t.cloneNode(tmp),
+                        importHelperId: t.cloneNode(state.importDefault),
+                        moduleStr: t.cloneNode(resolved),
+                        asId: t.cloneNode(tmp),
                       }),
                       loc
                     )
                   );
                   defaultStaticExports.push(
                     withLocation(
-                      exportTemplate({
-                        LOCAL: t.cloneNode(tmp),
-                        REMOTE: t.identifier(as),
+                      staticExportTemplate({
+                        nameId: t.cloneNode(tmp),
+                        asId: t.identifier(as),
                       }),
                       loc
                     )
                   );
                 } else if (name === 'default') {
-                  const tmp = path.scope.generateUidIdentifier(as);
+                  // NOTE: Maybe switch to module based name, but keeping original name based for now
+                  const tmp = path.scope.generateUidIdentifier(name);
                   imports.push(
                     withLocation(
                       importTemplate({
-                        IMPORT: t.cloneNode(state.importDefault),
-                        FILE: t.cloneNode(resolved),
-                        LOCAL: t.cloneNode(tmp),
+                        importHelperId: t.cloneNode(state.importDefault),
+                        moduleStr: t.cloneNode(resolved),
+                        asId: t.cloneNode(tmp),
                       }),
                       loc
                     )
                   );
                   staticExports.push(
                     withLocation(
-                      exportTemplate({
-                        LOCAL: t.cloneNode(tmp),
-                        REMOTE: t.identifier(as),
+                      staticExportTemplate({
+                        nameId: t.cloneNode(tmp),
+                        asId: t.identifier(as),
                       }),
                       loc
                     )
@@ -927,19 +876,19 @@ export function importExportPlugin({
                   const tmp = path.scope.generateUidIdentifier(as);
                   imports.push(
                     withLocation(
-                      requireNamedTemplate({
-                        FILE: t.cloneNode(resolved),
-                        LOCAL: t.cloneNode(tmp),
-                        REMOTE: t.identifier(name),
+                      requireNameTemplate({
+                        moduleStr: t.cloneNode(resolved),
+                        nameId: t.identifier(name),
+                        asId: t.cloneNode(tmp),
                       }),
                       loc
                     )
                   );
                   staticExports.push(
                     withLocation(
-                      exportTemplate({
-                        LOCAL: t.cloneNode(tmp),
-                        REMOTE: t.identifier(as),
+                      staticExportTemplate({
+                        nameId: t.cloneNode(tmp),
+                        asId: t.identifier(as),
                       }),
                       loc
                     )
@@ -948,30 +897,28 @@ export function importExportPlugin({
               }
 
               let sharedModuleVariableDeclaration: t.VariableDeclaration | null = null;
-              if (state.importNamedFrom.getOrDefault(module).length === 1) {
-                const importNamed = state.importNamedFrom.getOrDefault(module)[0];
+              if (state.importNamedFrom.getOrDefault(module.value).length === 1) {
+                const importNamed = state.importNamedFrom.getOrDefault(module.value)[0];
                 imports.push(
                   withLocation(
-                    requireNamedTemplate({
-                      FILE: t.cloneNode(resolved),
-                      LOCAL: t.identifier(importNamed.as),
-                      REMOTE: t.identifier(importNamed.name),
+                    requireNameTemplate({
+                      moduleStr: t.cloneNode(resolved),
+                      nameId: t.identifier(importNamed.name),
+                      asId: t.identifier(importNamed.as),
                     }),
-                    state.importNamedFrom.getOrDefault(module)[0].loc
+                    state.importNamedFrom.getOrDefault(module.value)[0].loc
                   )
                 );
               } else {
                 let sharedModuleImport: t.Identifier | null = null;
-                for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module)) {
+                for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module.value)) {
                   if (!sharedModuleVariableDeclaration) {
-                    sharedModuleImport = path.scope.generateUidIdentifier(module);
+                    sharedModuleImport = path.scope.generateUidIdentifierBasedOnNode(module);
                     sharedModuleVariableDeclaration = withLocation(
                       t.variableDeclaration('var', [
                         t.variableDeclarator(
                           t.cloneNode(sharedModuleImport),
-                          t.callExpression(t.identifier('require'), [
-                            resolvePath(t.stringLiteral(module), state.opts.resolve),
-                          ])
+                          t.callExpression(t.identifier('require'), [t.cloneNode(resolved)])
                         ),
                       ]),
                       loc
@@ -994,37 +941,37 @@ export function importExportPlugin({
                 }
               }
 
-              if (!sharedModuleVariableDeclaration && state.importSideEffect.has(module)) {
+              if (!sharedModuleVariableDeclaration && state.importSideEffect.has(module.value)) {
                 imports.push(
                   withLocation(
                     requireSideEffectTemplate({
-                      FILE: t.cloneNode(resolved),
+                      moduleStr: t.cloneNode(resolved),
                     }),
-                    state.importSideEffect.get(module)?.loc
+                    state.importSideEffect.get(module.value)?.loc
                   )
                 );
               }
 
-              for (const { as, loc } of state.importAllFromAs.getOrDefault(module)) {
+              for (const { as, loc } of state.importAllFromAs.getOrDefault(module.value)) {
                 imports.push(
                   withLocation(
                     importTemplate({
-                      IMPORT: t.cloneNode(state.importAll),
-                      FILE: t.cloneNode(resolved),
-                      LOCAL: t.identifier(as),
+                      importHelperId: t.cloneNode(state.importAll),
+                      moduleStr: t.cloneNode(resolved),
+                      asId: t.identifier(as),
                     }),
                     loc
                   )
                 );
               }
 
-              for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module)) {
+              for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module.value)) {
                 imports.push(
                   withLocation(
                     importTemplate({
-                      IMPORT: t.cloneNode(state.importDefault),
-                      FILE: t.cloneNode(resolved),
-                      LOCAL: as,
+                      importHelperId: t.cloneNode(state.importDefault),
+                      moduleStr: t.cloneNode(resolved),
+                      asId: as,
                     }),
                     loc
                   )
@@ -1035,9 +982,9 @@ export function importExportPlugin({
             for (const { name, as, loc } of state.exportNamed) {
               staticExports.push(
                 withLocation(
-                  exportTemplate({
-                    LOCAL: t.identifier(name),
-                    REMOTE: t.identifier(as),
+                  staticExportTemplate({
+                    nameId: t.identifier(name),
+                    asId: t.identifier(as),
                   }),
                   loc
                 )
@@ -1047,9 +994,9 @@ export function importExportPlugin({
             for (const { name, loc } of state.exportDefault) {
               defaultStaticExports.push(
                 withLocation(
-                  exportTemplate({
-                    LOCAL: t.identifier(name),
-                    REMOTE: t.identifier('default'),
+                  staticExportTemplate({
+                    nameId: t.identifier(name),
+                    asId: t.identifier('default'),
                   }),
                   loc
                 )
