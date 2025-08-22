@@ -19,6 +19,7 @@ import {
   CalendarAccessLevel,
   AlarmMethod,
   OpenEventDialogResult,
+  Attendee,
 } from '../Calendar';
 import { RecurrenceRule } from './types/RecurrenceRule';
 
@@ -389,7 +390,7 @@ export declare class ExpoCalendarEvent {
    * Creates a new attendee and adds it to this event.
    */
   createAttendee(
-    attendee: Pick<NonNullable<ExpoCalendarAttendee>, 'email'> & Partial<ExpoCalendarAttendee>
+    attendee: Pick<NonNullable<Attendee>, 'email'> & Partial<Attendee>
   ): ExpoCalendarAttendee;
 
   /**
@@ -527,7 +528,10 @@ export declare class ExpoCalendarAttendee {
    * Updates the attendee.
    * @platform android
    */
-  update(details: Partial<ModifiableAttendeeProperties>): void;
+  update(
+    details: Partial<ModifiableAttendeeProperties>,
+    nullableFields?: (keyof ModifiableAttendeeProperties)[]
+  ): void;
 
   /**
    * Deletes the attendee.

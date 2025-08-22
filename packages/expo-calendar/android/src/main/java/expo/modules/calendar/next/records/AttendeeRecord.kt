@@ -1,5 +1,9 @@
 package expo.modules.calendar.next.records
 
+import android.content.ContentResolver
+import android.database.Cursor
+import android.provider.CalendarContract
+import expo.modules.calendar.CalendarUtils
 import expo.modules.calendar.attendeeRelationshipConstantMatchingString
 import expo.modules.calendar.attendeeRelationshipStringMatchingConstant
 import expo.modules.calendar.attendeeStatusConstantMatchingString
@@ -24,17 +28,18 @@ data class AttendeeRecord(
   @Field
   val email: String? = null,
 ) : Record {
-  fun getUpdatedRecord(other: AttendeeRecord, nullableFields: List<String>? = null): AttendeeRecord {
-    val nullableSet = nullableFields?.toSet() ?: emptySet()
-
-    return AttendeeRecord(
-      id = this.id,
-      name = if ("name" in nullableSet) null else other.name ?: this.name,
-      role = if ("role" in nullableSet) null else other.role ?: this.role,
-      status = if ("status" in nullableSet) null else other.status ?: this.status,
-      type = if ("type" in nullableSet) null else other.type ?: this.type,
-      email = if ("email" in nullableSet) null else other.email ?: this.email,
-    )
+  companion object {
+    @JvmStatic
+    fun fromCursor(cursor: Cursor, contentResolver: ContentResolver): AttendeeRecord {
+      return AttendeeRecord(
+        id = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Attendees._ID),
+        name = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_NAME),
+        role = AttendeeRole.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)),
+        status = AttendeeStatus.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)),
+        type = AttendeeType.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_TYPE)),
+        email = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_EMAIL),
+      )
+    }
   }
 }
 

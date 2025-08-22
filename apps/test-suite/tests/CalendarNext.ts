@@ -1930,6 +1930,49 @@ export async function test(t) {
           t.expect(attendees[0].type).toBe(defaultAttendeeData.type);
         });
 
+        t.it('clears attendee email when set to null', async () => {
+          const attendee = createTestAttendee(event);
+          attendee.update({
+            email: null,
+          });
+          t.expect(attendee.email).toBeNull();
+          const attendees = await event.getAttendeesAsync();
+          t.expect(attendees.length).toBe(1);
+          t.expect(attendees[0].email).toBeNull();
+        });
+
+        t.it('clears attendee name when set to null', async () => {
+          const attendee = createTestAttendee(event);
+          attendee.update({
+            name: null,
+          });
+          t.expect(attendee.name).toBeNull();
+        });
+
+        t.it('clears attendee role when set to null', async () => {
+          const attendee = createTestAttendee(event);
+          attendee.update({
+            role: null,
+          });
+          t.expect(attendee.role).toBe(Calendar.AttendeeRole.NONE);
+        });
+
+        t.it('clears attendee status when set to null', async () => {
+          const attendee = createTestAttendee(event);
+          attendee.update({
+            status: null,
+          });
+          t.expect(attendee.status).toBe(Calendar.AttendeeStatus.NONE);
+        });
+
+        t.it('clears attendee type when set to null', async () => {
+          const attendee = createTestAttendee(event);
+          attendee.update({
+            type: null,
+          });
+          t.expect(attendee.type).toBe(Calendar.AttendeeType.NONE);
+        });
+
         t.it('creates many attendees', async () => {
           const attendees = [
             createTestAttendee(event),

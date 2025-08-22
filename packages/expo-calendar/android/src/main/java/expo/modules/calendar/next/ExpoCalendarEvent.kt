@@ -334,6 +334,7 @@ class ExpoCalendarEvent : SharedObject {
   fun getAttendees(): List<ExpoCalendarAttendee> {
     val eventID = eventRecord?.id?.toLong()
     if (eventID == null) {
+
       throw InvalidArgumentException("Event ID is required")
     }
     val cursor = CalendarContract.Attendees.query(
@@ -358,9 +359,8 @@ class ExpoCalendarEvent : SharedObject {
     if (eventId == null) {
       throw Exception("Missing event id")
     }
-    val newEventId = attendee.saveAttendee(attendeeRecord, eventId)
-    attendee.attendeeRecord = attendeeRecord
-    attendee.attendeeRecord?.id = newEventId
+    val newAttendeeId = attendee.saveAttendee(attendeeRecord, eventId)
+    attendee.reloadAttendee(newAttendeeId)
     return attendee
   }
 

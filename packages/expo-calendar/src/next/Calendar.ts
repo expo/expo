@@ -3,6 +3,7 @@ import { Platform, processColor } from 'react-native';
 
 import {
   Calendar,
+  Attendee,
   DialogEventResult,
   EntityTypes,
   Event,
@@ -19,12 +20,18 @@ import {
   ModifiableCalendarProperties,
   CalendarDialogOpenParamsNext,
   CalendarDialogParamsNext,
+  ModifiableAttendeeProperties,
 } from './ExpoCalendar.types';
 
 /**
  * Represents a calendar attendee object.
  */
-export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
+export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
+  override update(details: Partial<ModifiableAttendeeProperties>): void {
+    const nullableDetailsFields = getNullableDetailsFields(details);
+    return super.update(stringifyDateValues(details), nullableDetailsFields);
+  }
+}
 
 /**
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
@@ -51,7 +58,17 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   }
 
   override async getAttendeesAsync(): Promise<ExpoCalendarAttendee[]> {
-    return super.getAttendeesAsync();
+    const attendees = await super.getAttendeesAsync();
+    return attendees.map((attendee) => {
+      Object.setPrototypeOf(attendee, ExpoCalendarAttendee.prototype);
+      return attendee;
+    });
+  }
+
+  override createAttendee(attendee: Attendee): ExpoCalendarAttendee {
+    const newAttendee = super.createAttendee(attendee);
+    Object.setPrototypeOf(newAttendee, ExpoCalendarAttendee.prototype);
+    return newAttendee;
   }
 
   override update(details: Partial<ModifiableEventProperties>): void {

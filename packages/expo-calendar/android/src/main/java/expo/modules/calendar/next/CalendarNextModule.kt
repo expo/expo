@@ -3,7 +3,6 @@ package expo.modules.calendar.next
 import android.Manifest
 import android.content.ContentUris
 import android.database.Cursor
-import android.os.Bundle
 import android.provider.CalendarContract
 import expo.modules.calendar.CalendarUtils
 import expo.modules.calendar.dialogs.CreateEventContract
@@ -242,7 +241,8 @@ class CalendarNextModule : Module() {
       Function("createAttendee") { expoCalendarEvent: ExpoCalendarEvent, record: AttendeeRecord ->
         withPermissions {
           try {
-            expoCalendarEvent.createAttendee(record) ?: throw Exception("Attendee could not be created")
+            expoCalendarEvent.createAttendee(record)
+              ?: throw Exception("Attendee could not be created")
           } catch (e: Exception) {
             throw Exception("Attendee could not be created", e)
           }
@@ -370,7 +370,7 @@ class CalendarNextModule : Module() {
           try {
             expoCalendarEvent.getOccurrence(options)
           } catch (e: Exception) {
-            throw Exception( "Failed to get occurrence", e)
+            throw Exception("Failed to get occurrence", e)
           }
         }
       }
@@ -428,13 +428,11 @@ class CalendarNextModule : Module() {
 
 
 
-      Function("update") { expoCalendarAttendee: ExpoCalendarAttendee, attendeeRecord: AttendeeRecord ->
+      Function("update") { expoCalendarAttendee: ExpoCalendarAttendee, attendeeRecord: AttendeeRecord, nullableFields: List<String> ->
         withPermissions {
           try {
-            val updatedRecord = expoCalendarAttendee.attendeeRecord?.getUpdatedRecord(attendeeRecord, emptyList())
-              ?: throw Exception("Event record is null")
-            expoCalendarAttendee.saveAttendee(updatedRecord)
-            expoCalendarAttendee.attendeeRecord = updatedRecord
+            expoCalendarAttendee.saveAttendee(attendeeRecord, nullableFields = nullableFields)
+            expoCalendarAttendee.reloadAttendee()
           } catch (e: Exception) {
             throw Exception("Attendee could not be updated", e)
           }
