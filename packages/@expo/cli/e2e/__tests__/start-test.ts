@@ -69,6 +69,7 @@ it('runs `npx expo start --help`', async () => {
         --offline                       Skip network requests and use anonymous manifest signatures
         --https                         Start the dev server with https protocol. Deprecated in favor of --tunnel
         --scheme <scheme>               Custom URI protocol to use when launching an app
+        --app-id <app-id>               Custom app id to use when launching an app on Android
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
         --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
