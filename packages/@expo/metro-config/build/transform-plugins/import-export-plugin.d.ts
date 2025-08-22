@@ -17,38 +17,53 @@ export type Options = Readonly<{
         [key: string]: unknown;
     };
 }>;
+declare class MapToArray<K, V> extends Map<K, V[]> {
+    getOrDefault(key: K): V[];
+}
+declare class MapToFirst<K, V> extends Map<K, V> {
+    setFirst(key: K, value: V): this;
+}
 type State = {
-    exportAll: {
-        file: string;
-        loc?: t.SourceLocation | null;
-        [key: string]: unknown;
-    }[];
-    exportDefault: {
-        local: string;
-        loc?: t.SourceLocation | null;
-        namespace?: string;
-        [key: string]: unknown;
-    }[];
-    exportNamed: {
-        local: string;
-        remote: string;
-        loc?: t.SourceLocation | null;
-        namespace?: string;
-        [key: string]: unknown;
-    }[];
-    imports: {
-        node: t.Statement;
-    }[];
     importDefault: t.Node;
     importAll: t.Node;
     opts: Options;
-    importedIdentifiers: Map<string, {
-        source: string;
-        imported: string;
+    originalImportOrder: MapToFirst<string, t.StringLiteral>;
+    exportAllFrom: Map<string, {
+        loc: t.SourceLocation | null | undefined;
     }>;
-    namespaceForLocal: Map<string, {
-        namespace: string;
-        remote: string;
+    importAllFromAs: MapToArray<string, {
+        loc: t.SourceLocation | null | undefined;
+        as: string;
+    }>;
+    exportAllFromAs: MapToArray<string, {
+        loc: t.SourceLocation | null | undefined;
+        as: string;
+    }>;
+    importDefaultFromAs: MapToArray<string, {
+        loc: t.SourceLocation | null | undefined;
+        as: t.Identifier;
+    }>;
+    exportDefault: {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+    }[];
+    exportNamedFrom: MapToArray<string, {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+        as: string;
+    }>;
+    importNamedFrom: MapToArray<string, {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+        as: string;
+    }>;
+    exportNamed: {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+        as: string;
+    }[];
+    importSideEffect: Map<string, {
+        loc: t.SourceLocation | null | undefined;
     }>;
     [key: string]: unknown;
 };
