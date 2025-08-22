@@ -2,9 +2,22 @@ import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { AbortController } from 'abort-controller';
 
 import { createRequestHandler as createExpoHandler } from '../index';
+import {
+  getApiRoute,
+  getHtml,
+  getMiddleware,
+  getRoutesManifest,
+  handleRouteError,
+} from '../runtime/node';
 
 export function createRequestHandler({ build }: { build: string }) {
-  const handleRequest = createExpoHandler(build);
+  const handleRequest = createExpoHandler({
+    getRoutesManifest: getRoutesManifest(build),
+    getHtml: getHtml(build),
+    getApiRoute: getApiRoute(build),
+    getMiddleware: getMiddleware(build),
+    handleRouteError: handleRouteError(),
+  });
 
   return async (event: HandlerEvent) => {
     const response = await handleRequest(convertRequest(event));

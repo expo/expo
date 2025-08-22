@@ -1,7 +1,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SecureFieldProps: ExpoSwiftUI.ViewProps {
+final class SecureFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
@@ -10,19 +16,25 @@ final class SecureFieldProps: ExpoSwiftUI.ViewProps {
 
 struct SecureFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: SecureFieldProps
-  @State private var value: String = ""
+  @ObservedObject var textManager: TextFieldManager = TextFieldManager()
 
   init(props: SecureFieldProps) {
     self.props = props
   }
 
+  func setText(_ text: String) {
+    textManager.text = text
+  }
+
   var body: some View {
     SecureField(
       props.placeholder,
-      text: $value
-    ).fixedSize(horizontal: false, vertical: true)
-      .onAppear { value = props.defaultValue }
-      .onChange(of: value) { newValue in
+      text: $textManager.text
+    )
+      .modifier(CommonViewModifiers(props: props))
+      .fixedSize(horizontal: false, vertical: true)
+      .onAppear { textManager.text = props.defaultValue }
+      .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
       }
       .keyboardType(getKeyboardType(props.keyboardType))

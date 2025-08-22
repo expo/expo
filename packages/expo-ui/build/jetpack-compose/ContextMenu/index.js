@@ -25,7 +25,9 @@ function ContextMenu(props) {
         const handler = eventHandlersMap[e.nativeEvent.contextMenuElementID]?.[handlerType];
         handler?.(e);
     };
-    return (<MenuNativeView style={props.style} elements={processedElements} onContextMenuButtonPressed={createEventHandler('onPress')} onContextMenuSwitchValueChanged={createEventHandler('onValueChange')} onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')} {...props}>
+    return (<MenuNativeView style={props.style} elements={processedElements} onContextMenuButtonPressed={createEventHandler('onPress')} onContextMenuSwitchValueChanged={createEventHandler('onValueChange')} onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')} 
+    // @ts-expect-error
+    modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)} {...props}>
       {activationElement}
     </MenuNativeView>);
 }

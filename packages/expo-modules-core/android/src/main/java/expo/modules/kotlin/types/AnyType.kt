@@ -331,7 +331,6 @@ class AnyType(
 }
 
 inline fun <reified T> AnyType.inheritFrom(): Boolean {
-  return true
   val kClass = kType.classifier as? KClass<*> ?: return false
   val jClass = kClass.java
 

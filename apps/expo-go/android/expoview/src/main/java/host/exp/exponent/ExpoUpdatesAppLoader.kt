@@ -154,7 +154,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }
     val selectionPolicy = SelectionPolicy(
       ExpoGoLauncherSelectionPolicyFilterAware(sdkVersionsList),
-      LoaderSelectionPolicyFilterAware(),
+      LoaderSelectionPolicyFilterAware(configuration),
       ReaperSelectionPolicyDevelopmentClient()
     )
     val directory: File = try {

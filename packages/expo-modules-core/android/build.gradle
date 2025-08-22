@@ -25,7 +25,7 @@ if (shouldIncludeCompose) {
 }
 
 group = 'host.exp.exponent'
-version = '2.3.13'
+version = '3.0.5'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -75,7 +75,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "2.3.13"
+    versionName "3.0.5"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
@@ -155,13 +155,6 @@ android {
   sourceSets {
     main {
       java {
-        if (expoModuleExtension.reactNativeVersion.isAtLeast(0, 77, 0)) {
-          srcDirs += 'src/rn77'
-        } else {
-          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
-          srcDirs += 'src/rn74'
-        }
-
         if (shouldIncludeCompose) {
           srcDirs += 'src/compose'
         } else {

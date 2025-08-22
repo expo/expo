@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { type CommonViewModifierProps } from '../types';
 export type ShareLinkProps = {
     /**
      * The URL or item to be shared.
@@ -27,12 +27,7 @@ export type ShareLinkProps = {
      * Optional children to be rendered inside the share link.
      */
     children?: React.ReactNode;
-};
-/**
- * `<ShareLink>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function ShareLinkPrimitive(props: ShareLinkProps): import("react").JSX.Element;
+} & CommonViewModifierProps;
 /**
  * Renders the native ShareLink component with the provided properties.
  *
@@ -40,7 +35,5 @@ export declare function ShareLinkPrimitive(props: ShareLinkProps): import("react
  * @returns {JSX.Element} The rendered native ShareLink component.
  * @platform ios
  */
-export declare function ShareLink(props: ShareLinkProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
+export declare function ShareLink(props: ShareLinkProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

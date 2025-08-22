@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.compose.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,40 +9,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import expo.modules.devmenu.compose.primitives.Mono
+import androidx.compose.ui.unit.dp
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
-import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun DevelopmentSessionHelper() {
-  Column {
-    Text("Start a local development server with:")
-
-    Spacer(Theme.spacing.small)
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
+  ) {
+    NewText(
+      "Start a local development server with:"
+    )
 
     RoundedSurface(
-      color = Theme.colors.background.secondary,
+      color = NewAppTheme.colors.background.subtle,
       border = BorderStroke(
-        width = Theme.sizing.border.default,
-        color = Theme.colors.border.default
+        width = 1.dp,
+        color = NewAppTheme.colors.border.default
       ),
       modifier = Modifier
         .fillMaxWidth()
     ) {
-      Box(modifier = Modifier.padding(Theme.spacing.medium)) {
-        Mono("npx expo start", fontSize = Theme.typography.small)
+      Box(modifier = Modifier.padding(NewAppTheme.spacing.`3`)) {
+        NewText(
+          "npx expo start",
+          style = NewAppTheme.font.md.merge(
+            fontFamily = NewAppTheme.font.mono
+          )
+        )
       }
     }
 
-    Spacer(Theme.spacing.small)
-
-    Text("Then, select the local server when it appears here.")
-
-    Spacer(Theme.spacing.small)
-
-    Text("Alternatively, open the Camera app and scan the QR code that appears in your terminal")
+    NewText(
+      "Then, select the local server when it appears here."
+    )
   }
 }
 

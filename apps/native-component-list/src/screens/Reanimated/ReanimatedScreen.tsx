@@ -1,30 +1,25 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import ReanimatedLayoutAnimation from './ReanimatedLayoutAnimation';
-import ReanimatedLightbox from './ReanimatedLightbox';
-import ReanimatedSwipeable from './ReanimatedSwipeable';
-import ReanimatedWobble from './ReanimatedWobble';
+import { AccordionExample } from './ReanimatedAccordion';
+import { FlipCardExample } from './ReanimatedFlipCard';
+import { SliderExample } from './ReanimatedSlider';
 import HeadingText from '../../components/HeadingText';
 import { Colors } from '../../constants';
 
 export default function ReanimatedScreen() {
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 50 }}>
       <View style={styles.exampleContainer}>
-        <HeadingText style={styles.header}>Lightbox</HeadingText>
-        <ReanimatedLightbox />
+        <HeadingText style={styles.header}>Flip Card</HeadingText>
+        <FlipCardExample />
       </View>
       <View style={styles.exampleContainer}>
-        <HeadingText style={styles.header}>Wobble</HeadingText>
-        <ReanimatedWobble />
+        <HeadingText style={styles.header}>Slider</HeadingText>
+        <SliderExample />
       </View>
       <View style={styles.exampleContainer}>
-        <HeadingText style={styles.header}>Swipeable</HeadingText>
-        <ReanimatedSwipeable />
-      </View>
-      <View style={styles.exampleContainer}>
-        <HeadingText style={styles.header}>Layout Animation</HeadingText>
-        <ReanimatedLayoutAnimation />
+        <HeadingText style={styles.header}>Accordion</HeadingText>
+        <AccordionExample />
       </View>
     </ScrollView>
   );
@@ -32,6 +27,7 @@ export default function ReanimatedScreen() {
 
 const styles = StyleSheet.create({
   exampleContainer: {
+    paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.tintColor,
   },

@@ -23,6 +23,9 @@
     "ios:link-preview": "E2E_ROUTER_SRC=link-preview expo run:ios",
     "start:universal-linking": "EXPO_USE_STATIC=server EXPO_TUNNEL_SUBDOMAIN=expo-e2e-universal-linking E2E_ROUTER_SRC=universal-linking expo start --tunnel",
     "open:universal-linking": "xcrun simctl terminate booted com.expo.routere2e && npx uri-scheme open https://expo-e2e-universal-linking.ngrok.io/post/123 --ios",
+    "start:native-tabs": "E2E_ROUTER_SRC=native-tabs expo start",
+    "ios:native-tabs": "E2E_ROUTER_SRC=native-tabs expo run:ios",
+    "android:native-tabs": "E2E_ROUTER_JS_ENGINE=hermes E2E_ROUTER_SRC=native-tabs expo run:android",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
     "start:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes EXPO_WEB_DEV_HYDRATE=1 expo start",
     "export:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes expo export -p web",
@@ -32,25 +35,28 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "@expo/dom-webview": "0.1.4",
-    "expo": "~53.0.9",
-    "expo-haptics": "~14.1.4",
-    "expo-linking": "~7.1.5",
-    "expo-router": "^5.0.7",
-    "expo-speech": "~13.1.7",
-    "expo-sqlite": "~15.2.10",
+    "@expo/dom-webview": "0.2.2",
+    "expo": "~54.0.0-preview.6",
+    "expo-haptics": "~15.0.2",
+    "expo-linking": "~8.0.3",
+    "expo-router": "^6.0.0-beta.5",
+    "expo-speech": "~14.0.2",
+    "expo-sqlite": "~16.0.3",
+    "jose": "^5",
     "react": "19.1.0",
-    "react-native": "0.80.1",
-    "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "4.11.1-nightly-20250611-8b82e081e",
+    "react-native": "0.81.0",
+    "react-native-safe-area-context": "5.6.0",
+    "react-native-screens": "4.14.0",
     "react-native-webview": "13.13.5"
   },
   "devDependencies": {
     "compression": "^1.8.0",
+    "esbuild": "^0.25.8",
     "express": "^5.1.0",
     "morgan": "^1.10.0",
     "tailwindcss": "^3.3.5",
-    "tiny": "^0.0.10"
+    "tiny": "^0.0.10",
+    "workerd": "^1.20250807.0"
   },
   "private": true
 }

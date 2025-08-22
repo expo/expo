@@ -35,10 +35,12 @@ open class AppLoader: NSObject {
 
   public var updateResponseBlock: AppLoaderUpdateResponseBlock?
   public var assetBlock: AppLoaderAssetBlock?
+  public var assetLoadProgressBlock: FileDownloadProgressBlock?
   public var successBlock: AppLoaderSuccessBlock?
   public var errorBlock: AppLoaderErrorBlock?
 
   private var assetsToLoad: [UpdateAsset] = []
+  private var assetDownloadProgress: [UpdateAsset: Double] = [:]
   private var erroredAssets: [UpdateAsset] = []
   private var finishedAssets: [UpdateAsset] = []
   private var existingAssets: [UpdateAsset] = []
@@ -67,11 +69,13 @@ open class AppLoader: NSObject {
     erroredAssets = []
     finishedAssets = []
     existingAssets = []
+    assetDownloadProgress = [:]
     updateResponseContainingManifest = nil
     updateResponseBlock = nil
     assetBlock = nil
     successBlock = nil
     errorBlock = nil
+    assetLoadProgressBlock = nil
   }
 
   // MARK: - abstract methods
@@ -125,7 +129,7 @@ open class AppLoader: NSObject {
     if updateManifest.isDevelopmentMode {
       database.databaseQueue.async {
         do {
-          try self.database.addUpdate(updateManifest)
+          try self.database.addUpdate(updateManifest, config: self.config)
           try self.database.markUpdateFinished(updateManifest)
         } catch {
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
@@ -192,7 +196,7 @@ open class AppLoader: NSObject {
         // no update already exists with this ID, so we need to insert it and download everything.
         self.updateResponseContainingManifest = updateResponse
         do {
-          try self.database.addUpdate(updateManifest)
+          try self.database.addUpdate(updateManifest, config: self.config)
         } catch {
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
           return
@@ -251,6 +255,7 @@ open class AppLoader: NSObject {
     assetsToLoad.remove(asset)
     existingAssets.append(asset)
     notifyProgress(withAsset: asset)
+    notifyAssetLoadProgress(asset: asset, progress: 1)
     if assetsToLoad.isEmpty {
       finish()
     }
@@ -270,6 +275,26 @@ open class AppLoader: NSObject {
     arrayLock.unlock()
   }
 
+  public func assetLoadProgressListener(asset: UpdateAsset, progress: Double) {
+    arrayLock.lock()
+    notifyAssetLoadProgress(asset: asset, progress: progress)
+    arrayLock.unlock()
+  }
+
+  /**
+   * This should only be called on threads that have acquired self->_arrayLock
+   */
+  public func notifyAssetLoadProgress(asset: UpdateAsset, progress: Double) {
+    assetDownloadProgress[asset] = progress
+    let totalAssetsCount = finishedAssets.count + existingAssets.count + erroredAssets.count + assetsToLoad.count
+    if totalAssetsCount > 0 {
+      let progress = assetDownloadProgress.values.reduce(0, +) / Double(totalAssetsCount)
+      if let assetLoadProgressBlock = assetLoadProgressBlock {
+        assetLoadProgressBlock(progress)
+      }
+    }
+  }
+
   public func handleAssetDownload(withData data: Data, response: URLResponse?, asset: UpdateAsset) {
     arrayLock.lock()
     assetsToLoad.remove(asset)
@@ -283,6 +308,7 @@ open class AppLoader: NSObject {
 
     finishedAssets.append(asset)
     notifyProgress(withAsset: asset)
+    notifyAssetLoadProgress(asset: asset, progress: 1)
     if assetsToLoad.isEmpty {
       finish()
     }

@@ -8,6 +8,7 @@ export type Options = {
     internal_stripLoadRoute?: boolean;
     skipGenerated?: boolean;
     notFound?: boolean;
+    unstable_useServerMiddleware?: boolean;
     importMode?: string;
     platformRoutes?: boolean;
     sitemap?: boolean;

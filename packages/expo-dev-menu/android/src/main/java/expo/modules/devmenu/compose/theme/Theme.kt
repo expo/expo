@@ -27,6 +27,10 @@ val LocalIsDarkTheme = staticCompositionLocalOf {
   false
 }
 
+val LocalColor = staticCompositionLocalOf {
+  lightColors.text.default
+}
+
 @Composable
 fun AppTheme(
   isDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -45,6 +49,7 @@ fun AppTheme(
     LocalSizing provides Sizing,
     LocalIsDarkTheme provides isDarkTheme,
     LocalIndication provides ripple(),
+    LocalColor provides colors.text.default,
     content = content
   )
 }
@@ -61,4 +66,7 @@ object Theme {
 
   val sizing
     @Composable get() = LocalSizing.current
+
+  val isDarkTheme
+    @Composable get() = LocalIsDarkTheme.current
 }

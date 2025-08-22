@@ -7,7 +7,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.navigation.compose.NavHost
@@ -16,15 +18,15 @@ import androidx.navigation.compose.rememberNavController
 import expo.modules.devlauncher.compose.primitives.DefaultScaffold
 import expo.modules.devlauncher.compose.routes.CrashReport
 import expo.modules.devlauncher.compose.routes.CrashReportRoute
-import expo.modules.devlauncher.compose.routes.Home
 import expo.modules.devlauncher.compose.routes.HomeRoute
 import expo.modules.devlauncher.compose.routes.ProfileRoute
-import expo.modules.devlauncher.compose.routes.Settings
+import expo.modules.devlauncher.compose.routes.Routes
 import expo.modules.devlauncher.compose.routes.SettingsRoute
+import expo.modules.devlauncher.compose.routes.UpdatesRoute
 import expo.modules.devlauncher.compose.ui.BottomTabBar
 import expo.modules.devlauncher.compose.ui.Full
 import expo.modules.devlauncher.compose.ui.rememberBottomSheetState
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -34,7 +36,8 @@ fun DefaultScreenContainer(
   Box(
     modifier = Modifier
       .fillMaxSize()
-      .background(Theme.colors.background.secondary)
+      .background(NewAppTheme.colors.background.default)
+      .statusBarsPadding()
   ) {
     content()
   }
@@ -54,6 +57,10 @@ fun DevLauncherBottomTabsNavigator() {
   val mainNavController = rememberNavController()
   val bottomTabsNavController = rememberNavController()
   val bottomSheetState = rememberBottomSheetState()
+
+  val navigateToProfile = remember {
+    { bottomSheetState.targetDetent = Full }
+  }
 
   NavHost(
     navController = mainNavController,
@@ -78,7 +85,7 @@ fun DevLauncherBottomTabsNavigator() {
       }) {
         NavHost(
           navController = bottomTabsNavController,
-          startDestination = Home,
+          startDestination = Routes.Home,
           enterTransition = {
             EnterTransition.None
           },
@@ -86,10 +93,13 @@ fun DevLauncherBottomTabsNavigator() {
             ExitTransition.None
           }
         ) {
-          composable<Home> {
-            HomeRoute(navController = mainNavController, onProfileClick = { bottomSheetState.jumpTo(Full) })
+          composable<Routes.Home> {
+            HomeRoute(navController = mainNavController, onProfileClick = navigateToProfile)
           }
-          composable<Settings> {
+          composable<Routes.Updates> {
+            UpdatesRoute(onProfileClick = navigateToProfile)
+          }
+          composable<Routes.Settings> {
             SettingsRoute()
           }
         }

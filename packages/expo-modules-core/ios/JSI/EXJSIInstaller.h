@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/React-Core-umbrella.h>
+#import <React/RCTBridge.h>
 
 // Swift classes need forward-declaration in the headers.
 @class EXAppContext;
@@ -13,7 +13,7 @@
 /**
  Property name of the core object in the global scope of the Expo JS runtime.
  */
-extern NSString * _Nonnull const EXGlobalCoreObjectPropertyName;
+extern NSString *_Nonnull const EXGlobalCoreObjectPropertyName;
 
 @interface EXJavaScriptRuntimeManager : NSObject
 
@@ -36,7 +36,7 @@ extern NSString * _Nonnull const EXGlobalCoreObjectPropertyName;
 /**
  Installs the base class for shared objects, i.e. `global.expo.SharedObject`.
  */
-+ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void(^)(long))releaser;
++ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void (^)(long))releaser;
 
 /**
  Installs the base class for shared refs, i.e. `global.expo.SharedRef`.

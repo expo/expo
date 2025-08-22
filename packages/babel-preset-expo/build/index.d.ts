@@ -1,4 +1,4 @@
-import { ConfigAPI, TransformOptions } from '@babel/core';
+import type { ConfigAPI, TransformOptions } from '@babel/core';
 type BabelPresetExpoPlatformOptions = {
     /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
     decorators?: false | {

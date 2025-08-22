@@ -1,21 +1,24 @@
 package expo.modules.devlauncher.compose.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import com.composables.core.Icon
-import com.composeunstyled.Button
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.composeunstyled.Icon
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.models.Account
-import expo.modules.devlauncher.compose.utils.withIsLast
-import expo.modules.devmenu.compose.primitives.Divider
-import expo.modules.devmenu.compose.primitives.RoundedSurface
-import expo.modules.devmenu.compose.primitives.RowLayout
-import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
+import expo.modules.devmenu.compose.ui.NewMenuButton
 
 @Composable
 fun AccountSelector(
@@ -23,49 +26,62 @@ fun AccountSelector(
   onClick: (Account) -> Unit = {},
   onSignOut: () -> Unit = {}
 ) {
-  Column {
-    RoundedSurface {
-      Column {
-        for ((account, isLast) in accounts.withIsLast()) {
-          Button(
-            onClick = { onClick(account) },
-            enabled = !account.isSelected
-          ) {
-            val avatar = @Composable {
-              RoundedSurface(borderRadius = Theme.sizing.borderRadius.full) {
-                AccountAvatar(
-                  account.avatar
-                )
-              }
-            }
-            RowLayout(
-              modifier = Modifier.padding(Theme.spacing.small),
-              leftComponent = avatar,
-              rightComponent = {
-                if (account.isSelected) {
-                  Icon(
-                    painterResource(R.drawable._expodevclientcomponents_assets_checkicon),
-                    contentDescription = "Checked"
-                  )
-                }
-              }
-            ) {
-              Text(account.name)
-            }
-          }
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`4`)
+  ) {
+    NewText(
+      "Account",
+      style = NewAppTheme.font.xxl.merge(
+        fontWeight = FontWeight.SemiBold,
+        lineHeight = 20.sp,
+        textAlign = TextAlign.Center
+      ),
+      modifier = Modifier.fillMaxWidth()
+    )
 
-          if (!isLast) {
-            Divider()
-          }
-        }
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+    ) {
+      for (account in accounts) {
+        NewMenuButton(
+          spacedBy = NewAppTheme.spacing.`3`,
+          icon = {
+            AccountAvatar(
+              account.avatar,
+              size = 32.dp
+            )
+          },
+          content = {
+            NewText(
+              text = account.name,
+              style = NewAppTheme.font.lg.merge(
+                fontWeight = FontWeight.SemiBold
+              )
+            )
+          },
+          rightComponent = {
+            if (account.isSelected) {
+              Icon(
+                painterResource(R.drawable.check_circle),
+                contentDescription = "Checked",
+                tint = Color(0xFF34C759),
+                modifier = Modifier.size(20.dp)
+              )
+            }
+          },
+          onClick = {
+            onClick(account)
+          },
+          enabled = !account.isSelected
+        )
       }
     }
 
-    Spacer(Theme.spacing.medium)
-
     ActionButton(
       "Log Out",
-      style = Theme.colors.button.tertiary,
+      foreground = Color.White,
+      background = Color.Black,
+      modifier = Modifier.padding(NewAppTheme.spacing.`3`),
       onClick = onSignOut
     )
   }

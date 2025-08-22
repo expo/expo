@@ -7,7 +7,7 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
+import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import assert from 'node:assert';
 
 import type { TransformOptions } from './babel-core';

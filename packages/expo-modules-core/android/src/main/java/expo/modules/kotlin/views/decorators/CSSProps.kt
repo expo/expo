@@ -15,7 +15,6 @@ import com.facebook.react.uimanager.style.BoxShadow
 import com.facebook.react.uimanager.style.LogicalEdge
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.views.ViewDefinitionBuilder
-import expo.modules.rncompatibility.parseBoxShadow
 
 inline fun <reified T : View> ViewDefinitionBuilder<T>.UseBorderColorProps(crossinline body: (view: T, edge: LogicalEdge, color: Int?) -> Unit) {
   PropGroup(
@@ -144,7 +143,7 @@ inline fun <reified T : View> ViewDefinitionBuilder<T>.UseBoxShadowProp(crossinl
 
     val shadowStyle = mutableListOf<BoxShadow>()
     for (i in 0..<shadows.size()) {
-      val shadow = parseBoxShadow(shadows.getMap(i), view.context) ?: continue
+      val shadow = BoxShadow.parse(shadows.getMap(i), view.context) ?: continue
       shadowStyle.add((shadow))
     }
     body(view, shadowStyle)

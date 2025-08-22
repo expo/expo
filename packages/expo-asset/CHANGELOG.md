@@ -6,11 +6,36 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.0.3 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - Add resource name validation for Android. ([#37322](https://github.com/expo/expo/pull/37322) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
+- [Android] fix file scheme handling in `downloadAsync` ([#38227](https://github.com/expo/expo/pull/38227) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+- [android] throw when loading empty font file ([#38229](https://github.com/expo/expo/pull/38229) by [@vonovak](https://github.com/vonovak))
+- Update remaining `@expo/config-plugins` in config plugin to `expo/config-plugins` ([#38580](https://github.com/expo/expo/pull/38580) by [@kitten](https://github.com/kitten))
 
 ## 11.1.7 - 2025-07-03
 

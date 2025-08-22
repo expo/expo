@@ -2,9 +2,9 @@ package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
@@ -16,15 +16,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import expo.modules.devlauncher.compose.DefaultScreenContainer
 import expo.modules.devlauncher.compose.ui.ActionButton
-import expo.modules.devmenu.compose.primitives.Heading
-import expo.modules.devmenu.compose.primitives.Mono
-import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.utils.copyToClipboard
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -86,20 +87,32 @@ fun Modifier.horizontalScrollbar(
 
 @Composable
 fun StackTrace(
-  stack: String
+  stack: String,
+  modifier: Modifier = Modifier
 ) {
   val verticalScrollState = rememberScrollState()
   val horizontalScrollState = rememberScrollState()
-  Box(modifier = Modifier.verticalScrollbar(verticalScrollState).horizontalScrollbar(horizontalScrollState)) {
+  Box(
+    modifier = Modifier
+      .verticalScrollbar(verticalScrollState)
+      .horizontalScrollbar(horizontalScrollState)
+      .then(modifier)
+  ) {
     Box(
       Modifier
         .verticalScroll(verticalScrollState)
         .horizontalScroll(horizontalScrollState)
+
     ) {
-      Box(modifier = Modifier.padding(start = Theme.spacing.small, end = Theme.spacing.small, bottom = Theme.spacing.small)) {
-        Mono(
+      Box(modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)) {
+        NewText(
           stack,
-          fontSize = Theme.typography.size10
+          style = TextStyle.Default.merge(
+            lineHeight = 16.sp,
+            fontSize = 10.sp,
+            fontFamily = NewAppTheme.font.mono,
+            fontWeight = FontWeight.Light
+          )
         )
       }
     }
@@ -114,13 +127,21 @@ fun CrashReportScreen(
 ) {
   val context = LocalContext.current
 
-  Column(modifier = Modifier.safeDrawingPadding()) {
-    Spacer(Theme.spacing.medium)
-
-    Row(modifier = Modifier.padding(horizontal = Theme.spacing.small)) {
+  Column(
+    modifier = Modifier.safeDrawingPadding()
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`4`),
+      modifier = Modifier
+        .padding(horizontal = NewAppTheme.spacing.`4`)
+        .padding(top = NewAppTheme.spacing.`4`)
+    ) {
       ActionButton(
         "Tap to Copy Report",
-        style = Theme.colors.button.primary,
+        foreground = NewAppTheme.colors.buttons.primary.foreground,
+        background = NewAppTheme.colors.buttons.primary.background,
+        modifier = Modifier
+          .padding(vertical = NewAppTheme.spacing.`2`),
         onClick = {
           copyToClipboard(
             context,
@@ -137,49 +158,63 @@ fun CrashReportScreen(
           )
         }
       )
+
+      Column(verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)) {
+        NewText(
+          "Occurred:",
+          style = NewAppTheme.font.lg.merge(
+            fontWeight = FontWeight.Medium
+          )
+        )
+
+        NewText(
+          SimpleDateFormat.getDateTimeInstance().format(Date(timestamp)).toString(),
+          style = NewAppTheme.font.md,
+          color = NewAppTheme.colors.text.secondary
+        )
+      }
+
+      Column(verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)) {
+        NewText(
+          "Reason:",
+          style = NewAppTheme.font.lg.merge(
+            fontWeight = FontWeight.Medium
+          )
+        )
+
+        NewText(
+          message,
+          style = NewAppTheme.font.md,
+          color = NewAppTheme.colors.text.secondary
+        )
+      }
     }
 
-    Spacer(Theme.spacing.small)
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
+      modifier = Modifier.padding(top = NewAppTheme.spacing.`4`)
+    ) {
+      NewText(
+        "Stack Trace:",
+        style = NewAppTheme.font.lg.merge(
+          fontWeight = FontWeight.Medium
+        ),
+        modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)
+      )
 
-    Column(modifier = Modifier.padding(Theme.spacing.small)) {
-      Heading(
-        "Occurred:"
-      )
-      Spacer(Theme.spacing.tiny)
-      Text(
-        SimpleDateFormat.getDateTimeInstance().format(Date(timestamp)).toString()
-      )
+      StackTrace(stack)
     }
-
-    Column(modifier = Modifier.padding(Theme.spacing.small)) {
-      Heading(
-        "Reason:"
-      )
-      Spacer(Theme.spacing.tiny)
-      Text(
-        message
-      )
-    }
-
-    Row(modifier = Modifier.padding(Theme.spacing.small)) {
-      Heading(
-        "Stack trace:"
-      )
-      Spacer(Theme.spacing.tiny)
-    }
-
-    StackTrace(stack)
-
-    Spacer(Theme.spacing.medium)
   }
 }
 
 @Composable
 @Preview(showBackground = true)
 fun CrashReportScreenPreview() {
-  CrashReportScreen(
-    timestamp = 1633036800000L,
-    message = "Sample crash message",
-    stack = "java.lang.RuntimeException: Sample exception\n\tat com.example.app.MainActivity.onCreate(MainActivity.java:23)\n\tat android.app.Activity.performCreate(Activity.java:8000)\n\tat android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3500)\n\tat android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3600)\n\tat android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:85)\n\tat android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)\n\tat android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)\n\tat android.app.ActivityThread.handleMessage(ActivityThread.java:2200)\n\tat android.os.Handler.dispatchMessage(Handler.java:106)\n\tat android.os.Looper.loop(Looper.java:223)\n\tat android.app.ActivityThread.main(ActivityThread.java:7656)\n\tat java.lang.reflect.Method.invoke(Native Method)\n\tat com.android.internal.os.RuntimeInit.run(RuntimeInit.java:592)\n\tat com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)"
-  )
+  DefaultScreenContainer {
+    CrashReportScreen(
+      timestamp = 1633036800000L,
+      message = "Sample crash message",
+      stack = "java.lang.RuntimeException: Sample exception\n\tat com.example.app.MainActivity.onCreate(MainActivity.java:23)\n\tat android.app.Activity.performCreate(Activity.java:8000)\n\tat android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3500)\n\tat android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3600)\n\tat android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:85)\n\tat android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)\n\tat android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)\n\tat android.app.ActivityThread.handleMessage(ActivityThread.java:2200)\n\tat android.os.Handler.dispatchMessage(Handler.java:106)\n\tat android.os.Looper.loop(Looper.java:223)\n\tat android.app.ActivityThread.main(ActivityThread.java:7656)\n\tat java.lang.reflect.Method.invoke(Native Method)\n\tat com.android.internal.os.RuntimeInit.run(RuntimeInit.java:592)\n\tat com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)"
+    )
+  }
 }

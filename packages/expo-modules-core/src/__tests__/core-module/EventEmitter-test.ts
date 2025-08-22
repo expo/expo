@@ -1,8 +1,7 @@
-import type { ExpoGlobal } from '../../ts-declarations/global';
 import '../../';
 
 function getSampleEmitter() {
-  return new (globalThis.expo as ExpoGlobal).EventEmitter<any>();
+  return new globalThis.expo.EventEmitter<any>();
 }
 
 describe(`EventEmitter`, () => {

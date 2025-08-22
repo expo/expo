@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.UiThread
 import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
@@ -31,8 +32,6 @@ import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherNetworkInterceptor
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
-import expo.modules.devlauncher.launcher.DevLauncherReactHost
-import expo.modules.devlauncher.launcher.DevLauncherReactNativeHost
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
@@ -53,10 +52,6 @@ import okhttp3.OkHttpClient
 import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.dsl.module
-
-// Use this to load from a development server for the development client launcher UI
-// private val DEV_LAUNCHER_HOST = "10.0.0.175:8090";
-private val DEV_LAUNCHER_HOST: String? = null
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
@@ -91,13 +86,6 @@ class DevLauncherController private constructor() :
     }
 
   override val coroutineScope = CoroutineScope(Dispatchers.Default)
-
-  override val devClientHost by lazy {
-    ReactHostWrapper(
-      reactNativeHost = DevLauncherReactNativeHost(context as Application, DEV_LAUNCHER_HOST),
-      reactHostProvider = { DevLauncherReactHost.create(context as Application, DEV_LAUNCHER_HOST) }
-    )
-  }
 
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   override var manifest: Manifest? = null
@@ -427,6 +415,17 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     internal fun initialize(context: Context, reactHost: ReactHostWrapper) {
+      try {
+        val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
+        val splashScreenManager = splashScreenManagerClass
+          .kotlin
+          .objectInstance
+        splashScreenManagerClass.getMethod("hide")
+          .invoke(splashScreenManager)
+      } catch (e: Throwable) {
+        Log.e("DevLauncherController", "Failed to hide splash screen", e)
+      }
+
       val testInterceptor = DevLauncherKoinContext.app.koin.get<DevLauncherTestInterceptor>()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }

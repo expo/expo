@@ -76,12 +76,6 @@ describe('server', () => {
 
   beforeAll(async () => {
     projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
-
-    // TODO(cedric): Remove this once we publish `@expo/metro-config` with `export --dev` fixes
-    // Or when we can build `@expo/metro-config` on Windows
-    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
-    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
-    await fs.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   });
 
   it('runs `npx expo export`', async () => {
@@ -324,6 +318,74 @@ describe('server', () => {
     // log and diff the `bundle` with the a previous version from a branch
     // where this passes.
     expect(bundle.split('\n').length).toBeLessThan(700);
+  });
+
+  it('runs `npx expo export --no-bytecode --unstable-hosted-native`', async () => {
+    // `npx expo export`
+    await executeExpoAsync(
+      projectRoot,
+      [
+        'export',
+        '--source-maps',
+        '--no-bytecode',
+        '--dump-assetmap',
+        '--unstable-hosted-native',
+        '--platform',
+        'ios',
+      ],
+      {
+        env: {
+          NODE_ENV: 'production',
+          TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+        },
+      }
+    );
+
+    const outputDir = path.join(projectRoot, 'dist');
+    const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
+
+    expect(metadata).toEqual({
+      bundler: 'metro',
+      fileMetadata: {
+        ios: {
+          assets: [
+            {
+              ext: 'png',
+              path: expect.pathMatching(ASSETS_MD5_PATH),
+            },
+            {
+              ext: 'png',
+              path: expect.pathMatching(ASSETS_MD5_PATH),
+            },
+            {
+              ext: 'ttf',
+              path: expect.pathMatching(ASSETS_MD5_PATH),
+            },
+          ],
+          bundle: expect.pathMatching(
+            new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js$`)
+          ),
+        },
+      },
+      version: 0,
+    });
+
+    const assetmap = await JsonFile.readAsync(path.resolve(outputDir, 'assetmap.json'));
+    expect(assetmap).toEqual({});
+
+    // If this changes then everything else probably changed as well.
+    expect(findProjectFiles(outputDir)).toEqual([
+      expect.pathMatching(new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js$`)),
+      expect.pathMatching(
+        new RegExp(`_expo/static/js/ios/AppEntry-${MD5_REGEX.source}\\.js\\.map$`)
+      ),
+      'assetmap.json',
+      expect.pathMatching(new RegExp(`assets/assets/font\\.${MD5_REGEX.source}\\.ttf$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}\\.png$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}@2x\\.png$`)),
+      'favicon.ico',
+      'metadata.json',
+    ]);
   });
 
   // Regression test for: https://github.com/expo/expo/issues/35471

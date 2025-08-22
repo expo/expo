@@ -7,11 +7,13 @@ internal final class ImageViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPr
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var systemName: String = ""
   @Field var size: Double?
   @Field var color: Color?
   @Field var useTapGesture: Bool?
-  @Field var testID: String?
   var onTap = EventDispatcher()
 }
 

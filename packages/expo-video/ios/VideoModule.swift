@@ -313,6 +313,13 @@ public final class VideoModule: Module {
         return player.ref.isExternalPlaybackActive
       }
 
+      Property("keepScreenOnWhilePlaying") { player -> Bool in
+        return player.ref.preventsDisplaySleepDuringVideoPlayback
+      }
+      .set { player, keepScreenOnWhilePlaying in
+        player.ref.preventsDisplaySleepDuringVideoPlayback = keepScreenOnWhilePlaying
+      }
+
       Function("play") { player in
         player.ref.play()
       }
@@ -339,6 +346,7 @@ public final class VideoModule: Module {
 
       Function("replay") { player in
         player.ref.seek(to: CMTime.zero)
+        player.ref.play()
       }
 
       AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in

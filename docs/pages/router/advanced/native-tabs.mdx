@@ -1,0 +1,332 @@
+---
+title: Native tabs
+description: Learn how to use the native tabs layout in Expo Router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FileTree } from '~/ui/components/FileTree';
+
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
+
+Tabs are a common way to navigate between different sections of an app. In Expo Router, you can use different tab layouts, depending on your needs. This guide covers the native tabs. Unlike the [other tabs layout](/router/advanced/tabs), native tabs use the native system tab bar.
+
+For other tab-layouts see:
+
+<BoxLink
+  title="Custom tabs"
+  href="/router/advanced/custom-tabs/"
+  description="See custom tabs if your app requires a fully custom design that is not possible using system tabs."
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="JavaScript tabs"
+  href="/router/advanced/tabs/"
+  description="See JavaScript tabs if you already use React Navigation's tabs."
+  Icon={BookOpen02Icon}
+/>
+
+## Get started
+
+You can use file-based routing to create a tabs layout. Here's an example file structure:
+
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/settings.tsx']} />
+
+The above file structure produces a layout with a tab bar at the bottom of the screen. The tab bar will have two tabs: **Home** and **Settings**.
+
+<ContentSpotlight
+  alt="A screenshot of a tab bar with two tabs: Home and Settings."
+  src="/static/images/expo-router/native-tabs.png"
+  className="max-w-[540px]"
+/>
+
+You can use the **app/\_layout.tsx** file to define your app's root layout using tabs. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab item look and behave.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+        <Icon sf="house.fill" drawable="custom_android_drawable" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Icon sf="gear" drawable="custom_settings_drawable" />
+        <Label>Settings</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+Finally, you have the two tab files that make up the content of the tabs: **app/index.tsx** and **app/settings.tsx**.
+
+```tsx app/index.tsx and app/settings.tsx
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function Tab() {
+  return (
+    <View style={styles.container}>
+      <Text>Tab [Home|Settings]</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+```
+
+The tab file named **index.tsx** is the default tab when the app loads. The second tab file **settings.tsx** shows how you can add more tabs to the tab bar.
+
+> **info** In contrast to the Stack navigator, tabs are not automatically added to the tab bar. You need to explicitly add them in your layout file using the `NativeTabs.Trigger`.
+
+## Customizing tab bar items
+
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
+
+When you want to customize the tab bar item, we recommend using the components API designed for this purpose. Currently, you can customize:
+
+- **Icon**: The icon displayed in the tab bar item.
+- **Label**: The label displayed in the tab bar item.
+- **Badge**: The badge displayed in the tab bar item.
+
+### Icon
+
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
+
+You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `drawable` prop for Android drawables, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
+
+Additionally, you can use the `selectedSf` or `selectedSrc` props to specify a different icon when the tab is selected.
+
+> **warning** The custom images API is currently not available on Android, but we plan to add it to soon.
+
+> To use `drawable` props on Android, you can use [built-in drawables](https://developer.android.com/reference/android/R.drawable) or add [custom drawables](https://developer.android.com/studio/write/resource-manager).
+
+```tsx app/_layout.tsx
+import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Icon sf="house" selectedSf="house.fill" drawable="custom_home_drawable" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Icon
+          src={require('../../../assets/setting_icon.png')}
+          selectedSrc={require('../../../assets/selected_setting_icon.png')}
+        />
+      </NativeTabs.Trigger>
+  </NativeTabs>
+```
+
+Liquid glass on iOS automatically changes colors based on if the background color is light or dark. There is no callback for this, so you need to use a `PlatformColor` to set the color of the icon.
+
+```tsx app/_layout.tsx
+import { DynamicColorIOS } from 'react-native';
+import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs
+      style={{
+        // For the text color
+        color: DynamicColorIOS({
+          dark: 'white',
+          light: 'black',
+        }),
+        // For the selected icon color
+        tintColor: DynamicColorIOS({
+          dark: 'white',
+          light: 'black',
+        }),
+      }}>
+      <NativeTabs.Trigger name="index">
+        <Icon sf="house" selectedSf="house.fill" drawable="custom_home_drawable" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Icon
+          src={require('../../../assets/setting_icon.png')}
+          selectedSrc={require('../../../assets/selected_setting_icon.png')}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+### Label
+
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
+
+You can use the `Label` component to customize the label displayed in the tab bar item. The `Label` component accepts a string label passed as a child. If no label is provided, the tab bar item will use the route name as the label.
+
+If you don't want to display a label, you can use the `hidden` prop to hide the label.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Label hidden />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+### Badge
+
+> **important** Native tabs is an experimental feature available in SDK 54 and above, and its API is subject to change.
+
+You can use the `Badge` component to customize the badge displayed for the tab bar item. The badge is an additional mark on top of the tab and useful for showing notification or unread message counts.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Badge } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="messages">
+        <Badge>9+</Badge>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Badge />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+<ContentSpotlight
+  alt="A screenshot of a tab bar with badges on the Messages and Settings tabs."
+  src="/static/images/expo-router/native-tabs-badges.png"
+  className="max-w-[540px]"
+/>
+
+## Customizing the tab bar
+
+Since the native tab layout's appearance varies by platform, the customization options are also different. For all customization options, see the [API reference for `NativeTabs`](/versions/unversioned/sdk/router-native-tabs/).
+
+## Advanced
+
+### Hiding a tab conditionally
+
+If you want to hide a tab based on a condition, you can either remove the trigger or pass the `hidden` prop to the `NativeTabs.Trigger` component.
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  const shouldHideMessagesTab = true; // Replace with your condition
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="messages" hidden={shouldHideMessagesTab} />
+    </NativeTabs>
+  );
+}
+```
+
+### Dismiss behavior
+
+> **info** Currently this is an iOS-only feature, but we plan to add it to Android in the future.
+
+By default, tapping a tab that is already active closes all screens in that tab's stack and returns to the root screen. You can disable this by setting the `disablePopToTop` prop on the `NativeTabs.Trigger` component.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" disablePopToTop>
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Label>Settings</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+### Scroll to top
+
+> **info** Currently this is an iOS-only feature, but we plan to add it to Android in the future.
+
+By default, tapping a tab that is already active and showing its root screen scrolls the content back to the top. You can disable this by setting the `disableScrollToTop` prop on the `NativeTabs.Trigger` component.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" disableScrollToTop>
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Label>Settings</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+## Migrating from JavaScript tabs
+
+Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/router/advanced/tabs/). The native tabs are constrained to the native platform behavior, whereas the JavaScript tabs can be customized more freely. If you aren't interested in the native platform behavior, you can continue using the JavaScript tabs.
+
+### Use `Trigger` instead of `Screen`
+
+`NativeTabs` introduces the concept of a `Trigger` for adding routes to a layout. Unlike a `Screen`, which styles routes that are added automatically, the `Trigger` system gives you better control for hiding and removing tabs from the tab bar.
+
+### Use React components instead of props
+
+`NativeTabs` has a React-first API that opts to use components for defining UI in favor of props objects.
+
+```diff
+- options={{
+-   tabBarIcon: ({ focused, color, size }) => (
+-     <Icon name="home" color={color} size={size} />
+-   ),
+- }}
++ <Icon sf="house" drawable="home_drawable" />
+```
+
+### Use Stacks inside tabs
+
+The JavaScript `<Tabs />` have a mock stack header which is not present in the native tabs. Instead, you should nest a native `<Stack />` layout inside the native tabs to support both headers and pushing screens.
+
+## Known limitations
+
+### A limit of 5 tabs on Android
+
+On Android, there is a limitation of having a maximum of 5 tabs in the tab bar. This restriction comes from the platform's Material Tabs component.
+
+### Android does not support custom images
+
+This is in active development. At the moment, you can only use build-time drawables on Android.
+
+### Cannot measure the tab bar height
+
+The tabs move around, sometimes being on top of the screen when rendering on iPad, sometimes on the side of the screen when running on Apple Vision Pro, and so on. We're working on a layout function to provide more detailed layout info in the future.
+
+### No support for nested tabs
+
+Native tabs do not support nested tabs. If you need nested tabs, you can use the JavaScript tabs.

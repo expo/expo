@@ -1,5 +1,6 @@
 package expo.modules.updates.db.entity
 
+import android.net.Uri
 import androidx.room.*
 import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONObject
@@ -37,7 +38,9 @@ class UpdateEntity(
   @field:ColumnInfo(name = "commit_time") var commitTime: Date,
   @field:ColumnInfo(name = "runtime_version") var runtimeVersion: String,
   @field:ColumnInfo(name = "scope_key") var scopeKey: String,
-  @field:ColumnInfo(name = "manifest") var manifest: JSONObject
+  @field:ColumnInfo(name = "manifest") var manifest: JSONObject,
+  @field:ColumnInfo(name = "url") var url: Uri?,
+  @field:ColumnInfo(name = "headers") var requestHeaders: Map<String, String>?
 ) {
   @ColumnInfo(name = "launch_asset_id")
   var launchAssetId: Long? = null

@@ -61,7 +61,9 @@ class RemoteLoader internal constructor(
     embeddedUpdate: UpdateEntity?
   ): FileDownloader.AssetDownloadResult {
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate, requestedUpdate)
-    return mFileDownloader.downloadAsset(assetEntity, updatesDirectory, extraHeaders)
+    return mFileDownloader.downloadAsset(assetEntity, updatesDirectory, extraHeaders, { progress ->
+      assetLoadProgressListener(assetEntity, progress)
+    })
   }
 
   companion object {

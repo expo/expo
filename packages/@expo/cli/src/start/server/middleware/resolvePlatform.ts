@@ -32,6 +32,9 @@ export function resolvePlatformFromUserAgentHeader(req: ServerRequest): string |
   if (userAgent?.match(/Android/i)) {
     platform = 'android';
   }
+  if (userAgent?.match(/OculusBrowser|Quest/i)) {
+    platform = 'android';
+  }
   if (userAgent?.match(/iPhone|iPad/i)) {
     platform = 'ios';
   }

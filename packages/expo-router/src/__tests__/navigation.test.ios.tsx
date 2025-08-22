@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { Text, View } from 'react-native';
 
 import {
@@ -13,7 +14,7 @@ import {
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { act, fireEvent, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('should respect `unstable_settings', () => {
   const render = (options: any = {}) =>
@@ -885,7 +886,9 @@ it('can replace across groups', async () => {
   expect(screen).toHaveSegments(['+not-found']);
 
   // Go to one
-  act(() => router.push('/one/screen'));
+  // Using replace here, so we don't create a history entry
+  // Otherwise canGoBack would be true
+  act(() => router.replace('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 

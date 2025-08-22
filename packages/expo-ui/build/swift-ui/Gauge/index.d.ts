@@ -1,4 +1,5 @@
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
+import { type CommonViewModifierProps } from '../types';
 /**
  * The type of `Gauge`.
  * @platform ios
@@ -51,17 +52,10 @@ export type GaugeProps = {
      * Color (or array of colors for gradient) of the `Gauge`.
      */
     color?: ColorValue | ColorValue[];
-};
-/**
- * `<Gauge>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function GaugePrimitive({ type, ...props }: GaugeProps): import("react").JSX.Element | null;
+} & CommonViewModifierProps;
 /**
  * Renders a native `Gauge` component.
  * @platform ios
  */
-export declare function Gauge(props: GaugeProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
+export declare function Gauge({ type, modifiers, ...props }: GaugeProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

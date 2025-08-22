@@ -1,60 +1,61 @@
 package expo.modules.devmenu.compose.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composables.core.Icon
+import com.composeunstyled.Icon
 import expo.modules.devmenu.R
-import expo.modules.devmenu.compose.primitives.Heading
-import expo.modules.devmenu.compose.primitives.Surface
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
+import expo.modules.devmenu.compose.primitives.RoundedSurface
 
 @Composable
 fun Warning(
   text: String
 ) {
-  Surface(
-    shape = RoundedCornerShape(Theme.sizing.borderRadius.medium),
-    border = BorderStroke(1.dp, Theme.colors.border.warning),
-    modifier = Modifier.fillMaxWidth()
+  RoundedSurface(
+    borderRadius = NewAppTheme.borderRadius.xl
   ) {
     Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
       modifier = Modifier
         .fillMaxWidth()
-        .background(Theme.colors.background.warning)
-        .padding(Theme.spacing.medium)
+        .background(NewAppTheme.colors.background.warning)
+        .padding(NewAppTheme.spacing.`3`)
     ) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+      ) {
         Icon(
-          painterResource(R.drawable._expodevclientcomponents_assets_warningtriangleicon),
-          contentDescription = "Warning Icon",
-          tint = Theme.colors.text.warning,
+          painterResource(R.drawable.alert),
+          contentDescription = "Warning",
+          tint = NewAppTheme.colors.icon.warning,
           modifier = Modifier
-            .size(Theme.sizing.icon.small)
-            .padding(2.dp)
+            .size(18.dp)
         )
-        Spacer(Modifier.size(Theme.spacing.tiny))
-        Heading("Warning", fontSize = Theme.typography.small, color = Theme.colors.text.warning)
+        NewText(
+          "Warning",
+          color = NewAppTheme.colors.text.warning,
+          style = NewAppTheme.font.lg.merge(
+            fontWeight = FontWeight.Medium
+          )
+        )
       }
-      Spacer(Modifier.size(Theme.spacing.small))
-
-      Text(
+      NewText(
         text,
-        fontSize = Theme.typography.small,
-        color = Theme.colors.text.warning
+        style = NewAppTheme.font.sm
       )
     }
   }

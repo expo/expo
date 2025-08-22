@@ -1,3 +1,5 @@
+import { AudioQuality, IOSOutputFormat } from './RecordingConstants';
+
 // @docsMissing
 export type AudioSource =
   | string
@@ -20,6 +22,63 @@ export type AudioSource =
        */
       headers?: Record<string, string>;
     };
+
+/**
+ * Options for configuring audio player behavior.
+ */
+export type AudioPlayerOptions = {
+  /**
+   * How often (in milliseconds) to emit playback status updates.
+   * @default 500
+   *
+   * @platform ios
+   * @platform android
+   * @platform web
+   */
+  updateInterval?: number;
+  /**
+   * If set to `true`, the system will attempt to download the resource to the device before loading.
+   * This value defaults to `false`.
+   *
+   * Works with:
+   * - Local assets from `require('path/to/file')`
+   * - Remote HTTP/HTTPS URLs
+   * - Asset objects
+   *
+   * When enabled, this ensures the audio file is fully downloaded before playback begins.
+   * This can improve playback performance and reduce buffering, especially for users
+   * managing multiple audio players simultaneously.
+   *
+   * On Android and iOS, this will download the audio file to the device's tmp directory before playback begins.
+   * The system will purge the file at its discretion.
+   *
+   * On web, this will download the audio file to the user's device memory and make it available for the user to play.
+   * The system will usually purge the file from memory after a reload or on memory pressure.
+   * On web, CORS restrictions apply to the blob url, so you need to make sure the server returns the `Access-Control-Allow-Origin` header.
+   *
+   * @platform ios
+   * @platform web
+   * @platform android
+   */
+  downloadFirst?: boolean;
+  /**
+   * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
+   * If `undefined` (default), does not use CORS at all. If set to `'anonymous'`, the audio will be loaded with CORS enabled.
+   * Note that some audio may not play if CORS is enabled, depending on the CDN settings.
+   * If you encounter issues, consider adjusting the `crossOrigin` property.
+   *
+   *
+   * @platform web
+   * @default undefined
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
+};
+
+/**
+ * @deprecated Use `AudioPlayerOptions` instead.
+ * Options for audio loading behavior.
+ */
+export type AudioLoadOptions = AudioPlayerOptions;
 
 /**
  * Represents an available audio input device for recording.
@@ -156,78 +215,43 @@ export type AndroidOutputFormat =
 export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';
 
 /**
- * Audio output format options for iOS recording.
- *
- * Comprehensive enum of audio formats supported by iOS for recording.
- * Each format has different characteristics in terms of quality, file size, and compatibility.
- * Some formats like LINEARPCM offer the highest quality but larger file sizes,
- * while compressed formats like AAC provide good quality with smaller files.
- *
- * @platform ios
- */
-export enum IOSOutputFormat {
-  LINEARPCM = 'lpcm',
-  AC3 = 'ac-3',
-  '60958AC3' = 'cac3',
-  APPLEIMA4 = 'ima4',
-  MPEG4AAC = 'aac ',
-  MPEG4CELP = 'celp',
-  MPEG4HVXC = 'hvxc',
-  MPEG4TWINVQ = 'twvq',
-  MACE3 = 'MAC3',
-  MACE6 = 'MAC6',
-  ULAW = 'ulaw',
-  ALAW = 'alaw',
-  QDESIGN = 'QDMC',
-  QDESIGN2 = 'QDM2',
-  QUALCOMM = 'Qclp',
-  MPEGLAYER1 = '.mp1',
-  MPEGLAYER2 = '.mp2',
-  MPEGLAYER3 = '.mp3',
-  APPLELOSSLESS = 'alac',
-  MPEG4AAC_HE = 'aach',
-  MPEG4AAC_LD = 'aacl',
-  MPEG4AAC_ELD = 'aace',
-  MPEG4AAC_ELD_SBR = 'aacf',
-  MPEG4AAC_ELD_V2 = 'aacg',
-  MPEG4AAC_HE_V2 = 'aacp',
-  MPEG4AAC_SPATIAL = 'aacs',
-  AMR = 'samr',
-  AMR_WB = 'sawb',
-  AUDIBLE = 'AUDB',
-  ILBC = 'ilbc',
-  DVIINTELIMA = 0x6d730011,
-  MICROSOFTGSM = 0x6d730031,
-  AES3 = 'aes3',
-  ENHANCEDAC3 = 'ec-3',
-}
-
-/**
- * Audio quality levels for recording.
- *
- * Predefined quality levels that balance file size and audio fidelity.
- * Higher quality levels produce better sound but larger files and require more processing power.
- */
-export enum AudioQuality {
-  /** Minimum quality: smallest file size, lowest fidelity. */
-  MIN = 0,
-  /** Low quality: good for voice recordings where file size matters. */
-  LOW = 0x20,
-  /** Medium quality: balanced option for most use cases. */
-  MEDIUM = 0x40,
-  /** High quality: good fidelity, larger file size. */
-  HIGH = 0x60,
-  /** Maximum quality: best fidelity, largest file size. */
-  MAX = 0x7f,
-}
-
-/**
  * Bit rate strategies for audio encoding.
  *
  * Determines how the encoder manages bit rate during recording, affecting
  * file size consistency and quality characteristics.
  */
 export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrained' | 'variable';
+
+/**
+ * Options for controlling how audio recording is started.
+ */
+export type RecordingStartOptions = {
+  /**
+   * The duration in seconds after which recording should automatically stop.
+   * If not provided, recording continues until manually stopped.
+   *
+   * @platform ios
+   * @platform android
+   * @platform web
+   */
+  forDuration?: number;
+  /**
+   * The time in seconds to wait before starting the recording.
+   * If not provided, recording starts immediately.
+   *
+   * **Platform behavior:**
+   * - Android: Ignored, recording starts immediately
+   * - iOS: Uses native AVAudioRecorder.record(atTime:) for precise timing.
+   * - Web: Ignored, recording starts immediately
+   *
+   * > **warning** On iOS, the recording process starts immediately (you'll see status updates),
+   * but actual audio capture begins after the specified delay. This is not a countdown, since
+   * the recorder is active but silent during the delay period.
+   *
+   * @platform ios
+   */
+  atTime?: number;
+};
 
 export type RecordingOptions = {
   /**

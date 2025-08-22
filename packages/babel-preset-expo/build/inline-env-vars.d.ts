@@ -1,4 +1,2 @@
-import { ConfigAPI, PluginObj, types as t } from '@babel/core';
-export declare function expoInlineEnvVars(api: ConfigAPI & {
-    types: typeof t;
-}): PluginObj;
+import type { ConfigAPI, PluginObj } from '@babel/core';
+export declare function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core')): PluginObj;

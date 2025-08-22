@@ -50,10 +50,10 @@ class EXDevLauncherUtils {
   /**
    Invokes the original implementation before swizzling for the given selector
    */
-  static func invokeOriginalClassMethod(selector: Selector, forClass: AnyClass, A0: Any) throws -> Any? {
+  static func invokeOriginalClassMethod(selector: Selector, forClass: AnyClass, a0: Any) throws -> Any? {
     typealias ClassMethod = @convention(c) (AnyObject, Selector, Any) -> Any
     let imp = try getOriginalClassMethodImp(selector: selector, forClass: forClass)
-    return unsafeBitCast(imp, to: ClassMethod.self)(self, selector, A0)
+    return unsafeBitCast(imp, to: ClassMethod.self)(self, selector, a0)
   }
 
   private static func getOriginalClassMethodImp(selector: Selector, forClass: AnyClass) throws -> IMP {
@@ -62,14 +62,5 @@ class EXDevLauncherUtils {
       fatalError("Backup selector does not exist - forClass[\(forClass)] backupSelector[\(NSStringFromSelector(backupSelector))]")
     }
     return method_getImplementation(method)
-  }
-
-  static func resourcesBundle() -> Bundle? {
-    let frameworkBundle = Bundle(for: EXDevLauncherUtils.self)
-
-    guard let resourcesBundleUrl = frameworkBundle.url(forResource: "EXDevLauncher", withExtension: "bundle") else {
-      return nil
-    }
-    return Bundle(url: resourcesBundleUrl)
   }
 }

@@ -55,11 +55,6 @@ interface DevMenuManagerInterface {
   fun getSettings(): DevMenuPreferencesInterface?
 
   /**
-   * @return the dev menu application host.
-   */
-  fun getMenuHost(): ReactHostWrapper
-
-  /**
    * Synchronizes [ReactInstanceManager] from delegate with one saved in [DevMenuManger].
    */
   fun synchronizeDelegate()

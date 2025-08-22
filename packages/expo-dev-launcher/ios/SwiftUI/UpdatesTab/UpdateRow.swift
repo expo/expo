@@ -32,7 +32,9 @@ struct UpdateRow: View {
       Text("Open")
     }
     .buttonStyle(.bordered)
+    #if !os(tvOS)
     .controlSize(.small)
+    #endif
     .disabled(!isCompatible)
   }
 

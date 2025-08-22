@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE, } from './AudioEventKeys';
 import AudioModule from './AudioModule';
 import { createRecordingOptions } from './utils/options';
-import { resolveSource } from './utils/resolveSource';
+import { resolveSource, resolveSourceWithDownload } from './utils/resolveSource';
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source) {
@@ -20,11 +20,18 @@ AudioModule.AudioPlayer.prototype.setPlaybackRate = function (rate, pitchCorrect
         return setPlaybackRate.call(this, rate, pitchCorrectionQuality);
     }
 };
-const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
-AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
-    const processedOptions = options ? createRecordingOptions(options) : undefined;
-    return prepareToRecordAsync.call(this, processedOptions);
-};
+// Audio recording prototypes should not be shimmed on tvOS, where they do not exist
+if (!Platform.isTV || Platform.OS !== 'ios') {
+    const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
+    AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
+        const processedOptions = options ? createRecordingOptions(options) : undefined;
+        return prepareToRecordAsync.call(this, processedOptions);
+    };
+    const record = AudioModule.AudioRecorder.prototype.record;
+    AudioModule.AudioRecorder.prototype.record = function (options) {
+        return record.call(this, options);
+    };
+}
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.
  *
@@ -32,7 +39,7 @@ AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
  * The player will start loading the audio source immediately upon creation.
  *
  * @param source The audio source to load. Can be a local asset via `require()`, a remote URL, or null for no initial source.
- * @param updateInterval How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+ * @param options Audio player configuration options.
  * @returns An `AudioPlayer` instance that's automatically managed by the component lifecycle.
  *
  * @example
@@ -47,10 +54,60 @@ AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
  *   );
  * }
  * ```
+ *
+ * @example Using downloadFirst
+ * ```tsx
+ * import { useAudioPlayer } from 'expo-audio';
+ *
+ * function MyComponent() {
+ *   const player = useAudioPlayer('https://example.com/audio.mp3', {
+ *     updateInterval: 1000,
+ *     downloadFirst: true,
+ *   });
+ *
+ *   return (
+ *     <Button title="Play" onPress={() => player.play()} />
+ *   );
+ * }
+ * ```
  */
-export function useAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = resolveSource(source);
-    return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
+export function useAudioPlayer(source = null, options = {}) {
+    const { updateInterval = 500, downloadFirst = false } = options;
+    // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
+    // If downloadFirst is false, we resolve the source here.
+    // we call .replace() in the useEffect below to replace the source with the downloaded one.
+    const initialSource = useMemo(() => {
+        return downloadFirst ? null : resolveSource(source);
+    }, [JSON.stringify(source), downloadFirst]);
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval), [JSON.stringify(initialSource), updateInterval]);
+    // Handle async source resolution for downloadFirst
+    useEffect(() => {
+        if (!downloadFirst || source === null) {
+            return;
+        }
+        let isCancelled = false;
+        // We resolve the source with expo-asset and replace the player's source with the downloaded one.
+        async function resolveAndReplaceSource() {
+            try {
+                const resolved = await resolveSourceWithDownload(source);
+                if (!isCancelled &&
+                    resolved &&
+                    JSON.stringify(resolved) !== JSON.stringify(initialSource)) {
+                    player.replace(resolved);
+                }
+            }
+            catch (error) {
+                if (!isCancelled) {
+                    console.warn('expo-audio: Failed to download source, using original:', error);
+                }
+            }
+        }
+        resolveAndReplaceSource();
+        return () => {
+            isCancelled = true;
+        };
+    }, [player, JSON.stringify(source), downloadFirst]);
+    return player;
 }
 /**
  * Hook that provides real-time playback status updates for an `AudioPlayer`.
@@ -196,7 +253,22 @@ export function useAudioRecorderState(recorder, interval = 500) {
     const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
         const int = setInterval(() => {
-            setState(recorder.getStatus());
+            const newState = recorder.getStatus();
+            setState((prevState) => {
+                const meteringChanged = (prevState.metering === undefined) !== (newState.metering === undefined) ||
+                    (prevState.metering !== undefined &&
+                        newState.metering !== undefined &&
+                        Math.abs(prevState.metering - newState.metering) > 0.1);
+                if (prevState.canRecord !== newState.canRecord ||
+                    prevState.isRecording !== newState.isRecording ||
+                    prevState.mediaServicesDidReset !== newState.mediaServicesDidReset ||
+                    prevState.url !== newState.url ||
+                    Math.abs(prevState.durationMillis - newState.durationMillis) > 50 ||
+                    meteringChanged) {
+                    return newState;
+                }
+                return prevState;
+            });
         }, interval);
         return () => clearInterval(int);
     }, [recorder.id]);
@@ -205,14 +277,31 @@ export function useAudioRecorderState(recorder, interval = 500) {
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-updateinterval) hook instead.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayer) hook instead.
  * > See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
- * @param source
- * @param updateInterval
+ * @param source The audio source to load.
+ * @param options Audio player configuration options.
  */
-export function createAudioPlayer(source = null, updateInterval = 500) {
-    const parsedSource = resolveSource(source);
-    return new AudioModule.AudioPlayer(parsedSource, updateInterval);
+export function createAudioPlayer(source = null, options = {}) {
+    const { updateInterval = 500, downloadFirst = false } = options;
+    const initialSource = downloadFirst ? null : resolveSource(source);
+    const player = new AudioModule.AudioPlayer(initialSource, updateInterval);
+    if (downloadFirst && source) {
+        resolveSourceWithDownload(source)
+            .then((resolved) => {
+            if (resolved) {
+                player.replace(resolved);
+            }
+        })
+            .catch((error) => {
+            console.warn('expo-audio: Failed to download source, using fallback:', error);
+            const fallback = resolveSource(source);
+            if (fallback) {
+                player.replace(fallback);
+            }
+        });
+    }
+    return player;
 }
 /**
  * Enables or disables the audio subsystem globally.

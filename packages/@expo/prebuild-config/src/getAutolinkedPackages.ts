@@ -1,7 +1,9 @@
 import { ModPlatform, StaticPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-
-import { importExpoModulesAutolinking } from './importExpoModulesAutolinking';
+import {
+  makeCachedDependenciesLinker,
+  scanExpoModuleResolutionsForPlatform,
+} from 'expo/internal/unstable-autolinking-exports';
 
 /**
  * Returns a list of packages that are autolinked to a project.
@@ -14,21 +16,13 @@ export async function getAutolinkedPackagesAsync(
   projectRoot: string,
   platforms: ModPlatform[] = ['ios', 'android']
 ) {
-  const autolinking = importExpoModulesAutolinking(projectRoot);
-  const searchPaths = await autolinking.resolveSearchPathsAsync(null, projectRoot);
-
-  const platformPaths = await Promise.all(
-    platforms.map((platform) =>
-      autolinking.findModulesAsync({
-        projectRoot,
-        platform,
-        searchPaths,
-        silent: true,
-      })
-    )
+  const linker = makeCachedDependenciesLinker({ projectRoot });
+  const dependenciesPerPlatform = await Promise.all(
+    platforms.map((platform) => {
+      return scanExpoModuleResolutionsForPlatform(linker, platform);
+    })
   );
-
-  return resolvePackagesList(platformPaths);
+  return resolvePackagesList(dependenciesPerPlatform);
 }
 
 export function resolvePackagesList(platformPaths: Record<string, any>[]) {

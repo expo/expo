@@ -182,6 +182,8 @@ export type CacheMode =
 
 export type AndroidLayerType = 'none' | 'software' | 'hardware';
 
+export type IndicatorStyleType = 'default' | 'black' | 'white';
+
 export interface WebViewSourceUri {
   /**
    * The URI to load in the `WebView`. Can be a local or remote file.
@@ -306,6 +308,7 @@ export interface CommonNativeWebViewProps extends ViewProps {
   onShouldStartLoadWithRequest: (event: ShouldStartLoadRequestEvent) => void;
   showsHorizontalScrollIndicator?: boolean;
   showsVerticalScrollIndicator?: boolean;
+  paymentRequestEnabled?: boolean;
   // TODO: find a better way to type this.
 
   source: any;
@@ -424,7 +427,7 @@ export interface IOSWebViewProps extends WebViewSharedProps {
 
   /**
    * If the value of this property is true, the scroll view stops on multiples
-   * of the scroll view’s bounds when the user scrolls.
+   * of the scroll view's bounds when the user scrolls.
    * The default value is false.
    * @platform ios
    */
@@ -660,13 +663,25 @@ export interface IOSWebViewProps extends WebViewSharedProps {
   pullToRefreshEnabled?: boolean;
 
   /**
-   * Boolean value that determines whether a pull to refresh gesture is
-   * available in the `WebView`. The default value is `false`.
-   * If `true`, sets `bounces` automatically to `true`
+   * Boolean value that determines whether the refresh control color is white or not.
+   * The default value is `false`, meaning the refresh control color will be the default.
    * @platform ios
    *
    */
   refreshControlLightMode?: boolean;
+
+  /**
+   * Determines the style of the scroll indicators. This property works the same
+   * as `indicatorStyle` on React Native's ScrollView.
+   * The default value is `'default'`.
+   *
+   * Possible values:
+   * - `'default'` - Default style (dark on light backgrounds, light on dark backgrounds)
+   * - `'black'` - Black scroll indicators
+   * - `'white'` - White scroll indicators
+   * @platform ios
+   */
+  indicatorStyle?: IndicatorStyleType;
 
   /**
    * Function that is invoked when the client needs to download a file.
@@ -689,9 +704,9 @@ export interface IOSWebViewProps extends WebViewSharedProps {
   /**
    * A Boolean value which, when set to `true`, indicates to WebKit that a WKWebView
    * will only navigate to app-bound domains. Once set, any attempt to navigate away
-   * from an app-bound domain will fail with the error “App-bound domain failure.”
+   * from an app-bound domain will fail with the error "App-bound domain failure."
    *
-   * Applications can specify up to 10 “app-bound” domains using a new
+   * Applications can specify up to 10 "app-bound" domains using a new
    * Info.plist key `WKAppBoundDomains`.
    * @platform ios
    */
@@ -786,7 +801,7 @@ export interface MacOSWebViewProps extends WebViewSharedProps {
 
   /**
    * If the value of this property is true, the scroll view stops on multiples
-   * of the scroll view’s bounds when the user scrolls.
+   * of the scroll view's bounds when the user scrolls.
    * The default value is false.
    * @platform macos
    */
@@ -1044,7 +1059,7 @@ export interface AndroidWebViewProps extends WebViewSharedProps {
 
   /**
    * Boolean value to control whether DOM Storage is enabled. Used only in
-   * Android.
+   * Android. The default value is `true`.
    * @platform android
    */
   domStorageEnabled?: boolean;
@@ -1329,4 +1344,9 @@ export interface WebViewSharedProps extends ViewProps {
    * Enables WebView remote debugging using Chrome (Android) or Safari (iOS).
    */
   webviewDebuggingEnabled?: boolean;
+
+  /**
+   * Enables support for the Payment Request API for the WebView
+   */
+  paymentRequestEnabled?: boolean;
 }

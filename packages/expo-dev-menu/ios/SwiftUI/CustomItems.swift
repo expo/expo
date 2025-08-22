@@ -7,15 +7,14 @@ struct CustomItems: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       HStack {
-        Text("Custom Menu Items")
-          .font(.headline)
-          .foregroundColor(.primary)
+        Text("Custom Menu Items".uppercased())
+          .font(.caption)
+          .foregroundColor(.primary.opacity(0.6))
         Spacer()
       }
-      .padding(.horizontal)
 
-      VStack(spacing: 0) {
-        ForEach(Array(callbacks.enumerated()), id: \.offset) { index, name in
+      VStack(spacing: 6) {
+        ForEach(Array(callbacks.enumerated()), id: \.offset) { _, name in
           Button {
             onFireCallback(name)
           }
@@ -27,16 +26,10 @@ struct CustomItems: View {
             }
             .padding()
           }
-          .background(Color(.systemBackground))
-
-          if index < callbacks.count - 1 {
-            Divider()
-          }
+          .background(Color.expoSecondarySystemBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 12))
         }
       }
-      .cornerRadius(12)
-      .padding(.horizontal)
     }
-    .padding(.vertical, 8)
   }
 }

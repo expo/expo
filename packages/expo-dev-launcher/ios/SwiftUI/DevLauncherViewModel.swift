@@ -16,7 +16,11 @@ class DevLauncherViewModel: ObservableObject {
   @Published var updatesConfig: [AnyHashable: Any] = [:]
   @Published var devServers: [DevServer] = []
   @Published var currentError: EXDevLauncherAppError?
-  @Published var showingError = false
+  @Published var showingCrashReport = false
+  @Published var showingErrorAlert = false
+  @Published var errorAlertMessage = ""
+  @Published var storedCrashInstance: EXDevLauncherErrorInstance?
+  @Published var hasStoredCrash = false
   @Published var shakeDevice = true {
     didSet {
       saveMenuPreference(key: "EXDevMenuMotionGestureEnabled", value: shakeDevice)
@@ -37,7 +41,9 @@ class DevLauncherViewModel: ObservableObject {
   @Published var user: User?
   @Published var selectedAccountId: String?
 
+  #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
+  #endif
 
   var selectedAccount: UserAccount? {
     guard let userData = user,
@@ -59,6 +65,7 @@ class DevLauncherViewModel: ObservableObject {
     loadData()
     discoverDevServers()
     checkAuthenticationStatus()
+    checkForStoredCrashes()
   }
 
   private func loadData() {
@@ -94,13 +101,10 @@ class DevLauncherViewModel: ObservableObject {
     EXDevLauncherController.sharedInstance().loadApp(
       bundleUrl,
       onSuccess: nil,
-      onError: { [weak self] error in
-        let appError = EXDevLauncherAppError(
-          message: "Failed to load app from \(url) with error: \(error.localizedDescription)",
-          stack: nil
-        )
+      onError: { [weak self] _ in
+        let message = "Failed to connect to \(url)"
         DispatchQueue.main.async {
-          self?.showError(appError)
+          self?.showErrorAlert(message)
         }
       })
   }
@@ -171,28 +175,31 @@ class DevLauncherViewModel: ObservableObject {
 
   func showError(_ error: EXDevLauncherAppError) {
     currentError = error
-    showingError = true
   }
 
-  func dismissError() {
+  func showErrorAlert(_ message: String) {
+    errorAlertMessage = message
+    showingErrorAlert = true
+  }
+
+  func dismissErrorAlert() {
+    errorAlertMessage = ""
+    showingErrorAlert = false
+  }
+
+  func dismissCrashReport() {
     currentError = nil
-    showingError = false
+    showingCrashReport = false
+    storedCrashInstance = nil
+    hasStoredCrash = false
   }
 
-  func reloadCurrentApp() {
-    guard let appUrl = EXDevLauncherController.sharedInstance().appManifestURLWithFallback() else {
-      dismissError()
-      return
+  func showCrashReport() {
+    if let storedCrashInstance {
+      let error = EXDevLauncherAppError(message: storedCrashInstance.message, stack: nil)
+      currentError = error
+      showingCrashReport = true
     }
-
-    EXDevLauncherController.sharedInstance().loadApp(
-      appUrl,
-      onSuccess: { [weak self] in
-        self?.dismissError()
-      },
-      onError: { [weak self] _ in
-        self?.dismissError()
-      })
   }
 
   private func loadMenuPreferences() {
@@ -323,6 +330,9 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func performAuthentication(isSignUp: Bool) async throws -> Bool {
+    #if os(tvOS)
+    throw Exception(name: "NotImplementedError", description: "Not implemented on tvOS")
+    #else
     return try await withCheckedThrowingContinuation { continuation in
       let websiteOrigin = APIClient.shared.websiteOrigin
       let authType = isSignUp ? "signup" : "login"
@@ -360,6 +370,7 @@ class DevLauncherViewModel: ObservableObject {
       session.prefersEphemeralWebBrowserSession = true
       session.start()
     }
+    #endif
   }
 
   private func getURLScheme() -> String {
@@ -371,11 +382,19 @@ class DevLauncherViewModel: ObservableObject {
       (urlType["CFBundleURLSchemes"] as? [String])?.first
     }.first ?? DEV_LAUNCHER_DEFAULT_SCHEME
   }
+
+  func checkForStoredCrashes() {
+    let registry = EXDevLauncherErrorRegistry()
+    storedCrashInstance = registry.consumeException()
+    hasStoredCrash = storedCrashInstance != nil
+  }
 }
 
+#if !os(tvOS)
 private class DevLauncherAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
     let window = UIApplication.shared.windows.first { $0.isKeyWindow }
     return window ?? ASPresentationAnchor()
   }
 }
+#endif

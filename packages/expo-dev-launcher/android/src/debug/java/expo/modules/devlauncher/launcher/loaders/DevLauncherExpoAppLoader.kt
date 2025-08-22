@@ -50,7 +50,7 @@ abstract class DevLauncherExpoAppLoader(
       try {
         appearanceModule::class.java.setProtectedDeclaredField(
           obj = appearanceModule,
-          filedName = "mOverrideColorScheme",
+          filedName = "overrideColorScheme",
           newValue = object : AppearanceModule.OverrideColorScheme {
             override fun getScheme(): String {
               return userInterfaceStyle
@@ -61,7 +61,7 @@ abstract class DevLauncherExpoAppLoader(
 
         appearanceModule::class.java.setProtectedDeclaredField(
           obj = appearanceModule,
-          filedName = "mColorScheme",
+          filedName = "colorScheme",
           newValue = userInterfaceStyle
         )
       } catch (e: Exception) {

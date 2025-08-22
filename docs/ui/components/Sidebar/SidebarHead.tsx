@@ -52,6 +52,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
             Icon={Home02DuotoneIcon}
             isActive={sidebarActiveGroup === 'home'}
             allowCompactDisplay
+            mainSection="Home"
           />
           <SidebarSingleEntry
             href="/guides/overview/"
@@ -59,6 +60,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
             Icon={BookOpen02DuotoneIcon}
             isActive={sidebarActiveGroup === 'general'}
             allowCompactDisplay
+            mainSection="Guides"
           />
           <SidebarSingleEntry
             href="/eas/"
@@ -66,6 +68,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
             Icon={PlanEnterpriseIcon}
             isActive={sidebarActiveGroup === 'eas'}
             allowCompactDisplay
+            mainSection="EAS"
           />
           <SidebarSingleEntry
             href="/versions/latest/"
@@ -73,6 +76,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
             Icon={DocsLogo}
             isActive={sidebarActiveGroup === 'reference'}
             allowCompactDisplay
+            mainSection="Reference"
           />
           <SidebarSingleEntry
             href="/tutorial/overview/"
@@ -80,6 +84,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
             Icon={GraduationHat02DuotoneIcon}
             isActive={sidebarActiveGroup === 'learn'}
             allowCompactDisplay
+            mainSection="Learn"
           />
           {isPreviewVisible && (
             <SidebarSingleEntry

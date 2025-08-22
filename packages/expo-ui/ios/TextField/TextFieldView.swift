@@ -16,7 +16,13 @@ enum KeyboardType: String, Enumerable {
   case asciiCapableNumberPad = "ascii-capable-number-pad"
 }
 
-final class TextFieldProps: ExpoSwiftUI.ViewProps {
+final class TextFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var multiline: Bool = false
@@ -59,6 +65,14 @@ func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
   }
 }
 
+class TextFieldManager: ObservableObject {
+  @Published var text: String
+
+  init(initialText: String = "") {
+    self.text = initialText
+  }
+}
+
 func allowMultiLine() -> Bool {
   #if os(tvOS)
   return false
@@ -69,41 +83,50 @@ func allowMultiLine() -> Bool {
 
 struct TextFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: TextFieldProps
-  @State private var value: String = ""
+  @ObservedObject var textManager: TextFieldManager = TextFieldManager()
   @FocusState private var isFocused: Bool
 
   init(props: TextFieldProps) {
     self.props = props
   }
 
-  var body: some View {
+  func setText(_ text: String) {
+    textManager.text = text
+  }
+
+  var text: some View {
     let text = if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
         props.placeholder,
-        text: $value,
+        text: $textManager.text,
         axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
       )
     } else {
       TextField(
         props.placeholder,
-        text: $value
+        text: $textManager.text
       )
     }
-    text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
+    return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
+      .modifier(CommonViewModifiers(props: props))
       .fixedSize(horizontal: false, vertical: true)
-      .onAppear { value = props.defaultValue }
-      .onChange(of: value) { newValue in
-        props.onValueChanged(["value": newValue])
-      }
       .keyboardType(getKeyboardType(props.keyboardType))
       .autocorrectionDisabled(!props.autocorrection)
       .if(props.allowNewlines, {
         $0.focused($isFocused).onSubmit({
-          if value.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
-            value.append("\n")
+          if  textManager.text.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
+            textManager.text.append("\n")
           }
           isFocused = true
         })
       })
+  }
+
+  var body: some View {
+    text
+      .onAppear { textManager.text = props.defaultValue }
+      .onChange(of: textManager.text) { newValue in
+        props.onValueChanged(["value": newValue])
+      }
   }
 }

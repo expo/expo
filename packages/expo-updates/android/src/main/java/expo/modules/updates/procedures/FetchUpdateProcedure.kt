@@ -34,7 +34,7 @@ class FetchUpdateProcedure(
 
     val database = databaseHolder.database
     try {
-      val loaderResult = startRemoteLoader(database)
+      val loaderResult = startRemoteLoader(database, procedureContext)
       processSuccessLoaderResult(loaderResult, procedureContext)
     } catch (e: Exception) {
       logger.error("Failed to download new update", e)
@@ -47,7 +47,7 @@ class FetchUpdateProcedure(
     }
   }
 
-  private suspend fun startRemoteLoader(database: UpdatesDatabase): Loader.LoaderResult {
+  private suspend fun startRemoteLoader(database: UpdatesDatabase, procedureContext: ProcedureContext): Loader.LoaderResult {
     val remoteLoader = RemoteLoader(
       context,
       updatesConfiguration,
@@ -57,6 +57,10 @@ class FetchUpdateProcedure(
       updatesDirectory,
       launchedUpdate
     )
+
+    remoteLoader.assetLoadProgressBlock = { progress ->
+      procedureContext.processStateEvent(UpdatesStateEvent.DownloadProgress(progress))
+    }
 
     try {
       val result = remoteLoader.load { updateResponse ->

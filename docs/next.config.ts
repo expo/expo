@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 import { event, error } from 'next/dist/build/output/log.js';
 import { join } from 'node:path';
@@ -21,7 +22,7 @@ import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
 
-const betaVersion = 'betaVersion' in packageJson ? (packageJson.betaVersion as string) : undefined;
+const betaVersion = 'betaVersion' in packageJson ? packageJson.betaVersion : undefined;
 const latestVersion = 'version' in packageJson ? packageJson.version : undefined;
 const newestVersion = betaVersion ?? latestVersion;
 
@@ -157,4 +158,18 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const nextConfigWithSentry = withSentryConfig(nextConfig, {
+  org: 'expoio',
+  project: 'docs',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  debug: false, // Set to `true` to enable debug logging if having issues with missing source maps
+  widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
+  sourcemaps: {
+    disable: false, // Set `true` to kill sourcemaps upload
+    assets: ['out/**/*.js', 'out/**/*.js.map', '.next/**/*.js', '.next/**/*.js.map'], // Specify which files to upload
+    ignore: ['**/node_modules/**'], // Files to exclude
+    deleteSourcemapsAfterUpload: true, // Delete source maps after upload to avoid publicly exposing them
+  },
+});
+
+export default nextConfigWithSentry;

@@ -6,6 +6,45 @@
 
 ### 🎉 New features
 
+- [iOS] Add `animation` modifier. ([#38954](https://github.com/expo/expo/pull/38954) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- [iOS] Apple TV fixes. ([#39060](https://github.com/expo/expo/pull/39060) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+## 0.2.0-alpha.4 — 2025-08-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0-alpha.3 — 2025-08-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0-alpha.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0-alpha.1 — 2025-08-15
+
+### 🛠 Breaking changes
+
+- Merged `swift-ui-primitives` to `swift-ui` and now every component should explicitly wrap with a `<Host>`. ([#38866](https://github.com/expo/expo/pull/38866) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- [Android] Add compose modifier support. ([#38630](https://github.com/expo/expo/pull/38630) by [@aleqsio](https://github.com/aleqsio))
+
+- [iOS] Add `glassEffect` modifier. ([#38876](https://github.com/expo/expo/pull/38876) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 0.2.0-alpha.0 — 2025-08-13
+
+### 🎉 New features
+
+- [Android] Add ref functions for setting text in swiftui textinputs. ([#38276](https://github.com/expo/expo/pull/38276) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add ref functions for setting text in swiftui textinputs. ([#38276](https://github.com/expo/expo/pull/38276) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add ContentUnavailableView. ([#38128](https://github.com/expo/expo/pull/38128) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
 - Add ios `glassProminent` button variant. ([#37995](https://github.com/expo/expo/pull/37995) by [@betomoedano](https://github.com/betomoedano))
 - Add support for icon only button. ([#37899](https://github.com/expo/expo/pull/37899) by [@betomoedano](https://github.com/betomoedano))
 - Add ios `glass` button variant. ([#37373](https://github.com/expo/expo/pull/37373) by [@aleqsio](https://github.com/aleqsio))
@@ -15,10 +54,14 @@
 - [Android] Add `testID` support to compose primitives. ([#38005](https://github.com/expo/expo/pull/38005) by [@mateoguzmana](https://github.com/mateoguzmana))
 - [iOS] Add `testID` property to views. ([#37919](https://github.com/expo/expo/pull/37919) by [@mateoguzmana](https://github.com/mateoguzmana))
 - Add `SecureField` component. ([#37642](https://github.com/expo/expo/pull/37642) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Add `AlertDialog` component. ([#38266](https://github.com/expo/expo/pull/38266) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Added SwiftUI view modifiers support. ([#38543](https://github.com/expo/expo/pull/38543) by [@kudo](https://github.com/kudo))
+- [iOS] Add SwiftUI Chart component. ([#38128](https://github.com/expo/expo/pull/38517) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 🐛 Bug fixes
 
 - [iOS] Add `placeholder` TextInput prop. ([#36590](https://github.com/expo/expo/pull/36590) by [@ramonfabrega](https://github.com/ramonfabrega))
+- [iOS] Fix tvOS compilation. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

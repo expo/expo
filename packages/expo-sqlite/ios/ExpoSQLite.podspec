@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platforms      = {
     :ios => '15.1',
+    :tvos => '15.1',
     :osx => '11.0'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -36,11 +37,11 @@ Pod::Spec.new do |s|
 
   sqlite_cflags = '-DHAVE_USLEEP=1 -DSQLITE_ENABLE_LOCKING_STYLE=0 -DSQLITE_ENABLE_BYTECODE_VTAB=1 -DSQLITE_TEMP_STORE=2'
   sqlite_cflags << ' -DSQLITE_ENABLE_SESSION=1 -DSQLITE_ENABLE_PREUPDATE_HOOK=1'
-  unless podfile_properties['expo.sqlite.enableFTS'] === 'false'
+  unless podfile_properties['expo.sqlite.enableFTS'] == 'false'
     sqlite_cflags << ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   end
 
-  if podfile_properties['expo.sqlite.useSQLCipher'] === 'true'
+  if podfile_properties['expo.sqlite.useSQLCipher'] == 'true'
     s.vendor_sqlite_src!(true)
     # SQLCipher will have build error in sqlite3.c on debug build without the `-DNDEBUG`
     sqlite_cflags << ' -DSQLITE_HAS_CODEC=1 -DSQLCIPHER_CRYPTO_CC -DSQLITE_EXTRA_INIT=sqlcipher_extra_init -DSQLITE_EXTRA_SHUTDOWN=sqlcipher_extra_shutdown -DNDEBUG'
@@ -56,6 +57,10 @@ Pod::Spec.new do |s|
   # Consistent SQLite build flags for Swift module exposing from the umbrella header
   swift_flags = sqlite_cflags.split(' ').map { |flag| "-Xcc #{flag}" }.join(' ')
 
+  if podfile_properties['expo.sqlite.withSQLiteVecExtension'] == 'true'
+    swift_flags += ' -DWITH_SQLITE_VEC'
+  end
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
@@ -66,7 +71,7 @@ Pod::Spec.new do |s|
   s.source_files = "**/*.{c,h,m,swift}"
 
   vendored_frameworks = []
-  if podfile_properties['expo.sqlite.useLibSQL'] === 'true'
+  if podfile_properties['expo.sqlite.useLibSQL'] == 'true'
     vendored_frameworks << 'libsql.xcframework'
     s.private_header_files = [
       'libsql.xcframework/**/*.h',
@@ -75,6 +80,9 @@ Pod::Spec.new do |s|
     Pod::UI.message('SQLite: use libSQL integration')
   else
     s.exclude_files = ['libsql/**/*', 'libsql.xcframework/**/*', 'SQLiteModuleLibSQL.swift']
+  end
+  if podfile_properties['expo.sqlite.withSQLiteVecExtension'] == 'true'
+    vendored_frameworks << 'vec.xcframework'
   end
 
   s.ios.vendored_frameworks = vendored_frameworks

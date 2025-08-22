@@ -17,6 +17,7 @@ class DevMenuViewController: UIViewController {
     extendedLayoutIncludesOpaqueBars = true
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -31,9 +32,11 @@ class DevMenuViewController: UIViewController {
     NotificationCenter.default.post(name: DevMenuViewController.ContentDidAppearNotification, object: nil)
   }
 
+  #if !os(tvOS)
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     return UIInterfaceOrientationMask.all
   }
+  #endif
 
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {

@@ -206,8 +206,9 @@ export class Asset {
     // The hash of the whole asset, not to be confused with the hash of a specific file returned
     // from `selectAssetSource`
     const metaHash = meta.hash;
-    if (Asset.byHash[metaHash]) {
-      return Asset.byHash[metaHash];
+    const assetByHash = Asset.byHash[metaHash];
+    if (assetByHash) {
+      return assetByHash;
     }
 
     const { uri, hash } = selectAssetSource(meta);

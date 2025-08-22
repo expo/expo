@@ -6,7 +6,11 @@ public class LinkPreviewNativeModule: Module {
 
     View(NativeLinkPreviewView.self) {
       Prop("nextScreenId") { (view: NativeLinkPreviewView, nextScreenId: String) in
-        view.setNextScreenId(nextScreenId)
+        view.nextScreenId = nextScreenId
+      }
+
+      Prop("tabPath") { (view: NativeLinkPreviewView, tabPath: TabPathPayload) in
+        view.tabPath = tabPath
       }
 
       Events(
@@ -15,8 +19,7 @@ public class LinkPreviewNativeModule: Module {
         "onWillPreviewOpen",
         "onDidPreviewOpen",
         "onPreviewWillClose",
-        "onPreviewDidClose",
-        "onActionSelected"
+        "onPreviewDidClose"
       )
     }
 
@@ -38,17 +41,52 @@ public class LinkPreviewNativeModule: Module {
     }
 
     View(LinkPreviewNativeActionView.self) {
-      Prop("id") { (view: LinkPreviewNativeActionView, id: String) in
-        view.id = id
-      }
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
       Prop("icon") { (view: LinkPreviewNativeActionView, icon: String) in
         view.icon = icon
       }
+      Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool) in
+        view.disabled = disabled
+      }
+      Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool) in
+        view.destructive = destructive
+      }
+      Prop("singleSelection") { (view: LinkPreviewNativeActionView, singleSelection: Bool) in
+        view.singleSelection = singleSelection
+      }
+      Prop("displayAsPalette") { (view: LinkPreviewNativeActionView, displayAsPalette: Bool) in
+        view.displayAsPalette = displayAsPalette
+      }
+      Prop("isOn") { (view: LinkPreviewNativeActionView, isOn: Bool) in
+        view.isOn = isOn
+      }
+      Prop("keepPresented") { (view: LinkPreviewNativeActionView, keepPresented: Bool) in
+        view.keepPresented = keepPresented
+      }
+      Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool) in
+        view.displayInline = displayInline
+      }
+
+      Events("onSelected")
     }
 
-    View(NativeLinkPreviewTrigger.self) {}
+    View(NativeLinkPreviewTrigger.self) {
+      Prop("borderRadius") { (view, borderRadius: Double?) in
+        if let borderRadius = borderRadius {
+          view.triggerBorderRadius = borderRadius
+        }
+      }
+    }
   }
+}
+
+struct TabPathPayload: Record {
+  @Field var path: [TabStatePath]
+}
+
+struct TabStatePath: Record {
+  @Field var oldTabKey: String
+  @Field var newTabKey: String
 }
