@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Refactor Import Export Plugin for better live bindings support
+- Refactor Import Export Plugin for better live bindings support ([#39083](https://github.com/expo/expo/pull/39083) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 0.21.4 — 2025-08-21
 
