@@ -1,4 +1,143 @@
----
+// App.js
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, ScrollView, Image, TouchableOpacity, StyleSheet } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { VictoryChart, VictoryLine, VictoryTheme } from "victory-native";
+
+export default function App() {
+  // User setup state
+  const [age, setAge] = useState("");
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [activity, setActivity] = useState("");
+  const [goal, setGoal] = useState("");
+  const [equipment, setEquipment] = useState("");
+
+  // Meal tracking
+  const [meals, setMeals] = useState([]);
+  const [mealName, setMealName] = useState("");
+  const [mealCalories, setMealCalories] = useState("");
+
+  // Workout tracking
+  const [workouts, setWorkouts] = useState([]);
+  const [customWorkout, setCustomWorkout] = useState("");
+
+  // Progress photos
+  const [images, setImages] = useState([]);
+
+  // AI assistant messages
+  const [messages, setMessages] = useState([
+    { sender: "ai", text: "Hi! I'm your Decider AI Coach. Let's achieve your goals together!" }
+  ]);
+  const [userMessage, setUserMessage] = useState("");
+
+  // Graph data
+  const [progressData, setProgressData] = useState([]);
+
+  // Add meal
+  const addMeal = () => {
+    if (mealName && mealCalories) {
+      setMeals([...meals, { name: mealName, calories: parseInt(mealCalories) }]);
+      setMealName("");
+      setMealCalories("");
+    }
+  };
+
+  // Add workout
+  const addWorkout = () => {
+    if (customWorkout) {
+      setWorkouts([...workouts, customWorkout]);
+      setCustomWorkout("");
+    }
+  };
+
+  // Pick progress image
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImages([...images, result.assets[0].uri]);
+    }
+  };
+
+  // Send AI message (placeholder)
+  const sendMessage = () => {
+    if (userMessage) {
+      setMessages([...messages, { sender: "user", text: userMessage }]);
+      // Placeholder AI response
+      setMessages(prev => [...prev, { sender: "ai", text: "Great! Keep it up!" }]);
+      setUserMessage("");
+    }
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>Decider - Your Fitness AI</Text>
+
+      {/* User Setup */}
+      <Text style={styles.subHeader}>1. Setup</Text>
+      <TextInput style={styles.input} placeholder="Age" keyboardType="numeric" value={age} onChangeText={setAge} />
+      <TextInput style={styles.input} placeholder="Weight (kg)" keyboardType="numeric" value={weight} onChangeText={setWeight} />
+      <TextInput style={styles.input} placeholder="Height (cm)" keyboardType="numeric" value={height} onChangeText={setHeight} />
+      <TextInput style={styles.input} placeholder="Activity Level" value={activity} onChangeText={setActivity} />
+      <TextInput style={styles.input} placeholder="Goal (weight gain/loss)" value={goal} onChangeText={setGoal} />
+      <TextInput style={styles.input} placeholder="Available Equipment" value={equipment} onChangeText={setEquipment} />
+
+      {/* Meal Tracker */}
+      <Text style={styles.subHeader}>2. Track Meals</Text>
+      <TextInput style={styles.input} placeholder="Meal Name" value={mealName} onChangeText={setMealName} />
+      <TextInput style={styles.input} placeholder="Calories" keyboardType="numeric" value={mealCalories} onChangeText={setMealCalories} />
+      <Button title="Add Meal" onPress={addMeal} />
+      {meals.map((meal, index) => (
+        <Text key={index}>{meal.name} - {meal.calories} kcal</Text>
+      ))}
+
+      {/* Workout Tracker */}
+      <Text style={styles.subHeader}>3. Workouts</Text>
+      <TextInput style={styles.input} placeholder="Custom Workout" value={customWorkout} onChangeText={setCustomWorkout} />
+      <Button title="Add Workout" onPress={addWorkout} />
+      {workouts.map((w, i) => <Text key={i}>{w}</Text>)}
+
+      {/* Progress Images */}
+      <Text style={styles.subHeader}>4. Progress Photos</Text>
+      <Button title="Upload Progress Photo" onPress={pickImage} />
+      <ScrollView horizontal>
+        {images.map((img, i) => <Image key={i} source={{ uri: img }} style={styles.progressImage} />)}
+      </ScrollView>
+
+      {/* AI Assistant */}
+      <Text style={styles.subHeader}>5. AI Coach</Text>
+      <ScrollView style={styles.chatBox}>
+        {messages.map((msg, i) => (
+          <Text key={i} style={{ textAlign: msg.sender === "ai" ? "left" : "right", margin: 5 }}>
+            {msg.text}
+          </Text>
+        ))}
+      </ScrollView>
+      <TextInput style={styles.input} placeholder="Type message" value={userMessage} onChangeText={setUserMessage} />
+      <Button title="Send" onPress={sendMessage} />
+
+      {/* Progress Graph */}
+      <Text style={styles.subHeader}>6. Progress Graph</Text>
+      <VictoryChart theme={VictoryTheme.material}>
+        <VictoryLine data={progressData} x="date" y="weight" />
+      </VictoryChart>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 10, backgroundColor: "#f5f5f5" },
+  header: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
+  subHeader: { fontSize: 18, fontWeight: "bold", marginTop: 15, marginBottom: 5 },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 8, marginVertical: 5, borderRadius: 5 },
+  progressImage: { width: 100, height: 100, margin: 5, borderRadius: 10 },
+  chatBox: { maxHeight: 150, marginVertical: 10, borderWidth: 1, borderColor: "#ccc", padding: 5, borderRadius: 5 }
+});---
 title: Create your first build
 description: Learn how to create a build for your app with EAS Build.
 ---
