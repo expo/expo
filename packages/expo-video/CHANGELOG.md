@@ -20,6 +20,7 @@
 
 - [iOS] Fix `sourceLoad` event not being emitted. ([#39023](https://github.com/expo/expo/pull/39023) by [@behenate](https://github.com/behenate))
 - [Web] Fix audio not playing due to conflicting CORS and AudioNode settings. ([#39039](https://github.com/expo/expo/pull/39039) by [@behenate](https://github.com/behenate))
+- [iOS] Background mode playback fix. ([#33706](https://github.com/expo/expo/pull/33706) by [@hromovp](https://github.com/hromovp))
 
 ## 3.0.3 — 2025-08-21
 
