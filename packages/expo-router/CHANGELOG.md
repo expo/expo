@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- extract Screen component in NativeTabsView ([#39011](https://github.com/expo/expo/pull/39011) by [@Ubax](https://github.com/Ubax))
+
 ## 6.0.0-beta.5 — 2025-08-21
 
 ### 🎉 New features

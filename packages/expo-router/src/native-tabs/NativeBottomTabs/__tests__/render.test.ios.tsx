@@ -356,6 +356,10 @@ it('when nesting NativeTabs, it throws an Error', () => {
 });
 
 describe('Native props validation', () => {
+  let warn;
+  beforeEach(() => {
+    warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
   it.each(SUPPORTED_BLUR_EFFECTS)('supports %s blur effect', (blurEffect) => {
     renderRouter({
       _layout: () => (
@@ -371,21 +375,23 @@ describe('Native props validation', () => {
     expect(BottomTabs.mock.calls[0][0].tabBarBlurEffect).toBe(blurEffect);
   });
   it.each(['test', 'wrongValue', ...SUPPORTED_BLUR_EFFECTS.map((x) => x.toUpperCase())])(
-    'throws error for unsupported %s blur effect',
+    'warns when unsupported %s blur effect is used',
     (blurEffect) => {
-      expect(() =>
-        renderRouter({
-          _layout: () => (
-            // @ts-expect-error
-            <NativeTabs style={{ blurEffect }}>
-              <NativeTabs.Trigger name="index" />
-            </NativeTabs>
-          ),
-          index: () => <View testID="index" />,
-        })
-      ).toThrow(
+      renderRouter({
+        _layout: () => (
+          // @ts-expect-error
+          <NativeTabs style={{ blurEffect }}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
         `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
       );
+      expect(BottomTabs).toHaveBeenCalledTimes(1);
+      expect(BottomTabs.mock.calls[0][0].tabBarBlurEffect).toBe(undefined);
     }
   );
   it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
@@ -409,20 +415,22 @@ describe('Native props validation', () => {
     'test',
     'wrongValue',
     ...SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((x) => x.toUpperCase()),
-  ])('throws error for unsupported %s label visibility mode', (labelVisibilityMode) => {
-    expect(() =>
-      renderRouter({
-        _layout: () => (
-          // @ts-expect-error
-          <NativeTabs style={{ labelVisibilityMode }}>
-            <NativeTabs.Trigger name="index" />
-          </NativeTabs>
-        ),
-        index: () => <View testID="index" />,
-      })
-    ).toThrow(
+  ])('warns when unsupported %s label visibility mode is used', (labelVisibilityMode) => {
+    renderRouter({
+      _layout: () => (
+        // @ts-expect-error
+        <NativeTabs style={{ labelVisibilityMode }}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(
       `Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((effect) => `"${effect}"`).join(', ')}`
     );
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].tabBarItemLabelVisibilityMode).toBe(undefined);
   });
   it.each(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS)(
     'supports %s minimize behavior',
@@ -445,19 +453,21 @@ describe('Native props validation', () => {
     'test',
     'wrongValue',
     ...SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((x) => x.toUpperCase()),
-  ])('throws error for unsupported %s minimize behavior', (minimizeBehavior) => {
-    expect(() =>
-      renderRouter({
-        _layout: () => (
-          // @ts-expect-error
-          <NativeTabs minimizeBehavior={minimizeBehavior}>
-            <NativeTabs.Trigger name="index" />
-          </NativeTabs>
-        ),
-        index: () => <View testID="index" />,
-      })
-    ).toThrow(
+  ])('warns when unsupported %s minimize behavior is used', (minimizeBehavior) => {
+    renderRouter({
+      _layout: () => (
+        // @ts-expect-error
+        <NativeTabs minimizeBehavior={minimizeBehavior}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(
       `Unsupported minimizeBehavior: ${minimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((effect) => `"${effect}"`).join(', ')}`
     );
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].tabBarMinimizeBehavior).toBe(undefined);
   });
 });
