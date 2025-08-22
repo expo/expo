@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.31.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.21):
+  - Expo (53.0.22):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -260,7 +260,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSymbols (0.4.5):
     - ExpoModulesCore
-  - ExpoSystemUI (5.0.10):
+  - ExpoSystemUI (5.0.11):
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.2.4):
     - ExpoModulesCore
@@ -3451,7 +3451,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: f4cc4a62ee4f1c8a9cf2bb79d325eac6cb9f5684
   EXNotifications: d0a50a5490845c702f2c605e94533ae5ddf1aadb
-  Expo: 77be04585055a337de3001bdec9d4a1be35a19fc
+  Expo: f715b0c058ac26efde6fb3b4f18ffdd8bd933605
   ExpoAppleAuthentication: 7e358fcbcbacb7685cddb0bbeede0acd677e58f6
   ExpoAsset: 7bdbbacf4e6752ae6e3cf70555cee076f6229e6e
   ExpoAudio: 052e187744415b4e04fc5c9bec08a51058983122
@@ -3501,7 +3501,7 @@ SPEC CHECKSUMS:
   ExpoSQLite: 9ac0f99bd48e1a3e2df64f8aecfab40b89a62372
   ExpoStoreReview: bed43bea90a5876a6a480504f95fea1521dacaa7
   ExpoSymbols: bd4e20b0b6a9dbacc31dd7c861e0d6d01b56e1f2
-  ExpoSystemUI: ecb2b2e8ee9468295e7c33fa10eb4e73e581389a
+  ExpoSystemUI: 46c8903a9c8d78232ebd7b82c4d14175700231e5
   ExpoTrackingTransparency: 843029c42d70de59bb0503f6fc747b9d2fe67f7b
   ExpoVideo: 84edf8e48b71317fb1d7f17c3d49a310476dc0f4
   ExpoVideoThumbnails: 4280333bee3bd4d69b3b139bd50a8b7c967095ae

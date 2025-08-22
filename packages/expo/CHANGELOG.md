@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 53.0.22 — 2025-08-22
+
+_This version does not introduce any user-facing changes._
+
 ## 53.0.21 — 2025-08-22
 
 _This version does not introduce any user-facing changes._
