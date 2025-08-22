@@ -1,0 +1,116 @@
+// =========================
+// Fuel Station Shift App (Arabic) — Expo React Native
+// =========================
+// تمت إضافة ميزة: عرض صورة العداد في شاشة كاملة عند الضغط عليها.
+// =========================
+
+import React, { useEffect, useState } from 'react';
+import { I18nManager, Image, Modal, Button, Alert, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ar-sa';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as ExpoMLKitOCR from 'expo-ml-kit-ocr';
+
+try {
+  if (!I18nManager.isRTL) {
+    I18nManager.allowRTL(true);
+    I18nManager.forceRTL(true);
+  }
+} catch (e) {}
+
+const Tab = createBottomTabNavigator();
+const STORAGE_KEYS = { SETTINGS: 'fs_settings', SHIFTS: 'fs_shifts' };
+const toNumber = (v) => { const n = parseFloat(String(v).replace(/[^\d.\-]/g, '')); return isNaN(n) ? 0 : n; };
+const currency = (v, curr = 'SAR') => { try { return new Intl.NumberFormat('ar-SA', { style: 'currency', currency: curr }).format(v || 0);} catch { return `${(v || 0).toFixed(2)} ${curr}`; } };
+const formatDate = (d) => dayjs(d).locale('ar-sa').format('YYYY-MM-DD');
+
+// ======== OCR Component ========
+// (نفس الكود السابق)
+
+// ======== Add Shift Screen ========
+// (نفس الكود السابق)
+
+// ======== Reports Screen (مع عرض الصور + تكبير بالضغط) ========
+function ReportsScreen({ settings, shifts, setShifts }) {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const exportData = async () => {
+    const rows = [['التاريخ', 'الشفت', 'المضخة', 'البداية', 'النهاية', 'الكمية', 'السعر', 'الإجمالي', 'ملاحظات']];
+    shifts.forEach(s => rows.push([s.date, s.shiftNo, s.pump, s.start, s.end, s.quantity, s.price, s.amount, s.notes]));
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const fileUri = FileSystem.cacheDirectory + 'shifts.csv';
+    await FileSystem.writeAsStringAsync(fileUri, csv);
+    await Sharing.shareAsync(fileUri);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.h1}>التقارير</Text>
+        {shifts.map(s => (
+          <View key={s.id} style={styles.card}>
+            <Text>📅 {s.date} — شفت {s.shiftNo} — مضخة {s.pump}</Text>
+            <Text>من {s.start} إلى {s.end}</Text>
+            <Text>كمية: {s.quantity.toFixed(2)} لتر</Text>
+            <Text>إجمالي: {currency(s.amount, settings.currency)}</Text>
+            {s.notes ? <Text>ملاحظات: {s.notes}</Text> : null}
+
+            {s.startPhoto && (
+              <TouchableOpacity onPress={() => setSelectedImage(s.startPhoto)}>
+                <Image source={{ uri: s.startPhoto }} style={{ width: 120, height: 80, marginTop: 5 }} />
+                <Text style={{ fontSize: 12 }}>📷 بداية</Text>
+              </TouchableOpacity>
+            )}
+
+            {s.endPhoto && (
+              <TouchableOpacity onPress={() => setSelectedImage(s.endPhoto)}>
+                <Image source={{ uri: s.endPhoto }} style={{ width: 120, height: 80, marginTop: 5 }} />
+                <Text style={{ fontSize: 12 }}>📷 نهاية</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ))}
+
+        <TouchableOpacity onPress={exportData} style={styles.primaryBtn}>
+          <Text style={styles.primaryBtnText}>📤 تصدير CSV</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      <Modal visible={!!selectedImage} transparent={true} animationType="fade">
+        <View style={styles.modalContainer}>
+          <Image source={{ uri: selectedImage }} style={styles.fullImage} />
+          <TouchableOpacity onPress={() => setSelectedImage(null)} style={styles.closeBtn}>
+            <Text style={{ color: 'white', fontSize: 18 }}>✖</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </SafeAreaView>
+  );
+}
+
+// ======== باقي الشاشات (Settings / AddShift / App) ========
+// (نفس الكود السابق)
+
+// ======== Styles ========
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff' },
+  content: { padding: 16 },
+  h1: { fontSize: 20, fontWeight: 'bold', marginBottom: 12 },
+  label: { marginTop: 12, marginBottom: 4 },
+  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 6, padding: 8, textAlign: 'right' },
+  row: { flexDirection: 'row', alignItems: 'center' },
+  card: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 12, backgroundColor: '#fafafa' },
+  primaryBtn: { backgroundColor: '#007bff', padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 16 },
+  primaryBtnText: { color: 'white', fontSize: 16 },
+  secondaryBtn: { backgroundColor: '#eee', padding: 10, borderRadius: 6, marginLeft: 8 },
+  secondaryBtnText: { fontSize: 16 },
+  modalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center' },
+  fullImage: { width: '90%', height: '70%', resizeMode: 'contain' },
+  closeBtn: { position: 'absolute', top: 40, right: 20, padding: 10 },
+});
