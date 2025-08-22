@@ -50,30 +50,15 @@ async function resolveDependencies(
   depth: number,
   shouldIncludeDependency: (dependencyName: string) => boolean
 ): Promise<DependencyResolution[]> {
-  const modules: DependencyResolution[] = [];
   const dependencies =
     packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
       ? packageJson.dependencies
       : {};
+
+  const dependencyNames: string[] = [];
   for (const dependencyName in dependencies) {
-    if (!shouldIncludeDependency(dependencyName)) {
-      continue;
-    }
-    for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-      const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
-      const nodeModulePath = await maybeRealpath(originPath);
-      if (nodeModulePath != null) {
-        modules.push({
-          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
-          name: dependencyName,
-          version: '',
-          path: nodeModulePath,
-          originPath,
-          duplicates: null,
-          depth,
-        });
-        break;
-      }
+    if (shouldIncludeDependency(dependencyName)) {
+      dependencyNames.push(dependencyName);
     }
   }
 
@@ -91,12 +76,19 @@ async function resolveDependencies(
         // which would mean they'd have no reference in any dependencies. However, optional peer dependencies
         // don't auto-install and we can skip them
         continue;
+      } else {
+        dependencyNames.push(dependencyName);
       }
+    }
+  }
+
+  const modules = await Promise.all(
+    dependencyNames.map(async (dependencyName): Promise<DependencyResolution | null> => {
       for (let idx = 0; idx < nodeModulePaths.length; idx++) {
         const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
         const nodeModulePath = await maybeRealpath(originPath);
         if (nodeModulePath != null) {
-          modules.push({
+          return {
             source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
             name: dependencyName,
             version: '',
@@ -104,14 +96,14 @@ async function resolveDependencies(
             originPath,
             duplicates: null,
             depth,
-          });
-          break;
+          };
         }
       }
-    }
-  }
+      return null;
+    })
+  );
 
-  return modules;
+  return modules.filter((moduleEntry) => moduleEntry != null);
 }
 
 interface ResolutionOptions {
