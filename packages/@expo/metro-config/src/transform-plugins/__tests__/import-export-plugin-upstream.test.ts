@@ -66,11 +66,10 @@ it('correctly transforms complex patterns', () => {
     var b = _$$_IMPORT_ALL('second');
     var _third = require('third'),
         e = _third.d,
-        f = _third.f;
+        f = _third.f,
+        g = _third.g,
+        h = _third.h;
     var c = _$$_IMPORT_DEFAULT('third');
-    var _third2 = require('third'),
-        g = _third2.g,
-        h = _third2.h;
     require('fourth-with-side-effect');
     var i = require('fifth').i;
   `;
