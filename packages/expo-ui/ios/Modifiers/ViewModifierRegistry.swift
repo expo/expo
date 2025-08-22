@@ -389,7 +389,7 @@ internal struct GlassEffectModifier: ViewModifier {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       let glass = parseGlassVariant(glassVariant)
       switch shape {
@@ -411,7 +411,7 @@ internal struct GlassEffectModifier: ViewModifier {
   }
 
   #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
   private func parseGlassVariant(_ glassString: String) -> Glass {
     switch glassString {
     case "regular":
@@ -423,6 +423,29 @@ internal struct GlassEffectModifier: ViewModifier {
     }
   }
   #endif
+}
+
+internal struct GlassEffectIdModifier: ViewModifier {
+  let id: String?
+  let namespace: String?
+  @Environment(\.namespaceProvider) private var namespaceProvider
+
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      if let provideNamespace = namespaceProvider, let namespace = namespace {
+        let namespaceId = provideNamespace(namespace)
+        content.glassEffectID(id, in: namespaceId)
+      } else {
+        content
+      }
+      #else
+      content
+      #endif
+    } else {
+      content
+    }
+  }
 }
 
 internal struct AnimationModifier: ViewModifier {
@@ -828,6 +851,12 @@ extension ViewModifierRegistry {
       let animatedValue = params["animatedValue"] as? AnyHashable
 
       return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
+    }
+
+    register("glassEffectId") { params, _ in
+      let id = params["id"] as? String
+      let namespace = params["namespace"] as? String
+      return GlassEffectIdModifier(id: id, namespace: namespace)
     }
   }
 }
