@@ -541,6 +541,7 @@ export function importExportPlugin({
 
               const exportAllFrom = state.exportAllFrom.get(module.value);
               if (exportAllFrom) {
+                // export * from 'module'
                 namespace = path.scope.generateUidIdentifier(module.value);
                 exportAll.push(
                   ...withLocation(
@@ -556,6 +557,7 @@ export function importExportPlugin({
               }
 
               for (const { as, loc } of state.exportAllFromAs.getOrDefault(module.value)) {
+                // export * as name from 'module'
                 const importAllNamespace = path.scope.generateUidIdentifier(module.value);
                 imports.push(
                   withLocation(
@@ -610,6 +612,7 @@ export function importExportPlugin({
               }
 
               for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module.value)) {
+                // import { one as two } from 'module'
                 if (!namespace) {
                   namespace = importModuleNamespace(loc);
                 }
@@ -620,6 +623,7 @@ export function importExportPlugin({
               }
 
               if (!namespace && state.importSideEffect.has(module.value)) {
+                // import 'module'
                 imports.push(
                   withLocation(
                     requireSideEffectTemplate({
@@ -631,6 +635,7 @@ export function importExportPlugin({
               }
 
               for (const { as, loc } of state.importAllFromAs.getOrDefault(module.value)) {
+                // import * as name from 'module'
                 imports.push(
                   withLocation(
                     importTemplate({
@@ -644,6 +649,7 @@ export function importExportPlugin({
               }
 
               for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module.value)) {
+                // import name from 'module' (or import { default as name } from 'module')
                 if (exportedNames.has(as.name)) {
                   if (!namespace) {
                     namespace = importModuleNamespace(loc);
@@ -672,6 +678,9 @@ export function importExportPlugin({
             for (const { name, as, loc } of state.exportNamed) {
               const namespace = _namespaceForLocal.get(name);
               if (namespace && namespace.name === 'default') {
+                // import name from 'module'; (or import { default as name } from 'module')
+                // export { name }
+
                 // To avoid overwriting local use of the import default variable
                 _namespaceForLocal.delete(name);
                 liveExports.push(
@@ -684,6 +693,8 @@ export function importExportPlugin({
                   )
                 );
               } else if (namespace) {
+                // import {name} from 'module';
+                // export { name as newName }
                 liveExports.push(
                   withLocation(
                     liveBindExportTemplate({
@@ -695,6 +706,7 @@ export function importExportPlugin({
                   )
                 );
               } else {
+                // export const name = 'value';
                 staticExports.push(
                   withLocation(
                     staticExportTemplate({
@@ -789,6 +801,7 @@ export function importExportPlugin({
 
               const exportAllFrom = state.exportAllFrom.get(module.value);
               if (exportAllFrom) {
+                // export * from 'module'
                 exportAll.push(
                   ...withLocation(
                     staticExportAllTemplate({
@@ -802,7 +815,7 @@ export function importExportPlugin({
               }
 
               for (const { as, loc } of state.exportAllFromAs.getOrDefault(module.value)) {
-                // NOTE: Maybe switch to module based name, but keeping original export based for now
+                // export * as name from 'module' -> var _name = _$$_IMPORT_ALL('module'); exports.name = _name;
                 const ns = path.scope.generateUidIdentifier(as);
                 imports.push(
                   withLocation(
@@ -829,7 +842,7 @@ export function importExportPlugin({
 
               for (const { name, as, loc } of state.exportNamedFrom.getOrDefault(module.value)) {
                 if (name === 'default' && as === 'default') {
-                  // NOTE: Maybe switch to module based name, but keeping original name based for now
+                  // export { default } from 'module' -> exports.default = requireDefault('module');
                   const tmp = path.scope.generateUidIdentifier(name);
                   imports.push(
                     withLocation(
@@ -851,7 +864,7 @@ export function importExportPlugin({
                     )
                   );
                 } else if (name === 'default') {
-                  // NOTE: Maybe switch to module based name, but keeping original name based for now
+                  // export { default as name } from 'module' -> var _default = requireDefault('module'); exports.name = _default;
                   const tmp = path.scope.generateUidIdentifier(name);
                   imports.push(
                     withLocation(
@@ -873,7 +886,8 @@ export function importExportPlugin({
                     )
                   );
                 } else {
-                  const tmp = path.scope.generateUidIdentifier(as);
+                  // export { one as two } from 'module' -> var _one = require('module').one; exports.two = _one;
+                  const tmp = path.scope.generateUidIdentifier(name);
                   imports.push(
                     withLocation(
                       requireNameTemplate({
@@ -898,6 +912,7 @@ export function importExportPlugin({
 
               let sharedModuleVariableDeclaration: t.VariableDeclaration | null = null;
               if (state.importNamedFrom.getOrDefault(module.value).length === 1) {
+                // import { one as two } from 'module' -> var two = require('module').one;
                 const importNamed = state.importNamedFrom.getOrDefault(module.value)[0];
                 imports.push(
                   withLocation(
@@ -910,6 +925,8 @@ export function importExportPlugin({
                   )
                 );
               } else {
+                // import { one as two, three as four } from 'module'
+                //   -> var _module = require('module'), two = _module.one, four = _module.four;
                 let sharedModuleImport: t.Identifier | null = null;
                 for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module.value)) {
                   if (!sharedModuleVariableDeclaration) {
@@ -942,6 +959,7 @@ export function importExportPlugin({
               }
 
               if (!sharedModuleVariableDeclaration && state.importSideEffect.has(module.value)) {
+                // import 'module' -> require('module')
                 imports.push(
                   withLocation(
                     requireSideEffectTemplate({
@@ -953,6 +971,7 @@ export function importExportPlugin({
               }
 
               for (const { as, loc } of state.importAllFromAs.getOrDefault(module.value)) {
+                // import * as name from 'module'
                 imports.push(
                   withLocation(
                     importTemplate({
@@ -966,6 +985,7 @@ export function importExportPlugin({
               }
 
               for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module.value)) {
+                // import name from 'module'
                 imports.push(
                   withLocation(
                     importTemplate({
