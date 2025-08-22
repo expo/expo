@@ -419,6 +419,8 @@ exports[`with live bindings transforms import namespace by specifier 1`] = `
 test(AppleIcons);"
 `;
 
+exports[`with live bindings transforms import side effect 1`] = `"require("apple-icons");"`;
+
 exports[`with live bindings transforms import specifier 1`] = `
 "var _apple_icons = require('apple-icons');
 _apple_icons.test(_apple_icons.test);"
