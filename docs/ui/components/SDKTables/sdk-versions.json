@@ -10,7 +10,7 @@
       "react-native": "0.81",
       "react-native-web": "0.21.0",
       "react": "19.1.0",
-      "node": "22.18.x"
+      "node": "20.19.x"
     },
     {
       "sdk": "53.0.0",
@@ -22,7 +22,7 @@
       "react-native": "0.79",
       "react-native-web": "0.20.0",
       "react": "19.0.0",
-      "node": "22.15.x"
+      "node": "20.18.x"
     },
     {
       "sdk": "52.0.0",
