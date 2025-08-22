@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.24.21 — 2025-08-22
+
+### 🐛 Bug fixes
+
 - Factor in no :hermes_enabled in Podfile ([#38664](https://github.com/expo/expo/pull/38664) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others

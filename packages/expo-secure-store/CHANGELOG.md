@@ -2,16 +2,19 @@
 
 ## Unpublished
 
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- [android] Reset `isAuthenticating` prompt flag when error is thrown ([#38132](https://github.com/expo/expo/pull/38132) by [@SYoder1](https://github.com/SYoder1))
-
 ### 💡 Others
+
+## 14.2.4 — 2025-08-22
+
+### 🐛 Bug fixes
+
+- [android] Reset `isAuthenticating` prompt flag when error is thrown ([#38132](https://github.com/expo/expo/pull/38132) by [@SYoder1](https://github.com/SYoder1))
 
 ## 14.2.3 — 2025-04-30
 

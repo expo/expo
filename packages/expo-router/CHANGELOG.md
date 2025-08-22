@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.1.5 — 2025-08-22
+
+### 💡 Others
+
 - Replace `schema-utils` with `@expo/schema-utils` ([#38863](https://github.com/expo/expo/pull/38863) by [@kitten](https://github.com/kitten))
 
 ## 5.1.4 — 2025-07-18

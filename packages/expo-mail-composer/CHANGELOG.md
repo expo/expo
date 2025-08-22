@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Prevent duplicate values in LSApplicationQueriesSchemes ([#37697](https://github.com/expo/expo/pull/37697) by [@huextrat](https://github.com/huextrat))
-
 ### 💡 Others
+
+## 14.1.6 — 2025-08-22
+
+### 🐛 Bug fixes
+
+- [ios] Prevent duplicate values in LSApplicationQueriesSchemes ([#37697](https://github.com/expo/expo/pull/37697) by [@huextrat](https://github.com/huextrat))
 
 ## 14.1.5 — 2025-06-27
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] tvOS fixes. ([#38815](https://github.com/expo/expo/pull/38815) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 0.4.9 — 2025-08-22
+
+### 🐛 Bug fixes
+
+- [iOS] tvOS fixes. ([#38815](https://github.com/expo/expo/pull/38815) by [@douglowder](https://github.com/douglowder))
 
 ## 0.4.8 — 2025-07-03
 

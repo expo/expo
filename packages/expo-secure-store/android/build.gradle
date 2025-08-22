@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.2.3'
+version = '14.2.4'
 
 android {
   namespace "expo.modules.securestore"
   defaultConfig {
     versionCode 17
-    versionName '14.2.3'
+    versionName '14.2.4'
   }
 }
 
