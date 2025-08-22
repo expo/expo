@@ -13,7 +13,6 @@ import {
   Animation,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
 
 export default function AnimationModifierScreen() {
   const [animationState1, setAnimationState1] = useState(false);
