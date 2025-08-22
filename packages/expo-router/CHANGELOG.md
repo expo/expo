@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Added dependency on RNScreens in podspec to support dynamic linking through USE_FRAMEWORKS
+
 ### 💡 Others
 
 - extract Screen component in NativeTabsView ([#39011](https://github.com/expo/expo/pull/39011) by [@Ubax](https://github.com/Ubax))
