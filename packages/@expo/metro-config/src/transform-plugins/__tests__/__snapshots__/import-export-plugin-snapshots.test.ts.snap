@@ -1268,6 +1268,8 @@ exports[`without live bindings transforms import namespace by specifier 1`] = `
 test(AppleIcons);"
 `;
 
+exports[`without live bindings transforms import side effect 1`] = `"require("apple-icons");"`;
+
 exports[`without live bindings transforms import specifier 1`] = `
 "var test = require('apple-icons').test;
 test(test);"

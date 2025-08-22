@@ -454,11 +454,18 @@ export function importExportPlugin({
               case 'ImportSpecifier': {
                 const importedName =
                   s.imported.type === 'StringLiteral' ? s.imported.value : s.imported.name;
-                state.importNamedFrom.getOrDefault(file.value).push({
-                  name: importedName,
-                  as: s.local.name,
-                  loc: path.node.loc,
-                });
+                if (importedName === 'default') {
+                  state.importDefaultFromAs.getOrDefault(file.value).push({
+                    as: s.local.name,
+                    loc: path.node.loc,
+                  });
+                } else {
+                  state.importNamedFrom.getOrDefault(file.value).push({
+                    name: importedName,
+                    as: s.local.name,
+                    loc: path.node.loc,
+                  });
+                }
 
                 if (importedName !== 'default') {
                   state.importedIdentifiers.getOrDefault(s.local.name).push({
@@ -508,12 +515,15 @@ export function importExportPlugin({
         },
 
         exit(path: NodePath<t.Program>, state: State): void {
-          const hasEsmExport =
+          const body = path.node.body;
+
+          const hasEsmExports =
             state.exportDefault.length ||
             state.exportAllFrom.size ||
             state.exportNamed.length ||
             state.exportAllFromAs.size ||
             state.exportNamedFrom.size;
+
           if (state.opts.liveBindings) {
             const _namespaceForLocal = new Map<string, { namespace: string; remote: string }>();
             const liveExports: t.Statement[] = [];
@@ -747,8 +757,6 @@ export function importExportPlugin({
               );
             }
 
-            const body = path.node.body;
-
             body.unshift(...imports);
             body.unshift(...exportAll);
             body.unshift(...liveExports);
@@ -808,21 +816,219 @@ export function importExportPlugin({
                 programScope: path.scope,
               }
             );
+          } else {
+            const imports: t.Statement[] = [];
+            const exportAll: t.Statement[] = [];
+            const staticExports: t.Statement[] = [];
 
-            if (hasEsmExport) {
-              body.unshift(esModuleExportTemplate());
-              if (state.opts.out) {
-                state.opts.out.isESModule = true;
+            for (const module of state.originalImportOrder) {
+              const resolved = resolvePath(t.stringLiteral(module), state.opts.resolve);
+
+              const exportAllFrom = state.exportAllFrom.get(module);
+              if (exportAllFrom) {
+                exportAll.push(
+                  ...withLocation(
+                    exportAllTemplate({
+                      FILE: t.cloneNode(resolved),
+                      REQUIRED: path.scope.generateUidIdentifier(module),
+                      KEY: path.scope.generateUidIdentifier('key'),
+                    }),
+                    exportAllFrom.loc
+                  )
+                );
               }
-            } else if (state.opts.out) {
-              state.opts.out.isESModule = false;
+
+              for (const { as, loc } of state.exportAllFromAs.getOrDefault(module)) {
+                const ns = path.scope.generateUidIdentifier(module);
+                imports.push(
+                  withLocation(
+                    importTemplate({
+                      IMPORT: t.cloneNode(state.importAll),
+                      FILE: t.cloneNode(resolved),
+                      LOCAL: t.cloneNode(ns),
+                    }),
+                    loc
+                  )
+                );
+                staticExports.push(
+                  withLocation(
+                    exportTemplate({
+                      LOCAL: t.cloneNode(ns),
+                      REMOTE: t.identifier(as),
+                    }),
+                    loc
+                  )
+                );
+              }
+
+              for (const { name, as, loc } of state.exportNamedFrom.getOrDefault(module)) {
+                if (name === 'default') {
+                  const tmp = path.scope.generateUidIdentifier(as);
+                  imports.push(
+                    withLocation(
+                      importTemplate({
+                        IMPORT: t.cloneNode(state.importDefault),
+                        FILE: t.cloneNode(resolved),
+                        LOCAL: t.cloneNode(tmp),
+                      }),
+                      loc
+                    )
+                  );
+                  staticExports.push(
+                    withLocation(
+                      exportTemplate({
+                        LOCAL: t.cloneNode(tmp),
+                        REMOTE: t.identifier(as),
+                      }),
+                      loc
+                    )
+                  );
+                } else {
+                  const tmp = path.scope.generateUidIdentifier(as);
+                  imports.push(
+                    withLocation(
+                      requireNamedTemplate({
+                        FILE: t.cloneNode(resolved),
+                        LOCAL: t.cloneNode(tmp),
+                        REMOTE: t.identifier(name),
+                      }),
+                      loc
+                    )
+                  );
+                  staticExports.push(
+                    withLocation(
+                      exportTemplate({
+                        LOCAL: t.cloneNode(tmp),
+                        REMOTE: t.identifier(as),
+                      }),
+                      loc
+                    )
+                  );
+                }
+              }
+
+              let sharedModuleVariableDeclaration: t.VariableDeclaration | null = null;
+              if (state.importNamedFrom.getOrDefault(module).length === 1) {
+                const importNamed = state.importNamedFrom.getOrDefault(module)[0];
+                imports.push(
+                  withLocation(
+                    requireNamedTemplate({
+                      FILE: t.cloneNode(resolved),
+                      LOCAL: t.identifier(importNamed.as),
+                      REMOTE: t.identifier(importNamed.name),
+                    }),
+                    state.importNamedFrom.getOrDefault(module)[0].loc
+                  )
+                );
+              } else {
+                let sharedModuleImport: t.Identifier | null = null;
+                for (const { name, as, loc } of state.importNamedFrom.getOrDefault(module)) {
+                  if (!sharedModuleVariableDeclaration) {
+                    sharedModuleImport = path.scope.generateUidIdentifier(module);
+                    sharedModuleVariableDeclaration = withLocation(
+                      t.variableDeclaration('var', [
+                        t.variableDeclarator(
+                          t.cloneNode(sharedModuleImport),
+                          t.callExpression(t.identifier('require'), [
+                            resolvePath(t.stringLiteral(module), state.opts.resolve),
+                          ])
+                        ),
+                      ]),
+                      loc
+                    );
+                    imports.push(sharedModuleVariableDeclaration);
+                  }
+
+                  sharedModuleVariableDeclaration.declarations.push(
+                    withLocation(
+                      t.variableDeclarator(
+                        t.identifier(as),
+                        t.memberExpression(
+                          t.cloneNode(nullthrows(sharedModuleImport)),
+                          t.identifier(name)
+                        )
+                      ),
+                      loc
+                    )
+                  );
+                }
+              }
+
+              if (!sharedModuleVariableDeclaration && state.importSideEffect.has(module)) {
+                imports.push(
+                  withLocation(
+                    requireSideEffectTemplate({
+                      FILE: t.cloneNode(resolved),
+                    }),
+                    state.importSideEffect.get(module)?.loc
+                  )
+                );
+              }
+
+              for (const { as, loc } of state.importAllFromAs.getOrDefault(module)) {
+                imports.push(
+                  withLocation(
+                    importTemplate({
+                      IMPORT: t.cloneNode(state.importAll),
+                      FILE: t.cloneNode(resolved),
+                      LOCAL: t.identifier(as),
+                    }),
+                    loc
+                  )
+                );
+              }
+
+              for (const { as, loc } of state.importDefaultFromAs.getOrDefault(module)) {
+                imports.push(
+                  withLocation(
+                    importTemplate({
+                      IMPORT: t.cloneNode(state.importDefault),
+                      FILE: t.cloneNode(resolved),
+                      LOCAL: t.identifier(as),
+                    }),
+                    loc
+                  )
+                );
+              }
             }
-            // Exit after new live binding version was processed.
-            return;
+
+            for (const { name, as, loc } of state.exportNamed) {
+              staticExports.push(
+                withLocation(
+                  exportTemplate({
+                    LOCAL: t.identifier(as),
+                    REMOTE: t.identifier(name),
+                  }),
+                  loc
+                )
+              );
+            }
+
+            for (const { name, loc } of state.exportDefault) {
+              staticExports.push(
+                withLocation(
+                  exportTemplate({
+                    LOCAL: t.identifier(name),
+                    REMOTE: t.identifier('default'),
+                  }),
+                  loc
+                )
+              );
+            }
+
+            body.unshift(...imports);
+            body.unshift(...exportAll);
+            body.push(...staticExports);
           }
 
-          // TODO: Return loose impl
-          console.log('Not implemented.');
+          if (hasEsmExports) {
+            body.unshift(esModuleExportTemplate());
+            if (state.opts.out) {
+              state.opts.out.isESModule = true;
+            }
+          } else if (state.opts.out) {
+            state.opts.out.isESModule = false;
+          }
         },
       },
     },
