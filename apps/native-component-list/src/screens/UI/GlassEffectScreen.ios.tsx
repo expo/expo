@@ -15,11 +15,9 @@ import {
   animation,
   Animation,
   glassEffectId,
-  foregroundColor,
   background,
   cornerRadius,
   frame,
-  blur,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { View } from 'react-native';
