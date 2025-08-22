@@ -1,14 +1,21 @@
 import React, { useDeferredValue } from 'react';
+import type { ColorValue } from 'react-native';
 import {
   BottomTabs,
   BottomTabsScreen,
   featureFlags,
   type BottomTabsProps,
+  type BottomTabsScreenAppearance,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
 
 import {
-  SUPPORTED_BLUR_EFFECTS,
+  appendSelectedStyleToAppearance,
+  convertStyleToAppearance,
+  createScrollEdgeAppearanceFromOptions,
+  createStandardAppearanceFromOptions,
+} from './appearance';
+import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
   type NativeTabOptions,
@@ -21,11 +28,50 @@ import { shouldTabBeVisible } from './utils';
 featureFlags.experiment.controlledBottomTabs = false;
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { builder, style, minimizeBehavior, disableIndicator, focusedIndex } = props;
+  const {
+    builder,
+    minimizeBehavior,
+    disableIndicator,
+    focusedIndex,
+    disableTransparentOnScrollEdge,
+  } = props;
   const { state, descriptors, navigation } = builder;
   const { routes } = state;
 
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
+  let standardAppearance = convertStyleToAppearance({
+    ...props.labelStyle,
+    iconColor: props.iconColor,
+    blurEffect: props.blurEffect,
+    backgroundColor: props.backgroundColor,
+    badgeBackgroundColor: props.badgeBackgroundColor,
+  });
+  if (props.tintColor) {
+    standardAppearance = appendSelectedStyleToAppearance(
+      { iconColor: props.tintColor, color: props.tintColor },
+      standardAppearance
+    );
+  }
+  const scrollEdgeAppearance = convertStyleToAppearance({
+    ...props.labelStyle,
+    iconColor: props.iconColor,
+    blurEffect: disableTransparentOnScrollEdge ? props.blurEffect : 'none',
+    backgroundColor: disableTransparentOnScrollEdge ? props.backgroundColor : null,
+    badgeBackgroundColor: props.badgeBackgroundColor,
+  });
+
+  const appearances = routes.map((route) => ({
+    standardAppearance: createStandardAppearanceFromOptions(
+      descriptors[route.key].options,
+      standardAppearance
+    ),
+    scrollEdgeAppearance: createScrollEdgeAppearanceFromOptions(
+      descriptors[route.key].options,
+      scrollEdgeAppearance
+    ),
+  }));
+
+  const options = routes.map((route) => descriptors[route.key].options);
 
   const children = routes
     .map((route, index) => ({ route, index }))
@@ -41,36 +87,68 @@ export function NativeTabsView(props: NativeTabsViewProps) {
           name={route.name}
           descriptor={descriptor}
           isFocused={isFocused}
-          style={style}
+          standardAppearance={appearances[index].standardAppearance}
+          scrollEdgeAppearance={appearances[index].scrollEdgeAppearance}
+          badgeTextColor={props.badgeTextColor}
         />
       );
     });
 
   return (
     <BottomTabsWrapper
-      tabBarItemTitleFontColor={style?.color}
-      tabBarItemTitleFontFamily={style?.fontFamily}
-      tabBarItemTitleFontSize={style?.fontSize}
-      // Only string values are accepted by screens
-      tabBarItemTitleFontWeight={
-        style?.fontWeight
-          ? (String(style.fontWeight) as `${NonNullable<(typeof style)['fontWeight']>}`)
-          : undefined
+      // #region android props
+      tabBarItemTitleFontColor={
+        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
+          ?.tabBarItemTitleFontColor
       }
-      tabBarItemTitleFontStyle={style?.fontStyle}
-      tabBarBackgroundColor={style?.backgroundColor}
-      tabBarBlurEffect={style?.blurEffect}
-      tabBarTintColor={style?.tintColor}
-      tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor}
-      tabBarItemRippleColor={style?.rippleColor}
-      tabBarItemLabelVisibilityMode={style?.labelVisibilityMode}
-      tabBarItemIconColor={style?.iconColor}
-      tabBarItemIconColorActive={style?.['&:active']?.iconColor ?? style?.tintColor}
-      tabBarItemTitleFontColorActive={style?.['&:active']?.color ?? style?.tintColor}
-      tabBarItemTitleFontSizeActive={style?.['&:active']?.fontSize}
-      tabBarItemActiveIndicatorColor={style?.['&:active']?.indicatorColor}
+      tabBarItemTitleFontFamily={
+        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
+          ?.tabBarItemTitleFontFamily
+      }
+      tabBarItemTitleFontSize={
+        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
+          ?.tabBarItemTitleFontSize
+      }
+      tabBarItemTitleFontSizeActive={
+        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
+          ?.tabBarItemTitleFontSize
+      }
+      tabBarItemTitleFontWeight={
+        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
+          ?.tabBarItemTitleFontWeight
+      }
+      tabBarItemTitleFontStyle={
+        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal
+          ?.tabBarItemTitleFontStyle
+      }
+      tabBarItemIconColor={
+        appearances[deferredFocusedIndex].standardAppearance.stacked?.normal?.tabBarItemIconColor
+      }
+      tabBarBackgroundColor={
+        appearances[deferredFocusedIndex].standardAppearance.tabBarBackgroundColor ??
+        props.backgroundColor ??
+        undefined
+      }
+      tabBarItemRippleColor={props.rippleColor}
+      tabBarItemLabelVisibilityMode={props.labelVisibilityMode}
+      tabBarItemIconColorActive={
+        appearances[deferredFocusedIndex].standardAppearance?.stacked?.selected
+          ?.tabBarItemIconColor ?? props?.tintColor
+      }
+      tabBarItemTitleFontColorActive={
+        appearances[deferredFocusedIndex].standardAppearance?.stacked?.selected
+          ?.tabBarItemTitleFontColor ?? props?.tintColor
+      }
+      // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
+      tabBarItemActiveIndicatorColor={
+        options[deferredFocusedIndex]?.indicatorColor ?? props?.indicatorColor
+      }
       tabBarItemActiveIndicatorEnabled={!disableIndicator}
+      // #endregion
+      // #region iOS props
+      tabBarTintColor={props?.tintColor}
       tabBarMinimizeBehavior={minimizeBehavior}
+      // #endregion
       onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
         const descriptor = descriptors[tabKey];
         const route = descriptor.route;
@@ -92,23 +170,47 @@ function Screen(props: {
   name: string;
   descriptor: NativeTabsViewProps['builder']['descriptors'][string];
   isFocused: boolean;
-  style: NativeTabsViewProps['style'];
+  standardAppearance: BottomTabsScreenAppearance;
+  scrollEdgeAppearance: BottomTabsScreenAppearance;
+  badgeTextColor: ColorValue | undefined;
 }) {
-  const { routeKey, name, descriptor, isFocused, style } = props;
+  const {
+    routeKey,
+    name,
+    descriptor,
+    isFocused,
+    standardAppearance,
+    scrollEdgeAppearance,
+    badgeTextColor,
+  } = props;
   const title = descriptor.options.title ?? name;
+
+  let icon = convertOptionsIconToPropsIcon(descriptor.options.icon);
+
+  // Fix for an issue in screens
+  if (descriptor.options.role) {
+    switch (descriptor.options.role) {
+      case 'search':
+        icon = { sfSymbolName: 'magnifyingglass' };
+    }
+  }
 
   return (
     <BottomTabsScreen
       {...descriptor.options}
-      tabBarItemBadgeBackgroundColor={style?.badgeBackgroundColor}
-      tabBarItemBadgeTextColor={style?.badgeTextColor}
-      tabBarItemTitlePositionAdjustment={style?.titlePositionAdjustment}
+      tabBarItemBadgeBackgroundColor={
+        standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor
+      }
+      tabBarItemBadgeTextColor={badgeTextColor}
+      standardAppearance={standardAppearance}
+      scrollEdgeAppearance={scrollEdgeAppearance}
       iconResourceName={descriptor.options.icon?.drawable}
-      icon={convertOptionsIconToPropsIcon(descriptor.options.icon)}
+      icon={icon}
       selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
       title={title}
       freezeContents={false}
       tabKey={routeKey}
+      systemItem={descriptor.options.role}
       isFocused={isFocused}>
       {descriptor.render()}
     </BottomTabsScreen>
@@ -133,10 +235,9 @@ const supportedTabBarMinimizeBehaviorsSet = new Set<string>(SUPPORTED_TAB_BAR_MI
 const supportedTabBarItemLabelVisibilityModesSet = new Set<string>(
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES
 );
-const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
 function BottomTabsWrapper(props: BottomTabsProps) {
-  let { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, tabBarBlurEffect, ...rest } = props;
+  let { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, ...rest } = props;
   if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
     console.warn(
       `Unsupported minimizeBehavior: ${tabBarMinimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((behavior) => `"${behavior}"`).join(', ')}`
@@ -152,16 +253,9 @@ function BottomTabsWrapper(props: BottomTabsProps) {
     );
     tabBarItemLabelVisibilityMode = undefined;
   }
-  if (tabBarBlurEffect && !supportedBlurEffectsSet.has(tabBarBlurEffect)) {
-    console.warn(
-      `Unsupported blurEffect: ${tabBarBlurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
-    );
-    tabBarBlurEffect = undefined;
-  }
 
   return (
     <BottomTabs
-      tabBarBlurEffect={tabBarBlurEffect}
       tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode}
       tabBarMinimizeBehavior={tabBarMinimizeBehavior}
       {...rest}

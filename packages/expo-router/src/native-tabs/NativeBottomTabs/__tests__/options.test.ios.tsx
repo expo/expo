@@ -2,11 +2,12 @@ import { screen, act, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { renderRouter } from '../../../testing-library';
 import { Badge, Icon, Label } from '../../common/elements';
 import { NativeTabs } from '../NativeTabs';
-import type { NativeTabOptions } from '../NativeTabsView';
+import type { NativeTabOptions, TypeOrRecord } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -116,12 +117,14 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('when using Icon with selectedSf prop, it is passed as selected icon sfSymbolName', () => {
+  it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon selectedSf="homepod.2.fill" />
+            <Icon
+              sf={{ selected: 'homepod.2.fill' } as TypeOrRecord<SFSymbol, 'default' | 'selected'>}
+            />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -135,12 +138,12 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('when using Icon with sf and selectedSf, values are passed correctly', () => {
+  it('when using Icon with sf object, values are passed correctly', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" selectedSf="star.bubble" />
+            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -195,13 +198,13 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('uses last Icon selectedSf when multiple are provided', () => {
+  it('uses last Icon sf selected when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon selectedSf="stairs" />
-            <Icon selectedSf="homepod.2.fill" />
+            <Icon sf={{ selected: 'stairs' }} />
+            <Icon sf={{ selected: 'homepod.2.fill' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -215,13 +218,13 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('uses last Icon sf and selectedSf for each type when multiple are provided', () => {
+  it('uses last Icon sf for each type when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" selectedSf="star.bubble" />
-            <Icon sf="homepod.2.fill" selectedSf="homepod.2.fill" />
+            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
             <Icon sf="0.circle.ar" />
           </NativeTabs.Trigger>
         </NativeTabs>
@@ -237,14 +240,14 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('uses last Icon sf and selectedSf for each type when multiple are provided', () => {
+  it('uses last Icon sf for each type when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" selectedSf="star.bubble" />
-            <Icon sf="homepod.2.fill" selectedSf="homepod.2.fill" />
-            <Icon selectedSf="0.circle.ar" />
+            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
+            <Icon sf={{ selected: '0.circle.ar' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),

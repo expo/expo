@@ -1,11 +1,12 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabTrigger = NativeTabTrigger;
+exports.NativeTabTrigger = void 0;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
+const NativeTabsTriggerTabBar_1 = require("./NativeTabsTriggerTabBar");
 const utils_1 = require("./utils");
 const useSafeLayoutEffect_1 = require("../../views/useSafeLayoutEffect");
 const elements_1 = require("../common/elements");
@@ -49,7 +50,7 @@ const elements_1 = require("../common/elements");
  *
  * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
-function NativeTabTrigger(props) {
+function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
     const navigation = (0, native_1.useNavigation)();
     const isFocused = navigation.isFocused();
@@ -67,7 +68,10 @@ function NativeTabTrigger(props) {
     }, [isFocused, props]);
     return null;
 }
-function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, disableScrollToTop, }) {
+exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
+    TabBar: NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
+});
+function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }) {
     const initialOptions = {
         ...options,
         hidden: !!hidden,
@@ -77,65 +81,136 @@ function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, 
                 scrollToTop: !disableScrollToTop,
             },
         },
+        role: role ?? options?.role,
     };
-    const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [elements_1.Badge, elements_1.Label, elements_1.Icon]);
+    const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
+        elements_1.Badge,
+        elements_1.Label,
+        elements_1.Icon,
+        NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
+    ]);
     return allowedChildren.reduce((acc, child) => {
         if ((0, utils_1.isChildOfType)(child, elements_1.Badge)) {
-            if (child.props.children) {
-                acc.badgeValue = String(child.props.children);
-            }
-            else if (!child.props.hidden) {
-                // If no value is provided, we set it to a space to show the badge
-                // Otherwise, the `react-native-screens` will interpret it as a hidden badge
-                // https://github.com/software-mansion/react-native-screens/blob/b4358fd95dd0736fc54df6bb97f210dc89edf24c/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm#L172
-                acc.badgeValue = ' ';
-            }
+            appendBadgeOptions(acc, child.props);
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Label)) {
-            if (child.props.hidden) {
-                acc.title = '';
-            }
-            else {
-                acc.title = child.props.children;
-            }
+            appendLabelOptions(acc, child.props);
         }
         else if ((0, utils_1.isChildOfType)(child, elements_1.Icon)) {
-            if ('src' in child.props || 'selectedSrc' in child.props) {
-                acc.icon = child.props.src
-                    ? {
-                        src: child.props.src,
-                    }
-                    : undefined;
-                acc.selectedIcon = child.props.selectedSrc
-                    ? {
-                        src: child.props.selectedSrc,
-                    }
-                    : undefined;
-            }
-            else if ('sf' in child.props || 'selectedSf' in child.props) {
-                if (process.env.EXPO_OS === 'ios') {
-                    acc.icon = child.props.sf
-                        ? {
-                            sf: child.props.sf,
-                        }
-                        : undefined;
-                    acc.selectedIcon = child.props.selectedSf
-                        ? {
-                            sf: child.props.selectedSf,
-                        }
-                        : undefined;
-                }
-            }
-            if (process.env.EXPO_OS === 'android') {
-                acc.icon = { drawable: child.props.drawable };
-                acc.selectedIcon = undefined;
-            }
+            appendIconOptions(acc, child.props);
+        }
+        else if ((0, utils_1.isChildOfType)(child, NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar)) {
+            appendTabBarOptions(acc, child.props);
         }
         return acc;
     }, { ...initialOptions });
 }
+function appendBadgeOptions(options, props) {
+    if (props.children) {
+        options.badgeValue = String(props.children);
+        options.selectedBadgeBackgroundColor = props.selectedBackgroundColor;
+    }
+    else if (!props.hidden) {
+        // If no value is provided, we set it to a space to show the badge
+        // Otherwise, the `react-native-screens` will interpret it as a hidden badge
+        // https://github.com/software-mansion/react-native-screens/blob/b4358fd95dd0736fc54df6bb97f210dc89edf24c/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm#L172
+        options.badgeValue = ' ';
+    }
+}
+function appendLabelOptions(options, props) {
+    if (props.hidden) {
+        options.title = '';
+    }
+    else {
+        options.title = props.children;
+        options.selectedLabelStyle = props.selectedStyle;
+    }
+}
+function appendIconOptions(options, props) {
+    if ('src' in props && props.src) {
+        if (typeof props.src === 'object' && 'default' in props.src) {
+            options.icon = props.src.default
+                ? {
+                    src: props.src.default,
+                }
+                : undefined;
+            options.selectedIcon = props.src.selected
+                ? {
+                    src: props.src.selected,
+                }
+                : undefined;
+        }
+        else {
+            options.icon = props.src
+                ? {
+                    src: props.src,
+                }
+                : undefined;
+        }
+    }
+    else if ('sf' in props) {
+        if (process.env.EXPO_OS === 'ios') {
+            if (typeof props.sf === 'string') {
+                options.icon = props.sf
+                    ? {
+                        sf: props.sf,
+                    }
+                    : undefined;
+                options.selectedIcon = undefined;
+            }
+            else if (props.sf) {
+                options.icon = props.sf.default
+                    ? {
+                        sf: props.sf.default,
+                    }
+                    : undefined;
+                options.selectedIcon = props.sf.selected
+                    ? {
+                        sf: props.sf.selected,
+                    }
+                    : undefined;
+            }
+        }
+    }
+    if (process.env.EXPO_OS === 'android') {
+        options.icon = { drawable: props.drawable };
+        options.selectedIcon = undefined;
+    }
+    options.selectedIconColor = props.selectedColor;
+}
+function appendTabBarOptions(options, props) {
+    const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, } = props;
+    if (backgroundColor) {
+        options.backgroundColor = backgroundColor;
+    }
+    // We need better native integration of this on Android
+    // Simulating from JS side creates ugly transitions
+    if (process.env.EXPO_OS !== 'android') {
+        if (blurEffect) {
+            options.blurEffect = blurEffect;
+        }
+        if (iconColor) {
+            options.iconColor = iconColor;
+        }
+        if (disableTransparentOnScrollEdge !== undefined) {
+            options.disableTransparentOnScrollEdge = disableTransparentOnScrollEdge;
+        }
+        if (badgeBackgroundColor) {
+            options.badgeBackgroundColor = badgeBackgroundColor;
+        }
+        if (badgeTextColor) {
+            options.badgeTextColor = badgeTextColor;
+        }
+        if (indicatorColor) {
+            options.indicatorColor = indicatorColor;
+        }
+        if (labelStyle) {
+            options.labelStyle = labelStyle;
+        }
+    }
+}
 function isNativeTabTrigger(child, contextKey) {
-    if ((0, react_1.isValidElement)(child) && child && child.type === NativeTabTrigger) {
+    if ((0, react_1.isValidElement)(child) && child && child.type === exports.NativeTabTrigger) {
         if (typeof child.props === 'object' &&
             child.props &&
             'name' in child.props &&

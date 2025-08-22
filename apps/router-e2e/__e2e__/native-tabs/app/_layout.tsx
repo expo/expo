@@ -15,52 +15,74 @@ export default function Layout() {
     <ThemeProvider value={DarkTheme}>
       <ActiveTabsContext.Provider value={{ activeTabs, setActiveTabs }}>
         <NativeTabs
-          style={{
-            // fontSize: 16,
-            // fontWeight: 700,
-            // fontStyle: 'italic',
-            // fontFamily: 'Courier New',
-            backgroundColor: Platform.OS === 'android' ? 'black' : undefined,
-            // badgeBackgroundColor: 'green',
-            // color: 'blue',
-            tintColor: 'orange',
-            blurEffect: 'systemChromeMaterial',
-            labelVisibilityMode: 'auto',
-            rippleColor: 'orange',
-            iconColor: Platform.OS === 'android' ? '#888' : undefined,
-            color: Platform.OS === 'android' ? '#888' : undefined,
-            '&:active': {
-              fontSize: 14,
-              indicatorColor: Platform.OS === 'android' ? 'black' : undefined,
-            },
-          }}
-          minimizeBehavior="onScrollDown">
-          <NativeTabs.Trigger
-            name="index"
-            options={{
-              icon: { sf: 'applewatch.side.right', drawable: 'ic_phone' },
-              title: 'My Watch',
-            }}
-          />
+        // Both platforms
+        // labelStyle={{
+        //   fontSize: 16,
+        //   fontWeight: 700,
+        //   fontStyle: 'italic',
+        //   // fontFamily: 'Courier New',
+        //   color: Platform.OS === 'android' ? '#888' : undefined,
+        // }}
+        // backgroundColor={Platform.OS === 'android' ? 'black' : undefined}
+        // badgeBackgroundColor="green"
+        // tintColor="orange"
+        // iconColor={Platform.OS === 'android' ? '#888' : undefined}
+        // iOS only
+        // blurEffect="systemDefault"
+        // minimizeBehavior="onScrollDown"
+        // disableTransparentOnScrollEdge
+        // Android only
+        // labelVisibilityMode="auto"
+        // rippleColor="orange"
+        // indicatorColor="black"
+        >
+          <NativeTabs.Trigger name="index">
+            <Label
+            // selectedStyle={{ color: '#0f0' }}
+            >
+              My Watch
+            </Label>
+            <Icon
+              // selectedColor="deepNavy"
+              sf="applewatch.side.right"
+              drawable="ic_phone"
+            />
+          </NativeTabs.Trigger>
           {activeTabs.map((tab) => (
             <NativeTabs.Trigger key={tab} name={tab}>
               <Icon sf="plus" drawable="ic_search" />
-              <Badge />
+              <Badge
+              // selectedBackgroundColor="#ff0"
+              />
             </NativeTabs.Trigger>
           ))}
-          <NativeTabs.Trigger name="faces" options={{ title: 'Face Gallery' }}>
-            <Icon sf="lock.applewatch" selectedSf="lock.open.applewatch" drawable="ic_lock_open" />
-            <Label hidden />
-          </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="explore">
-            <Icon
-              src={require('../../../assets/explore_gray.png')}
-              selectedSrc={require('../../../assets/explore_orange.png')}
-              // sf="safari"
-              drawable="ic_search"
+          <NativeTabs.Trigger name="faces">
+            <NativeTabs.Trigger.TabBar
+            // labelStyle={{
+            //   fontSize: 32,
+            //   fontWeight: '900',
+            //   color: 'white',
+            // }}
+            // badgeBackgroundColor="white"
+            // backgroundColor="blue"
+            // blurEffect="light"
+            // iconColor="red"
+            // indicatorColor="white"
             />
-            <Badge>9+</Badge>
-            <Label>Explore</Label>
+            <Icon
+              // selectedColor="#f00"
+              sf={{
+                default: 'lock.applewatch',
+                selected: 'lock.open.applewatch',
+              }}
+              drawable="ic_lock_open"
+            />
+            <Label hidden />
+            <Badge>1</Badge>
+          </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="explore" role="search">
+            <Icon sf="magnifyingglass" drawable="ic_search" />
+            <Label>Search</Label>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="dynamic">
             <Icon sf="figure.disc.sports" drawable="ic_menu" />

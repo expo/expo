@@ -2,6 +2,7 @@
 import * as React from 'react';
 
 import { NativeTabs } from '../NativeBottomTabs/NativeTabs';
+import { NativeTabsTriggerTabBar } from '../NativeBottomTabs/NativeTabsTriggerTabBar';
 import { Badge, Icon, Label } from '../common/elements';
 
 it(`renders NativeTabs`, async () => {
@@ -30,4 +31,8 @@ it(`renders Badge`, async () => {
 
 it(`renders Label`, async () => {
   await expect(<Label>Test</Label>).toMatchFlightSnapshot();
+});
+
+it(`renders NativeTabsTriggerTabBar`, async () => {
+  await expect(<NativeTabsTriggerTabBar />).toMatchFlightSnapshot();
 });
