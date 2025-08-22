@@ -36,10 +36,6 @@ internal struct NamespaceProvider: ExpoSwiftUI.View {
   @Namespace private var namespace3
   private let namespaceCache = NamespaceCache()
 
-  init(props: NamespaceProviderProps) {
-    self.props = props
-  }
-
   var body: some View {
     Children()
       .environment(\.namespaceProvider, provideNamespace)
