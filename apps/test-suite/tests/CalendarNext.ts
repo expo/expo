@@ -624,7 +624,7 @@ export async function test(t) {
           t.expect(event.notes).toBe(defaultEventData.notes);
         });
 
-        t.it('creates an event with the recurrence rule', async () => {
+        t.it('creates an event with a recurrence rule', async () => {
           const recurrenceRule = {
             endDate: new Date(2021, 3, 5).toISOString(),
             frequency: Calendar.Frequency.DAILY,
@@ -1130,21 +1130,63 @@ export async function test(t) {
           });
         }
 
-        t.it('updates recurrence rule', async () => {
+        t.it('updates a recurrence rule with occurrence', async () => {
           const event = await createTestEvent(calendar);
 
           const newRecurrenceRule = {
             frequency: Calendar.Frequency.WEEKLY,
             interval: 1,
-            endDate: new Date(2021, 6, 5).toISOString(),
-            occurrence: 0,
+            occurrence: 3,
           };
 
           await event.update({
             recurrenceRule: newRecurrenceRule,
           });
 
-          t.expect(event.recurrenceRule).toEqual(newRecurrenceRule);
+          t.expect(event.recurrenceRule.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule.occurrence).toEqual(newRecurrenceRule.occurrence);
+          t.expect(event.recurrenceRule.endDate).toBeNull();
+        });
+
+        t.it('updates a recurrence rule with endDate', async () => {
+          const event = await createTestEvent(calendar);
+
+          const newRecurrenceRule = {
+            frequency: Calendar.Frequency.WEEKLY,
+            interval: 1,
+            endDate: new Date(2021, 6, 5).toISOString(),
+          };
+
+          await event.update({
+            recurrenceRule: newRecurrenceRule,
+          });
+
+          t.expect(event.recurrenceRule.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule.endDate).toEqual(newRecurrenceRule.endDate);
+          t.expect(event.recurrenceRule.occurrence).toBeNull();
+        });
+
+        t.it('endDate takes precedence over occurrence', async () => {
+          const event = await createTestEvent(calendar);
+
+          const newRecurrenceRule = {
+            frequency: Calendar.Frequency.WEEKLY,
+            interval: 1,
+            endDate: new Date(2021, 6, 5).toISOString(),
+            occurrence: 3,
+          };
+
+          await event.update({
+            recurrenceRule: newRecurrenceRule,
+          });
+
+          t.expect(event.recurrenceRule.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule.endDate).toEqual(newRecurrenceRule.endDate);
+          // The endDate takes precedence over the occurrence
+          t.expect(event.recurrenceRule.occurrence).toBeNull();
         });
 
         t.it('updates the all day property', async () => {
@@ -1184,17 +1226,6 @@ export async function test(t) {
           t.expect(event.endDate).toBe(defaultEventData.endDate.toISOString());
         });
 
-        t.it('clears timeZone when set to null', async () => {
-          const event = await createTestEvent(calendar);
-          t.expect(event.timeZone).toBe(defaultEventData.timeZone);
-          await event.update({
-            timeZone: null,
-          });
-          t.expect(event.timeZone).toBeNull();
-          t.expect(event.title).toBe(defaultEventData.title);
-          t.expect(event.location).toBe(defaultEventData.location);
-        });
-
         t.it('clears alarms when set to null', async () => {
           const event = await createTestEvent(calendar, {
             alarms: [{ relativeOffset: -60 }],
@@ -1214,11 +1245,12 @@ export async function test(t) {
           t.expect(fetchedEvent.alarms).toEqual([]);
         });
 
-        t.it('clears recurrenceRule when set to null', async () => {
+        t.it('clears a recurrence rule when set to null', async () => {
           const event = await createTestEvent(calendar, {
             recurrenceRule: {
               frequency: Calendar.Frequency.DAILY,
               interval: 1,
+              occurrence: 3,
             },
           });
           t.expect(event.recurrenceRule).toBeDefined();

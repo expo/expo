@@ -59,9 +59,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   override async update(
     details: Partial<ModifiableEventProperties>,
     options: RecurringEventOptions = {}
-  ): Promise<void> {
+  ): Promise<ExpoCalendarEvent> {
     const nullableDetailsFields = getNullableDetailsFields(details);
-    await super.update(
+    return await super.update(
       stringifyDateValues(details),
       stringifyDateValues(options),
       nullableDetailsFields

@@ -1,4 +1,5 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod, OpenEventDialogResult } from '../Calendar';
+import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod, OpenEventDialogResult } from '../Calendar';
+import { RecurrenceRule } from './types/RecurrenceRule';
 export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 export type ModifiableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
@@ -166,6 +167,7 @@ export declare class ExpoCalendarEvent {
     lastModifiedDate?: string | Date;
     /**
      * Time zone the event is scheduled in.
+     * When set to `null`, the event is scheduled to the device's time zone.
      */
     timeZone: string;
     /**
@@ -188,6 +190,7 @@ export declare class ExpoCalendarEvent {
     alarms: Alarm[];
     /**
      * Object representing rules for recurring or repeating events. Set to `null` for one-time events.
+     * It is either `endDate` or `occurrence` based.
      */
     recurrenceRule: RecurrenceRule | null;
     /**
@@ -295,7 +298,7 @@ export declare class ExpoCalendarEvent {
      * @param details A map of properties to be updated.
      * @param recurringEventOptions A map of options for recurring events, available only on iOS.
      */
-    update(details: Partial<ModifiableEventProperties>, recurringEventOptions?: RecurringEventOptions, nullableFields?: (keyof ModifiableEventProperties)[]): Promise<void>;
+    update(details: Partial<ModifiableEventProperties>, recurringEventOptions?: RecurringEventOptions, nullableFields?: (keyof ModifiableEventProperties)[]): Promise<ExpoCalendarEvent>;
     /**
      * Deletes the event.
      * @param recurringEventOptions A map of options for recurring events, available only on iOS.

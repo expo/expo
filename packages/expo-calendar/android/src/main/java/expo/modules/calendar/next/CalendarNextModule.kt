@@ -5,10 +5,7 @@ import android.content.ContentUris
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.util.Log
-import expo.modules.calendar.CalendarModule.Companion.TAG
 import expo.modules.calendar.CalendarUtils
-import expo.modules.calendar.ModuleDestroyedException
 import expo.modules.calendar.dialogs.CreateEventContract
 import expo.modules.calendar.dialogs.CreateEventIntentResult
 import expo.modules.calendar.dialogs.CreatedEventOptions
@@ -29,10 +26,6 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 
 class CalendarNextModule : Module() {
   public val contentResolver
@@ -221,7 +214,6 @@ class CalendarNextModule : Module() {
           try {
             val updatedRecord = expoCalendar.calendarRecord?.getUpdatedRecord(details)
               ?: throw Exception("Calendar record is null")
-            println("UPDATED_RECORD: ${updatedRecord.title}")
             ExpoCalendar.updateCalendar(updatedRecord, appContext, isNew = false)
             expoCalendar.calendarRecord = updatedRecord
             promise.resolve(null)
@@ -389,11 +381,9 @@ class CalendarNextModule : Module() {
       AsyncFunction("update") { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, _: Any, nullableFields: List<String>, promise: Promise ->
         withPermissions(promise) {
           try {
-            val updatedRecord = expoCalendarEvent.eventRecord?.getUpdatedRecord(eventRecord, nullableFields)
-              ?: throw Exception("Event record is null")
-            expoCalendarEvent.saveEvent(updatedRecord)
-            expoCalendarEvent.eventRecord = updatedRecord
-            promise.resolve(null)
+            expoCalendarEvent.saveEvent(eventRecord, nullableFields = nullableFields)
+            expoCalendarEvent.reloadEvent()
+            promise.resolve(expoCalendarEvent)
           } catch (e: Exception) {
             promise.reject("E_EVENT_UPDATE_FAILED", "Failed to update event", e)
           }

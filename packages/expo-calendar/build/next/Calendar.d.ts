@@ -14,7 +14,7 @@ export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendar
     editInCalendarAsync(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(recurringEventOptions?: RecurringEventOptions): Promise<ExpoCalendarAttendee[]>;
-    update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): Promise<void>;
+    update(details: Partial<ModifiableEventProperties>, options?: RecurringEventOptions): Promise<ExpoCalendarEvent>;
     delete(options?: RecurringEventOptions): Promise<void>;
     static get(eventId: string): ExpoCalendarEvent;
 }

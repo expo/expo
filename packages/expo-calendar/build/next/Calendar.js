@@ -29,7 +29,7 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     }
     async update(details, options = {}) {
         const nullableDetailsFields = getNullableDetailsFields(details);
-        await super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
+        return await super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
     }
     delete(options = {}) {
         return super.delete(stringifyDateValues(options));

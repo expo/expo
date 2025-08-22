@@ -12,14 +12,9 @@ import expo.modules.calendar.EventNotSavedException
 import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
 import expo.modules.calendar.findAttendeesByEventIdQueryParameters
 import expo.modules.calendar.findEventByIdQueryParameters
-import expo.modules.calendar.next.records.AlarmMethod
 import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.AttendeeRecord
-import expo.modules.calendar.next.records.EventAccessLevel
-import expo.modules.calendar.next.records.EventAvailability
 import expo.modules.calendar.next.records.EventRecord
-import expo.modules.calendar.next.records.EventStatus
-import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.records.RecurringEventOptions
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.AppContext
@@ -28,7 +23,6 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.text.ParseException
 import java.util.Calendar
-import java.util.Locale
 import java.util.TimeZone
 
 
@@ -53,45 +47,11 @@ class ExpoCalendarEvent : SharedObject {
 
   constructor(appContext: AppContext, cursor: Cursor) {
     this.localAppContext = appContext;
-
-
-    // may be CalendarContract.Instances.BEGIN or CalendarContract.Events.DTSTART (which have different string values)
-    val startDate = cursor.getString(3)
-    val endDate = cursor.getString(4)
-
-    val eventId = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Instances.EVENT_ID)
-
-    // unfortunately the string values of CalendarContract.Events._ID and CalendarContract.Instances._ID are equal
-    // so we'll use the somewhat brittle column number from the query
-    val instanceId = if (cursor.columnCount > 18) CalendarUtils.optStringFromCursor(cursor, CalendarContract.Instances._ID) else "";
-
-    this.eventRecord = EventRecord(
-      id = eventId,
-      calendarId = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.CALENDAR_ID),
-      title = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.TITLE),
-      notes = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION),
-      alarms = if (eventId != null) serializeAlarms(eventId)?.toList() else null,
-      recurrenceRule = extractRecurrenceRuleFromString(CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.RRULE)),
-      startDate = CalendarNextUtils.dateToString(startDate.toLongOrNull()),
-      endDate = CalendarNextUtils.dateToString(endDate.toLongOrNull()),
-      allDay = CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0,
-      location = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION),
-      availability = EventAvailability.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)),
-      timeZone = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.EVENT_TIMEZONE),
-      endTimeZone = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.EVENT_END_TIMEZONE),
-      status = EventStatus.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.STATUS)),
-      organizerEmail = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.ORGANIZER),
-      accessLevel = EventAccessLevel.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.ACCESS_LEVEL)),
-      guestsCanModify = CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_MODIFY) != 0,
-      guestsCanInviteOthers = CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0,
-      guestsCanSeeGuests = CalendarUtils.optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0,
-      originalId = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID),
-      instanceId = instanceId
-    )
+    this.eventRecord = EventRecord.fromCursor(cursor, contentResolver)
   }
 
   @Throws(EventNotSavedException::class, ParseException::class, SecurityException::class, InvalidArgumentException::class)
-  fun saveEvent(eventRecord: EventRecord, calendarId: String? = null): Int? {
+  fun saveEvent(eventRecord: EventRecord, calendarId: String? = null, nullableFields: List<String>? = null): Int? {
     val eventBuilder = CalendarEventBuilderNext()
 
     if (eventRecord.startDate != null) {
@@ -199,9 +159,12 @@ class ExpoCalendarEvent : SharedObject {
       eventBuilder.put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, if (eventRecord.guestsCanSeeGuests) 1 else 0)
     }
 
+    // Remove all nullable fields from the event builder that are possible to remove
+    cleanNullableFields(eventBuilder, nullableFields)
+
     if (this.eventRecord?.id != null) {
       // Update current event
-      val eventID = eventRecord.id?.toInt()
+      val eventID = this.eventRecord?.id?.toIntOrNull()
       if (eventID == null) {
         throw InvalidArgumentException("Event ID is required")
       }
@@ -226,6 +189,55 @@ class ExpoCalendarEvent : SharedObject {
         createRemindersForEvent(eventID, eventRecord.alarms)
       }
       return eventID
+    }
+  }
+
+  private fun cleanNullableFields(eventBuilder: CalendarEventBuilderNext, nullableFields: List<String>?) {
+    val nullableSet = nullableFields?.toSet() ?: emptySet()
+    if ("location" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.EVENT_LOCATION)
+    }
+    if ("timeZone" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.EVENT_TIMEZONE)
+    }
+    if ("endTimeZone" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.EVENT_END_TIMEZONE)
+    }
+    if ("notes" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.DESCRIPTION)
+    }
+    if ("recurrenceRule" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.RRULE)
+    }
+    if ("accessLevel" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.ACCESS_LEVEL)
+    }
+    if ("guestsCanModify" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.GUESTS_CAN_MODIFY)
+    }
+    if ("guestsCanInviteOthers" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS)
+    }
+    if ("guestsCanSeeGuests" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS)
+    }
+    if ("organizerEmail" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.ORGANIZER)
+    }
+    if ("status" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.STATUS)
+    }
+    if ("availability" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.AVAILABILITY)
+    }
+    if ("allDay" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.ALL_DAY)
+    }
+    if ("startDate" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.DTSTART)
+    }
+    if ("endDate" in nullableSet) {
+      eventBuilder.putNull(CalendarContract.Events.DTEND)
     }
   }
 
@@ -268,47 +280,20 @@ class ExpoCalendarEvent : SharedObject {
     }
   }
 
-  private fun extractRecurrenceRuleFromString(rrule: String?): RecurrenceRuleRecord? {
-    if (rrule == null) {
-      return null
+  fun reloadEvent(eventId: String? = null) {
+    val eventID = (eventId ?: this.eventRecord?.id)?.toIntOrNull();
+    if (eventID == null) {
+      throw InvalidArgumentException("Event ID is required")
     }
-    val ruleMap = mutableMapOf<String, String>()
-    rrule.split(";").forEach { part ->
-      val keyValue = part.split("=")
-      if (keyValue.size == 2) {
-        ruleMap[keyValue[0].uppercase(Locale.getDefault())] = keyValue[1]
+    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+    val cursor = contentResolver.query(uri, findEventByIdQueryParameters, null, null, null)
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
+    cursor.use {
+      if (it.count > 0) {
+        it.moveToFirst()
+        this.eventRecord = EventRecord.fromCursor(it, contentResolver)
       }
     }
-
-    val frequency = ruleMap["FREQ"]?.lowercase(Locale.getDefault())
-    val interval = ruleMap["INTERVAL"]?.toIntOrNull()
-    var endDate: String? = null
-    var occurrence: Int? = null
-
-    ruleMap["UNTIL"]?.let { untilValue ->
-      try {
-        // Try to parse the UNTIL value using the known date format, fallback to raw string if parsing fails
-        endDate = try {
-          sdf.parse(untilValue)?.toString()
-        } catch (e: ParseException) {
-          Log.e(TAG, "Couldn't parse the `endDate` property.", e)
-          untilValue
-        }
-      } catch (e: Exception) {
-        Log.e(TAG, "endDate is null or invalid", e)
-        endDate = untilValue
-      }
-    }
-
-    ruleMap["COUNT"]?.let { countValue ->
-      occurrence = countValue.toIntOrNull()
-    }
-    return RecurrenceRuleRecord(
-      endDate = endDate,
-      frequency = frequency,
-      interval = interval,
-      occurrence = occurrence,
-    )
   }
 
   @Throws(SecurityException::class)
@@ -324,27 +309,6 @@ class ExpoCalendarEvent : SharedObject {
         contentResolver.insert(CalendarContract.Reminders.CONTENT_URI, reminderValues)
       }
     }
-  }
-
-  private fun serializeAlarms(eventId: String): ArrayList<AlarmRecord>? {
-    val alarms = ArrayList<AlarmRecord>()
-    val cursor = CalendarContract.Reminders.query(
-      contentResolver,
-      eventId.toLong(),
-      arrayOf(
-        CalendarContract.Reminders.MINUTES,
-        CalendarContract.Reminders.METHOD
-      )
-    )
-    while (cursor.moveToNext()) {
-      val method = cursor.getInt(1)
-      val thisAlarm = AlarmRecord(
-        relativeOffset = -cursor.getInt(0),
-        method = AlarmMethod.fromAndroidValue(method)
-      )
-      alarms.add(thisAlarm)
-    }
-    return alarms
   }
 
   fun getAttendees(): List<ExpoCalendarAttendee> {

@@ -111,7 +111,7 @@ class ExpoCalendar : SharedObject {
       throw Exception("Calendar id is null")
     }
     val newEventId = event.saveEvent(record, calendarId)
-    event.eventRecord = event.eventRecord?.getUpdatedRecord(EventRecord(id = newEventId.toString()))
+    event.reloadEvent(newEventId.toString())
     return event
   }
 

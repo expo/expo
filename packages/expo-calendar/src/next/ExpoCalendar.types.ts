@@ -9,7 +9,6 @@ import {
   Availability,
   EntityTypes,
   Alarm,
-  RecurrenceRule,
   EventStatus,
   Organizer,
   ReminderStatus,
@@ -24,6 +23,7 @@ import {
   AlarmMethod,
   OpenEventDialogResult,
 } from '../Calendar';
+import { RecurrenceRule } from './types/RecurrenceRule';
 
 export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 
@@ -237,6 +237,7 @@ export declare class ExpoCalendarEvent {
   lastModifiedDate?: string | Date;
   /**
    * Time zone the event is scheduled in.
+   * When set to `null`, the event is scheduled to the device's time zone.
    */
   timeZone: string;
   /**
@@ -259,6 +260,7 @@ export declare class ExpoCalendarEvent {
   alarms: Alarm[];
   /**
    * Object representing rules for recurring or repeating events. Set to `null` for one-time events.
+   * It is either `endDate` or `occurrence` based.
    */
   recurrenceRule: RecurrenceRule | null;
   /**
@@ -379,7 +381,7 @@ export declare class ExpoCalendarEvent {
     details: Partial<ModifiableEventProperties>,
     recurringEventOptions?: RecurringEventOptions,
     nullableFields?: (keyof ModifiableEventProperties)[]
-  ): Promise<void>;
+  ): Promise<ExpoCalendarEvent>;
 
   /**
    * Deletes the event.
