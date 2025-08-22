@@ -129,6 +129,7 @@ export async function startAsync(
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       mcpServer,
+      platformsOptions: options.platformsOptions,
     });
   } else {
     // Display the server location in CI...

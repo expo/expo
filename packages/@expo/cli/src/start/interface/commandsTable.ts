@@ -20,6 +20,7 @@ export type StartOptions = {
   maxWorkers?: number;
   platforms?: ExpoConfig['platforms'];
   mcpServer?: McpServer;
+  platformsOptions?: { appId?: string };
 };
 
 export const printHelp = (): void => {
