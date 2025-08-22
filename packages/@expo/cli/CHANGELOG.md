@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Prevent `EXPO_USE_FAST_RESOLVER` from being force enabled for other experiments
+- Prevent `EXPO_USE_FAST_RESOLVER` from being force enabled for other experiments ([#39073](https://github.com/expo/expo/pull/39073) by [@kitten](https://github.com/kitten))
 
 ## 0.26.2 — 2025-08-21
 
