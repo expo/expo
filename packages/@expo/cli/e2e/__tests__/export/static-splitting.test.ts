@@ -20,7 +20,7 @@ describe('exports static with bundle splitting', () => {
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    // NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting
+    // NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production npx expo export -p web --source-maps --output-dir dist-static-splitting
     await executeExpoAsync(
       projectRoot,
       ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
@@ -30,7 +30,6 @@ describe('exports static with bundle splitting', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'production',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );
