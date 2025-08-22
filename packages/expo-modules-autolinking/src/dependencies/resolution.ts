@@ -112,11 +112,6 @@ export async function scanDependenciesRecursively(
   rawPath: string,
   { shouldIncludeDependency = defaultShouldIncludeDependency, limitDepth }: ResolutionOptions = {}
 ): Promise<ResolutionResult> {
-  const rootPath = await maybeRealpath(rawPath);
-  if (!rootPath) {
-    return {};
-  }
-
   const _visitedPackagePaths = new Set();
   const getNodeModulePaths = createNodeModulePathsCreator();
   const maxDepth = limitDepth != null ? limitDepth : MAX_DEPTH;
@@ -156,15 +151,18 @@ export async function scanDependenciesRecursively(
     await Promise.all(tasks);
   };
 
-  await recurseDependencies({
-    source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
-    name: '',
-    version: '',
-    path: rootPath,
-    originPath: rawPath,
-    duplicates: null,
-    depth: -1,
-  });
+  const rootPath = await maybeRealpath(rawPath);
+  if (rootPath) {
+    await recurseDependencies({
+      source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+      name: '',
+      version: '',
+      path: rootPath,
+      originPath: rawPath,
+      duplicates: null,
+      depth: -1,
+    });
+  }
 
   return searchResults;
 }
