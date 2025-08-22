@@ -8,6 +8,7 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import com.horcrux.svg.SvgPackage
+import com.rcttabview.RCTTabViewPackage
 import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage
 import com.reactnativecommunity.netinfo.NetInfoModule
 import com.reactnativecommunity.picker.RNCPickerPackage
@@ -174,6 +175,7 @@ class ExponentPackage : ReactPackage {
         SvgPackage(),
         LottiePackage(),
         MapsPackage(),
+        RCTTabViewPackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),
         RNCWebViewPackage(),

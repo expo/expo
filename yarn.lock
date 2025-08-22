@@ -1250,6 +1250,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bottom-tabs/react-navigation@~0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@bottom-tabs/react-navigation/-/react-navigation-0.10.0.tgz#75b6b104055407820ae7c4c158ed9f5494ef1ad6"
+  integrity sha512-amgkyPaAMDJN6IWL9v6FIaswioJkBijcUxWAzh9jqeK/AyPUIi0kb4jFMkOF8/B1CUuVA9rmX+WjZdM/H/OrpA==
+  dependencies:
+    color "^4.2.3"
+
 "@callstack/react-theme-provider@^3.0.9":
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/@callstack/react-theme-provider/-/react-theme-provider-3.0.9.tgz#01035fa1231f1fffc1a806be1b55eb82716e80c1"
@@ -13773,6 +13780,15 @@ react-mixin@^3.0.5:
   dependencies:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
+
+react-native-bottom-tabs@~0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/react-native-bottom-tabs/-/react-native-bottom-tabs-0.10.0.tgz#4f6893aa897fc857fc8bb10ee306460a5fc372c5"
+  integrity sha512-2NkcZKO01nioYawi7Cl3C5fsG/9Sv+ZooqCicjrxAq/ATBPP6jmLYtGsauZlVRqZuDqT3+cQQITB9Ey1sA8EWg==
+  dependencies:
+    react-freeze "^1.0.0"
+    sf-symbols-typescript "^2.0.0"
+    use-latest-callback "^0.2.1"
 
 react-native-drawer-layout@^4.1.11:
   version "4.1.12"

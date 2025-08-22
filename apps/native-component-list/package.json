@@ -32,6 +32,7 @@
     }
   },
   "dependencies": {
+    "@bottom-tabs/react-navigation": "~0.10.0",
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/styleguide-base": "^1.0.1",
@@ -140,6 +141,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.0",
+    "react-native-bottom-tabs": "~0.10.0",
     "react-native-dropdown-picker": "^5.3.0",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-keyboard-controller": "^1.18.4",

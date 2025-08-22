@@ -26,6 +26,10 @@ import {
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 
+const DiagnosticsIconSvg = require('../assets/icons/DiagnosticsIcon.svg');
+const HomeFilledIconSvg = require('../assets/icons/HomeFilledIcon.svg');
+const SettingsFilledIconSvg = require('../assets/icons/SettingsFilledIcon.svg');
+
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();
 const SettingsStack = createStackNavigator<SettingsStackRoutes>();
@@ -131,7 +135,12 @@ function TabNavigator(props: { theme: string }) {
         name="HomeStack"
         component={HomeStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <HomeFilledIcon style={styles.icon} color={color} size={24} />,
+          tabBarIcon: (props: { color?: string }) =>
+            Platform.OS === 'ios' ? (
+              HomeFilledIconSvg
+            ) : (
+              <HomeFilledIcon {...props} style={styles.icon} size={24} />
+            ),
           tabBarLabel: 'Home',
         }}
       />
@@ -141,7 +150,12 @@ function TabNavigator(props: { theme: string }) {
           name="DiagnosticsStack"
           component={DiagnosticsStackScreen}
           options={{
-            tabBarIcon: (props) => <DiagnosticsIcon {...props} style={styles.icon} size={24} />,
+            tabBarIcon: (props: { color?: string }) =>
+              Platform.OS === 'ios' ? (
+                DiagnosticsIconSvg
+              ) : (
+                <DiagnosticsIcon {...props} style={styles.icon} size={24} />
+              ),
             tabBarLabel: 'Diagnostics',
           }}
         />
@@ -151,7 +165,12 @@ function TabNavigator(props: { theme: string }) {
         component={SettingsStackScreen}
         options={{
           title: 'Settings',
-          tabBarIcon: (props) => <SettingsFilledIcon {...props} style={styles.icon} size={24} />,
+          tabBarIcon: (props: { color?: string }) =>
+            Platform.OS === 'ios' ? (
+              SettingsFilledIconSvg
+            ) : (
+              <SettingsFilledIcon {...props} style={styles.icon} size={24} />
+            ),
           tabBarLabel: 'Settings',
         }}
       />
