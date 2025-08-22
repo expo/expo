@@ -1,4 +1,4 @@
-import { type ModifierConfig } from './index';
+import { type ModifierConfig } from './createModifier';
 
 type GlobalEventPayload = {
   [eventName: string]: Record<string, any>;
