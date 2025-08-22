@@ -86,6 +86,7 @@
     "babel-preset-expo": "~14.0.2",
     "expo-asset": "~12.0.3",
     "expo-constants": "~18.0.3",
+    "expo-file-system": "~19.0.4",
     "expo-font": "~14.0.2",
     "expo-keep-awake": "~15.0.2",
     "expo-modules-autolinking": "3.0.3",
