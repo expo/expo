@@ -11,6 +11,7 @@ import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../server/DevServerManager';
+import { resolveLaunchPropsAsync as androidResolveOptions } from '../../run/android/resolveLaunchProps';
 
 const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
 
@@ -36,7 +37,8 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'platforms'>,
+  platformOptions: { appId?: string }
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
 
@@ -49,6 +51,8 @@ export async function startInterfaceAsync(
   };
 
   actions.printDevServerInfo(usageOptions);
+
+  const androidProps = await androidResolveOptions(devServerManager.projectRoot, platformOptions);
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -123,7 +127,11 @@ export async function startInterfaceAsync(
         );
       } else {
         try {
-          await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
+          await server.openPlatformAsync(settings.launchTarget,     {
+            applicationId: androidProps.packageName,
+            customAppId: androidProps.customAppId,
+            launchActivity: androidProps.launchActivity,
+          }, { shouldPrompt });
           printHelp();
         } catch (error: any) {
           if (!(error instanceof AbortCommandError)) {

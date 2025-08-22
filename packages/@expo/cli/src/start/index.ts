@@ -19,6 +19,7 @@ export const expoStart: Command = async (argv) => {
       '--port': Number,
       '--dev-client': Boolean,
       '--scheme': String,
+      '--app-id': String,
       '--android': Boolean,
       '--ios': Boolean,
       '--web': Boolean,

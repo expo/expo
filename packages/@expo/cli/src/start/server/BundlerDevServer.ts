@@ -418,6 +418,7 @@ export abstract class BundlerDevServer {
   /** Open the dev server in a runtime. */
   public async openPlatformAsync(
     launchTarget: keyof typeof PLATFORM_MANAGERS | 'desktop',
+    launchProps: Partial<BaseOpenInCustomProps> = {},
     resolver: BaseResolveDeviceProps<any> = {}
   ) {
     if (launchTarget === 'desktop') {
@@ -430,7 +431,7 @@ export abstract class BundlerDevServer {
 
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
     const manager = await this.getPlatformManagerAsync(launchTarget);
-    return manager.openAsync({ runtime }, resolver);
+    return manager.openAsync({ runtime, props: launchProps }, resolver);
   }
 
   /** Open the dev server in a runtime. */
