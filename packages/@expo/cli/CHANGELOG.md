@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Prevent `EXPO_USE_FAST_RESOLVER` from being force enabled for other experiments
+
 ## 0.26.2 — 2025-08-21
 
 ### 💡 Others
