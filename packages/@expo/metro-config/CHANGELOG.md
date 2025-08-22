@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Refactor Import Export Plugin for better live bindings support
+
 ## 0.21.4 — 2025-08-21
 
 ### 🐛 Bug fixes
