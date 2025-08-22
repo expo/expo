@@ -179,10 +179,7 @@ export default function AnimationModifierScreen() {
                     cornerRadius(16),
                     shadow({ radius: 8, x: 0, y: 4, color: '#3498DB40' }),
                     scaleEffect(animationState6 ? 1.3 : 1.0),
-                    animation(
-                      Animation.delay(Animation.easeInOut({ duration: 0.8 }), 1.0),
-                      animationState6
-                    ),
+                    animation(Animation.easeInOut({ duration: 0.8 }).delay(1.0), animationState6),
                     onTapGesture(() => setAnimationState6(!animationState6)),
                   ]}
                 />
@@ -199,7 +196,7 @@ export default function AnimationModifierScreen() {
                     shadow({ radius: 8, x: 0, y: 4, color: '#E67E2240' }),
                     rotationEffect(animationState7 ? 180 : 0),
                     animation(
-                      Animation.repeat(Animation.easeInOut({ duration: 0.6 }), {
+                      Animation.easeInOut({ duration: 0.6 }).repeat({
                         repeatCount: 3,
                         autoreverses: true,
                       }),

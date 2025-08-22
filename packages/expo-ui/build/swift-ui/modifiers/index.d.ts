@@ -2,7 +2,7 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
-import { animation } from './animation';
+import { animation } from './animation/index';
 import { createModifier, ModifierConfig } from './createModifier';
 /**
  * Sets the background of a view.
@@ -255,5 +255,5 @@ export declare const isModifier: (value: any) => value is ModifierConfig;
  * Filters an array to only include valid modifiers.
  */
 export declare const filterModifiers: (modifiers: unknown[]) => ModifierConfig[];
-export * from './animation';
+export * from './animation/index';
 //# sourceMappingURL=index.d.ts.map

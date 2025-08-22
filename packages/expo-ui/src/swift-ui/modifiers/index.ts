@@ -3,7 +3,7 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
-import { animation } from './animation';
+import { animation } from './animation/index';
 import { createModifier, ModifierConfig } from './createModifier';
 
 /**
@@ -372,4 +372,4 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
   return modifiers.filter(isModifier);
 };
 
-export * from './animation';
+export * from './animation/index';

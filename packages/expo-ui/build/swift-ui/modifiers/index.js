@@ -219,5 +219,5 @@ export const isModifier = (value) => {
 export const filterModifiers = (modifiers) => {
     return modifiers.filter(isModifier);
 };
-export * from './animation';
+export * from './animation/index';
 //# sourceMappingURL=index.js.map
