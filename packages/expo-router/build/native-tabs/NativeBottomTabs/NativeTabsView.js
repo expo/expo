@@ -121,7 +121,7 @@ function Screen(props) {
                 icon = { sfSymbolName: 'magnifyingglass' };
         }
     }
-    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={descriptor.options.icon?.drawable} icon={icon} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
+    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(descriptor.options.icon)} iconResource={getAndroidIconResource(descriptor.options.icon)} icon={icon} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
       {descriptor.render()}
     </react_native_screens_1.BottomTabsScreen>);
 }
@@ -134,6 +134,18 @@ function convertOptionsIconToPropsIcon(icon) {
     }
     else if ('src' in icon && icon.src) {
         return { templateSource: icon.src };
+    }
+    return undefined;
+}
+function getAndroidIconResource(icon) {
+    if (icon && 'src' in icon && icon.src) {
+        return icon.src;
+    }
+    return undefined;
+}
+function getAndroidIconResourceName(icon) {
+    if (icon && 'drawable' in icon && icon.drawable) {
+        return icon.drawable;
     }
     return undefined;
 }

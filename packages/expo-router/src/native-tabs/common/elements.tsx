@@ -38,15 +38,11 @@ export interface SourceIconCombination {
    * <Icon src={{ default: require('./path/to/icon.png'), selected: require('./path/to/icon-selected.png') }} />
    * ```
    *
+   * @platform Android
    * @platform iOS
    */
   src?: TypeOrRecord<ImageSourcePropType, 'default' | 'selected'>;
-  // TODO: Remove this when custom icons can be used on Android
-  /**
-   * The name of the drawable resource to use as an icon.
-   * @platform android
-   */
-  drawable?: string;
+  drawable?: never;
   sf?: never;
 }
 

@@ -204,7 +204,8 @@ function Screen(props: {
       tabBarItemBadgeTextColor={badgeTextColor}
       standardAppearance={standardAppearance}
       scrollEdgeAppearance={scrollEdgeAppearance}
-      iconResourceName={descriptor.options.icon?.drawable}
+      iconResourceName={getAndroidIconResourceName(descriptor.options.icon)}
+      iconResource={getAndroidIconResource(descriptor.options.icon)}
       icon={icon}
       selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
       title={title}
@@ -227,6 +228,24 @@ function convertOptionsIconToPropsIcon(
     return { sfSymbolName: icon.sf };
   } else if ('src' in icon && icon.src) {
     return { templateSource: icon.src };
+  }
+  return undefined;
+}
+
+function getAndroidIconResource(
+  icon: NativeTabOptions['icon']
+): BottomTabsScreenProps['iconResource'] {
+  if (icon && 'src' in icon && icon.src) {
+    return icon.src;
+  }
+  return undefined;
+}
+
+function getAndroidIconResourceName(
+  icon: NativeTabOptions['icon']
+): BottomTabsScreenProps['iconResourceName'] {
+  if (icon && 'drawable' in icon && icon.drawable) {
+    return icon.drawable;
   }
   return undefined;
 }

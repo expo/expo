@@ -16,18 +16,12 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    * @platform android
    * @platform iOS
    */
-  icon?: SfSymbolOrImageSource & {
-    /**
-     * The name of the drawable resource to use as an icon.
-     * @platform android
-     */
-    drawable?: string;
-  };
+  icon?: SymbolOrImageSource;
   /**
    * The icon to display when the tab is selected.
    * @platform iOS
    */
-  selectedIcon?: SfSymbolOrImageSource;
+  selectedIcon?: SymbolOrImageSource;
   /**
    * Title of the tab screen, displayed in the tab bar item.
    *
@@ -137,18 +131,22 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   indicatorColor?: ColorValue;
 }
 
-export type SfSymbolOrImageSource =
+export type SymbolOrImageSource =
   | {
       /**
        * The name of the SF Symbol to use as an icon.
        * @platform iOS
        */
       sf?: SFSymbol;
+      /**
+       * The name of the drawable resource to use as an icon.
+       * @platform android
+       */
+      drawable?: string;
     }
   | {
       /**
        * The image source to use as an icon.
-       * @platform iOS
        */
       src?: ImageSourcePropType;
     };
