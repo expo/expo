@@ -101,7 +101,7 @@
   "react-native-pager-view": "6.9.1",
   "react-native-worklets": "~0.4.1",
   "react-native-reanimated": "~4.0.2",
-  "react-native-screens": "~4.14.0",
+  "react-native-screens": "~4.15.0",
   "react-native-safe-area-context": "~5.6.0",
   "react-native-svg": "15.12.1",
   "react-native-view-shot": "4.0.3",
