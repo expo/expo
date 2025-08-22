@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Temporarily bring back dependency on `expo-file-system`. ([#38792](https://github.com/expo/expo/pull/38792) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 54.0.0-preview.6 — 2025-08-21
