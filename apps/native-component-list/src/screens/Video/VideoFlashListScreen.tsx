@@ -1,4 +1,4 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
+import Entypo from '@expo/vector-icons/Entypo';
 import { FlashList } from '@shopify/flash-list';
 import { VideoView, VideoSource, useVideoPlayer } from 'expo-video';
 import { useEffect, useState } from 'react';
@@ -62,16 +62,16 @@ function RenderItem({ item, index, viewSize, visibleIndex }: RenderItemProps) {
       />
       <View style={styles.overlayContainer}>
         <View style={styles.controlsContainer}>
-          <AntDesign
-            name={heart ? 'heart' : 'hearto'}
+          <Entypo
+            name={heart ? 'heart' : 'heart-outlined'}
             size={50}
             color="white"
             onPress={() => {
               setHeart(!heart);
             }}
           />
-          <AntDesign name="message1" size={50} color="white" />
-          <AntDesign name="cloudupload" size={50} color="white" />
+          <Entypo name="message" size={50} color="white" />
+          <Entypo name="upload-to-cloud" size={50} color="white" />
         </View>
       </View>
     </View>
