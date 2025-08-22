@@ -28,7 +28,7 @@ export const ReactNativeCompatibilityTable = () => {
           <HeaderCell>React Native Web version</HeaderCell>
           <HeaderCell>
             <div className="flex items-center gap-1.5">
-              <span>Node.js version</span>
+              <span>Minimum Node.js version</span>
               <Tooltip.Root
                 open={isTooltipOpen}
                 onOpenChange={setIsTooltipOpen}
@@ -49,9 +49,10 @@ export const ReactNativeCompatibilityTable = () => {
                   sideOffset={8}
                   collisionPadding={{ left: 16, right: 16 }}>
                   <FOOTNOTE>
-                    This is the recommended Node.js version, and it corresponds with the active LTS
-                    at the time of the SDK release. The Expo SDK is not strictly compatible only
-                    with this version, but you should use the specified version or higher.
+                    This is the minimum recommended Node.js version, and it corresponds with the
+                    active LTS at the time of the SDK release. The Expo SDK is not strictly
+                    compatible only with this version, but you should use the specified version or
+                    higher.
                   </FOOTNOTE>
                 </Tooltip.Content>
               </Tooltip.Root>
