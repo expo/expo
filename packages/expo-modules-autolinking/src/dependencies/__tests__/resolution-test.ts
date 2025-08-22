@@ -378,7 +378,7 @@ describe(scanDependenciesRecursively, () => {
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
           "source": 0,
-          "version": "",
+          "version": "0.0.1",
         },
       }
     `);
