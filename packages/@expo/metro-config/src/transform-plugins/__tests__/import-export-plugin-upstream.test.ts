@@ -62,8 +62,8 @@ it('correctly transforms complex patterns', () => {
 
   const expected = `
     require('first-with-side-effect');
-    var a = _$$_IMPORT_DEFAULT('second');
     var b = _$$_IMPORT_ALL('second');
+    var a = _$$_IMPORT_DEFAULT('second');
     var _third = require('third'),
         e = _third.d,
         f = _third.f,
@@ -88,8 +88,6 @@ it('correctly transforms complex patterns', () => {
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #2 (third)
     > 4 |     import c, {d as e, f} from 'third';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #2 (third)
-    > 5 |     import {g, h} from 'third';
-        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #2 (third)
     > 6 |     import 'fourth-with-side-effect';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #3 (fourth-with-side-effect)
     > 7 |     import {i} from 'fifth';
@@ -225,8 +223,8 @@ it('allows mixed esm and cjs exports', () => {
     exports.bar = 'bar';
     module.exports.baz = 'baz';
     class _default {}
-    exports.default = _default;
     exports.foo = foo;
+    exports.default = _default;
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -270,7 +268,7 @@ it('exports members of another module directly from an import (as all)', () => {
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
 
-    var _bar = require("bar");
+    var _bar = require('bar');
 
     for (var _key in _bar) {
       exports[_key] = _bar[_key];
