@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Added dependency on RNScreens in podspec to support dynamic linking through USE_FRAMEWORKS
+- [ios] Added dependency on RNScreens in podspec to support dynamic linking through USE_FRAMEWORKS ([#39074](https://github.com/expo/expo/pull/39074) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
