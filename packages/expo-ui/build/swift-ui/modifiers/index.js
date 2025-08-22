@@ -196,6 +196,8 @@ export const glassEffect = (params) => createModifier('glassEffect', params);
  * Associates an identity value to Liquid Glass effects defined within a `GlassEffectContainer`.
  */
 export const glassEffectId = (id, namespace) => createModifier('glassEffectId', { id, namespace });
+export const matchedGeometryEffect = (id, namespace) => createModifier('matchedGeometryEffect', { id, namespace });
+export const unmount = (unmount) => createModifier('unmount', { unmount });
 // =============================================================================
 // Utility Functions
 // =============================================================================

@@ -448,6 +448,31 @@ internal struct GlassEffectIdModifier: ViewModifier {
   }
 }
 
+internal struct MatchedGeometryEffectModifier: ViewModifier {
+  let id: String?
+  let namespace: String?
+  @Environment(\.namespaceProvider) private var namespaceProvider
+
+  func body(content: Content) -> some View {
+    if let provideNamespace = namespaceProvider, let namespace = namespace {
+      let namespaceId = provideNamespace(namespace)
+      content.matchedGeometryEffect(id: id, in: namespaceId)
+    } else {
+      content
+    }
+  }
+}
+
+internal struct UnmountModifier: ViewModifier {
+  let unmount: Bool
+
+  func body(content: Content) -> some View {
+    if !unmount {
+      content
+    }
+  }
+}
+
 internal struct AnimationModifier: ViewModifier {
   let animationConfig: [String: Any]
   let animatedValue: AnyHashable?
@@ -853,10 +878,21 @@ extension ViewModifierRegistry {
       return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
     }
 
+    register("unmount") { params, _ in
+      let unmount = params["unmount"] as? Bool ?? false
+      return UnmountModifier(unmount: unmount)
+    }
+
     register("glassEffectId") { params, _ in
       let id = params["id"] as? String
       let namespace = params["namespace"] as? String
       return GlassEffectIdModifier(id: id, namespace: namespace)
+    }
+
+    register("matchedGeometryEffect") { params, _ in
+      let id = params["id"] as? String
+      let namespace = params["namespace"] as? String
+      return MatchedGeometryEffectModifier(id: id, namespace: namespace)
     }
   }
 }

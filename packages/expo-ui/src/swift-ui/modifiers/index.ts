@@ -295,6 +295,11 @@ export const glassEffect = (params?: {
 export const glassEffectId = (id: string, namespace: string) =>
   createModifier('glassEffectId', { id, namespace });
 
+export const matchedGeometryEffect = (id: string, namespace: string) =>
+  createModifier('matchedGeometryEffect', { id, namespace });
+
+export const unmount = (unmount: boolean) => createModifier('unmount', { unmount });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -340,7 +345,9 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
-  | ReturnType<typeof animation>;
+  | ReturnType<typeof matchedGeometryEffect>
+  | ReturnType<typeof animation>
+  | ReturnType<typeof unmount>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

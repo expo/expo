@@ -4,7 +4,7 @@ type TapEvent = ViewEvent<'onTap', object> & {
     useTapGesture?: boolean;
 };
 interface StackBaseProps extends CommonViewModifierProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     spacing?: number;
     backgroundColor?: string;
     /**
