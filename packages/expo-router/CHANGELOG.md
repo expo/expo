@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [ios] Added dependency on RNScreens in podspec to support dynamic linking through USE_FRAMEWORKS ([#39074](https://github.com/expo/expo/pull/39074) by [@chrfalch](https://github.com/chrfalch))
+- [web] fix incorrect `unstable_useServerMiddleware` warning ([#39093](https://github.com/expo/expo/pull/39093) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
