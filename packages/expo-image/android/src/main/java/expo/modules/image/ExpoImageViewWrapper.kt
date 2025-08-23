@@ -416,11 +416,15 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
-    rerenderIfNeeded(
-      shouldRerenderBecauseOfResize = allowDownscaling &&
-        contentFit != ContentFit.Fill &&
-        contentFit != ContentFit.None
-    )
+    
+    val shouldRerenderBecauseOfResize = allowDownscaling &&
+      contentFit != ContentFit.Fill &&
+      contentFit != ContentFit.None
+    
+    // Post to main handler to ensure we're not in a Glide callback context
+    mainHandler.post {
+      rerenderIfNeeded(shouldRerenderBecauseOfResize = shouldRerenderBecauseOfResize)
+    }
   }
 
   private fun createPropOptions(): RequestOptions {
@@ -455,8 +459,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       firstView.recycleView()
       secondView.recycleView()
 
-      requestManager.clear(firstTarget)
-      requestManager.clear(secondTarget)
+      mainHandler.post {
+        requestManager.clear(firstTarget)
+        requestManager.clear(secondTarget)
+      }
 
       shouldRerender = false
       loadedSource = null
@@ -490,11 +496,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         secondView
       }
 
-      activeView
-        .recycleView()
-        ?.apply {
-          clear(requestManager)
+      val target = activeView.recycleView()
+      if (target != null) {
+        mainHandler.post {
+          target.clear(requestManager)
         }
+      }
     }
   }
 
