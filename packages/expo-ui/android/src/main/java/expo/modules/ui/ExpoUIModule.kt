@@ -97,6 +97,13 @@ class ExpoUIModule : Module() {
       )
     }
 
+    View(ChipView::class) {
+      Events(
+        "onPress",
+        "onDismiss"
+      )
+    }
+
     Function("padding") { all: Int ->
       return@Function ExpoModifier(Modifier.padding(Dp(all.toFloat())))
     }
@@ -152,7 +159,5 @@ class ExpoUIModule : Module() {
     Function("zIndex") { index: Float ->
       return@Function ExpoModifier(Modifier.zIndex(index))
     }
-
-    // TODO: Consider implementing semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding
   }
 }
