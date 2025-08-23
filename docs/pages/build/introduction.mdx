@@ -1,3 +1,200 @@
+# Install Expo CLI if you haven’t already
+npm install -g expo-cli
+
+# Create a new blank project
+expo init QuestForTheCrown
+cd QuestForTheCrown
+
+# Add some handy libraries
+expo install react-native-svg @react-native-community/hooks
+
+export type TileType = 'empty' | 'crown' | 'trap' | 'item';
+
+export interface Tile {
+  id: string;          // unique key
+  row: number;
+  col: number;
+  type: TileType;
+}
+
+export interface Player {
+  id: string;
+  name: string;
+  color: string;
+  row: number;
+  col: number;
+  gold: number;
+  items: string[];    // simple names, could be expanded
+}
+
+
+import { Tile } from '../types';
+import uuid from 'react-native-uuid';
+
+export function generateBoard(size = 5): Tile[] {
+  const tiles: Tile[] = [];
+
+  // create grid
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      tiles.push({
+        id: uuid.v4() as string,
+        row: r,
+        col: c,
+        type: 'empty',
+      });
+    }
+  }
+
+  // pick a random tile to be the crown
+  const crownIdx = Math.floor(Math.random() * tiles.length);
+  tiles[crownIdx].type = 'crown';
+
+  // add some traps and items (optional)
+  for (let i = 0; i < size; i++) {
+    const trapIdx = Math.floor(Math.random() * tiles.length);
+    if (tiles[trapIdx].type === 'empty') tiles[trapIdx].type = 'trap';
+  }
+
+  return tiles;
+}
+
+
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+
+export const Dice: React.FC<{ onRoll: (value: number) => void }> = ({ onRoll }) => {
+  const roll = () => Math.floor(Math.random() * 6) + 1;
+
+  return (
+    <TouchableOpacity style={styles.button} onPress={() => onRoll(roll())}>
+      <Text style={styles.text}>ROLL DICE</Text>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  button: { padding: 12, backgroundColor: '#4a90e2', borderRadius: 8 },
+  text: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+});
+
+
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Tile as TileType } from '../types';
+
+export const Tile: React.FC<{ tile: TileType; player?: boolean }> = ({ tile, player }) => {
+  let bgColor = '#eee';
+  if (tile.type === 'crown') bgColor = '#ffd700';
+  else if (tile.type === 'trap') bgColor = '#ff6666';
+  else if (tile.type === 'item') bgColor = '#66cc66';
+
+  return (
+    <View style={[styles.tile, { backgroundColor: bgColor }]}>
+      {player && <Text style={styles.player}>✦</Text>}
+      {tile.type === 'crown' && <Text style={styles.crown}>👑</Text>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  tile: {
+    width: 60,
+    height: 60,
+    borderWidth: 1,
+    borderColor: '#999',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  player: { fontSize: 20, color: '#000' },
+  crown: { fontSize: 18 },
+});
+
+
+
+import React, { useState } from 'react';
+import { SafeAreaView, View, Text, StyleSheet, FlatList } from 'react-native';
+import { generateBoard } from './src/utils/board';
+import { Tile as TileType } from './src/types';
+import { Dice } from './src/components/Dice';
+import { Tile } from './src/components/Tile';
+
+const BOARD_SIZE = 5;
+
+export default function App() {
+  const [tiles, setTiles] = useState<TileType[]>(generateBoard(BOARD_SIZE));
+
+  // single player for demo; extend to multiple players as needed
+  const [playerPos, setPlayerPos] = useState({ row: 0, col: 0 });
+  const [gold, setGold] = useState(10);
+  const [diceValue, setDiceValue] = useState<number | null>(null);
+
+  // find the tile at a given coordinate
+  const getTileAt = (row: number, col: number) =>
+    tiles.find((t) => t.row === row && t.col === col);
+
+  const rollDice = () => {
+    const value = Math.floor(Math.random() * 6) + 1;
+    setDiceValue(value);
+    movePlayer(value);
+  };
+
+  const movePlayer = (steps: number) => {
+    // simple linear movement: move right, then down when at edge
+    let { row, col } = playerPos;
+    for (let i = 0; i < steps; i++) {
+      if (col + 1 < BOARD_SIZE) col += 1;
+      else if (row + 1 < BOARD_SIZE) { col = 0; row += 1; }
+      // otherwise stay in place
+    }
+    setPlayerPos({ row, col });
+
+    const landedTile = getTileAt(row, col);
+    if (!landedTile) return;
+
+    if (landedTile.type === 'trap') {
+      alert('You triggered a trap! Lose 2 Gold.');
+      setGold((g) => Math.max(g - 2, 0));
+    } else if (landedTile.type === 'crown') {
+      alert(`🎉 You found the crown and win with ${gold} gold left!`);
+    }
+  };
+
+  const renderItem = ({ item }: { item: TileType }) => (
+    <Tile
+      tile={item}
+      player={
+        item.row === playerPos.row && item.col === playerPos.col
+      }
+    />
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Quest for the Crown</Text>
+      <FlatList
+        data={tiles}
+        renderItem={renderItem}
+        keyExtractor={(t) => t.id}
+        numColumns={BOARD_SIZE}
+        scrollEnabled={false}
+      />
+      <View style={styles.info}>
+        <Text>Gold: {gold}</Text>
+        {diceValue !== null && <Text>Last Roll: {diceValue}</Text>}
+      </View>
+      <Dice onRoll={rollDice} />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: 'center', paddingTop: 20 },
+  title: { fontSize: 24, marginBottom: 10 },
+  info: { marginVertical: 10 },
+});
+
+
 ---
 title: EAS Build
 sidebar_title: Introduction
