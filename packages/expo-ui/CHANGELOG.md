@@ -31,6 +31,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [Android] Add compose modifier support. ([#38630](https://github.com/expo/expo/pull/38630) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Add Chip component for Android. ([#39094](https://github.com/expo/expo/pull/39094) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ## 0.2.0-alpha.0 — 2025-08-13
 
