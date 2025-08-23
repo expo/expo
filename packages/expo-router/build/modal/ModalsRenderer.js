@@ -8,7 +8,7 @@ const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const ModalComponent_1 = require("./ModalComponent");
 const utils_1 = require("./utils");
-const ModalsRenderer = ({ children, modalConfigs, onDismissed, onShow, }) => {
+const ModalsRenderer = ({ children, modalConfigs, onDismissed, onShow, onDetentChange, }) => {
     const rootId = (0, react_1.useRef)((0, non_secure_1.nanoid)());
     return (<react_native_screens_1.ScreenStack style={styles.stackContainer}>
       <react_native_screens_1.ScreenStackItem screenId={rootId.current} activityState={2} style={react_native_1.StyleSheet.absoluteFill} headerConfig={{
@@ -33,6 +33,11 @@ const ModalsRenderer = ({ children, modalConfigs, onDismissed, onShow, }) => {
                 onDismissed?.(config.uniqueId);
             }} onAppear={() => {
                 onShow?.(config.uniqueId);
+            }} onSheetDetentChanged={(event) => {
+                onDetentChange?.(config.uniqueId, {
+                    index: event.nativeEvent.index,
+                    stable: event.nativeEvent.isStable,
+                });
             }}>
           <ModalComponent_1.ModalComponent modalConfig={config}/>
         </react_native_screens_1.ScreenStackItem>))}
