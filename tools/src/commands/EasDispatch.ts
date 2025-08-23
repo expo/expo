@@ -479,7 +479,13 @@ async function androidApkUploadAsync() {
       const githubArtifactUrl = res.data.browser_download_url;
       spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
 
-      await updateReleaseTitle(repoOwner, repoName, release.data.id, appVersion);
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
 
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.androidClientUrl = githubArtifactUrl;
@@ -554,7 +560,13 @@ async function iosSimulatorUploadAsync() {
       const githubArtifactUrl = res.data.browser_download_url;
       spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
 
-      await updateReleaseTitle(repoOwner, repoName, release.data.id, appVersion);
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
 
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.iosClientUrl = githubArtifactUrl;

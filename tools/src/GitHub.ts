@@ -398,7 +398,8 @@ export async function updateReleaseTitle(
   repoOwner: string,
   repoName: string,
   releaseId: number,
-  appVersion: string
+  appVersion: string,
+  assetNameWithoutExtension: string
 ) {
   const releaseAssets = await octokit.rest.repos.listReleaseAssets({
     owner: repoOwner,
@@ -406,16 +407,22 @@ export async function updateReleaseTitle(
     release_id: releaseId,
   });
 
-  const hasApk = releaseAssets.data.some((asset) => asset.name.endsWith('.apk'));
-  const hasTarGz = releaseAssets.data.some((asset) => asset.name.endsWith('.tar.gz'));
+  const hasAndroidBuild = releaseAssets.data.some(
+    (asset) => asset.name === `${assetNameWithoutExtension}.apk`
+  );
+  const hasiOSBuild = releaseAssets.data.some(
+    (asset) => asset.name === `${assetNameWithoutExtension}.tar.gz`
+  );
 
   let newTitle = `Expo Go ${appVersion}`;
-  if (hasApk && hasTarGz) {
+  if (hasAndroidBuild && hasiOSBuild) {
     newTitle = `Expo Go ${appVersion} Android and iOS`;
-  } else if (hasApk) {
+  } else if (hasAndroidBuild) {
     newTitle = `Expo Go ${appVersion} Android`;
-  } else if (hasTarGz) {
+  } else if (hasiOSBuild) {
     newTitle = `Expo Go ${appVersion} iOS`;
+  } else {
+    throw new Error('No build found while updating release title');
   }
 
   await octokit.rest.repos.updateRelease({
