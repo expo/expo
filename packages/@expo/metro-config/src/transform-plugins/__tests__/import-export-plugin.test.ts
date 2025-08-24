@@ -43,8 +43,8 @@ it('correctly transforms "export * as" combined with other ESM imports and expor
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
 
-    var React = _$$_IMPORT_DEFAULT('react');
     var Component = require('react').Component;
+    var React = _$$_IMPORT_DEFAULT('react');
     var _Icons = _$$_IMPORT_ALL('icons');
     var _default = _$$_IMPORT_DEFAULT('button');
     const MyComponent = () => React.createElement('div');
@@ -57,10 +57,10 @@ it('correctly transforms "export * as" combined with other ESM imports and expor
 
   expect(showTransformedDeps(code, [importExportPlugin])).toMatchInlineSnapshot(`
     "
-    > 2 |     import React from 'react';
-        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (react)
     > 3 |     import { Component } from 'react';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (react)
+    > 2 |     import React from 'react';
+        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (react)
     > 4 |     export * as Icons from 'icons';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #1 (icons)
     > 5 |     export { default as Button } from 'button';
@@ -134,8 +134,6 @@ it('exports members of another module directly from an import (as bax) with live
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-
-    var _bar = require('bar');
     Object.defineProperty(exports, "bax", {
       enumerable: true,
       get: function () {
@@ -148,6 +146,7 @@ it('exports members of another module directly from an import (as bax) with live
         return _bar.baz;
       }
     });
+    var _bar = require('bar');
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -169,14 +168,13 @@ it('imports members from another module and export them in separate statement wi
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-
-    var _bar = require('bar');
     Object.defineProperty(exports, "foo", {
       enumerable: true,
       get: function () {
         return _bar.foo;
       }
     });
+    var _bar = require('bar');
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -198,24 +196,28 @@ it('imports multiple members from another module and export them in separate sta
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-
-    var _bar = require('bar');
-    var bar = _$$_IMPORT_DEFAULT('bar');
-
-    exports.bar = bar;
+    Object.defineProperty(exports, "bar", {
+      enumerable: true,
+      get: function () {
+        return function (m) {
+          return m && m.__esModule ? m.default : m;
+        }(_bar);
+      }
+    });
     Object.defineProperty(exports, "foo", {
       enumerable: true,
       get: function () {
         return _bar.foo;
       }
     });
-
     Object.defineProperty(exports, "baz", {
       enumerable: true,
       get: function () {
         return _bar.baz;
       }
     });
+    var _bar = require('bar');
+    var bar = _$$_IMPORT_DEFAULT('bar');
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -302,7 +304,7 @@ it('transforms export all as live bindings (no named exports)', () => {
       value: true
     });
     var _exportedNames = {};
-    var _foo = require("foo");
+    var _foo = require('foo');
     Object.keys(_foo).forEach(function (_key) {
       if (_key === "default" || _key === "__esModule") return;
       if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
@@ -330,6 +332,7 @@ it('places export all with live bindings above export default and named', () => 
   const code = `
     export * from 'foo';
     export { baz } from 'bar';
+    const bax = 'bax';
     export default bax;
   `;
 
@@ -337,12 +340,16 @@ it('places export all with live bindings above export default and named', () => 
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var _bar = require('bar');
-    var _default = bax;
     var _exportedNames = {
       "baz": true
     };
-    var _foo = require("foo");
+    Object.defineProperty(exports, "baz", {
+      enumerable: true,
+      get: function () {
+        return _bar.baz;
+      }
+    });
+    var _foo = require('foo');
     Object.keys(_foo).forEach(function (_key) {
       if (_key === "default" || _key === "__esModule") return;
       if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
@@ -354,13 +361,10 @@ it('places export all with live bindings above export default and named', () => 
         }
       });
     });
+    var _bar = require('bar');
+    const bax = 'bax';
+    var _default = bax;
     exports.default = _default;
-    Object.defineProperty(exports, "baz", {
-      enumerable: true,
-      get: function () {
-        return _bar.baz;
-      }
-    });
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -370,6 +374,7 @@ it('places export all above export default and named', () => {
   const code = `
     export * from 'foo';
     export { baz } from 'bar';
+    const bax = 'bax';
     export default bax;
   `;
 
@@ -378,13 +383,14 @@ it('places export all above export default and named', () => {
       value: true
     });
     var _baz = require('bar').baz;
+    const bax = 'bax';
     var _default = bax;
-    var _foo = require("foo");
+    var _foo = require('foo');
     for (var _key in _foo) {
       exports[_key] = _foo[_key];
     }
-    exports.default = _default;
     exports.baz = _baz;
+    exports.default = _default;
   `;
 
   compare([importExportPlugin], code, expected, { ...opts });
@@ -463,13 +469,13 @@ it('transforms export as default as live binding', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var _bar = require('bar');
     Object.defineProperty(exports, "default", {
       enumerable: true,
       get: function () {
         return _bar.foo;
       }
     });
+    var _bar = require('bar');
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -484,7 +490,6 @@ it('transforms export as default as live binding with shared module', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var _bar = require('bar');
     Object.defineProperty(exports, "default", {
       enumerable: true,
       get: function () {
@@ -497,6 +502,7 @@ it('transforms export as default as live binding with shared module', () => {
         return _bar.baz;
       }
     });
+    var _bar = require('bar');
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -511,8 +517,52 @@ it('transforms export default as local with live binding', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var _bar = _$$_IMPORT_DEFAULT('bar');
-    exports.foo = _bar;
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return function (m) {
+          return m && m.__esModule ? m.default : m;
+        }(_bar);
+      }
+    });
+    var _bar = require('bar');
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+});
+
+it('transforms export default as local then >1 locals with live binding', () => {
+  // NOTE: A bug here reproduces if there's more than one additional named export after a `default as`
+  // The `default as` may be preceded by more exports that won't matter for reproduction
+  const code = `
+    export { default as b, c, d } from 'bar';
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+    Object.defineProperty(exports, "b", {
+      enumerable: true,
+      get: function () {
+        return function (m) {
+          return m && m.__esModule ? m.default : m;
+        }(_bar);
+      }
+    });
+    Object.defineProperty(exports, "c", {
+      enumerable: true,
+      get: function () {
+        return _bar.c;
+      }
+    });
+    Object.defineProperty(exports, "d", {
+      enumerable: true,
+      get: function () {
+        return _bar.d;
+      }
+    });
+    var _bar = require('bar');
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
@@ -530,6 +580,23 @@ it('transforms import default as local with live binding', () => {
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
 });
 
+it('transforms import default as local then >1 locals with live binding', () => {
+  const code = `
+    import { default as b, c, d } from 'bar';
+
+    test(b, c, d);
+  `;
+
+  const expected = `
+    var _bar = require('bar');
+    var b = _$$_IMPORT_DEFAULT('bar');
+
+    test(b, _bar.c, _bar.d)
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+});
+
 it('transforms import default and named as local with live binding', () => {
   const code = `
     import foo, { baz as bax } from 'bar';
@@ -537,8 +604,8 @@ it('transforms import default and named as local with live binding', () => {
   `;
 
   const expected = `
-    var foo = _$$_IMPORT_DEFAULT('bar');
     var _bar = require('bar');
+    var foo = _$$_IMPORT_DEFAULT('bar');
     console.log(foo, _bar.baz);
   `;
 

@@ -2,20 +2,8 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
-/**
- * Base interface for all view modifiers.
- * All modifiers must have a type field and can include arbitrary parameters.
- */
-export interface ModifierConfig {
-    $type: string;
-    [key: string]: any;
-    eventListener?: (args: any) => void;
-}
-/**
- * Factory function to create modifier configuration objects.
- * This is used internally by all modifier functions.
- */
-declare function createModifier(type: string, params?: Record<string, any>): ModifierConfig;
+import { animation } from './animation/index';
+import { createModifier, ModifierConfig } from './createModifier';
 /**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
@@ -241,7 +229,7 @@ export declare const glassEffect: (params?: {
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  */
-export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect>;
+export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof animation>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.
@@ -267,4 +255,5 @@ export declare const isModifier: (value: any) => value is ModifierConfig;
  * Filters an array to only include valid modifiers.
  */
 export declare const filterModifiers: (modifiers: unknown[]) => ModifierConfig[];
+export * from './animation/index';
 //# sourceMappingURL=index.d.ts.map

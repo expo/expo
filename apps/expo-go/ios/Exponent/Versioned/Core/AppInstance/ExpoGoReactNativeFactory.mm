@@ -1,6 +1,5 @@
 
 #import "ExpoGoReactNativeFactory.h"
-#import "EXGoReactNativeFeatureFlags.h"
 #import <RCTAppSetupUtils.h>
 #import <React/CoreModulesPlugins.h>
 
@@ -33,13 +32,6 @@
   if ([self.delegate respondsToSelector:@selector(loadBundleAtURL:onProgress:onComplete:)]) {
     [self.delegate loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
   }
-}
-
--(void)_setUpFeatureFlags {
-  static dispatch_once_t setupFeatureFlagsToken;
-  dispatch_once(&setupFeatureFlagsToken, ^{
-    [EXGoReactNativeFeatureFlags setup];
-  });
 }
 
 @end

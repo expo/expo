@@ -392,10 +392,9 @@ it(`recursively expands export all statements with nested statements`, async () 
           }
         });
       });
-      var _exportedNames2 = {};
       Object.keys(_$$_REQUIRE(_dependencyMap[1])).forEach(function (_key2) {
         if (_key2 === "default" || _key2 === "__esModule") return;
-        if (Object.prototype.hasOwnProperty.call(_exportedNames2, _key2)) return;
+        if (Object.prototype.hasOwnProperty.call(_exportedNames, _key2)) return;
         if (_key2 in exports && exports[_key2] === _$$_REQUIRE(_dependencyMap[1])[_key2]) return;
         Object.defineProperty(exports, _key2, {
           enumerable: true,
@@ -411,7 +410,6 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      const z1 = 0;
       var _exportedNames = {
         "z1": true
       };
@@ -426,6 +424,7 @@ it(`recursively expands export all statements with nested statements`, async () 
           }
         });
       });
+      const z1 = 0;
       exports.z1 = z1;
     },"/app/x1.js",["/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {

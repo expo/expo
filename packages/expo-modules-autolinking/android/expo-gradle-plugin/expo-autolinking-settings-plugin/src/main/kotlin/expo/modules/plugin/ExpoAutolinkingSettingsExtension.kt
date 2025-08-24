@@ -14,7 +14,7 @@ open class ExpoAutolinkingSettingsExtension(
   /**
    * Command that should be provided to `react-native` to resolve the configuration.
    */
-  val rnConfigCommand = AutolinkigCommandBuilder()
+  val rnConfigCommand = AutolinkingCommandBuilder()
     .command("react-native-config")
     .useJson()
     .build()

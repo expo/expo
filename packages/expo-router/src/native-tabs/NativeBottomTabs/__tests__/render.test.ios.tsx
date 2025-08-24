@@ -1,13 +1,21 @@
 import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
-import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
+import {
+  BottomTabsScreen as _BottomTabsScreen,
+  BottomTabs as _BottomTabs,
+} from 'react-native-screens';
 
 import { usePathname } from '../../../hooks';
 import { Redirect } from '../../../link/Redirect';
 import { renderRouter } from '../../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
+import {
+  SUPPORTED_BLUR_EFFECTS,
+  SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
+  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
+} from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -27,6 +35,7 @@ jest.mock('../NativeTabsView', () => {
 });
 
 const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
+const BottomTabs = _BottomTabs as jest.MockedFunction<typeof _BottomTabs>;
 
 const warn = jest.fn();
 const error = jest.fn();
@@ -344,4 +353,123 @@ it('when nesting NativeTabs, it throws an Error', () => {
   ).toThrow(
     'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
   );
+});
+
+describe('Native props validation', () => {
+  let warn;
+  beforeEach(() => {
+    warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  it.each(SUPPORTED_BLUR_EFFECTS)('supports %s blur effect', (blurEffect) => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs blurEffect={blurEffect}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0].standardAppearance.tabBarBlurEffect).toBe(blurEffect);
+    expect(BottomTabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarBlurEffect).toBe('none');
+  });
+  it.each(['test', 'wrongValue', ...SUPPORTED_BLUR_EFFECTS.map((x) => x.toUpperCase())])(
+    'warns when unsupported %s blur effect is used',
+    (blurEffect) => {
+      renderRouter({
+        _layout: () => (
+          // @ts-expect-error
+          <NativeTabs blurEffect={blurEffect}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
+        `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
+      );
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+      expect(BottomTabsScreen.mock.calls[0][0].standardAppearance.tabBarBlurEffect).toBe(undefined);
+      expect(BottomTabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarBlurEffect).toBe('none');
+    }
+  );
+  it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
+    'supports %s label visibility mode',
+    (labelVisibilityMode) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs labelVisibilityMode={labelVisibilityMode}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabs).toHaveBeenCalledTimes(1);
+      expect(BottomTabs.mock.calls[0][0].tabBarItemLabelVisibilityMode).toBe(labelVisibilityMode);
+    }
+  );
+  it.each([
+    'test',
+    'wrongValue',
+    ...SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((x) => x.toUpperCase()),
+  ])('warns when unsupported %s label visibility mode is used', (labelVisibilityMode) => {
+    renderRouter({
+      _layout: () => (
+        // @ts-expect-error
+        <NativeTabs labelVisibilityMode={labelVisibilityMode}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(
+      `Unsupported labelVisibilityMode: ${labelVisibilityMode}. Supported values are: ${SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((effect) => `"${effect}"`).join(', ')}`
+    );
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].tabBarItemLabelVisibilityMode).toBe(undefined);
+  });
+  it.each(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS)(
+    'supports %s minimize behavior',
+    (minimizeBehavior) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs minimizeBehavior={minimizeBehavior}>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabs).toHaveBeenCalledTimes(1);
+      expect(BottomTabs.mock.calls[0][0].tabBarMinimizeBehavior).toBe(minimizeBehavior);
+    }
+  );
+  it.each([
+    'test',
+    'wrongValue',
+    ...SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((x) => x.toUpperCase()),
+  ])('warns when unsupported %s minimize behavior is used', (minimizeBehavior) => {
+    renderRouter({
+      _layout: () => (
+        // @ts-expect-error
+        <NativeTabs minimizeBehavior={minimizeBehavior}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(
+      `Unsupported minimizeBehavior: ${minimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((effect) => `"${effect}"`).join(', ')}`
+    );
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].tabBarMinimizeBehavior).toBe(undefined);
+  });
 });

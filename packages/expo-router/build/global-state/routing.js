@@ -327,6 +327,11 @@ lookThroughAllTabs = false) {
                 // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
                 actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
         if (didActionAndCurrentStateDiverge) {
+            // If we are looking through all tabs, we need to add new tab id if this is the last route
+            // Otherwise we wouldn't be able to change the tab
+            if (navigationState.type === 'tab' && lookThroughAllTabs) {
+                navigationRoutes.push(stateRoute);
+            }
             break;
         }
         navigationRoutes.push(stateRoute);

@@ -465,14 +465,15 @@ export type ContactQuery = {
 
 /**
  * Denotes the functionality of a native contact form.
+ * @platform ios
  */
 export type FormOptions = {
   /**
-   * The properties that will be displayed. On iOS those properties does nothing while in editing mode.
+   * The properties that will be displayed when viewing a contact.
    */
   displayedPropertyKeys?: FieldType[];
   /**
-   * Controller title.
+   * The message displayed under the name of the contact. Only applies when editing an existing contact.
    */
   message?: string;
   /**
@@ -496,7 +497,7 @@ export type FormOptions = {
    */
   isNew?: boolean;
   /**
-   * The name of the left bar button.
+   * The name of the left bar button. Only applies when editing an existing contact.
    */
   cancelButtonTitle?: string;
   /**

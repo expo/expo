@@ -6,14 +6,10 @@ import { File, Directory, Paths } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
-import * as TestUtils from '../TestUtils';
-import { isDeviceFarm } from '../utils/Environment';
-
 export const name = 'FileSystem';
+const shouldSkipTestsRequiringPermissions = true;
 
 export async function test({ describe, expect, it, ...t }) {
-  const shouldSkipTestsRequiringPermissions =
-    (await TestUtils.shouldSkipTestsRequiringPermissionsAsync()) || isDeviceFarm();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';

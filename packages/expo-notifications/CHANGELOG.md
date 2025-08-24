@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.32.4 — 2025-08-21
+
+### 🛠 Breaking changes
+
+- [android] make data-only notifications consistent with iOS ([#39025](https://github.com/expo/expo/pull/39025) by [@vonovak](https://github.com/vonovak))
+
+## 0.32.3 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- [ios] fix `setBadgeCountAsync(0)` also cleared notifications ([#39009](https://github.com/expo/expo/pull/39009) by [@vonovak](https://github.com/vonovak))
+
 ## 0.32.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

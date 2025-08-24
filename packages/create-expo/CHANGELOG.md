@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.5.3 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Modify `_eas`, `_vscode`, `_github`, and `_cursor` parent folders to avoid creating an empty directory. ([#39002](https://github.com/expo/expo/pull/39002) by [@byCedric](https://github.com/byCedric))
+
 ## 3.5.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

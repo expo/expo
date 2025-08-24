@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Pass errors, synthetic and owners stacks to Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.1.0 — 2025-08-19
+
+### 🎉 New features
+
+- Pass errors, synthetic and owners stacks to Metro Dev Server terminal ([#38871](https://github.com/expo/expo/pull/38871) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 6.0.2 — 2025-08-16
 

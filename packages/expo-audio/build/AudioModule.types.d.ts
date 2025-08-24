@@ -188,7 +188,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * Returns the currently-selected recording input. This method can only be called if the `Recording` has been prepared.
      * @return A `Promise` that is fulfilled with a `RecordingInput` object.
      */
-    getCurrentInput(): RecordingInput;
+    getCurrentInput(): Promise<RecordingInput>;
     /**
      * Sets the current recording input.
      * @param inputUid The uid of a `RecordingInput`.
