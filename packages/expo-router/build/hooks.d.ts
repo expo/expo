@@ -1,6 +1,6 @@
 import { useRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
+import { LoaderFunction, Route, RouteParams, RouteSegments, UnknownOutputParams } from './types';
 export { useRouteInfo };
 /**
  * Returns the data loaded by the route's loader function. This hook only works

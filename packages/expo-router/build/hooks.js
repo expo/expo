@@ -46,44 +46,64 @@ const loaderPromiseCache = new Map();
  * ```
  */
 function useLoaderData(loader) {
-    const pathname = usePathname();
-    const segments = useSegments();
+    const contextKey = (0, Route_1.useContextKey)();
+    const localParams = useLocalSearchParams();
     const loaderDataContext = react_1.default.use(context_1.LoaderContext);
+    // Compute route-specific path for caching. This replaces dynamic segments with actual values
+    // e.g., "/posts/[id]" with params {id: "123"} becomes "/posts/123"
+    const routeSpecificPath = react_1.default.useMemo(() => {
+        // Replace dynamic segments [param] and [...param] with actual values
+        let resolvedPath = contextKey.startsWith('/') ? contextKey : `/${contextKey}`;
+        Object.entries(localParams).forEach(([key, value]) => {
+            // Handle catch-all routes [...param]
+            if (resolvedPath.includes(`[...${key}]`)) {
+                const replacement = Array.isArray(value) ? value.join('/') : String(value || '');
+                resolvedPath = resolvedPath.replace(`[...${key}]`, replacement);
+            }
+            // Handle dynamic segments [param]
+            else if (resolvedPath.includes(`[${key}]`)) {
+                resolvedPath = resolvedPath.replace(`[${key}]`, String(value || ''));
+            }
+        });
+        // Clean up path (remove /index, trailing slashes)
+        return (resolvedPath
+            .replace(/\/index$/, '/')
+            .replace(/\/+/g, '/')
+            .replace(/\/$/, '') || '/');
+    }, [contextKey, localParams]);
     // This is used by the server at build time
-    if (loaderDataContext && pathname in loaderDataContext) {
-        return loaderDataContext[pathname];
+    if (loaderDataContext && routeSpecificPath in loaderDataContext) {
+        return loaderDataContext[routeSpecificPath];
     }
-    if (globalThis.__EXPO_ROUTER_LOADER_DATA__ === undefined) {
-        throw new Error('Server data loaders are not enabled. Add `unstable_useServerDataLoaders: true` to your `expo-router` plugin config.');
+    // Check for preloaded data using route-specific path (if available)
+    if (globalThis.__EXPO_ROUTER_LOADER_DATA__) {
+        const preloadedData = globalThis.__EXPO_ROUTER_LOADER_DATA__[routeSpecificPath];
+        if (preloadedData !== undefined) {
+            return preloadedData;
+        }
     }
-    // This is used when first loading a page in the browser as the preloaded data should be
-    // available as a `<script>` tag in the HTML
-    const preloadedData = globalThis.__EXPO_ROUTER_LOADER_DATA__[pathname];
-    if (preloadedData !== undefined) {
-        return preloadedData;
+    // Check cache for route-specific data
+    if (loaderDataCache.has(routeSpecificPath)) {
+        return loaderDataCache.get(routeSpecificPath);
     }
-    // If client-side navigation has already triggered a load for this route, we can re-use the data
-    if (loaderDataCache.has(pathname)) {
-        return loaderDataCache.get(pathname);
-    }
-    // Check if a fetch is already in-progress for this route. This is to prevent duplicate network
-    // requests when multiple requests for the same route data are received, but before the first
-    // fetch has completed
-    if (!loaderPromiseCache.has(pathname)) {
-        const promise = (0, utils_1.fetchLoaderModule)(pathname, segments)
+    // Fetch data if not cached
+    if (!loaderPromiseCache.has(routeSpecificPath)) {
+        const promise = (0, utils_1.fetchLoaderModule)(routeSpecificPath)
             .then((data) => {
-            loaderDataCache.set(pathname, data);
-            loaderPromiseCache.delete(pathname);
+            loaderDataCache.set(routeSpecificPath, data);
+            loaderPromiseCache.delete(routeSpecificPath);
             return data;
         })
             .catch((error) => {
-            loaderPromiseCache.delete(pathname);
-            console.error(`Failed to load loader data for route: ${pathname}:`, error);
-            throw new Error(`Failed to load loader data for route: ${pathname}`, { cause: error });
+            loaderPromiseCache.delete(routeSpecificPath);
+            console.error(`Failed to load loader data for route: ${routeSpecificPath}:`, error);
+            throw new Error(`Failed to load loader data for route: ${routeSpecificPath}`, {
+                cause: error,
+            });
         });
-        loaderPromiseCache.set(pathname, promise);
+        loaderPromiseCache.set(routeSpecificPath, promise);
     }
-    return react_1.default.use(loaderPromiseCache.get(pathname));
+    return react_1.default.use(loaderPromiseCache.get(routeSpecificPath));
 }
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
