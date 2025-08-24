@@ -6,11 +6,14 @@ const ButtonNativeView = requireNativeView('ExpoUI', 'Button');
  * @hidden
  */
 export function transformButtonProps(props) {
-    const { children, onPress, systemImage, ...restProps } = props;
+    const { children, onPress, leadingIcon, trailingIcon, systemImage, ...restProps } = props;
+    // Handle backward compatibility: systemImage maps to leadingIcon
+    const finalLeadingIcon = leadingIcon ?? systemImage;
     return {
         ...restProps,
         text: children ?? '',
-        systemImage,
+        leadingIcon: finalLeadingIcon,
+        trailingIcon,
         onButtonPressed: onPress,
         // @ts-expect-error
         modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),

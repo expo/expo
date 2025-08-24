@@ -74,6 +74,6 @@ function createSubmenuElement(uuid, props, handlers) {
     };
 }
 function isSubmenuComponent(child) {
-    return child.type.toString() === Submenu.toString();
+    return child.type === Submenu;
 }
 //# sourceMappingURL=utils.js.map

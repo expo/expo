@@ -27,8 +27,19 @@ export type ButtonProps = {
    */
   onPress?: () => void;
   /**
+   * A string describing the leading icon to display in the button.
+   * Uses Material Icons on Android.
+   */
+  leadingIcon?: MaterialIcon;
+  /**
+   * A string describing the trailing icon to display in the button.
+   * Uses Material Icons on Android.
+   */
+  trailingIcon?: MaterialIcon;
+  /**
    * A string describing the system image to display in the button.
    * Uses Material Icons on Android.
+   * @deprecated Use `leadingIcon` instead.
    */
   systemImage?: MaterialIcon;
   /**
@@ -66,10 +77,11 @@ export type ButtonProps = {
  */
 export type NativeButtonProps = Omit<
   ButtonProps,
-  'role' | 'onPress' | 'children' | 'systemImage'
+  'role' | 'onPress' | 'children' | 'leadingIcon' | 'trailingIcon' | 'systemImage'
 > & {
   text: string;
-  systemImage?: string;
+  leadingIcon?: string;
+  trailingIcon?: string;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -82,11 +94,16 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
  * @hidden
  */
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { children, onPress, systemImage, ...restProps } = props;
+  const { children, onPress, leadingIcon, trailingIcon, systemImage, ...restProps } = props;
+  
+  // Handle backward compatibility: systemImage maps to leadingIcon
+  const finalLeadingIcon = leadingIcon ?? systemImage;
+  
   return {
     ...restProps,
     text: children ?? '',
-    systemImage,
+    leadingIcon: finalLeadingIcon,
+    trailingIcon,
     onButtonPressed: onPress,
     // @ts-expect-error
     modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),

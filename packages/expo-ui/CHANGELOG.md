@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- **Button**: Add support for `leadingIcon` and `trailingIcon` props for better icon positioning in buttons and context menus. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- **Button**: Deprecate `systemImage` prop in favor of `leadingIcon` and `trailingIcon` for more flexible icon placement. The `systemImage` prop will continue to work as `leadingIcon` for backward compatibility. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen))
 
 ## 0.2.0-alpha.3 — 2025-08-18
 

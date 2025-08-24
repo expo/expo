@@ -139,5 +139,5 @@ function createSubmenuElement(
 }
 
 function isSubmenuComponent(child: ReactElement): boolean {
-  return child.type.toString() === Submenu.toString();
+  return child.type === Submenu;
 }
