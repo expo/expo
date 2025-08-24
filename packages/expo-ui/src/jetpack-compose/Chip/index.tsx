@@ -13,49 +13,6 @@ export type ChipTextStyle =
   | 'bodyMedium'
   | 'bodyLarge';
 
-/**
- * Available icon names for chip leading icons.
- */
-export type ChipIconName =
-  | 'add'
-  | 'done'
-  | 'info'
-  | 'star'
-  | 'accountBox'
-  | 'accountCircle'
-  | 'addCircle'
-  | 'arrowDropDown'
-  | 'build'
-  | 'call'
-  | 'check'
-  | 'checkCircle'
-  | 'clear'
-  | 'close'
-  | 'create'
-  | 'dateRange'
-  | 'delete'
-  | 'edit'
-  | 'email'
-  | 'face'
-  | 'favorite'
-  | 'favoriteBorder'
-  | 'home'
-  | 'keyboardArrowDown'
-  | 'keyboardArrowUp'
-  | 'locationOn'
-  | 'lock'
-  | 'mailOutline'
-  | 'menu'
-  | 'moveVert'
-  | 'notifications'
-  | 'shoppingCart'
-  | 'warning'
-  | 'share'
-  | 'thumbUp'
-  | 'refresh'
-  | 'settings'
-  | 'search';
-
 export interface ChipProps extends ViewProps {
   /**
    * The variant of the chip
@@ -70,7 +27,7 @@ export interface ChipProps extends ViewProps {
   /**
    * Optional leading icon name (using Material Icons). Used for assist, filter and input (avatar icon) chips.
    */
-  leadingIcon?: ChipIconName;
+  leadingIcon?: string;
 
   /**
    * Size of the icon in density-independent pixels (dp). Defaults to 18.

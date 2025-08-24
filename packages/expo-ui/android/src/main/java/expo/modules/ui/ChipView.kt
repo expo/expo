@@ -79,7 +79,7 @@ class ChipView(context: Context, appContext: AppContext) :
         selected = selected,
         leadingIcon = if (selected) {
           {
-            ChipIcon(iconName = "done", iconSize = iconSize)
+            ChipIcon(iconName = "filled.Done", iconSize = iconSize)
           }
         } else null,
         enabled = enabled,
@@ -103,7 +103,7 @@ class ChipView(context: Context, appContext: AppContext) :
           }
         },
         trailingIcon = {
-          ChipIcon("close", iconSize = iconSize)
+          ChipIcon("filled.Close", iconSize = iconSize)
         },
         modifier = chipModifier
       )
@@ -156,56 +156,14 @@ private fun ChipIcon(
   tint: Color = MaterialTheme.colorScheme.primary,
   modifier: Modifier = Modifier
 ) {
-  Icon(
-    imageVector = getIconByName(iconName),
-    contentDescription = iconName,
-    tint = tint,
-    modifier = modifier
-      .size(iconSize.dp)
-      .padding(end = 4.dp)
-  )
-}
-
-private fun getIconByName(iconName: String): ImageVector {
-  return when (iconName) {
-    "add" -> Icons.Default.Add
-    "done" -> Icons.Default.Done
-    "info" -> Icons.Default.Info
-    "star" -> Icons.Default.Star
-    "accountBox" -> Icons.Default.AccountBox
-    "accountCircle" -> Icons.Default.AccountCircle
-    "addCircle" -> Icons.Default.AddCircle
-    "arrowDropDown" -> Icons.Default.ArrowDropDown
-    "build" -> Icons.Default.Build
-    "call" -> Icons.Default.Call
-    "check" -> Icons.Default.Check
-    "checkCircle" -> Icons.Default.CheckCircle
-    "clear" -> Icons.Default.Clear
-    "close" -> Icons.Default.Close
-    "create" -> Icons.Default.Create
-    "dateRange" -> Icons.Default.DateRange
-    "delete" -> Icons.Default.Delete
-    "edit" -> Icons.Default.Edit
-    "email" -> Icons.Default.Email
-    "face" -> Icons.Default.Face
-    "favorite" -> Icons.Default.Favorite
-    "favoriteBorder" -> Icons.Default.FavoriteBorder
-    "home" -> Icons.Default.Home
-    "keyboardArrowDown" -> Icons.Default.KeyboardArrowDown
-    "keyboardArrowUp" -> Icons.Default.KeyboardArrowUp
-    "locationOn" -> Icons.Default.LocationOn
-    "lock" -> Icons.Default.Lock
-    "mailOutline" -> Icons.Default.MailOutline
-    "menu" -> Icons.Default.Menu
-    "moveVert" -> Icons.Default.MoreVert
-    "notifications" -> Icons.Default.Notifications
-    "shoppingCart" -> Icons.Default.ShoppingCart
-    "warning" -> Icons.Default.Warning
-    "share" -> Icons.Default.Share
-    "thumbUp" -> Icons.Default.ThumbUp
-    "refresh" -> Icons.Default.Refresh
-    "settings" -> Icons.Default.Settings
-    "search" -> Icons.Default.Search
-    else -> Icons.Default.Info
+  getImageVector(iconName)?.let { imageVector ->
+    Icon(
+      imageVector = imageVector,
+      contentDescription = iconName,
+      tint = tint,
+      modifier = modifier
+        .size(iconSize.dp)
+        .padding(end = 4.dp)
+    )
   }
 }

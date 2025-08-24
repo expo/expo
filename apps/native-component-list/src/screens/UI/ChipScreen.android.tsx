@@ -60,7 +60,7 @@ export default function ChipScreen() {
           <Chip
             variant="assist"
             label="Book"
-            leadingIcon="add"
+            leadingIcon="filled.Add"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Opening flight booking...')}
@@ -69,7 +69,7 @@ export default function ChipScreen() {
           <Chip
             variant="assist"
             label="Calendar"
-            leadingIcon="dateRange"
+            leadingIcon="filled.DateRange"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Adding to calendar...')}
@@ -78,7 +78,7 @@ export default function ChipScreen() {
           <Chip
             variant="assist"
             label="Share"
-            leadingIcon="share"
+            leadingIcon="filled.Share"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Sharing location...')}
@@ -87,7 +87,7 @@ export default function ChipScreen() {
           <Chip
             variant="assist"
             label="Call"
-            leadingIcon="call"
+            leadingIcon="filled.Call"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Calling support...')}
@@ -96,7 +96,7 @@ export default function ChipScreen() {
           <Chip
             variant="assist"
             label="Disabled"
-            leadingIcon="lock"
+            leadingIcon="filled.Lock"
             iconSize={iconSize}
             textStyle={textStyle}
             enabled={false}
@@ -123,7 +123,7 @@ export default function ChipScreen() {
           <Chip
             variant="filter"
             label="Images"
-            leadingIcon="star"
+            leadingIcon="filled.Star"
             iconSize={iconSize}
             textStyle={textStyle}
             selected={selectedFilters.includes('Images')}
@@ -132,7 +132,7 @@ export default function ChipScreen() {
           <Chip
             variant="filter"
             label="Docs"
-            leadingIcon="create"
+            leadingIcon="filled.Create"
             iconSize={iconSize}
             textStyle={textStyle}
             selected={selectedFilters.includes('Docs')}
@@ -141,7 +141,7 @@ export default function ChipScreen() {
           <Chip
             variant="filter"
             label="Videos"
-            leadingIcon="star"
+            leadingIcon="filled.Star"
             iconSize={iconSize}
             textStyle={textStyle}
             selected={selectedFilters.includes('Videos')}
@@ -150,7 +150,7 @@ export default function ChipScreen() {
           <Chip
             variant="filter"
             label="Disabled"
-            leadingIcon="lock"
+            leadingIcon="filled.Lock"
             iconSize={iconSize}
             textStyle={textStyle}
             selected={false}
@@ -195,7 +195,7 @@ export default function ChipScreen() {
           <Chip
             variant="suggestion"
             label="Nearby"
-            leadingIcon="locationOn"
+            leadingIcon="filled.LocationOn"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Suggestion', 'Searching nearby...')}
@@ -203,7 +203,7 @@ export default function ChipScreen() {
           <Chip
             variant="suggestion"
             label="Photos"
-            leadingIcon="star"
+            leadingIcon="filled.Star"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Suggestion', 'Adding photos...')}
@@ -211,7 +211,7 @@ export default function ChipScreen() {
           <Chip
             variant="suggestion"
             label="Weather"
-            leadingIcon="star"
+            leadingIcon="filled.Star"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Suggestion', 'Showing weather...')}
