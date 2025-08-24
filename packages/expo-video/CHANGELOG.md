@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Added a warning for when the video plays before the component mounts in web. ([#33840](https://github.com/expo/expo/pull/33840) by [@zereight(https://github.com/zereight)])
+
 ### 💡 Others
 
 ## 3.0.4 — 2025-08-21

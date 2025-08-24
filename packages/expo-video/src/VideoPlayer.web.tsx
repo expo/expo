@@ -280,6 +280,12 @@ export default class VideoPlayerWeb
   }
 
   play(): void {
+    if (this._mountedVideos.size === 0) {
+      console.warn(
+        '[expo-video] Cannot play video - No mounted video found.'
+      )
+    }
+
     this._mountedVideos.forEach((video) => {
       video.play();
     });
