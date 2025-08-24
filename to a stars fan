@@ -1,0 +1,103 @@
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+
+export default function App() {
+  const [screen, setScreen] = useState("show"); // show → menu → arena
+  const [player, setPlayer] = useState(null);
+
+  // Автоматически переходим в меню через 4 секунды
+  useEffect(() => {
+    if (screen === "show") {
+      const timer = setTimeout(() => setScreen("menu"), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [screen]);
+
+  // Экран анонса нового бойца
+  if (screen === "show") {
+    return (
+      <View style={styles.show}>
+        <Text style={styles.title}>⭐ To a Stars Fan ⭐</Text>
+        <Text style={styles.subtitle}>НОВЫЙ БОЕЦ!</Text>
+        <View style={styles.heroCircle}>
+          <Text style={{ fontSize: 28 }}>Inferno 🔥</Text>
+        </View>
+        <Text style={styles.desc}>Огненный шар — урон по области!</Text>
+      </View>
+    );
+  }
+
+  // Меню выбора бойцов
+  if (screen === "menu") {
+    return (
+      <View style={styles.menu}>
+        <Text style={styles.title}>Выбери бойца</Text>
+        {["StarGirl ⭐", "Federico 🪵", "Waspy 🐝", "Nyx 🌑", "Slime 💧", "Inferno 🔥"].map(
+          (b) => (
+            <TouchableOpacity
+              key={b}
+              style={styles.button}
+              onPress={() => {
+                setPlayer(b);
+                setScreen("arena");
+              }}
+            >
+              <Text style={{ color: "white" }}>{b}</Text>
+            </TouchableOpacity>
+          )
+        )}
+      </View>
+    );
+  }
+
+  // Арена
+  if (screen === "arena") {
+    return (
+      <View style={styles.arena}>
+        <Text style={styles.subtitle}>⚔️ Арена</Text>
+        <Text style={styles.desc}>Ты играешь за: {player}</Text>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  show: {
+    flex: 1,
+    backgroundColor: "#ff4d4d",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  menu: {
+    flex: 1,
+    backgroundColor: "#222",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  arena: {
+    flex: 1,
+    backgroundColor: "#0066cc",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: { fontSize: 32, fontWeight: "bold", color: "white", marginBottom: 20 },
+  subtitle: { fontSize: 24, fontWeight: "bold", color: "white", marginBottom: 10 },
+  desc: { fontSize: 18, color: "white", marginTop: 10 },
+  heroCircle: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: "orange",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 20,
+  },
+  button: {
+    backgroundColor: "#555",
+    padding: 12,
+    margin: 8,
+    borderRadius: 10,
+    width: 200,
+    alignItems: "center",
+  },
+});
