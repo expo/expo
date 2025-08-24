@@ -30,6 +30,8 @@
 
 - [Android][iOS] Add `keepScreenOnWhilePlaying` property to the player. ([#37137](https://github.com/expo/expo/pull/37137) by [@behenate](https://github.com/behenate))
 
+- [ios] Fix tracks not loading due to checking status instead of newStatus. ([#37546](https://github.com/expo/expo/pull/37546) by [@HADeveloper](https://github.com/HADeveloper))
+
 ### 💡 Others
 
 - [Android] Keep the screen on while playback is running by default. ([#37137](https://github.com/expo/expo/pull/37137) by [@behenate](https://github.com/behenate))
