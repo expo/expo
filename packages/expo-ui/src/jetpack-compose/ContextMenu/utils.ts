@@ -1,7 +1,8 @@
 import { Children, isValidElement, ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
-import { ContextMenuElementBase, EventHandlers, Submenu, SubmenuProps } from './index';
+import { Submenu, SubmenuProps } from './Submenu';
+import { ContextMenuElementBase, EventHandlers } from './index';
 import { Button, ButtonProps, NativeButtonProps, transformButtonProps } from '../Button';
 import { Picker, PickerProps } from '../Picker';
 import { Switch, SwitchProps } from '../Switch';

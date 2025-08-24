@@ -1,5 +1,5 @@
 import { Children, isValidElement } from 'react';
-import { Submenu } from './index';
+import { Submenu } from './Submenu';
 import { Button, transformButtonProps } from '../Button';
 import { Picker } from '../Picker';
 import { Switch } from '../Switch';
