@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [typescript] Updated default TSConfig to use `"jsx": "react-jsx"` instead of the deprecated `"jsx": "react-native"` option ([#34051](https://github.com/expo/expo/pull/34051)) @asleepace
+
 ### 🎉 New features
 
 - Add `structuredClone` built-in to native platforms. ([#37503](https://github.com/expo/expo/pull/37503) by [@EvanBacon](https://github.com/EvanBacon))
