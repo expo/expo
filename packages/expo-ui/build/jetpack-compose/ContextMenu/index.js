@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import { Children, useMemo } from 'react';
 import { transformChildrenToElementArray } from './utils';
 const MenuNativeView = requireNativeView('ExpoUI', 'ContextMenu');
-export function Items() {
+export function Items(props) {
     return <></>;
 }
 Items.tag = 'Items';

@@ -100,7 +100,7 @@ type NativeMenuProps = ContextMenuProps & {
   ) => void;
 };
 
-export function Items() {
+export function Items(props: ContextMenuContentProps) {
   return <></>;
 }
 Items.tag = 'Items';

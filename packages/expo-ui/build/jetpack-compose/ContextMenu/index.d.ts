@@ -53,7 +53,7 @@ export type ContextMenuProps = {
     /** Modifiers for the component */
     modifiers?: ExpoModifier[];
 };
-export declare function Items(): import("react").JSX.Element;
+export declare function Items(props: ContextMenuContentProps): import("react").JSX.Element;
 export declare namespace Items {
     var tag: string;
 }
