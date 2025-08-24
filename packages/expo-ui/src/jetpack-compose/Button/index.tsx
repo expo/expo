@@ -95,10 +95,10 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
  */
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
   const { children, onPress, leadingIcon, trailingIcon, systemImage, ...restProps } = props;
-  
+
   // Handle backward compatibility: systemImage maps to leadingIcon
   const finalLeadingIcon = leadingIcon ?? systemImage;
-  
+
   return {
     ...restProps,
     text: children ?? '',
