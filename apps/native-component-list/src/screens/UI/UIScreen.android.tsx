@@ -130,6 +130,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./JetpackComposePrimitivesScreen'));
     },
   },
+  {
+    name: 'Carousel component',
+    route: 'ui/carousel-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CarouselScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
