@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Introduce new config values to enable Test environments when using `@config-plugin/react-native-branch` ([#28084](https://github.com/expo/expo/pull/28084) by [@rodperottoni](https://github.com/rodperottoni))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
