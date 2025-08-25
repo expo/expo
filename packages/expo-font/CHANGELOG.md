@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix types and adjust platform checks.
+
 ## 14.0.3 — 2025-08-25
 
 _This version does not introduce any user-facing changes._

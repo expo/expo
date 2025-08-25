@@ -1,8 +1,8 @@
-import { CodedError, Platform, registerWebModule } from 'expo-modules-core';
+import { CodedError, registerWebModule } from 'expo-modules-core';
 import FontObserver from 'fontfaceobserver';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined') {
         return null;
     }
     const styleSheet = getStyleElement();
@@ -58,7 +58,7 @@ function getHeadElements() {
 }
 const ExpoFontLoader = {
     async unloadAllAsync() {
-        if (!Platform.isDOMAvailable)
+        if (typeof window === 'undefined')
             return;
         const element = document.getElementById(ID);
         if (element && element instanceof HTMLStyleElement) {
@@ -142,7 +142,7 @@ const ExpoFontLoader = {
         }).load(null, 6000);
     },
 };
-const isServer = Platform.OS === 'web' && typeof window === 'undefined';
+const isServer = process.env.EXPO_OS === 'web' && typeof window === 'undefined';
 function createExpoFontLoader() {
     return ExpoFontLoader;
 }
