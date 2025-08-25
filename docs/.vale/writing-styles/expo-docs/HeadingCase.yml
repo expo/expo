@@ -210,10 +210,8 @@ exceptions:
   - '.*YAML.*'
   # PascalCase for React component names that end with common component suffixes
   - '^[A-Z][a-zA-Z]*(?:Input|Sheet|Picker|Progress|Menu|View|Button|Switch|Slider|Text|TextInput)(?:\s*\([^)]+\))?$'
-  # PascalCase for Expo UI component names
-  - '^(?:TextField)(?:\s*\([^)]+\))?$'
-  # Standalone common UI component names
-  - '^(?:BottomSheet|CircularProgress|LinearProgress|DateTimePicker|ContextMenu|ColorPicker)(?:\s*\([^)]+\))?$'
+  # Standalone Expo UI component names
+  - '^(?:BottomSheet|CircularProgress|LinearProgress|DateTimePicker|ContextMenu|ColorPicker|TextField)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
   - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer)(?:\s*\([^)]+\))?$'
   # Specific edge cases
