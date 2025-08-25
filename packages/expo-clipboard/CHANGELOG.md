@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+ - [Android] Obfuscate clipped image filenames ([#39124](https://github.com/expo/expo/pull/39124) by [@kretkiewicz](https://github.com/kretkiewicz))
 
 ## 8.0.3 — 2025-08-25
 
