@@ -2,6 +2,7 @@ import spawnAsync, { SpawnResult } from '@expo/spawn-async';
 import semver from 'semver';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
 import { parseInstallCheckOutput } from '../utils/parseInstallCheckOutput';
 
 function isSpawnResult(result: any): result is SpawnResult {
@@ -15,6 +16,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
 
   async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
+    const advice: string[] = [];
 
     // Expo CLI introduced support for --json output in SDK 54
     // Command: npx expo install --check --json
@@ -75,12 +77,19 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       }
     }
 
+    if (issues.length) {
+      advice.push(`Use 'npx expo install --check' to review and upgrade your dependencies.`);
+      advice.push(
+        `To ignore specific packages, add them to "expo.install.exclude" in package.json. ${learnMore(
+          'https://expo.fyi/dependency-validation'
+        )}`
+      );
+    }
+
     return {
       isSuccessful: issues.length === 0,
       issues,
-      advice: issues.length
-        ? [`Use 'npx expo install --check' to review and upgrade your dependencies.`]
-        : [],
+      advice,
     };
   }
 }
