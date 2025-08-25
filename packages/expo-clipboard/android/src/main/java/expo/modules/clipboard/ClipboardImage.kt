@@ -112,11 +112,14 @@ internal fun clearClipboardCache(clipboardCacheDir: File) {
 }
 
 internal fun hashFileName(): String {
-  val salt = ByteArray(16)
-  SecureRandom().nextBytes(salt)
-  val message = "copied_image$salt"
+  val salt = ByteArray(16).also {
+    SecureRandom().nextBytes(it)
+  }
+
+  val baseName = "copied_image" + salt.joinToString("") { "%02x".format(it) }
   val digest = MessageDigest.getInstance("SHA-256")
-  val hashBytes = digest.digest(message.toByteArray(Charsets.UTF_8))
+  val hashBytes = digest.digest(baseName.toByteArray(Charsets.UTF_8))
+
   return hashBytes.joinToString("") { "%02x".format(it) }
 }
 
