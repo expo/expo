@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix early tear down from `onDetachedFromWindow`.
+- [Android] Fix early tear down from `onDetachedFromWindow`. ([#39119](https://github.com/expo/expo/pull/39119) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
