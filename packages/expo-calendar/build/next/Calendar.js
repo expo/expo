@@ -119,7 +119,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
-export function getDefaultCalendarNext() {
+export function getDefaultCalendar() {
     if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendar) {
         throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
     }

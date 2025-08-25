@@ -45,7 +45,7 @@ export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
-export declare function getDefaultCalendarNext(): ExpoCalendar;
+export declare function getDefaultCalendar(): ExpoCalendar;
 /**
  * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the different calendars stored on the device.
  * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
