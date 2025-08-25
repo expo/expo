@@ -599,6 +599,58 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
   </Tab>
 </Tabs>
 
+### Chip
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Chip component on Android."
+      src="/static/images/expo-ui/chip/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Chip } from '@expo/ui/jetpack-compose';
+
+    // Assist chip with icon
+    <Chip
+      variant="assist"
+      label="Book"
+      leadingIcon="filled.Add"
+      onPress={() => console.log('Opening flight booking...')}
+    />
+
+    // Filter chip with selection
+    <Chip
+      variant="filter"
+      label="Images"
+      leadingIcon="filled.Star"
+      selected={selectedFilters.includes('Images')}
+      onPress={() => handleFilterToggle('Images')}
+    />
+
+    // Input chip with dismiss
+    <Chip
+      variant="input"
+      label="Work"
+      leadingIcon="filled.Create"
+      onDismiss={() => handleInputDismiss('Work')}
+    />
+
+    // Suggestion chip
+    <Chip
+      variant="suggestion"
+      label="Nearby"
+      leadingIcon="filled.LocationOn"
+      onPress={() => console.log('Searching nearby...')}
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/chip)*
+
+  </Tab>
+</Tabs>
+
 ### DateTimePicker (date)
 
 <Tabs>

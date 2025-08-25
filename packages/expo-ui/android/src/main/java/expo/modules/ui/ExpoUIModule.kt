@@ -97,6 +97,13 @@ class ExpoUIModule : Module() {
       )
     }
 
+    View(ChipView::class) {
+      Events(
+        "onPress",
+        "onDismiss"
+      )
+    }
+
     Function("padding") { all: Int ->
       return@Function ExpoModifier(Modifier.padding(Dp(all.toFloat())))
     }
