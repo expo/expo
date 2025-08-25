@@ -56,7 +56,7 @@ Upgrade all dependencies to match the installed SDK version. Then run [`expo-doc
 ### Update native projects
 
 - **If you use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Delete the **android** and **ios** directories if you generated them for a previous SDK version in your local project directory. They'll be re-generated next time you run a build, either with `npx expo run:ios`, `npx expo prebuild`, or with EAS Build.
-- **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an `ios` directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
+- **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an **ios** directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
 
 </Step>
 

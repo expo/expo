@@ -18,18 +18,19 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import {
+  createAutolinkingModuleResolverInput,
+  createAutolinkingModuleResolver,
+  AutolinkingModuleResolverInput,
+} from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
-import {
-  createStickyModuleResolverInput,
-  createStickyModuleResolver,
-  StickyModuleResolverInput,
-} from './createExpoStickyResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
+import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
@@ -166,7 +167,7 @@ export function withExtendedResolver(
   config: ConfigT,
   {
     tsconfig,
-    stickyModuleResolverInput,
+    autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
@@ -175,7 +176,7 @@ export function withExtendedResolver(
     getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
-    stickyModuleResolverInput?: StickyModuleResolverInput;
+    autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
@@ -192,9 +193,6 @@ export function withExtendedResolver(
   }
   if (isFastResolverEnabled) {
     Log.log(chalk.dim`Fast resolver is enabled.`);
-  }
-  if (stickyModuleResolverInput) {
-    Log.log(chalk.dim`Sticky resolver is enabled.`);
   }
 
   const defaultResolver = metroResolver;
@@ -638,7 +636,7 @@ export function withExtendedResolver(
       return null;
     },
 
-    createStickyModuleResolver(stickyModuleResolverInput, {
+    createAutolinkingModuleResolver(autolinkingModuleResolverInput, {
       getStrictResolver,
     }),
 
@@ -822,7 +820,9 @@ export function withExtendedResolver(
     }
   );
 
-  return withMetroErrorReportingResolver(metroConfigWithCustomContext);
+  return withMetroErrorReportingResolver(
+    withMetroSupervisingTransformWorker(metroConfigWithCustomContext)
+  );
 }
 
 /** @returns `true` if the incoming resolution should be swapped. */
@@ -849,7 +849,7 @@ export async function withMetroMultiPlatformAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled,
-    isStickyResolverEnabled,
+    isAutolinkingResolverEnabled,
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
@@ -861,7 +861,7 @@ export async function withMetroMultiPlatformAsync(
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
-    isStickyResolverEnabled?: boolean;
+    isAutolinkingResolverEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
@@ -908,10 +908,6 @@ export async function withMetroMultiPlatformAsync(
     }
   }
 
-  // TODO: Remove this
-  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
-  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
-
   let tsconfig: null | TsConfigPaths = null;
 
   if (isTsconfigPathsEnabled) {
@@ -933,16 +929,16 @@ export async function withMetroMultiPlatformAsync(
 
   config = withWebPolyfills(config, { getMetroBundler });
 
-  let stickyModuleResolverInput: StickyModuleResolverInput | undefined;
-  if (isStickyResolverEnabled) {
-    stickyModuleResolverInput = await createStickyModuleResolverInput({
+  let autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined;
+  if (isAutolinkingResolverEnabled) {
+    autolinkingModuleResolverInput = await createAutolinkingModuleResolverInput({
       platforms: expoConfigPlatforms,
       projectRoot,
     });
   }
 
   return withExtendedResolver(config, {
-    stickyModuleResolverInput,
+    autolinkingModuleResolverInput,
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,

@@ -10,6 +10,7 @@ export class Paths extends PathUtilities {
   static get cache() {
     return new Directory(ExpoFileSystem.cacheDirectory);
   }
+
   /**
    * A property containing the bundle directory – the directory where assets bundled with the application are stored.
    */
@@ -56,13 +57,26 @@ export class Paths extends PathUtilities {
   }
 }
 
+/**
+ * Represents a file on the filesystem.
+ *
+ * A `File` instance can be created for any path, and does not need to exist on the filesystem during creation.
+ *
+ * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
+ * @example
+ * ```ts
+ * const file = new File(File.cache, "subdirName", "file.txt");
+ * ```
+ */
 export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   /**
-   * Creates an instance of a file.
-   * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
+   * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
+   *
+   * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
+   * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
    * @example
    * ```ts
-   * const file = new File("file:///path/to/file.txt");
+   * const file = new File(File.cache, "subdirName", "file.txt");
    * ```
    */
   constructor(...uris: (string | File | Directory)[]) {
@@ -124,18 +138,31 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
+File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
+  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
+  return new File(file);
+};
+
 /**
  * Represents a directory on the filesystem.
  *
  * A `Directory` instance can be created for any path, and does not need to exist on the filesystem during creation.
+ *
+ * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a `Directory` instance (like `Paths.cache`).
+ * @example
+ * ```ts
+ * const directory = new Directory(File.cache, "subdirName");
+ * ```
  */
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
   /**
-   * Creates an instance of a directory.
-   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+   * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
+   *
+   * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a `Directory` instance (like `Paths.cache`).
+   * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
    * @example
    * ```ts
-   * const directory = new Directory("file:///path/to/directory");
+   * const directory = new Directory(File.cache, "subdirName");
    * ```
    */
   constructor(...uris: (string | File | Directory)[]) {
@@ -178,3 +205,8 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return new Directory(super.createDirectory(name).uri);
   }
 }
+
+Directory.pickDirectoryAsync = async function (initialUri?: string) {
+  const directory = (await ExpoFileSystem.pickDirectoryAsync(initialUri)).uri;
+  return new Directory(directory);
+};

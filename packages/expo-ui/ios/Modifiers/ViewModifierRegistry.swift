@@ -212,14 +212,15 @@ internal struct ClipShapeModifier: ViewModifier {
   let shape: String
   let cornerRadius: CGFloat
 
+  @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
     case "circle":
-      return AnyView(content.clipShape(Circle()))
+      content.clipShape(Circle())
     case "roundedRectangle":
-      return AnyView(content.clipShape(RoundedRectangle(cornerRadius: cornerRadius)))
+      content.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     default:
-      return AnyView(content.clipShape(Rectangle()))
+      content.clipShape(Rectangle())
     }
   }
 }
@@ -228,8 +229,10 @@ internal struct OnTapGestureModifier: ViewModifier {
   let eventDispatcher: EventDispatcher
 
   func body(content: Content) -> some View {
-    content.onTapGesture {
-      eventDispatcher(["onTapGesture": [:]])
+    if #available(iOS 15.0, tvOS 16.0, *) {
+      content.onTapGesture {
+        eventDispatcher(["onTapGesture": [:]])
+      }
     }
   }
 }
@@ -322,14 +325,15 @@ internal struct MaskModifier: ViewModifier {
   let shape: String
   let cornerRadius: CGFloat
 
+  @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
     case "circle":
-      return AnyView(content.mask(Circle()))
+      content.mask(Circle())
     case "roundedRectangle":
-      return AnyView(content.mask(RoundedRectangle(cornerRadius: cornerRadius)))
+      content.mask(RoundedRectangle(cornerRadius: cornerRadius))
     default:
-      return AnyView(content.mask(Rectangle()))
+      content.mask(Rectangle())
     }
   }
 }
@@ -374,6 +378,149 @@ internal struct AnyViewModifier: ViewModifier {
 
   func body(content: Content) -> some View {
     _body(content)
+  }
+}
+
+internal struct GlassEffectModifier: ViewModifier {
+  let glassVariant: String
+  let interactive: Bool
+  let tint: Color?
+  let shape: String
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      let glass = parseGlassVariant(glassVariant)
+      switch shape {
+      case "capsule":
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
+      case "circle":
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
+      case "ellipse":
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
+      default:
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: Rectangle())
+      }
+      #else
+      content
+      #endif
+    } else {
+      content
+    }
+  }
+
+  #if compiler(>=6.2) // Xcode 26
+  @available(iOS 26.0, *)
+  private func parseGlassVariant(_ glassString: String) -> Glass {
+    switch glassString {
+    case "regular":
+      return .regular
+    case "clear":
+      return .clear
+    default:
+      return .identity
+    }
+  }
+  #endif
+}
+
+internal struct AnimationModifier: ViewModifier {
+  let animationConfig: [String: Any]
+  let animatedValue: AnyHashable?
+
+  func body(content: Content) -> some View {
+    let animationValue = parseAnimation(animationConfig)
+    if let value = animatedValue {
+      content.animation(animationValue, value: value)
+    } else {
+      content
+    }
+  }
+
+  private func parseAnimation(_ config: [String: Any]) -> Animation {
+    let type = config["type"] as? String ?? "default"
+
+    var animation: Animation
+
+    switch type {
+    case "easeIn":
+      if let duration = config["duration"] as? Double {
+        animation = .easeIn(duration: duration)
+      } else {
+        animation = .easeIn
+      }
+
+    case "easeOut":
+      if let duration = config["duration"] as? Double {
+        animation = .easeOut(duration: duration)
+      } else {
+        animation = .easeOut
+      }
+
+    case "linear":
+      if let duration = config["duration"] as? Double {
+        animation = .linear(duration: duration)
+      } else {
+        animation = .linear
+      }
+
+    case "easeInOut":
+      if let duration = config["duration"] as? Double {
+        animation = .easeInOut(duration: duration)
+      } else {
+        animation = .easeInOut
+      }
+
+    case "spring":
+      let duration = config["duration"] as? Double
+      let bounce = config["bounce"] as? Double
+      let response = config["response"] as? Double
+      let dampingFraction = config["dampingFraction"] as? Double
+      let blendDuration = config["blendDuration"] as? Double
+
+      if response != nil || dampingFraction != nil {
+        // default values are 0.5, 0.825, 0.0
+        animation = .spring(response: response ?? 0.5, dampingFraction: dampingFraction ?? 0.825, blendDuration: blendDuration ?? 0.0)
+      } else if duration != nil || bounce != nil {
+        // default values are 0.5, 0.0, 0.0
+        animation = .spring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, blendDuration: blendDuration ?? 0.0)
+      } else if let blendDuration = blendDuration {
+        animation = .spring(blendDuration: blendDuration)
+      } else {
+        animation = .spring
+      }
+
+    case "interpolatingSpring":
+      let duration = config["duration"] as? Double
+      let bounce = config["bounce"] as? Double
+      let mass = config["mass"] as? Double
+      let stiffness = config["stiffness"] as? Double
+      let damping = config["damping"] as? Double
+      let initialVelocity = config["initialVelocity"] as? Double
+
+      if duration != nil || bounce != nil {
+        animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
+      } else if let stiffness = stiffness, let damping = damping {
+        animation = .interpolatingSpring(mass: mass ?? 1.0, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity ?? 0.0)
+      } else {
+        animation = .interpolatingSpring
+      }
+
+    default:
+      animation = .default
+    }
+
+    if let delay = config["delay"] as? Double {
+      animation = animation.delay(delay)
+    }
+
+    if let repeatCount = config["repeatCount"] as? Int {
+      let autoreverses = config["autoreverses"] as? Bool ?? false
+      animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
+    }
+
+    return animation
   }
 }
 
@@ -659,6 +806,28 @@ extension ViewModifierRegistry {
       let alignmentString = params["alignment"] as? String ?? "center"
       let alignment = parseAlignment(alignmentString)
       return BackgroundOverlayModifier(color: color, alignment: alignment)
+    }
+
+    register("glassEffect") { params, _ in
+      let glassDict = params["glass"] as? [String: Any]
+      let glassVariant = glassDict?["variant"] as? String ?? "regular"
+      let interactive = glassDict?["interactive"] as? Bool ?? false
+      let tintColor = (glassDict?["tint"] as? String).map { Color(hex: $0) }
+      let shape = params["shape"] as? String ?? "capsule"
+
+      return GlassEffectModifier(
+        glassVariant: glassVariant,
+        interactive: interactive,
+        tint: tintColor,
+        shape: shape
+      )
+    }
+
+    register("animation") { params, _ in
+      let animationConfig = params["animation"] as? [String: Any] ?? ["type": "default"]
+      let animatedValue = params["animatedValue"] as? AnyHashable
+
+      return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
     }
   }
 }

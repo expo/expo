@@ -6,6 +6,7 @@ exports.deepEqual = deepEqual;
 const router_store_1 = require("../../global-state/router-store");
 const routing_1 = require("../../global-state/routing");
 const href_1 = require("../href");
+const navigationParams_1 = require("../../navigationParams");
 function getTabPathFromRootStateByHref(href, rootState) {
     const hrefState = router_store_1.store.getStateForHref((0, href_1.resolveHref)(href));
     const state = rootState;
@@ -22,6 +23,7 @@ function getTabPathFromRootStateByHref(href, rootState) {
         if (route.state?.type === 'tab') {
             const tabState = route.state;
             const oldTabKey = tabState.routes[tabState.index].key;
+            // The next route will be either stack inside a tab or a new tab key
             if (!arr[i + 1]) {
                 throw new Error(`New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`);
             }
@@ -45,7 +47,8 @@ function getPreloadedRouteFromRootStateByHref(href, rootState) {
     if (navigationState.type === 'stack') {
         const stackState = navigationState;
         const payload = (0, routing_1.getPayloadFromStateRoute)(actionStateRoute);
-        const preloadedRoute = stackState.preloadedRoutes.find((route) => route.name === actionStateRoute.name && deepEqual(route.params, payload.params));
+        const preloadedRoute = stackState.preloadedRoutes.find((route) => route.name === actionStateRoute.name &&
+            deepEqual((0, navigationParams_1.removeInternalExpoRouterParams)(route.params), (0, navigationParams_1.removeInternalExpoRouterParams)(payload.params)));
         return preloadedRoute;
     }
     return undefined;
@@ -60,7 +63,7 @@ function deepEqual(a, b) {
     if (typeof a !== 'object' || typeof b !== 'object') {
         return false;
     }
-    const keys = Object.keys(a).filter((key) => key !== '__internal__expoRouterIsPreviewNavigation');
+    const keys = Object.keys(a);
     return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
 }
 //# sourceMappingURL=utils.js.map

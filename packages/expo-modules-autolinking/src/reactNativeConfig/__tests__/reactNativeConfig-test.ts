@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 
+import { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
 import { loadConfigAsync } from '../config';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
@@ -23,6 +24,13 @@ jest.mock('../config');
 beforeEach(() => {
   jest.resetAllMocks();
 });
+
+const BASE_AUTOLINKING_OPTIONS: AutolinkingOptions = {
+  legacy_shallowReactNativeLinking: false,
+  searchPaths: [],
+  nativeModulesDir: null,
+  exclude: [],
+};
 
 describe(createReactNativeConfigAsync, () => {
   const mockPlatformResolverIos = resolveDependencyConfigImplIosAsync as jest.MockedFunction<
@@ -66,10 +74,13 @@ describe(createReactNativeConfigAsync, () => {
       }
     );
     const result = await createReactNativeConfigAsync({
-      platform: 'ios',
-      projectRoot: '/app',
-      searchPaths: ['/app/node_modules'],
-      transitiveLinkingDependencies: [],
+      appRoot: '/app',
+      sourceDir: undefined,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+        searchPaths: ['/app/node_modules'],
+      },
     });
     expect(result).toMatchInlineSnapshot(`
       {
@@ -137,10 +148,13 @@ describe(createReactNativeConfigAsync, () => {
       }
     );
     const result = await createReactNativeConfigAsync({
-      platform: 'ios',
-      projectRoot: '/app',
-      searchPaths: ['/app/node_modules'],
-      transitiveLinkingDependencies: [],
+      appRoot: '/app',
+      sourceDir: undefined,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+        searchPaths: ['/app/node_modules'],
+      },
     });
     expect(result.dependencies['react-native-test']).toBeDefined();
     expect(result.dependencies['react-native-test'].root).toBe('/app/modules/react-native-test');
@@ -165,10 +179,13 @@ describe(createReactNativeConfigAsync, () => {
       '/app/node_modules/react-native/package.json': '',
     });
     const result = await createReactNativeConfigAsync({
-      platform: 'ios',
-      projectRoot: '/app',
-      searchPaths: ['/app/node_modules'],
-      transitiveLinkingDependencies: [],
+      appRoot: '/app',
+      sourceDir: undefined,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+        searchPaths: ['/app/node_modules'],
+      },
     });
     expect(result).toBeDefined();
   });

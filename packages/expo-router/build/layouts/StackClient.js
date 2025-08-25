@@ -8,6 +8,7 @@ const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
 const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
+const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
@@ -22,10 +23,8 @@ function isStackAction(action) {
 }
 const isPreviewAction = (action) => !!action.payload &&
     'params' in action.payload &&
-    !!action.payload.params &&
-    typeof action.payload === 'object' &&
-    '__internal__expoRouterIsPreviewNavigation' in action.payload.params &&
-    !!action.payload.params.__internal__expoRouterIsPreviewNavigation;
+    typeof action.payload.params === 'object' &&
+    !!(0, navigationParams_1.getInternalExpoRouterParams)(action.payload?.params ?? undefined)['__internal__expo_router_is_preview_navigation'];
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -91,7 +90,7 @@ const stackRouterOverride = (original) => {
                         }
                     }
                     // START FORK
-                    if (isPreviewAction(action)) {
+                    if (isPreviewAction(action) && !route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === route.key);
                     }
                     // END FORK
@@ -344,37 +343,40 @@ function filterSingular(state, getId) {
 const Stack = Object.assign((props) => {
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptions = (0, react_1.useMemo)(() => {
-        if (isStackAnimationDisabled) {
-            return disableAnimationInScreenOptions(props.screenOptions);
-        }
-        return props.screenOptions;
+        const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
+        return disableAnimationInScreenOptions(props.screenOptions, condition);
     }, [props.screenOptions, isStackAnimationDisabled]);
     return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,
 });
-function disableAnimationInScreenOptions(options) {
-    const animationNone = 'none';
-    if (options) {
-        if (typeof options === 'function') {
-            const newOptions = (...args) => {
-                const oldResult = options(...args);
+function disableAnimationInScreenOptions(options, condition) {
+    if (options && typeof options === 'function') {
+        return (props) => {
+            const oldOptions = options(props);
+            if (condition(props.route)) {
                 return {
-                    ...oldResult,
-                    animation: animationNone,
+                    ...oldOptions,
+                    animation: 'none',
                 };
-            };
-            return newOptions;
-        }
-        return {
-            ...options,
-            animation: animationNone,
+            }
+            return oldOptions ?? {};
         };
     }
-    return {
-        animation: animationNone,
+    return (props) => {
+        if (condition(props.route)) {
+            return {
+                ...(options ?? {}),
+                animation: 'none',
+            };
+        }
+        return options ?? {};
     };
+}
+function shouldDisableAnimationBasedOnParams(route) {
+    const expoParams = (0, navigationParams_1.getInternalExpoRouterParams)(route.params);
+    return !!expoParams.__internal_expo_router_no_animation;
 }
 exports.default = Stack;
 const StackRouter = (options) => {

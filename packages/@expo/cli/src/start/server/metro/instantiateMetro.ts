@@ -71,6 +71,9 @@ export async function loadMetroConfigAsync(
 ) {
   let reportEvent: ((event: any) => void) | undefined;
 
+  const autolinkingModuleResolutionEnabled =
+    exp.experiments?.autolinkingModuleResolution ?? env.EXPO_USE_STICKY_RESOLVER;
+
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
 
@@ -81,7 +84,6 @@ export async function loadMetroConfigAsync(
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
   if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
-    process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
 
   const isReactCanaryEnabled =
@@ -89,11 +91,6 @@ export async function loadMetroConfigAsync(
       serverActionsEnabled ||
       exp.experiments?.reactCanary) ??
     false;
-
-  if (isReactCanaryEnabled) {
-    // The fast resolver is required for React canary to work as it can switch the node_modules location for react imports.
-    process.env.EXPO_USE_FAST_RESOLVER = '1';
-  }
 
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
@@ -132,7 +129,7 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   if (exp.experiments?.reactCompiler) {
-    Log.warn(`Experimental React Compiler is enabled.`);
+    Log.log(chalk.gray`React Compiler enabled`);
   }
 
   if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
@@ -141,11 +138,17 @@ export async function loadMetroConfigAsync(
     );
   }
 
+  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+    Log.warn(`Experimental fast resolver is enabled.`);
+  }
   if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
   if (env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
+  }
+  if (autolinkingModuleResolutionEnabled) {
+    Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
   }
 
   if (serverActionsEnabled) {
@@ -159,7 +162,7 @@ export async function loadMetroConfigAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
-    isStickyResolverEnabled: env.EXPO_USE_STICKY_RESOLVER,
+    isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled,
@@ -431,6 +434,7 @@ function pruneCustomTransformOptions(
     // Set to the default value.
     transformOptions.customTransformOptions.routerRoot = 'app';
   }
+
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
     // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`

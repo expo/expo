@@ -34,6 +34,12 @@ class Env {
   get EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS() {
     return boolish('EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS', false);
   }
+
+  /** EAS Build Platform */
+  get EAS_BUILD_PLATFORM(): 'android' | 'ios' | null {
+    const easPlatform = process.env.EAS_BUILD_PLATFORM;
+    return easPlatform === 'android' || easPlatform === 'ios' ? easPlatform : null;
+  }
 }
 
 export const env = new Env();

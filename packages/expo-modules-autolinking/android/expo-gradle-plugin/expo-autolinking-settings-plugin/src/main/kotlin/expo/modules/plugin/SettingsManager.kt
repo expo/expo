@@ -50,7 +50,7 @@ class SettingsManager(
    * Resolved configuration from `expo-modules-autolinking`.
    */
   private val config by lazy {
-    val command = AutolinkigCommandBuilder()
+    val command = AutolinkingCommandBuilder()
       .command("resolve")
       .useJson()
       .useAutolinkingOptions(autolinkingOptions)

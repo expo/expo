@@ -23,6 +23,7 @@ import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
+import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
@@ -313,10 +314,13 @@ function getNavigateAction(
     rootPayload.params.initial = !withAnchor;
   }
 
-  const previewKeyParams = isPreviewNavigation
-    ? { __internal__expoRouterIsPreviewNavigation: isPreviewNavigation }
+  const expoParams: InternalExpoRouterParams = isPreviewNavigation
+    ? {
+        __internal__expo_router_is_preview_navigation: true,
+        __internal_expo_router_no_animation: true,
+      }
     : {};
-  const params = { ...rootPayload.params, ...previewKeyParams };
+  const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);
 
   return {
     type,
@@ -399,6 +403,11 @@ export function findDivergentState(
         actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
 
     if (didActionAndCurrentStateDiverge) {
+      // If we are looking through all tabs, we need to add new tab id if this is the last route
+      // Otherwise we wouldn't be able to change the tab
+      if (navigationState.type === 'tab' && lookThroughAllTabs) {
+        navigationRoutes.push(stateRoute);
+      }
       break;
     }
 

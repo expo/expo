@@ -47,6 +47,7 @@ function NativeTabsView(props) {
     const { routes } = state;
     const defaultTabName = (0, react_1.useMemo)(() => state.routes[focusedIndex]?.name ?? state.routes[0].name, []);
     const value = state.routes[focusedIndex]?.name ?? state.routes[0].name;
+    const currentTabKey = state.routes[focusedIndex]?.key ?? state.routes[0].key;
     const items = routes
         .filter(({ key }) => (0, utils_1.shouldTabBeVisible)(descriptors[key].options))
         .map((route) => (<TabItem key={route.key} route={route} title={descriptors[route.key].options.title ?? route.name} badgeValue={descriptors[route.key].options.badgeValue}/>));
@@ -65,7 +66,7 @@ function NativeTabsView(props) {
                     name: value,
                 },
             });
-        }} style={convertNativeTabsPropsToStyleVars(props.style)}>
+        }} style={convertNativeTabsPropsToStyleVars(props, descriptors[currentTabKey]?.options)}>
       <react_tabs_1.TabsList aria-label="Main" className={native_tabs_module_css_1.default.navigationMenuRoot}>
         {items}
       </react_tabs_1.TabsList>
@@ -82,46 +83,75 @@ function TabItem(props) {
         </div>)}
     </react_tabs_1.TabsTrigger>);
 }
-function convertNativeTabsPropsToStyleVars(style) {
+function convertNativeTabsPropsToStyleVars(props, currentTabOptions) {
     const vars = {};
-    if (!style) {
+    if (!props) {
         return vars;
     }
-    if (style.fontFamily) {
-        vars['--expo-router-tabs-font-family'] = String(style.fontFamily);
+    const { labelStyle } = props;
+    const optionsLabelStyle = currentTabOptions?.labelStyle;
+    if (optionsLabelStyle?.fontFamily) {
+        vars['--expo-router-tabs-font-family'] = String(optionsLabelStyle.fontFamily);
     }
-    if (style.fontSize) {
-        vars['--expo-router-tabs-font-size'] = String(style.fontSize);
+    else if (labelStyle?.fontFamily) {
+        vars['--expo-router-tabs-font-family'] = String(labelStyle.fontFamily);
     }
-    if (style.fontWeight) {
-        vars['--expo-router-tabs-font-weight'] = String(style.fontWeight);
+    if (optionsLabelStyle?.fontSize) {
+        vars['--expo-router-tabs-font-size'] = String(optionsLabelStyle.fontSize);
     }
-    if (style.fontStyle) {
-        vars['--expo-router-tabs-font-style'] = String(style.fontStyle);
+    else if (labelStyle?.fontSize) {
+        vars['--expo-router-tabs-font-size'] = String(labelStyle.fontSize);
     }
-    if (style.color) {
-        vars['--expo-router-tabs-text-color'] = String(style.color);
+    if (optionsLabelStyle?.fontWeight) {
+        vars['--expo-router-tabs-font-weight'] = String(optionsLabelStyle.fontWeight);
     }
-    if (style['&:active']?.color) {
-        vars['--expo-router-tabs-active-text-color'] = String(style['&:active'].color);
+    else if (labelStyle?.fontWeight) {
+        vars['--expo-router-tabs-font-weight'] = String(labelStyle.fontWeight);
     }
-    else if (style.tintColor) {
-        vars['--expo-router-tabs-active-text-color'] = String(style.tintColor);
+    if (optionsLabelStyle?.fontStyle) {
+        vars['--expo-router-tabs-font-style'] = String(optionsLabelStyle.fontStyle);
     }
-    if (style['&:active']?.fontSize) {
-        vars['--expo-router-tabs-active-font-size'] = String(style['&:active'].fontSize);
+    else if (labelStyle?.fontStyle) {
+        vars['--expo-router-tabs-font-style'] = String(labelStyle.fontStyle);
     }
-    if (style['&:active']?.indicatorColor) {
-        vars['--expo-router-tabs-active-background-color'] = String(style['&:active'].indicatorColor);
+    if (optionsLabelStyle?.color) {
+        vars['--expo-router-tabs-text-color'] = String(optionsLabelStyle.color);
     }
-    if (style.backgroundColor) {
-        vars['--expo-router-tabs-background-color'] = String(style.backgroundColor);
+    else if (labelStyle?.color) {
+        vars['--expo-router-tabs-text-color'] = String(labelStyle.color);
     }
-    if (style.badgeBackgroundColor) {
-        vars['--expo-router-tabs-badge-background-color'] = String(style.badgeBackgroundColor);
+    if (currentTabOptions?.selectedLabelStyle?.color) {
+        vars['--expo-router-tabs-active-text-color'] = String(currentTabOptions.selectedLabelStyle.color);
     }
-    if (style.badgeTextColor) {
-        vars['--expo-router-tabs-badge-text-color'] = String(style.badgeTextColor);
+    else if (props.tintColor) {
+        vars['--expo-router-tabs-active-text-color'] = String(props.tintColor);
+    }
+    if (currentTabOptions?.selectedLabelStyle?.fontSize) {
+        vars['--expo-router-tabs-active-font-size'] = String(currentTabOptions.selectedLabelStyle.fontSize);
+    }
+    if (currentTabOptions?.indicatorColor) {
+        vars['--expo-router-tabs-active-background-color'] = String(currentTabOptions.indicatorColor);
+    }
+    else if (props.indicatorColor) {
+        vars['--expo-router-tabs-active-background-color'] = String(props.indicatorColor);
+    }
+    if (currentTabOptions?.backgroundColor) {
+        vars['--expo-router-tabs-background-color'] = String(currentTabOptions.backgroundColor);
+    }
+    else if (props.backgroundColor) {
+        vars['--expo-router-tabs-background-color'] = String(props.backgroundColor);
+    }
+    if (currentTabOptions?.badgeBackgroundColor) {
+        vars['--expo-router-tabs-badge-background-color'] = String(currentTabOptions.badgeBackgroundColor);
+    }
+    else if (props.badgeBackgroundColor) {
+        vars['--expo-router-tabs-badge-background-color'] = String(props.badgeBackgroundColor);
+    }
+    if (currentTabOptions?.badgeTextColor) {
+        vars['--expo-router-tabs-badge-text-color'] = String(currentTabOptions.badgeTextColor);
+    }
+    else if (props.badgeTextColor) {
+        vars['--expo-router-tabs-badge-text-color'] = String(props.badgeTextColor);
     }
     return vars;
 }

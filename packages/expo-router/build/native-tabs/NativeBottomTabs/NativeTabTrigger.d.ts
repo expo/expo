@@ -1,4 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react';
+import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
 import type { ExtendedNativeTabOptions, NativeTabTriggerProps } from './types';
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -36,12 +37,17 @@ import type { ExtendedNativeTabOptions, NativeTabTriggerProps } from './types';
  *     </View>
  *   );
  * }
+ * ```
  *
- * **Note:** You can use the alias `NativeTabs.Trigger` for this component.
+ * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
-export declare function NativeTabTrigger(props: NativeTabTriggerProps): null;
-export declare function convertTabPropsToOptions({ options, hidden, children, disablePopToTop, disableScrollToTop, }: NativeTabTriggerProps): ExtendedNativeTabOptions;
+declare function NativeTabTriggerImpl(props: NativeTabTriggerProps): null;
+export declare const NativeTabTrigger: typeof NativeTabTriggerImpl & {
+    TabBar: typeof NativeTabsTriggerTabBar;
+};
+export declare function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }: NativeTabTriggerProps): ExtendedNativeTabOptions;
 export declare function isNativeTabTrigger(child: ReactNode, contextKey?: string): child is ReactElement<NativeTabTriggerProps & {
     name: string;
 }>;
+export {};
 //# sourceMappingURL=NativeTabTrigger.d.ts.map

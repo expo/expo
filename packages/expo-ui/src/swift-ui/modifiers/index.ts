@@ -3,23 +3,8 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
-/**
- * Base interface for all view modifiers.
- * All modifiers must have a type field and can include arbitrary parameters.
- */
-export interface ModifierConfig {
-  $type: string;
-  [key: string]: any;
-  eventListener?: (args: any) => void;
-}
-
-/**
- * Factory function to create modifier configuration objects.
- * This is used internally by all modifier functions.
- */
-function createModifier(type: string, params: Record<string, any> = {}): ModifierConfig {
-  return { $type: type, ...params };
-}
+import { animation } from './animation/index';
+import { createModifier, ModifierConfig } from './createModifier';
 
 /**
  * Creates a modifier with an event listener.
@@ -292,6 +277,18 @@ export const aspectRatio = (params: { ratio: number; contentMode?: 'fit' | 'fill
  */
 export const clipped = (clipped: boolean = true) => createModifier('clipped', { clipped });
 
+/**
+ * Applies a glass effect to a view.
+ */
+export const glassEffect = (params?: {
+  glass?: {
+    variant: 'regular' | 'clear' | 'identity';
+    interactive?: boolean;
+    tint?: string;
+  };
+  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
+}) => createModifier('glassEffect', params);
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -334,7 +331,9 @@ export type BuiltInModifier =
   | ReturnType<typeof overlay>
   | ReturnType<typeof backgroundOverlay>
   | ReturnType<typeof aspectRatio>
-  | ReturnType<typeof clipped>;
+  | ReturnType<typeof clipped>
+  | ReturnType<typeof glassEffect>
+  | ReturnType<typeof animation>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -372,3 +371,5 @@ export const isModifier = (value: any): value is ModifierConfig => {
 export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
   return modifiers.filter(isModifier);
 };
+
+export * from './animation/index';

@@ -1,7 +1,7 @@
 import type { JSXElementConstructor, ReactNode } from 'react';
 import React from 'react';
 
-import type { ExtendedNativeTabOptions } from './types';
+import type { ExtendedNativeTabOptions, TypeOrRecord } from './types';
 
 export function filterAllowedChildrenElements<Components extends JSXElementConstructor<any>[]>(
   children: ReactNode | ReactNode[],
@@ -26,4 +26,14 @@ export function shouldTabBeVisible(options: ExtendedNativeTabOptions): boolean {
   // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
   // If it is not defined, then it was not specified, and we should hide the tab.
   return options.hidden === false;
+}
+
+export function getValueFromTypeOrRecord<T, K extends string>(
+  value: TypeOrRecord<T, K> | undefined,
+  key: K
+): T | undefined {
+  if (value && typeof value === 'object' && key in value) {
+    return (value as { [k in K]: T })[key];
+  }
+  return value as T | undefined;
 }
