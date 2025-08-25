@@ -1,4 +1,3 @@
-import * as Calendar from 'expo-calendar';
 import {
   createCalendar,
   ExpoCalendar,
@@ -11,7 +10,9 @@ import {
   listEvents,
   ExpoCalendarReminder,
   ExpoCalendarAttendee,
+  EntityTypes,
 } from 'expo-calendar/next';
+import * as Calendar from 'expo-calendar/next';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
@@ -30,19 +31,19 @@ const defaultCalendarData = {
   },
 } satisfies Partial<ExpoCalendar>;
 
-async function createTestCalendarAsync(patch: Partial<ExpoCalendar> = {}) {
+function createTestCalendar(patch: Partial<ExpoCalendar> = {}) {
   return createCalendar({
     ...defaultCalendarData,
-    sourceId: await pickCalendarSourceIdAsync(),
+    sourceId: pickCalendarSourceId(),
     ...patch,
   } satisfies Partial<ExpoCalendar>);
 }
 
-async function pickCalendarSourceIdAsync() {
+function pickCalendarSourceId() {
   if (Platform.OS !== 'ios') {
     return;
   }
-  const sources = await Calendar.getSourcesAsync();
+  const sources = Calendar.getSources();
   const mainSource = sources.find((source) => source.name === 'iCloud') || sources[0];
   return mainSource?.id;
 }
@@ -116,7 +117,7 @@ function createTestAttendee(
 
 async function getReminderCalendar() {
   const calendars = getCalendarsNext();
-  return (await calendars).find((c) => c.entityType === Calendar.EntityTypes.REMINDER);
+  return (await calendars).find((c) => c.entityType === EntityTypes.REMINDER);
 }
 
 function reminderExists(reminders: ExpoCalendarReminder[], reminderId: string) {
@@ -241,7 +242,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.it('creates a calendar', async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
 
           t.expect(calendar).toBeDefined();
           t.expect(typeof calendar.id).toBe('string');
@@ -253,7 +254,7 @@ export async function test(t) {
         t.it('cannot create a calendar without a title', async () => {
           let error: any;
           try {
-            await createTestCalendarAsync({ title: undefined });
+            await createTestCalendar({ title: undefined });
           } catch (e) {
             error = e;
           }
@@ -272,7 +273,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeAll(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('returns an array of calendars with correct shape', async () => {
@@ -307,8 +308,8 @@ export async function test(t) {
         let calendar2: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar1 = await createTestCalendarAsync();
-          calendar2 = await createTestCalendarAsync();
+          calendar1 = await createTestCalendar();
+          calendar2 = await createTestCalendar();
         });
 
         t.it('returns an array of events', async () => {
@@ -369,7 +370,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('returns an event by its ID', async () => {
@@ -456,7 +457,7 @@ export async function test(t) {
     //   t.beforeEach(async () => {
     //     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
     //     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
-    //     calendar = await createTestCalendarAsync();
+    //     calendar = await createTestCalendar();
     //   });
 
     //   t.it('creates an event via UI', async () => {
@@ -466,7 +467,7 @@ export async function test(t) {
     //     if (Platform.OS === 'ios') {
     //       t.expect(result.action).toBe('saved');
     //       t.expect(typeof result.id).toBe('string');
-    //       const storedEvent = await Calendar.getEventAsync(result.id);
+    //       const storedEvent = ExpoCalendarEvent.get(result.id);
 
     //       t.expect(storedEvent).toEqual(
     //         t.jasmine.objectContaining({
@@ -511,7 +512,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('returns a calendar by its ID', async () => {
@@ -545,7 +546,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('updates a calendar', async () => {
@@ -619,7 +620,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('deletes a calendar', async () => {
@@ -651,7 +652,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeAll(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('creates an event in the specific calendar', async () => {
@@ -721,7 +722,7 @@ export async function test(t) {
           let reminder: ExpoCalendarReminder;
 
           t.beforeEach(async () => {
-            eventCalendar = await createTestCalendarAsync();
+            eventCalendar = await createTestCalendar();
             reminderCalendar = await getReminderCalendar();
           });
 
@@ -852,7 +853,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('resolves to an array with an event of the correct shape', async () => {
@@ -913,7 +914,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('gets an event by id', async () => {
@@ -940,7 +941,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('updates the event title', async () => {
@@ -1344,7 +1345,7 @@ export async function test(t) {
           let calendar: ExpoCalendar;
 
           t.beforeEach(async () => {
-            calendar = await createTestCalendarAsync();
+            calendar = await createTestCalendar();
           });
 
           t.it('returns an instance of a recurring event', async () => {
@@ -1377,7 +1378,7 @@ export async function test(t) {
         let calendar: ExpoCalendar;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
         });
 
         t.it('deletes an event', async () => {
@@ -1386,7 +1387,7 @@ export async function test(t) {
           let error;
 
           try {
-            await Calendar.getEventAsync(event.id);
+            await ExpoCalendar.get(event.id);
           } catch (e) {
             error = e;
           }
@@ -1562,7 +1563,7 @@ export async function test(t) {
         let event: ExpoCalendarEvent;
 
         t.beforeAll(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
           event = createTestEvent(calendar);
         });
 
@@ -1625,7 +1626,7 @@ export async function test(t) {
           let reminder: ExpoCalendarReminder;
 
           t.beforeEach(async () => {
-            eventCalendar = await createTestCalendarAsync();
+            eventCalendar = await createTestCalendar();
             reminderCalendar = await getReminderCalendar();
           });
 
@@ -1871,7 +1872,7 @@ export async function test(t) {
         let event: ExpoCalendarEvent;
 
         t.beforeEach(async () => {
-          calendar = await createTestCalendarAsync();
+          calendar = await createTestCalendar();
           event = createTestEvent(calendar);
         });
 

@@ -8,7 +8,7 @@ platforms: ['ios*', 'android*']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { IOSPermissions } from '~/components/plugins/permissions';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -145,6 +145,14 @@ Unless specified otherwise, all dates are returned in the ISO 8601 format.
 />
 
 ## Permissions
+
+### Android
+
+If you only intend to use the [system-provided calendar UI](#launching-system-provided-calendar-dialogs), you don't need to request any permissions.
+
+Otherwise, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
+
+<AndroidPermissions permissions={['READ_CALENDAR', 'WRITE_CALENDAR']} />
 
 ### iOS
 

@@ -292,13 +292,9 @@ export type {
 } from './ExpoCalendar.types';
 
 export type {
-  Calendar,
-  Event,
-  Reminder,
   PermissionResponse,
   Alarm,
   AlarmLocation,
-  Attendee,
   CalendarDialogParams,
   DaysOfTheWeek,
   DialogEventResult,
@@ -328,5 +324,7 @@ export {
   MonthOfTheYear,
   ReminderStatus,
   SourceType,
+  createEventInCalendarAsync,
+  openEventInCalendarAsync,
 } from '../Calendar';
 export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
