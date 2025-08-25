@@ -29,11 +29,6 @@ export interface CarouselItemProps {
      */
     cornerRadius?: number;
     /**
-     * Item height in dp
-     * Default: 200
-     */
-    height?: number;
-    /**
      * Callback function called when this item is pressed
      * @param index The index of the pressed item
      */

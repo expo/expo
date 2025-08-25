@@ -15,7 +15,6 @@ function transformChildrenToElements(children) {
                 textColor: props.textColor,
                 textStyle: props.textStyle,
                 cornerRadius: props.cornerRadius,
-                height: props.height,
             });
             if (props.onPress) {
                 onPressCallbacks.set(index, props.onPress);

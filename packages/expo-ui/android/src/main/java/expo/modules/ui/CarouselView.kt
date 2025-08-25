@@ -51,9 +51,7 @@ data class CarouselItem(
   @Field
   val textStyle: TextStyle? = null,
   @Field
-  val cornerRadius: Float? = null,
-  @Field
-  val height: Float? = null
+  val cornerRadius: Float? = null
 ) : Record
 
 class CarouselItemPressEvent : Record, Serializable {
@@ -180,14 +178,13 @@ private fun CarouselItem(
 ) {
   val context = LocalContext.current.applicationContext
   
-  val itemHeight = item.height ?: 200f
   val itemCornerRadius = item.cornerRadius ?: 28f
   val itemTextColor = item.textColor ?: "#FFFFFF"
   val itemTextStyle = item.textStyle ?: TextStyle.TITLE_MEDIUM
 
   Box(
     modifier = Modifier
-      .height(itemHeight.dp)
+      .wrapContentHeight()
       .fillMaxWidth(0.95f)
       .clip(RoundedCornerShape(itemCornerRadius.dp))
       .clickable { onItemPress() }

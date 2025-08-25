@@ -23,7 +23,6 @@ function transformChildrenToElements(children: ReactNode): {
         textColor: props.textColor,
         textStyle: props.textStyle,
         cornerRadius: props.cornerRadius,
-        height: props.height,
       });
 
       if (props.onPress) {

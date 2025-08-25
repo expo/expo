@@ -96,7 +96,6 @@ export default function CarouselScreen() {
             textColor="#FFFFFF"
             textStyle="titleLarge"
             cornerRadius={16}
-            height={160}
             onPress={(index: number) =>
               Alert.alert('Custom Style 1', `You pressed item at index: ${index}`)
             }
@@ -107,7 +106,6 @@ export default function CarouselScreen() {
             textColor="#000000"
             textStyle="bodyMedium"
             cornerRadius={8}
-            height={140}
             onPress={(index: number) =>
               Alert.alert('Custom Style 2', `You pressed item at index: ${index}`)
             }
@@ -118,7 +116,6 @@ export default function CarouselScreen() {
             textColor="#FFD700"
             textStyle="titleSmall"
             cornerRadius={50}
-            height={180}
             onPress={(index: number) =>
               Alert.alert('Custom Style 3', `You pressed item at index: ${index}`)
             }
@@ -129,7 +126,6 @@ export default function CarouselScreen() {
             textColor="#FF6B6B"
             textStyle="bodyLarge"
             cornerRadius={0}
-            height={120}
             onPress={(index: number) =>
               Alert.alert('Custom Style 4', `You pressed item at index: ${index}`)
             }
