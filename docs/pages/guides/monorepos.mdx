@@ -305,7 +305,7 @@ This is an experimental feature starting in SDK 52 and above. The process will b
 
 Often, duplicate dependencies won't cause any problems. However, native modules should never be duplicated, because only one version of a native module can be compiled for an app build at a time. Unlike JavaScript dependencies, native builds cannot contain two conflicting versions of a single native module.
 
-From **SDK 54**, you can set the [`EXPO_USE_STICKY_RESOLVER=1`](/more/expo-cli#environment-variables) environment variable to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [autolinking](/modules/autolinking/) links for your native builds.
+From **SDK 54**, you can set set `experiments.autolinkingModuleResolution` to `true` in your **app.json** to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [autolinking](/modules/autolinking/) links for your native builds.
 
 ### Script '...' does not exist
 

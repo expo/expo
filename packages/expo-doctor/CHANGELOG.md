@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug for lockfile check in monorepos. ([#39072](https://github.com/expo/expo/pull/39072) by [@entiendonull](https://github.com/entiendonull))
+
 ### 💡 Others
+
+## 1.17.0 — 2025-08-21
+
+### 🎉 New features
+
+- Add EAS platform detection, Android gitignore validation, and .expo gitignore check to project setup. ([#39007](https://github.com/expo/expo/pull/39007) by [@entiendonull](https://github.com/entiendonull))
+
+### 💡 Others
+
+- Inform users of corrupted `node_modules` if autolinking finds duplicates with all identical versions ([#39026](https://github.com/expo/expo/pull/39026) by [@kitten](https://github.com/kitten))
 
 ## 1.16.0 — 2025-08-19
 

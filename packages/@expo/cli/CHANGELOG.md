@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+- Prevent `EXPO_USE_FAST_RESOLVER` from being force enabled for other experiments ([#39073](https://github.com/expo/expo/pull/39073) by [@kitten](https://github.com/kitten))
+
+## 0.26.2 — 2025-08-21
+
+### 💡 Others
+
+- Replace `EXPO_USE_STICKY_RESOLVER` with `experiments.autolinkingModuleResolution` in app config ([#39044](https://github.com/expo/expo/pull/39044) by [@kitten](https://github.com/kitten))
+
+## 0.26.1 — 2025-08-21
+
+### 💡 Others
+
+- Apply supervisor transformer that wraps a user-configured custom transformer. This annotates initialization errors and enforces a single Metro version ([#38961](https://github.com/expo/expo/pull/38961) by [@kitten](https://github.com/kitten))
+
 ## 0.26.0 — 2025-08-19
 
 ### 🎉 New features

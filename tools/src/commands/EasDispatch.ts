@@ -18,7 +18,7 @@ import {
   RELEASES_REPO_NAME,
 } from '../Constants';
 import Git from '../Git';
-import { getOrCreateReleaseAsync, uploadReleaseAssetAsync } from '../GitHub';
+import { getOrCreateReleaseAsync, uploadReleaseAssetAsync, updateReleaseTitle } from '../GitHub';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
@@ -478,6 +478,15 @@ async function androidApkUploadAsync() {
 
       const githubArtifactUrl = res.data.browser_download_url;
       spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
+
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
+
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.androidClientUrl = githubArtifactUrl;
         sdkVersions.androidClientVersion = appVersion;
@@ -550,6 +559,15 @@ async function iosSimulatorUploadAsync() {
 
       const githubArtifactUrl = res.data.browser_download_url;
       spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
+
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
+
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.iosClientUrl = githubArtifactUrl;
         sdkVersions.iosClientVersion = appVersion;

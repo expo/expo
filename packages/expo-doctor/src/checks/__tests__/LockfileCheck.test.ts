@@ -1,5 +1,6 @@
 import { glob, GlobOptions } from 'glob';
 import { vol } from 'memfs';
+import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
 import { isFileIgnoredAsync } from '../../utils/files';
 import { LockfileCheck } from '../LockfileCheck';
@@ -7,8 +8,13 @@ import { LockfileCheck } from '../LockfileCheck';
 jest.mock('fs');
 jest.mock('glob');
 jest.mock('../../utils/files');
+jest.mock('resolve-workspace-root', () => ({
+  resolveWorkspaceRoot: jest.fn(() => null),
+}));
 
 const projectRoot = '/tmp/project';
+const monorepoRoot = '/monorepo-root';
+const appDir = '/monorepo-root/app';
 
 // required by runAsync
 const additionalProjectProps = {
@@ -81,6 +87,48 @@ describe('runAsync', () => {
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
     });
+    expect(result.isSuccessful).toBeFalsy();
+  });
+
+  // monorepo
+  it('uses monorepo root lockfile when running from a workspace app', async () => {
+    vol.fromJSON({
+      [monorepoRoot + '/yarn.lock']: 'test',
+    });
+
+    jest.mocked(resolveWorkspaceRoot).mockReturnValue(monorepoRoot);
+
+    const check = new LockfileCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      exp: { name: 'name', slug: 'slug' },
+      projectRoot: appDir,
+      hasUnusedStaticConfig: false,
+      staticConfigPath: null,
+      dynamicConfigPath: null,
+    });
+
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  it('reports multiple lockfiles found at the monorepo root', async () => {
+    vol.fromJSON({
+      [monorepoRoot + '/yarn.lock']: 'test',
+      [monorepoRoot + '/package-lock.json']: 'test',
+    });
+
+    jest.mocked(resolveWorkspaceRoot).mockReturnValue(monorepoRoot);
+
+    const check = new LockfileCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      exp: { name: 'name', slug: 'slug' },
+      projectRoot: appDir,
+      hasUnusedStaticConfig: false,
+      staticConfigPath: null,
+      dynamicConfigPath: null,
+    });
+
     expect(result.isSuccessful).toBeFalsy();
   });
 });

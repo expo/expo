@@ -164,7 +164,9 @@ class Env {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
   }
 
-  /** Enable the experimental sticky resolver for Metro. */
+  /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
+   * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
+   */
   get EXPO_USE_STICKY_RESOLVER() {
     return boolish('EXPO_USE_STICKY_RESOLVER', false);
   }

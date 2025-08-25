@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.21.3",
+  "version": "0.21.4",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "types": "build/ExpoMetroConfig.d.ts",
@@ -68,7 +68,7 @@
     "@jridgewell/trace-mapping": "^0.3.20",
     "@types/babel__core": "^7.20.5",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^5.0.2",
+    "expo-module-scripts": "^5.0.3",
     "sass": "^1.60.0"
   },
   "publishConfig": {

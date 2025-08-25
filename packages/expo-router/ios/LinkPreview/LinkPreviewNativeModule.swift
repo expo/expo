@@ -19,7 +19,7 @@ public class LinkPreviewNativeModule: Module {
         "onWillPreviewOpen",
         "onDidPreviewOpen",
         "onPreviewWillClose",
-        "onPreviewDidClose",
+        "onPreviewDidClose"
       )
     }
 

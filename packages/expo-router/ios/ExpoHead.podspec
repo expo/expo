@@ -27,6 +27,8 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
+  add_dependency(s, "RNScreens")
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',

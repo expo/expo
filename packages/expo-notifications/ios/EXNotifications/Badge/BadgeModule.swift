@@ -2,7 +2,6 @@
 
 import ExpoModulesCore
 import UIKit
-import MachO
 
 public class BadgeModule: Module {
   public func definition() -> ModuleDefinition {
@@ -14,11 +13,17 @@ public class BadgeModule: Module {
     .runOnQueue(.main)
 
     AsyncFunction("setBadgeCountAsync") { (badgeCount: Int) -> Bool in
-      let settings = await UNUserNotificationCenter.current().notificationSettings()
+      let center = UNUserNotificationCenter.current()
+
+      let settings = await center.notificationSettings()
 
       if settings.badgeSetting == .enabled {
-        Task { @MainActor in
-          EXSharedApplication().applicationIconBadgeNumber = badgeCount
+        if #available(iOS 16.0, *) {
+          try await center.setBadgeCount(badgeCount)
+        } else {
+          await MainActor.run {
+            EXSharedApplication().applicationIconBadgeNumber = badgeCount
+          }
         }
         return true
       }

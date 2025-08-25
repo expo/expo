@@ -1034,7 +1034,14 @@ export { Worm as default };
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.AArrowDown = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
+      Object.defineProperty(exports, "AArrowDown", {
+        enumerable: true,
+        get: function () {
+          return function (m) {
+            return m && m.__esModule ? m.default : m;
+          }(_$$_REQUIRE(_dependencyMap[0]));
+        }
+      });
     },"/app/lucide.js",["/app/a-arrow-down.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1489,13 +1496,13 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
           return _$$_REQUIRE(_dependencyMap[0]).z1;
         }
       });
+      exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1505,8 +1512,8 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       });
       const z1 = 0;
       var _default = {};
-      exports.default = _default;
       exports.z1 = z1;
+      exports.default = _default;
     },"/app/x1.js",[]);
     TEST_RUN_MODULE("/app/index.js");"
   `);

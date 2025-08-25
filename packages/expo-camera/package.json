@@ -37,7 +37,7 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.2"
+    "expo-module-scripts": "^5.0.3"
   },
   "peerDependencies": {
     "expo": "*",

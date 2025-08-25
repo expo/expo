@@ -382,6 +382,12 @@ export function getDefaultConfig(
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 
+/** Use to access the Expo Metro transformer path */
+export const unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
+export const internal_supervisingTransformerPath = require.resolve(
+  './transform-worker/supervising-transform-worker'
+);
+
 // re-export for use in config files.
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 

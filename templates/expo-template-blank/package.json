@@ -2,7 +2,7 @@
   "name": "expo-template-blank",
   "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
   "license": "0BSD",
-  "version": "54.0.7",
+  "version": "54.0.8",
   "main": "index.js",
   "scripts": {
     "start": "expo start",
@@ -11,7 +11,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~54.0.0-preview.4",
+    "expo": "~54.0.0-preview.6",
     "expo-status-bar": "~3.0.3",
     "react": "19.1.0",
     "react-native": "0.81.0"
