@@ -44,6 +44,7 @@ const NUM_OF_RETRIES = 6; // Number of retries for the suite
         appId: APP_ID,
         workflowFile: getMaestroFlowFilePath(projectRoot),
         confirmFirstRunPrompt: true,
+        projectRoot,
       });
 
       await retryAsync((retryNumber) => {

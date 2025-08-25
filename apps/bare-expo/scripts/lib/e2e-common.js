@@ -3,6 +3,14 @@
 const fs = require('fs/promises');
 const path = require('path');
 
+const { getDiff } = require('./get-diff.js');
+const {
+  ALL_TESTS_SPECIFIER,
+  ALWAYS_RUN_TESTS,
+  getPackagePathToTestMapping,
+} = require('../../e2e/TestSuite-test.native.js');
+const inputFile = require('../../e2e/TestSuite-test.native.js');
+
 /**
  * Parse the start mode from the command line arguments.
  * @param {string} programFilename
@@ -21,13 +29,72 @@ function getStartMode(programFilename) {
 }
 
 /**
+ * Check if selective testing is enabled via command line arguments.
+ * @returns {boolean}
+ */
+function isSelectiveTestingEnabled() {
+  return !process.argv.includes('--selective=false');
+}
+
+/**
+ * Get tests to run based on modified packages
+ * @param {string[]} modifiedFiles
+ * @returns {string[]}
+ */
+function getTestsToRun(modifiedFiles) {
+  const mapping = getPackagePathToTestMapping();
+
+  const testsToRun = new Set();
+
+  for (const [path, tests] of Object.entries(mapping)) {
+    const modifiedFileIsInPathsOfInterest = modifiedFiles.some((file) => file.startsWith(path));
+    if (!modifiedFileIsInPathsOfInterest) {
+      continue;
+    }
+    if (tests === ALL_TESTS_SPECIFIER) {
+      console.log(`Running all because of location: ${path}`);
+      return inputFile.TESTS;
+    }
+    if (typeof tests === 'string') {
+      testsToRun.add(tests);
+    } else if (Array.isArray(tests)) {
+      tests.forEach((it) => testsToRun.add(it));
+    }
+  }
+
+  if (testsToRun.size === 0) {
+    console.log('No e2e tests found for modified locations, running Basic test only');
+    return inputFile.ALWAYS_RUN_TESTS;
+  }
+
+  ALWAYS_RUN_TESTS.forEach((it) => testsToRun.add(it));
+  console.log(`Modified locations: ${Array.from(modifiedFiles).join(', ')}.`);
+  console.log(`Running tests: ${Array.from(testsToRun).join(', ')}`);
+  return Array.from(testsToRun);
+}
+
+/**
  * Generate Maestro flow yaml file
- * @param {{ appId: string; workflowFile: string; confirmFirstRunPrompt?: boolean; }} params
+ * @param {{ appId: string; workflowFile: string; confirmFirstRunPrompt?: boolean; projectRoot: string; selective?: boolean; }} params
  * @returns {Promise<void>}
  */
-async function createMaestroFlowAsync({ appId, workflowFile, confirmFirstRunPrompt }) {
-  const inputFile = require('../../e2e/TestSuite-test.native.js');
-  const testCases = inputFile.TESTS;
+async function createMaestroFlowAsync({
+  appId,
+  workflowFile,
+  confirmFirstRunPrompt,
+  projectRoot,
+  selective = isSelectiveTestingEnabled(),
+}) {
+  let testCases;
+
+  if (selective) {
+    const modifiedFiles = getDiff(projectRoot);
+    testCases = getTestsToRun(modifiedFiles);
+  } else {
+    // Run all tests (fallback behavior)
+    testCases = inputFile.TESTS;
+  }
+
   const contents = [
     `\
 appId: ${appId}
@@ -134,4 +201,5 @@ module.exports = {
   retryAsync,
   delayAsync,
   getMaestroFlowFilePath,
+  getTestsToRun,
 };

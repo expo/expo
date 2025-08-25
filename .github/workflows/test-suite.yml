@@ -1,7 +1,16 @@
 name: Test Suite e2e
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      selective:
+        description: 'Run e2e tests selectively - only run tests that correspond to edited files (default: true)'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
   push:
     branches: [main, 'sdk-*']
     paths:
@@ -125,7 +134,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧪 Run e2e tests (bare-expo)
-        run: ./scripts/start-ios-e2e-test.js --test
+        run: ./scripts/start-ios-e2e-test.js --test --selective=${{ github.event.inputs.selective || 'true' }}
         working-directory: apps/bare-expo
         timeout-minutes: 30
       - name: 📸 Store testing artifacts
@@ -245,7 +254,7 @@ jobs:
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: ./scripts/start-android-e2e-test.js --test
+          script: ./scripts/start-android-e2e-test.js --test --selective=${{ github.event.inputs.selective || 'true' }}
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
