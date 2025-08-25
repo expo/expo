@@ -10,6 +10,7 @@ isNew: true
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 `expo-file-system` provides access to files and directories stored on a device or bundled as assets into the native project. It also allows downloading files from the network.
 
@@ -37,23 +38,23 @@ The file or directory does not need to exist &mdash; an error will be thrown fro
 
 ## Examples
 
-### Writing and reading text files
-
+<Collapsible summary="Writing and reading text files">
 ```ts example.ts
 import { File, Paths } from 'expo-file-system';
 
 try {
-  const file = new File(Paths.cache, 'example.txt');
-  file.create(); // can throw an error if the file already exists or no permission to create it
-  file.write('Hello, world!');
-  console.log(file.textSync()); // Hello, world!
+const file = new File(Paths.cache, 'example.txt');
+file.create(); // can throw an error if the file already exists or no permission to create it
+file.write('Hello, world!');
+console.log(file.textSync()); // Hello, world!
 } catch (error) {
-  console.error(error);
+console.error(error);
 }
 ```
 
-### Picking files using system pickers
+</Collapsible>
 
+<Collapsible summary="Picking files using system pickers">
 Usage with `expo-document-picker`:
 
 ```ts example.ts
@@ -82,8 +83,9 @@ try {
 }
 ```
 
-### Downloading files
+</Collapsible>
 
+<Collapsible summary="Downloading files">
 Using `downloadFileAsync`:
 
 ```ts example.ts
@@ -95,7 +97,7 @@ try {
   destination.create();
   const output = await File.downloadFileAsync(url, destination);
   console.log(output.exists); // true
-  console.log(output.uri); // path to the downloaded file, e.g. '${cacheDirectory}/pdfs/sample.pdf'
+  console.log(output.uri); // path to the downloaded file, e.g., '${cacheDirectory}/pdfs/sample.pdf'
 } catch (error) {
   console.error(error);
 }
@@ -109,12 +111,13 @@ import { File } from 'expo-file-system';
 
 const url = 'https://pdfobject.com/pdf/sample.pdf';
 const response = await fetch(url);
-const src = new File(testDirectory, 'file.pdf');
+const src = new File(Paths.cache, 'file.pdf');
 src.write(await response.bytes());
 ```
 
-### Uploading files using `expo/fetch`
+</Collapsible>
 
+<Collapsible summary="Uploading files using `expo/fetch`">
 You can upload files as blobs directly with `fetch` built into the Expo package:
 
 ```ts example.ts
@@ -135,25 +138,24 @@ Or using the `FormData` constructor:
 
 ```ts example.ts
 import { fetch } from 'expo/fetch';
+import { File, Paths } from 'expo-file-system';
 
-const src = new File(testDirectory, 'file.txt');
+const file = new File(Paths.cache, 'file.txt');
 file.write('Hello, world!');
-const blob = src.blob();
-
+const blob = file.blob();
 const formData = new FormData();
 formData.append('data', blob);
-
 const response = await fetch('https://example.com', {
   method: 'POST',
   body: formData,
 });
 ```
 
-### Moving and copying files
+</Collapsible>
 
+<Collapsible summary="Moving and copying files">
 ```ts example.ts
 import { Directory, File, Paths } from 'expo-file-system';
-
 try {
   const file = new File(Paths.document, 'example.txt');
   file.create();
@@ -166,24 +168,24 @@ try {
   console.error(error);
 }
 ```
+</Collapsible>
 
-### Using legacy FileSystem API
-
+<Collapsible summary="Using legacy FileSystem API">
 ```ts example.ts
 import * as FileSystem from 'expo-file-system/legacy';
 import { File, Paths } from 'expo-file-system';
 
 try {
-  const file = new File(Paths.cache, 'example.txt');
-  const content = await FileSystem.readAsStringAsync(file.uri);
-  console.log(content);
+const file = new File(Paths.cache, 'example.txt');
+const content = await FileSystem.readAsStringAsync(file.uri);
+console.log(content);
 } catch (error) {
-  console.error(error);
+console.error(error);
 }
 ```
+</Collapsible>
 
-### Listing directory contents recursively
-
+<Collapsible summary="Listing directory contents recursively">
 ```ts example.ts
 import { Directory, Paths } from 'expo-file-system';
 
@@ -205,6 +207,8 @@ try {
   console.error(error);
 }
 ```
+
+</Collapsible>
 
 ## API
 
