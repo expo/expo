@@ -12,6 +12,7 @@ public final class CalendarNextModule: Module {
 
   private var calendarDialogDelegate: CalendarDialogDelegate?
 
+  // swiftlint:disable:next function_body_length cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("CalendarNext")
 

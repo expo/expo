@@ -13,7 +13,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
   init(event: EKEvent) {
     self.event = event
   }
-  
+
   convenience init(event: EKEvent, span: EKSpan) {
     self.init(event: event)
     self.span = span
@@ -62,11 +62,11 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     guard let calendarEvent = self.event else {
       throw ItemNoLongerExistsException()
     }
-    
+
     try eventStore.remove(calendarEvent, span: self.span ?? .thisEvent)
     self.event = nil
   }
-  
+
   func initialize(eventRecord: EventNext, nullableFields: [String]? = nil) throws {
     guard let event = self.event else {
       throw EventNotFoundException("EKevent not found")

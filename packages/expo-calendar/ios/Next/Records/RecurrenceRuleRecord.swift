@@ -2,29 +2,29 @@ import ExpoModulesCore
 
 internal struct RecurrenceRuleNext: Record {
   @Field
-  var endDate: String? = nil
+  var endDate: String?
 
   @Field
-  var frequency: String? = nil
+  var frequency: String?
 
   @Field
-  var interval: Int? = nil
+  var interval: Int?
 
   @Field
-  var occurrence: Int? = nil
+  var occurrence: Int?
 
   @Field
-  var daysOfTheWeek: [[String: Int?]]? = nil
+  var daysOfTheWeek: [[String: Int?]]?
 
   @Field
-  var daysOfTheMonth: [Int]? = nil
+  var daysOfTheMonth: [Int]?
 
   @Field
-  var daysOfTheYear: [Int]? = nil
+  var daysOfTheYear: [Int]?
 
   @Field
-  var monthsOfTheYear: [Int]? = nil
+  var monthsOfTheYear: [Int]?
 
   @Field
-  var setPositions: [Int]? = nil
+  var setPositions: [Int]?
 }
