@@ -95,6 +95,7 @@ export function convertTabPropsToOptions({
   role,
   disablePopToTop,
   disableScrollToTop,
+  unstable__addBottomBarInset,
 }: NativeTabTriggerProps) {
   const initialOptions: ExtendedNativeTabOptions = {
     ...options,
@@ -106,6 +107,8 @@ export function convertTabPropsToOptions({
       },
     },
     role: role ?? options?.role,
+    unstable__addBottomBarInset:
+      unstable__addBottomBarInset ?? options?.unstable__addBottomBarInset,
   };
   const allowedChildren = filterAllowedChildrenElements(children, [
     Badge,

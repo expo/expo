@@ -71,7 +71,7 @@ function NativeTabTriggerImpl(props) {
 exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     TabBar: NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
 });
-function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }) {
+function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, unstable__addBottomBarInset, }) {
     const initialOptions = {
         ...options,
         hidden: !!hidden,
@@ -82,6 +82,7 @@ function convertTabPropsToOptions({ options, hidden, children, role, disablePopT
             },
         },
         role: role ?? options?.role,
+        unstable__addBottomBarInset: unstable__addBottomBarInset ?? options?.unstable__addBottomBarInset,
     };
     const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
         elements_1.Badge,
