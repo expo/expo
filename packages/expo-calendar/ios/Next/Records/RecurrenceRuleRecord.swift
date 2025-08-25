@@ -1,30 +1,32 @@
 import ExpoModulesCore
 
+// swiftlint:disable redundant_optional_initialization
 internal struct RecurrenceRuleNext: Record {
   @Field
-  var endDate: String?
+  var endDate: String? = nil
 
   @Field
-  var frequency: String?
+  var frequency: String? = nil
 
   @Field
-  var interval: Int?
+  var interval: Int? = nil
 
   @Field
-  var occurrence: Int?
+  var occurrence: Int? = nil
 
   @Field
-  var daysOfTheWeek: [[String: Int?]]?
+  var daysOfTheWeek: [[String: Int?]]? = nil
 
   @Field
-  var daysOfTheMonth: [Int]?
+  var daysOfTheMonth: [Int]? = nil
 
   @Field
-  var daysOfTheYear: [Int]?
+  var daysOfTheYear: [Int]? = nil
 
   @Field
-  var monthsOfTheYear: [Int]?
+  var monthsOfTheYear: [Int]? = nil
 
   @Field
-  var setPositions: [Int]?
+  var setPositions: [Int]? = nil
 }
+// swiftlint:enable redundant_optional_initialization

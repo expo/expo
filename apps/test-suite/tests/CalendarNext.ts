@@ -3,7 +3,7 @@ import {
   ExpoCalendar,
   ExpoCalendarEvent,
   getCalendars,
-  getDefaultCalendarNext,
+  getDefaultCalendar,
   requestCalendarPermissionsAsync,
   requestRemindersPermissionsAsync,
   getSources,
@@ -367,9 +367,9 @@ export async function test(t) {
       });
 
       if (Platform.OS === 'ios') {
-        t.describe('getDefaultCalendarNext()', () => {
+        t.describe('getDefaultCalendar()', () => {
           t.it('get default calendar', async () => {
-            const calendar = getDefaultCalendarNext();
+            const calendar = getDefaultCalendar();
 
             testCalendarShape(calendar);
           });
