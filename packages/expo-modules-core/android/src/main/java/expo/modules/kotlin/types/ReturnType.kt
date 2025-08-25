@@ -1,9 +1,8 @@
 package expo.modules.kotlin.types
 
 import android.os.Bundle
-import expo.modules.kotlin.types.ReturnTypeProvider.types
+import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
-import kotlin.collections.set
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -97,7 +96,7 @@ interface ExperimentalJSTypeConverter<T> {
   class RecordConverter : ExperimentalJSTypeConverter<expo.modules.kotlin.records.Record> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<expo.modules.kotlin.records.Record?>(value)
-      return value?.toJSValue(JSTypeConverter.DefaultContainerProvider)
+      return value?.toJSValueExperimental()
     }
   }
 
@@ -169,6 +168,13 @@ interface ExperimentalJSTypeConverter<T> {
       return JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
     }
   }
+
+  class FormattedRecordConverter : ExperimentalJSTypeConverter<FormattedRecord<*>> {
+    override fun convertToJS(value: Any?): Any? {
+      enforceType<FormattedRecord<*>?>(value)
+      return value?.toJSValueExperimental()
+    }
+  }
 }
 
 class ReturnType(
@@ -198,6 +204,7 @@ class ReturnType(
       inheritFrom<Map<*, *>>() -> ExperimentalJSTypeConverter.MapConverter()
       inheritFrom<Enum<*>>() -> ExperimentalJSTypeConverter.EnumConverter()
       inheritFrom<expo.modules.kotlin.records.Record>() -> ExperimentalJSTypeConverter.RecordConverter()
+      inheritFrom<FormattedRecord<*>>() -> ExperimentalJSTypeConverter.FormattedRecordConverter()
       inheritFrom<expo.modules.kotlin.typedarray.RawTypedArrayHolder>() -> ExperimentalJSTypeConverter.RawTypedArrayHolderConverter()
       inheritFrom<Array<*>>() -> ExperimentalJSTypeConverter.ArrayConverter()
       inheritFrom<Collection<*>>() -> ExperimentalJSTypeConverter.CollectionConverter()
