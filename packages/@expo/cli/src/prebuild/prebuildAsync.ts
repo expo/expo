@@ -60,6 +60,8 @@ export async function prebuildAsync(
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
+    /** Skip git confirmation prompt and continue with uncommitted changes. */
+    yes?: boolean;
   }
 ): Promise<PrebuildResults | null> {
   setNodeEnv('development');
@@ -81,7 +83,7 @@ export async function prebuildAsync(
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
-    if (await maybeBailOnGitStatusAsync()) {
+    if (await maybeBailOnGitStatusAsync({ yes: options.yes })) {
       return null;
     }
     // Clear the native folders before syncing

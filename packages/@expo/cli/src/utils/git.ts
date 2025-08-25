@@ -6,13 +6,19 @@ import { isInteractive } from './interactive';
 import { confirmAsync } from './prompts';
 import * as Log from '../log';
 
-export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
+export async function maybeBailOnGitStatusAsync(options: { yes?: boolean } = {}): Promise<boolean> {
   if (env.EXPO_NO_GIT_STATUS) {
     Log.warn(
       'Git status is dirty but the command will continue because EXPO_NO_GIT_STATUS is enabled...'
     );
     return false;
   }
+
+  // user passed --yes flag to skip git confirmation prompt
+  if (options.yes) {
+    return false;
+  }
+
   const isGitStatusClean = await validateGitStatusAsync();
 
   // Give people a chance to bail out if git working tree is dirty
