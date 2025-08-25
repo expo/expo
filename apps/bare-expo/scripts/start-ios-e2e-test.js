@@ -6,14 +6,20 @@ const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
 const path = require('path');
 
-const { createMaestroFlowAsync, ensureDirAsync, getStartMode, retryAsync } = require('./lib/e2e-common.js');
+const {
+  createMaestroFlowAsync,
+  ensureDirAsync,
+  getStartMode,
+  retryAsync,
+  getMaestroFlowFilePath,
+} = require('./lib/e2e-common.js');
 
 const TARGET_DEVICE = 'iPhone 16 Pro';
 const TARGET_DEVICE_IOS_VERSION = 18;
 const APP_ID = 'dev.expo.Payments';
-const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
+const NUM_OF_RETRIES = 6; // Number of retries for the suite
 
 (async () => {
   try {
@@ -32,7 +38,16 @@ const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro d
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
-      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), 6);
+      await createMaestroFlowAsync({
+        appId: APP_ID,
+        workflowFile: getMaestroFlowFilePath(projectRoot),
+        confirmFirstRunPrompt: true,
+      });
+
+      await retryAsync((retryNumber) => {
+        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+        return testAsync(projectRoot, deviceId, appBinaryPath);
+      }, NUM_OF_RETRIES);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
@@ -41,10 +56,10 @@ const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro d
 })();
 
 /**
-  * @param {string} projectRoot
-  * @param {string} deviceId
-  * @returns {Promise<string>}
-  */
+ * @param {string} projectRoot
+ * @param {string} deviceId
+ * @returns {Promise<string>}
+ */
 async function buildAsync(projectRoot, deviceId) {
   console.log('\n💿 Building App');
   const buildOutput = await XcodeBuild.buildAsync({
@@ -71,16 +86,12 @@ async function buildAsync(projectRoot, deviceId) {
 }
 
 /**
-  * @param {string} projectRoot
-  * @param {string} deviceId
-  * @param {string} appBinaryPath
-  * @returns {Promise<void>}
-  */
-async function testAsync(
-  projectRoot,
-  deviceId,
-  appBinaryPath
-) {
+ * @param {string} projectRoot
+ * @param {string} deviceId
+ * @param {string} appBinaryPath
+ * @returns {Promise<void>}
+ */
+async function testAsync(projectRoot, deviceId, appBinaryPath) {
   try {
     console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
     await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
@@ -91,12 +102,7 @@ async function testAsync(
     console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
-    const maestroFlowFilePath = path.join(projectRoot, MAESTRO_GENERATED_FLOW);
-    await createMaestroFlowAsync({
-      appId: APP_ID,
-      workflowFile: maestroFlowFilePath,
-      confirmFirstRunPrompt: true,
-    });
+    const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
     console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
     await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
       stdio: 'inherit',
@@ -112,9 +118,9 @@ async function testAsync(
 
 /**
  * Query simulator UDID
-  * @param {number} iosVersion
-  * @param {string} device
-  * @returns {Promise<string | null>}
+ * @param {number} iosVersion
+ * @param {string} device
+ * @returns {Promise<string | null>}
  */
 async function queryDeviceIdAsync(iosVersion, device) {
   const { stdout } = await spawnAsync('xcrun', [
@@ -128,9 +134,7 @@ async function queryDeviceIdAsync(iosVersion, device) {
   const { devices: deviceWithRuntimes } = JSON.parse(stdout);
 
   // Try to find the target device first
-  for (const [runtime, devices] of Object.entries(
-    deviceWithRuntimes
-  )) {
+  for (const [runtime, devices] of Object.entries(deviceWithRuntimes)) {
     if (runtime.startsWith(`com.apple.CoreSimulator.SimRuntime.iOS-${iosVersion}-`)) {
       for (const { name, udid } of devices) {
         if (name === device) {

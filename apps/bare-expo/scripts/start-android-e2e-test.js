@@ -10,12 +10,13 @@ const {
   fileExistsAsync,
   getStartMode,
   retryAsync,
+  getMaestroFlowFilePath,
 } = require('./lib/e2e-common.js');
 
 const APP_ID = 'dev.expo.payments';
-const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'android/app/build/outputs/apk/release/app-release.apk';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
+const NUM_OF_RETRIES = 6; // Number of retries for the suite
 
 (async () => {
   try {
@@ -39,7 +40,16 @@ const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro d
       if (!deviceId) {
         throw new Error(`No connected Android device found`);
       }
-      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath, adbPath), 6);
+      await createMaestroFlowAsync({
+        appId: APP_ID,
+        workflowFile: getMaestroFlowFilePath(projectRoot),
+        confirmFirstRunPrompt: true,
+      });
+
+      await retryAsync((retryNumber) => {
+        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+        return testAsync(projectRoot, deviceId, appBinaryPath, adbPath);
+      }, NUM_OF_RETRIES);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
@@ -57,26 +67,17 @@ async function buildAsync(projectRoot) {
 }
 
 /**
-  * @param {string} projectRoot
-  * @param {string} deviceId
-  * @param {string} appBinaryPath
-  * @param {string} adbPath
-  * @returns {Promise<void>}
-  */
-async function testAsync(
-  projectRoot,
-  deviceId,
-  appBinaryPath,
-  adbPath
-) {
+ * @param {string} projectRoot
+ * @param {string} deviceId
+ * @param {string} appBinaryPath
+ * @param {string} adbPath
+ * @returns {Promise<void>}
+ */
+async function testAsync(projectRoot, deviceId, appBinaryPath, adbPath) {
   console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
   await spawnAsync(adbPath, ['-s', deviceId, 'install', '-r', appBinaryPath]);
 
-  const maestroFlowFilePath = path.join(projectRoot, MAESTRO_GENERATED_FLOW);
-  await createMaestroFlowAsync({
-    appId: APP_ID,
-    workflowFile: maestroFlowFilePath,
-  });
+  const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
   console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
   await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
     stdio: 'inherit',
@@ -105,9 +106,9 @@ async function findAdbAsync() {
 }
 
 /**
-  * @param {string} adbPath
-  * @returns {Promise<string | null>}
-  */
+ * @param {string} adbPath
+ * @returns {Promise<string | null>}
+ */
 async function queryDeviceIdAsync(adbPath) {
   const { stdout } = await spawnAsync(adbPath, ['devices']);
   const lines = stdout.split('\n');

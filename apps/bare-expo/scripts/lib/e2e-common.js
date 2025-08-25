@@ -1,6 +1,7 @@
 // @ts-check
 
 const fs = require('fs/promises');
+const path = require('path');
 
 /**
  * Parse the start mode from the command line arguments.
@@ -24,11 +25,7 @@ function getStartMode(programFilename) {
  * @param {{ appId: string; workflowFile: string; confirmFirstRunPrompt?: boolean; }} params
  * @returns {Promise<void>}
  */
-async function createMaestroFlowAsync({
-  appId,
-  workflowFile,
-  confirmFirstRunPrompt,
-}) {
+async function createMaestroFlowAsync({ appId, workflowFile, confirmFirstRunPrompt }) {
   const inputFile = require('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS;
   const contents = [
@@ -83,21 +80,17 @@ async function ensureDirAsync(dirPath) {
 /**
  * Retry an async function a number of times with a delay between each attempt.
  * @template T
- * @param {() => Promise<T>} fn
+ * @param {(retryNumber: number) => Promise<T>} fn
  * @param {number} retries
  * @param {number=} delayAfterErrorMs
  * @returns {Promise<T>}
  */
-async function retryAsync(
-  fn,
-  retries,
-  delayAfterErrorMs = 5000
-) {
+async function retryAsync(fn, retries, delayAfterErrorMs = 5000) {
   /** @types {Error | undefined} */
   let lastError;
   for (let i = 0; i < retries; ++i) {
     try {
-      return await fn();
+      return await fn(i);
     } catch (e) {
       lastError = e;
       await delayAsync(delayAfterErrorMs);
@@ -124,6 +117,15 @@ async function delayAsync(timeMs) {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
 
+/**
+ * @param {string} projectRoot
+ * @returns {string}
+ */
+const getMaestroFlowFilePath = (projectRoot) => {
+  const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
+  return path.join(projectRoot, MAESTRO_GENERATED_FLOW);
+};
+
 module.exports = {
   getStartMode,
   createMaestroFlowAsync,
@@ -131,4 +133,5 @@ module.exports = {
   fileExistsAsync,
   retryAsync,
   delayAsync,
+  getMaestroFlowFilePath,
 };
