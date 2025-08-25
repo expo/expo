@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] improve bitmap rendering for `renderToImageAsync` ([#39118](https://github.com/expo/expo/pull/39118) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - Fix types and adjust platform checks. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
