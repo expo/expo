@@ -1124,6 +1124,42 @@ export async function test(t) {
             t.expect(occurrence.startDate).toBe(new Date(2020, 3, 5, 9).toISOString());
             t.expect(occurrence.endDate).toBe(new Date(2020, 3, 5, 10).toISOString());
           });
+
+          t.it('updates future occurrences in a recurring event', async () => {
+            const event = createTestEvent(calendar, {
+              recurrenceRule: {
+                frequency: Calendar.Frequency.DAILY,
+              },
+            });
+
+            const initialEvents = await calendar.listEvents(
+              new Date(2020, 3, 4),
+              new Date(2020, 3, 8)
+            );
+            t.expect(initialEvents.length).toBe(4);
+
+            const occurrence = event.getOccurrence({
+              futureEvents: true,
+              instanceStartDate: new Date(2020, 3, 6, 9),
+            });
+
+            // Update all events after the occurrence
+            const newTitle = 'Updated title';
+            occurrence.update({
+              title: newTitle,
+            });
+
+            const fetchedEvents = await calendar.listEvents(
+              new Date(2020, 3, 4),
+              new Date(2020, 3, 8)
+            );
+
+            t.expect(fetchedEvents.length).toBe(4);
+            t.expect(fetchedEvents[0].title).toBe(defaultEventData.title);
+            t.expect(fetchedEvents[1].title).toBe(defaultEventData.title);
+            t.expect(fetchedEvents[2].title).toBe(newTitle);
+            t.expect(fetchedEvents[3].title).toBe(newTitle);
+          });
         }
 
         t.it('updates a recurrence rule with occurrence', async () => {

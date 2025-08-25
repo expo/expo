@@ -1,5 +1,4 @@
 import type { PermissionResponse } from 'expo-modules-core';
-import type { Source } from '../Calendar';
 declare class ExpoGoCalendarNextStub {
     static readonly ExpoCalendar: {
         new (): {};
@@ -14,15 +13,14 @@ declare class ExpoGoCalendarNextStub {
         new (): {};
     };
     getDefaultCalendar(): void;
-    getAllCalendars(): void;
-    getCalendars(): void;
-    createCalendarNext(): void;
-    listEvents(): void;
+    createCalendar(): void;
+    getCalendars(): Promise<void>;
+    listEvents(): Promise<void>;
     requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
     getCalendarPermissionsAsync(): Promise<PermissionResponse>;
     requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
     getRemindersPermissionsAsync(): Promise<PermissionResponse>;
-    getSources(): Source[];
+    getSources(): void;
 }
 export default ExpoGoCalendarNextStub;
 //# sourceMappingURL=ExpoGoCalendarNextStub.d.ts.map

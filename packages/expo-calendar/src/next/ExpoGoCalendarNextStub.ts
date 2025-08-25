@@ -1,7 +1,5 @@
 import type { PermissionResponse } from 'expo-modules-core';
 
-import type { Source } from '../Calendar';
-
 class ExpoGoCalendarNextStub {
   static readonly ExpoCalendar = class ExpoCalendar {
     constructor() {
@@ -34,19 +32,15 @@ class ExpoGoCalendarNextStub {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  getAllCalendars(): void {
+  createCalendar(): void {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  getCalendars(): void {
+  async getCalendars(): Promise<void> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  createCalendarNext(): void {
-    throw new Error('Calendar@next functionality is not available in Expo Go');
-  }
-
-  listEvents(): void {
+  async listEvents(): Promise<void> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
@@ -66,7 +60,7 @@ class ExpoGoCalendarNextStub {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  getSources(): Source[] {
+  getSources(): void {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 }

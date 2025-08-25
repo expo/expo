@@ -22,16 +22,13 @@ class ExpoGoCalendarNextStub {
     getDefaultCalendar() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    getAllCalendars() {
+    createCalendar() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    getCalendars() {
+    async getCalendars() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    createCalendarNext() {
-        throw new Error('Calendar@next functionality is not available in Expo Go');
-    }
-    listEvents() {
+    async listEvents() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
     async requestCalendarPermissionsAsync() {
