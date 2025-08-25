@@ -289,6 +289,12 @@ export const glassEffect = (params?: {
   shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
 }) => createModifier('glassEffect', params);
 
+/**
+ * Associates an identity value to Liquid Glass effects defined within a `GlassEffectContainer`.
+ */
+export const glassEffectId = (id: string, namespace: string) =>
+  createModifier('glassEffectId', { id, namespace });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -333,6 +339,7 @@ export type BuiltInModifier =
   | ReturnType<typeof aspectRatio>
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
+  | ReturnType<typeof glassEffectId>
   | ReturnType<typeof animation>;
 
 /**
