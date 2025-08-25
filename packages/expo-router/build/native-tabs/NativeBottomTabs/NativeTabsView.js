@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
 const react_1 = __importStar(require("react"));
 const react_native_screens_1 = require("react-native-screens");
+const NativeTabsBottomInsetComponent_1 = require("./NativeTabsBottomInsetComponent");
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const utils_1 = require("./utils");
@@ -123,6 +124,7 @@ function Screen(props) {
     }
     return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(descriptor.options.icon)} iconResource={getAndroidIconResource(descriptor.options.icon)} icon={icon} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
       {descriptor.render()}
+      <NativeTabsBottomInsetComponent_1.NativeTabsBottomInsetComponent isActive={!!descriptor.options.unstable__addBottomBarInset}/>
     </react_native_screens_1.BottomTabsScreen>);
 }
 function convertOptionsIconToPropsIcon(icon) {

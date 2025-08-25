@@ -122,6 +122,14 @@ export interface NativeTabOptions extends DefaultRouterOptions {
      * @platform web
      */
     indicatorColor?: ColorValue;
+    /**
+     * When set to `true`, the tab bar will add a bottom inset to your content, so that it is not obscured by the tab bar.
+     *
+     * On iOS use ScrollView with `contentInsetAdjustmentBehavior="always"` to avoid content being obscured.
+     *
+     * @platform android
+     */
+    unstable__addBottomBarInset?: boolean;
 }
 export type SymbolOrImageSource = {
     /**
@@ -378,6 +386,14 @@ export interface NativeTabTriggerProps {
      * @platform ios
      */
     role?: NativeTabsTabBarItemRole;
+    /**
+     * When set to `true`, the tab bar will add a bottom inset to your content, so that it is not obscured by the tab bar.
+     *
+     * On iOS use ScrollView with `contentInsetAdjustmentBehavior="always"` to avoid content being obscured.
+     *
+     * @platform android
+     */
+    unstable__addBottomBarInset?: boolean;
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];

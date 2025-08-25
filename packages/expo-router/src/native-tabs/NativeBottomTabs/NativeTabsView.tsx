@@ -9,6 +9,7 @@ import {
   type BottomTabsScreenProps,
 } from 'react-native-screens';
 
+import { NativeTabsBottomInsetComponent } from './NativeTabsBottomInsetComponent';
 import {
   appendSelectedStyleToAppearance,
   convertStyleToAppearance,
@@ -214,6 +215,7 @@ function Screen(props: {
       systemItem={descriptor.options.role}
       isFocused={isFocused}>
       {descriptor.render()}
+      <NativeTabsBottomInsetComponent isActive={!!descriptor.options.unstable__addBottomBarInset} />
     </BottomTabsScreen>
   );
 }

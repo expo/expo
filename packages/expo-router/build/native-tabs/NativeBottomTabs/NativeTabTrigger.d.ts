@@ -45,7 +45,7 @@ declare function NativeTabTriggerImpl(props: NativeTabTriggerProps): null;
 export declare const NativeTabTrigger: typeof NativeTabTriggerImpl & {
     TabBar: typeof NativeTabsTriggerTabBar;
 };
-export declare function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }: NativeTabTriggerProps): ExtendedNativeTabOptions;
+export declare function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, unstable__addBottomBarInset, }: NativeTabTriggerProps): ExtendedNativeTabOptions;
 export declare function isNativeTabTrigger(child: ReactNode, contextKey?: string): child is ReactElement<NativeTabTriggerProps & {
     name: string;
 }>;
