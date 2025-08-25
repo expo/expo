@@ -120,6 +120,7 @@ export const home = [
         makePage('config-plugins/plugins.mdx'),
         makePage('config-plugins/mods.mdx'),
         makePage('config-plugins/dangerous-mods.mdx'),
+        makePage('config-plugins/development-for-libraries.mdx'),
         makePage('config-plugins/development-and-debugging.mdx'),
         makePage('config-plugins/patch-project.mdx'),
       ],
