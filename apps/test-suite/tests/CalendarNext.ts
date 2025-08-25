@@ -367,36 +367,6 @@ export async function test(t) {
       });
 
       if (Platform.OS === 'ios') {
-        t.describe('getReminderById()', () => {
-          let calendar: ExpoCalendar;
-          let reminder: ExpoCalendarReminder;
-
-          t.beforeEach(async () => {
-            calendar = await getReminderCalendar();
-            reminder = createTestReminder(calendar);
-          });
-
-          t.it('returns a reminder by its ID', async () => {
-            const fetchedReminder = ExpoCalendarReminder.get(reminder.id);
-            t.expect(fetchedReminder).toBeDefined();
-            t.expect(fetchedReminder).toEqual(reminder);
-          });
-
-          t.it('returns a modified reminder', async () => {
-            reminder.update({
-              title: 'New title',
-            });
-
-            const fetchedReminder = ExpoCalendarReminder.get(reminder.id);
-            t.expect(fetchedReminder).toBeDefined();
-            t.expect(fetchedReminder.title).toBe('New title');
-          });
-
-          t.afterEach(async () => {
-            reminder.delete();
-          });
-        });
-
         t.describe('getDefaultCalendarNext()', () => {
           t.it('get default calendar', async () => {
             const calendar = getDefaultCalendarNext();
@@ -1594,6 +1564,16 @@ export async function test(t) {
             } catch (e) {
               t.expect(e).toBeDefined();
             }
+          });
+
+          t.it('returns a modified reminder', async () => {
+            reminder.update({
+              title: 'New title',
+            });
+
+            const fetchedReminder = ExpoCalendarReminder.get(reminder.id);
+            t.expect(fetchedReminder).toBeDefined();
+            t.expect(fetchedReminder.title).toBe('New title');
           });
 
           t.afterEach(async () => {
