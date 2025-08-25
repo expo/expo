@@ -1,6 +1,7 @@
 export * from './AlertDialog';
 export * from './Button';
 export * from './ContextMenu';
+export * from './Carousel';
 export * from './DatePicker';
 export * from './Picker';
 export * from './Progress';
