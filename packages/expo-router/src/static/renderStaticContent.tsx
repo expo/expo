@@ -14,9 +14,11 @@ import ReactDOMServer from 'react-dom/server.node';
 import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
+import { LoaderDataScript } from './html';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { Head } from '../head';
+import { LoaderContext } from '../loaders/context';
 
 const debug = require('debug')('expo:router:renderStaticContent');
 
@@ -32,7 +34,12 @@ function resetReactNavigationContexts() {
   global[contexts] = new Map<string, React.Context<any>>();
 }
 
-export async function getStaticContent(location: URL): Promise<string> {
+export type GetStaticContentOptions = { loader?: { enabled: boolean; data?: any } };
+
+export async function getStaticContent(
+  location: URL,
+  options?: GetStaticContentOptions
+): Promise<string> {
   const headContext: { helmet?: any } = {};
 
   const ref = React.createRef<ServerContainerRef>();
@@ -64,9 +71,15 @@ export async function getStaticContent(location: URL): Promise<string> {
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
+  const wrappedLoaderData = options?.loader?.enabled
+    ? { [location.pathname]: options.loader.data ?? {} }
+    : null;
+
   const html = await ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
-      <ServerContainer ref={ref}>{element}</ServerContainer>
+      <LoaderContext value={wrappedLoaderData}>
+        <ServerContainer ref={ref}>{element}</ServerContainer>
+      </LoaderContext>
     </Head.Provider>
   );
 
@@ -82,6 +95,14 @@ export async function getStaticContent(location: URL): Promise<string> {
   // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
+
+  // Inject loader data script when server loaders are enabled
+  if (options?.loader?.enabled) {
+    const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
+      <LoaderDataScript data={wrappedLoaderData || {}} />
+    );
+    output = output.replace('</head>', `${loaderDataScript}</head>`);
+  }
 
   return '<!DOCTYPE html>' + output;
 }

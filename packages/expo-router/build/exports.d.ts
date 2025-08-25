@@ -1,5 +1,5 @@
 import { Navigator, Slot } from './views/Navigator';
-export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, } from './hooks';
+export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, useLoaderData, } from './hooks';
 export { router, Router } from './imperative-api';
 export * from './link/Link';
 export * from './link/elements';

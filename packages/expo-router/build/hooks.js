@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useRouteInfo = void 0;
+exports.useLoaderData = useLoaderData;
 exports.useRootNavigationState = useRootNavigationState;
 exports.useRootNavigation = useRootNavigation;
 exports.useNavigationContainerRef = useNavigationContainerRef;
@@ -23,6 +24,87 @@ const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
 const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
+const context_1 = require("./loaders/context");
+const utils_1 = require("./loaders/utils");
+const loaderDataCache = new Map();
+const loaderPromiseCache = new Map();
+/**
+ * Returns the data loaded by the route's loader function. This hook only works
+ * when `web.output: "server" | "static"` is configured in your app config.
+ *
+ * @example
+ * ```tsx app/index.tsx
+ * // Route file
+ * export async function loader({ params }) {
+ *   return { user: await fetchUser(params.id) };
+ * }
+ *
+ * export default function UserRoute() {
+ *   const data = useLoaderData(loader);
+ *   return <Text>{data.user.name}</Text>;
+ * }
+ * ```
+ */
+function useLoaderData(loader) {
+    const contextKey = (0, Route_1.useContextKey)();
+    const localParams = useLocalSearchParams();
+    const loaderDataContext = react_1.default.use(context_1.LoaderContext);
+    // Compute route-specific path for caching. This replaces dynamic segments with actual values
+    // e.g., "/posts/[id]" with params {id: "123"} becomes "/posts/123"
+    const routeSpecificPath = react_1.default.useMemo(() => {
+        // Replace dynamic segments [param] and [...param] with actual values
+        let resolvedPath = contextKey.startsWith('/') ? contextKey : `/${contextKey}`;
+        Object.entries(localParams).forEach(([key, value]) => {
+            // Handle catch-all routes [...param]
+            if (resolvedPath.includes(`[...${key}]`)) {
+                const replacement = Array.isArray(value) ? value.join('/') : String(value || '');
+                resolvedPath = resolvedPath.replace(`[...${key}]`, replacement);
+            }
+            // Handle dynamic segments [param]
+            else if (resolvedPath.includes(`[${key}]`)) {
+                resolvedPath = resolvedPath.replace(`[${key}]`, String(value || ''));
+            }
+        });
+        // Clean up path (remove /index, trailing slashes)
+        return (resolvedPath
+            .replace(/\/index$/, '/')
+            .replace(/\/+/g, '/')
+            .replace(/\/$/, '') || '/');
+    }, [contextKey, localParams]);
+    // This is used by the server at build time
+    if (loaderDataContext && routeSpecificPath in loaderDataContext) {
+        return loaderDataContext[routeSpecificPath];
+    }
+    // Check for preloaded data using route-specific path (if available)
+    if (globalThis.__EXPO_ROUTER_LOADER_DATA__) {
+        const preloadedData = globalThis.__EXPO_ROUTER_LOADER_DATA__[routeSpecificPath];
+        if (preloadedData !== undefined) {
+            return preloadedData;
+        }
+    }
+    // Check cache for route-specific data
+    if (loaderDataCache.has(routeSpecificPath)) {
+        return loaderDataCache.get(routeSpecificPath);
+    }
+    // Fetch data if not cached
+    if (!loaderPromiseCache.has(routeSpecificPath)) {
+        const promise = (0, utils_1.fetchLoaderModule)(routeSpecificPath)
+            .then((data) => {
+            loaderDataCache.set(routeSpecificPath, data);
+            loaderPromiseCache.delete(routeSpecificPath);
+            return data;
+        })
+            .catch((error) => {
+            loaderPromiseCache.delete(routeSpecificPath);
+            console.error(`Failed to load loader data for route: ${routeSpecificPath}:`, error);
+            throw new Error(`Failed to load loader data for route: ${routeSpecificPath}`, {
+                cause: error,
+            });
+        });
+        loaderPromiseCache.set(routeSpecificPath, promise);
+    }
+    return react_1.default.use(loaderPromiseCache.get(routeSpecificPath));
+}
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
