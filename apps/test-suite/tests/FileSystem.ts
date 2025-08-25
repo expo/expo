@@ -480,6 +480,20 @@ export async function test({ describe, expect, it, ...t }) {
       });
     });
 
+    describe('When renaming a file', () => {
+      it('renames it', () => {
+        const file = new File(testDirectory, 'file.txt');
+        file.write('Hello world');
+        file.rename('file2.txt');
+        expect(file.exists).toBe(true);
+        expect(file.uri).toBe(testDirectory + 'file2.txt');
+
+        const directory = new Directory(testDirectory);
+        expect(directory.list().length).toBe(1);
+        expect(directory.list()[0].uri).toBe(testDirectory + 'file2.txt');
+      });
+    });
+
     describe('When moving a directory', () => {
       it('moves it to a folder', () => {
         const src = new Directory(testDirectory, 'directory/');
@@ -515,6 +529,21 @@ export async function test({ describe, expect, it, ...t }) {
         const dst = new File(testDirectory, 'file2.txt');
         dst.create();
         expect(() => src.move(dst)).toThrow();
+      });
+    });
+
+    describe('When renaming a directory', () => {
+      it('renames it', () => {
+        const directory = new Directory(testDirectory, 'directory/');
+        directory.create();
+        directory.rename('newDirectory');
+        expect(directory.exists).toBe(true);
+        expect(directory.uri).toBe(testDirectory + 'newDirectory');
+
+        const parentDirectory = new Directory(testDirectory);
+        const list = parentDirectory.list();
+        expect(list.length).toBe(1);
+        expect(list[0].uri).toBe(testDirectory + 'newDirectory/');
       });
     });
 
