@@ -37,4 +37,18 @@ exports.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS = [
     'onScrollDown',
     'onScrollUp',
 ];
+const SUPPORTED_TAB_BAR_ITEM_ROLES = [
+    'bookmarks',
+    'contacts',
+    'downloads',
+    'favorites',
+    'featured',
+    'history',
+    'more',
+    'mostRecent',
+    'mostViewed',
+    'recents',
+    'search',
+    'topRated',
+];
 //# sourceMappingURL=types.js.map

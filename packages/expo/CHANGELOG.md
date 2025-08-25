@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add `structuredClone` built-in to native platforms. ([#37503](https://github.com/expo/expo/pull/37503) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- Temporarily bring back dependency on `expo-file-system`. ([#38792](https://github.com/expo/expo/pull/38792) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

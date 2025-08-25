@@ -24,7 +24,6 @@ describe('exports static splitting with modal', () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'modal-splitting',
         E2E_ROUTER_ASYNC: 'production',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     });
   });

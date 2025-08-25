@@ -12,7 +12,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@expo/vector-icons": "^14.1.0",
+    "@expo/vector-icons": "^15.0.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
@@ -34,7 +34,7 @@
     "react-native-worklets": "~0.4.1",
     "react-native-reanimated": "~4.0.2",
     "react-native-safe-area-context": "~5.6.0",
-    "react-native-screens": "~4.14.0",
+    "react-native-screens": "~4.15.0",
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {
