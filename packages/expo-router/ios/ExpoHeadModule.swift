@@ -61,11 +61,11 @@ public class ExpoHeadModule: Module {
     // The module will be accessible from `requireNativeModule('ExpoHead')` in JavaScript.
     Name("ExpoHead")
 
-    Constants([
-      "activities": [
+    Constant("activities") {
+      [
         "INDEXED_ROUTE": indexRouteTag
       ]
-    ])
+    }
 
     Function("getLaunchActivity") { () -> [String: Any]? in
       if let activity = launchedActivity {

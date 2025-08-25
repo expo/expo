@@ -2,17 +2,25 @@
 import ExpoModulesCore
 
 public class ApplicationModule: Module {
+  let infoPlist = Bundle.main.infoDictionary
+
   public func definition() -> ModuleDefinition {
     Name("ExpoApplication")
 
-    Constants {
-      let infoPlist = Bundle.main.infoDictionary
-      return [
-        "applicationName": infoPlist?["CFBundleDisplayName"],
-        "applicationId": infoPlist?["CFBundleIdentifier"],
-        "nativeApplicationVersion": infoPlist?["CFBundleShortVersionString"],
-        "nativeBuildVersion": infoPlist?["CFBundleVersion"]
-      ]
+    Constant("applicationName") {
+      infoPlist?["CFBundleDisplayName"] as? String
+    }
+
+    Constant("applicationId") {
+      infoPlist?["CFBundleIdentifier"] as? String
+    }
+
+    Constant("nativeApplicationVersion") {
+      infoPlist?["CFBundleShortVersionString"] as? String
+    }
+
+    Constant("nativeBuildVersion") {
+      infoPlist?["CFBundleVersion"] as? String
     }
 
     AsyncFunction("getIosIdForVendorAsync") { () -> String? in

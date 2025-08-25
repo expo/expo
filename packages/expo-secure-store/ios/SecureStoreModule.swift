@@ -8,15 +8,13 @@ public final class SecureStoreModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSecureStore")
 
-    Constants([
-      "AFTER_FIRST_UNLOCK": SecureStoreAccessible.afterFirstUnlock.rawValue,
-      "AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY": SecureStoreAccessible.afterFirstUnlockThisDeviceOnly.rawValue,
-      "ALWAYS": SecureStoreAccessible.always.rawValue,
-      "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY": SecureStoreAccessible.whenPasscodeSetThisDeviceOnly.rawValue,
-      "ALWAYS_THIS_DEVICE_ONLY": SecureStoreAccessible.alwaysThisDeviceOnly.rawValue,
-      "WHEN_UNLOCKED": SecureStoreAccessible.whenUnlocked.rawValue,
-      "WHEN_UNLOCKED_THIS_DEVICE_ONLY": SecureStoreAccessible.whenUnlockedThisDeviceOnly.rawValue
-    ])
+    Constant("AFTER_FIRST_UNLOCK") { SecureStoreAccessible.afterFirstUnlock.rawValue }
+    Constant("AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY") { SecureStoreAccessible.afterFirstUnlockThisDeviceOnly.rawValue }
+    Constant("ALWAYS") { SecureStoreAccessible.always.rawValue }
+    Constant("WHEN_PASSCODE_SET_THIS_DEVICE_ONLY") { SecureStoreAccessible.whenPasscodeSetThisDeviceOnly.rawValue }
+    Constant("ALWAYS_THIS_DEVICE_ONLY") { SecureStoreAccessible.alwaysThisDeviceOnly.rawValue }
+    Constant("WHEN_UNLOCKED") { SecureStoreAccessible.whenUnlocked.rawValue }
+    Constant("WHEN_UNLOCKED_THIS_DEVICE_ONLY") { SecureStoreAccessible.whenUnlockedThisDeviceOnly.rawValue }
 
     AsyncFunction("getValueWithKeyAsync") { (key: String, options: SecureStoreOptions) -> String? in
       return try get(with: key, options: options)

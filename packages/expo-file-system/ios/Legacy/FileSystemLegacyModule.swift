@@ -27,12 +27,16 @@ public final class FileSystemLegacyModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExponentFileSystem")
 
-    Constants {
-      return [
-        "documentDirectory": documentDirectory?.absoluteString,
-        "cacheDirectory": cacheDirectory?.absoluteString,
-        "bundleDirectory": Bundle.main.bundlePath
-      ]
+    Constant("documentDirectory") {
+      return documentDirectory?.absoluteString
+    }
+
+    Constant("cacheDirectory") {
+      return cacheDirectory?.absoluteString
+    }
+
+    Constant("bundleDirectory") {
+      return Bundle.main.bundlePath
     }
 
     Events(EVENT_DOWNLOAD_PROGRESS, EVENT_UPLOAD_PROGRESS)
