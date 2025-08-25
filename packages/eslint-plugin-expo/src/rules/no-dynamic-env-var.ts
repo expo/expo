@@ -31,6 +31,20 @@ export const noDynamicEnvVar = createRule({
           node.init.object.property.name === 'env';
 
         if (isProcessEnv && node.init?.type === 'MemberExpression' && node.init.computed) {
+          if (
+            node.init.property.type === 'Literal' &&
+            typeof node.init.property.value === 'string'
+          ) {
+            return;
+          }
+
+          if (node.init.property.type === 'TemplateLiteral') {
+            const templateLiteral = node.init.property;
+            if (templateLiteral.expressions.length === 0) {
+              return;
+            }
+          }
+
           const identifierName =
             node.init.property.type === 'Identifier' ? node.init.property.name : '';
           const literalValue =
