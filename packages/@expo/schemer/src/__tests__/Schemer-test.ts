@@ -115,6 +115,81 @@ describe('Manual Validation Individual Unit Tests', () => {
     expect(error.errors).toHaveLength(1);
     expectSchemerErrorToMatchSnapshot(error);
   });
+
+  it('iOS .icon directory successful validation', async () => {
+    const customValidator = new Schemer(
+      {
+        properties: {
+          icon: {
+            meta: {
+              asset: true,
+              contentTypePattern: 'directory',
+              contentTypeHuman: '.icon directory',
+            },
+          },
+        },
+      },
+      { rootDir: __dirname }
+    );
+    expect(await customValidator.validateIcon('./fixtures/test.icon')).toBeUndefined();
+  });
+
+  it('iOS .icon directory fails validation - does not exist', async () => {
+    const customValidator = new Schemer(
+      {
+        properties: {
+          icon: {
+            meta: {
+              asset: true,
+              contentTypePattern: 'directory',
+              contentTypeHuman: '.icon directory',
+            },
+          },
+        },
+      },
+      { rootDir: __dirname }
+    );
+    const error = await expectSchemerToThrowAsync(() =>
+      customValidator.validateIcon('./fixtures/nonexistent.icon')
+    );
+
+    expect(error.errors).toHaveLength(1);
+    expect(error.errors[0]).toEqual(
+      expect.objectContaining({
+        errorCode: ErrorCodes.INVALID_ASSET_URI,
+        message: "directory does not exist at './fixtures/nonexistent.icon'",
+      })
+    );
+  });
+
+  it('iOS .icon directory fails validation - not a directory', async () => {
+    const customValidator = new Schemer(
+      {
+        properties: {
+          icon: {
+            meta: {
+              asset: true,
+              contentTypePattern: 'directory',
+              contentTypeHuman: '.icon directory',
+            },
+          },
+        },
+      },
+      { rootDir: __dirname }
+    );
+    const error = await expectSchemerToThrowAsync(() =>
+      customValidator.validateIcon('./fixtures/check.png')
+    );
+
+    expect(error.errors).toHaveLength(1);
+    expect(error.errors[0]).toEqual(
+      expect.objectContaining({
+        errorCode: ErrorCodes.INVALID_CONTENT_TYPE,
+        message:
+          "field 'icon' should point to .icon directory but the path at './fixtures/check.png' is not a directory",
+      })
+    );
+  });
 });
 
 describe('Individual Unit Tests', () => {

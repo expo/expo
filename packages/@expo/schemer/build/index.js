@@ -211,10 +211,48 @@ class Schemer {
             }
         }
     }
+    async _validateDirectoryAsync({ fieldPath, data, meta }) {
+        if (meta && meta.asset && data) {
+            const filePath = path_1.default.resolve(this.rootDir, data);
+            try {
+                if (!fs_1.default.existsSync(filePath)) {
+                    this.manualValidationErrors.push(new Error_1.ValidationError({
+                        errorCode: 'INVALID_ASSET_URI',
+                        fieldPath,
+                        message: `directory does not exist at '${data}'`,
+                        data,
+                        meta,
+                    }));
+                    return;
+                }
+                if (!fs_1.default.lstatSync(filePath).isDirectory()) {
+                    this.manualValidationErrors.push(new Error_1.ValidationError({
+                        errorCode: 'INVALID_CONTENT_TYPE',
+                        fieldPath,
+                        message: `field '${fieldPath}' should point to ${meta.contentTypeHuman} but the path at '${data}' is not a directory`,
+                        data,
+                        meta,
+                    }));
+                }
+            }
+            catch {
+                this.manualValidationErrors.push(new Error_1.ValidationError({
+                    errorCode: 'INVALID_ASSET_URI',
+                    fieldPath,
+                    message: `cannot access directory at '${data}'`,
+                    data,
+                    meta,
+                }));
+            }
+        }
+    }
     async _validateAssetAsync({ fieldPath, data, meta }) {
         if (meta && meta.asset && data) {
             if (meta.contentTypePattern && meta.contentTypePattern.startsWith('^image')) {
                 await this._validateImageAsync({ fieldPath, data, meta });
+            }
+            else if (meta.contentTypePattern === 'directory') {
+                await this._validateDirectoryAsync({ fieldPath, data, meta });
             }
         }
     }
