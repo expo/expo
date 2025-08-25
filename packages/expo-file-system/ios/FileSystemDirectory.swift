@@ -19,6 +19,9 @@ internal final class FileSystemDirectory: FileSystemPath {
   func create(_ options: CreateOptions) throws {
     try validatePermission(.write)
     try validateType()
+    guard try needsCreation(options) else {
+      return
+    }
     try validateCanCreate(options)
     do {
       try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
@@ -96,5 +99,12 @@ internal final class FileSystemDirectory: FileSystemPath {
     default:
       throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
     }
+  }
+
+  func needsCreation(_ options: CreateOptions) throws -> Bool {
+    if !exists {
+      return true
+    }
+    return !options.idempotent
   }
 }

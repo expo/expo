@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `idempotent` option for creating directories ([#39121](https://github.com/expo/expo/pull/39121) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
