@@ -344,7 +344,7 @@ itNotWindows('runs `npx expo prebuild --platform ios` after building Android', a
   });
 });
 
-itNotWindows('runs `npx expo prebuild --yes`', async () => {
+itNotWindows('runs `npx expo prebuild --clean --yes`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('prebuild-yes-test', 'with-blank', {
     reuseExisting: false,
   });
