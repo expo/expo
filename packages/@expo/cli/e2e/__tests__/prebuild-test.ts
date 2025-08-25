@@ -13,6 +13,7 @@ import {
 } from './utils';
 import { executeExpoAsync } from '../utils/expo';
 import { createPackageTarball } from '../utils/package';
+import { executeAsync } from '../utils/process';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -61,6 +62,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
+        -y, --yes                               Skip git confirmation prompt and continue with uncommitted changes
         -h, --help                               Usage info
     "
   `);
@@ -340,4 +342,25 @@ itNotWindows('runs `npx expo prebuild --platform ios` after building Android', a
   expect(command).not.toMatchObject({
     stderr: expect.stringContaining('Failed to read template file'),
   });
+});
+
+itNotWindows('runs `npx expo prebuild --yes`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('prebuild-yes-test', 'with-blank', {
+    reuseExisting: false,
+  });
+
+  await executeAsync(projectRoot, undefined, {
+    command: ['git', 'init'],
+  });
+
+  const output = await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--clean']);
+  expect(output.stderr).toContain(`! Git branch has uncommitted file changes`);
+
+  const stdoutWithYes = await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--no-install',
+    '--clean',
+    '--yes',
+  ]);
+  expect(stdoutWithYes.stderr).not.toContain('! Git branch has uncommitted file changes');
 });
