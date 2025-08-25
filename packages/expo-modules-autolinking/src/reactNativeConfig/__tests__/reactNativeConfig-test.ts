@@ -17,7 +17,6 @@ import type {
 jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('../../platforms/android');
-jest.mock('../androidResolver');
 jest.mock('../iosResolver');
 jest.mock('../config');
 
@@ -193,16 +192,21 @@ describe(createReactNativeConfigAsync, () => {
 
 describe(resolveAppProjectConfigAsync, () => {
   it('should return app project config for android', async () => {
-    const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
-      typeof findGradleAndManifestAsync
-    >;
+    const androidResolver = require('../androidResolver');
+    const mockFindGradleAndManifestAsync = jest.spyOn(
+      androidResolver,
+      'findGradleAndManifestAsync'
+    ) as jest.MockedFunction<typeof findGradleAndManifestAsync>;
+
     mockFindGradleAndManifestAsync.mockResolvedValueOnce({
       gradle: 'app/build.gradle',
       manifest: 'src/main/AndroidManifest.xml',
     });
-    const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
-      typeof parsePackageNameAsync
-    >;
+
+    const mockParsePackageNameAsync = jest.spyOn(
+      androidResolver,
+      'parsePackageNameAsync'
+    ) as jest.MockedFunction<typeof parsePackageNameAsync>;
     mockParsePackageNameAsync.mockResolvedValueOnce('com.test');
     const config = await resolveAppProjectConfigAsync('/app', 'android');
     expect(config).toMatchInlineSnapshot(`
@@ -215,17 +219,43 @@ describe(resolveAppProjectConfigAsync, () => {
     `);
   });
 
+  it('should return app project config for android with custom sourceDir', async () => {
+    vol.fromJSON({
+      '/brownfield/app/src/main/AndroidManifest.xml': `\
+        <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.test">
+      `,
+      '/brownfield/app/build.gradle': '',
+      '/brownfield/build.gradle': '',
+      '/brownfield/node_modules/react-native/package.json': '',
+      '/brownfield/package.json': '',
+      '/brownfield/exp/package.json': '',
+    });
+
+    const config = await resolveAppProjectConfigAsync('/brownfield/exp', 'android', '/brownfield');
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "android": {
+          "packageName": "com.test",
+          "sourceDir": "/brownfield",
+        },
+      }
+    `);
+  });
+
   it('should return empty project config for android if no gradle files or manifest files', async () => {
-    const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
-      typeof findGradleAndManifestAsync
-    >;
+    const androidResolver = require('../androidResolver');
+    const mockFindGradleAndManifestAsync = jest.spyOn(
+      androidResolver,
+      'findGradleAndManifestAsync'
+    ) as jest.MockedFunction<typeof findGradleAndManifestAsync>;
     mockFindGradleAndManifestAsync.mockResolvedValueOnce({
       gradle: null,
       manifest: null,
     });
-    const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
-      typeof parsePackageNameAsync
-    >;
+    const mockParsePackageNameAsync = jest.spyOn(
+      androidResolver,
+      'parsePackageNameAsync'
+    ) as jest.MockedFunction<typeof parsePackageNameAsync>;
     mockParsePackageNameAsync.mockResolvedValueOnce('com.test');
     const config = await resolveAppProjectConfigAsync('/app', 'android');
     expect(config).toEqual({});
@@ -243,16 +273,19 @@ describe(resolveAppProjectConfigAsync, () => {
   });
 
   it('should return app project config with custom sourceDir', async () => {
-    const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
-      typeof findGradleAndManifestAsync
-    >;
+    const androidResolver = require('../androidResolver');
+    const mockFindGradleAndManifestAsync = jest.spyOn(
+      androidResolver,
+      'findGradleAndManifestAsync'
+    ) as jest.MockedFunction<typeof findGradleAndManifestAsync>;
     mockFindGradleAndManifestAsync.mockResolvedValueOnce({
       gradle: 'app/build.gradle',
       manifest: 'src/main/AndroidManifest.xml',
     });
-    const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
-      typeof parsePackageNameAsync
-    >;
+    const mockParsePackageNameAsync = jest.spyOn(
+      androidResolver,
+      'parsePackageNameAsync'
+    ) as jest.MockedFunction<typeof parsePackageNameAsync>;
     mockParsePackageNameAsync.mockResolvedValueOnce('com.test');
     const configAndroid = await resolveAppProjectConfigAsync('/app', 'android', '/customNative');
     expect(configAndroid).toMatchInlineSnapshot(`
