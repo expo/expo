@@ -478,21 +478,21 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
   </Tab>
 </Tabs>
 
-### TextInput
+### TextField
 
 <Tabs>
   <Tab label="iOS">
     <ContentSpotlight
-      alt="TextInput component on iOS."
+      alt="TextField component on iOS."
       src="/static/images/expo-ui/textinput/ios.png"
       className="max-w-[320px]"
     />
   </Tab>
   <Tab label="Code">
     ```tsx
-    import { TextInput } from '@expo/ui/swift-ui';
+    import { TextField } from '@expo/ui/swift-ui';
 
-    <TextInput autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
+    <TextField autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
     ```
     *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/textfield)*
 
