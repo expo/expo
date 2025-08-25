@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use latest SDK for unsupported React Native versions ([#38918](https://github.com/expo/expo/pull/38918) by [@hyochan](https://github.com/hyochan))
+
 ### 💡 Others
 
 ## 0.13.3 — 2025-08-21
