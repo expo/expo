@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add new type - `ValueOrUndefined`. ([#39116](https://github.com/expo/expo/pull/39116) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
