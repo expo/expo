@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- add support for bottom tab accessory in native tabs ([#39114](https://github.com/expo/expo/pull/39114) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
