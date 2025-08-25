@@ -16,6 +16,6 @@ import ExpoImageManipulator from './NativeImageManipulatorModule';
  * Use [`ImageManipulator.manipulate`](#manipulatesource) or [`useImageManipulator`](#useimagemanipulatorsource) instead.
  */
 export declare function manipulateAsync(uri: string, actions?: Action[], saveOptions?: SaveOptions): Promise<ImageResult>;
-export declare function useImageManipulator(source: string | SharedRef<'image'>): ImageManipulatorContext;
+export declare function useImageManipulator(source: string | SharedRef<'image'>, headers?: Record<string, string>): ImageManipulatorContext;
 export { ExpoImageManipulator as ImageManipulator };
 //# sourceMappingURL=ImageManipulator.d.ts.map
