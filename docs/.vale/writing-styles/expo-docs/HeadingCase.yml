@@ -211,7 +211,7 @@ exceptions:
   # PascalCase for React component names that end with common component suffixes
   - '^[A-Z][a-zA-Z]*(?:Input|Sheet|Picker|Progress|Menu|View|Button|Switch|Slider|Text|TextInput)(?:\s*\([^)]+\))?$'
   # PascalCase for Expo UI component names
-  - '^[A-Z][a-zA-Z]*(?:TextField)(?:\s*\([^)]+\))?$'
+  - '^(?:TextField)(?:\s*\([^)]+\))?$'
   # Standalone common UI component names
   - '^(?:BottomSheet|CircularProgress|LinearProgress|DateTimePicker|ContextMenu|ColorPicker)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
