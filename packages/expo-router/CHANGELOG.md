@@ -30,6 +30,7 @@
 ### 🎉 New features
 
 - Update web modals to iOS 26 specifications ([#38897](https://github.com/expo/expo/pull/38897) by [@hirbod](https://github.com/hirbod))
+- add helpers to use expo vector icons in native tabs ([#39012](https://github.com/expo/expo/pull/39012) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
