@@ -793,7 +793,6 @@ class ExpoCameraView(
   }
 
   fun cleanupCamera() {
-    super.onDetachedFromWindow()
     orientationEventListener.disable()
     cancelCoroutineScope()
     cameraProvider?.unbindAll()
