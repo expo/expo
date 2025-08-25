@@ -15,6 +15,7 @@ const urlParams = "${`?${string}` | `#${string}` | ''}";
 export type GetTypedRoutesDeclarationFileOptions = {
   partialTypedGroups?: boolean;
   testIgnoreComments?: boolean;
+  unstable_useServerMiddleware?: boolean;
 };
 
 export function getTypedRoutesDeclarationFile(
@@ -22,6 +23,7 @@ export function getTypedRoutesDeclarationFile(
   {
     partialTypedGroups = false,
     testIgnoreComments = false,
+    unstable_useServerMiddleware = false,
   }: GetTypedRoutesDeclarationFileOptions = {}
 ) {
   let routeNode: RouteNode | null = null;
@@ -34,6 +36,8 @@ export function getTypedRoutesDeclarationFile(
       ignoreEntryPoints: true,
       ignoreRequireErrors: true,
       importMode: 'async', // Don't load the file
+      // NOTE(@hassankhan): We should ensure that getRoutes() doesn't have optional options in the future
+      unstable_useServerMiddleware,
     });
   } catch {
     // Ignore errors from `getRoutes`. This is also called inside the app, which has
