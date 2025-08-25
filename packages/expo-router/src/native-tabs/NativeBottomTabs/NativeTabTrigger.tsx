@@ -7,6 +7,7 @@ import type { ImageSourcePropType } from 'react-native';
 import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
 import type {
   ExtendedNativeTabOptions,
+  NativeTabOptions,
   NativeTabsTriggerTabBarProps,
   NativeTabTriggerProps,
 } from './types';
@@ -19,6 +20,9 @@ import {
   type LabelProps,
   type IconProps,
   type BadgeProps,
+  type SourceIconCombination,
+  VectorIcon,
+  type VectorIconProps,
 } from '../common/elements';
 
 /**
@@ -151,26 +155,11 @@ function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps
   }
 }
 
-function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) {
+export function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) {
   if ('src' in props && props.src) {
-    if (typeof props.src === 'object' && 'default' in props.src) {
-      options.icon = props.src.default
-        ? {
-            src: props.src.default,
-          }
-        : undefined;
-      options.selectedIcon = props.src.selected
-        ? {
-            src: props.src.selected,
-          }
-        : undefined;
-    } else {
-      options.icon = props.src
-        ? {
-            src: props.src as ImageSourcePropType,
-          }
-        : undefined;
-    }
+    const icon = convertIconSrcToIconOption(props);
+    options.icon = icon?.icon;
+    options.selectedIcon = icon?.selectedIcon;
   } else if ('sf' in props && process.env.EXPO_OS === 'ios') {
     if (typeof props.sf === 'string') {
       options.icon = props.sf
@@ -196,6 +185,40 @@ function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) 
     options.selectedIcon = undefined;
   }
   options.selectedIconColor = props.selectedColor;
+}
+
+function convertIconSrcToIconOption(
+  icon: SourceIconCombination | undefined
+): Pick<NativeTabOptions, 'icon' | 'selectedIcon'> | undefined {
+  if (icon && icon.src) {
+    const { defaultIcon, selected } =
+      typeof icon.src === 'object' && 'selected' in icon.src
+        ? { defaultIcon: icon.src.default, selected: icon.src.selected }
+        : { defaultIcon: icon.src };
+
+    const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
+    options.icon = convertSrcOrComponentToSrc(defaultIcon);
+    options.selectedIcon = convertSrcOrComponentToSrc(selected);
+    return options;
+  }
+
+  return undefined;
+}
+
+function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
+  if (src) {
+    if (isValidElement(src)) {
+      if (src.type === VectorIcon) {
+        const props = src.props as VectorIconProps<string>;
+        return { src: props.family.getImageSource(props.name, 24, 'white') };
+      } else {
+        console.warn('Only VectorIcon is supported as a React element in Icon.src');
+      }
+    } else {
+      return { src };
+    }
+  }
+  return undefined;
 }
 
 function appendTabBarOptions(

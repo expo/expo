@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabTrigger = void 0;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
+exports.appendIconOptions = appendIconOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
@@ -128,25 +129,9 @@ function appendLabelOptions(options, props) {
 }
 function appendIconOptions(options, props) {
     if ('src' in props && props.src) {
-        if (typeof props.src === 'object' && 'default' in props.src) {
-            options.icon = props.src.default
-                ? {
-                    src: props.src.default,
-                }
-                : undefined;
-            options.selectedIcon = props.src.selected
-                ? {
-                    src: props.src.selected,
-                }
-                : undefined;
-        }
-        else {
-            options.icon = props.src
-                ? {
-                    src: props.src,
-                }
-                : undefined;
-        }
+        const icon = convertIconSrcToIconOption(props);
+        options.icon = icon?.icon;
+        options.selectedIcon = icon?.selectedIcon;
     }
     else if ('sf' in props && process.env.EXPO_OS === 'ios') {
         if (typeof props.sf === 'string') {
@@ -175,6 +160,35 @@ function appendIconOptions(options, props) {
         options.selectedIcon = undefined;
     }
     options.selectedIconColor = props.selectedColor;
+}
+function convertIconSrcToIconOption(icon) {
+    if (icon && icon.src) {
+        const { defaultIcon, selected } = typeof icon.src === 'object' && 'selected' in icon.src
+            ? { defaultIcon: icon.src.default, selected: icon.src.selected }
+            : { defaultIcon: icon.src };
+        const options = {};
+        options.icon = convertSrcOrComponentToSrc(defaultIcon);
+        options.selectedIcon = convertSrcOrComponentToSrc(selected);
+        return options;
+    }
+    return undefined;
+}
+function convertSrcOrComponentToSrc(src) {
+    if (src) {
+        if ((0, react_1.isValidElement)(src)) {
+            if (src.type === elements_1.VectorIcon) {
+                const props = src.props;
+                return { src: props.family.getImageSource(props.name, 24, 'white') };
+            }
+            else {
+                console.warn('Only VectorIcon is supported as a React element in Icon.src');
+            }
+        }
+        else {
+            return { src };
+        }
+    }
+    return undefined;
 }
 function appendTabBarOptions(options, props) {
     const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, } = props;

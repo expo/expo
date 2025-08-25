@@ -148,7 +148,7 @@ export type SymbolOrImageSource =
       /**
        * The image source to use as an icon.
        */
-      src?: ImageSourcePropType;
+      src?: ImageSourcePropType | Promise<ImageSourcePropType>;
     };
 
 export interface ExtendedNativeTabOptions extends NativeTabOptions {
@@ -239,12 +239,6 @@ export interface NativeTabsActiveStyleType {
    */
   indicatorColor?: ColorValue;
 }
-
-export type TypeOrRecord<T, K extends string> =
-  | T
-  | {
-      [key in K]?: T;
-    };
 
 export interface NativeTabsProps extends PropsWithChildren {
   // #region common props

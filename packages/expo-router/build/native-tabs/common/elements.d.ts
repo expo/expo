@@ -1,6 +1,6 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import type { NativeTabsLabelStyle, TypeOrRecord } from '../NativeBottomTabs/types';
+import type { NativeTabsLabelStyle } from '../NativeBottomTabs/types';
 export interface LabelProps {
     /**
      * The text to display as the label for the tab.
@@ -35,7 +35,10 @@ export interface SourceIconCombination {
      * @platform Android
      * @platform iOS
      */
-    src?: TypeOrRecord<ImageSourcePropType, 'default' | 'selected'>;
+    src?: ImageSourcePropType | React.ReactElement | {
+        default?: ImageSourcePropType | React.ReactElement;
+        selected: ImageSourcePropType | React.ReactElement;
+    };
     drawable?: never;
     sf?: never;
 }
@@ -59,7 +62,10 @@ export interface NamedIconCombination {
      *
      * @platform iOS
      */
-    sf?: TypeOrRecord<SFSymbol, 'default' | 'selected'>;
+    sf?: SFSymbol | {
+        default?: SFSymbol;
+        selected: SFSymbol;
+    };
     /**
      * The name of the drawable resource to use as an icon.
      * @platform android
@@ -77,6 +83,43 @@ export type IconProps = {
  * @platform android
  */
 export declare function Icon(props: IconProps): null;
+export interface VectorIconProps<NameT extends string> {
+    /**
+     * The family of the vector icon.
+     *
+     * @example
+     * ```tsx
+     * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+     * ```
+     */
+    family: {
+        getImageSource: (name: NameT, size: number, color: ColorValue) => Promise<ImageSourcePropType>;
+    };
+    /**
+     * The name of the vector icon.
+     */
+    name: NameT;
+}
+/**
+ * Helper component which can be used to load vector icons for `NativeTabs`.
+ *
+ * @example
+ * ```tsx
+ * import { NativeTabs, VectorIcon } from 'expo-router';
+ * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+ *
+ * export default Layout(){
+ *   return (
+ *     <NativeTabs>
+ *       <NativeTabs.Trigger name="index">
+ *         <Icon src={<VectorIcon family={MaterialCommunityIcons} name="home" />} />
+ *       </NativeTabs.Trigger>
+ *     </NativeTabs>
+ *   );
+ * }
+ * ```
+ */
+export declare function VectorIcon<NameT extends string>(props: VectorIconProps<NameT>): null;
 export interface BadgeProps {
     /**
      * The text to display as the badge for the tab.

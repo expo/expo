@@ -1,5 +1,6 @@
+import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
-import { Badge, Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { Badge, Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Appearance, Platform } from 'react-native';
 
@@ -81,11 +82,7 @@ export default function Layout() {
             <Badge>1</Badge>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="explore">
-            {process.env.EXPO_OS === 'android' ? (
-              <Icon src={require('../../../assets/explore_gray.png')} />
-            ) : (
-              <Icon sf={{ default: 'safari', selected: 'safari.fill' }} />
-            )}
+            <Icon src={<VectorIcon family={MIcons} name="compass-calibration" />} />
             <Label>Explore</Label>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="dynamic">
