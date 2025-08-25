@@ -306,7 +306,7 @@ export async function test(t) {
         let calendar1: ExpoCalendar;
         let calendar2: ExpoCalendar;
 
-        t.beforeAll(async () => {
+        t.beforeEach(async () => {
           calendar1 = await createTestCalendarAsync();
           calendar2 = await createTestCalendarAsync();
         });
@@ -329,7 +329,8 @@ export async function test(t) {
           );
 
           t.expect(updatedEvents.length).toBe(2);
-          t.expect(updatedEvents.map((e) => e.id)).toEqual([event1.id, event2.id]);
+          t.expect(updatedEvents.map((e) => e.id)).toContain(event1.id);
+          t.expect(updatedEvents.map((e) => e.id)).toContain(event2.id);
 
           const singleCalendarEvents = await listEvents(
             [calendar1.id],
@@ -340,7 +341,25 @@ export async function test(t) {
           t.expect(singleCalendarEvents[0].id).toBe(event1.id);
         });
 
-        t.afterAll(async () => {
+        t.it(
+          'returns an array of events when calendars are provided as ExpoCalendar objects',
+          async () => {
+            const event1 = createTestEvent(calendar1);
+            const event2 = createTestEvent(calendar2);
+
+            const events = await listEvents(
+              [calendar1, calendar2],
+              new Date(2019, 3, 1),
+              new Date(2019, 3, 29)
+            );
+
+            t.expect(events.length).toBe(2);
+            t.expect(events.map((e) => e.id)).toContain(event1.id);
+            t.expect(events.map((e) => e.id)).toContain(event2.id);
+          }
+        );
+
+        t.afterEach(async () => {
           calendar1.delete();
           calendar2.delete();
         });

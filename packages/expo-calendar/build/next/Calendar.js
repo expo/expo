@@ -169,9 +169,9 @@ export async function listEvents(calendars, startDate, endDate) {
     if (!InternalExpoCalendar.listEvents) {
         throw new UnavailabilityError('Calendar', 'listEvents');
     }
-    const calendarIds = Array.isArray(calendars) && calendars.length > 0 && typeof calendars[0] !== 'string'
-        ? calendars.map((calendar) => calendar.id)
-        : calendars;
+    const calendarIds = Array.isArray(calendars)
+        ? calendars.map((c) => (typeof c === 'string' ? c : c.id))
+        : [];
     return InternalExpoCalendar.listEvents(calendarIds, stringifyIfDate(startDate), stringifyIfDate(endDate));
 }
 /**

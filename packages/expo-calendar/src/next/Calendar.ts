@@ -238,10 +238,9 @@ export async function listEvents(
   if (!InternalExpoCalendar.listEvents) {
     throw new UnavailabilityError('Calendar', 'listEvents');
   }
-  const calendarIds: string[] =
-    Array.isArray(calendars) && calendars.length > 0 && typeof calendars[0] !== 'string'
-      ? (calendars as ExpoCalendar[]).map((calendar) => calendar.id)
-      : (calendars as string[]);
+  const calendarIds = Array.isArray(calendars)
+    ? calendars.map((c) => (typeof c === 'string' ? c : c.id))
+    : [];
   return InternalExpoCalendar.listEvents(
     calendarIds,
     stringifyIfDate(startDate),
