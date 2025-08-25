@@ -1,5 +1,6 @@
 import { getExactRoutes } from '../getRoutes';
 import { getServerManifest, parseParameter } from '../getServerManifest';
+import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 import { RequireContext } from '../types';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
@@ -599,4 +600,75 @@ it(`matches top-level catch-all before +not-found route`, () => {
       routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher))?.file
     ).toBe(page);
   }
+});
+
+it(`marks routes with loader functions with loader property`, () => {
+  const contextModule = createMockContextModule({
+    './index.js': {
+      default() {},
+      loader() {},
+    },
+    './blog/[id].js': {
+      default() {},
+      loader() {},
+    },
+  });
+
+  const manifest = getServerManifest(getExactRoutes(contextModule, { preserveApiRoutes: true }));
+
+  const indexRoute = manifest.htmlRoutes.find((r) => r.file === './index.js');
+  expect(indexRoute).toMatchObject({
+    file: './index.js',
+    page: '/index',
+    loader: './index.js',
+  });
+
+  const blogRoute = manifest.htmlRoutes.find((r) => r.file === './blog/[id].js');
+  expect(blogRoute).toMatchObject({
+    file: './blog/[id].js',
+    page: '/blog/[id]',
+    loader: './blog/[id].js',
+  });
+});
+
+it(`includes generated routes with loaders and generateStaticParams in manifest`, async () => {
+  const contextModule = createMockContextModule({
+    './blog/[slug].js': {
+      default() {},
+      loader() {},
+      generateStaticParams() {
+        return [{ slug: 'post-1' }, { slug: 'post-2' }, { slug: 'post-3' }];
+      },
+    },
+  });
+
+  const routes = getExactRoutes(contextModule, { preserveApiRoutes: true });
+  await loadStaticParamsAsync(routes);
+  const manifest = getServerManifest(routes);
+
+  // Check that all routes have the same namedRegex and routeKeys
+  const dynamicRoute = manifest.htmlRoutes.find((r) => !r.generated);
+  expect(dynamicRoute).toEqual({
+    file: './blog/[slug].js',
+    page: '/blog/[slug]',
+    namedRegex: '^/blog/(?<slug>[^/]+?)(?:/)?$',
+    routeKeys: { slug: 'slug' },
+    loader: './blog/[slug].js',
+  });
+
+  // Check that generated routes have the same namedRegex and routeKeys as the dynamic route
+  const generatedRoutes = manifest.htmlRoutes.filter((r) => r.generated);
+  expect(generatedRoutes).toHaveLength(3);
+
+  generatedRoutes.forEach((route) => {
+    expect(route.namedRegex).toBe(dynamicRoute!.namedRegex);
+    expect(route.routeKeys).toEqual(dynamicRoute!.routeKeys);
+    expect(route.file).toBe(dynamicRoute!.file);
+    expect(route.loader).toBe('./blog/[slug].js');
+    expect(route.generated).toBe(true);
+  });
+
+  // Check that the pages are correctly set for generated routes
+  const pages = generatedRoutes.map((r) => r.page).sort();
+  expect(pages).toEqual(['/blog/post-1', '/blog/post-2', '/blog/post-3']);
 });

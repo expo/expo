@@ -56,4 +56,13 @@ export type NativeIntent = {
   legacy_subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);
 };
 
+/**
+ * Function type for route loaders. Loaders are executed on the server during
+ * SSR/SSG to fetch data required by a route.
+ */
+export type LoaderFunction<T = any> = (args: {
+  params: Record<string, string | string[]>;
+  request?: Request;
+}) => Promise<T> | T;
+
 export type * from './typed-routes/types';

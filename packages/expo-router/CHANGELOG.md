@@ -30,6 +30,7 @@
 ### 🎉 New features
 
 - Update web modals to iOS 26 specifications ([#38897](https://github.com/expo/expo/pull/38897) by [@hirbod](https://github.com/hirbod))
+- [web] Add experimental support for server data loaders in static export mode ([#38524](https://github.com/expo/expo/pull/38524) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 

@@ -7,7 +7,9 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
+import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import type { GetStaticContentOptions } from 'expo-router/build/static/renderStaticContent';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -192,12 +194,13 @@ export async function exportFromServerAsync(
     exp,
   });
 
-  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({
-      includeSourceMaps,
-    }),
-    devServer.getStaticRenderFunctionAsync(),
-  ]);
+  const [resources, { manifest, serverManifest, renderAsync, executeLoaderAsync }] =
+    await Promise.all([
+      devServer.getStaticResourcesAsync({
+        includeSourceMaps,
+      }),
+      devServer.getStaticRenderFunctionAsync(),
+    ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
@@ -208,7 +211,32 @@ export async function exportFromServerAsync(
     manifest,
     exportServer,
     async renderAsync({ pathname, route }) {
-      const template = await renderAsync(pathname);
+      const normalizedPathname =
+        pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
+      let template: string;
+
+      if (useServerLoaders) {
+        const loaderData = await executeLoaderAsync(normalizedPathname);
+
+        if (loaderData != null) {
+          const loaderPath = getLoaderModulePath(normalizedPathname);
+          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          const moduleContent = `export default ${JSON.stringify(loaderData)}`;
+          files.set(fileSystemPath, {
+            contents: moduleContent,
+            targetDomain: 'client',
+            loaderId: normalizedPathname,
+          });
+        }
+
+        template = await renderAsync(normalizedPathname, {
+          loader: { enabled: true, data: loaderData },
+        });
+      } else {
+        template = await renderAsync(normalizedPathname, { loader: { enabled: false } });
+      }
       let html = await serializeHtmlWithAssets({
         isExporting,
         resources: resources.artifacts,
