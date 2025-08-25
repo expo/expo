@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { Children, ReactElement, ReactNode, useMemo } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
+import { SubmenuProps } from './Submenu';
 import { MenuElement, transformChildrenToElementArray } from './utils';
 import { ExpoModifier } from '../../types';
 import { ButtonProps } from '../Button';
@@ -77,20 +78,6 @@ export type ContextMenuProps = {
 };
 
 /**
- * Props of the `Submenu` component.
- */
-export type SubmenuProps = {
-  /**
-   * The button that will be used to expand the submenu. On Android the `text` prop of the `Button` will be used as a section title.
-   */
-  button: ReactElement<ButtonProps>;
-  /**
-   * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
-   */
-  children: ReactNode;
-};
-
-/**
  * @hidden
  */
 type NativeMenuProps = ContextMenuProps & {
@@ -113,11 +100,7 @@ type NativeMenuProps = ContextMenuProps & {
   ) => void;
 };
 
-export function Submenu() {
-  return <></>;
-}
-
-export function Items() {
+export function Items(props: ContextMenuContentProps) {
   return <></>;
 }
 Items.tag = 'Items';
@@ -175,3 +158,4 @@ ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 
 export { ContextMenu };
+export { Submenu } from './Submenu';

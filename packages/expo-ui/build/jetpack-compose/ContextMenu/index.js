@@ -2,10 +2,7 @@ import { requireNativeView } from 'expo';
 import { Children, useMemo } from 'react';
 import { transformChildrenToElementArray } from './utils';
 const MenuNativeView = requireNativeView('ExpoUI', 'ContextMenu');
-export function Submenu() {
-    return <></>;
-}
-export function Items() {
+export function Items(props) {
     return <></>;
 }
 Items.tag = 'Items';
@@ -35,4 +32,5 @@ ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 export { ContextMenu };
+export { Submenu } from './Submenu';
 //# sourceMappingURL=index.js.map
