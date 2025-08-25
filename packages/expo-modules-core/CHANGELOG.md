@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add new type - `ValueOrUndefined`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
