@@ -299,30 +299,38 @@ Since the `Host` component is a React Native [`View`](https://reactnative.dev/do
 ```tsx Wrapping Button in Host
 import { Button, Host } from '@expo/ui/swift-ui';
 
-<Host matchContents>
-  <Button
-    onPress={() => {
-      console.log('Pressed');
-    }}>
-    Click
-  </Button>
-</Host>
+function Example() {
+  return (
+    <Host matchContents>
+      <Button
+        onPress={() => {
+          console.log('Pressed');
+        }}>
+        Click
+      </Button>
+    </Host>
+  );
+}
 ```
 
 ```tsx Host with flexbox and VStack
 import { Button, Host, VStack, Text } from '@expo/ui/swift-ui';
 
-<Host style={{ flex: 1 }}>
-  <VStack spacing={8}>
-    <Text>Hello, world!</Text>
-    <Button
-      onPress={() => {
-        console.log('Pressed');
-      }}>
-      Click
-    </Button>
-  </VStack>
-</Host>
+function Example() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={8}>
+        <Text>Hello, world!</Text>
+        <Button
+          onPress={() => {
+            console.log('Pressed');
+          }}>
+          Click
+        </Button>
+      </VStack>
+    </Host>
+  );
+}
 ```
 
 ### LinearProgress
