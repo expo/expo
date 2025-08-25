@@ -23,9 +23,9 @@
       "types": "./build/polyfill/dangerous-internal.d.ts",
       "default": "./src/polyfill/dangerous-internal.ts"
     },
-    "./src/uuid/uuid": {
-      "types": "./build/uuid/uuid.d.ts",
-      "default": "./src/uuid/uuid.ts"
+    "./src/uuid": {
+      "types": "./build/uuid/index.d.ts",
+      "default": "./src/uuid/index.ts"
     }
   },
   "scripts": {
