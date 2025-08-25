@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - remove redundant native trigger view ([#38964](https://github.com/expo/expo/pull/38964) by [@Ubax](https://github.com/Ubax))
+- prevent changes of title and icon when role is set ([#39147](https://github.com/expo/expo/pull/39147) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.0-beta.7 — 2025-08-25
 
