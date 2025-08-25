@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Add new type - `ValueOrUndefined`. ([#39116](https://github.com/expo/expo/pull/39116) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.0.6 — 2025-08-25
+
+### 🎉 New features
+
+- [Android] Add new type - `ValueOrUndefined`. ([#39116](https://github.com/expo/expo/pull/39116) by [@lukmccall](https://github.com/lukmccall))
 
 ## 3.0.5 — 2025-08-21
 

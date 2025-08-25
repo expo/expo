@@ -1,7 +1,7 @@
 {
   "name": "expo-live-photo",
   "title": "Expo Video",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Library, which makes it possible to display live photos on iOS",
   "main": "src/index.ts",
   "types": "build/index.d.ts",

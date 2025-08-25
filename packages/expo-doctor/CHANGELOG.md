@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix bug for lockfile check in monorepos. ([#39072](https://github.com/expo/expo/pull/39072) by [@entiendonull](https://github.com/entiendonull))
-
 ### 💡 Others
+
+## 1.17.1 — 2025-08-25
+
+### 🐛 Bug fixes
+
+- Fix bug for lockfile check in monorepos. ([#39072](https://github.com/expo/expo/pull/39072) by [@entiendonull](https://github.com/entiendonull))
 
 ## 1.17.0 — 2025-08-21
 

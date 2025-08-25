@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.0-beta.6 — 2025-08-25
+
+### 🎉 New features
+
 - add support for custom icons on Android ([#39043](https://github.com/expo/expo/pull/39043) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes

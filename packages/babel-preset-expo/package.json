@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "14.0.2",
+  "version": "14.0.3",
   "description": "The Babel preset for Expo projects",
   "main": "build/index.js",
   "files": [
