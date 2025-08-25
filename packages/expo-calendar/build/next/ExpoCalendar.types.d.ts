@@ -1,4 +1,4 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, EventStatus, Organizer, ReminderStatus, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod, OpenEventDialogResult } from '../Calendar';
+import { AttendeeRole, AttendeeStatus, AttendeeType, Source, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, EventStatus, Organizer, ReminderStatus, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod, OpenEventDialogResult, Attendee } from '../Calendar';
 import { RecurrenceRule } from './types/RecurrenceRule';
 export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
@@ -305,7 +305,7 @@ export declare class ExpoCalendarEvent {
     /**
      * Creates a new attendee and adds it to this event.
      */
-    createAttendee(attendee: Pick<NonNullable<ExpoCalendarAttendee>, 'email'> & Partial<ExpoCalendarAttendee>): ExpoCalendarAttendee;
+    createAttendee(attendee: Pick<NonNullable<Attendee>, 'email'> & Partial<Attendee>): ExpoCalendarAttendee;
     /**
      * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
      * @param eventId The ID of the event to get.
@@ -432,7 +432,7 @@ export declare class ExpoCalendarAttendee {
      * Updates the attendee.
      * @platform android
      */
-    update(details: Partial<ModifiableAttendeeProperties>): void;
+    update(details: Partial<ModifiableAttendeeProperties>, nullableFields?: (keyof ModifiableAttendeeProperties)[]): void;
     /**
      * Deletes the attendee.
      * @platform android

@@ -1,10 +1,11 @@
-import { Calendar, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
+import { Calendar, Attendee, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
-import { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext } from './ExpoCalendar.types';
+import { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext, ModifiableAttendeeProperties } from './ExpoCalendar.types';
 /**
  * Represents a calendar attendee object.
  */
 export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
+    update(details: Partial<ModifiableAttendeeProperties>): void;
 }
 /**
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
@@ -14,6 +15,7 @@ export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendar
     editInCalendarAsync(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
     getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendeesAsync(): Promise<ExpoCalendarAttendee[]>;
+    createAttendee(attendee: Attendee): ExpoCalendarAttendee;
     update(details: Partial<ModifiableEventProperties>): void;
     delete(): void;
     static get(eventId: string): ExpoCalendarEvent;
@@ -68,19 +70,6 @@ export declare function createCalendar(details?: Partial<Calendar>): ExpoCalenda
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
 export declare function listEvents(calendars: string[] | ExpoCalendar[], startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
-/**
- * Gets an event by its ID.
- * @param eventId The ID of the event to get.
- * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
- */
-export declare function getEventById(eventId: string): ExpoCalendarEvent;
-/**
- * Gets a reminder by its ID.
- * @param reminderId The ID of the reminder to get.
- * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
- * @platform ios
- */
-export declare function getReminderById(reminderId: string): ExpoCalendarReminder;
 /**
  * Asks the user to grant permissions for accessing user's calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).

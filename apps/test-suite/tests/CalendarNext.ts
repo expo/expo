@@ -11,8 +11,6 @@ import {
   listEvents,
   ExpoCalendarReminder,
   ExpoCalendarAttendee,
-  getEventById,
-  getReminderById,
 } from 'expo-calendar/next';
 import { Platform } from 'react-native';
 
@@ -38,11 +36,6 @@ async function createTestCalendarAsync(patch: Partial<ExpoCalendar> = {}) {
     sourceId: await pickCalendarSourceIdAsync(),
     ...patch,
   } satisfies Partial<ExpoCalendar>);
-}
-
-async function getCalendarByIdAsync(calendarId) {
-  const calendars = await Calendar.getCalendarsAsync();
-  return calendars.find((calendar) => calendar.id === calendarId);
 }
 
 async function pickCalendarSourceIdAsync() {
@@ -362,7 +355,7 @@ export async function test(t) {
 
         t.it('returns an event by its ID', async () => {
           const event = createTestEvent(calendar);
-          const event2 = getEventById(event.id);
+          const event2 = ExpoCalendarEvent.get(event.id);
           t.expect(event2).toBeDefined();
           t.expect(event2).toEqual(event);
         });
@@ -374,7 +367,7 @@ export async function test(t) {
             location: 'New location',
           });
 
-          const event2 = await getEventById(event.id);
+          const event2 = ExpoCalendarEvent.get(event.id);
           t.expect(event2).toBeDefined();
           t.expect(event2.title).toBe('New title');
           t.expect(event2.location).toBe('New location');
@@ -396,7 +389,7 @@ export async function test(t) {
           });
 
           t.it('returns a reminder by its ID', async () => {
-            const fetchedReminder = await getReminderById(reminder.id);
+            const fetchedReminder = ExpoCalendarReminder.get(reminder.id);
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder).toEqual(reminder);
           });
@@ -406,7 +399,7 @@ export async function test(t) {
               title: 'New title',
             });
 
-            const fetchedReminder = await getReminderById(reminder.id);
+            const fetchedReminder = ExpoCalendarReminder.get(reminder.id);
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder.title).toBe('New title');
           });
@@ -506,6 +499,7 @@ export async function test(t) {
           const fetchedCalendar = ExpoCalendar.get(calendar.id);
           t.expect(fetchedCalendar).toBeDefined();
           t.expect(fetchedCalendar).toEqual(calendar);
+          testCalendarShape(fetchedCalendar);
         });
 
         t.it('throws an error when getting a non-existent calendar', async () => {
@@ -514,6 +508,13 @@ export async function test(t) {
           } catch (e) {
             t.expect(e).toBeDefined();
           }
+        });
+
+        t.it('retrieves a specific calendar by ID from the list of all calendars', async () => {
+          const calendars = await getCalendarsNext();
+          const fetchedCalendar = calendars.find((c) => c.id === calendar.id);
+          t.expect(fetchedCalendar).toBeDefined();
+          t.expect(fetchedCalendar.id).toBe(calendar.id);
         });
 
         t.afterEach(async () => {
@@ -535,7 +536,7 @@ export async function test(t) {
             title: newTitle,
             color: newColor,
           });
-          const updatedCalendar = await getCalendarByIdAsync(calendar.id);
+          const updatedCalendar = ExpoCalendar.get(calendar.id);
 
           t.expect(updatedCalendar.id).toBe(calendar.id);
           t.expect(updatedCalendar.color).toBe(newColor);
@@ -563,6 +564,30 @@ export async function test(t) {
           t.expect(calendar.title).toBe(defaultCalendarData.title);
           if (Platform.OS === 'ios') {
             t.expect(calendar.entityType).toBe(defaultCalendarData.entityType);
+          }
+        });
+
+        t.it('updates a calendar, and verifies the changes are persisted', async () => {
+          const newTitle = 'New test-suite calendar title!!!';
+          const newColor = '#111111';
+          calendar.update({
+            title: newTitle,
+            color: newColor,
+          });
+
+          const updatedCalendar = ExpoCalendar.get(calendar.id);
+          t.expect(updatedCalendar.id).toBe(calendar.id);
+          t.expect(updatedCalendar.color).toBe(newColor);
+          t.expect(updatedCalendar.title).toBe(newTitle);
+        });
+
+        t.it('throws an error when updating a non-existent calendar', async () => {
+          try {
+            ExpoCalendar.get('non-existent-calendar-id').update({
+              title: 'New title',
+            });
+          } catch (e) {
+            t.expect(e).toBeDefined();
           }
         });
 
@@ -876,6 +901,7 @@ export async function test(t) {
           const event = createTestEvent(calendar);
           const fetchedEvent = ExpoCalendarEvent.get(event.id);
           t.expect(fetchedEvent).toEqual(event);
+          testEventShape(fetchedEvent);
         });
 
         t.it('throws an error when getting a non-existent event', async () => {
