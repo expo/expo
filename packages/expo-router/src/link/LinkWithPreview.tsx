@@ -15,7 +15,7 @@ import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
-import { NativeLinkPreview, NativeLinkPreviewTrigger } from './preview/native';
+import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
 import { shouldLinkExternally } from '../utils/url';
@@ -134,11 +134,10 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         if (!isPad) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
-      }}>
+      }}
+      style={{ borderRadius: highlightBorderRadius }}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>
-          <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
-        </NativeLinkPreviewTrigger>
+        <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
         {preview}
         {menuElement}
       </InternalLinkPreviewContext>
