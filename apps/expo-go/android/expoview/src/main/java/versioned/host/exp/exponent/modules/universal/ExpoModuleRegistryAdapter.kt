@@ -37,12 +37,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
     moduleRegistry.registerInternalModule(ConstantsBinding(scopedContext, experienceProperties, manifest))
 
-    // Overriding expo-file-system FilePermissionModule
-    moduleRegistry.registerInternalModule(ScopedFilePermissionModule(scopedContext))
-
-    // Overriding expo-permissions ScopedPermissionsService
-    moduleRegistry.registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
-
     // Overriding expo-notifications classes
     moduleRegistry.registerInternalModule(ScopedNotificationsChannelsProvider(scopedContext, experienceKey))
     moduleRegistry.registerInternalModule(ScopedNotificationsCategoriesSerializer())
@@ -83,6 +77,14 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
           ScopedExpoNotificationPresentationModule(scopedContext, experienceKey),
           ScopedExpoNotificationCategoriesModule(experienceKey)
         )
+      }
+
+      with(appContext.legacyModuleRegistry) {
+        // Overriding expo-file-system FilePermissionModule
+        registerInternalModule(ScopedFilePermissionModule(scopedContext))
+
+        // Overriding expo-permissions ScopedPermissionsService
+        registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
       }
     }
   }
