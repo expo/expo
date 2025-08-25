@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [next] Implement `ExpoCalendar@next`  ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -2,17 +2,11 @@ package expo.modules.calendar
 
 import android.util.Log
 import expo.modules.calendar.CalendarModule.Companion.TAG
+import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.core.arguments.ReadableArguments
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
-
-data class Recurrence(
-  val frequency: String,
-  val interval: Int?,
-  val endDate: String?,
-  val occurrence: Int?
-)
 
 object EventRecurrenceUtils {
 
@@ -20,7 +14,9 @@ object EventRecurrenceUtils {
     timeZone = TimeZone.getTimeZone("GMT")
   }
 
-  fun extractRecurrence(recurrenceRule: ReadableArguments): Recurrence {
+  val rrFormat = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
+
+  fun extractRecurrence(recurrenceRule: ReadableArguments): RecurrenceRuleRecord {
     val frequency = recurrenceRule.getString("frequency")
     val interval: Int? = if (recurrenceRule.containsKey("interval")) {
       recurrenceRule.getInt("interval")
@@ -35,26 +31,25 @@ object EventRecurrenceUtils {
     var endDate: String? = null
 
     if (recurrenceRule.containsKey("endDate")) {
-      val format = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
       val endDateObj = recurrenceRule["endDate"]
       if (endDateObj is String) {
         val parsedDate = dateFormat.parse(endDateObj)
         if (parsedDate != null) {
-          endDate = format.format(parsedDate)
+          endDate = rrFormat.format(parsedDate)
         } else {
           Log.e(TAG, "endDate is null")
         }
       } else if (endDateObj is Number) {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = endDateObj.toLong()
-        endDate = format.format(calendar.time)
+        endDate = rrFormat.format(calendar.time)
       }
     }
-    return Recurrence(frequency, interval, endDate, occurrence)
+    return RecurrenceRuleRecord(endDate, frequency, interval, occurrence)
   }
 
-  fun createRecurrenceRule(opts: Recurrence): String {
-    val (frequency, interval, endDate, occurrence) = opts
+  fun createRecurrenceRule(opts: RecurrenceRuleRecord): String {
+    val (endDate, frequency, interval, occurrence) = opts
     var rrule: String = when (frequency) {
       "daily" -> "FREQ=DAILY"
       "weekly" -> "FREQ=WEEKLY"
