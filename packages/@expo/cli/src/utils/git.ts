@@ -6,7 +6,7 @@ import { isInteractive } from './interactive';
 import { confirmAsync } from './prompts';
 import * as Log from '../log';
 
-export async function maybeBailOnGitStatusAsync(options: { yes?: boolean } = {}): Promise<boolean> {
+export async function maybeBailOnGitStatusAsync(options?: { yes: boolean }): Promise<boolean> {
   if (env.EXPO_NO_GIT_STATUS) {
     Log.warn(
       'Git status is dirty but the command will continue because EXPO_NO_GIT_STATUS is enabled...'
@@ -15,7 +15,7 @@ export async function maybeBailOnGitStatusAsync(options: { yes?: boolean } = {})
   }
 
   // user passed --yes flag to skip git confirmation prompt
-  if (options.yes) {
+  if (options?.yes) {
     return false;
   }
 
