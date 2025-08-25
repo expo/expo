@@ -19,23 +19,29 @@ internal class ExpoCalendarItem: SharedObject {
   }
 
   // Mostly copied from CalendarModule.swift
-  func serializeRecurrenceRule() -> [String: Any?]? {
+  func serializeRecurrenceRule() -> RecurrenceRuleNext? {
     guard let rule = calendarItem?.recurrenceRules?.first else {
       return nil
     }
     let frequencyType = recurrenceToString(frequency: rule.frequency)
-    var recurrenceRule: [String: Any?] = ["frequency": frequencyType]
+    var recurrenceRule: RecurrenceRuleNext = RecurrenceRuleNext(frequency: frequencyType)
 
-    recurrenceRule["interval"] = rule.interval
+    recurrenceRule.interval = rule.interval
 
     if let endDate = rule.recurrenceEnd?.endDate {
-      recurrenceRule["endDate"] = dateFormatter.string(from: endDate)
+      recurrenceRule.endDate = dateFormatter.string(from: endDate)
+    } else {
+      recurrenceRule.endDate = nil
     }
 
-    recurrenceRule["occurrence"] = rule.recurrenceEnd?.occurrenceCount
+    if let occurrenceCount = rule.recurrenceEnd?.occurrenceCount, occurrenceCount > 0 {
+      recurrenceRule.occurrence = occurrenceCount
+    } else {
+      recurrenceRule.occurrence = nil
+    }
 
     if let daysOfTheWeek = rule.daysOfTheWeek {
-      recurrenceRule["daysOfTheWeek"] = daysOfTheWeek.map({ day in
+      recurrenceRule.daysOfTheWeek = daysOfTheWeek.map({ day in
         [
           "dayOfTheWeek": day.dayOfTheWeek.rawValue,
           "weekNumber": day.weekNumber
@@ -44,19 +50,19 @@ internal class ExpoCalendarItem: SharedObject {
     }
 
     if let daysOfTheMonth = rule.daysOfTheMonth {
-      recurrenceRule["daysOfTheMonth"] = daysOfTheMonth
+      recurrenceRule.daysOfTheMonth = daysOfTheMonth.map { $0.intValue }
     }
 
     if let daysOfTheYear = rule.daysOfTheYear {
-      recurrenceRule["daysOfTheYear"] = daysOfTheYear
+      recurrenceRule.daysOfTheYear = daysOfTheYear.map { $0.intValue }
     }
 
     if let monthsOfTheYear = rule.monthsOfTheYear {
-      recurrenceRule["monthsOfTheYear"] = monthsOfTheYear
+      recurrenceRule.monthsOfTheYear = monthsOfTheYear.map { $0.intValue }
     }
 
     if let setPositions = rule.setPositions {
-      recurrenceRule["setPositions"] = setPositions
+      recurrenceRule.setPositions = setPositions.map { $0.intValue }
     }
 
     return recurrenceRule

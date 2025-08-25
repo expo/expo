@@ -1,6 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { createCalendarNext, ExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
+import { createCalendar, ExpoCalendar, getCalendars } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -73,15 +73,19 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
   const [calendars, setCalendars] = useState<ExpoCalendar[]>([]);
 
   const findCalendars = async () => {
-    const calendarGranted = (await askForCalendarPermissions()).granted;
-    const reminderGranted =
-      Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
-    if (calendarGranted && reminderGranted) {
-      const eventCalendars = getCalendarsNext(Calendar.EntityTypes.EVENT) as unknown as any[];
-      const reminderCalendars = (
-        Platform.OS === 'ios' ? getCalendarsNext(Calendar.EntityTypes.REMINDER) : []
-      ) as any[];
-      setCalendars([...eventCalendars, ...reminderCalendars]);
+    try {
+      const calendarGranted = (await askForCalendarPermissions()).granted;
+      const reminderGranted =
+        Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
+      if (calendarGranted && reminderGranted) {
+        const eventCalendars = (await getCalendars(Calendar.EntityTypes.EVENT)) as unknown as any[];
+        const reminderCalendars = (
+          Platform.OS === 'ios' ? await getCalendars(Calendar.EntityTypes.REMINDER) : []
+        ) as any[];
+        setCalendars([...eventCalendars, ...reminderCalendars]);
+      }
+    } catch (e) {
+      console.log('error', e);
     }
   };
 
@@ -92,20 +96,29 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
         sourceId: calendars.find((cal) => cal.source && cal.source.name === 'Default')?.source.id,
       }),
       android: () => {
-        // TODO: Add source details for Android
-        return {};
+        const firstCalendar = calendars.find((cal) => cal.source);
+        return {
+          source: {
+            id: firstCalendar?.source?.id || '1',
+            type: 'com.google',
+            name: 'Default',
+            isLocalAccount: false,
+          },
+          ownerAccount: firstCalendar?.ownerAccount || firstCalendar?.source.name || 'Default',
+        };
       },
     })();
     const newCalendar = {
       title: 'cool new calendar',
-      entityType: Calendar.EntityTypes.EVENT,
       color: '#c0ff33',
       ...sourceDetails,
       name: 'coolNewCalendar',
       accessLevel: Calendar.CalendarAccessLevel.OWNER,
+      allowedAttendeeTypes: [Calendar.AttendeeType.REQUIRED, Calendar.AttendeeType.OPTIONAL],
     };
+
     try {
-      const calendar = createCalendarNext(newCalendar);
+      const calendar = createCalendar(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
     } catch (e) {

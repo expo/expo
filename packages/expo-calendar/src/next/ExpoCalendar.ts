@@ -17,14 +17,18 @@ declare class ExpoCalendarNextModule extends NativeModule {
   ExpoCalendarReminder: typeof ExpoCalendarReminder;
 
   getDefaultCalendar(): ExpoCalendar;
-  getCalendars(type?: EntityTypes): ExpoCalendar[];
+  getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
   createCalendarNext(details: Partial<Calendar>): ExpoCalendar;
 
   listEvents(
-    calendarIds: string[],
+    calendars: string[] | ExpoCalendar[],
     startDate: string | Date,
     endDate: string | Date
-  ): ExpoCalendarEvent[];
+  ): Promise<ExpoCalendarEvent[]>;
+
+  getCalendarById(calendarId: string): ExpoCalendar;
+  getEventById(eventId: string): ExpoCalendarEvent;
+  getReminderById(reminderId: string): ExpoCalendarReminder;
 
   requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
   getCalendarPermissionsAsync(): Promise<PermissionResponse>;

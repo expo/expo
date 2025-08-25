@@ -4,6 +4,6 @@
     "modules": ["CalendarModule", "CalendarNextModule"]
   },
   "android": {
-    "modules": ["expo.modules.calendar.CalendarModule"]
+    "modules": ["expo.modules.calendar.CalendarModule", "expo.modules.calendar.next.CalendarNextModule"]
   }
 }

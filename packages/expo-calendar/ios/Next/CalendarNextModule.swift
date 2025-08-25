@@ -3,6 +3,7 @@ import EventKitUI
 import ExpoModulesCore
 import Foundation
 
+// swiftlint:disable closure_parameter_position
 public final class CalendarNextModule: Module {
   private var permittedEntities: EKEntityMask = .event
   private var eventStore: EKEventStore {
@@ -11,7 +12,6 @@ public final class CalendarNextModule: Module {
 
   private var calendarDialogDelegate: CalendarDialogDelegate?
 
-  // swiftlint:disable:next cyclomatic_complexity function_body_length
   public func definition() -> ModuleDefinition {
     Name("CalendarNext")
 
@@ -31,7 +31,7 @@ public final class CalendarNextModule: Module {
       return ExpoCalendar(calendar: defaultCalendar)
     }
 
-    Function("getCalendars") { (type: CalendarEntity?) -> [ExpoCalendar] in
+    AsyncFunction("getCalendars") { (type: CalendarEntity?) -> [ExpoCalendar] in
       let calendars: [EKCalendar]
       switch type {
       case nil:
@@ -44,18 +44,26 @@ public final class CalendarNextModule: Module {
       case .reminder:
         try checkRemindersPermissions()
         calendars = eventStore.calendars(for: .reminder)
-      default:
-        throw InvalidCalendarEntityException(type?.rawValue)
       }
       return calendars.map { ExpoCalendar(calendar: $0) }
     }
 
-    Function("createCalendarNext") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
+    Function("getCalendarById") { (calendarId: String) -> ExpoCalendar in
+      try checkCalendarPermissions()
+      guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
+        throw CalendarIdNotFoundException(calendarId)
+      }
+      return ExpoCalendar(calendar: calendar)
+    }
+
+    Function("createCalendar") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
       let calendar: EKCalendar
       switch calendarRecord.entityType {
       case .event:
+        try checkCalendarPermissions()
         calendar = EKCalendar(for: .event, eventStore: eventStore)
       case .reminder:
+        try checkRemindersPermissions()
         calendar = EKCalendar(for: .reminder, eventStore: eventStore)
       case .none:
         throw EntityNotSupportedException(calendarRecord.entityType?.rawValue)
@@ -81,7 +89,11 @@ public final class CalendarNextModule: Module {
       return ExpoCalendar(calendar: calendar)
     }
 
-    Function("listEvents") { (calendarIds: [String], startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) -> [ExpoCalendarEvent] in
+    AsyncFunction("listEvents") {
+      ( calendarIds: [String],
+        startDateStr: Either<String, Double>,
+        endDateStr: Either<String, Double>,
+        promise: Promise) throws in
       try checkCalendarPermissions()
 
       guard let startDate = parse(date: startDateStr),
@@ -104,7 +116,23 @@ public final class CalendarNextModule: Module {
         $0.startDate.compare($1.startDate) == .orderedAscending
       }
 
-      return calendarEvents.map { ExpoCalendarEvent(event: $0) }
+      promise.resolve(calendarEvents.map { ExpoCalendarEvent(event: $0) })
+    }
+
+    Function("getEventById") {
+      (eventId: String) -> ExpoCalendarEvent in
+      guard let event = eventStore.event(withIdentifier: eventId) else {
+        throw EventNotFoundException(eventId)
+      }
+      return ExpoCalendarEvent(event: event)
+    }
+
+    Function("getReminderById") {
+      (reminderId: String) -> ExpoCalendarReminder in
+      guard let reminder = eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
+        throw ReminderNotFoundException(reminderId)
+      }
+      return ExpoCalendarReminder(reminder: reminder)
     }
 
     AsyncFunction("getCalendarPermissionsAsync") { (promise: Promise) in
@@ -208,7 +236,11 @@ public final class CalendarNextModule: Module {
           fromMask: calendar.supportedEventAvailabilities)
       }
 
-      Function("listEvents") { (expoCalendar: ExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) throws in
+      AsyncFunction("listEvents") {
+        (expoCalendar: ExpoCalendar,
+        startDateStr: Either<String, Double>,
+        endDateStr: Either<String, Double>,
+        promise: Promise) throws in
         try checkCalendarPermissions()
 
         guard let startDate = parse(date: startDateStr),
@@ -217,10 +249,9 @@ public final class CalendarNextModule: Module {
           throw InvalidDateFormatException()
         }
 
-        return try expoCalendar.listEvents(startDate: startDate, endDate: endDate)
+        promise.resolve(try expoCalendar.listEvents(startDate: startDate, endDate: endDate))
       }
 
-      // swiftlint:disable closure_parameter_position
       AsyncFunction("listReminders") {
         ( calendar: ExpoCalendar,
           startDateStr: String?,
@@ -246,8 +277,7 @@ public final class CalendarNextModule: Module {
           endDate = parsedEndDate
         }
 
-        return calendar.listReminders(
-          startDate: startDate, endDate: endDate, status: status, promise: promise)
+        return calendar.listReminders(startDate: startDate, endDate: endDate, status: status, promise: promise)
       }
 
       // swiftlint:enable closure_parameter_position
@@ -352,7 +382,7 @@ public final class CalendarNextModule: Module {
         expoEvent.serializeAlarms()
       }
 
-      Property("recurrenceRule") { (expoEvent: ExpoCalendarEvent) -> [String: Any?]? in
+      Property("recurrenceRule") { (expoEvent: ExpoCalendarEvent) -> RecurrenceRuleNext? in
         expoEvent.serializeRecurrenceRule()
       }
 
@@ -444,22 +474,23 @@ public final class CalendarNextModule: Module {
         guard let ekEvent = try expoEvent.getOccurrence(options: options) else {
           throw EventNotFoundException(options?.instanceStartDate ?? "")
         }
-        return ExpoCalendarEvent(event: ekEvent)
+        let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent
+        return ExpoCalendarEvent(event: ekEvent, span: span)
       }
 
-      Function("getAttendees") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
+      AsyncFunction("getAttendeesAsync") { (expoEvent: ExpoCalendarEvent) throws in
         try checkCalendarPermissions()
-        return try expoEvent.getAttendees(options: options)
+        return try expoEvent.getAttendees()
       }
 
-      Function("update") { (expoEvent: ExpoCalendarEvent, eventRecord: EventNext, options: RecurringEventOptions?, nullableFields: [String]?) throws in
+      Function("update") { (expoEvent: ExpoCalendarEvent, eventRecord: EventNext, nullableFields: [String]?) throws in
         try checkCalendarPermissions()
-        try expoEvent.update(eventRecord: eventRecord, options: options, nullableFields: nullableFields)
+        try expoEvent.update(eventRecord: eventRecord, nullableFields: nullableFields)
       }
 
-      Function("delete") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions) in
+      Function("delete") { (expoEvent: ExpoCalendarEvent) in
         try checkCalendarPermissions()
-        try expoEvent.delete(options: options)
+        try expoEvent.delete()
       }
     }
 
@@ -511,7 +542,7 @@ public final class CalendarNextModule: Module {
         expoReminder.serializeAlarms()
       }
 
-      Property("recurrenceRule") { (expoReminder: ExpoCalendarReminder) -> [String: Any?]? in
+      Property("recurrenceRule") { (expoReminder: ExpoCalendarReminder) -> RecurrenceRuleNext? in
         expoReminder.serializeRecurrenceRule()
       }
 

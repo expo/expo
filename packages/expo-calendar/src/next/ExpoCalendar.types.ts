@@ -3,32 +3,34 @@ import {
   AttendeeStatus,
   AttendeeType,
   Source,
-  Event,
   RecurringEventOptions,
   CalendarType,
   Availability,
   EntityTypes,
   Alarm,
-  RecurrenceRule,
   EventStatus,
   Organizer,
   ReminderStatus,
-  Calendar,
-  Reminder,
   CalendarDialogParams,
   DialogEventResult,
   OpenEventPresentationOptions,
   PresentationOptions,
+  EventAccessLevel,
+  CalendarAccessLevel,
+  AlarmMethod,
+  OpenEventDialogResult,
+  Attendee,
 } from '../Calendar';
+import { RecurrenceRule } from './types/RecurrenceRule';
 
-type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
+export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 
-type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
+export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
-export type ModifiableCalendarProperties = Pick<Calendar, 'color' | 'title'>;
+export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 
 export type ModifiableEventProperties = Pick<
-  Event,
+  ExpoCalendarEvent,
   | 'title'
   | 'location'
   | 'timeZone'
@@ -43,7 +45,7 @@ export type ModifiableEventProperties = Pick<
 >;
 
 export type ModifiableReminderProperties = Pick<
-  Reminder,
+  ExpoCalendarReminder,
   | 'title'
   | 'location'
   | 'timeZone'
@@ -56,6 +58,9 @@ export type ModifiableReminderProperties = Pick<
   | 'completed'
   | 'completionDate'
 >;
+
+export type ModifiableAttendeeProperties = ExpoCalendarAttendee;
+
 export declare class ExpoCalendar {
   constructor(id: string);
 
@@ -70,6 +75,7 @@ export declare class ExpoCalendar {
   /**
    * ID of the source to be used for the calendar. Likely the same as the source for any other
    * locally stored calendars.
+   * @platform ios
    */
   sourceId?: string;
   /**
@@ -78,6 +84,7 @@ export declare class ExpoCalendar {
   source: Source;
   /**
    * Type of calendar this object represents.
+   * @platform ios
    */
   type?: CalendarType;
   /**
@@ -86,6 +93,7 @@ export declare class ExpoCalendar {
   color: string;
   /**
    * Whether the calendar is used in the Calendar or Reminders OS app.
+   * @platform ios
    */
   entityType?: EntityTypes;
   /**
@@ -96,11 +104,57 @@ export declare class ExpoCalendar {
    * Availability types that this calendar supports.
    */
   allowedAvailabilities: Availability[];
+  /**
+   * Boolean value indicating whether this is the device's primary calendar.
+   * @platform android
+   */
+  isPrimary?: boolean;
+  /**
+   * Internal system name of the calendar.
+   * @platform android
+   */
+  name?: string | null;
+  /**
+   * Name for the account that owns this calendar.
+   * @platform android
+   */
+  ownerAccount?: string;
+  /**
+   * Time zone for the calendar.
+   * @platform android
+   */
+  timeZone?: string;
+  /**
+   * Alarm methods that this calendar supports.
+   * @platform android
+   */
+  allowedReminders?: AlarmMethod[];
+  /**
+   * Attendee types that this calendar supports.
+   * @platform android
+   */
+  allowedAttendeeTypes?: AttendeeType[];
+  /**
+   * Indicates whether the OS displays events on this calendar.
+   * @platform android
+   */
+  isVisible?: boolean;
+  /**
+   * Indicates whether this calendar is synced and its events stored on the device.
+   * Unexpected behavior may occur if this is not set to `true`.
+   * @platform android
+   */
+  isSynced?: boolean;
+  /**
+   * Level of access that the user has for the calendar.
+   * @platform android
+   */
+  accessLevel?: CalendarAccessLevel;
 
   /**
    * Returns a calendar event list for the given date range.
    */
-  listEvents(startDate: Date | string, endDate: Date | string): ExpoCalendarEvent[];
+  listEvents(startDate: Date | string, endDate: Date | string): Promise<ExpoCalendarEvent[]>;
 
   /**
    * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
@@ -122,14 +176,16 @@ export declare class ExpoCalendar {
    * @param eventData A map of details for the event to be created.
    * @return An instance of the created event.
    */
-  createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): ExpoCalendarEvent;
+  createEvent(eventData: Omit<Partial<ExpoCalendarEvent>, 'id' | 'organizer'>): ExpoCalendarEvent;
 
   /**
    * Creates a new reminder in the calendar.
    * @param reminderData A map of details for the reminder to be created.
    * @return An instance of the created reminder.
    */
-  createReminder(reminderData: Omit<Partial<Reminder>, 'id' | 'calendarId'>): ExpoCalendarReminder;
+  createReminder(
+    reminderData: Omit<Partial<ExpoCalendarReminder>, 'id' | 'calendarId'>
+  ): ExpoCalendarReminder;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,
@@ -142,6 +198,13 @@ export declare class ExpoCalendar {
    * Deletes the calendar.
    */
   delete(): void;
+
+  /**
+   * Gets a calendar by its ID. Throws an error if the calendar with the given ID does not exist.
+   * @param calendarId The ID of the calendar to get.
+   * @returns An [`ExpoCalendar`](#expocalendar) object representing the calendar.
+   */
+  static get(calendarId: string): ExpoCalendar;
 }
 
 export declare class ExpoCalendarEvent {
@@ -164,18 +227,27 @@ export declare class ExpoCalendarEvent {
   location: string | null;
   /**
    * Date when the event record was created.
+   * @platform ios
    */
   creationDate?: string | Date;
   /**
    * Date when the event record was last modified.
+   * @platform ios
    */
   lastModifiedDate?: string | Date;
   /**
    * Time zone the event is scheduled in.
+   * When set to `null`, the event is scheduled to the device's time zone.
    */
   timeZone: string;
   /**
+   * Time zone for the end date of the event.
+   * @platform android
+   */
+  endTimeZone?: string;
+  /**
    * URL for the event.
+   * @platform ios
    */
   url?: string;
   /**
@@ -188,6 +260,7 @@ export declare class ExpoCalendarEvent {
   alarms: Alarm[];
   /**
    * Object representing rules for recurring or repeating events. Set to `null` for one-time events.
+   * It is either `endDate` or `occurrence` based.
    */
   recurrenceRule: RecurrenceRule | null;
   /**
@@ -200,10 +273,12 @@ export declare class ExpoCalendarEvent {
   endDate: string | Date;
   /**
    * For recurring events, the start date for the first (original) instance of the event.
+   * @platform ios
    */
   originalStartDate?: string | Date;
   /**
    * Boolean value indicating whether or not the event is a detached (modified) instance of a recurring event.
+   * @platform ios
    */
   isDetached?: boolean;
   /**
@@ -222,8 +297,46 @@ export declare class ExpoCalendarEvent {
    * Organizer of the event.
    * This property is only available on events associated with calendars that are managed by a service such as Google Calendar or iCloud.
    * The organizer is read-only and cannot be set.
+   *
+   * @platform ios
    */
   organizer?: Organizer;
+  /**
+   * Email address of the organizer of the event.
+   * @platform android
+   */
+  organizerEmail?: string;
+  /**
+   * User's access level for the event.
+   * @platform android
+   */
+  accessLevel?: EventAccessLevel;
+  /**
+   * Whether invited guests can modify the details of the event.
+   * @platform android
+   */
+  guestsCanModify?: boolean;
+  /**
+   * Whether invited guests can invite other guests.
+   * @platform android
+   */
+  guestsCanInviteOthers?: boolean;
+  /**
+   * Whether invited guests can see other guests.
+   * @platform android
+   */
+  guestsCanSeeGuests?: boolean;
+  /**
+   * For detached (modified) instances of recurring events, the ID of the original recurring event.
+   * @platform android
+   */
+  originalId?: string;
+  /**
+   * For instances of recurring events, volatile ID representing this instance. Not guaranteed to
+   * always refer to the same instance.
+   * @platform android
+   */
+  instanceId?: string;
 
   /**
    * Launches the calendar UI provided by the OS to preview an event.
@@ -231,8 +344,8 @@ export declare class ExpoCalendarEvent {
    * @header systemProvidedUI
    */
   openInCalendarAsync(
-    params: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
-  ): void;
+    params?: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
+  ): Promise<OpenEventDialogResult>;
 
   /**
    * Launches the calendar UI provided by the OS to edit or delete an event.
@@ -240,40 +353,52 @@ export declare class ExpoCalendarEvent {
    * @header systemProvidedUI
    */
   editInCalendarAsync(
-    params: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
+    params?: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
   /**
    * Returns an event instance for a given event (or instance of a recurring event).
    * @param recurringEventOptions A map of options for recurring events.
    * @return An event instance.
+   * @platform ios
    */
   getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
 
   /**
    * Gets all attendees for a given event (or instance of a recurring event).
-   * @param recurringEventOptions A map of options for recurring events.
    * @return An array of [`Attendee`](#attendee) associated with the specified event.
    */
-  getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
+  getAttendeesAsync(): Promise<ExpoCalendarAttendee[]>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,
    * explicitly set it to `null` in `details`.
    * @param details A map of properties to be updated.
-   * @param recurringEventOptions A map of options for recurring events.
+   * @param nullableFields A list of fields that can be set to `null`.
    */
   update(
     details: Partial<ModifiableEventProperties>,
-    recurringEventOptions?: RecurringEventOptions,
     nullableFields?: (keyof ModifiableEventProperties)[]
   ): void;
 
   /**
    * Deletes the event.
-   * @param recurringEventOptions A map of options for recurring events.
    */
-  delete(recurringEventOptions: RecurringEventOptions): void;
+  delete(): void;
+
+  /**
+   * Creates a new attendee and adds it to this event.
+   */
+  createAttendee(
+    attendee: Pick<NonNullable<Attendee>, 'email'> & Partial<Attendee>
+  ): ExpoCalendarAttendee;
+
+  /**
+   * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
+   * @param eventId The ID of the event to get.
+   * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
+   */
+  static get(eventId: string): ExpoCalendarEvent;
 }
 
 export declare class ExpoCalendarReminder {
@@ -348,14 +473,28 @@ export declare class ExpoCalendarReminder {
    * Deletes the reminder.
    */
   delete(): void;
+
+  /**
+   * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
+   * @param reminderId The ID of the reminder to get.
+   * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
+   */
+  static get(reminderId: string): ExpoCalendarReminder;
 }
 
 /**
  * Represents a calendar attendee object.
+ * @platform android
  */
 export declare class ExpoCalendarAttendee {
   /**
+   * Internal ID that represents this attendee on the device.
+   * @platform android
+   */
+  id?: string;
+  /**
    * Indicates whether or not this attendee is the current OS user.
+   * @platform ios
    */
   isCurrentUser?: boolean;
   /**
@@ -376,6 +515,27 @@ export declare class ExpoCalendarAttendee {
   type: AttendeeType;
   /**
    * URL for the attendee.
+   * @platform ios
    */
   url?: string;
+  /**
+   * Email of the attendee.
+   * @platform android
+   */
+  email: string;
+
+  /**
+   * Updates the attendee.
+   * @platform android
+   */
+  update(
+    details: Partial<ModifiableAttendeeProperties>,
+    nullableFields?: (keyof ModifiableAttendeeProperties)[]
+  ): void;
+
+  /**
+   * Deletes the attendee.
+   * @platform android
+   */
+  delete(): void;
 }

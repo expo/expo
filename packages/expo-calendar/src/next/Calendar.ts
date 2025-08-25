@@ -1,10 +1,13 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { processColor } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
 import {
   Calendar,
+  Attendee,
+  DialogEventResult,
   EntityTypes,
   Event,
+  OpenEventDialogResult,
   RecurringEventOptions,
   Reminder,
   ReminderStatus,
@@ -15,35 +18,72 @@ import {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
+  CalendarDialogOpenParamsNext,
+  CalendarDialogParamsNext,
+  ModifiableAttendeeProperties,
 } from './ExpoCalendar.types';
 
 /**
  * Represents a calendar attendee object.
  */
-export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {}
+export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
+  override update(details: Partial<ModifiableAttendeeProperties>): void {
+    const nullableDetailsFields = getNullableDetailsFields(details);
+    return super.update(stringifyDateValues(details), nullableDetailsFields);
+  }
+}
 
 /**
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
+  override async openInCalendarAsync(
+    params?: CalendarDialogOpenParamsNext
+  ): Promise<OpenEventDialogResult> {
+    // We have to pass null here because the core doesn't support skipping the first param
+    return super.openInCalendarAsync(params ?? null);
+  }
+
+  override async editInCalendarAsync(
+    params?: CalendarDialogParamsNext
+  ): Promise<DialogEventResult> {
+    // We have to pass null here because the core doesn't support skipping the first param
+    return super.editInCalendarAsync(params ?? null);
+  }
+
   override getOccurrence(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarEvent {
-    return super.getOccurrence(stringifyDateValues(recurringEventOptions));
+    const result = super.getOccurrence(stringifyDateValues(recurringEventOptions));
+    Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);
+    return result;
   }
 
-  override getAttendees(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarAttendee[] {
-    return super.getAttendees(stringifyDateValues(recurringEventOptions));
+  override async getAttendeesAsync(): Promise<ExpoCalendarAttendee[]> {
+    const attendees = await super.getAttendeesAsync();
+    return attendees.map((attendee) => {
+      Object.setPrototypeOf(attendee, ExpoCalendarAttendee.prototype);
+      return attendee;
+    });
   }
 
-  override update(
-    details: Partial<ModifiableEventProperties>,
-    options: RecurringEventOptions = {}
-  ): void {
+  override createAttendee(attendee: Attendee): ExpoCalendarAttendee {
+    const newAttendee = super.createAttendee(attendee);
+    Object.setPrototypeOf(newAttendee, ExpoCalendarAttendee.prototype);
+    return newAttendee;
+  }
+
+  override update(details: Partial<ModifiableEventProperties>): void {
     const nullableDetailsFields = getNullableDetailsFields(details);
-    super.update(stringifyDateValues(details), stringifyDateValues(options), nullableDetailsFields);
+    return super.update(stringifyDateValues(details), nullableDetailsFields);
   }
 
-  override delete(options: RecurringEventOptions = {}): void {
-    super.delete(stringifyDateValues(options));
+  override delete(): void {
+    super.delete();
+  }
+
+  static override get(eventId: string): ExpoCalendarEvent {
+    const event = InternalExpoCalendar.getEventById(eventId);
+    Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
+    return event;
   }
 }
 
@@ -54,6 +94,12 @@ export class ExpoCalendarReminder extends InternalExpoCalendar.ExpoCalendarRemin
   override update(details: Partial<ModifiableReminderProperties>): void {
     const nullableDetailsFields = getNullableDetailsFields(details);
     super.update(stringifyDateValues(details), nullableDetailsFields);
+  }
+
+  static override get(reminderId: string): ExpoCalendarReminder {
+    const reminder = InternalExpoCalendar.getReminderById(reminderId);
+    Object.setPrototypeOf(reminder, ExpoCalendarReminder.prototype);
+    return reminder;
   }
 }
 
@@ -88,14 +134,15 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     return newReminder;
   }
 
-  override listEvents(startDate: Date, endDate: Date): ExpoCalendarEvent[] {
+  override async listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]> {
     if (!startDate) {
       throw new Error('listEvents must be called with a startDate (date) to search for events');
     }
     if (!endDate) {
       throw new Error('listEvents must be called with an endDate (date) to search for events');
     }
-    return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate)).map((event) => {
+    const events = await super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+    return events.map((event) => {
       Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
       return event;
     });
@@ -120,7 +167,13 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
   override update(details: Partial<ModifiableCalendarProperties>): void {
     const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, color: color || undefined };
-    super.update(newDetails);
+    return super.update(newDetails as Partial<ModifiableCalendarProperties>);
+  }
+
+  static override get(calendarId: string): ExpoCalendar {
+    const calendar = InternalExpoCalendar.getCalendarById(calendarId);
+    Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+    return calendar;
   }
 }
 
@@ -129,7 +182,7 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
 export function getDefaultCalendarNext(): ExpoCalendar {
-  if (!InternalExpoCalendar.getDefaultCalendar) {
+  if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendar) {
     throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
   }
   const defaultCalendar = InternalExpoCalendar.getDefaultCalendar();
@@ -145,11 +198,11 @@ export function getDefaultCalendarNext(): ExpoCalendar {
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export function getCalendarsNext(type?: EntityTypes): ExpoCalendar[] {
+export async function getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]> {
   if (!InternalExpoCalendar.getCalendars) {
     throw new UnavailabilityError('Calendar', 'getCalendars');
   }
-  const calendars = InternalExpoCalendar.getCalendars(type);
+  const calendars = await InternalExpoCalendar.getCalendars(type);
   return calendars.map((calendar) => {
     Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
     return calendar;
@@ -161,13 +214,10 @@ export function getCalendarsNext(type?: EntityTypes): ExpoCalendar[] {
  * @param details A map of details for the calendar to be created.
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
-export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalendar {
-  if (!InternalExpoCalendar.createCalendarNext) {
-    throw new UnavailabilityError('Calendar', 'createCalendarNext');
-  }
+export function createCalendar(details: Partial<Calendar> = {}): ExpoCalendar {
   const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color: color || undefined };
-  const createdCalendar = InternalExpoCalendar.createCalendarNext(newDetails);
+  const createdCalendar = InternalExpoCalendar.createCalendar(newDetails);
   Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
   return createdCalendar;
 }
@@ -175,19 +225,22 @@ export function createCalendarNext(details: Partial<Calendar> = {}): ExpoCalenda
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
- * @param calendarIds An array of calendar IDs to search for events.
+ * @param calendars An array of calendar IDs (`string[]`) or [`ExpoCalendar`](#expocalendar) objects to search for events.
  * @param startDate The start date of the time range to search for events.
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
-export function listEvents(
-  calendarIds: string[],
+export async function listEvents(
+  calendars: (string | ExpoCalendar)[],
   startDate: Date,
   endDate: Date
-): ExpoCalendarEvent[] {
+): Promise<ExpoCalendarEvent[]> {
   if (!InternalExpoCalendar.listEvents) {
     throw new UnavailabilityError('Calendar', 'listEvents');
   }
+  const calendarIds = Array.isArray(calendars)
+    ? calendars.map((c) => (typeof c === 'string' ? c : c.id))
+    : [];
   return InternalExpoCalendar.listEvents(
     calendarIds,
     stringifyIfDate(startDate),
@@ -239,13 +292,9 @@ export type {
 } from './ExpoCalendar.types';
 
 export type {
-  Calendar,
-  Event,
-  Reminder,
   PermissionResponse,
   Alarm,
   AlarmLocation,
-  Attendee,
   CalendarDialogParams,
   DaysOfTheWeek,
   DialogEventResult,
@@ -275,5 +324,7 @@ export {
   MonthOfTheYear,
   ReminderStatus,
   SourceType,
+  createEventInCalendarAsync,
+  openEventInCalendarAsync,
 } from '../Calendar';
 export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';

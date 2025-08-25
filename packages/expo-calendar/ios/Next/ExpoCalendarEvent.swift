@@ -4,6 +4,7 @@ import EventKit
 
 internal final class ExpoCalendarEvent: ExpoCalendarItem {
   var event: EKEvent?
+  var span: EKSpan?
 
   override var calendarItem: EKCalendarItem? {
     return event
@@ -11,6 +12,11 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
 
   init(event: EKEvent) {
     self.event = event
+  }
+  
+  convenience init(event: EKEvent, span: EKSpan) {
+    self.init(event: event)
+    self.span = span
   }
 
   convenience init(eventRecord: EventNext) throws {
@@ -43,34 +49,24 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     self.init(event: calendarEvent)
   }
 
-  func update(eventRecord: EventNext, options: RecurringEventOptions?, nullableFields: [String]? = nil) throws {
+  func update(eventRecord: EventNext, nullableFields: [String]? = nil) throws {
     guard let calendarEvent = self.event else {
       throw ItemNoLongerExistsException()
     }
 
     try self.initialize(event: calendarEvent, eventRecord: eventRecord, nullableFields: nullableFields)
-
-    let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent
-
-    try eventStore.save(calendarEvent, span: span, commit: true)
+    try eventStore.save(calendarEvent, span: self.span ?? .thisEvent, commit: true)
   }
 
-  func delete(options: RecurringEventOptions) throws {
-    if self.event?.calendarItemIdentifier == nil {
+  func delete() throws {
+    guard let calendarEvent = self.event else {
       throw ItemNoLongerExistsException()
     }
-
-    let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-    let instanceStartDate = parse(date: options.instanceStartDate)
-
-    guard let calendarEvent = getOccurrence(startDate: instanceStartDate) else {
-      return
-    }
-
-    try eventStore.remove(calendarEvent, span: span)
+    
+    try eventStore.remove(calendarEvent, span: self.span ?? .thisEvent)
     self.event = nil
   }
-
+  
   func initialize(eventRecord: EventNext, nullableFields: [String]? = nil) throws {
     guard let event = self.event else {
       throw EventNotFoundException("EKevent not found")
@@ -153,10 +149,8 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
     }
   }
 
-  func getAttendees(options: RecurringEventOptions?) throws -> [ExpoCalendarAttendee]? {
-    let occurrence = try getOccurrence(options: options)
-
-    guard let occurrence, let attendees = occurrence.attendees else {
+  func getAttendees() throws -> [ExpoCalendarAttendee]? {
+    guard let event = self.event, let attendees = event.attendees else {
       return []
     }
 
