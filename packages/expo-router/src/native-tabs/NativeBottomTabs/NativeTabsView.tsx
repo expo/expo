@@ -1,5 +1,5 @@
-import React, { useDeferredValue } from 'react';
-import type { ColorValue } from 'react-native';
+import React, { useDeferredValue, useEffect } from 'react';
+import { Text, View, type ColorValue } from 'react-native';
 import {
   BottomTabs,
   BottomTabsScreen,
@@ -22,6 +22,7 @@ import {
   type NativeTabsViewProps,
 } from './types';
 import { shouldTabBeVisible } from './utils';
+import { NativeBottomAccessory } from '../botom-accessory/native';
 
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
@@ -87,6 +88,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
           name={route.name}
           descriptor={descriptor}
           isFocused={isFocused}
+          // This will not work with first route hidden
+          isFirst={index === 0}
           standardAppearance={appearances[index].standardAppearance}
           scrollEdgeAppearance={appearances[index].scrollEdgeAppearance}
           badgeTextColor={props.badgeTextColor}
@@ -173,6 +176,7 @@ function Screen(props: {
   standardAppearance: BottomTabsScreenAppearance;
   scrollEdgeAppearance: BottomTabsScreenAppearance;
   badgeTextColor: ColorValue | undefined;
+  isFirst: boolean;
 }) {
   const {
     routeKey,
@@ -186,6 +190,12 @@ function Screen(props: {
   const title = descriptor.options.title ?? name;
 
   let icon = convertOptionsIconToPropsIcon(descriptor.options.icon);
+
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  useEffect(() => {
+    return () => setIsMounted(false);
+  }, []);
 
   // Fix for an issue in screens
   if (descriptor.options.role) {
@@ -210,10 +220,27 @@ function Screen(props: {
       selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
       title={title}
       freezeContents={false}
+      onWillAppear={() => setIsMounted(true)}
       tabKey={routeKey}
       systemItem={descriptor.options.role}
       isFocused={isFocused}>
       {descriptor.render()}
+      {props.isFirst && isMounted && (
+        <NativeBottomAccessory onLayout={() => console.log('layout')}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingHorizontal: 24,
+              backgroundColor: 'rgba(255,0,0,0.25)',
+            }}>
+            <Text style={{ padding: 8, backgroundColor: 'white' }}>Test</Text>
+            <Text>Test</Text>
+          </View>
+        </NativeBottomAccessory>
+      )}
     </BottomTabsScreen>
   );
 }
