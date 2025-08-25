@@ -2,6 +2,8 @@ import { requireNativeView } from 'expo';
 import React from 'react';
 import { StyleSheet, ViewProps } from 'react-native';
 
+import { ExpoModifier } from '../../types';
+
 /**
  * Available text style variants for chip labels.
  */
@@ -50,6 +52,11 @@ export interface ChipProps extends ViewProps {
   selected?: boolean;
 
   /**
+   * Modifiers for the component
+   */
+  modifiers?: ExpoModifier[];
+
+  /**
    * Callback fired when the chip is clicked. Used for assist and filter chips.
    */
   onPress?: () => void;
@@ -60,15 +67,20 @@ export interface ChipProps extends ViewProps {
   onDismiss?: () => void;
 }
 
-type NativeChipProps = Omit<ChipProps, 'onPress'> & {
-  onPress?: () => void;
-};
-
 // Native component declaration using the same pattern as Button
-const ChipNativeView: React.ComponentType<NativeChipProps> = requireNativeView(
-  'ExpoUI',
-  'ChipView'
-);
+const ChipNativeView: React.ComponentType<ChipProps> = requireNativeView('ExpoUI', 'ChipView');
+
+/**
+ * @hidden
+ */
+export function transformChipProps(props: ChipProps): ChipProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    ...restProps,
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
+  };
+}
 
 /**
  * Displays a native chip component.
@@ -77,7 +89,7 @@ export function Chip(props: ChipProps): React.JSX.Element {
   // Min height from https://m3.material.io/components/chips/specs, minWidth
   return (
     <ChipNativeView
-      {...props}
+      {...transformChipProps(props)}
       style={StyleSheet.compose({ minWidth: 100, height: 32 }, props.style)}
     />
   );

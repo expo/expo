@@ -1,5 +1,6 @@
 import React from 'react';
 import { ViewProps } from 'react-native';
+import { ExpoModifier } from '../../types';
 /**
  * Available text style variants for chip labels.
  */
@@ -34,6 +35,10 @@ export interface ChipProps extends ViewProps {
      */
     selected?: boolean;
     /**
+     * Modifiers for the component
+     */
+    modifiers?: ExpoModifier[];
+    /**
      * Callback fired when the chip is clicked. Used for assist and filter chips.
      */
     onPress?: () => void;
@@ -42,6 +47,10 @@ export interface ChipProps extends ViewProps {
      */
     onDismiss?: () => void;
 }
+/**
+ * @hidden
+ */
+export declare function transformChipProps(props: ChipProps): ChipProps;
 /**
  * Displays a native chip component.
  */
