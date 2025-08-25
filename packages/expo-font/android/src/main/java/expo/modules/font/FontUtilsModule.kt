@@ -19,7 +19,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.UUID
-import kotlin.math.abs
 
 private class SaveImageException(uri: String, cause: Throwable? = null) :
   CodedException("Could not save image to '$uri'", cause)
@@ -34,24 +33,24 @@ open class FontUtilsModule : Module() {
     AsyncFunction("renderToImageAsync") { glyphs: String, options: RenderToImageOptions, promise: Promise ->
       val typeface = ReactFontManager.getInstance().getTypeface(options.fontFamily, Typeface.NORMAL, context.assets)
 
+      val size = options.size
       val paint = Paint().apply {
         this.typeface = typeface
-        this.color = options.color
-        this.textSize = options.size
-        this.isAntiAlias = true
+        color = options.color
+        textSize = size
+        isAntiAlias = true
       }
 
-      val bounds = Rect().also {
+      Rect().also {
         paint.getTextBounds(glyphs, 0, glyphs.length, it)
       }
 
-      val bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888)
+      val sizeInt = size.toInt()
+      val bitmap = Bitmap.createBitmap(sizeInt, sizeInt, Bitmap.Config.ARGB_8888)
       val canvas = Canvas(bitmap)
 
-      val x = abs(bounds.left).toFloat()
-      val y = bounds.height().toFloat() / 2 - ((paint.fontMetrics.ascent + paint.fontMetrics.descent) / 2)
-
-      canvas.drawText(glyphs, x, y, paint)
+      val offsetY = size - paint.fontMetrics.bottom
+      canvas.drawText(glyphs, 0f, offsetY, paint)
 
       val output = File(context.cacheDir, "${UUID.randomUUID()}.png")
       if (!output.exists()) {
@@ -61,8 +60,8 @@ open class FontUtilsModule : Module() {
       try {
         FileOutputStream(output).use { out ->
           bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-          promise.resolve(Uri.fromFile(output))
         }
+        promise.resolve(Uri.fromFile(output))
       } catch (e: IOException) {
         promise.reject(SaveImageException(output.absolutePath, e))
       }
