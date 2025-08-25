@@ -43,12 +43,12 @@ The file or directory does not need to exist &mdash; an error will be thrown fro
 import { File, Paths } from 'expo-file-system';
 
 try {
-const file = new File(Paths.cache, 'example.txt');
-file.create(); // can throw an error if the file already exists or no permission to create it
-file.write('Hello, world!');
-console.log(file.textSync()); // Hello, world!
+  const file = new File(Paths.cache, 'example.txt');
+  file.create(); // can throw an error if the file already exists or no permission to create it
+  file.write('Hello, world!');
+  console.log(file.textSync()); // Hello, world!
 } catch (error) {
-console.error(error);
+  console.error(error);
 }
 ```
 
@@ -176,11 +176,11 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { File, Paths } from 'expo-file-system';
 
 try {
-const file = new File(Paths.cache, 'example.txt');
-const content = await FileSystem.readAsStringAsync(file.uri);
-console.log(content);
+  const file = new File(Paths.cache, 'example.txt');
+  const content = await FileSystem.readAsStringAsync(file.uri);
+  console.log(content);
 } catch (error) {
-console.error(error);
+  console.error(error);
 }
 ```
 </Collapsible>
