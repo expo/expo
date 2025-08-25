@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS][next] Implement `ExpoCalendar@next` ([#38564](https://github.com/expo/expo/pull/38564) by [@kosmydel](https://github.com/kosmydel))
+- [next] Implement `ExpoCalendar@next` ([#39108](https://github.com/expo/expo/pull/39108/) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
