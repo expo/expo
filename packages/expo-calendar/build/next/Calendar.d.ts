@@ -54,7 +54,7 @@ export declare function getDefaultCalendarNext(): ExpoCalendar;
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export declare function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalendar[]>;
+export declare function getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
 /**
  * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
  * @param details A map of details for the calendar to be created.

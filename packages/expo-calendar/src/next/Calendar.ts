@@ -198,7 +198,7 @@ export function getDefaultCalendarNext(): ExpoCalendar {
  * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
  */
-export async function getCalendarsNext(type?: EntityTypes): Promise<ExpoCalendar[]> {
+export async function getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]> {
   if (!InternalExpoCalendar.getCalendars) {
     throw new UnavailabilityError('Calendar', 'getCalendars');
   }

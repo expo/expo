@@ -2,7 +2,7 @@ import {
   createCalendar,
   ExpoCalendar,
   ExpoCalendarEvent,
-  getCalendarsNext,
+  getCalendars,
   getDefaultCalendarNext,
   requestCalendarPermissionsAsync,
   requestRemindersPermissionsAsync,
@@ -116,7 +116,7 @@ function createTestAttendee(
 }
 
 async function getReminderCalendar() {
-  const calendars = getCalendarsNext();
+  const calendars = getCalendars();
   return (await calendars).find((c) => c.entityType === EntityTypes.REMINDER);
 }
 
@@ -277,7 +277,7 @@ export async function test(t) {
         });
 
         t.it('returns an array of calendars with correct shape', async () => {
-          const calendars = await getCalendarsNext();
+          const calendars = await getCalendars();
 
           t.expect(Array.isArray(calendars)).toBeTruthy();
 
@@ -288,7 +288,7 @@ export async function test(t) {
 
         if (Platform.OS === 'ios') {
           t.it('returns an array of calendars for reminders', async () => {
-            const calendars = await getCalendarsNext(Calendar.EntityTypes.REMINDER);
+            const calendars = await getCalendars(Calendar.EntityTypes.REMINDER);
 
             t.expect(Array.isArray(calendars)).toBeTruthy();
 
@@ -469,7 +469,7 @@ export async function test(t) {
         });
 
         t.it('retrieves a specific calendar by ID from the list of all calendars', async () => {
-          const calendars = await getCalendarsNext();
+          const calendars = await getCalendars();
           const fetchedCalendar = calendars.find((c) => c.id === calendar.id);
           t.expect(fetchedCalendar).toBeDefined();
           t.expect(fetchedCalendar.id).toBe(calendar.id);
@@ -564,7 +564,7 @@ export async function test(t) {
         t.it('deletes a calendar', async () => {
           calendar.delete();
 
-          const calendars = getCalendarsNext();
+          const calendars = getCalendars();
           t.expect((await calendars).findIndex((c) => c.id === calendar.id)).toBe(-1);
         });
 

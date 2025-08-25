@@ -1,6 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { createCalendarNext, ExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
+import { createCalendar, ExpoCalendar, getCalendars } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -78,11 +78,9 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       const reminderGranted =
         Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
       if (calendarGranted && reminderGranted) {
-        const eventCalendars = (await getCalendarsNext(
-          Calendar.EntityTypes.EVENT
-        )) as unknown as any[];
+        const eventCalendars = (await getCalendars(Calendar.EntityTypes.EVENT)) as unknown as any[];
         const reminderCalendars = (
-          Platform.OS === 'ios' ? getCalendarsNext(Calendar.EntityTypes.REMINDER) : []
+          Platform.OS === 'ios' ? await getCalendars(Calendar.EntityTypes.REMINDER) : []
         ) as any[];
         setCalendars([...eventCalendars, ...reminderCalendars]);
       }
@@ -120,7 +118,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
     };
 
     try {
-      const calendar = await createCalendarNext(newCalendar);
+      const calendar = createCalendar(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
     } catch (e) {
