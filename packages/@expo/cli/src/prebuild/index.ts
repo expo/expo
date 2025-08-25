@@ -43,7 +43,7 @@ export const expoPrebuild: Command = async (argv) => {
         `--template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo`,
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
         `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,
-        `-y, --yes                               Skip git confirmation prompt and continue with uncommitted changes`,
+        `-y, --yes                                Skip git confirmation prompt and continue with uncommitted changes`,
         `-h, --help                               Usage info`,
       ].join('\n')
     );
