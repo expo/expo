@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed issue with missing `instantMessageAddresses` on iOS ([#38985](https://github.com/expo/expo/pull/38985) by [@hryhoriiK97](https://github.com/hryhoriiK97)
+
 ### 💡 Others
 
 ## 15.0.4 — 2025-08-25
