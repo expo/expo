@@ -366,38 +366,6 @@ export async function test(t) {
         });
       });
 
-      t.describe('getEventById()', () => {
-        let calendar: ExpoCalendar;
-
-        t.beforeEach(async () => {
-          calendar = await createTestCalendar();
-        });
-
-        t.it('returns an event by its ID', async () => {
-          const event = createTestEvent(calendar);
-          const event2 = ExpoCalendarEvent.get(event.id);
-          t.expect(event2).toBeDefined();
-          t.expect(event2).toEqual(event);
-        });
-
-        t.it('returns a modified event', async () => {
-          const event = createTestEvent(calendar);
-          event.update({
-            title: 'New title',
-            location: 'New location',
-          });
-
-          const event2 = ExpoCalendarEvent.get(event.id);
-          t.expect(event2).toBeDefined();
-          t.expect(event2.title).toBe('New title');
-          t.expect(event2.location).toBe('New location');
-        });
-
-        t.afterEach(async () => {
-          calendar.delete();
-        });
-      });
-
       if (Platform.OS === 'ios') {
         t.describe('getReminderById()', () => {
           let calendar: ExpoCalendar;
@@ -930,6 +898,19 @@ export async function test(t) {
           } catch (e) {
             t.expect(e).toBeDefined();
           }
+        });
+
+        t.it('returns a modified event', async () => {
+          const event = createTestEvent(calendar);
+          event.update({
+            title: 'New title',
+            location: 'New location',
+          });
+
+          const event2 = ExpoCalendarEvent.get(event.id);
+          t.expect(event2).toBeDefined();
+          t.expect(event2.title).toBe('New title');
+          t.expect(event2.location).toBe('New location');
         });
 
         t.afterEach(async () => {
