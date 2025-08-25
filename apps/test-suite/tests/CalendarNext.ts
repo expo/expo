@@ -13,6 +13,7 @@ import {
   EntityTypes,
 } from 'expo-calendar/next';
 import * as Calendar from 'expo-calendar/next';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
@@ -1864,16 +1865,33 @@ export async function test(t) {
       });
     }
 
-    if (Platform.OS === 'android') {
-      t.describe('Attendee', () => {
-        let calendar: ExpoCalendar;
-        let event: ExpoCalendarEvent;
+    t.describe('Attendee', () => {
+      let calendar: ExpoCalendar;
+      let event: ExpoCalendarEvent;
 
-        t.beforeEach(async () => {
-          calendar = await createTestCalendar();
-          event = createTestEvent(calendar);
+      t.beforeEach(async () => {
+        calendar = createTestCalendar();
+        event = createTestEvent(calendar);
+      });
+
+      if (Platform.OS === 'ios') {
+        t.describe('Attendee on iOS', () => {
+          t.it('createAttendee() throws UnavailabilityError on iOS', () => {
+            let error;
+            try {
+              event.createAttendee(defaultAttendeeData);
+            } catch (e) {
+              error = e;
+            }
+            t.expect(error instanceof UnavailabilityError).toBe(true);
+            t.expect(error.message).toBe(
+              new UnavailabilityError('ExpoCalendarEvent', 'createAttendee').message
+            );
+          });
         });
+      }
 
+      if (Platform.OS === 'android') {
         t.it('lists attendees for an event with attendees', async () => {
           const attendees = await event.getAttendeesAsync();
           t.expect(Array.isArray(attendees)).toBe(true);
@@ -2050,12 +2068,11 @@ export async function test(t) {
           }
           t.expect(error).toBeDefined();
         });
+      }
 
-        t.afterEach(async () => {
-          event.delete();
-          calendar.delete();
-        });
+      t.afterEach(async () => {
+        calendar.delete();
       });
-    }
+    });
   });
 }

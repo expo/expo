@@ -28,8 +28,18 @@ import {
  */
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
   override update(details: Partial<ModifiableAttendeeProperties>): void {
+    if (!super.update) {
+      throw new UnavailabilityError('ExpoCalendarAttendee', 'update');
+    }
     const nullableDetailsFields = getNullableDetailsFields(details);
     return super.update(stringifyDateValues(details), nullableDetailsFields);
+  }
+
+  override delete(): void {
+    if (!super.delete) {
+      throw new UnavailabilityError('ExpoCalendarAttendee', 'delete');
+    }
+    super.delete();
   }
 }
 
@@ -66,6 +76,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
   }
 
   override createAttendee(attendee: Attendee): ExpoCalendarAttendee {
+    if (!super.createAttendee) {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'createAttendee');
+    }
     const newAttendee = super.createAttendee(attendee);
     Object.setPrototypeOf(newAttendee, ExpoCalendarAttendee.prototype);
     return newAttendee;

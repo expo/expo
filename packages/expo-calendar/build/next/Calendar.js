@@ -7,8 +7,17 @@ import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '
  */
 export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
     update(details) {
+        if (!super.update) {
+            throw new UnavailabilityError('ExpoCalendarAttendee', 'update');
+        }
         const nullableDetailsFields = getNullableDetailsFields(details);
         return super.update(stringifyDateValues(details), nullableDetailsFields);
+    }
+    delete() {
+        if (!super.delete) {
+            throw new UnavailabilityError('ExpoCalendarAttendee', 'delete');
+        }
+        super.delete();
     }
 }
 /**
@@ -36,6 +45,9 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
         });
     }
     createAttendee(attendee) {
+        if (!super.createAttendee) {
+            throw new UnavailabilityError('ExpoCalendarEvent', 'createAttendee');
+        }
         const newAttendee = super.createAttendee(attendee);
         Object.setPrototypeOf(newAttendee, ExpoCalendarAttendee.prototype);
         return newAttendee;

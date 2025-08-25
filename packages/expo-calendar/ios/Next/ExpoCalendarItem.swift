@@ -18,7 +18,6 @@ internal class ExpoCalendarItem: SharedObject {
     return serialize(alarms: alarms, with: dateFormatter)
   }
 
-  // Mostly copied from CalendarModule.swift
   func serializeRecurrenceRule() -> RecurrenceRuleNext? {
     guard let rule = calendarItem?.recurrenceRules?.first else {
       return nil

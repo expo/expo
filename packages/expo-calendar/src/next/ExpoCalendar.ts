@@ -21,7 +21,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
   createCalendarNext(details: Partial<Calendar>): ExpoCalendar;
 
   listEvents(
-    calendars: string[] | ExpoCalendar[],
+    calendars: string[],
     startDate: string | Date,
     endDate: string | Date
   ): Promise<ExpoCalendarEvent[]>;

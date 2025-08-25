@@ -6,6 +6,7 @@ import { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCale
  */
 export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAttendee {
     update(details: Partial<ModifiableAttendeeProperties>): void;
+    delete(): void;
 }
 /**
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
