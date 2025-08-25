@@ -25,7 +25,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.ui.button.Button
 import expo.modules.ui.menu.ContextMenu
-import expo.modules.ui.CarouselView
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {

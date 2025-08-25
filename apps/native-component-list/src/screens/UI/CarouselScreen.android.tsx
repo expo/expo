@@ -1,87 +1,140 @@
-import { Carousel, CarouselItem } from '@expo/ui/jetpack-compose';
+import { Carousel, CarouselItem, padding, background } from '@expo/ui/jetpack-compose';
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function CarouselScreen() {
-  const items: CarouselItem[] = [
-    {
-      image: 'https://picsum.photos/id/10/400/300',
-      title: 'Forest',
-    },
-    {
-      image: 'https://picsum.photos/id/11/400/300',
-      title: 'Lake',
-    },
-    {
-      image: 'https://picsum.photos/id/15/400/300',
-      title: 'River',
-    },
-    {
-      image: 'https://picsum.photos/id/18/400/300',
-      title: 'Trees',
-    },
-    {
-      image: 'https://picsum.photos/id/93/400/300',
-      title: 'Path',
-    },
-    {
-      image: 'https://picsum.photos/id/110/400/300',
-      title: 'Green',
-    },
-  ];
-
-  const handleItemPress = (event: { nativeEvent: { index: number } }) => {
-    const currentIndex = event.nativeEvent.index;
-    Alert.alert(
-      'Item Pressed',
-      `You pressed item at index: ${currentIndex}\nTitle: ${items[currentIndex]?.title || 'Unknown'}`,
-      [{ text: 'OK', style: 'default' }]
-    );
+  const handleItemPress = (title: string, index: number) => {
+    Alert.alert('Carousel Item Pressed', `You pressed: ${title} at index: ${index}`, [
+      { text: 'OK', style: 'default' },
+    ]);
   };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Carousel View</Text>
-      <Text style={styles.subtitle}>A simple horizontal scrolling carousel component</Text>
+      <Text style={styles.subtitle}>
+        A flexible horizontal scrolling carousel with children-based API, press events, and
+        modifier-based styling
+      </Text>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Multi Browse Carousel</Text>
+        <Text style={styles.sectionTitle}>MultiBrowse Carousel (Default Properties)</Text>
         <Text style={styles.sectionDescription}>
-          HorizontalMultiBrowseCarousel with custom styling and click events
+          MultiBrowse carousel with default styling and press events.
         </Text>
-        <Carousel
-          style={styles.carousel}
-          items={items}
-          variant="multiBrowse"
-          preferredItemWidth={180}
-          itemHeight={160}
-          itemSpacing={12}
-          contentPadding={20}
-          topBottomPadding={10}
-          cornerRadius={24}
-          textColor="#FFFFFF"
-          textStyle="titleMedium"
-          onItemPress={handleItemPress}
-        />
+        <Carousel variant="multiBrowse" style={styles.carousel}>
+          <CarouselItem
+            image="https://picsum.photos/id/10/400/300"
+            title="Forest"
+            onPress={(index: number) => handleItemPress('Forest', index)}
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/11/400/300"
+            title="Lake"
+            onPress={(index: number) => handleItemPress('Lake', index)}
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/15/400/300"
+            title="River"
+            onPress={(index: number) => handleItemPress('River', index)}
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/18/400/300"
+            title="Trees"
+            onPress={(index: number) => handleItemPress('Trees', index)}
+          />
+        </Carousel>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Uncontained Carousel</Text>
+        <Text style={styles.sectionTitle}>Uncontained Carousel (Default Properties)</Text>
         <Text style={styles.sectionDescription}>
-          HorizontalUncontainedCarousel with no content padding (items extend beyond bounds)
+          Uncontained carousel with default styling and press events.
+        </Text>
+        <Carousel variant="uncontained" style={styles.carousel}>
+          <CarouselItem
+            image="https://picsum.photos/id/10/400/300"
+            title="Forest"
+            onPress={(index: number) => handleItemPress('Forest', index)}
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/11/400/300"
+            title="Lake"
+            onPress={(index: number) => handleItemPress('Lake', index)}
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/15/400/300"
+            title="River"
+            onPress={(index: number) => handleItemPress('River', index)}
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/18/400/300"
+            title="Trees"
+            onPress={(index: number) => handleItemPress('Trees', index)}
+          />
+        </Carousel>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Custom Styling with Modifiers</Text>
+        <Text style={styles.sectionDescription}>
+          Carousel with custom styling using modifiers for padding and background.
         </Text>
         <Carousel
+          variant="multiBrowse"
           style={styles.carousel}
-          items={items}
-          variant="uncontained"
-          preferredItemWidth={200}
-          itemHeight={200}
-          itemSpacing={8}
-          topBottomPadding={8}
-          cornerRadius={28}
-          textColor="#FFD700"
-          textStyle="titleLarge"
-        />
+          preferredItemWidth={180}
+          itemSpacing={12}
+          contentPadding={20}
+          modifiers={[
+            padding(16), // Add padding around the carousel
+            background('#f8f9fa'), // Light background
+          ]}>
+          <CarouselItem
+            image="https://picsum.photos/id/10/400/300"
+            title="Custom Style 1"
+            textColor="#FFFFFF"
+            textStyle="titleLarge"
+            cornerRadius={16}
+            height={160}
+            onPress={(index: number) =>
+              Alert.alert('Custom Style 1', `You pressed item at index: ${index}`)
+            }
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/11/400/300"
+            title="Custom Style 2"
+            textColor="#000000"
+            textStyle="bodyMedium"
+            cornerRadius={8}
+            height={140}
+            onPress={(index: number) =>
+              Alert.alert('Custom Style 2', `You pressed item at index: ${index}`)
+            }
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/15/400/300"
+            title="Custom Style 3"
+            textColor="#FFD700"
+            textStyle="titleSmall"
+            cornerRadius={50}
+            height={180}
+            onPress={(index: number) =>
+              Alert.alert('Custom Style 3', `You pressed item at index: ${index}`)
+            }
+          />
+          <CarouselItem
+            image="https://picsum.photos/id/18/400/300"
+            title="Custom Style 4"
+            textColor="#FF6B6B"
+            textStyle="bodyLarge"
+            cornerRadius={0}
+            height={120}
+            onPress={(index: number) =>
+              Alert.alert('Custom Style 4', `You pressed item at index: ${index}`)
+            }
+          />
+        </Carousel>
       </View>
     </ScrollView>
   );
@@ -132,7 +185,7 @@ const styles = StyleSheet.create({
   },
   carousel: {
     width: '100%',
-    height: 200,
+    minHeight: 200,
   },
 });
 

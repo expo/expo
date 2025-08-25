@@ -1,6 +1,9 @@
 import { requireNativeView } from 'expo';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+
+import { transformCarouselProps, CarouselElement } from './utils';
+import { ExpoModifier } from '../../types';
 
 export type CarouselTextStyle =
   | 'titleLarge'
@@ -12,17 +15,49 @@ export type CarouselTextStyle =
 
 export type CarouselVariant = 'multiBrowse' | 'uncontained';
 
-export interface CarouselItem {
+export interface CarouselItemProps {
+  /**
+   * The image URL to display in the carousel item
+   */
   image: string;
+
+  /**
+   * The title text to display over the image
+   */
   title: string;
+
+  /**
+   * Text color in hex format (e.g., "#FFFFFF", "#000000")
+   * Default: "#FFFFFF" (white)
+   */
+  textColor?: string;
+
+  /**
+   * Text style for item title
+   * Default: "titleMedium"
+   */
+  textStyle?: CarouselTextStyle;
+
+  /**
+   * Corner radius in dp
+   * Default: 28
+   */
+  cornerRadius?: number;
+
+  /**
+   * Item height in dp
+   * Default: 200
+   */
+  height?: number;
+
+  /**
+   * Callback function called when this item is pressed
+   * @param index The index of the pressed item
+   */
+  onPress?: (index: number) => void;
 }
 
 export interface CarouselProps {
-  /**
-   * The items to display in the carousel
-   */
-  items: CarouselItem[];
-
   /**
    * The carousel variant to use
    */
@@ -35,12 +70,6 @@ export interface CarouselProps {
   preferredItemWidth?: number;
 
   /**
-   * Item height in dp for carousel items
-   * Default: 200
-   */
-  itemHeight?: number;
-
-  /**
    * Spacing between items in dp
    * Default: 8
    */
@@ -48,21 +77,9 @@ export interface CarouselProps {
 
   /**
    * Horizontal content padding in dp
-   * Default: 16
+   * Default: 0
    */
   contentPadding?: number;
-
-  /**
-   * Top/bottom padding in dp
-   * Default: 8
-   */
-  topBottomPadding?: number;
-
-  /**
-   * Corner radius in dp
-   * Default: 28
-   */
-  cornerRadius?: number;
 
   /**
    * Starting item index
@@ -71,34 +88,40 @@ export interface CarouselProps {
   initialItemIndex?: number;
 
   /**
-   * Text color in hex format (e.g., "#FFFFFF", "#000000")
-   * Default: "#FFFFFF" (white)
-   */
-  textColor?: string;
-
-  /**
-   * Text style for item titles
-   * Default: "titleMedium"
-   */
-  textStyle?: CarouselTextStyle;
-
-  /**
    * Additional styles to apply to the carousel.
    */
   style?: StyleProp<ViewStyle>;
 
   /**
-   * Callback function called when an item is pressed
-   * @param event The event object containing the index of the pressed item
+   * Modifiers for customizing the carousel
    */
-  onItemPress?: (event: { nativeEvent: { index: number } }) => void;
+  modifiers?: ExpoModifier[];
+
+  /**
+   * The carousel items as children
+   */
+  children: ReactElement<CarouselItemProps> | ReactElement<CarouselItemProps>[];
 }
 
-const CarouselViewNative: React.ComponentType<CarouselProps> = requireNativeView(
+export type NativeCarouselProps = Omit<CarouselProps, 'children'> & {
+  elements: CarouselElement[];
+  onItemPress?: (event: { nativeEvent: { index: number } }) => void;
+};
+
+const CarouselViewNative: React.ComponentType<NativeCarouselProps> = requireNativeView(
   'ExpoUI',
   'CarouselView'
 );
 
+/**
+ * Individual carousel item component
+ */
+export function CarouselItem(props: CarouselItemProps): React.JSX.Element {
+  // This component is used for type checking and transformation
+  // The actual rendering happens on the native side
+  return React.createElement('CarouselItem', props);
+}
+
 export function Carousel(props: CarouselProps) {
-  return <CarouselViewNative {...props} />;
+  return <CarouselViewNative {...transformCarouselProps(props)} />;
 }

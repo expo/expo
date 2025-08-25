@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
@@ -46,7 +45,15 @@ data class CarouselItem(
   @Field
   val image: String,
   @Field
-  val title: String
+  val title: String,
+  @Field
+  val textColor: String? = null,
+  @Field
+  val textStyle: TextStyle? = null,
+  @Field
+  val cornerRadius: Float? = null,
+  @Field
+  val height: Float? = null
 ) : Record
 
 class CarouselItemPressEvent : Record, Serializable {
@@ -70,28 +77,19 @@ enum class TextStyle(val value: String) {
 
 data class CarouselConfig(
   @Field val preferredItemWidth: Float = 200f,
-  @Field val itemHeight: Float = 200f,
   @Field val itemSpacing: Float = 8f,
-  @Field val contentPadding: Float = 16f,
-  @Field val topBottomPadding: Float = 8f,
-  @Field val cornerRadius: Float = 28f,
-  @Field val initialItemIndex: Int = 0,
-  @Field val textColor: String = "#FFFFFF",
-  @Field val textStyle: TextStyle = TextStyle.TITLE_MEDIUM
+  @Field val contentPadding: Float = 0f,
+  @Field val initialItemIndex: Int = 0
 ) : Record
 
 data class CarouselViewProps(
-  val items: MutableState<List<CarouselItem>> = mutableStateOf(emptyList()),
+  val elements: MutableState<List<CarouselItem>> = mutableStateOf(emptyList()),
   val variant: MutableState<String> = mutableStateOf("multiBrowse"),
   val preferredItemWidth: MutableState<Float> = mutableFloatStateOf(200f),
-  val itemHeight: MutableState<Float> = mutableFloatStateOf(200f),
   val itemSpacing: MutableState<Float> = mutableFloatStateOf(8f),
-  val contentPadding: MutableState<Float> = mutableFloatStateOf(16f),
-  val topBottomPadding: MutableState<Float> = mutableFloatStateOf(8f),
-  val cornerRadius: MutableState<Float> = mutableFloatStateOf(28f),
+  val contentPadding: MutableState<Float> = mutableFloatStateOf(0f),
   val initialItemIndex: MutableState<Int> = mutableIntStateOf(0),
-  val textColor: MutableState<String> = mutableStateOf("#FFFFFF"),
-  val textStyle: MutableState<TextStyle> = mutableStateOf(TextStyle.TITLE_MEDIUM)
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,19 +99,23 @@ class CarouselView(context: Context, appContext: AppContext) :
   override val props = CarouselViewProps()
   private val onItemPress by EventDispatcher<CarouselItemPressEvent>()
 
+  private fun onItemPress(index: Int) {
+    val event = CarouselItemPressEvent()
+    event.index = index
+    onItemPress.invoke(event)
+  }
+
   @Composable
   private fun MultiBrowseCarousel(
     items: List<CarouselItem>,
     config: CarouselConfig,
-    modifier: Modifier = Modifier,
-    onItemPress: (Int) -> Unit
+    modifier: Modifier = Modifier
   ) {
     HorizontalMultiBrowseCarousel(
       state = rememberCarouselState(config.initialItemIndex) { items.size },
       modifier = modifier
         .fillMaxWidth()
-        .wrapContentHeight()
-        .padding(top = config.topBottomPadding.dp, bottom = config.topBottomPadding.dp),
+        .wrapContentHeight(),
       preferredItemWidth = config.preferredItemWidth.dp,
       itemSpacing = config.itemSpacing.dp,
       contentPadding = PaddingValues(horizontal = config.contentPadding.dp)
@@ -121,7 +123,6 @@ class CarouselView(context: Context, appContext: AppContext) :
       val item = items[i]
       CarouselItem(
         item = item,
-        config = config,
         onItemPress = { onItemPress(i) }
       )
     }
@@ -131,23 +132,20 @@ class CarouselView(context: Context, appContext: AppContext) :
   private fun UncontainedCarousel(
     items: List<CarouselItem>,
     config: CarouselConfig,
-    modifier: Modifier = Modifier,
-    onItemPress: (Int) -> Unit
+    modifier: Modifier = Modifier
   ) {
     HorizontalUncontainedCarousel(
       state = rememberCarouselState(config.initialItemIndex) { items.size },
       modifier = modifier
         .fillMaxWidth()
-        .wrapContentHeight()
-        .padding(top = config.topBottomPadding.dp, bottom = config.topBottomPadding.dp),
+        .wrapContentHeight(),
       itemSpacing = config.itemSpacing.dp,
       itemWidth = config.preferredItemWidth.dp,
-      contentPadding = PaddingValues(0.dp)
+      contentPadding = PaddingValues(horizontal = config.contentPadding.dp)
     ) { i ->
       val item = items[i]
       CarouselItem(
         item = item,
-        config = config,
         onItemPress = { onItemPress(i) }
       )
     }
@@ -155,29 +153,22 @@ class CarouselView(context: Context, appContext: AppContext) :
 
   @Composable
   override fun Content(modifier: Modifier) {
-    val items = props.items.value
+    val items = props.elements.value
     val variant = props.variant.value
     val config = CarouselConfig(
       preferredItemWidth = props.preferredItemWidth.value,
-      itemHeight = props.itemHeight.value,
       itemSpacing = props.itemSpacing.value,
       contentPadding = props.contentPadding.value,
-      topBottomPadding = props.topBottomPadding.value,
-      cornerRadius = props.cornerRadius.value,
-      initialItemIndex = props.initialItemIndex.value,
-      textColor = props.textColor.value,
-      textStyle = props.textStyle.value
+      initialItemIndex = props.initialItemIndex.value
     )
-    val onItemPress: (Int) -> Unit = { index ->
-      val event = CarouselItemPressEvent()
-      event.index = index
-      onItemPress.invoke(event)
-    }
+
+    // Apply modifiers to the carousel
+    val modifiedModifier = modifier.fromExpoModifiers(props.modifiers.value)
 
     when (variant) {
-      CarouselVariant.MULTI_BROWSE.value -> MultiBrowseCarousel(items, config, modifier, onItemPress)
-      CarouselVariant.UNCONTAINED.value -> UncontainedCarousel(items, config, modifier, onItemPress)
-      else -> MultiBrowseCarousel(items, config, modifier, onItemPress) // Default
+      CarouselVariant.MULTI_BROWSE.value -> MultiBrowseCarousel(items, config, modifiedModifier)
+      CarouselVariant.UNCONTAINED.value -> UncontainedCarousel(items, config, modifiedModifier)
+      else -> MultiBrowseCarousel(items, config, modifiedModifier) // Default
     }
   }
 }
@@ -185,17 +176,21 @@ class CarouselView(context: Context, appContext: AppContext) :
 @Composable
 private fun CarouselItem(
   item: CarouselItem,
-  config: CarouselConfig,
-  onItemPress: (() -> Unit)?,
+  onItemPress: () -> Unit
 ) {
   val context = LocalContext.current.applicationContext
+  
+  val itemHeight = item.height ?: 200f
+  val itemCornerRadius = item.cornerRadius ?: 28f
+  val itemTextColor = item.textColor ?: "#FFFFFF"
+  val itemTextStyle = item.textStyle ?: TextStyle.TITLE_MEDIUM
 
   Box(
     modifier = Modifier
-      .height(config.itemHeight.dp)
+      .height(itemHeight.dp)
       .fillMaxWidth(0.95f)
-      .clip(RoundedCornerShape(config.cornerRadius.dp))
-      .clickable { onItemPress?.invoke() }
+      .clip(RoundedCornerShape(itemCornerRadius.dp))
+      .clickable { onItemPress() }
   ) {
     AsyncImage(
       model = ImageRequest.Builder(context)
@@ -215,8 +210,8 @@ private fun CarouselItem(
     ) {
       Text(
         text = item.title,
-        color = Color(config.textColor.toColorInt()),
-        style = when (config.textStyle) {
+        color = Color(itemTextColor.toColorInt()),
+        style = when (itemTextStyle) {
           TextStyle.TITLE_LARGE -> typography.titleLarge
           TextStyle.TITLE_MEDIUM -> typography.titleMedium
           TextStyle.TITLE_SMALL -> typography.titleSmall
