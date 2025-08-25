@@ -35,10 +35,12 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
 const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const utils_1 = require("./utils");
+const native_1 = require("../botom-accessory/native");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
@@ -75,7 +77,9 @@ function NativeTabsView(props) {
         .map(({ route, index }) => {
         const descriptor = descriptors[route.key];
         const isFocused = index === deferredFocusedIndex;
-        return (<Screen key={route.key} routeKey={route.key} name={route.name} descriptor={descriptor} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={props.badgeTextColor}/>);
+        return (<Screen key={route.key} routeKey={route.key} name={route.name} descriptor={descriptor} isFocused={isFocused} 
+        // This will not work with first route hidden
+        isFirst={index === 0} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={props.badgeTextColor}/>);
     });
     return (<BottomTabsWrapper 
     // #region android props
@@ -114,6 +118,10 @@ function Screen(props) {
     const { routeKey, name, descriptor, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, } = props;
     const title = descriptor.options.title ?? name;
     let icon = convertOptionsIconToPropsIcon(descriptor.options.icon);
+    const [isMounted, setIsMounted] = react_1.default.useState(false);
+    (0, react_1.useEffect)(() => {
+        return () => setIsMounted(false);
+    }, []);
     // Fix for an issue in screens
     if (descriptor.options.role) {
         switch (descriptor.options.role) {
@@ -121,8 +129,21 @@ function Screen(props) {
                 icon = { sfSymbolName: 'magnifyingglass' };
         }
     }
-    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(descriptor.options.icon)} iconResource={getAndroidIconResource(descriptor.options.icon)} icon={icon} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
+    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(descriptor.options.icon)} iconResource={getAndroidIconResource(descriptor.options.icon)} icon={icon} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} onWillAppear={() => setIsMounted(true)} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
       {descriptor.render()}
+      {props.isFirst && isMounted && (<native_1.NativeBottomAccessory onLayout={() => console.log('layout')}>
+          <react_native_1.View style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingHorizontal: 24,
+                backgroundColor: 'rgba(255,0,0,0.25)',
+            }}>
+            <react_native_1.Text style={{ padding: 8, backgroundColor: 'white' }}>Test</react_native_1.Text>
+            <react_native_1.Text>Test</react_native_1.Text>
+          </react_native_1.View>
+        </native_1.NativeBottomAccessory>)}
     </react_native_screens_1.BottomTabsScreen>);
 }
 function convertOptionsIconToPropsIcon(icon) {
