@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix early tear down from `onDetachedFromWindow`.
+
 ### 💡 Others
 
 ## 17.0.2 — 2025-08-16
