@@ -225,13 +225,13 @@ export function createCalendar(details: Partial<Calendar> = {}): ExpoCalendar {
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
- * @param calendars An array of calendar IDs to search for events or [`ExpoCalendar`](#expocalendar) objects.
+ * @param calendars An array of calendar IDs (`string[]`) or [`ExpoCalendar`](#expocalendar) objects to search for events.
  * @param startDate The start date of the time range to search for events.
  * @param endDate The end date of the time range to search for events.
  * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
  */
 export async function listEvents(
-  calendars: string[] | ExpoCalendar[],
+  calendars: (string | ExpoCalendar)[],
   startDate: Date,
   endDate: Date
 ): Promise<ExpoCalendarEvent[]> {
