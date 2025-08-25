@@ -1,5 +1,4 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { ProcessedColorValue } from 'react-native';
 export { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
 /**
  * Options for specifying a particular instance of a recurring event.
@@ -60,7 +59,7 @@ export type Calendar = {
     /**
      * Color used to display this calendar's events.
      */
-    color: string | ProcessedColorValue;
+    color: string;
     /**
      * Whether the calendar is used in the Calendar or Reminders OS app.
      * @platform ios
