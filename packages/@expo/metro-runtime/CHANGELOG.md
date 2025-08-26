@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid sending compilation errors back to Metro terminal from the application runtime
+
 ### 💡 Others
 
 ## 6.1.0 — 2025-08-19
