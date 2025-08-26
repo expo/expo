@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.compose.ui
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
@@ -53,19 +55,18 @@ fun ServerUrlInput(
         url = newUrl
       },
       textColor = NewAppTheme.colors.text.default,
-      textStyle = NewAppTheme.font.sm.merge(
-        fontFamily = NewAppTheme.font.mono,
-        fontWeight = FontWeight.Light
-      ),
+      textStyle = NewAppTheme.font.md,
       singleLine = true,
       modifier = Modifier
         .fillMaxWidth()
         .border(
           width = 1.dp,
-          shape = RoundedCornerShape(NewAppTheme.borderRadius.sm),
+          shape = RoundedCornerShape(NewAppTheme.borderRadius.xl),
           color = NewAppTheme.colors.border.default
         )
-        .padding(NewAppTheme.spacing.`2`),
+        .clip(RoundedCornerShape(NewAppTheme.borderRadius.xl))
+        .background(NewAppTheme.colors.background.element)
+        .padding(NewAppTheme.spacing.`3`),
       keyboardOptions = KeyboardOptions(
         capitalization = KeyboardCapitalization.None,
         autoCorrectEnabled = false,
@@ -77,11 +78,8 @@ fun ServerUrlInput(
         placeholder = {
           NewText(
             text = "http://localhost:8081",
-            style = NewAppTheme.font.sm.merge(
-              fontFamily = NewAppTheme.font.mono,
-              fontWeight = FontWeight.Light
-            ),
-            color = NewAppTheme.colors.text.quaternary
+            style = NewAppTheme.font.md,
+            color = NewAppTheme.colors.text.secondary
           )
         }
       )
@@ -91,9 +89,9 @@ fun ServerUrlInput(
       text = "Connect",
       foreground = Color.White,
       background = Color.Black,
-      modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),
-      borderRadius = NewAppTheme.borderRadius.sm,
-      textStyle = NewAppTheme.font.sm.merge(
+      modifier = Modifier.padding(vertical = NewAppTheme.spacing.`3`),
+      borderRadius = NewAppTheme.borderRadius.xl,
+      textStyle = NewAppTheme.font.md.merge(
         fontWeight = FontWeight.SemiBold
       ),
       onClick = {

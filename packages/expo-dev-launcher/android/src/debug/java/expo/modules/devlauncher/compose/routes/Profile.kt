@@ -99,14 +99,14 @@ fun ProfileRoute(
                   )
                 )
                 .background(
-                  NewAppTheme.colors.background.default,
+                  Color.White,
                   shape = RoundedCornerShape(NewAppTheme.borderRadius.md)
                 )
             ) {
               Icon(
                 painter = painterResource(R.drawable.expo_logo),
                 contentDescription = "Expo logo",
-                tint = NewAppTheme.colors.icon.default,
+                tint = Color.Black,
                 modifier = Modifier
                   .size(24.dp)
                   .align(Alignment.Center)
