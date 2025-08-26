@@ -7,7 +7,6 @@ import XCTest
  * Tests for UpdatesMultipartStreamReader
  */
 class UpdatesMultipartStreamReaderSpec: XCTestCase {
-
   func testSimpleCase() {
     let response = "preamble, should be ignored\r\n" +
                    "--sample_boundary\r\n" +

@@ -4,7 +4,6 @@ import XCTest
 @testable import EXUpdates
 
 class UpdatesParameterParserSpec: XCTestCase {
-
   func testParameterParser() {
     let testCases: [(String, [String: Any])] = [
       ("", [:]),
