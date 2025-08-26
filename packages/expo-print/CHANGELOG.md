@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Use the last path segment of the `uri` as the job name. ([#39133](https://github.com/expo/expo/pull/39133) by [@ouwargui](https://github.com/ouwargui))
-
 ### 💡 Others
+
+## 15.0.4 — 2025-08-26
+
+### 🐛 Bug fixes
+
+- [Android] Use the last path segment of the `uri` as the job name. ([#39133](https://github.com/expo/expo/pull/39133) by [@ouwargui](https://github.com/ouwargui))
 
 ## 15.0.3 — 2025-08-25
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Avoid sending compilation errors back to Metro terminal from the application runtime ([#39142](https://github.com/expo/expo/pull/39142) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 💡 Others
+
+## 6.1.1 — 2025-08-26
+
+### 🐛 Bug fixes
+
+- Avoid sending compilation errors back to Metro terminal from the application runtime ([#39142](https://github.com/expo/expo/pull/39142) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 6.1.0 — 2025-08-19
 

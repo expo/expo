@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 6.0.0-beta.8 — 2025-08-26
+
+### 🐛 Bug fixes
+
 - fix setting dynamic options in the tab, which is rendered in link preview ([#39139](https://github.com/expo/expo/pull/39139) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
