@@ -2,7 +2,7 @@ import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 import { Badge, Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
-import { Appearance, Platform } from 'react-native';
+import { Appearance } from 'react-native';
 
 import { ActiveTabsContext } from '../utils/active-tabs-context';
 
