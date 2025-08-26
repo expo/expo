@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Always keep the native controls always enabled in fullscreen mode to mimic iOS. ([#39015](https://github.com/expo/expo/pull/39015) by [@behenate](https://github.com/behenate))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.0.5 — 2025-08-25
+
+### 🛠 Breaking changes
+
+- [Android] Always keep the native controls always enabled in fullscreen mode to mimic iOS. ([#39015](https://github.com/expo/expo/pull/39015) by [@behenate](https://github.com/behenate))
 
 ## 3.0.4 — 2025-08-21
 

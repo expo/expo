@@ -648,4 +648,32 @@ jobject NullableFrontendConverter::convert(
   return parameterConverter->convert(rt, env, value);
 }
 
+ValueOrUndefinedFrontendConverter::ValueOrUndefinedFrontendConverter(
+  jni::local_ref<SingleType::javaobject> expectedType
+) : parameterConverter(
+  FrontendConverterProvider::instance()->obtainConverter(
+    expectedType->getFirstParameterType()
+  )
+) {}
+
+bool ValueOrUndefinedFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  return value.isUndefined() ||
+         parameterConverter->canConvert(rt, value);
+}
+
+jobject ValueOrUndefinedFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  if (value.isUndefined()) {
+    return env->NewLocalRef(JCacheHolder::get().jUndefined);
+  }
+
+  return parameterConverter->convert(rt, env, value);
+}
+
 } // namespace expo

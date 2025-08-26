@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.0-beta.7 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0-beta.6 — 2025-08-25
+
+### 🎉 New features
+
 - add support for custom icons on Android ([#39043](https://github.com/expo/expo/pull/39043) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
@@ -22,6 +34,7 @@
 ### 🎉 New features
 
 - Update web modals to iOS 26 specifications ([#38897](https://github.com/expo/expo/pull/38897) by [@hirbod](https://github.com/hirbod))
+- add helpers to use expo vector icons in native tabs ([#39012](https://github.com/expo/expo/pull/39012) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -38,6 +51,7 @@
 
 - validate BottomTabs props ([#38959](https://github.com/expo/expo/pull/38959) by [@Ubax](https://github.com/Ubax))
 - use deffered value to fix performance for heavy tabs ([#38841](https://github.com/expo/expo/pull/38841) by [@Ubax](https://github.com/Ubax))
+- remove redundant native trigger view ([#38964](https://github.com/expo/expo/pull/38964) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.0-beta.3 — 2025-08-18
 

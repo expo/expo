@@ -9,12 +9,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~54.0.0-preview.6",
-    "expo-clipboard": "8.0.2",
-    "expo-dev-client": "~6.0.4",
-    "expo-image": "~3.0.2",
-    "expo-media-library": "18.0.2",
-    "expo-notifications": "~0.32.4",
+    "expo": "~54.0.0-preview.8",
+    "expo-clipboard": "8.0.3",
+    "expo-dev-client": "~6.0.5",
+    "expo-image": "~3.0.3",
+    "expo-media-library": "18.0.3",
+    "expo-notifications": "~0.32.5",
     "expo-splash-screen": "~31.0.4",
     "expo-updates": "29.0.4",
     "react": "19.1.0",
