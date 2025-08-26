@@ -1,6 +1,9 @@
 package expo.modules.ui
 
 import android.graphics.Color
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -161,6 +164,10 @@ class ExpoUIModule : Module() {
       return@Function ExpoModifier(Modifier.zIndex(index))
     }
 
+    Function("animateContentSize") { dampingRatio: Float?, stiffness: Float? ->
+      return@Function ExpoModifier(Modifier.animateContentSize(spring(dampingRatio = dampingRatio ?: Spring.DampingRatioNoBouncy, stiffness = stiffness ?: Spring.StiffnessMedium)))
+    }
+
     Function("weight") { weight: Float ->
       val scopedExpoModifier = ExpoModifier {
         it.rowScope?.run {
@@ -180,8 +187,6 @@ class ExpoUIModule : Module() {
       }
       return@Function scopedExpoModifier
     }
-
-
 
     Function("testID") { testID: String ->
       return@Function ExpoModifier(Modifier.applyTestTag(testID))

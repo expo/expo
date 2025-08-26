@@ -20,3 +20,5 @@ export const zIndex: (index: number) => ExpoModifier = nativeExpoUIModule.zIndex
 export const weight: (weight: number) => ExpoModifier = nativeExpoUIModule.weight;
 export const testID: (tag: string) => ExpoModifier = nativeExpoUIModule.testID;
 export const matchParentSize: () => ExpoModifier = nativeExpoUIModule.matchParentSize;
+export const animateContentSize: (dampingRatio?: number, stiffness?: number) => ExpoModifier =
+  nativeExpoUIModule.animateContentSize;

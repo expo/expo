@@ -14,4 +14,5 @@ export declare const zIndex: (index: number) => ExpoModifier;
 export declare const weight: (weight: number) => ExpoModifier;
 export declare const testID: (tag: string) => ExpoModifier;
 export declare const matchParentSize: () => ExpoModifier;
+export declare const animateContentSize: (dampingRatio?: number, stiffness?: number) => ExpoModifier;
 //# sourceMappingURL=modifiers.d.ts.map

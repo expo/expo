@@ -1,4 +1,13 @@
-import { background, size, weight, testID, matchParentSize, blur } from '@expo/ui/jetpack-compose';
+import {
+  background,
+  size,
+  weight,
+  testID,
+  matchParentSize,
+  blur,
+  clickable,
+  animateContentSize,
+} from '@expo/ui/jetpack-compose';
 import { Container, Column, Row, Text, Box } from '@expo/ui/jetpack-compose-primitives';
 import { padding } from '@expo/ui/src/jetpack-compose/modifiers';
 import { useState } from 'react';
@@ -81,8 +90,15 @@ export default function JetpackComposePrimitivesScreen() {
           </Column>
         </Row>
         {/* Example 3: Two nested boxes */}
-        <Box modifiers={[size(200, 200), background('#ffdddd'), blur(10)]}>
-          <Box modifiers={[padding(30), background('#ddddff'), matchParentSize()]} />
+        <Box
+          modifiers={[
+            animateContentSize(0.5, 100),
+            size(200, checked ? 100 : 200),
+            background('#ffdddd'),
+            blur(10),
+            clickable(() => setChecked((c) => !c)),
+          ]}>
+          <Box modifiers={[matchParentSize(), padding(30), background('#ddddff')]} />
         </Box>
       </Column>
     </Container>
