@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix setting dynamic options in the tab, which is rendered in link preview ([#39139](https://github.com/expo/expo/pull/39139) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 - remove redundant native trigger view ([#38964](https://github.com/expo/expo/pull/38964) by [@Ubax](https://github.com/Ubax))
