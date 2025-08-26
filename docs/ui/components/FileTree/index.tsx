@@ -93,7 +93,6 @@ function renderStructure(structure: FileObject[], level = 0): ReactNode {
       );
     }
 
-    // this allows for showing just the folder name when the file name is empty
     return null;
   });
 }
