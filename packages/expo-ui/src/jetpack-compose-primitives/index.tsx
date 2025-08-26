@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
+
 import { ExpoModifier } from '../types';
 
 type PrimitiveBaseProps = {
