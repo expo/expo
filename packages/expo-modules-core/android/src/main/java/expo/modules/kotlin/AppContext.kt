@@ -29,6 +29,7 @@ import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
 import expo.modules.kotlin.defaultmodules.AppDirectoriesModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.FilePermissionModule
+import expo.modules.kotlin.defaultmodules.JSLoggerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -111,6 +112,7 @@ class AppContext(
       // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
       registry.register(NativeModulesProxyModule())
+      registry.register(JSLoggerModule())
 
       // Registering modules that were previously provided by legacy FileSystem module.
       legacyModuleRegistry.registerInternalModule(FilePermissionModule())
@@ -248,8 +250,14 @@ class AppContext(
       return KEventEmitterWrapper(legacyEventEmitter, hostingRuntimeContext.reactContextHolder)
     }
 
-  val errorManager: ErrorManagerModule?
-    get() = hostingRuntimeContext.registry.getModule()
+  @Deprecated("Use AppContext.jsLogger instead")
+  val errorManager: ErrorManagerModule? by lazy {
+    hostingRuntimeContext.registry.getModule()
+  }
+
+  val jsLogger by lazy {
+    hostingRuntimeContext.registry.getModule<JSLoggerModule>()?.logger
+  }
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
     hostingRuntimeContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)
