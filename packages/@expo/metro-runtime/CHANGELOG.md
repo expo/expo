@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Avoid sending compilation errors back to Metro terminal from the application runtime
+- Avoid sending compilation errors back to Metro terminal from the application runtime ([#39142](https://github.com/expo/expo/pull/39142) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
