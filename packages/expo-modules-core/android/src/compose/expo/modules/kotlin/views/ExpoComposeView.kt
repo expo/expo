@@ -13,13 +13,25 @@ import androidx.core.view.size
 import expo.modules.kotlin.AppContext
 
 data class ComposableScope(
-  val rowScope: RowScope? = null,
-  val columnScope: ColumnScope? = null,
+  var rowScope: RowScope? = null,
+  var columnScope: ColumnScope? = null,
   // still experimental, so we comment it out for now
   //  val flowRowScope: FlowRowScope? = null,
-  val flowColumnScope: ColumnScope? = null,
-  val boxScope: BoxScope? = null
+  //  var flowColumnScope: FlowColumnScope? = null,
+  var boxScope: BoxScope? = null
 )
+
+fun ComposableScope.with(rowScope: RowScope?): ComposableScope {
+  return this.copy(rowScope = rowScope)
+}
+
+fun ComposableScope.with(columnScope: ColumnScope?): ComposableScope {
+  return this.copy(columnScope = columnScope)
+}
+
+fun ComposableScope.with(boxScope: BoxScope?): ComposableScope {
+  return this.copy(boxScope = boxScope)
+}
 
 /**
  * A base class that should be used by compose views.

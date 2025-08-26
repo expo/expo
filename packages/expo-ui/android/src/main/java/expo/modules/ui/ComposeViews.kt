@@ -22,6 +22,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.with
 
 enum class HorizontalArrangement(val value: String) : Enumerable {
   START("start"),
@@ -109,7 +110,7 @@ class RowView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
       verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
       modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
     ) {
-      Children(ComposableScope(rowScope = this))
+      Children(composableScope.with(rowScope = this))
     }
   }
 }
@@ -124,7 +125,7 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
       horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
       modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
     ) {
-      Children(ComposableScope(columnScope = this))
+      Children(composableScope.with(columnScope = this))
     }
   }
 }
@@ -137,7 +138,7 @@ class BoxView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
     Box(
       modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
     ) {
-      Children(ComposableScope(boxScope = this))
+      Children(composableScope.with(boxScope = this))
     }
   }
 }
