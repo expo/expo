@@ -15,6 +15,23 @@ import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModu
 
 const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
 
+// NOTE(@kitten): We're already checking these via `bundledNativeModules`. This is
+// just a fallback for when we don't get a list of modules from the helper
+const REACT_DEPENDENCIES = ['react', 'react-native', 'react-dom'];
+
+// NOTE(@kitten): This is a replacement for the expo-router doctor check
+// - https://github.com/expo/expo/pull/32679
+// What it (presumably) attempted to guard were using outdated React Navigation
+// versions with Router's version of React Navigation. This is subtly different
+// from the usual reason of us checking for duplicates, but we can replace router's
+// custom check with this anyway, since it accomplishes the same
+const ROUTER_DEPENDENCIES = [
+  '@react-navigation/native',
+  '@react-navigation/native-stack',
+  '@react-navigation/bottom-tabs',
+  '@react-navigation/core',
+];
+
 export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
   description = 'Check that no duplicate dependencies are installed';
 
@@ -46,13 +63,20 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
     );
     const packagesWithIssues = new Map<string, DependencyResolution>();
 
+    // The packages we'll always include in our duplicate checks
+    const forceResolvePackages = [
+      ...REACT_DEPENDENCIES,
+      ...ROUTER_DEPENDENCIES,
+      ...(bundledNativeModules || []),
+    ];
+
     const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
     const dependenciesPerPlatform = await Promise.all(
       AUTOLINKING_PLATFORMS.map((platform) => {
         return autolinking.scanDependencyResolutionsForPlatform(
           linker,
           platform,
-          bundledNativeModules || undefined
+          forceResolvePackages
         );
       })
     );
