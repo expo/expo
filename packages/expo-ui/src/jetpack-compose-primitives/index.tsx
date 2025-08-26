@@ -35,6 +35,24 @@ type LayoutBaseProps = {
   modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
 
+//#region Box Component
+export type BoxProps = Pick<LayoutBaseProps, 'children' | 'modifiers'>;
+const BoxNativeView: React.ComponentType<BoxProps> | null =
+  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'BoxView') : null;
+export function Box(props: BoxProps) {
+  if (!BoxNativeView) {
+    return null;
+  }
+  return (
+    <BoxNativeView
+      {...props}
+      // @ts-ignore
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+    />
+  );
+}
+//#endregion
+
 //#region Row Component
 export type RowProps = LayoutBaseProps;
 const RowNativeView: React.ComponentType<RowProps> | null =

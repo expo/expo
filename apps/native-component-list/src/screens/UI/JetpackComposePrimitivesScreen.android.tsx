@@ -1,5 +1,6 @@
-import { background, size, weight, testID } from '@expo/ui/jetpack-compose';
-import { Container, Column, Row, Text } from '@expo/ui/jetpack-compose-primitives';
+import { background, size, weight, testID, matchParentSize, blur } from '@expo/ui/jetpack-compose';
+import { Container, Column, Row, Text, Box } from '@expo/ui/jetpack-compose-primitives';
+import { padding } from '@expo/ui/src/jetpack-compose/modifiers';
 import { useState } from 'react';
 import { Button, View, StyleSheet, Text as RNText } from 'react-native';
 
@@ -79,6 +80,10 @@ export default function JetpackComposePrimitivesScreen() {
             </Text>
           </Column>
         </Row>
+        {/* Example 3: Two nested boxes */}
+        <Box modifiers={[size(200, 200), background('#ffdddd'), blur(10)]}>
+          <Box modifiers={[padding(30), background('#ddddff'), matchParentSize()]} />
+        </Box>
       </Column>
     </Container>
   );

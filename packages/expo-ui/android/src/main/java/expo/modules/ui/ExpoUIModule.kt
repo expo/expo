@@ -85,6 +85,7 @@ class ExpoUIModule : Module() {
       }
     }
 
+    View(BoxView::class)
     View(RowView::class)
     View(ColumnView::class)
     View(ContainerView::class)
@@ -170,6 +171,17 @@ class ExpoUIModule : Module() {
       }
       return@Function scopedExpoModifier
     }
+
+    Function("matchParentSize") {
+      val scopedExpoModifier = ExpoModifier {
+        it.boxScope?.run {
+          Modifier.matchParentSize()
+        } ?: Modifier
+      }
+      return@Function scopedExpoModifier
+    }
+
+
 
     Function("testID") { testID: String ->
       return@Function ExpoModifier(Modifier.applyTestTag(testID))

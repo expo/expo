@@ -3,6 +3,7 @@ package expo.modules.ui
 import android.content.Context
 import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
@@ -124,6 +125,19 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
       modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
     ) {
       Children(ComposableScope(columnScope = this))
+    }
+  }
+}
+
+class BoxView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
+  override val props = LayoutProps()
+
+  @Composable
+  override fun Content(composableScope: ComposableScope) {
+    Box(
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
+    ) {
+      Children(ComposableScope(boxScope = this))
     }
   }
 }

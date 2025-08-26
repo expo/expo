@@ -13,4 +13,5 @@ export declare const rotate: (degrees: number) => ExpoModifier;
 export declare const zIndex: (index: number) => ExpoModifier;
 export declare const weight: (weight: number) => ExpoModifier;
 export declare const testID: (tag: string) => ExpoModifier;
+export declare const matchParentSize: () => ExpoModifier;
 //# sourceMappingURL=modifiers.d.ts.map

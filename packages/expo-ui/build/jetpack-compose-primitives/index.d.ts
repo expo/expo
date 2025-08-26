@@ -18,6 +18,8 @@ type LayoutBaseProps = {
     verticalAlignment?: VerticalAlignment;
     modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
+export type BoxProps = Pick<LayoutBaseProps, 'children' | 'modifiers'>;
+export declare function Box(props: BoxProps): import("react").JSX.Element | null;
 export type RowProps = LayoutBaseProps;
 export declare function Row(props: RowProps): import("react").JSX.Element | null;
 export type ColumnProps = LayoutBaseProps;
