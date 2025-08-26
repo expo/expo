@@ -6,11 +6,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as Font from 'expo-font';
 import { RenderToImageResult } from 'expo-font';
 import { Image } from 'expo-image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import type { ImageURISource } from 'react-native';
 
 import { Page, Section } from '../components/Page';
+
+const round = (num: number) => Math.round(num * 100) / 100;
 
 export default function FontScreen() {
   const renderedImage = useLoadIcon(() =>
@@ -22,7 +23,7 @@ export default function FontScreen() {
   );
 
   const renderedImage2 = useLoadIcon(() =>
-    Font.renderToImageAsync('ABCD', {
+    Font.renderToImageAsync('ÅBÇD', {
       fontFamily: 'Inter-BoldItalic',
       size: 100,
     })
@@ -145,28 +146,40 @@ export default function FontScreen() {
         </Section>
         <VectorIconSection />
 
-        <Section title="renderToImageAsync">
+        <Section title="renderToImageAsync" gap={5}>
           {renderedImage && (
-            <Image
-              source={{ uri: renderedImage.uri }}
-              style={{
-                height: renderedImage.height,
-                width: renderedImage.width,
-                backgroundColor: 'grey',
-              }}
-              resizeMode="contain"
-            />
+            <>
+              <Text>
+                FontAwesome5Free rendered to image
+                {round(renderedImage.width)}x{round(renderedImage.height)}
+              </Text>
+              <Image
+                source={{ uri: renderedImage.uri }}
+                style={{
+                  height: renderedImage.height,
+                  width: renderedImage.width,
+                  backgroundColor: 'grey',
+                }}
+                resizeMode="contain"
+              />
+            </>
           )}
           {renderedImage2 && (
-            <Image
-              source={{ uri: renderedImage2.uri }}
-              style={{
-                height: renderedImage2.height,
-                width: renderedImage2.width,
-                backgroundColor: 'grey',
-              }}
-              resizeMode="contain"
-            />
+            <>
+              <Text>
+                Inter-BoldItalic rendered to image
+                {round(renderedImage2.width)}x{round(renderedImage2.height)}
+              </Text>
+              <Image
+                source={{ uri: renderedImage2.uri }}
+                style={{
+                  height: renderedImage2.height,
+                  width: renderedImage2.width,
+                  backgroundColor: 'grey',
+                }}
+                resizeMode="contain"
+              />
+            </>
           )}
         </Section>
       </Page>
@@ -228,19 +241,23 @@ function VectorIconSection() {
   const icons = [icon1, icon2, icon3, icon4];
 
   return (
-    <Section title="vector icon to image">
+    <Section title="vector icon to image" gap={5}>
       {icons.map((icon) => {
         return (
           !!icon && (
-            <Image
-              key={icon.uri}
-              source={icon}
-              style={{
-                height: icon.height,
-                width: icon.width,
-                backgroundColor: 'lightgrey',
-              }}
-            />
+            <Fragment key={icon.uri}>
+              <Text>
+                Icon rendered to image {round(icon.width)}x{round(icon.height)}
+              </Text>
+              <Image
+                source={icon}
+                style={{
+                  height: icon.height,
+                  width: icon.width,
+                  backgroundColor: 'lightgrey',
+                }}
+              />
+            </Fragment>
           )
         );
       })}
