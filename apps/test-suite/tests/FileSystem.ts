@@ -528,6 +528,36 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'doesNotExist.txt');
         expect(() => file.rename('shouldNotWork.txt')).toThrow();
       });
+
+      it('renames a file and preserves file metadata', () => {
+        const file = new File(testDirectory, 'metadata.txt');
+        file.write('Content');
+        const originalSize = file.size;
+        const originalMd5 = file.md5;
+        file.rename('metadataRenamed.txt');
+        expect(file.size).toBe(originalSize);
+        expect(file.md5).toBe(originalMd5);
+      });
+
+      it('throws an error when renaming to an empty string', () => {
+        const file = new File(testDirectory, 'file.txt');
+        file.write('Content');
+        expect(() => file.rename('')).toThrow();
+      });
+
+      it('renames a file and updates parent directory listing correctly', () => {
+        const file1 = new File(testDirectory, 'file1.txt');
+        const file2 = new File(testDirectory, 'file2.txt');
+        file1.write('Content 1');
+        file2.write('Content 2');
+
+        file1.rename('renamedFile1.txt');
+
+        const parentDir = new Directory(testDirectory);
+        const files = parentDir.list();
+        const fileNames = files.map((f) => f.name).sort();
+        expect(fileNames).toEqual(['file2.txt', 'renamedFile1.txt']);
+      });
     });
 
     describe('When moving a directory', () => {
@@ -617,7 +647,48 @@ export async function test({ describe, expect, it, ...t }) {
         expect(nestedDir.uri).toBe(testDirectory + 'a/b/renamedC/');
         const parent = new Directory(testDirectory, 'a/b/');
         const list = parent.list();
-        expect(list.some(item => item.uri === testDirectory + 'a/b/renamedC/')).toBe(true);
+        expect(list.some((item) => item.uri === testDirectory + 'a/b/renamedC/')).toBe(true);
+      });
+
+      it('renames a directory and preserves directory metadata', () => {
+        const dir = new Directory(testDirectory, 'metadataDir/');
+        dir.create();
+        const file = new File(dir, 'test.txt');
+        file.write('Test content');
+
+        const originalSize = dir.size;
+
+        dir.rename('metadataDirRenamed');
+
+        expect(dir.size).toBe(originalSize);
+      });
+
+      it('throws an error when renaming to a file name that exists', () => {
+        const dir = new Directory(testDirectory, 'dirToRename/');
+        const file = new File(testDirectory, 'existingFile');
+        dir.create();
+        file.create();
+        expect(() => dir.rename('existingFile')).toThrow();
+      });
+
+      it('throws an error when renaming to an empty string', () => {
+        const dir = new Directory(testDirectory, 'dirToRename/');
+        dir.create();
+        expect(() => dir.rename('')).toThrow();
+      });
+
+      it('renames a directory and updates parent directory listing correctly', () => {
+        const dir1 = new Directory(testDirectory, 'dir1/');
+        const dir2 = new Directory(testDirectory, 'dir2/');
+        dir1.create();
+        dir2.create();
+
+        dir1.rename('renamedDir1');
+
+        const parentDir = new Directory(testDirectory);
+        const contents = parentDir.list();
+        const dirNames = contents.map((d) => d.name).sort();
+        expect(dirNames).toEqual(['dir2', 'renamedDir1']);
       });
     });
 
