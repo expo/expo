@@ -27,11 +27,9 @@ public final class UpdatesMultipartStreamReader {
     var bytesSeen = 0
 
     // First delimiter doesn't necessarily need to be preceded by CRLF (boundary can be first thing in body)
-    guard let firstDelimiter = "--\(boundary)\(Constants.crlf)".data(using: .utf8),
-          let restDelimiter = "\(Constants.crlf)--\(boundary)\(Constants.crlf)".data(using: .utf8),
-          let closeDelimiter = "\(Constants.crlf)--\(boundary)--\(Constants.crlf)".data(using: .utf8) else {
-      return false
-    }
+    let firstDelimiter = Data("--\(boundary)\(Constants.crlf)".utf8)
+    let restDelimiter = Data("\(Constants.crlf)--\(boundary)\(Constants.crlf)".utf8)
+    let closeDelimiter = Data("\(Constants.crlf)--\(boundary)--\(Constants.crlf)".utf8)
 
     var delimiter = firstDelimiter
     var content = Data()
@@ -109,9 +107,7 @@ public final class UpdatesMultipartStreamReader {
     chunkStart: Int,
     completion: ([String: Any]) -> Void
   ) {
-    guard let marker = "\(Constants.crlf)\(Constants.crlf)".data(using: .utf8) else {
-      return
-    }
+    let marker = Data("\(Constants.crlf)\(Constants.crlf)".utf8)
     let range = content.range(of: marker, options: [], in: range)
     guard range.location != NSNotFound else {
       return
@@ -149,8 +145,8 @@ public final class UpdatesMultipartStreamReader {
     callback: @escaping MultipartCallback,
     done: Bool
   ) {
-    guard let marker = "\(Constants.crlf)\(Constants.crlf)".data(using: .utf8),
-      let range = data.range(of: marker) else {
+    let marker = Data("\(Constants.crlf)\(Constants.crlf)".utf8)
+    guard let range = data.range(of: marker) else {
       callback(nil, data, done)
       return
     }
