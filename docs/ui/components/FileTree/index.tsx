@@ -69,22 +69,32 @@ function generateStructure(files: FileTreeProps['files'] = []): FileObject[] {
 function renderStructure(structure: FileObject[], level = 0): ReactNode {
   return structure.map(({ name, note, files }, index) => {
     const FileIcon = getIconForFile(name);
-    return files.length > 0 ? (
-      <div key={name + '_' + index} className="mt-1 flex flex-col rounded-sm pl-2 pt-1">
-        <div className="flex items-center">
-          {' '.repeat(level)}
-          <FolderIcon className="mr-2 min-w-[20px] text-icon-tertiary opacity-60" />
-          <TextWithNote name={name} note={note} className="text-secondary" />
+
+    if (files.length > 0) {
+      return (
+        <div key={name + '_' + index} className="mt-1 flex flex-col rounded-sm pl-2 pt-1">
+          <div className="flex items-center">
+            {' '.repeat(level)}
+            <FolderIcon className="mr-2 min-w-[20px] text-icon-tertiary opacity-60" />
+            <TextWithNote name={name} note={note} className="text-secondary" />
+          </div>
+          {renderStructure(files, level + 1)}
         </div>
-        {renderStructure(files, level + 1)}
-      </div>
-    ) : (
-      <div key={name + '_' + index} className="mt-1 flex items-center rounded-sm pl-2 pt-1">
-        {' '.repeat(Math.max(level, 0))}
-        <FileIcon className="mr-2 min-w-[20px] text-icon-tertiary" />
-        <TextWithNote name={name} note={note} className="text-default" />
-      </div>
-    );
+      );
+    }
+
+    if (name.length > 0) {
+      return (
+        <div key={name + '_' + index} className="mt-1 flex items-center rounded-sm pl-2 pt-1">
+          {' '.repeat(Math.max(level, 0))}
+          <FileIcon className="mr-2 min-w-[20px] text-icon-tertiary" />
+          <TextWithNote name={name} note={note} className="text-default" />
+        </div>
+      );
+    }
+
+    // this allows for showing just the folder name when the file name is empty
+    return null;
   });
 }
 
