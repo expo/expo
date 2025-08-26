@@ -481,16 +481,52 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('When renaming a file', () => {
-      it('renames it', () => {
-        const file = new File(testDirectory, 'file.txt');
-        file.write('Hello world');
-        file.rename('file2.txt');
-        expect(file.exists).toBe(true);
-        expect(file.uri).toBe(testDirectory + 'file2.txt');
+      it('renames a file and updates its uri and existence', () => {
+        const originalFile = new File(testDirectory, 'original.txt');
+        originalFile.write('Hello world');
+        originalFile.rename('renamed.txt');
+        expect(originalFile.exists).toBe(true);
+        expect(originalFile.uri).toBe(testDirectory + 'renamed.txt');
+      });
 
-        const directory = new Directory(testDirectory);
-        expect(directory.list().length).toBe(1);
-        expect(directory.list()[0].uri).toBe(testDirectory + 'file2.txt');
+      it('renames a file and verifies it appears in the parent directory listing', () => {
+        const fileToRename = new File(testDirectory, 'toRename.txt');
+        fileToRename.write('Hello world');
+        fileToRename.rename('renamedFile.txt');
+
+        const parentDir = new Directory(testDirectory);
+        const files = parentDir.list();
+        expect(files.length).toBe(1);
+        expect(files[0].uri).toBe(testDirectory + 'renamedFile.txt');
+      });
+
+      it('ensures the old file name no longer exists after renaming', () => {
+        const file = new File(testDirectory, 'oldName.txt');
+        file.write('Hello world');
+        file.rename('newName.txt');
+        expect(new File(testDirectory, 'oldName.txt').exists).toBe(false);
+        expect(new File(testDirectory, 'newName.txt').exists).toBe(true);
+      });
+
+      it('retains file contents after renaming', () => {
+        const file = new File(testDirectory, 'contentFile.txt');
+        file.write('Sample content');
+        file.rename('contentFileRenamed.txt');
+        const renamedFile = new File(testDirectory, 'contentFileRenamed.txt');
+        expect(renamedFile.textSync()).toBe('Sample content');
+      });
+
+      it('throws an error when renaming to an existing file name', () => {
+        const file1 = new File(testDirectory, 'fileA.txt');
+        const file2 = new File(testDirectory, 'fileB.txt');
+        file1.write('A');
+        file2.write('B');
+        expect(() => file1.rename('fileB.txt')).toThrow();
+      });
+
+      it('throws an error when renaming a non-existent file', () => {
+        const file = new File(testDirectory, 'doesNotExist.txt');
+        expect(() => file.rename('shouldNotWork.txt')).toThrow();
       });
     });
 
@@ -533,17 +569,55 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('When renaming a directory', () => {
-      it('renames it', () => {
-        const directory = new Directory(testDirectory, 'directory/');
-        directory.create();
-        directory.rename('newDirectory');
-        expect(directory.exists).toBe(true);
-        expect(directory.uri).toBe(testDirectory + 'newDirectory');
+      it('renames a directory and updates its uri and parent listing', () => {
+        const originalDir = new Directory(testDirectory, 'oldName/');
+        originalDir.create();
+        originalDir.rename('renamedDir');
+        expect(originalDir.exists).toBe(true);
+        expect(originalDir.uri).toBe(testDirectory + 'renamedDir');
 
-        const parentDirectory = new Directory(testDirectory);
-        const list = parentDirectory.list();
-        expect(list.length).toBe(1);
-        expect(list[0].uri).toBe(testDirectory + 'newDirectory/');
+        const parentDir = new Directory(testDirectory);
+        const contents = parentDir.list();
+        expect(contents.length).toBe(1);
+        expect(contents[0].uri).toBe(testDirectory + 'renamedDir/');
+      });
+
+      it('preserves directory contents after renaming', () => {
+        const dir = new Directory(testDirectory, 'contentDir/');
+        dir.create();
+        const file = new File(dir, 'file.txt');
+        file.write('test');
+        dir.rename('renamedContentDir');
+        const renamedDir = new Directory(testDirectory, 'renamedContentDir/');
+        expect(renamedDir.exists).toBe(true);
+        const files = renamedDir.list();
+        expect(files.length).toBe(1);
+        expect(files[0].name).toBe('file.txt');
+        expect(new File(renamedDir, 'file.txt').textSync()).toBe('test');
+      });
+
+      it('throws an error when renaming a directory to an existing directory name', () => {
+        const dir1 = new Directory(testDirectory, 'dir1/');
+        const dir2 = new Directory(testDirectory, 'dir2/');
+        dir1.create();
+        dir2.create();
+        expect(() => dir1.rename('dir2')).toThrow();
+      });
+
+      it('throws an error when renaming a non-existent directory', () => {
+        const nonExistentDir = new Directory(testDirectory, 'ghostDir/');
+        expect(() => nonExistentDir.rename('shouldNotWork')).toThrow();
+      });
+
+      it('renames a deeply nested directory', () => {
+        const nestedDir = new Directory(testDirectory, 'a/b/c/');
+        nestedDir.create({ intermediates: true });
+        nestedDir.rename('renamedC');
+        expect(nestedDir.exists).toBe(true);
+        expect(nestedDir.uri).toBe(testDirectory + 'a/b/renamedC');
+        const parent = new Directory(testDirectory, 'a/b/');
+        const list = parent.list();
+        expect(list.some(item => item.uri === testDirectory + 'a/b/renamedC/')).toBe(true);
       });
     });
 
