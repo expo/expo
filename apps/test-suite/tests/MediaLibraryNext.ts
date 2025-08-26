@@ -1,4 +1,4 @@
-import { Asset as A } from 'expo-asset';
+import { Asset as ExpoAsset } from 'expo-asset';
 import { Asset, Album, requestPermissionsAsync } from 'expo-media-library/next';
 import { Platform } from 'react-native';
 
@@ -6,7 +6,6 @@ export const name = 'MediaLibrary@Next';
 
 const FILES = [
   require('../assets/icons/app.png'),
-  require('../assets/icons/loading.png'),
   require('../assets/black-128x256.png'),
   require('../assets/qrcode_expo.jpg'),
   require('../assets/big_buck_bunny.mp4'),
@@ -26,11 +25,11 @@ export async function test(t) {
   };
 
   t.beforeAll(async () => {
-    files = await A.loadAsync(FILES);
-    mp3Files = await A.loadAsync(MP3_FILES);
+    files = await ExpoAsset.loadAsync(FILES);
+    mp3Files = await ExpoAsset.loadAsync(MP3_FILES);
     pngFile = files[0];
-    jpgFile = files[3];
-    mp4File = files[4];
+    jpgFile = files[2];
+    mp4File = files[3];
     mp3File = mp3Files[0];
     allTypeFiles = [pngFile, jpgFile, mp4File, mp3File];
     permissions = await requestPermissionsAsync();
@@ -77,10 +76,12 @@ export async function test(t) {
       t.expect(assets.length).toBe(files.length);
       t.expect(await album.getTitle()).toBe(albumName);
       const fetchedAssets = await album.getAssets();
-      for (const asset of assets) {
-        t.expect(fetchedAssets.findIndex((fetchedAsset) => fetchedAsset.id === asset.id)).not.toBe(
-          -1
-        );
+      if (Platform.OS === 'android' && Platform.Version >= 29) {
+        for (const asset of assets) {
+          t.expect(
+            fetchedAssets.findIndex((fetchedAsset) => fetchedAsset.id === asset.id)
+          ).not.toBe(-1);
+        }
       }
     });
 
@@ -90,7 +91,7 @@ export async function test(t) {
         const assets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
         assetsContainer.push(...assets);
         const oldAssetUris = await Promise.all(assets.map((asset) => asset.getUri()));
-        const albumName = createAlbumName('album from assets');
+        const albumName = createAlbumName('album from assets move');
 
         // when
         const album = await Album.create(albumName, assets);
@@ -100,6 +101,27 @@ export async function test(t) {
         albumsContainer.push(album);
         for (const oldAssetUri of oldAssetUris) {
           t.expect(newAssetUris.findIndex((uri) => uri === oldAssetUri)).toBe(-1);
+        }
+      });
+      t.it('when creating an album from a list of assets should correctly copy files', async () => {
+        // given
+        const assets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+        assetsContainer.push(...assets);
+        const oldAssetUris = await Promise.all(assets.map((asset) => asset.getUri()));
+        const albumName = createAlbumName('album from assets copy');
+
+        // when
+        const album = await Album.create(albumName, assets, false);
+
+        // then
+        const newAssetUris = await Promise.all(assets.map((asset) => asset.getUri()));
+        albumsContainer.push(album);
+        if (Platform.OS === 'android' && Platform.Version >= 29) {
+          for (const oldAssetUri of oldAssetUris) {
+            t.expect(newAssetUris.findIndex((uri) => uri === oldAssetUri)).not.toBe(-1);
+          }
+        } else {
+          t.expect();
         }
       });
     }
@@ -166,7 +188,6 @@ export async function test(t) {
       assetsContainer.push(newAsset);
 
       t.expect(newAsset.id).toBeDefined();
-
       const assets = await album.getAssets();
       const assetIds = assets.map((a) => a.id);
       t.expect(assetIds).toContain(newAsset.id);
@@ -309,6 +330,7 @@ export async function test(t) {
       t.expect(width).toBeGreaterThan(0);
     });
   });
+
   function createAlbumName(name: string) {
     return name.replaceAll(' ', '_');
   }

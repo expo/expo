@@ -2,105 +2,77 @@ package expo.modules.medialibrary.next.extensions.resolver
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
+import expo.modules.medialibrary.next.extensions.asIterable
+import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 val EXTERNAL_CONTENT_URI: Uri = MediaStore.Files.getContentUri("external")
 
-suspend fun ContentResolver.queryAlbumTitle(albumId: Long): String? = withContext(Dispatchers.IO) {
-  val projection = arrayOf(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-  val selection = "${MediaStore.Images.Media.BUCKET_ID} = ?"
-  val selectionArgs = arrayOf(albumId.toString())
-
-  query(
+suspend fun ContentResolver.queryAlbumTitle(bucketId: String): String? =
+  queryOne(
     EXTERNAL_CONTENT_URI,
-    projection,
-    selection,
-    selectionArgs,
-    null
-  )?.use { cursor ->
-    ensureActive()
-    if (cursor.moveToFirst()) {
-      val albumTitle = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
-      return@withContext albumTitle
-    }
-  }
-  return@withContext null
-}
-
-fun ContentResolver.queryAlbumAssetsContentUris(albumId: Long): List<Uri> {
-  val uris = mutableListOf<Uri>()
-
-  val projection = arrayOf(
-    MediaStore.Files.FileColumns._ID,
-    MediaStore.Files.FileColumns.MEDIA_TYPE
+    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+    Cursor::getString,
+    "${MediaStore.MediaColumns.BUCKET_ID} = ?",
+    arrayOf(bucketId)
   )
 
-  val selection = "${MediaStore.Files.FileColumns.BUCKET_ID} = ?"
-
-  query(
-    MediaStore.Files.getContentUri("external"),
-    projection,
-    selection,
-    arrayOf(albumId.toString()),
-    null
-  )?.use { cursor ->
-    val idCol = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
-    val typeCol = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MEDIA_TYPE)
-
-    while (cursor.moveToNext()) {
-      val id = cursor.getLong(idCol)
-      val mediaType = cursor.getInt(typeCol)
-
-      val baseUri = when (mediaType) {
-        MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        else -> MediaStore.Files.getContentUri("external")
-      }
-
-      val contentUri = ContentUris.withAppendedId(baseUri, id)
-      uris.add(contentUri)
-    }
-  }
-
-  return uris
-}
-
-suspend fun ContentResolver.queryAlbumRelativePath(albumId: Long): String? = withContext(Dispatchers.IO) {
-  val projection = arrayOf(MediaStore.Files.FileColumns.RELATIVE_PATH)
-  val selection = "${MediaStore.Files.FileColumns.BUCKET_ID} = ?"
-  val selectionArgs = arrayOf(albumId.toString())
-
-  query(EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null)?.use { cursor ->
-    ensureActive()
-    if (cursor.moveToFirst()) {
-      return@withContext cursor.getString(
-        cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.RELATIVE_PATH)
-      )
-    }
-  }
-  return@withContext null
-}
-
-fun ContentResolver.queryAlbumId(relativePath: String): Long? {
-  val projection = arrayOf(MediaStore.Files.FileColumns.BUCKET_ID)
-  val selection = "${MediaStore.Files.FileColumns.RELATIVE_PATH} = ?"
-  val selectionArgs = arrayOf(relativePath)
-
-  query(
+suspend fun ContentResolver.queryAlbumRelativePath(bucketId: String): RelativePath? =
+  queryOne(
     EXTERNAL_CONTENT_URI,
-    projection,
-    selection,
-    selectionArgs,
-    null
-  )?.use { cursor ->
-    if (cursor.moveToFirst()) {
-      return cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.BUCKET_ID))
-    }
+    MediaStore.MediaColumns.RELATIVE_PATH,
+    { index -> RelativePath(getString(index)) },
+    "${MediaStore.MediaColumns.BUCKET_ID} = ?",
+    arrayOf(bucketId)
+  )
+
+suspend fun ContentResolver.queryAlbumFilepath(bucketId: String): String? =
+  queryOne(
+    EXTERNAL_CONTENT_URI,
+    MediaStore.MediaColumns.DATA,
+    Cursor::getString,
+    "${MediaStore.Files.FileColumns.BUCKET_ID} = ?",
+    arrayOf(bucketId)
+  )
+
+suspend fun ContentResolver.queryAlbumId(relativePath: RelativePath): String? =
+  queryOne(
+    EXTERNAL_CONTENT_URI,
+    MediaStore.Files.FileColumns.BUCKET_ID,
+    Cursor::getString,
+    "${MediaStore.Files.FileColumns.RELATIVE_PATH} = ?",
+    arrayOf(relativePath.value)
+  )
+
+suspend fun ContentResolver.queryAlbumAssetsContentUris(bucketId: String): List<Uri> =
+  withContext(Dispatchers.IO) {
+    val projection = arrayOf(
+      MediaStore.Files.FileColumns._ID,
+      MediaStore.Files.FileColumns.MEDIA_TYPE
+    )
+    val selection = "${MediaStore.Files.FileColumns.BUCKET_ID} = ?"
+
+    query(EXTERNAL_CONTENT_URI, projection, selection, arrayOf(bucketId), null)?.use { cursor ->
+      ensureActive()
+      val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
+      val typeColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MEDIA_TYPE)
+      cursor.asIterable()
+        .map { row ->
+          val id = row.getLong(idColumn)
+          val mediaType = row.getInt(typeColumn)
+          val baseUri = when (mediaType) {
+            MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            else -> EXTERNAL_CONTENT_URI
+          }
+          ContentUris.withAppendedId(baseUri, id)
+        }
+        .toList()
+    } ?: emptyList()
   }
-  return null
-}

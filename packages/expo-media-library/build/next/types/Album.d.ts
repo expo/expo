@@ -70,7 +70,7 @@ export declare class Album {
      *
      * @param title - Name of the new album.
      * @param assetsOrPaths - Optional list of {@link Asset} objects or file paths to include.
-     * @param copyAssets - Whether to copy assets into the album (if supported). Defaults to `false`.
+     * @param deleteOriginalAsset - Whether to copy assets into the album (if supported). Defaults to `false`.
      * @returns A promise resolving to the created {@link Album}.
      *
      * @example
@@ -79,7 +79,7 @@ export declare class Album {
      * console.log(await album.getTitle()); // "My Album"
      * ```
      */
-    static create(title: string, assetsOrPaths?: (Asset | string)[], copyAssets?: boolean): Promise<Album>;
+    static create(title: string, assetsOrPaths?: (Asset | string)[], deleteOriginalAsset?: boolean): Promise<Album>;
     /**
      * Deletes multiple albums at once.
      * @param albums - An array of {@link Album} instances to delete.

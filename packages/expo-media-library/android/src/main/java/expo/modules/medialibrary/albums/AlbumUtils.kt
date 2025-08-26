@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
+import android.util.Log
 import expo.modules.core.utilities.ifNull
 import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.AssetFileException
@@ -46,6 +47,7 @@ suspend fun queryAlbum(
       }
       val bucketIdIndex = albumsCursor.getColumnIndex(MediaColumns.BUCKET_ID)
       val bucketDisplayNameIndex = albumsCursor.getColumnIndex(MediaColumns.BUCKET_DISPLAY_NAME)
+      Log.d("w", "index: ${albumsCursor.getString(bucketIdIndex)}")
       val result = Bundle().apply {
         putString("id", albumsCursor.getString(bucketIdIndex))
         putString("title", albumsCursor.getString(bucketDisplayNameIndex))

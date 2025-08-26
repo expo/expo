@@ -13,3 +13,9 @@ class AssetNotFoundException(message: String, cause: Throwable? = null) :
 
 class AssetPropertyNotFoundException(propertyName: String, cause: Throwable? = null) :
   CodedException("$propertyName not found. The asset may have been deleted or is no longer accessible.", cause)
+
+class AssetCouldNotBeCreated(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)
+
+class AssetInitializationException(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)

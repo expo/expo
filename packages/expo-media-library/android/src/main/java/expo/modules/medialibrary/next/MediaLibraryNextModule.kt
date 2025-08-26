@@ -1,6 +1,7 @@
 package expo.modules.medialibrary.next
 
 import android.net.Uri
+import android.os.Build
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
@@ -9,12 +10,12 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.toKClass
-import expo.modules.medialibrary.next.permissions.contracts.DeleteContract
-import expo.modules.medialibrary.next.permissions.contracts.WriteContract
-import expo.modules.medialibrary.next.objects.Album
-import expo.modules.medialibrary.next.objects.Asset
-import expo.modules.medialibrary.next.objects.factories.AlbumFactory
-import expo.modules.medialibrary.next.objects.factories.AssetFactory
+import expo.modules.medialibrary.next.objects.album.Album
+import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
+import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
+import expo.modules.medialibrary.next.objects.asset.factories.AssetModernFactory
+import expo.modules.medialibrary.next.objects.asset.factories.AssetLegacyFactory
 import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import expo.modules.medialibrary.next.permissions.enums.GranularPermission
@@ -26,8 +27,25 @@ class MediaLibraryNextModule : Module() {
   private val systemPermissionsDelegate by lazy {
     SystemPermissionsDelegate(appContext)
   }
+
   private val mediaStorePermissionsDelegate by lazy {
     MediaStorePermissionsDelegate(appContext)
+  }
+
+  private val albumFactory by lazy {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      AlbumModernFactory(context, assetFactory)
+    } else {
+      AlbumLegacyFactory(context, assetFactory)
+    }
+  }
+
+  private val assetFactory by lazy {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      AssetModernFactory(context)
+    } else {
+      AssetLegacyFactory(context)
+    }
   }
 
   override fun definition() = ModuleDefinition {
@@ -91,7 +109,7 @@ class MediaLibraryNextModule : Module() {
     }
 
     Class(Album::class) {
-      Constructor { id: Long ->
+      Constructor { id: String ->
         Album(id, context)
       }
 
@@ -106,7 +124,7 @@ class MediaLibraryNextModule : Module() {
 
       AsyncFunction("getAssets") Coroutine { self: Album ->
         systemPermissionsDelegate.requireSystemPermissions(false)
-        self.assets
+        self.getAssets()
       }
 
       AsyncFunction("add") Coroutine { self: Album, asset: Asset ->
@@ -117,32 +135,27 @@ class MediaLibraryNextModule : Module() {
 
       AsyncFunction("delete") Coroutine { self: Album ->
         systemPermissionsDelegate.requireSystemPermissions(true)
-        val assetIdsToDelete = self.assets.map { it.contentUri }
+        val assetIdsToDelete = self.getAssets().map { it.contentUri }
         mediaStorePermissionsDelegate.requestMediaLibraryActionPermission(assetIdsToDelete, needsDeletePermission = true)
         self.delete()
       }
     }
 
-    AsyncFunction("createAsset") Coroutine { filePath: String, album: Album? ->
-      systemPermissionsDelegate.requireSystemPermissions(false)
-      val assetFactory = AssetFactory(context)
+    AsyncFunction("createAsset") Coroutine { filePath: Uri, album: Album? ->
+      systemPermissionsDelegate.requireSystemPermissions(true)
       return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
     }
 
     @OptIn(EitherType::class)
-    AsyncFunction("createAlbum") Coroutine { name: String, assetsRefs: Either<List<Asset>, List<String>>, move: Boolean ->
-      systemPermissionsDelegate.requireSystemPermissions(false)
-      val albumFactory = AlbumFactory(context)
-      if (assetsRefs.`is`(toKClass<List<Asset>>())) {
-        assetsRefs.get(toKClass<List<Asset>>()).let {
-          return@Coroutine albumFactory.createFromAssets(name, it, move)
-        }
+    AsyncFunction("createAlbum") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, move: Boolean ->
+      systemPermissionsDelegate.requireSystemPermissions(true)
+      val assetListKClass = toKClass<List<Asset>>()
+      if (assetRefs.`is`(assetListKClass)) {
+        val assetList = assetRefs.get(assetListKClass)
+        return@Coroutine albumFactory.createFromAssets(name, assetList, move)
       }
-      if (assetsRefs.`is`(toKClass<List<String>>())) {
-        assetsRefs.get(toKClass<List<String>>()).let {
-          return@Coroutine albumFactory.createFromFilePaths(name, it, AssetFactory(context))
-        }
-      }
+      val assetPaths = assetRefs.get(toKClass<List<Uri>>())
+      return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
     }
 
     AsyncFunction("deleteManyAlbums") Coroutine { albums: List<Album> ->
@@ -166,10 +179,9 @@ class MediaLibraryNextModule : Module() {
     }
 
     RegisterActivityContracts {
-      mediaStorePermissionsDelegate.deleteLauncher =
-        registerForActivityResult(DeleteContract(this@MediaLibraryNextModule))
-      mediaStorePermissionsDelegate.writeLauncher =
-        registerForActivityResult(WriteContract(this@MediaLibraryNextModule))
+      with(mediaStorePermissionsDelegate) {
+        registerMediaStoreContracts(this@MediaLibraryNextModule)
+      }
     }
   }
 }

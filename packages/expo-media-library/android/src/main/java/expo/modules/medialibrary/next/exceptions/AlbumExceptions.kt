@@ -10,3 +10,6 @@ class AlbumAlreadyExistsException(message: String, cause: Throwable? = null) :
 
 class AlbumPropertyNotFoundException(message: String, cause: Throwable? = null) :
   CodedException(message, cause)
+
+class AlbumCouldNotBeCreated(message: String, cause: Throwable? = null) :
+  CodedException(message, cause)

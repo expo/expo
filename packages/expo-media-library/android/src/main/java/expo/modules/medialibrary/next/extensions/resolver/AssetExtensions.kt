@@ -6,106 +6,84 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import expo.modules.medialibrary.AssetFileException
+import androidx.annotation.RequiresApi
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
+import expo.modules.medialibrary.next.objects.wrappers.RelativePath
+import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 suspend fun ContentResolver.queryAssetDisplayName(contentUri: Uri): String? =
-  queryAssetProperty(contentUri, android.provider.OpenableColumns.DISPLAY_NAME) { c, i -> c.getString(i) }
+  queryOne(contentUri, MediaStore.MediaColumns.DISPLAY_NAME, Cursor::getString)
 
 suspend fun ContentResolver.queryGetCreationTime(contentUri: Uri): Long? =
-  queryAssetProperty(contentUri, MediaStore.Images.Media.DATE_TAKEN) { c, i -> c.getLong(i) }
+  queryOne(contentUri, MediaStore.Images.Media.DATE_TAKEN, Cursor::getLong)
 
-suspend fun ContentResolver.queryAssetModificationDate(contentUri: Uri): Long? =
-  queryAssetProperty(contentUri, MediaStore.Images.Media.DATE_MODIFIED) { c, i -> c.getLong(i) }
+suspend fun ContentResolver.queryAssetModificationTime(contentUri: Uri): Long? =
+  queryOne(contentUri, MediaStore.Images.Media.DATE_MODIFIED, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetDuration(contentUri: Uri): Long? =
-  queryAssetProperty(contentUri, MediaStore.Video.VideoColumns.DURATION) { c, i -> c.getLong(i) }
-
-suspend fun ContentResolver.queryAssetMediaType(contentUri: Uri): Int? =
-  queryAssetProperty(contentUri, MediaStore.Files.FileColumns.MEDIA_TYPE) { c, i -> c.getInt(i) }
+  queryOne(contentUri, MediaStore.Video.VideoColumns.DURATION, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
-  queryAssetProperty(contentUri, MediaStore.Images.Media.WIDTH) { c, i -> c.getInt(i) }
+  queryOne(contentUri, MediaStore.Images.Media.WIDTH, Cursor::getInt)
 
 suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
-  queryAssetProperty(contentUri, MediaStore.Images.Media.HEIGHT) { c, i -> c.getInt(i) }
+  queryOne(contentUri, MediaStore.Images.Media.HEIGHT, Cursor::getInt)
 
-suspend fun ContentResolver.queryAssetUri(contentUri: Uri): String? =
-  queryAssetProperty(contentUri, MediaStore.Images.Media.DATA) { c, i -> c.getString(i) }
+suspend fun ContentResolver.queryAssetPath(contentUri: Uri): String? =
+  queryOne(contentUri, MediaStore.Files.FileColumns.DATA, Cursor::getString)
 
-private suspend fun <T> ContentResolver.queryAssetProperty(
-  contentUri: Uri,
-  column: String,
-  extractor: (cursor: Cursor, index: Int) -> T?
-): T? = withContext(Dispatchers.IO) {
-  val projection = arrayOf(column)
-  query(contentUri, projection, null, null, null)?.use { cursor ->
-    ensureActive()
-    val index = cursor.getColumnIndex(column)
-    if (cursor.moveToFirst() && index != -1) {
-      return@withContext extractor(cursor, index)
-    }
-  }
-  return@withContext null
-}
+suspend fun ContentResolver.queryAssetBucketId(contentUri: Uri): Int? =
+  queryOne(contentUri, MediaStore.Images.Media.BUCKET_ID, Cursor::getInt)
 
-suspend fun ContentResolver.queryAssetLocalUri(uri: Uri): String = withContext(Dispatchers.IO) {
-  val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA)
-  query(uri, projection, null, null, null).use { cursor ->
-    ensureActive()
-    if (cursor == null) {
-      throw AssetFileException("Could not delete assets. Cursor is null.")
-    }
-    if (!cursor.moveToFirst()) {
-      throw AssetFileException("Could not delete assets. Asset not found.")
-    }
-    val dataColumnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
-    val assetLocalUri = cursor.getString(dataColumnIndex)
-    return@withContext assetLocalUri
-  }
-}
-
-fun ContentResolver.insertPendingAsset(
+suspend fun ContentResolver.insertPendingAsset(
   displayName: String,
-  mimeType: String?,
-  relativePath: String
-): Uri {
+  mimeType: MimeType,
+  relativePath: RelativePath
+): Uri = withContext(Dispatchers.IO) {
   val contentValues = ContentValues().apply {
     put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
-    put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
-    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+    put(MediaStore.MediaColumns.MIME_TYPE, mimeType.value)
+    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath.value)
     put(MediaStore.MediaColumns.IS_PENDING, 1)
   }
-
-  val collectionUri = when {
-    mimeType == null -> EXTERNAL_CONTENT_URI
-    mimeType.startsWith("image/") -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    mimeType.startsWith("video/") -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-    mimeType.startsWith("audio/") -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-    else -> EXTERNAL_CONTENT_URI
-  }
-
-  return insert(collectionUri, contentValues) ?: TODO("jakies bledy")
+  val collectionUri = mimeType.mediaCollectionUri()
+  return@withContext insert(collectionUri, contentValues)
+    ?: throw AssetCouldNotBeCreated("Failed to create asset: contentResolver.insert() returned null.")
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 fun ContentResolver.publishPendingAsset(uri: Uri) {
   val contentValues = ContentValues().apply {
     put(MediaStore.MediaColumns.IS_PENDING, 0)
   }
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    update(uri, contentValues, null)
+  safeUpdate(uri, contentValues)
+}
+
+fun ContentResolver.safeUpdate(
+  uri: Uri,
+  values: ContentValues
+): Int {
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    update(uri, values, null)
+  } else {
+    update(uri, values, null, null)
   }
 }
 
-fun ContentResolver.updateRelativePath(contentUri: Uri, newRelativePath: String) {
+fun ContentResolver.updateRelativePath(contentUri: Uri, newRelativePath: RelativePath) {
   val contentValues = ContentValues().apply {
-    put(MediaStore.MediaColumns.RELATIVE_PATH, newRelativePath)
+    put(MediaStore.MediaColumns.RELATIVE_PATH, newRelativePath.value)
   }
   update(contentUri, contentValues, null, null)
 }
 
-fun ContentResolver.getMimeCategory(uri: Uri): String? {
-  return this.getType(uri)?.substringBefore("/")
+fun ContentResolver.deleteBy(assetPath: String) {
+  delete(
+    EXTERNAL_CONTENT_URI,
+    "${MediaStore.MediaColumns.DATA}=?",
+    arrayOf(assetPath)
+  )
 }
