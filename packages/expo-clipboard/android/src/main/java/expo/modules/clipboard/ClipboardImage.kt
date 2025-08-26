@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
-import android.util.Log
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
@@ -100,9 +99,9 @@ internal suspend fun imageFromContentUri(
 }
 
 internal fun clearClipboardCache(clipboardCacheDir: File) {
-  if(clipboardCacheDir.exists() && clipboardCacheDir.isDirectory()) {
+  if (clipboardCacheDir.exists() && clipboardCacheDir.isDirectory()) {
     clipboardCacheDir.listFiles()?.forEach { file ->
-      if (file.isDirectory() ) {
+      if (file.isDirectory()) {
         file.deleteRecursively()
       } else {
         file.delete()
