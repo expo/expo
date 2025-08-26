@@ -66,7 +66,7 @@ Expo UI has several SwiftUI components available. You can use them in your app b
   </Tab>
 </Tabs>
 
-### HStack and VStack
+### Using `HStack` and `VStack`
 
 You can also use the `HStack` and `VStack` components to build the entire layout in SwiftUI.
 
@@ -254,7 +254,7 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
 
 <Collapsible summary="Can I use flexbox or other styles in SwiftUI components?">
 
-Flexbox styles can be applied to the `<Host>` component itself. Once you’re inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available — layouts should be defined using `<HStack>` and `<VStack>` instead.
+Flexbox styles can be applied to the `<Host>` component itself. Once you're inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available — layouts should be defined using `<HStack>` and `<VStack>` instead.
 
 </Collapsible>
 
@@ -266,7 +266,7 @@ Flexbox styles can be applied to the `<Host>` component itself. Once you’re in
 
 <Collapsible summary="How is Expo UI different from libraries like `react-native-paper` or `react-native-elements`?">
 
-Expo UI is not “yet another” UI library and not an opinionated design kit. Instead, it’s a primitives library: it exposes native SwiftUI and Jetpack Compose components directly to JavaScript, rather than re-implementing or simulating UI in JavaScript.
+Expo UI is not "yet another" UI library and not an opinionated design kit. Instead, it's a primitives library: it exposes native SwiftUI and Jetpack Compose components directly to JavaScript, rather than re-implementing or simulating UI in JavaScript.
 
 </Collapsible>
 
@@ -279,11 +279,11 @@ The first milestone for Expo UI is achieving a 1-1 mapping from SwiftUI to Expo 
 <Collapsible summary="Can I use React Native components inside SwiftUI components?">
 
 Yes, you can place React Native components as JSX children of Expo UI components. Expo UI automatically creates a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) wrapper for you.
-However, keep in mind that the SwiftUI layout system works differently from UIKit and has some limitations. According to Apple’s documentation:
+However, keep in mind that the SwiftUI layout system works differently from UIKit and has some limitations. According to Apple's documentation:
 
-> **Warning** SwiftUI fully controls the layout of the UIKit view’s [`center`](https://developer.apple.com/documentation/UIKit/UIView/center), [`bounds`](https://developer.apple.com/documentation/UIKit/UIView/bounds), [`frame`](https://developer.apple.com/documentation/UIKit/UIView/frame), and [`transform`](https://developer.apple.com/documentation/UIKit/UIView/transform) properties. Don’t directly set these layout-related properties on the view managed by a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) instance from your own code because that conflicts with SwiftUI and results in undefined behavior.
+> **Warning** SwiftUI fully controls the layout of the UIKit view's [`center`](https://developer.apple.com/documentation/UIKit/UIView/center), [`bounds`](https://developer.apple.com/documentation/UIKit/UIView/bounds), [`frame`](https://developer.apple.com/documentation/UIKit/UIView/frame), and [`transform`](https://developer.apple.com/documentation/UIKit/UIView/transform) properties. Don't directly set these layout-related properties on the view managed by a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) instance from your own code because that conflicts with SwiftUI and results in undefined behavior.
 
-Also note that once you render React Native components, you’re leaving the SwiftUI context. If you want to add Expo UI components again, you’ll need to reintroduce a `<Host>` wrapper.
+Also note that once you render React Native components, you're leaving the SwiftUI context. If you want to add Expo UI components again, you'll need to reintroduce a `<Host>` wrapper.
 
 We recommend keeping SwiftUI layouts self-contained. Interop is possible, but it works best when boundaries are clearly defined.
 
@@ -291,7 +291,7 @@ We recommend keeping SwiftUI layouts self-contained. Interop is possible, but it
 
 <Collapsible summary="I’m a SwiftUI developer. Why should I learn Expo UI?">
 
-Because React’s promise of _“learn once, write anywhere”_ now extends to SwiftUI and Jetpack Compose. With Expo UI, you can apply your SwiftUI knowledge to build apps that run in the React Native ecosystem, extend to the Web through [DOM components](/guides/dom-components/), and even integrate [2D](https://shopify.github.io/react-native-skia/) and [3D](https://github.com/wcandillon/react-native-webgpu) rendering. The system is flexible enough that different parts of your app can use different approaches — giving you seamless integration at the component level.
+Because React's promise of _"learn once, write anywhere"_ now extends to SwiftUI and Jetpack Compose. With Expo UI, you can apply your SwiftUI knowledge to build apps that run in the React Native ecosystem, extend to the Web through [DOM components](/guides/dom-components/), and even integrate [2D](https://shopify.github.io/react-native-skia/) and [3D](https://github.com/wcandillon/react-native-webgpu) rendering. The system is flexible enough that different parts of your app can use different approaches — giving you seamless integration at the component level.
 
 </Collapsible>
 
