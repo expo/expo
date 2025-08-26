@@ -69,9 +69,11 @@ export declare class Directory {
      */
     list(): (Directory | File)[];
     /**
-     * Retrieves an object containing properties of a directory
+     * Retrieves an object containing properties of a directory.
+     *
      * @throws Error If the application does not have read access to the directory, or if the path does not point to a directory (e.g., it points to a file).
-     * @returns An object with directory metadata (e.g., size, creation date, etc.).
+     *
+     * @returns An object with directory metadata (for example, size, creation date, and so on).
      */
     info(): DirectoryInfo;
     /**
@@ -79,10 +81,10 @@ export declare class Directory {
      */
     size: number | null;
     /**
-     * @platform android
      * A static method that opens a file picker to select a directory.
      * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
-     * @returns a `Directory` instance. The underlying uri will be a content uri on Android.
+     * @returns a `Directory` instance. The underlying uri will be a content URI on Android.
+     * @platform android
      */
     static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
@@ -156,8 +158,8 @@ export declare class File {
     delete(): void;
     /**
      * Retrieves an object containing properties of a file
-     * @throws Error If the application does not have read access to the file, or if the path does not point to a file (e.g., it points to a directory).
-     * @returns An object with file metadata (e.g., size, creation date, etc.).
+     * @throws Error If the application does not have read access to the file, or if the path does not point to a file (for example, it points to a directory).
+     * @returns An object with file metadata (for example, size, creation date, and so on).
      */
     info(options?: InfoOptions): FileInfo;
     /**
@@ -180,15 +182,18 @@ export declare class File {
      */
     move(destination: Directory | File): void;
     /**
-     * Returns a FileHandle object that can be used to read and write data to the file.
+     * Returns A `FileHandle` object that can be used to read and write data to the file.
      * @throws Error if the file does not exist or cannot be opened.
      */
     open(): FileHandle;
     /**
      * A static method that downloads a file from the network.
+     *
      * @param url - The URL of the file to download.
      * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
+     *
      * @returns A promise that resolves to the downloaded file.
+     *
      * @example
      * ```ts
      * const file = await File.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
@@ -196,11 +201,14 @@ export declare class File {
      */
     static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
     /**
-     * @platform android
      * A static method that opens a file picker to select a single file of specified type.
-     * @param initialUri An optional uri pointing to an initial folder on which the file picker is opened.
+     *
+     * @platform android
+     *
+     * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
      * @returns a `File` instance.
+     * @platform android
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
     /**
@@ -260,6 +268,7 @@ export type FileInfo = {
 export type InfoOptions = {
     /**
      * Whether to return the MD5 hash of the file.
+     *
      * @default false
      */
     md5?: boolean;

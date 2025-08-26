@@ -4,9 +4,10 @@ import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
 import { renderRouter } from '../../../testing-library';
-import { Badge, Icon, Label } from '../../common/elements';
+import { Badge, Icon, Label, VectorIcon, type IconProps } from '../../common/elements';
+import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import type { NativeTabOptions } from '../NativeTabsView';
+import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -116,12 +117,12 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('when using Icon with selectedSf prop, it is passed as selected icon sfSymbolName', () => {
+  it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon selectedSf="homepod.2.fill" />
+            <Icon sf={{ selected: 'homepod.2.fill' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -135,12 +136,12 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('when using Icon with sf and selectedSf, values are passed correctly', () => {
+  it('when using Icon with sf object, values are passed correctly', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" selectedSf="star.bubble" />
+            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -195,13 +196,13 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('uses last Icon selectedSf when multiple are provided', () => {
+  it('uses last Icon sf selected when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon selectedSf="stairs" />
-            <Icon selectedSf="homepod.2.fill" />
+            <Icon sf={{ selected: 'stairs' }} />
+            <Icon sf={{ selected: 'homepod.2.fill' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -215,13 +216,13 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('uses last Icon sf and selectedSf for each type when multiple are provided', () => {
+  it('uses last Icon sf for each type when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" selectedSf="star.bubble" />
-            <Icon sf="homepod.2.fill" selectedSf="homepod.2.fill" />
+            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
             <Icon sf="0.circle.ar" />
           </NativeTabs.Trigger>
         </NativeTabs>
@@ -237,14 +238,14 @@ describe('Icons', () => {
     } as NativeTabOptions);
   });
 
-  it('uses last Icon sf and selectedSf for each type when multiple are provided', () => {
+  it('uses last Icon sf for each type when multiple are provided', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" selectedSf="star.bubble" />
-            <Icon sf="homepod.2.fill" selectedSf="homepod.2.fill" />
-            <Icon selectedSf="0.circle.ar" />
+            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
+            <Icon sf={{ selected: '0.circle.ar' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -801,5 +802,54 @@ describe('Dynamic options', () => {
     act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(BottomTabsScreen).toHaveBeenCalledTimes(4);
     expect(BottomTabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
+  });
+});
+
+describe(appendIconOptions, () => {
+  const ICON_FAMILY = {
+    getImageSource: (name: 'a' | 'b' | 'c') => Promise.resolve({ uri: name }),
+  };
+  it.each([
+    [{}, {}],
+    [{ sf: '0.circle' }, { icon: { sf: '0.circle' }, selectedIcon: undefined }],
+    [
+      { sf: { default: '0.circle', selected: 'o.circle.fill' } },
+      { icon: { sf: '0.circle' }, selectedIcon: { sf: 'o.circle.fill' } },
+    ],
+    [
+      { sf: { selected: 'o.circle.fill' } },
+      { icon: undefined, selectedIcon: { sf: 'o.circle.fill' } },
+    ],
+    [
+      { src: { uri: 'xxx', scale: 2 } },
+      { icon: { src: { uri: 'xxx', scale: 2 } }, selectedIcon: undefined },
+    ],
+    [
+      { src: { default: 'xxx', selected: 'yyy' } },
+      { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
+    ],
+  ] as [IconProps, NativeTabOptions][])(
+    'should append icon props %p to options correctly',
+    (props, expected) => {
+      const options: NativeTabOptions = {};
+      appendIconOptions(options, props);
+      expect(options).toEqual(expected);
+    }
+  );
+  it('when vector icon is used, promise is set', () => {
+    const options: NativeTabOptions = {};
+    const props: IconProps = {
+      src: {
+        default: <VectorIcon family={ICON_FAMILY} name="a" />,
+        selected: { uri: 'yyy' },
+      },
+    };
+    appendIconOptions(options, props);
+    expect(options).toEqual({
+      icon: { src: expect.any(Promise) },
+      selectedIcon: {
+        src: { uri: 'yyy' },
+      },
+    });
   });
 });

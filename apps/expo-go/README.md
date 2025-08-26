@@ -39,7 +39,9 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 ## Building Expo Go
 
-1. Build React Native
+1. Set up React Native
+
+Go to the `react-native-lab/react-native` directory and run `yarn install` to install its dependencies.
 
 You can build the React Native Android dep using `./gradlew :packages:react-native:ReactAndroid:buildCMakeDebug` in `react-native-lab/react-native` directory. This is optional because React Native will be built anyway when you build Expo Go, but can help to narrow down a potential issue surface area.
 
@@ -52,6 +54,7 @@ Metro needs to run prior running the build. Verify it runs on port 80. This is b
 For Android, run `./gradlew app:assembleDebug` in the `apps/expo-go/android` directory.
 
 For iOS:
+- run `pod install` in the `apps/expo-go/ios` directory
 - set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist`
 - open and run `ios/Exponent.xcworkspace` in Xcode.
 

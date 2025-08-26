@@ -53,7 +53,7 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
     `);
   });
 
-  it('returns successful result when no dependencies exist', async () => {
+  it('returns failing result for duplicates dependencies exist', async () => {
     const dependencies: ResolutionResult = {
       react: {
         source: 0 as any,
@@ -104,6 +104,71 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
     `);
     expect(result.advice).toMatchInlineSnapshot(`
       [
+        "Resolve your dependency issues and deduplicate your dependencies. Learn more: https://expo.fyi/resolving-dependency-issues",
+      ]
+    `);
+  });
+
+  it('returns failing result with advice for corrupted node_modules folders', async () => {
+    const dependencies: ResolutionResult = {
+      react: {
+        source: 0 as any,
+        depth: 0,
+        name: 'expo-constants',
+        version: '18.0.2',
+        path: '/tmp/root/node_modules/expo-constants',
+        originPath: '/tmp/root/node_modules/expo-constants',
+        duplicates: [
+          {
+            name: 'expo-constants',
+            version: '18.0.2',
+            path: '/tmp/root/node_modules/expo/node_modules/expo-constants',
+            originPath: '/tmp/root/node_modules/expo/node_modules/expo-constants',
+          },
+          {
+            name: 'expo-constants',
+            version: '18.0.2',
+            path: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
+            originPath: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
+          },
+        ],
+      },
+    };
+
+    jest.mocked(importAutolinkingExportsFromProject).mockReturnValue({
+      ...jest.requireActual('expo/internal/unstable-autolinking-exports'),
+      makeCachedDependenciesLinker: () => ({}) as any,
+      scanDependencyResolutionsForPlatform: async () => dependencies,
+    });
+
+    jest.mocked(getVersionedNativeModuleNamesAsync).mockResolvedValue(['react']);
+
+    const check = new AutolinkingDependencyDuplicatesCheck();
+    const result = await check.runAsync({
+      pkg: {
+        name: 'test-project',
+        version: '1.0.0',
+        dependencies: {
+          react: '*',
+        },
+      },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toMatchInlineSnapshot(`
+      [
+        "Your project contains duplicate native module dependencies, which should be de-duplicated.
+      Native builds may only contain one version of any given native module, and having multiple versions of a single Native module installed may lead to unexpected build errors.",
+        "Found duplicates for expo-constants:
+        ├─ expo-constants@18.0.2 (at: node_modules/expo-constants)
+        ├─ expo-constants@18.0.2 (at: node_modules/expo/node_modules/expo-constants)
+        └─ expo-constants@18.0.2 (at: node_modules/expo-asset/node_modules/expo-constants)",
+      ]
+    `);
+    expect(result.advice).toMatchInlineSnapshot(`
+      [
+        "Multiple copies of the same version exist for: expo-constants.
+      - Try deleting your node_modules folders and reinstall your dependencies after.",
         "Resolve your dependency issues and deduplicate your dependencies. Learn more: https://expo.fyi/resolving-dependency-issues",
       ]
     `);

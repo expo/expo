@@ -783,6 +783,8 @@ export async function transform(
 
 export function getCacheKey(config: JsTransformerConfig): string {
   const {
+    // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
+    expo_customTransformerPath: _customTransformerPath,
     babelTransformerPath,
     minifierPath,
     // Pull out of the cache key to prevent accidental cache invalidation.

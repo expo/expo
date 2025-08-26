@@ -292,6 +292,14 @@ class VideoModule : Module() {
           }
         }
 
+      Property("keepScreenOnWhilePlaying")
+        .get { ref: VideoPlayer ->
+          ref.keepScreenOnWhilePlaying
+        }
+        .set { ref: VideoPlayer, value: Boolean? ->
+          ref.keepScreenOnWhilePlaying = value ?: true
+        }
+
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
         replaceImpl(ref, source)
       }

@@ -124,7 +124,7 @@ class FullscreenPlayerActivity : Activity() {
 
   override fun onResume() {
     orientationHelper.startOrientationEventListener()
-    playerView.useController = videoView.useNativeControls
+    playerView.useController = true
     // Reconfigure subtitles when resuming (handles returning from settings)
     SubtitleUtils.configureSubtitleView(playerView, this)
     super.onResume()

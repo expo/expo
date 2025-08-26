@@ -297,13 +297,15 @@ class AudioRecorder(
       throw GetAudioInputNotSupportedException()
     }
 
-    try {
-      // getRoutedDevice() is the most reliable way to return the actual mic input, however it
-      // only returns a valid device when actively recording, and may throw otherwise.
-      // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
-      deviceInfo = recorder?.routedDevice
-    } catch (e: java.lang.Exception) {
-      // no-op
+    if (isRecording) {
+      try {
+        // getRoutedDevice() is the most reliable way to return the actual mic input, however it
+        // only returns a valid device when actively recording, and may throw otherwise.
+        // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
+        deviceInfo = recorder?.routedDevice
+      } catch (e: java.lang.Exception) {
+        // no-op
+      }
     }
 
     // If no routed device is found try preferred device

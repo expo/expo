@@ -348,7 +348,7 @@ fun HomeScreen(
           modifier = Modifier.fillMaxWidth()
         ) {
           NewText(
-            "RECENTLY OPEND",
+            "RECENTLY OPENED",
             style = NewAppTheme.font.sm.merge(
               fontWeight = FontWeight.Medium,
               fontFamily = NewAppTheme.font.mono

@@ -26,7 +26,6 @@ describe('server-root-group', () => {
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'server-root-group',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );

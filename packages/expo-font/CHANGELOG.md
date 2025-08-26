@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Fix types and adjust platform checks. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 14.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._
