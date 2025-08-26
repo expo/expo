@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove redundant `expo-router/doctor` sub-check ([#39158](https://github.com/expo/expo/pull/39158) by [@kitten](https://github.com/kitten))
+
 ## 0.26.3 — 2025-08-25
 
 ### 💡 Others

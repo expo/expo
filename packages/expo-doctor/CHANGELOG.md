@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add `@react-navigation/*` packages to duplicates check manually ([#39158](https://github.com/expo/expo/pull/39158) by [@kitten](https://github.com/kitten)) 
+
 ## 1.17.1 — 2025-08-25
 
 ### 🐛 Bug fixes

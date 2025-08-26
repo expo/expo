@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - remove redundant native trigger view ([#38964](https://github.com/expo/expo/pull/38964) by [@Ubax](https://github.com/Ubax))
+- Remove redundant `expo-router/doctor` sub-check ([#39158](https://github.com/expo/expo/pull/39158) by [@kitten](https://github.com/kitten))
 
 ## 6.0.0-beta.7 — 2025-08-25
 
