@@ -7,24 +7,25 @@ description: Add React Native into existing native apps using the "integrated" a
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-React Native is great when you are starting a new mobile app from scratch. However, it also works well for adding a single view or user flow to existing native applications. With a few steps, you can add new React Native based features, screens, views, etc.
+React Native offers a flexible development strategy. Whether you're launching a new application or looking to integrate an existing native app, it provides a powerful solution. You can leverage its capabilities to introduce new features or views incrementally, allowing your team to adopt modern, cross-platform development without a complete rewrite.
+
+In this guide, we will walk through the steps to add a React Native view into an existing native app using the "integrated" approach.
 
 ## Create an Expo project
 
+First, create an Expo project inside your existing native project's root directory.
+
 <Terminal cmd={['$ npx create-expo-app exp']} />
 
-This will create a new Expo project under the `exp` folder in the current directory, you can change the name of the project to whatever you like in the command, but for this guide we will use `exp` as the name of the project.
-This new project includes a example TypeScript code to help you get started.
+This command creates a new directory named `exp` that contains your new Expo project. While you can name the project anything, this guide uses `exp` for consistency. The new project includes an example TypeScript application to help you get started.
 
-## Setting up your project structure
+## Set up your project structure
 
-The standard for react-native projects is for the native projects to be located under /android and /ios folders,
-but this may not be possible for large codebases that want to explore using react-native.
-we recommend two different approaches, move your files into the appropriate folders, or setting up a monorepo.
+A standard React Native project places native code in `/android` and `/ios` directories. This structure may not be feasible when integrating with a large, existing native app.
+This guide covers two approaches: moving your native project files into the standard directories or setting up a monorepo.
 
 ### a. Move your existing native projects files
 
@@ -47,7 +48,8 @@ E.g.
 </Tabs>
 ### b. Set up a monorepo
 
-create a `package.json` file in the root of your project with the following content:
+Setting up a monorepo will ensure that Android and iOS scripts will be able invoke commands from Node libraries even with a custom folder structure.
+To setup a Yarn monorepo, create a `package.json` file in the root of your project and add the following content:
 
 ```json package.json
 {
@@ -57,15 +59,20 @@ create a `package.json` file in the root of your project with the following cont
 }
 ```
 
-And run `yarn install` to install the dependencies. This will ensure `node_modules` are installed at the root of your project, and that native scripts will be able to interact with React Native code.
+Then run `yarn install` to install the dependencies. This will ensure `node_modules` are installed at the root of your project, and that native scripts will be able to interact with React Native code.
+Make sure to change `["exp"]` to the name of the Expo projected you create in the previous step.
 
-Remember, opting for a monorepo requires you to configure a custom project root, in Gradle/Cocoapods. This will be covered in the next sections.
+> **info** Opting for a monorepo requires you to configure a custom project root, in Gradle/Cocoapods. This will be covered in the next sections.
 
 ## Configuring your Android project
 
-### Configuring Gradle
+To integrate React Native on Android, you need to configure the native project by modifying the following files:
 
-React Native uses the React Native Gradle Plugin to configure your dependencies and project setup.
+- **Gradle files**: `settings.gradle`, top-level `build.gradle`, `app/build.gradle`, and `gradle.properties` to add the React Native Gradle Plugin (RNGP) and other properties.
+- **AndroidManifest.xml**: To add necessary permissions.
+- **MainActivity**: To load your React Native application.
+
+### Configuring Gradle
 
 <Step label="1">
 Start by editing your `settings.gradle` file and add the following lines (Use the [minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/settings.gradle) as a reference):
@@ -113,9 +120,9 @@ includeBuild(expoAutolinking.reactNativeGradlePlugin)
 </Step>
 
 <Step label="2">
-Then you need to open your top level `build.gradle` and include this line (as suggested from the [Minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/build.gradle)):
+Then open your top level `build.gradle` and include this line (as suggested from the [minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/build.gradle)):
 
-```diff
+```diff build.gradle
 buildscript {
     repositories {
         google()
@@ -131,14 +138,14 @@ buildscript {
 +apply plugin: "com.facebook.react.rootproject"
 ```
 
-This makes sure the React Native Gradle Plugin (RNGP) is available inside your project.
+This makes sure the React Native Gradle and the Expo plugins are available and applied inside your project.
 
 </Step>
 
 <Step label="3">
-Add the following lines inside your Applications's `build.gradle` file (usually `app/build.gradle` - you can use the [Minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/build.gradle)):
+Add the following lines inside your Applications's `build.gradle` file (usually `app/build.gradle` - you can use the [minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/build.gradle)):
 
-```diff
+```diff app/build.gradle
 apply plugin: "com.android.application"
 +apply plugin: "com.facebook.react"
 
@@ -172,12 +179,12 @@ dependencies {
 </Step>
 
 <Step label="4">
-Finally, open your application `gradle.properties` files and add the following line (here the [Minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/gradle.properties)):
+Finally, open your application `gradle.properties` file and add the following lines (here the [minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/gradle.properties)):
 
-```diff
-+reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
-+newArchEnabled=true
-+hermesEnabled=true
+```properties gradle.properties
+reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
+newArchEnabled=true
+hermesEnabled=true
 ```
 
 </Step>
@@ -187,7 +194,7 @@ Finally, open your application `gradle.properties` files and add the following l
 <Step label="1">
 First, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
-```diff
+```diff AndroidManifest.xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 +   <uses-permission android:name="android.permission.INTERNET" />
@@ -216,8 +223,7 @@ Now in your **debug** `AndroidManifest.xml` enable [cleartext traffic](https://d
 ```
 
 This is necessary for your app to communicate with your local [Metro bundler](https://metrobundler.dev/), via HTTP.
-
-Use the AndroidManifest.xml files from the Minimum template as a reference: [main](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml) and [debug](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml)
+You can use the `AndroidManifest.xml` files from the minimum template as a reference: [main](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml) and [debug](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml)
 
 </Step>
 
@@ -227,7 +233,7 @@ We now need to add some native code in order to start the React Native runtime a
 
 #### Updating your Application class
 
-Start by updating your `Application` class to initialize React Native, you can use MainApplication.kt from the [Minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt) as reference
+Start by updating your `Application` class to initialize React Native, you can use MainApplication.kt from the [minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt) as reference
 
 ```diff
 // package <your-package-here>
@@ -286,9 +292,9 @@ Start by updating your `Application` class to initialize React Native, you can u
 
 #### Creating a `ReactActivity`
 
-Create a new `Activity` that will extend `ReactActivity` and host the React Native code. This activity will be responsible for starting the React Native runtime and rendering the React component. You can use the [MainActivity.kt from Minimum template file](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.kt) as reference
+Create a new `Activity` that will extend `ReactActivity` and host the React Native code. This activity will be responsible for starting the React Native runtime and rendering the React component. You can use the [MainActivity.kt from minimum template file](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.kt) as reference
 
-```kotlin
+```kotlin MyReactActivity.kt
 // package <your-package-here>
 
 import android.os.Build
@@ -347,11 +353,17 @@ Now your activity is ready to run some JavaScript code.
 
 ## Configuring your iOS project
 
+To integrate React Native, you need to configure the native iOS project by modifying the following files:
+
+- **Podfile**: To add the React Native dependencies.
+- **Xcode project**: To add a build phase for bundling JavaScript code.
+- **Info.plist**: To configure app settings required by React Native.
+
 ### Configuring CocoaPods
 
 If your project does not have a `Podfile`, you can create one using the minimum template as a reference.
 
-```rb
+```rb Podfile
 # necessary for expo constants and must be absolute
 project_root = File.join(__dir__, 'exp')
 ENV['PROJECT_ROOT'] = project_root
