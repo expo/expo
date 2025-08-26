@@ -2,12 +2,12 @@ import { screen, act, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { renderRouter } from '../../../testing-library';
-import { Badge, Icon, Label } from '../../common/elements';
+import { Badge, Icon, Label, VectorIcon, type IconProps } from '../../common/elements';
+import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import type { NativeTabOptions, TypeOrRecord } from '../types';
+import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -122,9 +122,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon
-              sf={{ selected: 'homepod.2.fill' } as TypeOrRecord<SFSymbol, 'default' | 'selected'>}
-            />
+            <Icon sf={{ selected: 'homepod.2.fill' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -804,5 +802,54 @@ describe('Dynamic options', () => {
     act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(BottomTabsScreen).toHaveBeenCalledTimes(4);
     expect(BottomTabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
+  });
+});
+
+describe(appendIconOptions, () => {
+  const ICON_FAMILY = {
+    getImageSource: (name: 'a' | 'b' | 'c') => Promise.resolve({ uri: name }),
+  };
+  it.each([
+    [{}, {}],
+    [{ sf: '0.circle' }, { icon: { sf: '0.circle' }, selectedIcon: undefined }],
+    [
+      { sf: { default: '0.circle', selected: 'o.circle.fill' } },
+      { icon: { sf: '0.circle' }, selectedIcon: { sf: 'o.circle.fill' } },
+    ],
+    [
+      { sf: { selected: 'o.circle.fill' } },
+      { icon: undefined, selectedIcon: { sf: 'o.circle.fill' } },
+    ],
+    [
+      { src: { uri: 'xxx', scale: 2 } },
+      { icon: { src: { uri: 'xxx', scale: 2 } }, selectedIcon: undefined },
+    ],
+    [
+      { src: { default: 'xxx', selected: 'yyy' } },
+      { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
+    ],
+  ] as [IconProps, NativeTabOptions][])(
+    'should append icon props %p to options correctly',
+    (props, expected) => {
+      const options: NativeTabOptions = {};
+      appendIconOptions(options, props);
+      expect(options).toEqual(expected);
+    }
+  );
+  it('when vector icon is used, promise is set', () => {
+    const options: NativeTabOptions = {};
+    const props: IconProps = {
+      src: {
+        default: <VectorIcon family={ICON_FAMILY} name="a" />,
+        selected: { uri: 'yyy' },
+      },
+    };
+    appendIconOptions(options, props);
+    expect(options).toEqual({
+      icon: { src: expect.any(Promise) },
+      selectedIcon: {
+        src: { uri: 'yyy' },
+      },
+    });
   });
 });

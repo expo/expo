@@ -88,7 +88,7 @@ async function createReactNativeConfigAsync({ appRoot, sourceDir, autolinkingOpt
 async function resolveAppProjectConfigAsync(projectRoot, platform, sourceDir) {
     // TODO(@kitten): use the commandRoot here to find these files in non <projectRoot>/<platform> folders
     if (platform === 'android') {
-        const androidDir = path_1.default.join(projectRoot, 'android');
+        const androidDir = sourceDir ?? path_1.default.join(projectRoot, 'android');
         const { gradle, manifest } = await (0, androidResolver_1.findGradleAndManifestAsync)({ androidDir, isLibrary: false });
         if (gradle == null || manifest == null) {
             return {};

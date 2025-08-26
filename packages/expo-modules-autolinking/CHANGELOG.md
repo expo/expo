@@ -19,6 +19,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Regression: Use the command's root instead of the app's root when resolving extra build dependencies ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
+- [Android] Update resolveAppProjectConfigAsync to use sourceDir ([#39125](https://github.com/expo/expo/pull/39125) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

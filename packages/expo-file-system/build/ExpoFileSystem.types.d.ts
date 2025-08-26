@@ -91,14 +91,10 @@ export declare class Directory {
      */
     size: number | null;
     /**
-     *
      * A static method that opens a file picker to select a directory.
-     *
+     * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
+     * @returns a `Directory` instance. The underlying uri will be a content URI on Android.
      * @platform android
-     *
-     * @param initialUri An optional URI pointing to an initial folder on which the directory picker is opened.
-     *
-     * @returns A `Directory` instance. The underlying URI will be a content URI on Android.
      */
     static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
@@ -221,8 +217,8 @@ export declare class File {
      *
      * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
-     *
-     * @returns A `File` instance.
+     * @returns a `File` instance.
+     * @platform android
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
     /**

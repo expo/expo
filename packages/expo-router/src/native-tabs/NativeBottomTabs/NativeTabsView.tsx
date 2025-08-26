@@ -1,5 +1,5 @@
-import React, { useDeferredValue } from 'react';
-import type { ColorValue } from 'react-native';
+import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import type { ColorValue, ImageSourcePropType } from 'react-native';
 import {
   BottomTabs,
   BottomTabsScreen,
@@ -8,6 +8,7 @@ import {
   type BottomTabsScreenAppearance,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import {
   appendSelectedStyleToAppearance,
@@ -19,6 +20,7 @@ import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
   type NativeTabOptions,
+  type NativeTabsTabBarItemRole,
   type NativeTabsViewProps,
 } from './types';
 import { shouldTabBeVisible } from './utils';
@@ -165,6 +167,22 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   );
 }
 
+// TODO: remove after fix is merged in screens
+const rolesIcons: Record<NativeTabsTabBarItemRole, SFSymbol> = {
+  bookmarks: 'book.fill',
+  contacts: 'person.crop.circle.fill',
+  downloads: 'square.and.arrow.down.fill',
+  favorites: 'star.fill',
+  featured: 'star.fill',
+  history: 'clock.fill',
+  more: 'ellipsis',
+  mostRecent: 'clock.fill',
+  mostViewed: 'list.number',
+  recents: 'clock.fill',
+  search: 'magnifyingglass',
+  topRated: 'star.fill',
+};
+
 function Screen(props: {
   routeKey: string;
   name: string;
@@ -185,13 +203,14 @@ function Screen(props: {
   } = props;
   const title = descriptor.options.title ?? name;
 
-  let icon = convertOptionsIconToPropsIcon(descriptor.options.icon);
+  let icon = useAwaitedScreensIcon(descriptor.options.icon);
+  let selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
 
   // Fix for an issue in screens
   if (descriptor.options.role) {
-    switch (descriptor.options.role) {
-      case 'search':
-        icon = { sfSymbolName: 'magnifyingglass' };
+    if (descriptor.options.role && descriptor.options.role in rolesIcons) {
+      icon = { sf: rolesIcons[descriptor.options.role] };
+      selectedIcon = icon;
     }
   }
 
@@ -204,10 +223,10 @@ function Screen(props: {
       tabBarItemBadgeTextColor={badgeTextColor}
       standardAppearance={standardAppearance}
       scrollEdgeAppearance={scrollEdgeAppearance}
-      iconResourceName={getAndroidIconResourceName(descriptor.options.icon)}
-      iconResource={getAndroidIconResource(descriptor.options.icon)}
-      icon={icon}
-      selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)}
+      iconResourceName={getAndroidIconResourceName(icon)}
+      iconResource={getAndroidIconResource(icon)}
+      icon={convertOptionsIconToPropsIcon(icon)}
+      selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)}
       title={title}
       freezeContents={false}
       tabKey={routeKey}
@@ -218,8 +237,42 @@ function Screen(props: {
   );
 }
 
+type AwaitedIcon =
+  | {
+      sf?: SFSymbol;
+      drawable?: string;
+    }
+  | {
+      src?: ImageSourcePropType;
+    };
+
+function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
+  const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+  const [awaitedIcon, setAwaitedIcon] = useState<AwaitedIcon | undefined>(undefined);
+
+  useEffect(() => {
+    const loadIcon = async () => {
+      if (src && src instanceof Promise) {
+        const currentAwaitedIcon = { src: await src };
+        setAwaitedIcon(currentAwaitedIcon);
+      }
+    };
+    loadIcon();
+    // Checking `src` rather then icon here, to avoid unnecessary re-renders
+    // The icon object can be recreated, while src should stay the same
+    // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
+    // So we should be safe with promise resolving
+  }, [src]);
+
+  return useMemo(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
+}
+
+function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
+  return !icon || !('src' in icon && icon.src instanceof Promise);
+}
+
 function convertOptionsIconToPropsIcon(
-  icon: NativeTabOptions['icon']
+  icon: AwaitedIcon | undefined
 ): BottomTabsScreenProps['icon'] {
   if (!icon) {
     return undefined;
@@ -233,7 +286,7 @@ function convertOptionsIconToPropsIcon(
 }
 
 function getAndroidIconResource(
-  icon: NativeTabOptions['icon']
+  icon: AwaitedIcon | undefined
 ): BottomTabsScreenProps['iconResource'] {
   if (icon && 'src' in icon && icon.src) {
     return icon.src;
@@ -242,7 +295,7 @@ function getAndroidIconResource(
 }
 
 function getAndroidIconResourceName(
-  icon: NativeTabOptions['icon']
+  icon: AwaitedIcon | undefined
 ): BottomTabsScreenProps['iconResourceName'] {
   if (icon && 'drawable' in icon && icon.drawable) {
     return icon.drawable;

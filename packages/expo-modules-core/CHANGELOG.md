@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.0.6 — 2025-08-25
+
+### 🎉 New features
+
+- [Android] Add new type - `ValueOrUndefined`. ([#39116](https://github.com/expo/expo/pull/39116) by [@lukmccall](https://github.com/lukmccall))
+
 ## 3.0.5 — 2025-08-21
 
 _This version does not introduce any user-facing changes._
@@ -60,6 +66,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Add package exports support. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Cleaned up iOS header files for precompilation ([#38441](https://github.com/expo/expo/pull/38441) by [@chrfalch](https://github.com/chrfalch))
 - [Android] RN 0.81.0: patched some reflection issues after kotlin upgrade ([#38451](https://github.com/expo/expo/pull/38451) by [@chrfalch](https://github.com/chrfalch))
 - Restructure Jest polyfills to not import forbidden platform extension directly. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))

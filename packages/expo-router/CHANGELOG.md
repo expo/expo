@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.0-beta.7 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0-beta.6 — 2025-08-25
+
+### 🎉 New features
+
 - add support for custom icons on Android ([#39043](https://github.com/expo/expo/pull/39043) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
@@ -22,6 +34,7 @@
 ### 🎉 New features
 
 - Update web modals to iOS 26 specifications ([#38897](https://github.com/expo/expo/pull/38897) by [@hirbod](https://github.com/hirbod))
+- add helpers to use expo vector icons in native tabs ([#39012](https://github.com/expo/expo/pull/39012) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

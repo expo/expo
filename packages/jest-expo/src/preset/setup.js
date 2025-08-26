@@ -190,18 +190,6 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
   },
 }));
 
-// Mock the `createSnapshotFriendlyRef` to return an ref that can be serialized in snapshots.
-jest.doMock('expo-modules-core/src/Refs', () => ({
-  createSnapshotFriendlyRef: () => {
-    // We cannot use `createRef` since it is not extensible.
-    const ref = { current: null };
-    Object.defineProperty(ref, 'toJSON', {
-      value: () => '[React.ref]',
-    });
-    return ref;
-  },
-}));
-
 function attemptLookup(moduleName) {
   // hack to get the package name from the module name
   const filePath = stackTrace.getSync().find((line) => line.fileName.includes(moduleName));
@@ -268,6 +256,16 @@ jest.doMock('expo-modules-core', () => {
     EventEmitter,
     NativeModule,
     SharedObject,
+
+    // Mock the `createSnapshotFriendlyRef` to return an ref that can be serialized in snapshots.
+    createSnapshotFriendlyRef: () => {
+      // We cannot use `createRef` since it is not extensible.
+      const ref = { current: null };
+      Object.defineProperty(ref, 'toJSON', {
+        value: () => '[React.ref]',
+      });
+      return ref;
+    },
 
     requireOptionalNativeModule: requireMockModule,
     requireNativeModule(moduleName) {
