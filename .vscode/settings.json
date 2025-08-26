@@ -1,6 +1,5 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "eslint.workingDirectories": [
-    { "pattern": "*" },
-  ]
+  "eslint.workingDirectories": [{ "pattern": "*" }],
+  "cmake.sourceDirectory": "/Users/vojta/_dev/expo/node_modules/react-native-reanimated/android"
 }

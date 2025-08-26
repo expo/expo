@@ -23,9 +23,8 @@ public class PushTokenModule: Module, NotificationDelegate {
     }
 
     AsyncFunction("getDevicePushTokenAsync") { (promise: Promise) in
-      if promiseNotYetResolved != nil {
-        promise.reject("E_AWAIT_PROMISE", "Another async call to getDevicePushTokenAsync() is in progress. Await the first Promise.")
-        return
+      if let existingPromise = promiseNotYetResolved {
+        existingPromise.reject("E_AWAIT_PROMISE", "A newer async call to getDevicePushTokenAsync() was started. To obtain the push token, await the result of the newer call.")
       }
       promiseNotYetResolved = promise
       UIApplication.shared.registerForRemoteNotifications()
