@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [web] fix active font size on web ([#39190](https://github.com/expo/expo/pull/39190) by [@Ubax](https://github.com/Ubax))
+- fix dynamic options setting in native tabs ([#39152](https://github.com/expo/expo/pull/39152) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
