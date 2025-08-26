@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `The method 'getResourceDrawableUri' was expected to be of type static` exception.
+
 ### 💡 Others
 
 ## 3.0.3 — 2025-08-25
