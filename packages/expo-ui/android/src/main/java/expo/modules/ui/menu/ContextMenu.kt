@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.ViewEventCallback
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.ui.DynamicTheme
 import expo.modules.ui.ThemedHybridSwitch
 import expo.modules.ui.compose
@@ -170,7 +171,7 @@ class ContextMenu(context: Context, appContext: AppContext) :
   }
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     var elements by remember { props.elements }
     val color by remember { props.color }
 

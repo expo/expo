@@ -17,3 +17,5 @@ export const blur: (radius: number) => ExpoModifier = nativeExpoUIModule.blur;
 export const clickable: (callback: () => void) => ExpoModifier = nativeExpoUIModule.clickable;
 export const rotate: (degrees: number) => ExpoModifier = nativeExpoUIModule.rotate;
 export const zIndex: (index: number) => ExpoModifier = nativeExpoUIModule.zIndex;
+export const weight: (weight: number) => ExpoModifier = nativeExpoUIModule.weight;
+export const testID: (tag: string) => ExpoModifier = nativeExpoUIModule.testID;

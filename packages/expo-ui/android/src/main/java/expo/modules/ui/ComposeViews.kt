@@ -20,6 +20,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ComposableScope
 
 enum class HorizontalArrangement(val value: String) : Enumerable {
   START("start"),
@@ -101,13 +102,13 @@ class RowView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
   override val props = LayoutProps()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     Row(
       horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
       verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = modifier.then(Modifier.fromExpoModifiers(props.modifiers.value))
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
     ) {
-      Children()
+      Children(ComposableScope(rowScope = this))
     }
   }
 }
@@ -116,13 +117,13 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
   override val props = LayoutProps()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     Column(
       verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
       horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = modifier.then(Modifier.fromExpoModifiers(props.modifiers.value))
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope)
     ) {
-      Children()
+      Children(ComposableScope(columnScope = this))
     }
   }
 }
@@ -169,10 +170,10 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
   override val props = TextProps()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     Text(
       text = props.text.value,
-      modifier = modifier.then(Modifier.fromExpoModifiers(props.modifiers.value)),
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value),
       color = colorToComposeColor(props.color.value),
       style = TextStyle(
         fontSize = props.fontSize.value.sp,
@@ -185,10 +186,10 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
 class ContainerView(context: Context, appContext: AppContext) :
   ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content(modifier = modifier)
+      child.Content(composableScope = composableScope)
     }
   }
 }

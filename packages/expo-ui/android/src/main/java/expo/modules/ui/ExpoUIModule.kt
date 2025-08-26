@@ -160,6 +160,21 @@ class ExpoUIModule : Module() {
       return@Function ExpoModifier(Modifier.zIndex(index))
     }
 
+    Function("weight") { weight: Float ->
+      val scopedExpoModifier = ExpoModifier {
+        it.rowScope?.run {
+          Modifier.weight(weight)
+        } ?: it.columnScope?.run {
+          Modifier.weight(weight)
+        } ?: Modifier
+      }
+      return@Function scopedExpoModifier
+    }
+
+    Function("testID") { testID: String ->
+      return@Function ExpoModifier(Modifier.applyTestTag(testID))
+    }
+
     // TODO: Consider implementing semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding
   }
 }

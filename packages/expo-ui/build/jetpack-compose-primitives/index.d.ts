@@ -1,4 +1,5 @@
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ExpoModifier } from '../types';
 type PrimitiveBaseProps = {
     /**
      * Used to locate this view in end-to-end tests.
@@ -15,6 +16,7 @@ type LayoutBaseProps = {
     verticalArrangement?: VerticalArrangement;
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
+    modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
 export type RowProps = LayoutBaseProps;
 export declare function Row(props: RowProps): import("react").JSX.Element | null;
@@ -23,6 +25,7 @@ export declare function Column(props: ColumnProps): import("react").JSX.Element 
 export type ContainerProps = {
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
+    modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
 export declare function Container(props: ContainerProps): import("react").JSX.Element | null;
 export type TextFontWeight = 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';

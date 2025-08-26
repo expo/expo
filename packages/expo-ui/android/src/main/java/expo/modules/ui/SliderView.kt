@@ -16,6 +16,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ComposableScope
 
 class SliderColors : Record {
   @Field
@@ -49,7 +50,7 @@ class SliderView(context: Context, appContext: AppContext) :
   private val onValueChanged by EventDispatcher()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     val (value) = props.value
     val (min) = props.min
     val (max) = props.max
