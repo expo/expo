@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `The method 'getResourceDrawableUri' was expected to be of type static` exception.
+- [Android] Fixed `The method 'getResourceDrawableUri' was expected to be of type static` exception. ([#39143](https://github.com/expo/expo/pull/39143) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
