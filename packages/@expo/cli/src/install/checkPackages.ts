@@ -66,31 +66,6 @@ export async function checkPackagesAsync(
   }
 
   const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
-
-  /*
-   * Expo Router projects will do this additional check
-   * Note: The e2e tests use nexpo which will always resolve 'expo-router/doctor.js'
-   *       For that reason, you cannot use nexpo to test for the sub-dependency check,
-   *       and you cannot replace this guard with a try/catch around the import('expo-router')
-   */
-  if (pkg.dependencies?.['expo-router']) {
-    // TODO(@kitten): This should be removed. None of the checks apply anymore
-    try {
-      const { doctor: routerDoctor } = await import('expo-router/doctor.js');
-      dependencies.push(
-        ...routerDoctor(pkg, resolveFrom.silent(projectRoot, '@react-navigation/native'), {
-          bold: chalk.bold,
-          learnMore,
-        })
-      );
-    } catch (error) {
-      if (!json) {
-        Log.log(`Skipped checking expo-router dependencies: expo-router/doctor.js not found.`);
-      }
-      debug('expo-router/doctor error:', error);
-    }
-  }
-
   if (!dependencies.length) {
     if (json) {
       console.log(JSON.stringify({ dependencies: [], upToDate: true }));
