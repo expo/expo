@@ -2,14 +2,12 @@
 
 package expo.modules.font
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.net.Uri
-import androidx.core.os.bundleOf
 import com.facebook.react.common.assets.ReactFontManager
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -50,7 +48,7 @@ open class FontUtilsModule : Module() {
       // This gives the maximum height the font might occupy. Could be more than strictly needed but aligns with iOS.
       val height = (fontMetrics.descent - fontMetrics.ascent).toInt()
 
-      val bitmap = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888)
+      val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
       val canvas = Canvas(bitmap)
 
       // The `drawText` method's y-parameter is the baseline of the text.
@@ -66,7 +64,7 @@ open class FontUtilsModule : Module() {
         FileOutputStream(output).use { out ->
           bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         }
-        promise.resolve(bundleOf(
+        promise.resolve(mapOf(
           "uri" to Uri.fromFile(output).toString(),
           "width" to bitmap.width,
           "height" to bitmap.height,
