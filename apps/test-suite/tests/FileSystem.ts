@@ -574,7 +574,7 @@ export async function test({ describe, expect, it, ...t }) {
         originalDir.create();
         originalDir.rename('renamedDir');
         expect(originalDir.exists).toBe(true);
-        expect(originalDir.uri).toBe(testDirectory + 'renamedDir');
+        expect(originalDir.uri).toBe(testDirectory + 'renamedDir/');
 
         const parentDir = new Directory(testDirectory);
         const contents = parentDir.list();
@@ -614,7 +614,7 @@ export async function test({ describe, expect, it, ...t }) {
         nestedDir.create({ intermediates: true });
         nestedDir.rename('renamedC');
         expect(nestedDir.exists).toBe(true);
-        expect(nestedDir.uri).toBe(testDirectory + 'a/b/renamedC');
+        expect(nestedDir.uri).toBe(testDirectory + 'a/b/renamedC/');
         const parent = new Directory(testDirectory, 'a/b/');
         const list = parent.list();
         expect(list.some(item => item.uri === testDirectory + 'a/b/renamedC/')).toBe(true);

@@ -80,7 +80,9 @@ internal class FileSystemPath: SharedObject {
     try validatePermission(.write)
     let newUrl = url.deletingLastPathComponent().appendingPathComponent(newName)
     try FileManager.default.moveItem(at: url, to: newUrl)
-    url = newUrl
+    // Refetch the URL to ensure it has the correct trailing slash, which differs for directories and files.
+    let updatedUrl = url.deletingLastPathComponent().appendingPathComponent(newName)
+    url = updatedUrl
   }
 
   var modificationTime: Int64 {
