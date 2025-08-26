@@ -373,10 +373,11 @@ public final class FileDownloader {
     let contentType = httpResponse.value(forHTTPHeaderField: "content-type") ?? ""
 
     if contentType.lowercased().hasPrefix("multipart/") {
-      guard let contentTypeParameters = EXUpdatesParameterParser().parseParameterString(
-        contentType,
-        withDelimiter: FileDownloader.ParameterParserSemicolonDelimiter
-      ) as? [String: Any],
+      guard let scalar = UnicodeScalar(FileDownloader.ParameterParserSemicolonDelimiter) else {
+        return
+      }
+      let contentTypeParameters = UpdatesParameterParser().parseParameterString(contentType, withDelimiter: Character(scalar))
+      guard
         let boundaryParameterValue: String = contentTypeParameters.optionalValue(forKey: "boundary") else {
         let cause = UpdatesError.fileDownloaderMissingMultipartBoundary
         logger.error(cause: cause, code: UpdatesErrorCode.unknown)
@@ -425,7 +426,7 @@ public final class FileDownloader {
     successBlock: @escaping RemoteUpdateDownloadSuccessBlock,
     errorBlock: @escaping RemoteUpdateDownloadErrorBlock
   ) {
-    let reader = EXUpdatesMultipartStreamReader(inputStream: InputStream(data: data), boundary: boundary)
+    let reader = UpdatesMultipartStreamReader(inputStream: InputStream(data: data), boundary: boundary)
 
     var manifestPartHeadersAndData: ([String: Any], Data)?
     var extensionsData: Data?
@@ -433,19 +434,20 @@ public final class FileDownloader {
     var directivePartHeadersAndData: ([String: Any], Data)?
 
     let completed = data.isEmpty || reader.readAllParts { headers, content, _ in
-      if let contentDisposition = (headers as! [String: Any]).stringValueForCaseInsensitiveKey("content-disposition") {
-        if let contentDispositionParameters = EXUpdatesParameterParser().parseParameterString(
-          contentDisposition,
-          withDelimiter: FileDownloader.ParameterParserSemicolonDelimiter
-        ) as? [String: Any],
+      if let contentDisposition = (headers!).stringValueForCaseInsensitiveKey("content-disposition") {
+        guard let scalar = UnicodeScalar(FileDownloader.ParameterParserSemicolonDelimiter) else {
+          return
+        }
+        let contentDispositionParameters = UpdatesParameterParser().parseParameterString(contentDisposition, withDelimiter: Character(scalar))
+        if
           let contentDispositionNameFieldValue: String = contentDispositionParameters.optionalValue(forKey: "name") {
           switch contentDispositionNameFieldValue {
           case FileDownloader.MultipartManifestPartName:
-            if let headers = headers as? [String: Any], let content = content {
+            if let headers, let content = content {
               manifestPartHeadersAndData = (headers, content)
             }
           case FileDownloader.MultipartDirectivePartName:
-            if let headers = headers as? [String: Any], let content = content {
+            if let headers, let content = content {
               directivePartHeadersAndData = (headers, content)
             }
           case FileDownloader.MultipartExtensionsPartName:
