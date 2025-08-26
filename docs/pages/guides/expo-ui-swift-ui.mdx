@@ -35,6 +35,7 @@ You'll need to install the `@expo/ui` package in your Expo project.
 ## Usage
 
 Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`<Host>`](/versions/unversioned/sdk/ui/#host) component. The [`<Host>`](/versions/unversioned/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/hostingview) to render SwiftUI views in UIKit.
+
 ### Basic usage with `Host`
 
 <Tabs>
@@ -54,6 +55,7 @@ Expo UI has several SwiftUI components available. You can use them in your app b
       );
     }
     ```
+
   </Tab>
   <Tab label="Preview">
     <ContentSpotlight
@@ -88,7 +90,9 @@ You can also use the `HStack` and `VStack` components to build the entire layout
       );
     }
     ```
+
   </Tab>
+
   <Tab label="Preview">
     <ContentSpotlight
       alt="HStack and VStack"
@@ -100,7 +104,7 @@ You can also use the `HStack` and `VStack` components to build the entire layout
 
 ### Modifiers
 
-[SwiftUI modifier](https://developer.apple.com/documentation/swiftui/view/modifier(_:)) is a powerful way to customize the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In this example, we combine [`expo-mesh-gradient`](/versions/latest/sdk/mesh-gradient/) and `glassEffect` modifier to create Liquid Glass text.
+[SwiftUI modifier](<https://developer.apple.com/documentation/swiftui/view/modifier(_:)>) is a powerful way to customize the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In this example, we combine [`expo-mesh-gradient`](/versions/latest/sdk/mesh-gradient/) and `glassEffect` modifier to create Liquid Glass text.
 
 <Tabs>
   <Tab label="Code">
@@ -152,7 +156,9 @@ You can also use the `HStack` and `VStack` components to build the entire layout
       );
     }
     ```
+
   </Tab>
+
   <Tab label="Preview">
     <ContentSpotlight
       alt="Liquid Glass effect"
@@ -232,7 +238,9 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
       );
     }
     ```
+
   </Tab>
+
   <Tab label="Preview">
     <ContentSpotlight
       alt="Form example to build iOS Settings app"
@@ -274,7 +282,6 @@ Yes, you can place React Native components as JSX children of Expo UI components
 However, keep in mind that the SwiftUI layout system works differently from UIKit and has some limitations. According to Apple’s documentation:
 
 > **Warning** SwiftUI fully controls the layout of the UIKit view’s [`center`](https://developer.apple.com/documentation/UIKit/UIView/center), [`bounds`](https://developer.apple.com/documentation/UIKit/UIView/bounds), [`frame`](https://developer.apple.com/documentation/UIKit/UIView/frame), and [`transform`](https://developer.apple.com/documentation/UIKit/UIView/transform) properties. Don’t directly set these layout-related properties on the view managed by a [`UIViewRepresentable`](https://developer.apple.com/documentation/swiftui/uiviewrepresentable) instance from your own code because that conflicts with SwiftUI and results in undefined behavior.
->
 
 Also note that once you render React Native components, you’re leaving the SwiftUI context. If you want to add Expo UI components again, you’ll need to reintroduce a `<Host>` wrapper.
 
@@ -287,7 +294,6 @@ We recommend keeping SwiftUI layouts self-contained. Interop is possible, but it
 Because React’s promise of _“learn once, write anywhere”_ now extends to SwiftUI and Jetpack Compose. With Expo UI, you can apply your SwiftUI knowledge to build apps that run in the React Native ecosystem, extend to the Web through [DOM components](/guides/dom-components/), and even integrate [2D](https://shopify.github.io/react-native-skia/) and [3D](https://github.com/wcandillon/react-native-webgpu) rendering. The system is flexible enough that different parts of your app can use different approaches — giving you seamless integration at the component level.
 
 </Collapsible>
-
 
 ## Additional resources
 
