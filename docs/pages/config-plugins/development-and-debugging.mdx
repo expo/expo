@@ -72,7 +72,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 ### Versioning
 
-By default, `npx expo prebuild` runs transformations on a [source template][source-template] associated with the Expo SDK version that a project is using. The SDK version is defined in the **app.json** or inferred from the installed version of `expo` that the project has.
+By default, `npx expo prebuild` runs transformations on a [source template](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum) associated with the Expo SDK version that a project is using. The SDK version is defined in the **app.json** or inferred from the installed version of `expo` that the project has.
 
 When Expo SDK upgrades to a new version of React Native for instance, the template may change significantly to account for changes in React Native or new releases of Android or iOS.
 
@@ -96,14 +96,13 @@ interface StaticObject {
 
 Static properties are required because the app config must be serializable to JSON for use as the app manifest.
 
-If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increases the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
+If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) work better. Remember that every property you add increases complexity, making it harder to change in the future and increases the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
 
 ## Development environment
 
 ### Tooling
 
-We highly recommend installing the [Expo Tools VS Code extension][vscode-expo]
-as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
+We highly recommend installing the [Expo Tools VS Code extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
 
 ### Set up a playground environment
 
@@ -120,7 +119,7 @@ If you aren't comfortable setting up a monorepo, you can try manually running a 
 - Run `npm pack` in the package with the config plugin
 - In your test project, run `npm install path/to/react-native-my-package-1.0.0.tgz`, this will add the package to your **package.json** `dependencies` object.
 - Add the package to the `plugins` array in your **app.json**: `{ "plugins": ["react-native-my-package"] }`
-  - If you have [VS Code Expo Tools][vscode-expo] installed, autocomplete should work for the plugin.
+  - If you have [VS Code Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) installed, autocomplete should work for the plugin.
 - If you need to update the package, change the `version` in the package's **package.json** and repeat the process.
 
 ## Modifying native files with plugins
@@ -458,7 +457,7 @@ project.ext.react = [/* @info This code would be added to the template ahead of 
   - `property`: Get a property, throw an error if the property is not defined.
   - `findProperty`: Get a property without throwing an error if the property is missing. This can often be used with the `?:` operator to provide a default value.
 
-Generally, you should only interact with the Gradle file via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
+Generally, you should only interact with the Gradle file via Expo [Autolinking](/more/glossary-of-terms/#autolinking), this provides a programmatic interface with the project files.
 
 ### iOS AppDelegate
 
@@ -491,11 +490,11 @@ target 'yolo27' do
 end
 ```
 
-Generally, you should only interact with the Podfile via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
+Generally, you should only interact with the Podfile via Expo [Autolinking](/more/glossary-of-terms/#autolinking), this provides a programmatic interface with the project files.
 
 ### Custom base modifiers
 
-The Expo CLI `npx expo prebuild` command uses [`@expo/prebuild-config`][prebuild-config] to get the default base modifiers. These defaults only manage a subset of common files, if you want to manage custom files you can do that locally by adding new base modifiers.
+The Expo CLI `npx expo prebuild` command uses [`@expo/prebuild-config`](https://github.com/expo/expo/tree/main/packages/%40expo/prebuild-config) to get the default base modifiers. These defaults only manage a subset of common files, if you want to manage custom files you can do that locally by adding new base modifiers.
 
 For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
 
@@ -603,12 +602,3 @@ Please add the following to your app config
   ]
 }
 ```
-
-[config-docs]: /versions/latest/config/app/
-[prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
-[cli-prebuild]: /more/expo-cli/#prebuild
-[source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
-[vscode-expo]: https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools
-[ems-plugin]: https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin
-[memfs]: https://www.npmjs.com/package/memfs
-[autolinking]: /more/glossary-of-terms/#autolinking
