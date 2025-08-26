@@ -3,6 +3,7 @@ const Icons: { [key: string]: any } = {
   BarCodeScanner: () => require('../../assets/icons/api/BarCodeScanner.png'),
   BlurView: () => require('../../assets/icons/api/BlurView.png'),
   Calendars: () => require('../../assets/icons/api/Calendars.png'),
+  'Calendars@next': () => require('../../assets/icons/api/Calendars.png'),
   Contacts: () => require('../../assets/icons/api/Contacts.png'),
   DocumentPicker: () => require('../../assets/icons/api/DocumentPicker.png'),
   FacebookAds: () => require('../../assets/icons/api/FacebookAds.png'),
