@@ -3,7 +3,8 @@ import React from 'react';
 import { Button, View } from 'react-native';
 import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
 
-import { renderRouter } from '../../../testing-library';
+import { HrefPreview } from '../../../link/preview/HrefPreview';
+import { renderRouter, within } from '../../../testing-library';
 import { Badge, Icon, Label, VectorIcon, type IconProps } from '../../common/elements';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
@@ -802,6 +803,57 @@ describe('Dynamic options', () => {
     act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(BottomTabsScreen).toHaveBeenCalledTimes(4);
     expect(BottomTabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
+  });
+
+  it('can be used in preview', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="second" options={{ title: 'Second' }} />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <HrefPreview href="/second" />
+        </View>
+      ),
+      second: () => (
+        <View testID="second">
+          <NativeTabs.Trigger name="second">
+            <Label>Updated Title</Label>
+            <Badge>5</Badge>
+            <Icon sf="homepod.2.fill" />
+          </NativeTabs.Trigger>
+        </View>
+      ),
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    // Tab + preview
+    expect(screen.getAllByTestId('second')).toHaveLength(2);
+    expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      title: 'Initial Title',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^index-[-\w]+/),
+      isFocused: true,
+      iconResourceName: undefined,
+      icon: undefined,
+      selectedIcon: undefined,
+      freezeContents: false,
+    } as NativeTabOptions);
+    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      title: 'Second',
+      hidden: false,
+      specialEffects: {},
+      tabKey: expect.stringMatching(/^second-[-\w]+/),
+      isFocused: false,
+      icon: undefined,
+      selectedIcon: undefined,
+      freezeContents: false,
+    } as NativeTabOptions);
   });
 });
 
