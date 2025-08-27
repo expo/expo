@@ -1,5 +1,4 @@
 import { Children, isValidElement } from 'react';
-import { CarouselItem } from './index';
 /**
  * Transforms children to elements array for native component
  */

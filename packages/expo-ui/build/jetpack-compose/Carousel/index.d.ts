@@ -1,40 +1,16 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { CarouselElement } from './utils';
-import { ExpoModifier } from '../../types';
 export type CarouselTextStyle = 'titleLarge' | 'titleMedium' | 'titleSmall' | 'bodyLarge' | 'bodyMedium' | 'bodySmall';
 export type CarouselVariant = 'multiBrowse' | 'uncontained';
-export interface CarouselItemProps {
-    /**
-     * The image URL to display in the carousel item
-     */
+export interface CarouselItem {
     image: string;
-    /**
-     * The title text to display over the image
-     */
     title: string;
-    /**
-     * Text color in hex format (e.g., "#FFFFFF", "#000000")
-     * Default: "#FFFFFF" (white)
-     */
-    textColor?: string;
-    /**
-     * Text style for item title
-     * Default: "titleMedium"
-     */
-    textStyle?: CarouselTextStyle;
-    /**
-     * Corner radius in dp
-     * Default: 28
-     */
-    cornerRadius?: number;
-    /**
-     * Callback function called when this item is pressed
-     * @param index The index of the pressed item
-     */
-    onPress?: (index: number) => void;
 }
 export interface CarouselProps {
+    /**
+     * The items to display in the carousel
+     */
+    items: CarouselItem[];
     /**
      * The carousel variant to use
      */
@@ -45,44 +21,58 @@ export interface CarouselProps {
      */
     preferredItemWidth?: number;
     /**
+     * Item height in dp for carousel items
+     * Default: 200
+     */
+    itemHeight?: number;
+    /**
      * Spacing between items in dp
      * Default: 8
      */
     itemSpacing?: number;
     /**
      * Horizontal content padding in dp
-     * Default: 0
+     * Default: 16
      */
     contentPadding?: number;
+    /**
+     * Top/bottom padding in dp
+     * Default: 8
+     */
+    topBottomPadding?: number;
+    /**
+     * Corner radius in dp
+     * Default: 28
+     */
+    cornerRadius?: number;
     /**
      * Starting item index
      * Default: 0
      */
     initialItemIndex?: number;
     /**
+     * Text color in hex format (e.g., "#FFFFFF", "#000000")
+     * Default: "#FFFFFF" (white)
+     */
+    textColor?: string;
+    /**
+     * Text style for item titles
+     * Default: "titleMedium"
+     */
+    textStyle?: CarouselTextStyle;
+    /**
      * Additional styles to apply to the carousel.
      */
     style?: StyleProp<ViewStyle>;
     /**
-     * Modifiers for customizing the carousel
+     * Callback function called when an item is pressed
+     * @param event The event object containing the index of the pressed item
      */
-    modifiers?: ExpoModifier[];
-    /**
-     * The carousel items as children
-     */
-    children: ReactElement<CarouselItemProps> | ReactElement<CarouselItemProps>[];
-}
-export type NativeCarouselProps = Omit<CarouselProps, 'children'> & {
-    elements: CarouselElement[];
     onItemPress?: (event: {
         nativeEvent: {
             index: number;
         };
     }) => void;
-};
-/**
- * Individual carousel item component
- */
-export declare function CarouselItem(props: CarouselItemProps): React.JSX.Element;
+}
 export declare function Carousel(props: CarouselProps): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map
