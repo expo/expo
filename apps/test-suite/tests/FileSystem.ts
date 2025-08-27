@@ -543,6 +543,17 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('Downloads files', () => {
+      let originalTimeout: number;
+
+      t.beforeAll(async () => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 2;
+      });
+
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+
       it('downloads a file to a target file', async () => {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'image.jpeg');
