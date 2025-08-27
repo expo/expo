@@ -9,6 +9,11 @@ export type ColorPickerProps = {
      */
     label?: string;
     /**
+     * The color of the label. Can be a HEX, color string or an Apple system color name.
+     * @see https://developer.apple.com/documentation/SwiftUI/Color#Getting-standard-colors
+     */
+    labelColor?: string | null;
+    /**
      * Callback function that is called when a new color is selected.
      */
     onValueChanged?: (value: string) => void;

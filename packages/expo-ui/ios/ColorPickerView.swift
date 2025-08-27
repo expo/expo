@@ -12,6 +12,7 @@ final class ColorPickerProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
 
   @Field var selection: Color = .clear
   @Field var label: String?
+  @Field var labelColor: Color?
   @Field var supportsOpacity: Bool = true
   var onValueChanged = EventDispatcher()
 }
@@ -23,20 +24,24 @@ struct ColorPickerView: ExpoSwiftUI.View {
 
   var body: some View {
 #if !os(tvOS)
-    ColorPicker(props.label ?? "", selection: $selection, supportsOpacity: props.supportsOpacity)
-      .modifier(CommonViewModifiers(props: props))
-      .onAppear {
-        selection = props.selection
-        previousHex = colorToHex(props.selection)
+    ColorPicker(selection: $selection, supportsOpacity: props.supportsOpacity) {
+      if let label = props.label {
+        Text(label)
+          .foregroundStyle(props.labelColor ?? .primary)
       }
-      .onChange(of: selection) { newValue in
-        let newHex = colorToHex(newValue)
-        if newHex != previousHex {
-          previousHex = newHex
-          let payload = ["value": newHex]
-          props.onValueChanged(payload)
-        }
+    }
+    .modifier(CommonViewModifiers(props: props))
+    .onAppear {
+      selection = props.selection
+      previousHex = colorToHex(props.selection)
+    }
+    .onChange(of: selection) { newValue in
+      let newHex = colorToHex(newValue)
+      if newHex != previousHex {
+        previousHex = newHex
+        props.onValueChanged(["value": newHex])
       }
+    }
 #else
     EmptyView()
 #endif

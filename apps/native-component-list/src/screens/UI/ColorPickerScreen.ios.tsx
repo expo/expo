@@ -22,6 +22,7 @@ export default function ColorPickerScreen() {
               <ColorPicker
                 label="Select a color"
                 selection={color}
+                labelColor={color}
                 supportsOpacity={supportsOpacity}
                 onValueChanged={setColor}
               />
