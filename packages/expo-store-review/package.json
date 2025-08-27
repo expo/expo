@@ -1,6 +1,6 @@
 {
   "name": "expo-store-review",
-  "version": "9.0.3",
+  "version": "9.0.4",
   "description": "Provides access to native APIs for in-app reviews.",
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",
