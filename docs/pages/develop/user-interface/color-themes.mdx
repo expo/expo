@@ -101,7 +101,10 @@ If `userInterfaceStyle` property is set to `light` or `dark` ensure the `parentT
 ```json app.json
 {
   "expo": {
-    "android": "light"
+    "userInterfaceStyle": "light",
+    "android": {
+      "edgeToEdgeEnabled": true,
+    },
     "plugins": [
       [
         "react-native-edge-to-edge",
