@@ -63,6 +63,8 @@ export declare function addNotificationsDroppedListener(listener: () => void): E
  */
 export declare function addNotificationResponseReceivedListener(listener: (event: NotificationResponse) => void): EventSubscription;
 /**
+ * @deprecated use `getLastNotificationResponse` instead.
+ *
  * Gets the notification response received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
  *
@@ -79,6 +81,8 @@ export declare function getLastNotificationResponseAsync(): Promise<Notification
  */
 export declare function getLastNotificationResponse(): NotificationResponse | null;
 /**
+ * @deprecated use `clearLastNotificationResponse` instead.
+
  * Clears the notification response that was received most recently. May be used
  * when an app selects a route based on the notification response, and it is undesirable
  * to continue selecting the route after the response has already been handled.
