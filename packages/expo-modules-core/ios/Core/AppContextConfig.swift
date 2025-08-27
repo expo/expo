@@ -10,6 +10,7 @@ public struct AppContextConfig {
     self.documentDirectory = documentDirectory ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     self.cacheDirectory = cacheDirectory ?? FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
     self.scoped = documentDirectory != nil ? true : false
+
     var sharedDirectories: [URL] = []
     for appGroup in appGroups ?? [] {
       if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
