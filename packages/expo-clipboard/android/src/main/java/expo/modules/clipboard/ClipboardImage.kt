@@ -19,6 +19,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.StringBuilder
+import java.security.MessageDigest
+import java.security.SecureRandom
 
 const val PNG_PREFIX = "iVBORw0K"
 const val JPEG_PREFIX = "/9j/"
@@ -96,6 +98,30 @@ internal suspend fun imageFromContentUri(
   )
 }
 
+internal fun clearClipboardCache(clipboardCacheDir: File) {
+  if (clipboardCacheDir.exists() && clipboardCacheDir.isDirectory()) {
+    clipboardCacheDir.listFiles()?.forEach { file ->
+      if (file.isDirectory()) {
+        file.deleteRecursively()
+      } else {
+        file.delete()
+      }
+    }
+  }
+}
+
+internal fun hashFileName(): String {
+  val salt = ByteArray(16).also {
+    SecureRandom().nextBytes(it)
+  }
+
+  val baseName = "copied_image" + salt.joinToString("") { "%02x".format(it) }
+  val digest = MessageDigest.getInstance("SHA-256")
+  val hashBytes = digest.digest(baseName.toByteArray(Charsets.UTF_8))
+
+  return hashBytes.joinToString("") { "%02x".format(it) }
+}
+
 /**
  * Gets base64-encoded image data and prepares it to be accessible by other applications
  * when pasting from clipboard
@@ -120,24 +146,30 @@ internal suspend fun clipDataFromBase64Image(
   // 2. Determine image format
   val format = getImageFormatFromBase64(base64Image)
 
+  // 3. Clear previous clipboard files - ensure the cache only stores the last file
+  clearClipboardCache(clipboardCacheDir)
+
+  // 4. Generate a random name for the file to obfuscate its URI
+  val nameHash = hashFileName()
+
   val fileName = when (format) {
-    ImageFormat.PNG -> "copied_image.png"
-    ImageFormat.JPG -> "copied_image.jpeg"
+    ImageFormat.PNG -> "$nameHash.png"
+    ImageFormat.JPG -> "$nameHash.jpeg"
   }
 
-  // 3. Create file in cache dir, it will be overwritten if already exists
+  // 5. Create file in cache dir, it will be overwritten if already exists
   val file = File(clipboardCacheDir, fileName).also {
     it.ensureExists()
   }
 
-  // 4. Write bitmap to the file
+  // 6. Write bitmap to the file
   val fileStream = runInterruptible { FileOutputStream(file, false) }
   BufferedOutputStream(fileStream).use { outputStream ->
     bitmap.compress(format.compressFormat, 100, outputStream)
     runInterruptible { outputStream.flush() }
   }
 
-  // 5. Get content:// URI to the image file and put it to the clipboard data
+  // 7. Get content:// URI to the image file and put it to the clipboard data
   val imageUri = ClipboardFileProvider.getUriForFile(
     context,
     context.applicationInfo.packageName + ".ClipboardFileProvider",
