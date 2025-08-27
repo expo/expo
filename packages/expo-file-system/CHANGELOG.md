@@ -10,10 +10,7 @@
 
 ### 💡 Others
 
-- Fix a type checking issue with expo-file-system/legacy when the
-  verbatimModuleSyntax TypeScript compiler option is enabled.
-  ([#39194](https://github.com/expo/expo/pull/39194) by
-  [@sharplet](https://github.com/sharplet))
+- Fix a type checking issue with expo-file-system/legacy when the verbatimModuleSyntax TypeScript compiler option is enabled. ([#39194](https://github.com/expo/expo/pull/39194) by [@sharplet](https://github.com/sharplet))
 
 ## 19.0.6 — 2025-08-26
 
