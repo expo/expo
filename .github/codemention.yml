@@ -44,6 +44,8 @@ rules:
     mentions: ['EvanBacon']
   - patterns: ['packages/@expo/schemer/**']
     mentions: ['bycedric', 'kitten']
+  - patterns: ['packages/@expo/schema-utils/**']
+    mentions: ['kitten']
   - patterns: ['packages/@expo/server/**']
     mentions: ['bycedric', 'kitten']
   - patterns: ['packages/babel-preset-expo/**']
