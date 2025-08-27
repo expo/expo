@@ -64,11 +64,13 @@ open class FontUtilsModule : Module() {
         FileOutputStream(output).use { out ->
           bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         }
-        promise.resolve(mapOf(
-          "uri" to Uri.fromFile(output).toString(),
-          "width" to bitmap.width,
-          "height" to bitmap.height,
-        ))
+        promise.resolve(
+          mapOf(
+            "uri" to Uri.fromFile(output).toString(),
+            "width" to bitmap.width,
+            "height" to bitmap.height,
+          )
+        )
       } catch (e: IOException) {
         promise.reject(SaveImageException(output.absolutePath, e))
       }
