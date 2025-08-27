@@ -15,7 +15,7 @@ import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
-import { NativeLinkPreview, NativeLinkPreviewTrigger } from './preview/native';
+import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
 import { shouldLinkExternally } from '../utils/url';
@@ -45,13 +45,6 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   const [{ nextScreenId, tabPath }, prefetch] = useNextScreenId();
 
   useEffect(() => {
-    if (shouldLinkExternally(String(rest.href))) {
-      if (process.env.NODE_ENV !== 'production') {
-        throw new Error('External links previews are not supported');
-      } else {
-        console.warn('External links previews are not supported');
-      }
-    }
     if (rest.replace) {
       if (process.env.NODE_ENV !== 'production') {
         throw new Error('Using replace links with preview is not supported');
@@ -90,7 +83,10 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   const highlightBorderRadius =
     rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
 
-  const preview = React.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
+  const preview = React.useMemo(
+    () => (shouldLinkExternally(String(rest.href)) || !previewElement ? null : previewElement),
+    [previewElement, rest.href]
+  );
 
   const isPreviewTapped = useRef(false);
 
@@ -101,7 +97,9 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     [tabPath]
   );
 
-  if (shouldLinkExternally(String(rest.href)) || rest.replace) {
+  const hasPreview = !!previewElement;
+
+  if (rest.replace) {
     return <BaseExpoRouterLink children={children} {...rest} />;
   }
 
@@ -110,20 +108,24 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
       nextScreenId={isPad ? undefined : nextScreenId}
       tabPath={isPad ? undefined : tabPathValue}
       onWillPreviewOpen={() => {
-        isPreviewTapped.current = false;
-        prefetch(rest.href);
-        setIsCurrenPreviewOpen(true);
+        if (hasPreview) {
+          isPreviewTapped.current = false;
+          prefetch(rest.href);
+          setIsCurrenPreviewOpen(true);
+        }
       }}
       onPreviewWillClose={() => {
-        setIsCurrenPreviewOpen(false);
-        // When preview was not tapped, then we need to enable the screen stack animation
-        // Otherwise this will happen in StackNavigator, when new screen is opened
-        if (!isPreviewTapped.current || isPad) {
-          setOpenPreviewKey(undefined);
+        if (hasPreview) {
+          setIsCurrenPreviewOpen(false);
+          // When preview was not tapped, then we need to enable the screen stack animation
+          // Otherwise this will happen in StackNavigator, when new screen is opened
+          if (!isPreviewTapped.current || isPad) {
+            setOpenPreviewKey(undefined);
+          }
         }
       }}
       onPreviewDidClose={() => {
-        if (isPreviewTapped.current && isPad) {
+        if (hasPreview && isPreviewTapped.current && isPad) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
@@ -132,11 +134,10 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         if (!isPad) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
-      }}>
+      }}
+      style={{ borderRadius: highlightBorderRadius }}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>
-          <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
-        </NativeLinkPreviewTrigger>
+        <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
         {preview}
         {menuElement}
       </InternalLinkPreviewContext>

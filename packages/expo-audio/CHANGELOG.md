@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 1.0.5 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Correctly export enum values. ([#38940](https://github.com/expo/expo/pull/38940) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Repurpose audio recording tests. ([#38940](https://github.com/expo/expo/pull/38940) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- [Android] Emit state update after reload. ([#39003](https://github.com/expo/expo/pull/39003) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.3 — 2025-08-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix regression in playing bundled assets in production. ([#38928](https://github.com/expo/expo/pull/38928) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 1.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

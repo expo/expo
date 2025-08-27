@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 11.0.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.3 — 2025-08-19
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

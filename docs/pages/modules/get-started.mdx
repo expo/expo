@@ -7,6 +7,7 @@ description: Learn about getting started with Expo modules API.
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -14,9 +15,9 @@ import { Step } from '~/ui/components/Step';
 
 The two recommended flows to create a new module with Expo Modules API:
 
-- [Add a new module to an existing Expo application](#adding-a-new-module-to-an-existing-application), and use it to test and develop your module.
+- [Add a new module to an existing Expo application](#add-a-new-module-to-an-existing-application), and use it to test and develop your module.
 
-- [Create a new module in isolation with a generated example project](#creating-a-new-module-with-an-example-project) if you want to reuse it in multiple projects or publish it to npm.
+- [Create a new module in isolation with a generated example project](#create-a-new-module-with-an-example-project) if you want to reuse it in multiple projects or publish it to npm.
 
 Both of these flows are covered in the next sections.
 
@@ -30,11 +31,24 @@ Navigate to your project directory (the one that contains the **package.json** f
 
 <Terminal cmd={['$ npx create-expo-module@latest --local']} />
 
+You can provide a meaningful module name in the CLI prompt. For the rest of the prompts, you can also accept the default suggestions.
+
+Once you've run the command, you will see a new directory created in your project called **modules**. The directory structure should look like this:
+
+<FileTree
+  files={[
+    ['modules/my-module'],
+    ['modules/my-module/android/'],
+    ['modules/my-module/ios/'],
+    ['modules/my-module/src/'],
+    ['modules/my-module/expo-module.config.json'],
+    ['modules/my-module/index.ts'],
+  ]}
+/>
+
 Then, if your project doesn't have native projects generated (**android** and **ios** directories), run the following command, otherwise skip this command:
 
 <Terminal cmd={['$ npx expo prebuild --clean']} />
-
-You can provide a meaningful module name in the CLI prompt. For the rest of the prompts, you can also accept the default suggestions.
 
 > **Note**: If you have a pre-existing **ios** directory in your project's root which was created using `npx expo prebuild`, you must reinstall the pods:
 >
@@ -47,13 +61,13 @@ You can provide a meaningful module name in the CLI prompt. For the rest of the 
 
 ### Use the local module
 
-Import the local module in your application, for example in **App.js** or **App.tsx** or **app/index.tsx**:
+Import the local module in your application, for example in **App.js** or **App.tsx** or **app/(tabs)/index.tsx**:
 
-```tsx App.tsx
+```tsx app/(tabs)/index.tsx
 /* @hide ...*/ /* @end */
-import MyModule from './modules/my-module';
+import MyModule from '@/modules/my-module';
 
-export default function App() {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
       /* @info In the component, return the result of the native method. */

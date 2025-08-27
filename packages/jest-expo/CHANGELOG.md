@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 54.0.4 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.2 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
 ## 54.0.1 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

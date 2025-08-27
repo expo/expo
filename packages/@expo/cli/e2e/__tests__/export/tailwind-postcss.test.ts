@@ -20,7 +20,6 @@ describe('exports with tailwind and postcss', () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'tailwind-postcss',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     });
   });

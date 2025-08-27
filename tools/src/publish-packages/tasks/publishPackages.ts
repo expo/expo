@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
+import semver from 'semver';
 
 import { checkPackageAccess } from './checkPackageAccess';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -64,6 +65,16 @@ export const publishPackages = new Task<TaskArgs>(
             stdio: requiresOTP ? 'inherit' : undefined,
           },
         });
+        // Assign SDK tag when package is a template
+        if (pkg.isTemplate() && !options.canary) {
+          const sdkTag = `sdk-${semver.major(pkg.packageVersion)}`;
+          logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
+          if (!options.dry) {
+            await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, sdkTag, {
+              stdio: requiresOTP ? 'inherit' : undefined,
+            });
+          }
+        }
       } catch (error) {
         if (error.stderr.includes('You cannot publish over the previously published versions:')) {
           const { confirmed } = await inquirer.prompt<{ confirmed: boolean }>([

@@ -92,12 +92,33 @@ describe('Icons', () => {
   //     ).toThrow('You can only use one type of icon (Icon or Icon.Drawable) for a single tab');
   //   });
 
-  it('does not set icon or selectedIcon when using sf and selectedSf on Android', () => {
+  it('does not set icon or selectedIcon when using sf with string on Android', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="star" selectedSf="star.fill" drawable="stairs" />
+            <Icon sf="star" drawable="stairs" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
+    expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      iconResourceName: 'stairs',
+    } as NativeTabOptions);
+  });
+
+  it('does not set icon or selectedIcon when using sf with object on Android', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <Icon sf={{ default: 'star', selected: 'star.fill' }} drawable="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),

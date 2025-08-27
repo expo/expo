@@ -8,6 +8,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
 import semver from 'semver';
+import * as tar from 'tar';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -17,7 +18,7 @@ import {
   RELEASES_REPO_NAME,
 } from '../Constants';
 import Git from '../Git';
-import { getOrCreateReleaseAsync, uploadReleaseAssetAsync } from '../GitHub';
+import { getOrCreateReleaseAsync, uploadReleaseAssetAsync, updateReleaseTitle } from '../GitHub';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
@@ -477,6 +478,15 @@ async function androidApkUploadAsync() {
 
       const githubArtifactUrl = res.data.browser_download_url;
       spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
+
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
+
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.androidClientUrl = githubArtifactUrl;
         sdkVersions.androidClientVersion = appVersion;
@@ -549,6 +559,15 @@ async function iosSimulatorUploadAsync() {
 
       const githubArtifactUrl = res.data.browser_download_url;
       spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
+
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
+
       await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
         sdkVersions.iosClientUrl = githubArtifactUrl;
         sdkVersions.iosClientVersion = appVersion;
@@ -703,8 +722,9 @@ async function processIosTarArchiveAsync(archivePath: string, projectDir: string
   const tempExtractDir = path.join(projectDir, 'temp-extract');
   try {
     await mkdirp(tempExtractDir);
-    await spawnAsync('tar', ['-xzf', archivePath, '-C', tempExtractDir], {
-      stdio: 'pipe',
+    await tar.extract({
+      file: archivePath,
+      cwd: tempExtractDir,
     });
 
     // delete the original archive and create a new later in the same path
@@ -715,16 +735,26 @@ async function processIosTarArchiveAsync(archivePath: string, projectDir: string
     const appBundle = extractedContents.find((item) => item.endsWith('.app'));
     if (appBundle) {
       const appBundlePath = path.join(tempExtractDir, appBundle);
-      await spawnAsync('tar', ['-zcvf', archivePath, '-C', appBundlePath, '.'], {
-        stdio: 'pipe',
-      });
+      await tar.create(
+        {
+          gzip: true,
+          file: archivePath,
+          cwd: appBundlePath,
+        },
+        ['.']
+      );
       logger.info(`Created tar from .app bundle contents: ${archivePath}`);
     }
     // If no .app file, check if it's a valid iOS app bundle. tar.gz could be from Cloudfront URL.
     else if (fs.existsSync(path.join(tempExtractDir, 'Info.plist'))) {
-      await spawnAsync('tar', ['-zcvf', archivePath, '-C', tempExtractDir, '.'], {
-        stdio: 'pipe',
-      });
+      await tar.create(
+        {
+          gzip: true,
+          file: archivePath,
+          cwd: tempExtractDir,
+        },
+        ['.']
+      );
       logger.info(`Created tar from extracted contents: ${archivePath}`);
     } else {
       throw new Error('Unknown archive format');

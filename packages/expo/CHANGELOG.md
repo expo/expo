@@ -10,6 +10,42 @@
 
 ### 💡 Others
 
+## 54.0.0-preview.9 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.8 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.7 — 2025-08-25
+
+### 🎉 New features
+
+- Add `structuredClone` built-in to native platforms. ([#37503](https://github.com/expo/expo/pull/37503) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Temporarily bring back dependency on `expo-file-system`. ([#38792](https://github.com/expo/expo/pull/38792) by [@aleqsio](https://github.com/aleqsio))
+
+## 54.0.0-preview.6 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.5 — 2025-08-21
+
+### 🛠 Breaking changes
+
+- Enable [React Native Strict TypeScript API typings](https://reactnative.dev/docs/strict-typescript-api) by default. This is not a breaking change unless you've used internal APIs in your TypeScript code. ([#39018](https://github.com/expo/expo/pull/39018) by [@kitten](https://github.com/kitten))
+
+## 54.0.0-preview.4 — 2025-08-19
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.3 — 2025-08-18
+
+_This version does not introduce any user-facing changes._
+
 ## 54.0.0-preview.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._
@@ -32,6 +68,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix React Native's `enableEdgeToEdge` Gradle property being ignored. ([#38734](https://github.com/expo/expo/pull/38734) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
@@ -46,6 +83,7 @@ _This version does not introduce any user-facing changes._
 - Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 - Moved **src/devtools** code to the `@expo/devtools` package. ([#38438](https://github.com/expo/expo/pull/38438) by [@kudo](https://github.com/kudo))
 - Remove (newly added) peer dependencies on `react-refresh` and `metro-runtime` ([#38562](https://github.com/expo/expo/pull/38562) by [@kitten](https://github.com/kitten))
+- Remove `react-native-edge-to-edge` dependency. ([#38767](https://github.com/expo/expo/pull/38767) by [@behenate](https://github.com/behenate))
 
 ### ⚠️ Notices
 

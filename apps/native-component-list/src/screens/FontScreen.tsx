@@ -10,7 +10,7 @@ export default function FontScreen() {
   const [preview, setPreview] = useState<string | null>(null);
   const toImageAsync = async (glyphs: string, options: any) => {
     const imageURL = await Font.renderToImageAsync(glyphs, options);
-    setPreview(imageURL);
+    setPreview(imageURL.uri);
   };
 
   return (

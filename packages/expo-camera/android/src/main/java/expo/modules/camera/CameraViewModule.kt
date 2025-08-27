@@ -382,6 +382,10 @@ class CameraViewModule : Module() {
         }
       }
 
+      OnViewDestroys { view ->
+        view.cleanupCamera()
+      }
+
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
         if (!EmulatorUtilities.isRunningOnEmulator()) {
           view.takePicture(options, promise, cacheDirectory, runtimeContext)

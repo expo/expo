@@ -2,13 +2,7 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
-/**
- * Factory function to create modifier configuration objects.
- * This is used internally by all modifier functions.
- */
-function createModifier(type, params = {}) {
-    return { $type: type, ...params };
-}
+import { createModifier } from './createModifier';
 /**
  * Creates a modifier with an event listener.
  */
@@ -194,6 +188,10 @@ export const aspectRatio = (params) => createModifier('aspectRatio', params);
  * @param clipped - Whether to clip content
  */
 export const clipped = (clipped = true) => createModifier('clipped', { clipped });
+/**
+ * Applies a glass effect to a view.
+ */
+export const glassEffect = (params) => createModifier('glassEffect', params);
 // =============================================================================
 // Utility Functions
 // =============================================================================
@@ -221,4 +219,5 @@ export const isModifier = (value) => {
 export const filterModifiers = (modifiers) => {
     return modifiers.filter(isModifier);
 };
+export * from './animation/index';
 //# sourceMappingURL=index.js.map

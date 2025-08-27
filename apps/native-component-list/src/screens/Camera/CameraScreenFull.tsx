@@ -344,9 +344,9 @@ export default function CameraScreen() {
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={updatePreviewState}>
         {state.previewPaused ? (
-          <AntDesign name="playcircleo" size={24} color="white" />
+          <AntDesign name="play-circle" size={24} color="white" />
         ) : (
-          <AntDesign name="pausecircleo" size={24} color="white" />
+          <AntDesign name="pause-circle" size={24} color="white" />
         )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={toggleMoreOptions}>

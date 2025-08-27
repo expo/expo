@@ -8,6 +8,12 @@ import {
   type TabRouterOptions,
 } from '@react-navigation/native';
 
+import {
+  appendInternalExpoRouterParams,
+  getInternalExpoRouterParams,
+  type InternalExpoRouterParams,
+} from '../../navigationParams';
+
 export function NativeBottomTabsRouter(options: TabRouterOptions) {
   const tabRouter = TabRouter({ ...options });
 
@@ -34,37 +40,15 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
                 return route;
               }
 
-              const nestedParams =
-                route.params &&
-                'params' in route.params &&
-                typeof route.params.params === 'object' &&
-                route.params.params
-                  ? route.params.params
-                  : {};
+              const expoParams: InternalExpoRouterParams = getInternalExpoRouterParams(
+                action.payload.params
+              );
 
-              const isPreviewNavigation =
-                action.payload.params &&
-                '__internal__expoRouterIsPreviewNavigation' in action.payload.params
-                  ? action.payload.params.__internal__expoRouterIsPreviewNavigation
-                  : undefined;
-              const previewKeyParams = isPreviewNavigation
-                ? {
-                    __internal__expoRouterIsPreviewNavigation: isPreviewNavigation,
-                  }
-                : {};
+              if (route.params && 'screen' in route.params) {
+                expoParams['__internal_expo_router_no_animation'] = true;
+              }
 
-              const params = {
-                ...(route.params || {}),
-                ...previewKeyParams,
-                // This is a workaround for the issue with the preview key not being passed to the params
-                // https://github.com/Ubax/react-navigation/blob/main/packages/core/src/useNavigationBuilder.tsx#L573
-                // Another solution would be to propagate the preview key in the useNavigationBuilder,
-                // but that would require us to fork the @react-navigation/core package.
-                params: {
-                  ...nestedParams,
-                  ...previewKeyParams,
-                },
-              };
+              const params = appendInternalExpoRouterParams(route.params, expoParams);
               return {
                 ...route,
                 params,

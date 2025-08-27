@@ -60,6 +60,7 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
     {
       name: 'locationAlwaysPermission',
       platform: 'ios',
+      deprecated: true,
       description:
         'A string to set the [`NSLocationAlwaysUsageDescription`](#permission-nslocationalwaysusagedescription) permission message.',
       default: '"Allow $(PRODUCT_NAME) to use your location"',
@@ -278,3 +279,5 @@ The following usage description keys are used by this library:
     'NSLocationWhenInUseUsageDescription',
   ]}
 />
+
+`NSLocationAlwaysUsageDescription` is deprecated in favor of `NSLocationAlwaysAndWhenInUseUsageDescription` from iOS 11.

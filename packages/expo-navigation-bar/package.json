@@ -1,6 +1,6 @@
 {
   "name": "expo-navigation-bar",
-  "version": "5.0.2",
+  "version": "5.0.4",
   "description": "Modify and observe the native navigation bar on Android devices.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -36,12 +36,11 @@
   "dependencies": {
     "@react-native/normalize-colors": "0.81.0",
     "debug": "^4.3.2",
-    "react-native-is-edge-to-edge": "^1.1.6",
-    "react-native-edge-to-edge": "1.6.0"
+    "react-native-is-edge-to-edge": "^1.2.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "expo-module-scripts": "^5.0.2"
+    "expo-module-scripts": "^5.0.4"
   },
   "peerDependencies": {
     "expo": "*",

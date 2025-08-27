@@ -7,8 +7,11 @@ import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
 export const name = 'FileSystem';
+const shouldSkipTestsRequiringPermissions = true;
 
 export async function test({ describe, expect, it, ...t }) {
+  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
+
   const testDirectory = FS.documentDirectory + 'tests/';
   t.beforeEach(async () => {
     try {
@@ -37,38 +40,57 @@ export async function test({ describe, expect, it, ...t }) {
       });
     }
 
-    // This test fails on CI.
-    // it('Supports some operations on SAF picker files', async () => {
-    //   const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
-    //   if (!saf.granted) {
-    //     throw new Error();
-    //   }
-    //   const safDirectory = new Directory(saf.directoryUri);
-    //   safDirectory.list().forEach((sd) => {
-    //     sd.delete();
-    //   });
-    //   expect(safDirectory.list().length).toBe(0);
+    describeWithPermissions('picker operations', () => {
+      let originalTimeout;
+      t.beforeAll(async () => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+      });
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+      it('Supports some operations on SAF directories', async () => {
+        const safDirectory = await Directory.pickDirectoryAsync();
 
-    //   safDirectory.createFile('newFile', 'text/plain');
-    //   expect(safDirectory.list().length).toBe(1);
+        safDirectory.list().forEach((sd) => {
+          sd.delete();
+        });
+        expect(safDirectory.list().length).toBe(0);
 
-    //   safDirectory.list().forEach((sd) => {
-    //     sd.delete();
-    //   });
-    //   expect(safDirectory.list().length).toBe(0);
+        safDirectory.createFile('newFile', 'text/plain');
+        expect(safDirectory.list().length).toBe(1);
 
-    //   const file = safDirectory.createFile('newFile', 'text/plain');
-    //   file.write('test');
-    //   expect(file.textSync()).toBe('test');
-    //   expect(file.bytesSync()).toEqual(new Uint8Array([116, 101, 115, 116]));
-    //   expect(file.base64Sync()).toBe('dGVzdA==');
-    //   const file2 = safDirectory.createFile('newFile2', 'text/plain');
+        safDirectory.list().forEach((sd) => {
+          sd.delete();
+        });
+        expect(safDirectory.list().length).toBe(0);
 
-    //   file2.write(new Uint8Array([116, 101, 115, 116]));
-    //   expect(file2.textSync()).toBe('test');
-    //   expect(file2.size).toBe(4);
-    //   expect(safDirectory.size).toBe(8);
-    // });
+        const file = safDirectory.createFile('newFile', 'text/plain');
+        file.write('test');
+        expect(file.textSync()).toBe('test');
+        expect(file.bytesSync()).toEqual(new Uint8Array([116, 101, 115, 116]));
+        expect(file.base64Sync()).toBe('dGVzdA==');
+        const file2 = safDirectory.createFile('newFile2', 'text/plain');
+
+        file2.write(new Uint8Array([116, 101, 115, 116]));
+        expect(file2.textSync()).toBe('test');
+        expect(file2.size).toBe(4);
+        expect(safDirectory.size).toBe(8);
+
+        const safFile = await File.pickFileAsync(safDirectory.uri);
+        expect(safFile.textSync()).toBe('test');
+      });
+
+      it('allows picking files from cache directory', async () => {
+        const file = await File.pickFileAsync(Paths.cache.uri);
+        expect(file.exists).toBe(true);
+      });
+
+      it('allows picking directories from cache directory', async () => {
+        const dir = await Directory.pickDirectoryAsync(Paths.cache.uri);
+        expect(dir.exists).toBe(true);
+      });
+    });
 
     it('Creates a lazy file reference', () => {
       const file = new File('file:///path/to/file');
@@ -236,7 +258,7 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
       const content = await outputFile.text();
       expect(content).toBe('Hello world');
-      const contentSync = await outputFile.textSync();
+      const contentSync = outputFile.textSync();
       expect(contentSync).toBe('Hello world');
     });
 

@@ -51,7 +51,7 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     record(options?: RecordingStartOptions): void;
     private startActualRecording;
     getAvailableInputs(): RecordingInput[];
-    getCurrentInput(): RecordingInput;
+    getCurrentInput(): Promise<RecordingInput>;
     prepareToRecordAsync(): Promise<void>;
     getStatus(): RecorderState;
     pause(): void;

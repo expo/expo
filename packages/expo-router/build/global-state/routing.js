@@ -57,6 +57,7 @@ const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
 const matchers_1 = require("../matchers");
+const navigationParams_1 = require("../navigationParams");
 const url_1 = require("../utils/url");
 function assertIsReady() {
     if (!router_store_1.store.navigationRef.isReady()) {
@@ -254,10 +255,13 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
          */
         rootPayload.params.initial = !withAnchor;
     }
-    const previewKeyParams = isPreviewNavigation
-        ? { __internal__expoRouterIsPreviewNavigation: isPreviewNavigation }
+    const expoParams = isPreviewNavigation
+        ? {
+            __internal__expo_router_is_preview_navigation: true,
+            __internal_expo_router_no_animation: true,
+        }
         : {};
-    const params = { ...rootPayload.params, ...previewKeyParams };
+    const params = (0, navigationParams_1.appendInternalExpoRouterParams)(rootPayload.params, expoParams);
     return {
         type,
         target: navigationState.key,
@@ -323,6 +327,11 @@ lookThroughAllTabs = false) {
                 // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
                 actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
         if (didActionAndCurrentStateDiverge) {
+            // If we are looking through all tabs, we need to add new tab id if this is the last route
+            // Otherwise we wouldn't be able to change the tab
+            if (navigationState.type === 'tab' && lookThroughAllTabs) {
+                navigationRoutes.push(stateRoute);
+            }
             break;
         }
         navigationRoutes.push(stateRoute);

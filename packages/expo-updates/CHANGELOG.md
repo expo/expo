@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 29.0.5 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Fix `unexpected ',' separator` issue ([#39027](https://github.com/expo/expo/pull/39027) by [@phil9l](https://github.com/phil9l))
+
+## 29.0.3 — 2025-08-18
+
+_This version does not introduce any user-facing changes._
+
 ## 29.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

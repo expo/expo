@@ -83,14 +83,17 @@ const SERVER_STACK_MATCHER = new RegExp(
   `${escapedPathSep}(react-dom|metro-runtime|expo-router)${escapedPathSep}`
 );
 
-export async function maybeSymbolicateAndFormatReactErrorLogAsync(
+export async function maybeSymbolicateAndFormatJSErrorStackLogAsync(
   projectRoot: string,
   level: 'error' | 'warn',
   error: {
     message: string;
     stack: StackFrame[];
   }
-): Promise<string> {
+): Promise<{
+  isFallback: boolean;
+  stack: string;
+}> {
   const log = new LogBoxLog({
     level: level as 'error' | 'warn',
     message: {
@@ -105,18 +108,23 @@ export async function maybeSymbolicateAndFormatReactErrorLogAsync(
 
   await new Promise((res) => log.symbolicate('stack', res));
 
-  const symbolicatedErrorMessageAndStackLog = [
-    log.message.content,
-    getStackAsFormattedLog(projectRoot, {
-      stack: log.symbolicated?.stack?.stack ?? [],
-      codeFrame: log.codeFrame,
-    }),
-  ].join('\n\n');
+  const formatted = getStackAsFormattedLog(projectRoot, {
+    stack: log.symbolicated?.stack?.stack ?? [],
+    codeFrame: log.codeFrame,
+  });
 
-  return symbolicatedErrorMessageAndStackLog;
+  // NOTE: Message is printed above stack by the default Metro logic. So we don't need to include it here.
+  const symbolicatedErrorStackLog = `\n\n${formatted.stack}`;
+
+  return {
+    isFallback: formatted.isFallback,
+    stack: symbolicatedErrorStackLog,
+  };
 }
 
-/** Attempt to parse an error message string to an unsymbolicated stack.  */
+/**
+ * Attempt to parse an error message string to an unsymbolicated stack.
+ */
 export function parseErrorStringToObject(errorString: string) {
   // Find the first line of the possible stack trace
   const stackStartIndex = errorString.indexOf('\n    at ');

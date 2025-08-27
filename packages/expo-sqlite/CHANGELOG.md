@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 16.0.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 — 2025-08-18
+
+### 💡 Others
+
+- Updated API doc for `loadExtensionAsync()` and `loadExtensionSync()`. ([#38905](https://github.com/expo/expo/pull/38905) by [@kudo](https://github.com/kudo))
+
 ## 16.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._
