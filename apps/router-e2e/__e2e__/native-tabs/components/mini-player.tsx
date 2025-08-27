@@ -1,5 +1,5 @@
 import FontAwesomeIcons from '@expo/vector-icons/FontAwesome5';
-import { Pressable, Text, View } from 'react-native';
+import { DynamicColorIOS, Platform, Pressable, Text, View } from 'react-native';
 
 export function MiniPlayer() {
   return (
@@ -24,7 +24,17 @@ export function MiniPlayer() {
             }}
           />
           <View>
-            <Text style={{ fontWeight: 700, fontSize: 14, color: 'white' }}>Bad Habits</Text>
+            <Text
+              style={{
+                fontWeight: 700,
+                fontSize: 14,
+                color: Platform.select({
+                  ios: DynamicColorIOS({ light: 'black', dark: 'white' }),
+                  default: 'white',
+                }),
+              }}>
+              Bad Habits
+            </Text>
             <Text style={{ fontSize: 12, color: 'white' }}>Ed Sheeran</Text>
           </View>
         </View>
