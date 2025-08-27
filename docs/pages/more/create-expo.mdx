@@ -1,167 +1,265 @@
----
-title: create-expo-app
-maxHeadingDepth: 4
-description: A command-line tool to create a new Expo and React Native project.
----
-
-import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs } from '~/ui/components/Tabs';
-
-`create-expo-app` is a command-line tool to create and set up a new Expo and React Native project. This tool simplifies the initialization process by providing various templates to get started quickly without the need for manual configuration.
-
-## Create a new project
-
-To create a new project, run the following command:
-
-<Tabs>
-
-<Tab label="npm">
-
-<Terminal cmd={['$ npx create-expo-app@latest']} />
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal cmd={['$ yarn create expo-app']} />
-
-</Tab>
-
-<Tab label="pnpm">
-
-<Terminal cmd={['$ pnpm create expo-app']} />
-
-</Tab>
-
-<Tab label="Bun">
-
-<Terminal cmd={['$ bun create expo']} />
-
-</Tab>
-
-</Tabs>
-
-Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
-
-<Terminal cmd={['What is your app named? my-app']} />
-
-## Options
-
-Uses the following options to customize the command behavior.
-
-### `--yes`
-
-Uses the default options to create a new project.
-
-### `--no-install`
-
-Skips installing npm dependencies or CocoaPods.
-
-### `--template`
-
-Running `create-expo-app` with a [Node Package Manager](#node-package-managers-support) initializes and sets up a new Expo project using the default template.
-
-You can use the `--template` option to select one of the following templates or pass it as an argument to the option. For example, `--template default`.
-
-> **info** Looking for more templates? Check out the [`--example`](#--example) option to initialize your project with one of the example apps that demonstrate specific features and integrations.
-
-| Template                                                                                              | Description                                                                                                                                                                           |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`default`](https://github.com/expo/expo/tree/main/templates/expo-template-default)                   | Default template. Designed to build multi-screen apps. Includes recommended tools such as Expo CLI, Expo Router library and TypeScript configuration enabled. Suitable for most apps. |
-| [`blank`](https://github.com/expo/expo/tree/main/templates/expo-template-blank)                       | Installs minimum required npm dependencies without configuring navigation.                                                                                                            |
-| [`blank-typescript`](https://github.com/expo/expo/tree/main/templates/expo-template-blank-typescript) | A Blank template with TypeScript enabled.                                                                                                                                             |
-| [`tabs`](https://github.com/expo/expo/tree/main/templates/expo-template-tabs)                         | Installs and configures file-based routing with Expo Router and TypeScript enabled.                                                                                                   |
-| [`bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum)         | A Blank template with native directories (**android** and **ios**) generated. Runs [`npx expo prebuild`](/workflow/prebuild/) during the setup.                                       |
-
-### `--example`
-
-Use this option to initialize a project using an example from [expo/examples](https://github.com/expo/examples).
-
-For example:
-
-- Running `npx create-expo-app --example with-router` sets up a project with the Expo Router library
-- Running `npx create-expo-app --example with-react-navigation` sets up a project similar to the default template, but configured with plain React Navigation library
-
-### `--version`
-
-Prints the version number and exits.
-
-### `--help`
-
-Prints the list of available options and exits.
-
-## Node Package Managers support
-
-Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a specific Node Package Manager.
-
-**If you are migrating from one package manager to another**, you've to manually carry out the additional configuration in your project. **If you are using [EAS](/eas/)**, you also have to configure your project for any additional required steps manually.
-
-All the additional steps for each package manager are listed below.
-
-### npm
-
-#### Local installation
-
-npm is installed as part of Node.js installation. See [Node.js documentation](https://nodejs.org/en/download/package-manager) for installation instructions.
-
-#### EAS installation
-
-Supported by default if the project directory contains **package-lock.json**.
-
-### Yarn 1 (Classic)
-
-#### Local installation
-
-Yarn 1 (Classic) is usually installed as a global dependency of npm. See [Yarn 1 documentation](https://classic.yarnpkg.com/en/docs/getting-started) for installation instructions.
-
-#### EAS installation
-
-Supported by default if the project directory contains **yarn.lock**.
-
-### Yarn 2+ (Modern)
-
-#### Local installation
-
-See [Yarn documentation](https://yarnpkg.com/getting-started/install) for installation instructions.
-
-Yarn 2+ handles package management differently than Yarn 1. One of the core changes in Yarn 2+ is the [Plug'n'Play (PnP)](https://yarnpkg.com/features/pnp) node linking model that does not work with React Native.
-
-By default, a project created with `create-expo-app` and Yarn 2+ uses [`nodeLinker`](https://yarnpkg.com/features/linkers#nodelinker-node-modules) with its value set to `node-modules` to install dependencies.
-
-```yaml .yarnrc.yml
-nodeLinker: node-modules
-```
-
-#### EAS installation
-
-Yarn Modern on EAS requires adding [`eas-build-pre-install` hook](/build-reference/npm-hooks/). In your project's **package.json**, add the following configuration:
-
-```json package.json
-{
-  "scripts": {
-    "eas-build-pre-install": "corepack enable && yarn set version 4"
-  }
-}
-```
-
-### pnpm
-
-#### Local installation
-
-Requires installing Node.js. See [pnpm documentation](https://pnpm.io/installation) for installation instructions.
-
-By default, a project created with `create-expo-app` and pnpm uses [`node-linker`](https://pnpm.io/npmrc#node-linker) with its value set to `hoisted` to install dependencies.
-
-```ini .npmrc
-node-linker=hoisted
-```
-
-> **info** From **SDK 54**, Expo supports isolated installations, and you can delete the `node-linker` setting if you prefer to use isolated dependencies.
-
-#### EAS installation
-
-Supported by default if the project directory contains **pnpm-lock.yaml**.
-
-### Bun
-
-See [Bun](/guides/using-bun/) guide for details on creating a new Expo project with `bun`, migration from another package manager, and usage with EAS.
+import React, { useState, useCallback, useMemo } from 'react';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+// Datos base
+const MUSIC_GENRES = [
+  {
+    id: 'trap',
+    name: 'Trap',
+    color: '#ff6b6b',
+    icon: 'graphic-eq',
+    items: [
+      { task: '808: EQ + sidechain kick', priority: 'Alta' },
+      { task: 'Kick: compresión pegada', priority: 'Alta' },
+      { task: 'Hi-hats: paneo y swing', priority: 'Media' },
+    ],
+  },
+  {
+    id: 'reggaeton',
+    name: 'Reggaetón',
+    color: '#4ecdc4',
+    icon: 'music-note',
+    items: [
+      { task: 'Kick + bajo: revisar mezcla mono', priority: 'Alta' },
+      { task: 'Clap/snare: EQ y reverb corta', priority: 'Alta' },
+      { task: 'Voz principal: comp + EQ brillante', priority: 'Alta' },
+    ],
+  },
+];
+
+// Animación personalizada
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+const useSpringAnimation = (initialValue = 1) => {
+  const animatedValue = useMemo(() => new Animated.Value(initialValue), []);
+  const springTo = useCallback(
+    (toValue) => {
+      Animated.spring(animatedValue, {
+        toValue,
+        useNativeDriver: true,
+        tension: 100,
+        friction: 8,
+      }).start();
+    },
+    [animatedValue]
+  );
+  return [animatedValue, springTo];
+};
+
+// Tarjeta de estadísticas
+const StatsCard = ({ title, value, subtitle, color, icon }) => {
+  const [scaleAnim] = useSpringAnimation(1);
+
+  return (
+    <AnimatedTouchable
+      style={[
+        styles.statsCard,
+        { transform: [{ scale: scaleAnim }] },
+      ]}
+      onPressIn={() => scaleAnim.setValue(0.95)}
+      onPressOut={() => scaleAnim.setValue(1)}
+    >
+      <View style={[styles.statsIconContainer, { backgroundColor: color }]}>
+        <Icon name={icon} size={28} color="#fff" />
+      </View>
+      <View style={styles.statsTextContainer}>
+        <Text style={styles.statsValue}>{value}</Text>
+        <Text style={styles.statsTitle}>{title}</Text>
+        {subtitle ? <Text style={styles.statsSubtitle}>{subtitle}</Text> : null}
+      </View>
+    </AnimatedTouchable>
+  );
+};
+
+// Pantalla principal
+const App = () => {
+  const [completedTasks, setCompletedTasks] = useState({});
+
+  // Cambiar estado de tarea
+  const toggleTask = async (genreId, taskIndex) => {
+    const updated = { ...completedTasks };
+    updated[genreId] = updated[genreId] || [];
+    if (updated[genreId].includes(taskIndex)) {
+      updated[genreId] = updated[genreId].filter((i) => i !== taskIndex);
+    } else {
+      updated[genreId].push(taskIndex);
+    }
+    setCompletedTasks(updated);
+    await AsyncStorage.setItem('completedTasks', JSON.stringify(updated));
+  };
+
+  // Progreso general
+  const totalTasks = MUSIC_GENRES.reduce(
+    (sum, g) => sum + g.items.length,
+    0
+  );
+  const totalCompleted = Object.values(completedTasks).reduce(
+    (sum, arr) => sum + arr.length,
+    0
+  );
+  const progress = ((totalCompleted / totalTasks) * 100).toFixed(0);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>🎶 Checklist Estudio Recnovatio</Text>
+
+      {/* Stats */}
+      <View style={styles.statsRow}>
+        <StatsCard
+          title="Completadas"
+          value={`${totalCompleted}`}
+          subtitle="Tareas hechas"
+          color="#6c5ce7"
+          icon="check-circle"
+        />
+        <StatsCard
+          title="Progreso"
+          value={`${progress}%`}
+          subtitle="General"
+          color="#00b894"
+          icon="bar-chart"
+        />
+      </View>
+
+      {/* Listado de géneros */}
+      <FlatList
+        data={MUSIC_GENRES}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.genreCard}>
+            <View style={[styles.genreHeader, { backgroundColor: item.color }]}>
+              <Icon name={item.icon} size={24} color="#fff" />
+              <Text style={styles.genreTitle}>{item.name}</Text>
+            </View>
+            {item.items.map((task, index) => {
+              const done =
+                completedTasks[item.id]?.includes(index) || false;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.taskRow}
+                  onPress={() => toggleTask(item.id, index)}
+                >
+                  <Icon
+                    name={done ? 'check-box' : 'check-box-outline-blank'}
+                    size={22}
+                    color={done ? '#00b894' : '#555'}
+                  />
+                  <Text
+                    style={[
+                      styles.taskText,
+                      done && { textDecorationLine: 'line-through', color: '#888' },
+                    ]}
+                  >
+                    {task.task}
+                  </Text>
+                  <Text style={styles.priority}>[{task.priority}]</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+      />
+    </SafeAreaView>
+  );
+};
+
+// Estilos
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f6fa',
+    padding: 12,
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+    color: '#2d3436',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statsCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 14,
+    margin: 6,
+    elevation: 3,
+  },
+  statsIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  statsTextContainer: {
+    flex: 1,
+  },
+  statsValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2d3436',
+  },
+  statsTitle: {
+    fontSize: 14,
+    color: '#636e72',
+  },
+  statsSubtitle: {
+    fontSize: 12,
+    color: '#b2bec3',
+  },
+  genreCard: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    marginVertical: 8,
+    padding: 8,
+    elevation: 2,
+  },
+  genreHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 10,
+  },
+  genreTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginLeft: 8,
+  },
+  taskRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  taskText: {
+    flex: 1,
+    fontSize: 15,
+    marginLeft: 8,
+    color: '#2d3436',
+  },
+  priority: {
+    fontSize: 12,
+    color: '#636e72',
+  },
+});
+
+export default App;
