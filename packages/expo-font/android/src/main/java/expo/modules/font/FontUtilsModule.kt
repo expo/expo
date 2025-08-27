@@ -68,7 +68,7 @@ open class FontUtilsModule : Module() {
           mapOf(
             "uri" to Uri.fromFile(output).toString(),
             "width" to bitmap.width,
-            "height" to bitmap.height,
+            "height" to bitmap.height
           )
         )
       } catch (e: IOException) {
