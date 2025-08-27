@@ -46,7 +46,7 @@ open class FontUtilsModule : Module() {
 
       // Calculate height based on font metrics to ensure enough space
       // This gives the maximum height the font might occupy. Could be more than strictly needed but aligns with iOS.
-      val height = (fontMetrics.descent - fontMetrics.ascent).toInt()
+      val height = ceil(fontMetrics.descent - fontMetrics.ascent).toInt()
 
       val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
       val canvas = Canvas(bitmap)
