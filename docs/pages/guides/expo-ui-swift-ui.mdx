@@ -1,7 +1,7 @@
 ---
 title: Building SwiftUI apps with Expo UI
-sidebar_title: Expo UI - SwiftUI
-description: Learn how to use Expo UI to build SwiftUI apps.
+sidebar_title: Expo UI and SwiftUI
+description: Learn how to use Expo UI to integrate SwiftUI into your Expo apps.
 platforms: ['ios', 'macos', 'tvos']
 ---
 
@@ -13,6 +13,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 
 > **info** Available in **SDK 54 and above**.
 
@@ -23,18 +24,18 @@ This guide covers the basics of using Expo UI to integrate SwiftUI into your Exp
 ## Features
 
 - **SwiftUI primitives**: Expo UI is not another UI library. It brings SwiftUI primitives to Expo.
-- **1-1 mapping**: The components in Expo UI have a 1-to-1 mapping to SwiftUI views. You can easily explore available views in the SwiftUI ecosystem like [Explore SwiftUI](https://exploreswiftui.com/) or the [Libraried app](https://apps.apple.com/us/app/libraried-ui-components/id1642862540) and find the corresponding Expo UI component.
-- **Full-app support**: Expo UI is designed to be used throughout the entire app. You can write your app entirely in Expo UI, while maintaining flexibility at the same time. The integration works at the component level. You can also mix [React Native components](https://reactnative.dev/docs/components-and-apis), [Expo UI components](/versions/unversioned/sdk/ui/), [DOM components](/guides/dom-components/), or custom 2D components if you have [`react-native-skia`](https://shopify.github.io/react-native-skia/) installed.
+- **1-to-1 mapping**: The components in Expo UI have a 1-to-1 mapping to SwiftUI views. You can easily explore available views in the SwiftUI ecosystem, such as [Explore SwiftUI](https://exploreswiftui.com/) or the [Libraried app](https://apps.apple.com/us/app/libraried-ui-components/id1642862540), and find the corresponding Expo UI component.
+- **Full-app support**: Expo UI is designed to be used throughout the entire app. You can write your app entirely in Expo UI, while maintaining flexibility at the same time. The integration works at the component level. You can also mix [React Native components](https://reactnative.dev/docs/components-and-apis), [Expo UI components](/versions/unversioned/sdk/ui/), [DOM components](/guides/dom-components/), or custom 2D components using [`react-native-skia`](https://shopify.github.io/react-native-skia/).
 
 ## Installation
 
-You'll need to install the `@expo/ui` package in your Expo project.
+You'll need to install the `@expo/ui` package in your Expo project. Run the following command to install it:
 
 <Terminal cmd={['$ npx expo install @expo/ui']} />
 
 ## Usage
 
-Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`<Host>`](/versions/unversioned/sdk/ui/#host) component. The [`<Host>`](/versions/unversioned/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/hostingview) to render SwiftUI views in UIKit.
+Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`<Host>`](/versions/unversioned/sdk/ui/#host) component. The [`<Host>`](/versions/unversioned/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
 
 ### Basic usage with `Host`
 
@@ -104,7 +105,7 @@ You can also use the `HStack` and `VStack` components to build the entire layout
 
 ### Modifiers
 
-[SwiftUI modifier](<https://developer.apple.com/documentation/swiftui/view/modifier(_:)>) is a powerful way to customize the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In this example, we combine [`expo-mesh-gradient`](/versions/latest/sdk/mesh-gradient/) and `glassEffect` modifier to create Liquid Glass text.
+[SwiftUI modifier](https://developer.apple.com/documentation/swiftui/view/modifier(_:)) is a powerful way to customize the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In the following example, the [`expo-mesh-gradient`](/versions/latest/sdk/mesh-gradient/) and `glassEffect` modifier are combined to create Liquid Glass text.
 
 <Tabs>
   <Tab label="Code">
@@ -254,25 +255,25 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
 
 <Collapsible summary="Can I use flexbox or other styles in SwiftUI components?">
 
-Flexbox styles can be applied to the `<Host>` component itself. Once you're inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available — layouts should be defined using `<HStack>` and `<VStack>` instead.
+Flexbox styles can be applied to the `<Host>` component itself. Once you're inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available &mdash; layouts should be defined using `<HStack>` and `<VStack>` instead.
 
 </Collapsible>
 
-<Collapsible summary="What’s the `<Host>` component?">
+<Collapsible summary={<>What's the <CODE>Host</CODE> component?</>}>
 
-`<Host>` is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/hostingview) to render SwiftUI views in UIKit.
-
-</Collapsible>
-
-<Collapsible summary="How is Expo UI different from libraries like `react-native-paper` or `react-native-elements`?">
-
-Expo UI is not "yet another" UI library and not an opinionated design kit. Instead, it's a primitives library: it exposes native SwiftUI and Jetpack Compose components directly to JavaScript, rather than re-implementing or simulating UI in JavaScript.
+`<Host>` is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
 
 </Collapsible>
 
-<Collapsible summary="Can I use `@expo/ui/swift-ui` on Android or Web?">
+<Collapsible summary={<>How is Expo UI different from libraries like <CODE>react-native-paper</CODE> or <CODE>react-native-elements</CODE>?</>}>
 
-The first milestone for Expo UI is achieving a 1-1 mapping from SwiftUI to Expo UI. Universal support will come in the next stage of the roadmap. Our priority is to establish strong SwiftUI support first, and then expand to Jetpack Compose on Android and DOM support on the Web.
+Expo UI is not "yet another" UI library and not an opinionated design kit. Instead, it's a primitives library. It exposes native SwiftUI and Jetpack Compose components directly to JavaScript, rather than re-implementing or simulating UI in JavaScript.
+
+</Collapsible>
+
+<Collapsible summary={<>Can I use <CODE>@expo/ui/swift-ui</CODE> on Android or web?</>}>
+
+The first milestone for Expo UI is achieving a 1-to-1 mapping from SwiftUI to Expo UI. Universal support will come in the next stage of the roadmap. Our priority is to establish strong SwiftUI support first, and then expand to Jetpack Compose on Android and DOM support on the Web.
 
 </Collapsible>
 
@@ -289,9 +290,9 @@ We recommend keeping SwiftUI layouts self-contained. Interop is possible, but it
 
 </Collapsible>
 
-<Collapsible summary="I’m a SwiftUI developer. Why should I learn Expo UI?">
+<Collapsible summary="I'm a SwiftUI developer. Why should I learn Expo UI?">
 
-Because React's promise of _"learn once, write anywhere"_ now extends to SwiftUI and Jetpack Compose. With Expo UI, you can apply your SwiftUI knowledge to build apps that run in the React Native ecosystem, extend to the Web through [DOM components](/guides/dom-components/), and even integrate [2D](https://shopify.github.io/react-native-skia/) and [3D](https://github.com/wcandillon/react-native-webgpu) rendering. The system is flexible enough that different parts of your app can use different approaches — giving you seamless integration at the component level.
+Because React's promise of _"learn once, write anywhere"_, it now extends to SwiftUI and Jetpack Compose. With Expo UI, you can apply your SwiftUI knowledge to build apps that run in the React Native ecosystem, extend to the Web through [DOM components](/guides/dom-components/), and even integrate [2D](https://shopify.github.io/react-native-skia/) and [3D](https://github.com/wcandillon/react-native-webgpu) rendering. The system is flexible enough that different parts of your app can use different approaches &mdash; giving you seamless integration at the component level.
 
 </Collapsible>
 

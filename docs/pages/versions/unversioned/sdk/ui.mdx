@@ -15,6 +15,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 
 > **important** **This library is currently in alpha and will frequently experience breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
 
@@ -22,7 +23,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <BoxLink
   title="Expo UI guide for Swift UI"
-  description="Learn about the basics of `@expo/ui/swift-ui`"
+  description={<>Learn about the basics of <CODE>@expo/ui/swift-ui</CODE></>}
   href="/guides/expo-ui-swift-ui/"
   Icon={BookOpen02Icon}
 />
