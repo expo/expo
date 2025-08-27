@@ -1,53 +1,358 @@
+# AFK Idle Android App — Full Project
+
+This document contains a complete, ready-to-build Android app template (Kotlin) that implements a proper **foreground service** AFK/idle engine. The service runs in background with a visible notification and executes a configurable `onTick` callback (where you put your game logic or resource accrual). This project is intentionally self-contained and **does not** automate or interact with other apps.
+
 ---
-title: 'EAS Tutorial: Introduction'
-sidebar_title: Introduction
-description: An introduction to the tutorial for building apps for Android and iOS using Expo Application Services (EAS) that covers the Build, Update, and Submit workflows.
+
+## Project files (paste into an Android Studio project)
+
+### 1) settings.gradle.kts
+```kotlin
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "afk-idle-app"
+include(":app")
+```
+
+### 2) build.gradle.kts (project-level)
+```kotlin
+plugins {
+    kotlin("jvm") version "1.9.0" apply false
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+### 3) app/build.gradle.kts
+```kotlin
+plugins {
+    id("com.android.application")
+    kotlin("android")
+}
+
+android {
+    namespace = "com.example.afk"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.example.afk"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+}
+```
+
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+### 4) AndroidManifest.xml
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.afk">
 
-import { BoxLink } from '~/ui/components/BoxLink';
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-## About this tutorial
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
-This tutorial will give you proficiency with [Expo Application Services (EAS)](https://expo.dev/eas) core services: [Build](/build/introduction/), [Submit](/submit/introduction/), and [Update](/eas-update/introduction/). When you complete the tutorial, you will know how to set up a professional mobile Continuous Integration (CI)/Continuous Development (CD) pipeline for your individual and team projects.
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-This tutorial covers the following topics:
+        <service
+            android:name=".AutoService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+    </application>
+</manifest>
+```
 
-- Use EAS Build to create and install a development build, then run it on a device, emulator, or simulator.
-- Experience the benefits of using a development build instead of Expo Go.
-- Implement workflows for sharing development builds with a team or external stakeholders.
-- Automatically increment app build versions.
-- Simultaneously install different app variants, like development and preview, on one device.
-- Utilize EAS Update to create and deploy updates swiftly during the development phase.
-- Automate build processes by integrating with a GitHub repository.
+---
 
-These topics will give us the foundation needed to use EAS effectively and to approach more advanced topics when needed.
+### 5) res/values/strings.xml
+```xml
+<resources>
+    <string name="app_name">AFK Idle</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="running">AFK engine running…</string>
+    <string name="stopped">AFK engine stopped</string>
+    <string name="channel_name">AFK Engine</string>
+    <string name="channel_desc">Background AFK processing</string>
+</resources>
+```
 
-## Prerequisites
+### 6) res/layout/activity_main.xml
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
 
-This tutorial is hands-on and designed to be completed in about two hours. You will need an existing Expo project to follow along and set it up locally on your machine. Options include:
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="@string/stopped" />
 
-- Continuing with the Sticker Smash app from our previous tutorial. If new, download it from [GitHub](https://github.com/expo/examples/tree/master/stickersmash).
-- Starting a new project with [`npx create-expo-app`](/get-started/create-a-project/).
-- Using a bare React Native project. Ensure the `expo` package is installed, which you can do [automatically](/bare/installing-expo-modules/) or [manually](/bare/installing-expo-modules/#manual-installation).
+    <EditText
+        android:id="@+id/etInterval"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Interval ms (e.g. 5000)"
+        android:inputType="number" />
 
-## Tools
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/start" />
 
-[Expo Orbit](https://expo.dev/orbit) to manage and launch builds with one click on macOS and Windows.
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/stop" />
 
-If you want to install and run the build locally on your machine simultaneously, you can use Android Emulator or iOS Simulator. To set them up, see the following:
+    <TextView
+        android:id="@+id/tvLog"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="12dp"
+        android:textSize="14sp" />
+</LinearLayout>
+```
 
-- [Android Emulator](/workflow/android-studio-emulator/)
-- [iOS Simulator](/workflow/ios-simulator/) (available only on macOS)
+---
 
-## Next step
+### 7) MainActivity.kt
+```kotlin
+package com.example.afk
 
-We're ready for this journey after setting up an Expo project locally. In the next chapter, let's learn how to create your first build with EAS Build.
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.activity.ComponentActivity
 
-<BoxLink
-  title="Start"
-  description="Let's start by configuring a development build."
-  Icon={BookOpen02Icon}
-  href="/tutorial/eas/configure-development-build/"
-/>
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val tvStatus = findViewById<TextView>(R.id.tvStatus)
+        val tvLog = findViewById<TextView>(R.id.tvLog)
+        val etInterval = findViewById<EditText>(R.id.etInterval)
+        val btnStart = findViewById<Button>(R.id.btnStart)
+        val btnStop = findViewById<Button>(R.id.btnStop)
+
+        btnStart.setOnClickListener {
+            val interval = (etInterval.text?.toString()?.toLongOrNull() ?: 5000L)
+            val intent = Intent(this, AutoService::class.java).apply {
+                putExtra(AutoService.EXTRA_INTERVAL, interval)
+                action = AutoService.ACTION_START
+            }
+            startForegroundService(intent)
+            tvStatus.text = getString(R.string.running)
+            tvLog.append("
+Started with interval: $interval ms")
+        }
+
+        btnStop.setOnClickListener {
+            val intent = Intent(this, AutoService::class.java).apply {
+                action = AutoService.ACTION_STOP
+            }
+            startService(intent)
+            tvStatus.text = getString(R.string.stopped)
+            tvLog.append("
+Stopped")
+        }
+    }
+}
+```
+
+---
+
+### 8) AutoService.kt
+```kotlin
+package com.example.afk
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.IBinder
+import androidx.core.app.NotificationCompat
+import kotlinx.coroutines.*
+
+class AutoService : Service() {
+    companion object {
+        const val CHANNEL_ID = "afk_channel"
+        const val NOTIFICATION_ID = 1001
+        const val EXTRA_INTERVAL = "extra_interval"
+        const val ACTION_START = "action_start"
+        const val ACTION_STOP = "action_stop"
+    }
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private var engine: AutoEngine? = null
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_START -> start(intent.getLongExtra(EXTRA_INTERVAL, 5000L))
+            ACTION_STOP -> stop()
+        }
+        return START_STICKY
+    }
+
+    private fun start(interval: Long) {
+        createChannel()
+        val notif: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText(getString(R.string.running))
+            .setSmallIcon(android.R.drawable.stat_notify_sync)
+            .setOngoing(true)
+            .build()
+        startForeground(NOTIFICATION_ID, notif)
+
+        engine?.shutdown()
+        engine = AutoEngine(interval) { tick ->
+            // Default onTick logic: increment a value and log it
+            android.util.Log.d("AFK", "tick #$tick")
+            // You may replace this block with your own resource accrual, DB update, or file write.
+        }
+        engine?.start(scope)
+    }
+
+    private fun stop() {
+        engine?.shutdown()
+        stopForeground(true)
+        stopSelf()
+    }
+
+    private fun createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                getString(R.string.channel_name),
+                NotificationManager.IMPORTANCE_LOW
+            ).apply { description = getString(R.string.channel_desc) }
+            manager.createNotificationChannel(channel)
+        }
+    }
+}
+```
+
+---
+
+### 9) AutoEngine.kt
+```kotlin
+package com.example.afk
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+
+class AutoEngine(
+    private val intervalMs: Long,
+    private val onTick: (tick: Long) -> Unit
+) {
+    private var job: Job? = null
+    private var tickCount: Long = 0
+
+    fun start(scope: CoroutineScope) {
+        job?.cancel()
+        job = scope.launch {
+            while (isActive) {
+                onTick(++tickCount)
+                delay(intervalMs)
+            }
+        }
+    }
+
+    fun shutdown() {
+        job?.cancel()
+        job = null
+    }
+}
+```
+
+---
+
+## How to build & run
+1. Open Android Studio (Chipmunk or newer). 
+2. Create a new project + replace files with those above (or clone if you paste into a repo). 
+3. Sync Gradle, select a device or emulator, then Run.
+4. On first run, grant permission to show notifications. On Android 9+ the app may be subject to battery optimizations — you may prompt the user to disable battery optimization for reliable background execution.
+
+### Notes & best practices
+- **Do not** use this app to automate external games; keep automation inside your owned app. Automating other apps may violate Terms of Service.
+- Use `WorkManager` for periodic background work that must run even after reboot if you need stricter reliability (but WorkManager has scheduling granularity and constraints). Foreground service is best for continuous ticking.
+- Be mindful of battery and thermal impact. Use longer intervals where possible.
+
+---
+
+## Optional extras you can ask me to add (I can implement right away):
+- Save progress to Room DB + simple UI to show resources.
+- Export a debug APK build script (instructions to sign and produce an APK).
+- Add a simple idle-game loop: resource generation, upgrades, and persistent storage.
+- Flutter or React Native equivalent.
+
+If you want, I can now add **Room persistence + UI** and a small upgrade shop so you have a working idle game — tell me "เพิ่มระบบเก็บข้อมูลกับร้านค้า" and I'll append code.
+
