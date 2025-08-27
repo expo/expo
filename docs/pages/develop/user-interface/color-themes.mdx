@@ -92,6 +92,34 @@ The `userInterfaceStyle` property supports the following values:
 - `light`: Restrict the app to support light theme only.
 - `dark`: Restrict the app to support dark theme only.
 
+<Collapsible summary="Using react-native-edge-to-edge?">
+
+#### Android
+
+If `userInterfaceStyle` property is set to `light` or `dark` ensure the `parentTheme` property is set correctly using the `react-native-edge-to-edge` config plugin:
+
+```json app.json
+{
+  "expo": {
+    "android": "light"
+    "plugins": [
+      [
+        "react-native-edge-to-edge",
+        {
+          "android": {
+            "parentTheme": "Light",
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+For a complete overview of all available options, refer to the [react-native-edge-to-edge README](https://github.com/zoontek/react-native-edge-to-edge?tab=readme-ov-file#expo).
+
+</Collapsible>
+
 ## Detect the color scheme
 
 To detect the color scheme in your project, use `Appearance` or `useColorScheme` from `react-native`:
