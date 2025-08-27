@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Bump media3 version to 1.8.0.
+
 ## 3.0.5 — 2025-08-25
 
 ### 🛠 Breaking changes
