@@ -1,10 +1,12 @@
 import { ThemeProvider } from 'ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, Text } from 'react-native';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
+
+import { ExpoCssView } from './modules/expo-css-view';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,5 +41,14 @@ export default function App() {
     await loadAssetsAsync();
   });
 
-  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
+  return (
+    <ExpoCssView
+      style={{
+        width: 100,
+        height: 100,
+        experimental_backgroundImage: 'linear-gradient(to right, red, blue)',
+        filter: 'blur(10px);',
+      }}
+    />
+  );
 }
