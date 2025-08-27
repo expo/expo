@@ -6,7 +6,6 @@ import type {
 } from 'react-native-screens';
 
 import {
-  SUPPORTED_BLUR_EFFECTS,
   type NativeTabOptions,
   type NativeTabsBlurEffect,
   type NativeTabsLabelStyle,
@@ -96,13 +95,6 @@ export function appendStyleToAppearance(
   appearance: BottomTabsScreenAppearance,
   states: ('selected' | 'focused' | 'disabled' | 'normal')[]
 ): BottomTabsScreenAppearance {
-  let tabBarBlurEffect = style?.blurEffect;
-  if (tabBarBlurEffect && !supportedBlurEffectsSet.has(tabBarBlurEffect)) {
-    console.warn(
-      `Unsupported blurEffect: ${tabBarBlurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
-    );
-    tabBarBlurEffect = undefined;
-  }
   const baseItemAppearance =
     appearance.stacked || appearance.inline || appearance.compactInline || {};
 
@@ -129,26 +121,15 @@ export function appendStyleToAppearance(
       style.backgroundColor === null
         ? undefined
         : (style.backgroundColor ?? appearance.tabBarBackgroundColor),
-    tabBarBlurEffect: tabBarBlurEffect ?? appearance.tabBarBlurEffect,
+    tabBarBlurEffect: styleAppearance.tabBarBlurEffect ?? appearance.tabBarBlurEffect,
   };
 }
-
-const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
 export function convertStyleToAppearance(
   style: AppearanceStyle | undefined
 ): BottomTabsScreenAppearance {
   if (!style) {
     return {};
-  }
-  let blurEffect = style.blurEffect;
-  if (style.blurEffect && !supportedBlurEffectsSet.has(style.blurEffect)) {
-    console.warn(
-      `Unsupported blurEffect: ${style.blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map(
-        (effect) => `"${effect}"`
-      ).join(', ')}`
-    );
-    blurEffect = undefined;
   }
   const stateAppearance = convertStyleToItemStateAppearance(style);
   const itemAppearance: BottomTabsScreenItemAppearance = {
@@ -162,7 +143,7 @@ export function convertStyleToAppearance(
     stacked: itemAppearance,
     compactInline: itemAppearance,
     tabBarBackgroundColor: style?.backgroundColor ?? undefined,
-    tabBarBlurEffect: blurEffect,
+    tabBarBlurEffect: style?.blurEffect,
   };
 }
 
