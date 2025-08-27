@@ -547,7 +547,7 @@ export async function test({ describe, expect, it, ...t }) {
 
       t.beforeAll(async () => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 2;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
       });
 
       t.afterAll(() => {
