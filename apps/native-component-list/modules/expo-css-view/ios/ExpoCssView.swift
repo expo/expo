@@ -37,6 +37,22 @@ class ExpoCssView: ExpoView {
           }
         }
       }
+      
+      if let grayscaleAmount = filterConfig["grayscale"] as? CGFloat {
+        
+        if let FilterClass = Self.FilterClass {
+          let selector = NSSelectorFromString("filterWithType:")
+          if FilterClass.responds(to: selector) {
+            let methodIMP = FilterClass.method(for: selector)
+            let filterWithType = unsafeBitCast(methodIMP, to: (@convention(c) (AnyClass, Selector, NSString) -> Any).self)
+            let colorSaturateFilter = filterWithType(FilterClass, selector, "colorSaturate")
+            if let filter = colorSaturateFilter as? NSObject {
+              filter.setValue(grayscaleAmount, forKey: "inputAmount")
+              layerFilters.add(filter)
+            }
+          }
+        }
+      }
     }
     
     self.layer.filters = layerFilters as? [Any]

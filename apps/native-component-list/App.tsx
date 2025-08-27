@@ -47,7 +47,7 @@ export default function App() {
         width: 100,
         height: 100,
         experimental_backgroundImage: 'linear-gradient(to right, red, blue)',
-        filter: 'blur(10px);',
+        filter: 'blur(10px);grayscale(1)',
       }}
     />
   );
