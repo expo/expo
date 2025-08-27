@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Bring back correct scoping for expo-go ([#39186](https://github.com/expo/expo/pull/39186) by [@aleqsio](https://github.com/aleqsio))
+- [ios] Bring back correct scoping for Expo Go. ([#39186](https://github.com/expo/expo/pull/39186) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
