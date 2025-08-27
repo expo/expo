@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 
 internal protocol FilePickingResultHandler {
   func didPickFileAt(url: URL)
+  func didPickDirectoryAt(url: URL)
   func didCancelPicking()
 }
 
@@ -34,7 +35,22 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
       return
     }
 
-    self.resultHandler.didPickFileAt(url: url)
+    if isDirectory {
+      // For directory access, we need to start accessing the security-scoped resource
+      let didStartAccessing = url.startAccessingSecurityScopedResource()
+      if didStartAccessing {
+        // Store the picked URL for proper cleanup
+        if let pickingHandler = pickingHandler {
+          pickingHandler.filePickingContext?.pickedUrl = url
+        }
+        self.resultHandler.didPickDirectoryAt(url: url)
+      } else {
+        // If we can't access the directory, treat as cancellation
+        self.resultHandler.didCancelPicking()
+      }
+    } else {
+      self.resultHandler.didPickFileAt(url: url)
+    }
   }
 
   func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -80,6 +96,24 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumen
       picker.directoryURL = initialUri
     }
 
+    return picker
+  }
+}
+
+internal func createDirectoryPicker(initialUri: URL?) -> UIDocumentPickerViewController {
+  if #available(iOS 14.0, *) {
+    // Use UTType.folder for directory access as per Apple's documentation
+    let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.folder], asCopy: false)
+    if let initialUri = initialUri {
+      picker.directoryURL = initialUri
+    }
+    return picker
+  } else {
+    // For iOS 13 and earlier, use kUTTypeFolder
+    let picker = UIDocumentPickerViewController(documentTypes: [kUTTypeFolder as String], in: .open)
+    if let initialUri = initialUri {
+      picker.directoryURL = initialUri
+    }
     return picker
   }
 }

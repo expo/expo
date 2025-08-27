@@ -98,6 +98,16 @@ public final class FileSystemModule: Module {
       downloadTask.resume()
     }
 
+    AsyncFunction("pickDirectoryAsync") { (initialUri: URL?, promise: Promise) in
+      filePickingHandler.presentDocumentPicker(
+        picker: createDirectoryPicker(initialUri: initialUri),
+        isDirectory: true,
+        initialUri: initialUri,
+        mimeType: nil,
+        promise: promise
+      )
+    }.runOnQueue(.main)
+
     AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
       filePickingHandler.presentDocumentPicker(
         picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),

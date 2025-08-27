@@ -90,3 +90,9 @@ internal final class FilePickingCancelledException: Exception {
     "File picking was cancelled by the user"
   }
 }
+
+internal final class NotImplementedException: Exception {
+  override var reason: String {
+    "Not implemented"
+  }
+}

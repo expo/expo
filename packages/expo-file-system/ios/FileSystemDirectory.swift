@@ -6,7 +6,7 @@ internal final class FileSystemDirectory: FileSystemPath {
     super.init(url: url, isDirectory: true)
   }
 
-  func validateType() throws {
+  override func validateType() throws {
     try validatePermission(.read)
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
@@ -17,13 +17,13 @@ internal final class FileSystemDirectory: FileSystemPath {
   }
 
   func create(_ options: CreateOptions) throws {
-    try validatePermission(.write)
-    try validateType()
-    try validateCanCreate(options)
-    do {
-      try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
-    } catch {
-      throw UnableToCreateException(error.localizedDescription)
+    try withSecurityScopedAccess(permission: .write, validateType: true) {
+      try validateCanCreate(options)
+      do {
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
+      } catch {
+        throw UnableToCreateException(error.localizedDescription)
+      }
     }
   }
 

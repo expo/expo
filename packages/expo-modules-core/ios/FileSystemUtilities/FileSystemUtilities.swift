@@ -85,6 +85,10 @@ public struct FileSystemUtilities {
   }
 
   private static func getExternalPathPermissions(_ url: URL) -> [FileSystemPermissionFlags] {
+    if url.startAccessingSecurityScopedResource() {
+      return [.read, .write]
+    }
+    
     var filePermissions: [FileSystemPermissionFlags] = []
 
     if FileManager.default.isReadableFile(atPath: url.path) {
@@ -96,6 +100,14 @@ public struct FileSystemUtilities {
     }
 
     return filePermissions
+  }
+
+  public static func startAccessingSecurityScopedResource(_ url: URL) -> Bool {
+    return url.startAccessingSecurityScopedResource()
+  }
+
+  public static func stopAccessingSecurityScopedResource(_ url: URL) {
+    url.stopAccessingSecurityScopedResource()
   }
 
   private static func getAppGroupSharedDirectories(_ appContext: AppContext) -> [String] {
