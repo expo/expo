@@ -134,6 +134,86 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
+internal struct ForegroundStyleModifier: ViewModifier {
+  let styleType: String
+  let hierarchicalStyle: String?
+  let color: Color?
+  let colors: [Color]?
+  let startPoint: UnitPoint?
+  let endPoint: UnitPoint?
+  let center: UnitPoint?
+  let startRadius: CGFloat?
+  let endRadius: CGFloat?
+
+  func body(content: Content) -> some View {
+    switch styleType {
+    case "color":
+      if let color {
+        content.foregroundStyle(color)
+      } else {
+        content
+      }
+    case "hierarchical":
+      switch hierarchicalStyle {
+      case "primary":
+        content.foregroundStyle(.primary)
+      case "secondary":
+        content.foregroundStyle(.secondary)
+      case "tertiary":
+        content.foregroundStyle(.tertiary)
+      case "quaternary":
+        content.foregroundStyle(.quaternary)
+      case "quinary":
+        if #available(iOS 16.0, *) {
+          content.foregroundStyle(.quinary)
+        } else {
+          content.foregroundStyle(.quaternary)
+        }
+      default:
+        content.foregroundStyle(.primary)
+      }
+    case "linearGradient":
+      if let colors, let startPoint, let endPoint {
+        content.foregroundStyle(
+          LinearGradient(
+            colors: colors,
+            startPoint: startPoint,
+            endPoint: endPoint
+          )
+        )
+      } else {
+        content
+      }
+    case "radialGradient":
+      if let colors, let center, let startRadius, let endRadius {
+        content.foregroundStyle(
+          RadialGradient(
+            colors: colors,
+            center: center,
+            startRadius: startRadius,
+            endRadius: endRadius
+          )
+        )
+      } else {
+        content
+      }
+    case "angularGradient":
+      if let colors, let center {
+        content.foregroundStyle(
+          AngularGradient(
+            colors: colors,
+            center: center
+          )
+        )
+      } else {
+        content
+      }
+    default:
+      content
+    }
+  }
+}
+
 internal struct TintModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -688,6 +768,11 @@ extension ViewModifierRegistry {
       return try ForegroundColorModifier(from: params, appContext: appContext)
     }
 
+    register("foregroundStyle") { params, _, _ in
+      let styleType = params["styleType"] as? String ?? "color"
+      return self.makeForegroundStyleModifier(styleType: styleType, params: params)
+    }
+
     register("tint") { params, appContext, _ in
       return try TintModifier(from: params, appContext: appContext)
     }
@@ -794,5 +879,87 @@ extension ViewModifierRegistry {
     register("glassEffectId") { params, appContext, _ in
       return try GlassEffectIdModifier.init(from: params, appContext: appContext)
     }
+  }
+
+  private func makeForegroundStyleModifier(
+    styleType: String,
+    params: [String: Any]
+  ) -> ForegroundStyleModifier {
+    var hierarchicalStyle: String?
+    var color: Color?
+    var colors: [Color]?
+    var startPoint: UnitPoint?
+    var endPoint: UnitPoint?
+    var center: UnitPoint?
+    var startRadius: CGFloat?
+    var endRadius: CGFloat?
+
+    switch styleType {
+    case "color":
+      color = (params["color"] as? String).map { Color(hex: $0) }
+
+    case "hierarchical":
+      hierarchicalStyle = params["style"] as? String ?? "primary"
+
+    case "linearGradient":
+      (colors, startPoint, endPoint) = parseLinearGradient(params)
+
+    case "radialGradient":
+      (colors, center, startRadius, endRadius) = parseRadialGradient(params)
+
+    case "angularGradient":
+      (colors, center) = parseAngularGradient(params)
+
+    default:
+      color = (params["color"] as? String).map { Color(hex: $0) }
+    }
+
+    return ForegroundStyleModifier(
+      styleType: styleType,
+      hierarchicalStyle: hierarchicalStyle,
+      color: color,
+      colors: colors,
+      startPoint: startPoint,
+      endPoint: endPoint,
+      center: center,
+      startRadius: startRadius,
+      endRadius: endRadius
+    )
+  }
+
+  private func parseLinearGradient(
+    _ params: [String: Any]
+  ) -> ([Color]?, UnitPoint?, UnitPoint?) {
+    let colors = (params["colors"] as? [String])?.map { Color(hex: $0) }
+    let start = parseUnitPoint(params["startPoint"] as? [String: Any])
+    let end = parseUnitPoint(params["endPoint"] as? [String: Any])
+    return (colors, start, end)
+  }
+
+  private func parseRadialGradient(
+    _ params: [String: Any]
+  ) -> ([Color]?, UnitPoint?, CGFloat?, CGFloat?) {
+    let colors = (params["colors"] as? [String])?.map { Color(hex: $0) }
+    let center = parseUnitPoint(params["center"] as? [String: Any])
+    let startRadius = (params["startRadius"] as? Double).map { CGFloat($0) }
+    let endRadius = (params["endRadius"] as? Double).map { CGFloat($0) }
+    return (colors, center, startRadius, endRadius)
+  }
+
+  private func parseAngularGradient(
+    _ params: [String: Any]
+  ) -> ([Color]?, UnitPoint?) {
+    let colors = (params["colors"] as? [String])?.map { Color(hex: $0) }
+    let center = parseUnitPoint(params["center"] as? [String: Any])
+    return (colors, center)
+  }
+
+  private func parseUnitPoint(_ pointDict: [String: Any]?) -> UnitPoint? {
+    guard let pointDict = pointDict,
+      let x = pointDict["x"] as? Double,
+      let y = pointDict["y"] as? Double else {
+      return nil
+    }
+    return UnitPoint(x: CGFloat(x), y: CGFloat(y))
   }
 }
