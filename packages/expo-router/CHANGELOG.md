@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] fix active font size on web ([#39190](https://github.com/expo/expo/pull/39190) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.0-beta.8 — 2025-08-26
