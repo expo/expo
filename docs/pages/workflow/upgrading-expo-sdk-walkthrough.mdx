@@ -53,6 +53,31 @@ Upgrade all dependencies to match the installed SDK version. Then run [`expo-doc
 
 <Step label="3">
 
+### Consider updating your other dependencies
+
+Check whether your dependencies have new updates. A new SDK version usually comes with a new version of React Native and maintainers often update their packages after new React Native releases. Package managers have built-in commands to list your app's outdated dependencies.
+
+<Tabs>
+  <Tab label="npm">
+    <Terminal cmd={['$ npm outdated']} />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal cmd={['$ yarn outdated']} />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal cmd={['$ pnpm outdated --recursive']} />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal cmd={['$ bun outdated']} />
+  </Tab>
+</Tabs>
+
+If `expo-doctor` reports new problems related to dependencies after this step, you may have [to try to resolve dependency issues manually.](https://expo.fyi/resolving-dependency-issues)
+
+</Step>
+
+<Step label="4">
+
 ### Update native projects
 
 - **If you use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Delete the **android** and **ios** directories if you generated them for a previous SDK version in your local project directory. They'll be re-generated next time you run a build, either with `npx expo run:ios`, `npx expo prebuild`, or with EAS Build.
@@ -60,7 +85,7 @@ Upgrade all dependencies to match the installed SDK version. Then run [`expo-doc
 
 </Step>
 
-<Step label="4">
+<Step label="5">
 
 ### Follow the release notes for any other instructions
 
