@@ -17,11 +17,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.composeunstyled.Button
 import expo.modules.core.utilities.EmulatorUtilities
-import expo.modules.devmenu.compose.primitives.Heading
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.ripple.ripple
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun SimulatorMessage() {
@@ -37,12 +36,12 @@ fun SimulatorMessage() {
     append(" on other platforms to get back to it at any time.")
   }
 
-  Text(annotatedString)
+  NewText(annotatedString)
 }
 
 @Composable
 fun DeviceMessage() {
-  Text("You can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.")
+  NewText("You can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.")
 }
 
 @Composable
@@ -51,14 +50,14 @@ fun Onboarding(onOnboardingFinished: () -> Unit = {}) {
 
   Column(
     modifier = Modifier
-      .background(Theme.colors.background.default)
-      .padding(horizontal = Theme.spacing.large, vertical = Theme.spacing.medium)
+      .background(NewAppTheme.colors.background.default)
+      .padding(horizontal = NewAppTheme.spacing.`3`, vertical = NewAppTheme.spacing.`2`)
   ) {
-    Text(
+    NewText(
       "This is the developer menu. It gives you access to useful tools in your development builds."
     )
 
-    Spacer(Theme.spacing.medium)
+    Spacer(NewAppTheme.spacing.`2`)
 
     if (!isEmulator) {
       DeviceMessage()
@@ -66,25 +65,31 @@ fun Onboarding(onOnboardingFinished: () -> Unit = {}) {
       SimulatorMessage()
     }
 
-    Spacer(Theme.spacing.large)
+    Spacer(NewAppTheme.spacing.`3`)
 
     Button(
       onClick = onOnboardingFinished,
-      shape = RoundedCornerShape(Theme.sizing.borderRadius.medium),
-      backgroundColor = Theme.colors.button.primary.background,
-      indication = ripple(color = Theme.colors.button.primary.foreground)
+      shape = RoundedCornerShape(NewAppTheme.borderRadius.md),
+      backgroundColor = NewAppTheme.colors.buttons.primary.background,
+      indication = ripple(color = NewAppTheme.colors.buttons.primary.foreground)
     ) {
       Box(
         contentAlignment = Alignment.Companion.Center,
         modifier = Modifier.Companion
-          .padding(vertical = Theme.spacing.small)
+          .padding(vertical = NewAppTheme.spacing.`2`)
           .fillMaxWidth()
       ) {
-        Heading("Continue", color = Theme.colors.button.primary.foreground, fontSize = Theme.typography.medium)
+        NewText(
+          "Continue",
+          color = NewAppTheme.colors.buttons.primary.foreground,
+          style = NewAppTheme.font.md.merge(
+            fontWeight = FontWeight.SemiBold
+          )
+        )
       }
     }
 
-    Spacer(Theme.spacing.medium)
+    Spacer(NewAppTheme.spacing.`2`)
   }
 }
 
