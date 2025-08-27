@@ -1,0 +1,137 @@
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/ConcreteState.h b/node_modules/react-native/ReactCommon/react/renderer/core/ConcreteState.h
+index f0eb03a..6c788d5 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/ConcreteState.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/ConcreteState.h
+@@ -74,10 +74,10 @@ class ConcreteState : public State {
+    * function for cases where a new value of data does not depend on an old
+    * value.
+    */
+-  void updateState(Data&& newData) const {
+-    updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
++  void updateState(Data&& newData, bool flushSync = false) const {
++      updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
+       return std::make_shared<const Data>(data);
+-    });
++    }, flushSync);
+   }
+ 
+   /*
+@@ -89,7 +89,8 @@ class ConcreteState : public State {
+    * return `nullptr`.
+    */
+   void updateState(
+-      std::function<StateData::Shared(const Data& oldData)> callback) const {
++      std::function<StateData::Shared(const Data& oldData)> callback,
++      bool flushSync = false) const {
+     auto family = family_.lock();
+ 
+     if (!family) {
+@@ -104,7 +105,7 @@ class ConcreteState : public State {
+           return callback(*static_cast<const Data*>(oldData.get()));
+         }};
+ 
+-    family->dispatchRawState(std::move(stateUpdate));
++    family->dispatchRawState(std::move(stateUpdate), flushSync);
+   }
+ 
+ #if defined(RN_SERIALIZABLE_STATE)
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.cpp b/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.cpp
+index 8d5476b..e0a824e 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.cpp
+@@ -41,8 +41,8 @@ void EventDispatcher::experimental_flushSync() const {
+   eventQueue_.experimental_flushSync();
+ }
+ 
+-void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate) const {
+-  eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
++void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const {
++  eventQueue_.enqueueStateUpdate(std::move(stateUpdate), flushSync);
+ }
+ 
+ void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.h b/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.h
+index c103e48..f2867fa 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/EventDispatcher.h
+@@ -56,7 +56,7 @@ class EventDispatcher {
+   /*
+    * Dispatches a state update with given priority.
+    */
+-  void dispatchStateUpdate(StateUpdate&& stateUpdate) const;
++  void dispatchStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const;
+ 
+ #pragma mark - Event listeners
+   /*
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.cpp b/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.cpp
+index a83c805..5bc0991 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.cpp
+@@ -65,7 +65,7 @@ void EventQueue::enqueueUniqueEvent(RawEvent&& rawEvent) const {
+   enqueueEvent(std::move(rawEvent));
+ }
+ 
+-void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
++void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const {
+   {
+     std::scoped_lock lock(queueMutex_);
+     if (!stateUpdateQueue_.empty()) {
+@@ -77,7 +77,11 @@ void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
+     stateUpdateQueue_.push_back(std::move(stateUpdate));
+   }
+ 
+-  onEnqueue();
++  if (flushSync) {
++    flushStateUpdates();
++  } else {
++    onEnqueue();
++  }
+ }
+ 
+ void EventQueue::onEnqueue() const {
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.h b/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.h
+index 74525c6..f66b534 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/EventQueue.h
+@@ -46,7 +46,7 @@ class EventQueue {
+    * Enqueues and (probably later) dispatch a given state update.
+    * Can be called on any thread.
+    */
+-  void enqueueStateUpdate(StateUpdate&& stateUpdate) const;
++  void enqueueStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const;
+ 
+   /*
+    * Experimental API exposed to support EventEmitter::experimental_flushSync.
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.cpp b/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.cpp
+index bf48680..e99e27d 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.cpp
+@@ -173,13 +173,13 @@ std::shared_ptr<const State> ShadowNodeFamily::getMostRecentStateIfObsolete(
+   return mostRecentState_;
+ }
+ 
+-void ShadowNodeFamily::dispatchRawState(StateUpdate&& stateUpdate) const {
++void ShadowNodeFamily::dispatchRawState(StateUpdate&& stateUpdate, bool flushSync) const {
+   auto eventDispatcher = eventDispatcher_.lock();
+   if (!eventDispatcher) {
+     return;
+   }
+ 
+-  eventDispatcher->dispatchStateUpdate(std::move(stateUpdate));
++  eventDispatcher->dispatchStateUpdate(std::move(stateUpdate), flushSync);
+ }
+ 
+ } // namespace facebook::react
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.h b/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.h
+index 8385608..afaf066 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.h
+@@ -108,7 +108,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
+   /*
+    * Dispatches a state update with given priority.
+    */
+-  void dispatchRawState(StateUpdate&& stateUpdate) const;
++  void dispatchRawState(StateUpdate&& stateUpdate, bool flushSync) const;
+ 
+   /*
+    * Holds currently applied native props. `nullptr` if setNativeProps API is
