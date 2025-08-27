@@ -203,12 +203,11 @@ export declare class File {
     /**
      * A static method that opens a file picker to select a single file of specified type.
      *
-     * @platform android
+     * On iOS, it returns a copy of the file leaving the original file untouched.
      *
      * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
      * @returns a `File` instance.
-     * @platform android
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
     /**

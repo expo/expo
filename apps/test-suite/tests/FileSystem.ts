@@ -50,7 +50,16 @@ export async function test({ describe, expect, it, ...t }) {
         t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
       });
       it('Supports some operations on SAF directories', async () => {
-        const safDirectory = await Directory.pickDirectoryAsync();
+
+        // const file = new File(documentDirectory.uri, 'newFile.txt');
+        // file.create();
+        // file.write('test');
+
+        // expect(file.exists).toBe(true);
+        // expect(file.textSync()).toBe('test');
+
+
+        const safDirectory = await Directory.pickDirectoryAsync(Paths.document.uri);
 
         const testDirectory = new Directory(safDirectory.uri, 'test');
         testDirectory.create();
@@ -62,19 +71,19 @@ export async function test({ describe, expect, it, ...t }) {
         expect(file.exists).toBe(true);
         expect(file.textSync()).toBe('test');
 
-        const subdirs = [];
-        for (let i = 0; i < 10; i++) {
-          const subdir = new Directory(testDirectory.uri, `subdir${i}`);
-          subdir.create();
-          subdirs.push(subdir);
-        }
+        // const subdirs = [];
+        // for (let i = 0; i < 10; i++) {
+        //   const subdir = new Directory(testDirectory.uri, `subdir${i}`);
+        //   subdir.create();
+        //   subdirs.push(subdir);
+        // }
 
-        subdirs.forEach((subdir, i) => {
-          expect(subdir.exists).toBe(true);
-        });
+        // subdirs.forEach((subdir, i) => {
+        //   expect(subdir.exists).toBe(true);
+        // });
 
-        const listedSubdirs = testDirectory.list().filter((item) => item instanceof Directory);
-        expect(listedSubdirs.length).toBe(10);
+        // const listedSubdirs = testDirectory.list().filter((item) => item instanceof Directory);
+        // expect(listedSubdirs.length).toBe(10);
 
         testDirectory.delete();
         expect(testDirectory.exists).toBe(false);

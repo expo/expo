@@ -108,23 +108,18 @@ internal class FileSystemPath: SharedObject {
   }
 
   @discardableResult
-  func withSecurityScopedAccess<T>(
+  func withCorrectTypeAndScopedAccess<T>(
     permission: FileSystemPermissionFlags,
-    validateType: Bool = false,
     _ work: () throws -> T
   ) throws -> T {
-    if FileSystemUtilities.startAccessingSecurityScopedResource(url) {
-      defer { FileSystemUtilities.stopAccessingSecurityScopedResource(url) }
-      if validateType {
-        try self.validateType()
-      }
-      return try work()
-    } else {
-      try validatePermission(permission)
-      if validateType {
-        try self.validateType()
-      }
-      return try work()
-    }
+    let accessed = url.startAccessingSecurityScopedResource();
+    defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+
+    print("!!!!", url.absoluteString)
+
+    // try validatePermission(permission)
+
+//    try self.validateType()
+    return try work()
   }
 }

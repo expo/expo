@@ -7,17 +7,18 @@ internal final class FileSystemDirectory: FileSystemPath {
   }
 
   override func validateType() throws {
-    try validatePermission(.read)
-    var isDirectory: ObjCBool = false
-    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-      if !isDirectory.boolValue {
-        throw InvalidTypeDirectoryException()
-      }
+    try withCorrectTypeAndScopedAccess(permission: .read) {
+        var isDirectory: ObjCBool = false
+        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+        if !isDirectory.boolValue {
+            throw InvalidTypeDirectoryException()
+        }
+        }
     }
   }
 
   func create(_ options: CreateOptions) throws {
-    try withSecurityScopedAccess(permission: .write, validateType: true) {
+    try withCorrectTypeAndScopedAccess(permission: .write) {
       try validateCanCreate(options)
       do {
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
@@ -58,14 +59,15 @@ internal final class FileSystemDirectory: FileSystemPath {
 
   // Internal only function
   func listAsRecords() throws -> [[String: Any]] {
-    try validatePermission(.read)
+    try withCorrectTypeAndScopedAccess(permission: .read) {
     var contents: [[String: Any]] = []
 
     let items = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
       for item in items {
         contents.append(["isDirectory": item.hasDirectoryPath, "uri": item.absoluteString])
       }
-    return contents
+      return contents
+    }
   }
 
   func validatePath() throws {
@@ -75,8 +77,7 @@ internal final class FileSystemDirectory: FileSystemPath {
   }
 
   func info() throws -> DirectoryInfo {
-    try validateType()
-    try validatePermission(.read)
+    try withCorrectTypeAndScopedAccess(permission: .read) {
     if !exists {
       let result = DirectoryInfo()
       result.exists = false
@@ -95,6 +96,7 @@ internal final class FileSystemDirectory: FileSystemPath {
       return result
     default:
       throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
+    }
     }
   }
 }

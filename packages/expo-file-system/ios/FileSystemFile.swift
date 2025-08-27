@@ -18,7 +18,7 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func create(_ options: CreateOptions) throws {
-    try withSecurityScopedAccess(permission: .write, validateType: true) {
+    try withCorrectTypeAndScopedAccess(permission: .write) {
       try validateCanCreate(options)
       do {
         if options.intermediates {
@@ -52,7 +52,7 @@ internal final class FileSystemFile: FileSystemPath {
 
   var md5: String {
     get throws {
-      return try withSecurityScopedAccess(permission: .read) {
+      return try withCorrectTypeAndScopedAccess(permission: .read) {
         let fileData = try Data(contentsOf: url)
         let hash = Insecure.MD5.hash(data: fileData)
         return hash.map { String(format: "%02hhx", $0) }.joined()
@@ -76,38 +76,38 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func write(_ content: String) throws {
-    try withSecurityScopedAccess(permission: .write, validateType: true) {
+    try withCorrectTypeAndScopedAccess(permission: .write) {
       try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
     }
   }
 
   // TODO: blob support
   func write(_ content: TypedArray) throws {
-    try withSecurityScopedAccess(permission: .write, validateType: true) {
+    try withCorrectTypeAndScopedAccess(permission: .write) {
       try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
     }
   }
 
   func text() throws -> String {
-    return try withSecurityScopedAccess(permission: .write, validateType: true) {
+    return try withCorrectTypeAndScopedAccess(permission: .write) {
       return try String(contentsOf: url)
     }
   }
 
   func bytes() throws -> Data {
-    return try withSecurityScopedAccess(permission: .write, validateType: true) {
+    return try withCorrectTypeAndScopedAccess(permission: .write) {
       return try Data(contentsOf: url)
     }
   }
 
   func base64() throws -> String {
-    return try withSecurityScopedAccess(permission: .write) {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
       return try Data(contentsOf: url).base64EncodedString()
     }
   }
 
   func info(options: InfoOptions) throws -> FileInfo {
-    return try withSecurityScopedAccess(permission: .write, validateType: true) {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
       if !exists {
         let result = FileInfo()
         result.exists = false
