@@ -20,7 +20,6 @@ import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
   type NativeTabOptions,
-  type NativeTabsTabBarItemRole,
   type NativeTabsViewProps,
 } from './types';
 import { shouldTabBeVisible } from './utils';
@@ -167,22 +166,6 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   );
 }
 
-// TODO: remove after fix is merged in screens
-const rolesIcons: Record<NativeTabsTabBarItemRole, SFSymbol> = {
-  bookmarks: 'book.fill',
-  contacts: 'person.crop.circle.fill',
-  downloads: 'square.and.arrow.down.fill',
-  favorites: 'star.fill',
-  featured: 'star.fill',
-  history: 'clock.fill',
-  more: 'ellipsis',
-  mostRecent: 'clock.fill',
-  mostViewed: 'list.number',
-  recents: 'clock.fill',
-  search: 'magnifyingglass',
-  topRated: 'star.fill',
-};
-
 function Screen(props: {
   routeKey: string;
   name: string;
@@ -201,18 +184,15 @@ function Screen(props: {
     scrollEdgeAppearance,
     badgeTextColor,
   } = props;
+  const role = descriptor.options.role;
+  // To align with apple documentation and prevent untested cases,
+  // title and icon cannot be changed when role is defined
+  const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios';
+
   const title = descriptor.options.title ?? name;
 
-  let icon = useAwaitedScreensIcon(descriptor.options.icon);
-  let selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
-
-  // Fix for an issue in screens
-  if (descriptor.options.role) {
-    if (descriptor.options.role && descriptor.options.role in rolesIcons) {
-      icon = { sf: rolesIcons[descriptor.options.role] };
-      selectedIcon = icon;
-    }
-  }
+  const icon = useAwaitedScreensIcon(descriptor.options.icon);
+  const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
 
   return (
     <BottomTabsScreen
@@ -225,9 +205,11 @@ function Screen(props: {
       scrollEdgeAppearance={scrollEdgeAppearance}
       iconResourceName={getAndroidIconResourceName(icon)}
       iconResource={getAndroidIconResource(icon)}
-      icon={convertOptionsIconToPropsIcon(icon)}
-      selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)}
-      title={title}
+      icon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(icon)}
+      selectedIcon={
+        shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(selectedIcon)
+      }
+      title={shouldResetTitleAndIcon ? undefined : title}
       freezeContents={false}
       tabKey={routeKey}
       systemItem={descriptor.options.role}

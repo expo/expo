@@ -12,6 +12,7 @@ import type {
   NativeTabTriggerProps,
 } from './types';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
+import { useIsPreview } from '../../link/preview/PreviewRouteContext';
 import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import {
   Icon,
@@ -69,12 +70,13 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
   const isFocused = navigation.isFocused();
+  const isInPreview = useIsPreview();
 
   useSafeLayoutEffect(() => {
     // This will cause the tab to update only when it is focused.
     // As long as all tabs are loaded at the start, we don't need this check.
     // It is here to ensure similar behavior to stack
-    if (isFocused) {
+    if (isFocused && !isInPreview) {
       if (navigation.getState()?.type !== 'tab') {
         throw new Error(
           `Trigger component can only be used in the tab screen. Current route: ${route.name}`
@@ -83,7 +85,7 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
       const options = convertTabPropsToOptions(props);
       navigation.setOptions(options);
     }
-  }, [isFocused, props]);
+  }, [isFocused, props, isInPreview]);
 
   return null;
 }

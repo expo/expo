@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 6.0.0-beta.8 — 2025-08-26
+
+### 🐛 Bug fixes
+
+- fix setting dynamic options in the tab, which is rendered in link preview ([#39139](https://github.com/expo/expo/pull/39139) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- remove redundant native trigger view ([#38964](https://github.com/expo/expo/pull/38964) by [@Ubax](https://github.com/Ubax))
+- prevent changes of title and icon when role is set ([#39147](https://github.com/expo/expo/pull/39147) by [@Ubax](https://github.com/Ubax))
+
 ## 6.0.0-beta.7 — 2025-08-25
 
 _This version does not introduce any user-facing changes._
@@ -23,6 +34,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [ios] Added dependency on RNScreens in podspec to support dynamic linking through USE_FRAMEWORKS ([#39074](https://github.com/expo/expo/pull/39074) by [@chrfalch](https://github.com/chrfalch))
+- [web] fix incorrect `unstable_useServerMiddleware` warning ([#39093](https://github.com/expo/expo/pull/39093) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 

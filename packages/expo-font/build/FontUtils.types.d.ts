@@ -15,4 +15,18 @@ export interface RenderToImageOptions {
      */
     color?: string;
 }
+export interface RenderToImageResult {
+    /**
+     * The file uri to the image.
+     */
+    uri: string;
+    /**
+     * Image width.
+     */
+    width: number;
+    /**
+     * Image height.
+     */
+    height: number;
+}
 //# sourceMappingURL=FontUtils.types.d.ts.map

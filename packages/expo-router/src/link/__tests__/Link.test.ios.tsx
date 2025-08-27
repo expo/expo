@@ -14,7 +14,6 @@ import { LinkPreviewContextProvider } from '../preview/LinkPreviewContext';
 import {
   type NativeLinkPreviewActionProps,
   type NativeLinkPreviewContentProps,
-  type NativeLinkPreviewTriggerProps,
   type NativeLinkPreviewProps,
   NativeLinkPreview,
 } from '../preview/native';
@@ -34,9 +33,6 @@ jest.mock('../preview/native', () => {
     ),
     NativeLinkPreviewContent: jest.fn(({ children }: NativeLinkPreviewContentProps) => (
       <View testID="link-preview-native-preview-view" children={children} />
-    )),
-    NativeLinkPreviewTrigger: jest.fn(({ children }: NativeLinkPreviewTriggerProps) => (
-      <View testID="link-preview-native-trigger-view" children={children} />
     )),
     NativeLinkPreviewAction: jest.fn(({ children, onSelected }: NativeLinkPreviewActionProps) => (
       <View testID="link-preview-native-action-view" onPress={onSelected}>
@@ -707,7 +703,6 @@ describe('Preview', () => {
     });
     expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
     expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
-    expect(screen.getByTestId('link-preview-native-trigger-view')).toBeVisible();
   });
   it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
     expect(() => {
