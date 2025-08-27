@@ -2298,7 +2298,7 @@ PODS:
     - Google-Maps-iOS-Utils (= 5.0.0)
     - GoogleMaps (= 8.4.0)
     - React-Core
-  - react-native-keyboard-controller (1.18.4):
+  - react-native-keyboard-controller (1.18.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -2316,7 +2316,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-keyboard-controller/common (= 1.18.4)
+    - react-native-keyboard-controller/common (= 1.18.5)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2327,7 +2327,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-keyboard-controller/common (1.18.4):
+  - react-native-keyboard-controller/common (1.18.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -4362,7 +4362,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 0746ffab5ac0f49b7c9347338e3d0c1d9dd634c8
   React-microtasksnativemodule: b0fb3f97372df39bda3e657536039f1af227cc29
   react-native-google-maps: 7cc1184afe41fbd15a3dffd53c924819f6587b69
-  react-native-keyboard-controller: 4d479d44dc22d5beb0622d08c9a9f1e7c29456a6
+  react-native-keyboard-controller: 5e209d13d4c5355ddf8c36be3d41b8dfc879cd91
   react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 899989dd025d219d3ac0d386b2bc162f81ae8330
