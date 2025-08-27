@@ -3,7 +3,6 @@ import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
-import { Directory, Paths } from 'expo-file-system';
 
 let Notifications;
 try {
@@ -48,11 +47,6 @@ function useLoaded() {
 }
 
 export default function Main() {
-  console.log(
-    new Directory(
-      'file:///Users/aleqsio/Library/Developer/CoreSimulator/Devices/84F095BE-AA19-47D8-82B3-743473B42D81/data/Containers/Data/Application/10BBDC9C-9830-431A-9871-E8CE3CCB2804/Documents/ExponentExperienceData/@anonymous/sandbox-9532ccac-aed7-4855-a22f-eeeec8ef1dd1/'
-    ).listAsRecords()
-  );
   React.useEffect(() => {
     try {
       const subscription = Notifications.addNotificationResponseReceivedListener(
