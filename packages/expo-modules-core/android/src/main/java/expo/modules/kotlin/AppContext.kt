@@ -27,6 +27,7 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
+import expo.modules.kotlin.defaultmodules.JSLoggerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -107,7 +108,7 @@ class AppContext(
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
       // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
-      hostingRuntimeContext.registry.register(ErrorManagerModule())
+      hostingRuntimeContext.registry.register(JSLoggerModule())
       hostingRuntimeContext.registry.register(NativeModulesProxyModule())
       hostingRuntimeContext.registry.register(modulesProvider)
 
@@ -240,8 +241,14 @@ class AppContext(
       return KEventEmitterWrapper(legacyEventEmitter, hostingRuntimeContext.reactContextHolder)
     }
 
-  val errorManager: ErrorManagerModule?
-    get() = hostingRuntimeContext.registry.getModule()
+  @Deprecated("Use AppContext.jsLogger instead")
+  val errorManager: ErrorManagerModule? by lazy {
+    hostingRuntimeContext.registry.getModule()
+  }
+
+  val jsLogger by lazy {
+    hostingRuntimeContext.registry.getModule<JSLoggerModule>()?.logger
+  }
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
     hostingRuntimeContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)

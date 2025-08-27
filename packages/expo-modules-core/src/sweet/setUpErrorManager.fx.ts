@@ -1,18 +1,51 @@
-import NativeErrorManager from './NativeErrorManager';
+import NativeJSLogger from './NativeJSLogger';
 import Platform from '../Platform';
 import { CodedError } from '../errors/CodedError';
 
-if (__DEV__ && Platform.OS === 'android' && NativeErrorManager) {
-  const onNewException = 'ExpoModulesCoreErrorManager.onNewException';
-  const onNewWarning = 'ExpoModulesCoreErrorManager.onNewWarning';
+type LogListener = {
+  action: (...data: any[]) => void;
+  eventName: string;
+};
 
-  NativeErrorManager.addListener(onNewException, ({ message }: { message: string }) => {
-    console.error(message);
-  });
+if (__DEV__ && (Platform.OS === 'android' || Platform.OS === 'ios') && NativeJSLogger) {
+  const onNewException: LogListener = {
+    eventName: 'ExpoModulesCoreJSLogger.onNewError',
+    action: console.error,
+  };
 
-  NativeErrorManager.addListener(onNewWarning, ({ message }: { message: string }) => {
-    console.warn(message);
-  });
+  const onNewWarning: LogListener = {
+    eventName: 'ExpoModulesCoreJSLogger.onNewWarning',
+    action: console.warn,
+  };
+
+  const onNewDebug: LogListener = {
+    eventName: 'ExpoModulesCoreJSLogger.onNewDebug',
+    action: console.debug,
+  };
+
+  const onNewInfo: LogListener = {
+    eventName: 'ExpoModulesCoreJSLogger.onNewInfo',
+    action: console.info,
+  };
+
+  const onNewTrace: LogListener = {
+    eventName: 'ExpoModulesCoreJSLogger.onNewTrace',
+    action: console.trace,
+  };
+
+  const listeners: LogListener[] = [
+    onNewException,
+    onNewWarning,
+    onNewDebug,
+    onNewInfo,
+    onNewTrace,
+  ];
+
+  for (const listener of listeners) {
+    NativeJSLogger.addListener(listener.eventName, ({ message }: { message: string }) => {
+      listener.action(message);
+    });
+  }
 }
 
 declare namespace globalThis {
