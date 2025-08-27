@@ -78,7 +78,7 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
   return (
     <BottomSheet
       key={uuid}
-      enableDynamicSizing
+      snapPoints={['70%']}
       index={0}
       ref={bottomSheetRef}
       backdropComponent={renderBackdrop}

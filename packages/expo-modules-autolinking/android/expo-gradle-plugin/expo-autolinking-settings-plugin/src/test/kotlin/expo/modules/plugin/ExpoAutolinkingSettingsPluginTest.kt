@@ -42,7 +42,7 @@ class ExpoAutolinkingSettingsPluginTest {
     val configFromPlugin = ExpoAutolinkingConfig.decodeFromString(configStringFromPlugin!!)
 
     val configStringFromAutolinking = testProjectDir.root.runCommand(
-      *AutolinkigCommandBuilder()
+      *AutolinkingCommandBuilder()
         .command("resolve")
         .useJson()
         .build()

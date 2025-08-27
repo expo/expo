@@ -215,6 +215,7 @@ export function getDefaultConfig(
   sourceExts.push('cjs');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
+  const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
 
   let sassVersion: string | null = null;
   if (isCSSEnabled) {
@@ -239,6 +240,7 @@ export function getDefaultConfig(
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
+    console.log(`- Babel Runtime: ${babelRuntimeVersion}`);
     console.log();
   }
 
@@ -369,6 +371,8 @@ export function getDefaultConfig(
       // TODO: The absolute path invalidates caching across devices. To account for this, we remove the `asyncRequireModulePath` from the cache key but that means any changes to the file will not invalidate the cache.
       asyncRequireModulePath: require.resolve('./async-require'),
       assetRegistryPath: '@react-native/assets-registry/registry',
+      // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
+      enableBabelRuntime: babelRuntimeVersion ?? undefined,
       // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
@@ -381,6 +385,12 @@ export function getDefaultConfig(
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
+
+/** Use to access the Expo Metro transformer path */
+export const unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
+export const internal_supervisingTransformerPath = require.resolve(
+  './transform-worker/supervising-transform-worker'
+);
 
 // re-export for use in config files.
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };

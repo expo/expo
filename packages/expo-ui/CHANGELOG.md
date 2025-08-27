@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.2.0-alpha.5 — 2025-08-25
+
+### 🎉 New features
+
+- [iOS] Add `animation` modifier. ([#38954](https://github.com/expo/expo/pull/38954) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- [iOS] Apple TV fixes. ([#39060](https://github.com/expo/expo/pull/39060) by [@douglowder](https://github.com/douglowder))
+
 ## 0.2.0-alpha.4 — 2025-08-19
 
 _This version does not introduce any user-facing changes._
@@ -31,6 +41,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [Android] Add compose modifier support. ([#38630](https://github.com/expo/expo/pull/38630) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add `glassEffect` modifier. ([#38876](https://github.com/expo/expo/pull/38876) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Add Chip component for Android. ([#39094](https://github.com/expo/expo/pull/39094) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ## 0.2.0-alpha.0 — 2025-08-13

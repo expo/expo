@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Set default `@babel/runtime` minimum version to the project's installed version, if any (as determined by `@expo/metro-config`), or `^7.20.0` ([#39040](https://github.com/expo/expo/pull/39040) by [@kitten](https://github.com/kitten))
+
+## 14.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

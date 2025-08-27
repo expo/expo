@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
 import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -45,6 +47,7 @@ fun NewMenuButton(
         modifier = Modifier
           .background(NewAppTheme.colors.background.subtle)
           .padding(NewAppTheme.spacing.`3`)
+          .sizeIn(minHeight = 32.dp)
       ) {
         icon?.invoke()
         content?.invoke()

@@ -159,6 +159,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return JavaScriptFunctionTypeConverter<Any>(type)
     }
 
+    if (ValueOrUndefined::class.java.isAssignableFrom(jClass)) {
+      return ValueOrUndefinedTypeConverter(this, type)
+    }
+
     return handelEither(type, jClass)
       ?: throw MissingTypeConverter(type)
   }

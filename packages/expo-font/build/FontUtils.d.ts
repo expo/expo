@@ -1,5 +1,5 @@
-import { RenderToImageOptions } from './FontUtils.types';
-export type { RenderToImageOptions };
+import type { RenderToImageOptions, RenderToImageResult } from './FontUtils.types';
+export type { RenderToImageOptions, RenderToImageResult };
 /**
  * Creates an image with provided text.
  * @param glyphs Text to be exported.
@@ -8,5 +8,5 @@ export type { RenderToImageOptions };
  * @platform android
  * @platform ios
  */
-export declare function renderToImageAsync(glyphs: string, options?: RenderToImageOptions): Promise<string>;
+export declare function renderToImageAsync(glyphs: string, options?: RenderToImageOptions): Promise<RenderToImageResult>;
 //# sourceMappingURL=FontUtils.d.ts.map

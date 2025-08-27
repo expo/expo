@@ -17,6 +17,16 @@ export function captureStackForServerLogs() {
       return HMRClientLogOriginal.apply(HMRClient, [level, data]);
     }
 
+    const preventSymbolication = data.some(
+      (item) => hasBooleanKey(item, 'preventSymbolication') && item.preventSymbolication
+    );
+    if (preventSymbolication) {
+      // NOTE(krystofwoldrich): Although a generic flag, it's only used for compilation errors for which symbolication will fail.
+      // If the error would be send back to metro it would be printed multiple times, once by Metro and once from here.
+      // https://github.com/facebook/react-native/blob/a8bc74c0099252cb1d11ad3b80f3deac71dcc0d5/packages/react-native/Libraries/Utilities/HMRClient.js#L367
+      return;
+    }
+
     const hasErrorLikeStack = data.some((item) => hasStringKey(item, 'stack'));
     const hasComponentStack = data.some(
       (item) =>
@@ -77,6 +87,15 @@ function hasStringKey(obj: unknown, key: string): obj is { [key: string]: string
     obj !== null &&
     key in obj &&
     typeof (obj as Record<string, unknown>)[key] === 'string'
+  );
+}
+
+function hasBooleanKey(obj: unknown, key: string): obj is { [key: string]: boolean } {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    key in obj &&
+    typeof (obj as Record<string, unknown>)[key] === 'boolean'
   );
 }
 

@@ -1512,8 +1512,8 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       });
       const z1 = 0;
       var _default = {};
-      exports.default = _default;
       exports.z1 = z1;
+      exports.default = _default;
     },"/app/x1.js",[]);
     TEST_RUN_MODULE("/app/index.js");"
   `);

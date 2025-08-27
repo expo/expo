@@ -21,7 +21,7 @@ type BabelPresetExpoPlatformOptions = {
     disableImportExportTransform?: boolean;
     disableDeepImportWarnings?: boolean;
     disableFlowStripTypesTransform?: boolean;
-    enableBabelRuntime?: boolean;
+    enableBabelRuntime?: boolean | string;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
     /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
     'react-compiler'?: false | {

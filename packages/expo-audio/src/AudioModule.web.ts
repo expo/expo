@@ -377,12 +377,12 @@ export class AudioRecorderWeb
     return [];
   }
 
-  getCurrentInput(): RecordingInput {
-    return {
+  getCurrentInput(): Promise<RecordingInput> {
+    return Promise.resolve({
       type: 'Default',
       name: 'Default',
       uid: 'Default',
-    };
+    });
   }
 
   async prepareToRecordAsync(): Promise<void> {
