@@ -9,6 +9,7 @@ const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const NativeTabsTriggerTabBar_1 = require("./NativeTabsTriggerTabBar");
 const utils_1 = require("./utils");
+const PreviewRouteContext_1 = require("../../link/preview/PreviewRouteContext");
 const useSafeLayoutEffect_1 = require("../../views/useSafeLayoutEffect");
 const elements_1 = require("../common/elements");
 /**
@@ -55,18 +56,19 @@ function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
     const navigation = (0, native_1.useNavigation)();
     const isFocused = navigation.isFocused();
+    const isInPreview = (0, PreviewRouteContext_1.useIsPreview)();
     (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
         // This will cause the tab to update only when it is focused.
         // As long as all tabs are loaded at the start, we don't need this check.
         // It is here to ensure similar behavior to stack
-        if (isFocused) {
+        if (isFocused && !isInPreview) {
             if (navigation.getState()?.type !== 'tab') {
                 throw new Error(`Trigger component can only be used in the tab screen. Current route: ${route.name}`);
             }
             const options = convertTabPropsToOptions(props);
             navigation.setOptions(options);
         }
-    }, [isFocused, props]);
+    }, [isFocused, props, isInPreview]);
     return null;
 }
 exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
