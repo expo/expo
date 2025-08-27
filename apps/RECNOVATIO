@@ -1,0 +1,322 @@
+// App.js
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  StatusBar,
+  Alert,
+  ActivityIndicator,
+  Platform,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+// Datos base
+const MUSIC_GENRES = [
+  {
+    id: 'trap',
+    name: 'Trap',
+    color: '#ff6b6b',
+    icon: { name: 'graphic-eq', family: 'community' },
+    items: [
+      { task: '808: EQ + sidechain kick', priority: 'Alta' },
+      { task: 'Kick: compresión pegada', priority: 'Alta' },
+      { task: 'Hi-hats: paneo y swing', priority: 'Media' },
+    ],
+  },
+  {
+    id: 'reggaeton',
+    name: 'Reggaetón',
+    color: '#4ecdc4',
+    icon: { name: 'music-note', family: 'material' },
+    items: [
+      { task: 'Kick + bajo: revisar mezcla mono', priority: 'Alta' },
+      { task: 'Clap/snare: EQ y reverb corta', priority: 'Alta' },
+      { task: 'Voz principal: comp + EQ brillante', priority: 'Alta' },
+    ],
+  },
+];
+
+// Animación personalizada
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+const useSpringAnimation = (initialValue = 1) => {
+  const animatedValue = useMemo(() => new Animated.Value(initialValue), []);
+  const springTo = useCallback(
+    (toValue) => {
+      Animated.spring(animatedValue, {
+        toValue,
+        useNativeDriver: true,
+        tension: 100,
+        friction: 10,
+      }).start();
+    },
+    [animatedValue]
+  );
+  return [animatedValue, springTo];
+};
+
+// Selector de icono (flexible)
+const IconRenderer = ({ family = 'material', name, size = 24, color = '#fff' }) => {
+  if (family === 'community') {
+    return <MaterialCommunityIcons name={name} size={size} color={color} />;
+  }
+  return <MaterialIcons name={name} size={size} color={color} />;
+};
+
+// Tarjeta de estadísticas
+const StatsCard = ({ title, value, subtitle, color, icon }) => {
+  const [scaleAnim, springTo] = useSpringAnimation(1);
+
+  return (
+    <AnimatedTouchable
+      activeOpacity={0.9}
+      style={[
+        styles.statsCard,
+        { transform: [{ scale: scaleAnim }] },
+      ]}
+      onPressIn={() => springTo(0.96)}
+      onPressOut={() => springTo(1)}
+    >
+      <View style={[styles.statsIconContainer, { backgroundColor: color }]}>
+        <IconRenderer family={icon.family} name={icon.name} size={28} color="#fff" />
+      </View>
+      <View style={styles.statsTextContainer}>
+        <Text style={styles.statsValue}>{value}</Text>
+        <Text style={styles.statsTitle}>{title}</Text>
+        {subtitle ? <Text style={styles.statsSubtitle}>{subtitle}</Text> : null}
+      </View>
+    </AnimatedTouchable>
+  );
+};
+
+// Pantalla principal
+const App = () => {
+  const [completedTasks, setCompletedTasks] = useState({});
+  const [loading, setLoading] = useState(true);
+  const STORAGE_KEY = 'completedTasks_v1';
+
+  // Cargar tareas guardadas al iniciar
+  useEffect(() => {
+    let mounted = true;
+    const loadTasks = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        if (saved && mounted) {
+          setCompletedTasks(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.warn('Error cargando tareas:', e);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    loadTasks();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Cambiar estado de tarea
+  const toggleTask = async (genreId, taskIndex) => {
+    try {
+      const updated = { ...completedTasks };
+      updated[genreId] = updated[genreId] || [];
+      if (updated[genreId].includes(taskIndex)) {
+        updated[genreId] = updated[genreId].filter((i) => i !== taskIndex);
+      } else {
+        updated[genreId].push(taskIndex);
+      }
+      setCompletedTasks(updated);
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Error guardando tarea:', e);
+      Alert.alert('Error', 'No se pudo guardar el progreso.');
+    }
+  };
+
+  // Progreso general
+  const totalTasks = MUSIC_GENRES.reduce((sum, g) => sum + g.items.length, 0);
+  const totalCompleted = Object.values(completedTasks).reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
+  const progress = totalTasks === 0 ? 0 : Math.round((totalCompleted / totalTasks) * 100);
+
+  // renderItem optimizado
+  const renderGenre = useCallback(
+    ({ item }) => {
+      return (
+        <View style={styles.genreCard}>
+          <View style={[styles.genreHeader, { backgroundColor: item.color }]}>
+            <IconRenderer family={item.icon.family} name={item.icon.name} size={20} color="#fff" />
+            <Text style={styles.genreTitle}>{item.name}</Text>
+          </View>
+          {item.items.map((task, index) => {
+            const done = completedTasks[item.id]?.includes(index) || false;
+            return (
+              <TouchableOpacity
+                key={`${item.id}-${index}`}
+                style={styles.taskRow}
+                onPress={() => toggleTask(item.id, index)}
+                activeOpacity={0.7}
+              >
+                <MaterialIcons
+                  name={done ? 'check-box' : 'check-box-outline-blank'}
+                  size={22}
+                  color={done ? '#00b894' : '#555'}
+                />
+                <Text
+                  style={[
+                    styles.taskText,
+                    done && { textDecorationLine: 'line-through', color: '#888' },
+                  ]}
+                >
+                  {task.task}
+                </Text>
+                <Text style={styles.priority}>[{task.priority}]</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      );
+    },
+    [completedTasks, toggleTask]
+  );
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <StatusBar barStyle="dark-content" />
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 8 }}>Cargando...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <Text style={styles.header}>🎶 Checklist Estudio Recnovatio</Text>
+
+      {/* Stats */}
+      <View style={styles.statsRow}>
+        <StatsCard
+          title="Completadas"
+          value={`${totalCompleted}`}
+          subtitle="Tareas hechas"
+          color="#6c5ce7"
+          icon={{ name: 'check-circle', family: 'material' }}
+        />
+        <StatsCard
+          title="Progreso"
+          value={`${progress}%`}
+          subtitle="General"
+          color="#00b894"
+          icon={{ name: 'chart-bar', family: 'community' }}
+        />
+      </View>
+
+      {/* Listado de géneros */}
+      <FlatList
+        data={MUSIC_GENRES}
+        keyExtractor={(item) => item.id}
+        renderItem={renderGenre}
+        contentContainerStyle={{ paddingBottom: 24 }}
+      />
+    </SafeAreaView>
+  );
+};
+
+// Estilos
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f6fa',
+    padding: 12,
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'center',
+    color: '#2d3436',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statsCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 14,
+    margin: 6,
+    ...Platform.select({ android: { elevation: 3 }, ios: { shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } } }),
+  },
+  statsIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  statsTextContainer: {
+    flex: 1,
+  },
+  statsValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2d3436',
+  },
+  statsTitle: {
+    fontSize: 14,
+    color: '#636e72',
+  },
+  statsSubtitle: {
+    fontSize: 12,
+    color: '#b2bec3',
+  },
+  genreCard: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    marginVertical: 8,
+    padding: 8,
+    ...Platform.select({ android: { elevation: 2 }, ios: { shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } } }),
+  },
+  genreHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 10,
+  },
+  genreTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginLeft: 8,
+  },
+  taskRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  taskText: {
+    flex: 1,
+    fontSize: 15,
+    marginLeft: 8,
+    color: '#2d3436',
+  },
+  priority: {
+    fontSize: 12,
+    color: '#636e72',
+  },
+});
+
+export default App;
