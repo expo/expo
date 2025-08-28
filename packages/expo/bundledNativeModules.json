@@ -99,7 +99,7 @@
   "react-native-keyboard-controller": "1.18.5",
   "react-native-maps": "1.20.1",
   "react-native-pager-view": "6.9.1",
-  "react-native-worklets": "~0.4.1",
+  "react-native-worklets": "~0.4.2",
   "react-native-reanimated": "~4.0.2",
   "react-native-screens": "~4.15.3",
   "react-native-safe-area-context": "~5.6.0",
