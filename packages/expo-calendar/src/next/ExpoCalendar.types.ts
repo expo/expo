@@ -455,6 +455,10 @@ export declare class ExpoCalendarReminder {
    */
   dueDate?: string | Date;
   /**
+   * Whether the reminder is an all-day reminder.
+   */
+  allDay?: boolean;
+  /**
    * Indicates whether or not the task has been completed.
    */
   completed?: boolean;

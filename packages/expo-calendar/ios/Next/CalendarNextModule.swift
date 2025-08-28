@@ -547,6 +547,10 @@ public final class CalendarNextModule: Module {
         expoReminder.serializeRecurrenceRule()
       }
 
+      Property("allDay") { (expoReminder: ExpoCalendarReminder) in
+        expoReminder.isAllDay()
+      }
+
       Property("startDate") { (expoReminder: ExpoCalendarReminder) -> String? in
         let currentCalendar = Calendar.current
 

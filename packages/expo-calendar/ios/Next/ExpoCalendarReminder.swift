@@ -141,4 +141,20 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
       reminder.isCompleted = isCompleted
     }
   }
+
+  func isAllDay() -> Bool {
+    guard let reminder else { return false }
+
+    let components = [reminder.startDateComponents, reminder.dueDateComponents].compactMap { $0 }
+
+    guard !components.isEmpty else { return false }
+
+    let result = components.allSatisfy(isAllDayDateComponents);
+
+    return result
+  }
+
+  private func isAllDayDateComponents(_ components: DateComponents) -> Bool {
+    return components.hour == 0 && components.minute == 0 && components.second == 0
+  }
 }

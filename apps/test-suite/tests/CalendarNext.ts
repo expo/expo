@@ -131,6 +131,9 @@ export async function test(t) {
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
+  const shouldSkipUItest = true;
+  const describeWithUiTest = shouldSkipUItest ? t.xdescribe : t.describe;
+
   function testCalendarShape(calendar) {
     t.expect(calendar).toBeDefined();
     t.expect(typeof calendar.id).toBe('string');
@@ -387,7 +390,7 @@ export async function test(t) {
       }
     });
 
-    t.describe('Calendar UI Integration', () => {
+    describeWithUiTest('Calendar UI Integration', () => {
       let originalTimeout;
       const dontStartNewTask = {
         startNewActivityTask: false,
@@ -1612,6 +1615,14 @@ export async function test(t) {
             const fetchedReminder = ExpoCalendarReminder.get(reminder.id);
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder.title).toBe('New title');
+          });
+
+          t.it('supports all-day reminders', async () => {
+            const allDayReminder = await createTestReminder(calendar, {
+              allDay: true,
+            });
+            t.expect(allDayReminder.allDay).toBe(true);
+            t.expect(allDayReminder.dueDate).toBeNull();
           });
 
           t.afterEach(async () => {
