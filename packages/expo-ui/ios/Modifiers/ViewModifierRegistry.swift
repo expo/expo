@@ -963,3 +963,17 @@ extension ViewModifierRegistry {
     return UnitPoint(x: CGFloat(x), y: CGFloat(y))
   }
 }
+
+// MARK: - Color Extension
+
+internal extension Color {
+  init(hex: String) {
+    // Use ExpoModulesCore's Color conversion system for all color formats
+    do {
+      self = try Color.convert(from: hex)
+    } catch {
+      // Fallback to clear color if conversion fails
+      self = .clear
+    }
+  }
+}
