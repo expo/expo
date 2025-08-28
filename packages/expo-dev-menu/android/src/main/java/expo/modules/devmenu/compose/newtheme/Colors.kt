@@ -61,6 +61,28 @@ class Colors(private val pallet: RadixPallet<Color>) {
         pallet.blue.`10`
       }
     )
+
+    val secondary = Button(
+      foreground = if (pallet.isDark) {
+        Color.White
+      } else {
+        pallet.gray.`12`
+      },
+      background = if (pallet.isDark) {
+        pallet.gray.`3`
+      } else {
+        Color.White
+      }
+    )
+
+    val tertiary = Button(
+      foreground = if (pallet.isDark) {
+        pallet.blue.`11`
+      } else {
+        pallet.blue.`10`
+      },
+      background = Color.Transparent
+    )
   }
 
   val text = Text()

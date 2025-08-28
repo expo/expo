@@ -1,6 +1,6 @@
 {
   "name": "pod-install",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A fast, zero-dependency package for cutting down on common issues developers have when running pod install.",
   "main": "./build/index.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "@expo/package-manager": "^1.9.3",
+    "@expo/package-manager": "^1.9.4",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "^5.0.4",

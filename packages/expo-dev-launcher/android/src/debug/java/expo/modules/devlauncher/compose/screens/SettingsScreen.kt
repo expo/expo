@@ -2,7 +2,6 @@ package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,14 +9,11 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.Button
 import com.composeunstyled.Icon
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.DefaultScreenContainer
@@ -31,15 +27,14 @@ import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.ToggleSwitch
 import expo.modules.devmenu.compose.ui.NewMenuButton
-import expo.modules.devmenu.compose.utils.copyToClipboard
+import expo.modules.devmenu.compose.ui.Section
+import expo.modules.devmenu.compose.ui.SystemSection
 
 @Composable
 fun SettingsScreen(
   state: SettingsState = SettingsState(),
   onAction: (SettingsAction) -> Unit = {}
 ) {
-  val context = LocalContext.current
-
   Column(
     modifier = Modifier
       .statusBarsPadding()
@@ -90,14 +85,7 @@ fun SettingsScreen(
 
     Spacer(NewAppTheme.spacing.`6`)
 
-    NewText(
-      "MENU GESTURES",
-      style = NewAppTheme.font.sm.merge(
-        fontWeight = FontWeight.Medium,
-        fontFamily = NewAppTheme.font.mono
-      ),
-      color = NewAppTheme.colors.text.quaternary
-    )
+    Section.Header("MENU GESTURES")
 
     Spacer(NewAppTheme.spacing.`3`)
 
@@ -196,95 +184,12 @@ fun SettingsScreen(
 
     Spacer(NewAppTheme.spacing.`6`)
 
-    NewText(
-      "SYSTEM",
-      style = TextStyle(
-        fontSize = NewAppTheme.font.sm.fontSize,
-        fontFamily = NewAppTheme.font.mono,
-        fontWeight = FontWeight.Medium,
-        color = NewAppTheme.colors.text.quaternary
-      )
+    val info = state.applicationInfo
+    SystemSection(
+      appVersion = info?.appVersion,
+      runtimeVersion = (info as? ApplicationInfo.Updates)?.runtimeVersion,
+      fullDataProvider = { info?.toJson() ?: "No application info available" }
     )
-
-    Spacer(NewAppTheme.spacing.`3`)
-
-    Divider(
-      thickness = 0.5.dp,
-      color = NewAppTheme.colors.border.default
-    )
-
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp)
-    ) {
-      NewText(
-        "Version",
-        color = NewAppTheme.colors.text.secondary
-      )
-
-      NewText(
-        state.applicationInfo?.appVersion ?: "N/A",
-        color = NewAppTheme.colors.text.secondary
-      )
-    }
-
-    Divider(
-      thickness = 0.5.dp,
-      color = NewAppTheme.colors.border.default
-    )
-
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp)
-    ) {
-      NewText(
-        "Runtime version",
-        color = NewAppTheme.colors.text.secondary
-      )
-
-      val runtimeVersion = (state.applicationInfo as? ApplicationInfo.Updates)?.runtimeVersion
-      NewText(
-        runtimeVersion ?: "N/A",
-        color = NewAppTheme.colors.text.secondary
-      )
-    }
-
-    Divider(
-      thickness = 0.5.dp,
-      color = NewAppTheme.colors.border.default
-    )
-
-    Button(onClick = {
-      copyToClipboard(
-        context,
-        label = "Copy system info",
-        text = state.applicationInfo?.toJson() ?: "No application info available"
-      )
-    }) {
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(vertical = 12.dp)
-      ) {
-        NewText(
-          "Copy system info",
-          color = NewAppTheme.colors.text.link,
-          style = NewAppTheme.font.sm
-        )
-        Icon(
-          painter = painterResource(expo.modules.devmenu.R.drawable.copy),
-          contentDescription = "Copy system info",
-          tint = NewAppTheme.colors.text.link,
-          modifier = Modifier
-            .size(12.dp)
-        )
-      }
-    }
   }
 }
 

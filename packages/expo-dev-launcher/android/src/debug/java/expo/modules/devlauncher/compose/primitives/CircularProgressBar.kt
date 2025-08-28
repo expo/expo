@@ -17,8 +17,10 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import expo.modules.devmenu.compose.theme.Pallet
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import io.github.lukmccall.colors.blue
+import io.github.lukmccall.colors.gray
+
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -29,17 +31,8 @@ fun CircularProgressBar(
   strokeWidth: Dp = size / 8,
   duration: Duration = 1.seconds
 ) {
-  val backgroundColor = if (Theme.isDarkTheme) {
-    Pallet.Dark.Gray.gray300
-  } else {
-    Pallet.Light.Gray.gray300
-  }
-
-  val progressColor = if (Theme.isDarkTheme) {
-    Pallet.Dark.Blue.blue500
-  } else {
-    Pallet.Light.Blue.blue500
-  }
+  val backgroundColor = NewAppTheme.pallet.gray.`3`
+  val progressColor = NewAppTheme.pallet.blue.`5`
 
   val transition = rememberInfiniteTransition(label = "infiniteSpinningTransition")
 

@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- [android] improve bitmap rendering for `renderToImageAsync` ([#39118](https://github.com/expo/expo/pull/39118) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 14.0.5 — 2025-08-27
+
+### 🛠 Breaking changes
+
+- [android] improve bitmap rendering for `renderToImageAsync` ([#39118](https://github.com/expo/expo/pull/39118) by [@vonovak](https://github.com/vonovak))
 
 ## 14.0.4 — 2025-08-26
 

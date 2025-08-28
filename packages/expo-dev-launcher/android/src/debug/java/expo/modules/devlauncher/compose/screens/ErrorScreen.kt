@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.compose.models.ErrorAction
 import expo.modules.devlauncher.compose.ui.ActionButton
-import expo.modules.devmenu.compose.primitives.Heading
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun ErrorScreen(
@@ -23,18 +23,23 @@ fun ErrorScreen(
 ) {
   Column(
     modifier = Modifier
-      .background(Theme.colors.background.secondary)
+      .background(NewAppTheme.colors.background.subtle)
       .fillMaxSize()
       .statusBarsPadding()
   ) {
-    Column(modifier = Modifier.padding(horizontal = Theme.spacing.small)) {
-      Spacer(Theme.spacing.medium)
-      Heading("There was a problem loading the project.")
+    Column(modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`2`)) {
+      Spacer(NewAppTheme.spacing.`3`)
+      NewText(
+        "There was a problem loading the project.",
+        style = NewAppTheme.font.lg.merge(
+          fontWeight = FontWeight.SemiBold
+        )
+      )
 
-      Spacer(Theme.spacing.medium)
-      Text("This development build encountered the following error.")
+      Spacer(NewAppTheme.spacing.`3`)
+      NewText("This development build encountered the following error.")
 
-      Spacer(Theme.spacing.medium)
+      Spacer(NewAppTheme.spacing.`3`)
     }
 
     StackTrace(
@@ -45,23 +50,27 @@ fun ErrorScreen(
 
     Column(
       modifier = Modifier
-        .background(Theme.colors.background.default)
-        .padding(Theme.spacing.medium)
+        .background(NewAppTheme.colors.background.default)
+        .padding(NewAppTheme.spacing.`3`)
         .navigationBarsPadding()
     ) {
       ActionButton(
         "Reload",
-        style = Theme.colors.button.tertiary,
+        foreground = NewAppTheme.colors.buttons.tertiary.foreground,
+        background = NewAppTheme.colors.buttons.tertiary.background,
+        modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),
         onClick = {
           onAction(ErrorAction.Reload)
         }
       )
 
-      Spacer(Theme.spacing.small)
+      Spacer(NewAppTheme.spacing.`2`)
 
       ActionButton(
         "Go To Home",
-        style = Theme.colors.button.secondary,
+        foreground = NewAppTheme.colors.buttons.secondary.foreground,
+        background = NewAppTheme.colors.buttons.secondary.background,
+        modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),
         onClick = {
           onAction(ErrorAction.GoToHome)
         }

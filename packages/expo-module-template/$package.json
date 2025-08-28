@@ -32,8 +32,8 @@
   "devDependencies": {
     "@types/react": "~19.1.0",
     "expo-module-scripts": "^5.0.4",
-    "expo": "^54.0.0-preview.9",
-    "react-native": "0.81.0"
+    "expo": "^54.0.0-preview.10",
+    "react-native": "0.81.1"
   },
   "peerDependencies": {
     "expo": "*",
