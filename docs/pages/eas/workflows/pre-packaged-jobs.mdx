@@ -882,9 +882,9 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="Saving assets for use in subsequent steps">
+<Collapsible summary="Saving screenshots and recordings">
 
-To save assets created by Maestro commands (such as [takeScreenshot](https://docs.maestro.dev/api-reference/commands/takescreenshot) or [startRecording](https://docs.maestro.dev/api-reference/commands/startrecording)) for use in subsequent workflow steps, use the `MAESTRO_TESTS_DIR` environment variable to specify predictable file locations.
+To save assets created by Maestro commands (such as [`takeScreenshot`](https://docs.maestro.dev/api-reference/commands/takescreenshot) or [`startRecording`](https://docs.maestro.dev/api-reference/commands/startrecording)) to use for debugging later, use the `MAESTRO_TESTS_DIR` environment variable.
 
 In your Maestro flow file, specify the asset locations:
 
@@ -899,7 +899,7 @@ appId: com.myapp
 - stopRecording
 ```
 
-The assets created in one step will be available at the specified paths (e.g., `${MAESTRO_TESTS_DIR}/my_recording` and `${MAESTRO_TESTS_DIR}/my_screenshot`) in subsequent workflow steps.
+The assets will be available within the "Maestro Test Results" artifact in the Artifacts section.
 
 </Collapsible>
 
