@@ -27,6 +27,7 @@ class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDele
     switch action {
     case .responded: promise.resolve(DialogViewResponse(action: .responded))
     case .deleted: promise.resolve(DialogViewResponse(action: .deleted))
+    // swiftlint:disable:next no_fallthrough_only
     case .done: fallthrough
     default: promise.resolve(DialogViewResponse())
     }
