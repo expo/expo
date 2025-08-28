@@ -112,7 +112,7 @@ internal class FileSystemPath: SharedObject {
     permission: FileSystemPermissionFlags,
     _ work: () throws -> T
   ) throws -> T {
-    let accessed = url.startAccessingSecurityScopedResource();
+    let accessed = url.startAccessingSecurityScopedResource()
     defer { if accessed { url.stopAccessingSecurityScopedResource() } }
 
     print("!!!!", url.absoluteString)

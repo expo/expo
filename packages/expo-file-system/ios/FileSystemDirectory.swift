@@ -8,12 +8,12 @@ internal final class FileSystemDirectory: FileSystemPath {
 
   override func validateType() throws {
     try withCorrectTypeAndScopedAccess(permission: .read) {
-        var isDirectory: ObjCBool = false
-        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+      var isDirectory: ObjCBool = false
+      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
         if !isDirectory.boolValue {
-            throw InvalidTypeDirectoryException()
+          throw InvalidTypeDirectoryException()
         }
-        }
+      }
     }
   }
 
