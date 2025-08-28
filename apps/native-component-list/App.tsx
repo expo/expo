@@ -61,7 +61,7 @@ export default function App() {
         }}
         backdropFilter={[
           {
-            grayscale: 0.5,
+            grayscale: 0,
           },
         ]}
       />
