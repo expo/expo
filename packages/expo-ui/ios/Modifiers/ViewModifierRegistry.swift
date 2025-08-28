@@ -1032,8 +1032,7 @@ internal extension Color {
   init(hex: String) {
     // Use ExpoModulesCore's Color conversion system for all color formats
     do {
-      let appContext = AppContext()
-      self = try Color.convert(from: hex, appContext: appContext)
+      self = try Color.convert(from: hex)
     } catch {
       // Fallback to clear color if conversion fails
       self = .clear
