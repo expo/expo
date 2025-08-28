@@ -4,7 +4,7 @@ import path from 'path';
 
 import getVCSClientAsync from './vcs';
 
-export type Workflow = 'managed' | 'generic';
+export type Workflow = 'managed' | 'generic' | 'not-configured';
 
 export async function resolveWorkflowAsync(
   projectDir: string,
@@ -22,6 +22,12 @@ export async function resolveWorkflowAsync(
           ]
         : [IOSConfig.Paths.getPBXProjectPath(projectDir)];
   } catch {
+    const isIgnored = await isNativeCodeIgnored(projectDir, platform);
+
+    if (!isIgnored) {
+      return 'not-configured';
+    }
+
     return 'managed';
   }
 
@@ -35,6 +41,16 @@ export async function resolveWorkflowAsync(
     }
   }
   return 'managed';
+}
+
+export async function isNativeCodeIgnored(projectDir: string, platform: 'ios' | 'android') {
+  const vcsClient = await getVCSClientAsync(projectDir);
+  const vcsRootPath = path.normalize(await vcsClient.getRootPathAsync());
+
+  const platformFolder = platform === 'ios' ? 'ios' : 'android';
+  const relativePlatformPath = path.relative(vcsRootPath, path.join(projectDir, platformFolder));
+
+  return await vcsClient.isFileIgnoredAsync(relativePlatformPath);
 }
 
 export function validateWorkflow(possibleWorkflow: string): Workflow {

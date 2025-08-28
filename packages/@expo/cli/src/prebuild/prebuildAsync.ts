@@ -1,6 +1,8 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
 
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
@@ -10,6 +12,8 @@ import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
+import { isInteractive } from '../utils/interactive';
+import { upsertGitIgnoreContents } from '../utils/mergeGitIgnorePaths';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
@@ -17,6 +21,8 @@ import { profile } from '../utils/profile';
 import { confirmAsync } from '../utils/prompts';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
+
+const cngDocs = 'https://docs.expo.dev/workflow/continuous-native-generation/';
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -215,28 +221,48 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
     const workflow = uniqueWorkflows[0];
 
     if (workflow === 'generic') {
-      Log.warn(
-        chalk.default.yellow(
-          `NOT using Continuous Native Generation. https://docs.expo.dev/workflow/continuous-native-generation/\n`
-        )
-      );
+      Log.warn(chalk.default.yellow(`NOT using Continuous Native Generation. ${cngDocs}\n`));
     } else {
-      Log.warn(
-        chalk.default.yellow(
-          `Using Continuous Native Generation. https://docs.expo.dev/workflow/continuous-native-generation/\n`
-        )
-      );
+      Log.warn(chalk.default.yellow(`Using Continuous Native Generation. ${cngDocs}\n`));
     }
   } else {
     let message = '';
     workflows.forEach(({ platform, workflow }) => {
-      if (workflow === 'generic') {
-        message += `The ${platform} project NOT using the Continuous Native Generation.\n`;
-      } else {
+      if (workflow === 'managed') {
         message += `The ${platform} project is using the Continuous Native Generation.\n`;
+      } else {
+        message += `The ${platform} project is NOT using the Continuous Native Generation.\n`;
       }
     });
-    message += 'https://docs.expo.dev/workflow/continuous-native-generation\n';
+    message += `${cngDocs}\n`;
     Log.warn(chalk.default.yellow(message));
+  }
+
+  const notConfiguredPlatforms = workflows
+    .filter(({ workflow }) => workflow === 'not-configured')
+    .map(({ platform }) => platform);
+
+  if (notConfiguredPlatforms.length > 0 && isInteractive()) {
+    const platformFolders = notConfiguredPlatforms.map((platform) =>
+      platform === 'ios' ? '/ios' : '/android'
+    );
+
+    const shouldAddToGitignore = await confirmAsync({
+      message: `Would you like to add ${platformFolders.join(' and ')} to .gitignore to use Continuous Native Generation? \n${cngDocs}`,
+      initial: true,
+    });
+
+    if (shouldAddToGitignore) {
+      const gitignorePath = path.join(projectRoot, '.gitignore');
+
+      if (!fs.existsSync(gitignorePath)) {
+        fs.writeFileSync(gitignorePath, '');
+      }
+
+      const gitignoreEntries = platformFolders.join('\n');
+      upsertGitIgnoreContents(gitignorePath, gitignoreEntries);
+
+      Log.log(chalk.default.green(`✓ Added ${platformFolders.join(' and ')} to .gitignore`));
+    }
   }
 }
