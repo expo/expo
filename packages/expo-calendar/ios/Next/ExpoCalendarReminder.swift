@@ -111,16 +111,18 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
       reminder.url = URL(string: url)
     }
 
+    let isAllDay = reminderRecord.allDay ?? false
+
     if nullableSet.contains("startDate") {
       reminder.startDateComponents = nil
     } else if let startDate {
-      reminder.startDateComponents = createDateComponents(for: startDate)
+      reminder.startDateComponents = createDateComponents(for: startDate, allDay: isAllDay)
     }
 
     if nullableSet.contains("dueDate") {
       reminder.dueDateComponents = nil
     } else if let dueDate {
-      reminder.dueDateComponents = createDateComponents(for: dueDate)
+      reminder.dueDateComponents = createDateComponents(for: dueDate, allDay: isAllDay)
     }
 
     if nullableSet.contains("completionDate") {
