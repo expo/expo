@@ -145,6 +145,12 @@ class ExpoCssView: ExpoView {
           layerFilters.add(filter)
         }
       }
+      
+      if let contrastAmount = filterConfig["contrast"] as? CGFloat {
+        if let filter = getContrastFilter(amount: contrastAmount) {
+          layerFilters.add(filter)
+        }
+      }
     }
     
     self.layer.filters = layerFilters as? [Any]
@@ -191,6 +197,13 @@ class ExpoCssView: ExpoView {
         
         if let saturateAmount = filterConfig["saturate"] as? CGFloat {
           if let filter = getSaturateFilter(amount: saturateAmount) {
+            layerFilters.add(filter)
+          }
+        }
+        
+        // Handle contrast filter
+        if let contrastAmount = filterConfig["contrast"] as? CGFloat {
+          if let filter = getContrastFilter(amount: contrastAmount) {
             layerFilters.add(filter)
           }
         }
