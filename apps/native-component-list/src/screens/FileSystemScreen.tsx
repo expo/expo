@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
-import { File, Directory } from 'expo-file-system';
+import { File, Directory, Paths } from 'expo-file-system';
 import * as FileSystem from 'expo-file-system/legacy';
 // import * as Progress from 'expo-progress';
 import type {
@@ -330,7 +330,15 @@ export default class FileSystemScreen extends React.Component<object, State> {
 
   _pickDirectory = async () => {
     const directory = await Directory.pickDirectoryAsync();
-    Alert.alert('Result', JSON.stringify(directory, null, 2));
+    const content = directory.list().map((f) => Paths.basename(f.uri));
+    const maxDisplay = 10;
+    const displayContent = content.slice(0, maxDisplay);
+    const moreCount = content.length > maxDisplay ? content.length - maxDisplay : 0;
+    let contentText = displayContent.join(', ');
+    if (moreCount > 0) {
+      contentText += `, and ${moreCount} more...`;
+    }
+    Alert.alert('Result', `${JSON.stringify(directory, null, 2)}\nContent:\n${contentText}`);
   };
 
   render() {
