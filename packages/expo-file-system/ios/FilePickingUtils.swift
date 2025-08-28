@@ -108,14 +108,13 @@ internal func createDirectoryPicker(initialUri: URL?) -> UIDocumentPickerViewCon
       picker.directoryURL = initialUri
     }
     return picker
-  } else {
-    // For iOS 13 and earlier, use kUTTypeFolder
-    let picker = UIDocumentPickerViewController(documentTypes: [kUTTypeFolder as String], in: .open)
-    if let initialUri = initialUri {
-      picker.directoryURL = initialUri
-    }
-    return picker
   }
+  // For iOS 13 and earlier, use kUTTypeFolder
+  let picker = UIDocumentPickerViewController(documentTypes: [kUTTypeFolder as String], in: .open)
+  if let initialUri = initialUri {
+    picker.directoryURL = initialUri
+  }
+  return picker
 }
 
 @available(iOS 14.0, *)
