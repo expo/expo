@@ -78,6 +78,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
   external fun registerClass(
     name: String,
     prototypeDecorator: JSDecoratorsBridgingObject,
+    constructorDecorator: JSDecoratorsBridgingObject,
     takesOwner: Boolean,
     ownerClass: Class<*>?,
     isSharedRef: Boolean,

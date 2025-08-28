@@ -163,6 +163,17 @@ class SingleTestContext(
     return jsiInterop.evaluateScript("(new $moduleRef.$className()).$functionName($args)")
   }
 
+  fun callClassStatic(className: String, functionName: String, args: String = "") = jsiInterop.evaluateScript(
+    "$moduleRef.$className.$functionName($args)"
+  )
+
+  fun callClassStaticAsync(className: String, functionName: String, args: String = "", shouldBeResolved: Boolean = true) =
+    jsiInterop.waitForAsyncFunction(
+      methodQueue,
+      "$moduleRef.$className.$functionName($args)",
+      shouldBeResolved
+    )
+
   fun classProperty(className: String, propertyName: String) =
     jsiInterop.evaluateScript("(new $moduleRef.$className()).$propertyName")
 
