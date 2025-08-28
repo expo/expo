@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Prevent incorrect path rewrites when a URL is present in query parameters ([#39146](https://github.com/expo/expo/pull/39146) by [@hassankhan](https://github.com/hassankhan))
-
 ### 💡 Others
+
+## 6.0.0-beta.10 — 2025-08-28
+
+### 🐛 Bug fixes
+
+- Prevent incorrect path rewrites when a URL is present in query parameters ([#39146](https://github.com/expo/expo/pull/39146) by [@hassankhan](https://github.com/hassankhan))
 
 ## 6.0.0-beta.9 — 2025-08-27
 
