@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import expo.modules.devlauncher.compose.primitives.DefaultScaffold
 import expo.modules.devlauncher.compose.routes.CrashReport
 import expo.modules.devlauncher.compose.routes.CrashReportRoute
+import expo.modules.devlauncher.compose.routes.DevelopmentServersRoute
 import expo.modules.devlauncher.compose.routes.HomeRoute
 import expo.modules.devlauncher.compose.routes.ProfileRoute
 import expo.modules.devlauncher.compose.routes.Routes
@@ -56,10 +57,15 @@ object Main
 fun DevLauncherBottomTabsNavigator() {
   val mainNavController = rememberNavController()
   val bottomTabsNavController = rememberNavController()
-  val bottomSheetState = rememberBottomSheetState()
+  val profileBottomSheetState = rememberBottomSheetState()
+  val developmentServersBottomSheetState = rememberBottomSheetState()
 
   val navigateToProfile = remember {
-    { bottomSheetState.targetDetent = Full }
+    { profileBottomSheetState.targetDetent = Full }
+  }
+
+  val openDevelopmentServers = remember {
+    { developmentServersBottomSheetState.targetDetent = Full }
   }
 
   NavHost(
@@ -94,7 +100,11 @@ fun DevLauncherBottomTabsNavigator() {
           }
         ) {
           composable<Routes.Home> {
-            HomeRoute(navController = mainNavController, onProfileClick = navigateToProfile)
+            HomeRoute(
+              navController = mainNavController,
+              onProfileClick = navigateToProfile,
+              onDevServersClick = openDevelopmentServers
+            )
           }
           composable<Routes.Updates> {
             UpdatesRoute(onProfileClick = navigateToProfile)
@@ -124,5 +134,7 @@ fun DevLauncherBottomTabsNavigator() {
     }
   }
 
-  ProfileRoute(bottomSheetState)
+  ProfileRoute(profileBottomSheetState)
+
+  DevelopmentServersRoute(developmentServersBottomSheetState)
 }

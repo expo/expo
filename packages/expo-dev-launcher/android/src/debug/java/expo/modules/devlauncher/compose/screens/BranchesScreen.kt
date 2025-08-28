@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -29,7 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.Button
 import com.composeunstyled.Icon
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.Branch
@@ -41,11 +41,9 @@ import expo.modules.devlauncher.compose.ui.ActionButton
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.utils.DateFormat
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
-import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.theme.Theme
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -59,20 +57,23 @@ fun BranchBadge(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
     modifier = Modifier
-      .clip(RoundedCornerShape(Theme.sizing.borderRadius.medium))
+      .clip(RoundedCornerShape(NewAppTheme.borderRadius.md))
       .background(backgroundColor)
-      .padding(horizontal = Theme.spacing.small, vertical = Theme.spacing.tiny)
+      .padding(NewAppTheme.spacing.`2`)
   ) {
     Icon(
       painter = painterResource(R.drawable.branch_icon),
       contentDescription = "Branch Icon",
       tint = textColor,
-      modifier = Modifier.size(12.dp)
+      modifier = Modifier.size(16.dp)
     )
 
     NewText(
       "Branch: $name",
-      style = NewAppTheme.font.sm,
+      style = NewAppTheme.font.sm.merge(
+        fontFamily = NewAppTheme.font.mono,
+        fontSize = 13.sp
+      ),
       color = textColor
     )
   }
@@ -177,144 +178,135 @@ fun BranchesScreen(
         }
       }
 
-      RoundedSurface(
-        color = NewAppTheme.colors.background.subtle
+      LazyColumn(
+        state = lazyListState,
+        verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
       ) {
-        LazyColumn(
-          state = lazyListState
-        ) {
-          itemsIndexed(items = branches) { index, branch ->
-            Column {
-              Button(
-                modifier = Modifier
-                  .background(
-                    NewAppTheme.colors.background.subtle,
-                    shape = RoundedCornerShape(NewAppTheme.borderRadius.xl)
-                  ),
-                onClick = {
+        items(items = branches) { branch ->
+          RoundedSurface(
+            color = NewAppTheme.colors.background.subtle,
+            borderRadius = NewAppTheme.borderRadius.xl
+          ) {
+            Column(
+              verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+              modifier = Modifier
+                .clickable {
                   onAction(BranchesAction.OpenBranch(branch.name))
                 }
+                .padding(NewAppTheme.spacing.`3`)
+            ) {
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                  .fillMaxWidth()
               ) {
-                Column(
-                  verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
-                  modifier = Modifier.padding(NewAppTheme.spacing.`3`)
-                ) {
-                  Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                      .fillMaxWidth()
-                  ) {
-                    BranchBadge(branch.name)
+                BranchBadge(branch.name)
 
-                    Icon(
-                      painter = painterResource(R.drawable.chevron_right),
-                      contentDescription = "Chevron Icon",
-                      tint = NewAppTheme.colors.icon.tertiary,
-                      modifier = Modifier.size(16.dp)
-                    )
-                  }
-
-                  val update = branch.compatibleUpdate
-                  if (update == null) {
-                    Row(
-                      horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
-                      verticalAlignment = Alignment.CenterVertically
-                    ) {
-                      Icon(
-                        painter = painterResource(expo.modules.devmenu.R.drawable.alert),
-                        contentDescription = "Warning Icon",
-                        tint = NewAppTheme.colors.icon.warning,
-                        modifier = Modifier.size(20.dp)
-                      )
-
-                      NewText(
-                        "No compatible update found for this branch.",
-                        color = NewAppTheme.colors.text.warning,
-                        style = NewAppTheme.font.sm.merge(
-                          fontWeight = FontWeight.Medium
-                        )
-                      )
-                    }
-                  } else {
-                    val formatedTime = DateFormat.formatUpdateDate(update.createdAt)
-
-                    Row(
-                      verticalAlignment = Alignment.CenterVertically,
-                      horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
-                    ) {
-                      Icon(
-                        painter = painterResource(R.drawable.update_icon),
-                        contentDescription = "Update Icon",
-                        tint = NewAppTheme.colors.icon.tertiary,
-                        modifier = Modifier.size(20.dp)
-                      )
-
-                      Column(
-                        verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
-                        modifier = Modifier.padding(end = 20.dp)
-                      ) {
-                        NewText(
-                          "Update: \"${update.name}\"",
-                          style = NewAppTheme.font.md.merge(
-                            fontWeight = FontWeight.Medium
-                          ),
-                          maxLines = 1,
-                          overflow = TextOverflow.Ellipsis
-                        )
-
-                        NewText(
-                          "Published: $formatedTime",
-                          style = NewAppTheme.font.sm,
-                          color = NewAppTheme.colors.text.secondary
-                        )
-                      }
-                    }
-                  }
-                }
+                Icon(
+                  painter = painterResource(R.drawable.chevron_right),
+                  contentDescription = "Chevron Icon",
+                  tint = NewAppTheme.colors.icon.quaternary,
+                  modifier = Modifier.size(20.dp)
+                )
               }
 
-              if (index < branches.size - 1) {
-                Divider(
-                  thickness = 0.5.dp,
-                  color = NewAppTheme.colors.border.default
-                )
+              val update = branch.compatibleUpdate
+              if (update == null) {
+                Row(
+                  horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(NewAppTheme.borderRadius.md))
+                    .background(NewAppTheme.colors.background.warning)
+                    .padding(NewAppTheme.spacing.`2`)
+                ) {
+                  Icon(
+                    painter = painterResource(expo.modules.devmenu.R.drawable.alert),
+                    contentDescription = "Warning Icon",
+                    tint = NewAppTheme.colors.icon.warning,
+                    modifier = Modifier.size(20.dp)
+                  )
+
+                  NewText(
+                    "No compatible update found for this branch.",
+                    color = NewAppTheme.colors.text.warning,
+                    style = NewAppTheme.font.sm.merge(
+                      fontWeight = FontWeight.Medium
+                    )
+                  )
+                }
+              } else {
+                val formatedTime = DateFormat.formatUpdateDate(update.createdAt)
+
+                Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+                ) {
+                  Icon(
+                    painter = painterResource(R.drawable.update_icon),
+                    contentDescription = "Update Icon",
+                    tint = NewAppTheme.colors.icon.quaternary,
+                    modifier = Modifier.size(20.dp)
+                  )
+
+                  Column(
+                    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
+                    modifier = Modifier.padding(end = 20.dp)
+                  ) {
+                    NewText(
+                      "Update: \"${update.name}\"",
+                      style = NewAppTheme.font.md.merge(
+                        fontWeight = FontWeight.Medium
+                      ),
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis
+                    )
+
+                    NewText(
+                      "Published: $formatedTime",
+                      style = NewAppTheme.font.sm,
+                      color = NewAppTheme.colors.text.secondary
+                    )
+                  }
+                }
               }
             }
           }
+        }
 
-          if (isLoading) {
-            item {
-              Row(
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = NewAppTheme.spacing.`2`),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-              ) {
-                CircularProgressBar(
-                  size = Theme.sizing.icon.large
-                )
-              }
+        if (isLoading) {
+          item {
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = NewAppTheme.spacing.`2`),
+              horizontalArrangement = Arrangement.Center,
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+              CircularProgressBar(
+                size = 44.dp
+              )
             }
-          } else if (branches.isEmpty()) {
-            item {
-              Row(
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(NewAppTheme.spacing.`3`),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-              ) {
-                NewText(
-                  "No branches available.",
-                  style = NewAppTheme.font.lg.merge(
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Medium
-                  ),
-                  color = NewAppTheme.colors.text.secondary
-                )
-              }
+          }
+        } else if (branches.isEmpty()) {
+          item {
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(NewAppTheme.spacing.`3`),
+              horizontalArrangement = Arrangement.Center,
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+              NewText(
+                "No branches available.",
+                style = NewAppTheme.font.lg.merge(
+                  textAlign = TextAlign.Center,
+                  fontWeight = FontWeight.Medium
+                ),
+                color = NewAppTheme.colors.text.secondary
+              )
             }
           }
         }

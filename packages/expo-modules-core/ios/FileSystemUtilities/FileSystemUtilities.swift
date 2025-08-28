@@ -56,7 +56,7 @@ public struct FileSystemUtilities {
     if !permissionForInternalDirs.contains(.none) {
       return permissionForInternalDirs
     }
-    return getExternalPathPermissions(path)
+    return getExternalPathPermissions(path, appContext)
   }
 
   private static func getInternalPathPermissions(_ appContext: AppContext?, for url: URL) -> [FileSystemPermissionFlags] {
@@ -84,7 +84,10 @@ public struct FileSystemUtilities {
     return [.none]
   }
 
-  private static func getExternalPathPermissions(_ url: URL) -> [FileSystemPermissionFlags] {
+  private static func getExternalPathPermissions(_ url: URL, _ appContext: AppContext?) -> [FileSystemPermissionFlags] {
+    if appContext?.config.scoped ?? false && url.path.contains("ExponentExperienceData") {
+      return []
+    }
     var filePermissions: [FileSystemPermissionFlags] = []
 
     if FileManager.default.isReadableFile(atPath: url.path) {

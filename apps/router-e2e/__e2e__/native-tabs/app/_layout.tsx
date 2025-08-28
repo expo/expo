@@ -82,7 +82,9 @@ export default function Layout() {
             <Badge>1</Badge>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="explore">
-            <Icon src={<VectorIcon family={MIcons} name="compass-calibration" />} />
+            {Platform.OS !== 'web' && (
+              <Icon src={<VectorIcon family={MIcons} name="compass-calibration" />} />
+            )}
             <Label>Explore</Label>
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="dynamic">

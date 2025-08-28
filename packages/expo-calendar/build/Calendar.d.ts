@@ -335,6 +335,12 @@ export type Reminder = {
      */
     dueDate?: string | Date;
     /**
+     * Indicates if the reminder has a time specified for the due date.
+     *
+     * @platform ios
+     */
+    allDay?: boolean;
+    /**
      * Indicates whether or not the task has been completed.
      */
     completed?: boolean;

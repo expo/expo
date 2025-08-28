@@ -41,7 +41,6 @@ import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun BranchScreen(
@@ -200,7 +199,7 @@ fun BranchScreen(
                 verticalAlignment = Alignment.CenterVertically
               ) {
                 CircularProgressBar(
-                  size = Theme.sizing.icon.large
+                  size = 44.dp
                 )
               }
             }

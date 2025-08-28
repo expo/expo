@@ -6,11 +6,16 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for all‑day reminders ([#39028](https://github.com/expo/expo/pull/39028)) by [@dominik-miskovic](https://github.com/dominik-miskovic)
 - [next] Implement `ExpoCalendar@next`  ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
 
 ## 15.0.3 — 2025-08-25
 

@@ -10,7 +10,7 @@ const SLUG = /\[.+?\]/g;
 // /(group)/path/(group2)/route - Match [(group), (group2)]
 const GROUP = /(?:^|\/)\(.*?\)/g;
 const urlParams = "${`?${string}` | `#${string}` | ''}";
-function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIgnoreComments = false, } = {}) {
+function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIgnoreComments = false, unstable_useServerMiddleware = false, } = {}) {
     let routeNode = null;
     try {
         routeNode = (0, getRoutes_1.getRoutes)(ctx, {
@@ -20,6 +20,8 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
             ignoreEntryPoints: true,
             ignoreRequireErrors: true,
             importMode: 'async', // Don't load the file
+            // NOTE(@hassankhan): We should ensure that getRoutes() doesn't have optional options in the future
+            unstable_useServerMiddleware,
         });
     }
     catch {

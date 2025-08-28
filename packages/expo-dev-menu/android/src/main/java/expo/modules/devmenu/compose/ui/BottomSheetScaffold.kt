@@ -1,9 +1,10 @@
-package expo.modules.devmenu.compose
+package expo.modules.devmenu.compose.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,7 +38,7 @@ fun rememberBottomSheetState() = rememberModalBottomSheetState(
 )
 
 @Composable
-fun BottomSheet(
+fun BottomSheetScaffold(
   state: ModalBottomSheetState,
   onDismiss: () -> Unit = {},
   header: @Composable () -> Unit = {},
@@ -62,8 +63,10 @@ fun BottomSheet(
         .background(NewAppTheme.colors.background.default)
     ) {
       Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+          .fillMaxWidth()
+          .navigationBarsPadding()
       ) {
         Box(modifier = Modifier.padding(NewAppTheme.spacing.`4`)) {
           header()
@@ -75,7 +78,10 @@ fun BottomSheet(
             .fillMaxWidth()
             .verticalScroll(scrollState)
         ) {
-          Box(modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)) {
+          Box(
+            modifier = Modifier
+              .padding(horizontal = NewAppTheme.spacing.`4`)
+          ) {
             content()
           }
         }

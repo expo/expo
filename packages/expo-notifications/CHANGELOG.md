@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.32.6 — 2025-08-27
+
+### 🐛 Bug fixes
+
+- refactor ExpoPushTokenManager promise handling ([#39179](https://github.com/expo/expo/pull/39179) by [@vonovak](https://github.com/vonovak))
+
 ## 0.32.5 — 2025-08-25
 
 _This version does not introduce any user-facing changes._

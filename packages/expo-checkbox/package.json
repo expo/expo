@@ -1,6 +1,6 @@
 {
   "name": "expo-checkbox",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "Basic boolean input for Android, iOS and web.",
   "main": "build/Checkbox.js",
   "types": "build/Checkbox.d.ts",
@@ -34,7 +34,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.3"
+    "expo-module-scripts": "^5.0.4"
   },
   "peerDependencies": {
     "react": "*",

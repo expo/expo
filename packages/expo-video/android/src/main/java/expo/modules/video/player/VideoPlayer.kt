@@ -52,7 +52,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
   private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
-  val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
+  val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
   val trackSelector = DefaultTrackSelector(context)

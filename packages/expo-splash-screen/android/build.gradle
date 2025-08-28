@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '31.0.4'
+version = '31.0.5'
 
 android {
   namespace "expo.modules.splashscreen"
   defaultConfig {
     versionCode 17
-    versionName '31.0.4'
+    versionName '31.0.5'
   }
 }
 

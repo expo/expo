@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Bring back correct scoping for Expo Go. ([#39186](https://github.com/expo/expo/pull/39186) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
+
+## 3.0.8 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.7 — 2025-08-26
+
+### 🐛 Bug fixes
+
+- [Android] Fix ErrorManager not receiving error/warning events on the JS side. ([#39126](https://github.com/expo/expo/pull/39126) by [@behenate](https://github.com/behenate))
 
 ## 3.0.6 — 2025-08-25
 
