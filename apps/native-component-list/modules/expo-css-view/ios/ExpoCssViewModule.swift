@@ -8,6 +8,10 @@ public class ExpoCssViewModule: Module {
       Prop("filter") { (view, filter: [[String: Any]]?) in
         view.setFilter(filter)
       }
+      
+      Prop("backdropFilter") { (view, backdropFilter: [[String: Any]]?) in
+        view.setBackdropFilter(backdropFilter)
+      }
     }
   }
 }
