@@ -437,7 +437,6 @@ private func emailsFor(contact person: CNContact) -> [[String: Any]]? {
   return results.isEmpty ? nil : results
 }
 
-
 private func phoneNumbersFor(contact person: CNContact) -> [[String: Any]]? {
   var results = [[String: Any]]()
 
