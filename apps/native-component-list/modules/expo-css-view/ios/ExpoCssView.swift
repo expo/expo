@@ -151,6 +151,12 @@ class ExpoCssView: ExpoView {
           layerFilters.add(filter)
         }
       }
+
+      if let invertAmount = filterConfig["invert"] as? CGFloat {
+        if let filter = getInvertFilter(amount: invertAmount) {
+          layerFilters.add(filter)
+        }
+      }
     }
     
     self.layer.filters = layerFilters as? [Any]
@@ -204,6 +210,12 @@ class ExpoCssView: ExpoView {
         // Handle contrast filter
         if let contrastAmount = filterConfig["contrast"] as? CGFloat {
           if let filter = getContrastFilter(amount: contrastAmount) {
+            layerFilters.add(filter)
+          }
+        }
+
+        if let invertAmount = filterConfig["invert"] as? CGFloat {
+          if let filter = getInvertFilter(amount: invertAmount) {
             layerFilters.add(filter)
           }
         }
@@ -297,25 +309,6 @@ class ExpoCssView: ExpoView {
     return nil
   }
   
-  private func getHueRotateFilter(angle: CGFloat) -> NSObject? {
-    guard let FilterClass = Self.FilterClass else { return nil }
-    
-    let selector = NSSelectorFromString("filterWithType:")
-    guard FilterClass.responds(to: selector) else { return nil }
-    
-    let methodIMP = FilterClass.method(for: selector)
-    let filterWithType = unsafeBitCast(methodIMP, to: (@convention(c) (AnyClass, Selector, NSString) -> Any).self)
-    let hueAdjustFilter = filterWithType(FilterClass, selector, "colorHueAdjust")
-    
-    if let filter = hueAdjustFilter as? NSObject {
-      // Convert degrees to radians
-      let angleInRadians = angle * CGFloat.pi / 180.0
-      filter.setValue(angleInRadians, forKey: "inputAngle")
-      return filter
-    }
-    return nil
-  }
-  
   private func getInvertFilter(amount: CGFloat) -> NSObject? {
     guard let FilterClass = Self.FilterClass else { return nil }
     
@@ -350,24 +343,5 @@ class ExpoCssView: ExpoView {
     return nil
   }
   
-  private func getSepiaFilter(amount: CGFloat) -> NSObject? {
-    guard let FilterClass = Self.FilterClass else { return nil }
-    
-    let selector = NSSelectorFromString("filterWithType:")
-    guard FilterClass.responds(to: selector) else { return nil }
-    
-    let methodIMP = FilterClass.method(for: selector)
-    let filterWithType = unsafeBitCast(methodIMP, to: (@convention(c) (AnyClass, Selector, NSString) -> Any).self)
-    let sepiaFilter = filterWithType(FilterClass, selector, "colorMonochrome")
-    
-    if let filter = sepiaFilter as? NSObject {
-      // Set sepia color (brownish tone)
-      let sepiaColor = UIColor(red: 0.76, green: 0.69, blue: 0.56, alpha: 1.0)
-      filter.setValue(sepiaColor, forKey: "inputColor")
-      filter.setValue(amount, forKey: "inputIntensity")
-      return filter
-    }
-    return nil
-  }
 }
 
