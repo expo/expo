@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@expo/dom-webview": "0.2.4",
-    "@expo/vector-icons": "^15.0.0",
+    "@expo/vector-icons": "^15.0.2",
     "expo": "~54.0.0-preview.10",
     "expo-haptics": "~15.0.4",
     "expo-linking": "~8.0.4",
