@@ -1762,10 +1762,10 @@
   resolved "https://registry.yarnpkg.com/@expo/sudo-prompt/-/sudo-prompt-9.3.2.tgz#0fd2813402a42988e49145cab220e25bea74b308"
   integrity sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw==
 
-"@expo/vector-icons@^15.0.0":
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-15.0.0.tgz#3e4e30eb17b44b7b44a559f9c7fabcaf9794bc77"
-  integrity sha512-tWmVdNzmpfoffC0MQzwUs5C/uaZDtgrUk+SMpegBcVaSKmR5B/uN0O7B7KvnZwkzWoODsATYx9U4wUyogTcMyw==
+"@expo/vector-icons@^15.0.1", "@expo/vector-icons@~15.0.1":
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-15.0.1.tgz#20f23762a27e565467957b16ab64da73e00fb9bf"
+  integrity sha512-59ej0hbW1G5f1v+UcuIaAqVHriPYHk2HeG3GVnflmBNMJ/R3lY82B4yoXz8KS6yTt3uD7WU5hl1y1Ze0GXsHfg==
 
 "@expo/ws-tunnel@^1.0.1":
   version "1.0.1"
