@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Show whether the project is using CNG when running prebuild
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

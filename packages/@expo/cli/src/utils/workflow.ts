@@ -28,7 +28,7 @@ export async function resolveWorkflowAsync(
       return 'not-configured';
     }
 
-    return 'managed';
+    return 'generic';
   }
 
   const vcsRootPath = path.normalize(await vcsClient.getRootPathAsync());

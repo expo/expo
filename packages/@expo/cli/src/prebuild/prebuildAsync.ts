@@ -220,10 +220,10 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
   if (uniqueWorkflows.length === 1) {
     const workflow = uniqueWorkflows[0];
 
-    if (workflow === 'generic') {
-      Log.warn(chalk.default.yellow(`NOT using Continuous Native Generation. ${cngDocs}\n`));
-    } else {
+    if (workflow === 'managed') {
       Log.warn(chalk.default.yellow(`Using Continuous Native Generation. ${cngDocs}\n`));
+    } else {
+      Log.warn(chalk.default.yellow(`NOT using Continuous Native Generation. ${cngDocs}\n`));
     }
   } else {
     let message = '';
