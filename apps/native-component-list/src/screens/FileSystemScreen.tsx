@@ -329,7 +329,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
   };
 
   _pickDirectory = async () => {
-    const directory = await Directory.pickDirectoryAsync();
+    const directory = await Directory.pickDirectoryAsync(Paths.document.uri);
     const content = directory.list().map((f) => Paths.basename(f.uri));
     const maxDisplay = 10;
     const displayContent = content.slice(0, maxDisplay);

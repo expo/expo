@@ -93,6 +93,7 @@ export async function test({ describe, expect, it, ...t }) {
           expect(dir.exists).toBe(true);
         });
       }
+
       if (Platform.OS === 'ios') {
         it('allows picking files', async () => {
           const file = new File(testDirectory, 'selectMe.txt');
@@ -100,10 +101,6 @@ export async function test({ describe, expect, it, ...t }) {
           const selectedFile = await File.pickFileAsync(testDirectory);
           expect(selectedFile.exists).toBe(true);
           expect(selectedFile.textSync()).toBe('test');
-
-          const directory = new Directory(testDirectory);
-          directory.delete();
-          expect(directory.exists).toBe(false);
         });
 
         it('allows picking directories', async () => {
