@@ -149,9 +149,7 @@ internal final class ExpoCalendarReminder: ExpoCalendarItem {
 
     guard !components.isEmpty else { return false }
 
-    let result = components.allSatisfy(isAllDayDateComponents);
-
-    return result
+    return components.allSatisfy(isAllDayDateComponents)
   }
 
   private func isAllDayDateComponents(_ components: DateComponents) -> Bool {
