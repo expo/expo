@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix wrong dimensions reported for portrait images ([#39230](https://github.com/expo/expo/pull/39230) by [@hirbod](https://github.com/hirbod))
+
 ### 💡 Others
 
 ## 17.0.4 — 2025-08-27
