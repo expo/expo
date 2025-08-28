@@ -160,7 +160,7 @@ export default function FontScreen() {
                   width: renderedFontAwesomeImage.width,
                   backgroundColor: 'grey',
                 }}
-                resizeMode="contain"
+                contentFit="cover"
               />
             </>
           )}
@@ -177,7 +177,7 @@ export default function FontScreen() {
                   width: renderedFontAsImage.width,
                   backgroundColor: 'grey',
                 }}
-                resizeMode="contain"
+                contentFit="cover"
               />
             </>
           )}
