@@ -70,15 +70,15 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumen
 
   let utiTypes: [String]
   if let mimeType = mimeType {
-      utiTypes = [toUTI(mimeType: mimeType)]
+    utiTypes = [toUTI(mimeType: mimeType)]
   } else {
-      utiTypes = [kUTTypeItem as String]
+    utiTypes = [kUTTypeItem as String]
   }
 
   let picker = UIDocumentPickerViewController(documentTypes: utiTypes, in: .import)
 
   if let initialUri = initialUri {
-      picker.directoryURL = initialUri
+    picker.directoryURL = initialUri
   }
 
   return picker
