@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Show whether the project is using CNG when running prebuild
+- Show whether the project is using CNG when running prebuild ([#38821](https://github.com/expo/expo/pull/38821) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
