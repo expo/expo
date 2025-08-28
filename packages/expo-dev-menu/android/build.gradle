@@ -77,7 +77,7 @@ dependencies {
 
   implementation("com.composables:core:1.37.0")
 
-  implementation 'io.github.lukmccall:radix-ui-colors:1.0.1'
+  api 'io.github.lukmccall:radix-ui-colors:1.0.1'
 
   // Needed by gesture handler
   implementation "androidx.core:core-ktx:1.6.0"

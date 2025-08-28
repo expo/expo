@@ -28,7 +28,6 @@ import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
 
 @Composable
 fun Accordion(
@@ -95,6 +94,6 @@ fun Accordion(
 @Preview(showBackground = true, heightDp = 200, widthDp = 300)
 fun AccordionVariantPreview() {
   Accordion(text = "Enter URL manually") {
-    Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac nisl interdum, mattis purus a, consequat ipsum. Aliquam sem mauris, egestas a elit a, lacinia efficitur nisi. Maecenas scelerisque erat nisi, ac interdum mauris volutpat vel. Proin sed lectus at purus interdum porta. Ut mollis feugiat dignissim.")
+    NewText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac nisl interdum, mattis purus a, consequat ipsum. Aliquam sem mauris, egestas a elit a, lacinia efficitur nisi. Maecenas scelerisque erat nisi, ac interdum mauris volutpat vel. Proin sed lectus at purus interdum porta. Ut mollis feugiat dignissim.")
   }
 }
