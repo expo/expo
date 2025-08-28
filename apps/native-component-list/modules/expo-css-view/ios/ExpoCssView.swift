@@ -29,14 +29,12 @@ class ExpoCssView: ExpoView {
     let layerFilters = NSMutableArray()
     
     for filterConfig in filters {
-      // Handle blur filter
       if let blurRadius = filterConfig["blur"] as? CGFloat {
         if let filter = getBlurFilter(radius: blurRadius) {
           layerFilters.add(filter)
         }
       }
       
-      // Handle grayscale filter  
       if let grayscaleAmount = filterConfig["grayscale"] as? CGFloat {
         if let filter = getGrayscaleFilter(amount: grayscaleAmount) {
           layerFilters.add(filter)
@@ -64,7 +62,6 @@ class ExpoCssView: ExpoView {
       let layerFilters = NSMutableArray()
       
       for filterConfig in filters {
-        // Handle blur filter
         if let blurRadius = filterConfig["blur"] as? CGFloat {
           if let filter = getBlurFilter(radius: blurRadius) {
             layerFilters.add(filter)

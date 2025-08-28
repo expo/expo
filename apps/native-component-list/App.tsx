@@ -58,12 +58,12 @@ export default function App() {
           height: 300,
           width: 300,
           backgroundColor: 'rgb(255, 255, 255, 0.1)',
+          backdropFilter: [
+            {
+              grayscale: 1,
+            },
+          ],
         }}
-        backdropFilter={[
-          {
-            grayscale: 0,
-          },
-        ]}
       />
     </View>
   );
