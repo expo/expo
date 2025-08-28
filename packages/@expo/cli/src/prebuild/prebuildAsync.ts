@@ -78,6 +78,9 @@ export async function prebuildAsync(
       );
     }
   }
+
+  await checkCNG(options.platforms, projectRoot);
+
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
@@ -181,4 +184,59 @@ export async function prebuildAsync(
     hasNewProjectFiles,
     exp,
   };
+}
+
+async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
+  const { resolveWorkflowAsync } = await import('../utils/workflow.js');
+  const { Log } = await import('../log.js');
+  const chalk = await import('chalk');
+
+  const nativePlatforms = platforms.filter(
+    (platform) => platform === 'ios' || platform === 'android'
+  );
+  if (nativePlatforms.length === 0) return;
+
+  const workflows: { platform: string; workflow: string }[] = [];
+
+  for (const platform of nativePlatforms) {
+    try {
+      const workflow = await resolveWorkflowAsync(projectRoot, platform);
+      workflows.push({ platform, workflow });
+    } catch (error) {
+      debug(`Could not determine workflow for ${platform}: ${error}`);
+    }
+  }
+
+  if (workflows.length === 0) return;
+
+  const uniqueWorkflows = [...new Set(workflows.map((w) => w.workflow))];
+
+  if (uniqueWorkflows.length === 1) {
+    const workflow = uniqueWorkflows[0];
+
+    if (workflow === 'generic') {
+      Log.warn(
+        chalk.default.yellow(
+          `NOT using Continuous Native Generation. https://docs.expo.dev/workflow/continuous-native-generation/\n`
+        )
+      );
+    } else {
+      Log.warn(
+        chalk.default.yellow(
+          `Using Continuous Native Generation. https://docs.expo.dev/workflow/continuous-native-generation/\n`
+        )
+      );
+    }
+  } else {
+    let message = '';
+    workflows.forEach(({ platform, workflow }) => {
+      if (workflow === 'generic') {
+        message += `The ${platform} project NOT using the Continuous Native Generation.\n`;
+      } else {
+        message += `The ${platform} project is using the Continuous Native Generation.\n`;
+      }
+    });
+    message += 'https://docs.expo.dev/workflow/continuous-native-generation\n';
+    Log.warn(chalk.default.yellow(message));
+  }
 }
