@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.0-alpha.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
 ## 0.2.0-alpha.5 — 2025-08-25
 
 ### 🎉 New features

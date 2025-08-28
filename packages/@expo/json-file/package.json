@@ -1,6 +1,6 @@
 {
   "name": "@expo/json-file",
-  "version": "10.0.3",
+  "version": "10.0.4",
   "description": "A module for reading, writing, and manipulating JSON files",
   "main": "build/JsonFile.js",
   "scripts": {

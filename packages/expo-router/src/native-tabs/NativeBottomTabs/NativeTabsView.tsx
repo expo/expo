@@ -17,6 +17,7 @@ import {
   createStandardAppearanceFromOptions,
 } from './appearance';
 import {
+  SUPPORTED_BLUR_EFFECTS,
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
   type NativeTabOptions,
@@ -28,22 +29,28 @@ import { shouldTabBeVisible } from './utils';
 // Otherwise user may see glitches when switching between tabs.
 featureFlags.experiment.controlledBottomTabs = false;
 
+const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
+
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const {
-    builder,
-    minimizeBehavior,
-    disableIndicator,
-    focusedIndex,
-    disableTransparentOnScrollEdge,
-  } = props;
+  const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
   const { state, descriptors, navigation } = builder;
   const { routes } = state;
+
+  let blurEffect = props.blurEffect;
+  if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+    console.warn(
+      `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map(
+        (effect) => `"${effect}"`
+      ).join(', ')}`
+    );
+    blurEffect = undefined;
+  }
 
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
   let standardAppearance = convertStyleToAppearance({
     ...props.labelStyle,
     iconColor: props.iconColor,
-    blurEffect: props.blurEffect,
+    blurEffect,
     backgroundColor: props.backgroundColor,
     badgeBackgroundColor: props.badgeBackgroundColor,
   });
@@ -56,8 +63,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const scrollEdgeAppearance = convertStyleToAppearance({
     ...props.labelStyle,
     iconColor: props.iconColor,
-    blurEffect: disableTransparentOnScrollEdge ? props.blurEffect : 'none',
-    backgroundColor: disableTransparentOnScrollEdge ? props.backgroundColor : null,
+    blurEffect,
+    backgroundColor: props.backgroundColor,
     badgeBackgroundColor: props.badgeBackgroundColor,
   });
 

@@ -131,10 +131,8 @@ fun AppHeader(
 @Composable
 @Preview(showBackground = true, widthDp = 300)
 fun AppHeaderPreview() {
-  ScreenHeaderContainer {
-    AppHeader(
-      appName = "BareExpo",
-      modifier = Modifier.padding(NewAppTheme.spacing.`4`)
-    )
-  }
+  AppHeader(
+    appName = "BareExpo",
+    modifier = Modifier.padding(NewAppTheme.spacing.`4`)
+  )
 }
