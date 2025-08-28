@@ -423,16 +423,20 @@ private func emailsFor(contact person: CNContact) -> [[String: Any]]? {
 
   for container in person.emailAddresses {
     let emailAddress = container.value as String
+    let emailLabel: String
     if let label = container.label {
-      let emailLabel = CNLabeledValue<NSString>.localizedString(forLabel: label)
-      results.append(["email": emailAddress, "label": emailLabel, "id": container.identifier])
+      emailLabel = CNLabeledValue<NSString>.localizedString(forLabel: label)
     } else {
-      results.append(["email": emailAddress, "id": container.identifier])
+      // Use localized "other" label to match iOS's standard.
+      // This ensures iCloud contacts (which could have no label) still have a consistent label.
+      emailLabel = CNLabeledValue<NSString>.localizedString(forLabel: CNLabelOther)
     }
+    results.append(["email": emailAddress, "label": emailLabel, "id": container.identifier])
   }
 
   return results.isEmpty ? nil : results
 }
+
 
 private func phoneNumbersFor(contact person: CNContact) -> [[String: Any]]? {
   var results = [[String: Any]]()
