@@ -19,6 +19,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - fix `CNContactViewController` presentation ([#39004](https://github.com/expo/expo/pull/39004) by [@vonovak](https://github.com/vonovak))
+- [iOS] Fixed undefined labels for emails in contacts. ([#39222](https://github.com/expo/expo/pull/39222) by [@NorseGaud](https://github.com/hryhoriiK97)
 
 ## 15.0.2 — 2025-08-16
 
