@@ -13,10 +13,9 @@ internal protocol AnyStaticFunctionDefinition: AnyFunctionDefinition {
 /**
  Represents a static function that can only be called synchronously.
  */
-public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>: SyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition {
-  var isStatic: Bool {
-    get { true }
-  }
+public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
+  SyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition {
+  let isStatic = true
 
   override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any {
     return try super.call(by: nil, withArguments: args, appContext: appContext)
@@ -30,10 +29,9 @@ public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
 /**
  Represents a static function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
-public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AsyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition {
-  var isStatic: Bool {
-    get { true }
-  }
+public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>:
+  AsyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition {
+  let isStatic = true
 
   override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
     return super.call(by: nil, withArguments: args, appContext: appContext, callback: callback)
