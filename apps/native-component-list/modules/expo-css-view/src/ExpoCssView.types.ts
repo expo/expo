@@ -12,4 +12,5 @@ export type ChangeEventPayload = {
 
 export type ExpoCssViewProps = {
   style?: StyleProp<ViewStyle & { backdropFilter?: ViewStyle['filter'] }>;
+  children?: React.ReactNode;
 };
