@@ -9,9 +9,8 @@ inExpoGo: true
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { SnackInline } from '~/ui/components/Snippet';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
 
 [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 
@@ -19,7 +18,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Installation
 
-<APIInstallSection href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/#platform-specific-setup" />
+<Terminal cmd={['$ npx expo install react-native-reanimated react-native-worklets']} />
 
 <br />
 

@@ -336,6 +336,10 @@ export default class FileSystemScreen extends React.Component<object, State> {
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
+        <HeadingText>FileSystem</HeadingText>
+        <ListButton onPress={this._pickFile} title="Pick file" />
+        <ListButton onPress={this._pickDirectory} title="Pick directory" />
+        <HeadingText>FileSystem Legacy</HeadingText>
         <ListButton onPress={this._download} title="Download file (1.1MB)" />
         <ListButton onPress={this._startDownloading} title="Start Downloading file (8.4MB)" />
         {this.state.downloadProgress ? (
@@ -400,8 +404,6 @@ export default class FileSystemScreen extends React.Component<object, State> {
             )}
           </>
         )}
-        <ListButton onPress={this._pickFile} title="Pick file" />
-        <ListButton onPress={this._pickDirectory} title="Pick directory" />
       </ScrollView>
     );
   }

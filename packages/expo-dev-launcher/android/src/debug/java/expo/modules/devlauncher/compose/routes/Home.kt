@@ -13,7 +13,8 @@ import expo.modules.devlauncher.compose.screens.HomeScreen
 @Composable
 fun HomeRoute(
   navController: NavController,
-  onProfileClick: () -> Unit
+  onProfileClick: () -> Unit,
+  onDevServersClick: () -> Unit
 ) {
   DefaultScreenContainer {
     val viewModel = viewModel<HomeViewModel>()
@@ -42,7 +43,8 @@ fun HomeRoute(
           else -> viewModel.onAction(action)
         }
       },
-      onProfileClick = onProfileClick
+      onProfileClick = onProfileClick,
+      onDevServersClick = onDevServersClick
     )
   }
 }

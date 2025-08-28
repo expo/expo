@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Add pickFileAsync support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
+- [iOS] Add `pickFileAsync` support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 19.0.6 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
 
 ## 19.0.5 — 2025-08-25
 

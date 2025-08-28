@@ -27,7 +27,8 @@ data class AutolinkingOptions(
  */
 open class ExpoGradleExtension(
   val config: ExpoAutolinkingConfig,
-  val options: AutolinkingOptions = AutolinkingOptions()
+  val options: AutolinkingOptions = AutolinkingOptions(),
+  val projectRoot: java.io.File,
 ) {
   /**
    * MD5 hash of the configuration.
