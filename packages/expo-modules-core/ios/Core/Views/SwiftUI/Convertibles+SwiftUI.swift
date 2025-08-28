@@ -14,7 +14,6 @@ extension Color: Convertible {
     }
     throw Conversions.ConvertingException<Color>(value)
   }
-  
   public static func convert(from value: Any?, appContext: AppContext) throws -> Color {
     return try convert(from: value)
   }
