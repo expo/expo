@@ -3602,32 +3602,10 @@
     metro-core "^0.83.1"
     semver "^7.1.3"
 
-"@react-native/debugger-frontend@0.80.1":
-  version "0.80.1"
-  resolved "https://registry.yarnpkg.com/@react-native/debugger-frontend/-/debugger-frontend-0.80.1.tgz#c21e6cf0deb5ebe628769277e60d1573006a66a0"
-  integrity sha512-5dQJdX1ZS4dINNw51KNsDIL+A06sZQd2hqN2Pldq5SavxAwEJh5NxAx7K+lutKhwp1By5gxd6/9ruVt+9NCvKA==
-
 "@react-native/debugger-frontend@0.81.1":
   version "0.81.1"
   resolved "https://registry.yarnpkg.com/@react-native/debugger-frontend/-/debugger-frontend-0.81.1.tgz#db71318e9cfe973cd731c59d2361700b8422a304"
   integrity sha512-dwKv1EqKD+vONN4xsfyTXxn291CNl1LeBpaHhNGWASK1GO4qlyExMs4TtTjN57BnYHikR9PzqPWcUcfzpVRaLg==
-
-"@react-native/dev-middleware@0.80.1":
-  version "0.80.1"
-  resolved "https://registry.yarnpkg.com/@react-native/dev-middleware/-/dev-middleware-0.80.1.tgz#89914c0cba38605e7d751acdadb61e99469bed05"
-  integrity sha512-EBnZ3s6+hGAlUggDvo9uI37Xh0vG55H2rr3A6l6ww7+sgNuUz+wEJ63mGINiU6DwzQSgr6av7rjrVERxKH6vxg==
-  dependencies:
-    "@isaacs/ttlcache" "^1.4.1"
-    "@react-native/debugger-frontend" "0.80.1"
-    chrome-launcher "^0.15.2"
-    chromium-edge-launcher "^0.2.0"
-    connect "^3.6.5"
-    debug "^4.4.0"
-    invariant "^2.2.4"
-    nullthrows "^1.1.1"
-    open "^7.0.3"
-    serve-static "^1.16.2"
-    ws "^6.2.3"
 
 "@react-native/dev-middleware@0.81.1":
   version "0.81.1"

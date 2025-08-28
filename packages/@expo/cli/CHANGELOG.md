@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump to `@react-native/dev-middleware@0.81.1` ([#39206](https://github.com/expo/expo/pull/39206) by [@kitten](https://github.com/kitten))
+
 ## 0.26.4 — 2025-08-27
 
 ### 💡 Others
