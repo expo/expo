@@ -1,0 +1,104 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(ChioscoApp());
+}
+
+class ChioscoApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Prenotazioni Chiosco',
+      theme: ThemeData(primarySwatch: Colors.green),
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  final List<String> campi = ["Basket", "Calcetto", "Tennis"];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Prenotazioni Chiosco")),
+      body: ListView.builder(
+        itemCount: campi.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(campi[index]),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PrenotazioneForm(campo: campi[index])),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class PrenotazioneForm extends StatefulWidget {
+  final String campo;
+  PrenotazioneForm({required this.campo});
+
+  @override
+  _PrenotazioneFormState createState() => _PrenotazioneFormState();
+}
+
+class _PrenotazioneFormState extends State<PrenotazioneForm> {
+  final _formKey = GlobalKey<FormState>();
+  String nome = "", cognome = "", email = "", telefono = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Prenotazione ${widget.campo}")),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: "Nome"),
+                validator: (val) => val!.isEmpty ? "Campo obbligatorio" : null,
+                onSaved: (val) => nome = val!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Cognome"),
+                validator: (val) => val!.isEmpty ? "Campo obbligatorio" : null,
+                onSaved: (val) => cognome = val!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Email"),
+                validator: (val) => val!.contains("@") ? null : "Email non valida",
+                onSaved: (val) => email = val!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Telefono"),
+                validator: (val) => val!.length < 6 ? "Numero non valido" : null,
+                onSaved: (val) => telefono = val!,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Text("Conferma Prenotazione"),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Prenotazione confermata per ${widget.campo}")),
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
