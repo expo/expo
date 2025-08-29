@@ -74,7 +74,6 @@ export type AudioPlayerOptions = {
      *
      * > **Note:** If needed, you can manually deactivate the audio session using `setIsAudioActiveAsync(false)`.
      *
-     *
      * @platform ios
      * @default false
      */
