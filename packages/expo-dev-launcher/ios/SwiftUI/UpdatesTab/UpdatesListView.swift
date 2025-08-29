@@ -26,7 +26,7 @@ struct UpdatesListView: View {
       .padding()
       .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)
-      
+
       if isLoading {
         loading
       } else if let message = errorMessage {
@@ -154,15 +154,15 @@ struct UpdatesListView: View {
       Image(systemName: "exclamationmark.triangle")
         .foregroundColor(.red)
         .font(.title2)
-      
+
       Text("Error loading updates")
         .font(.headline)
-      
+
       Text(message)
         .font(.caption)
         .foregroundStyle(.secondary)
         .multilineTextAlignment(.center)
-      
+
       Button("Retry") {
         loadBranches()
       }
