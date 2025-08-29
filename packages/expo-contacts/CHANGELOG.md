@@ -8,8 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed issue with missing `instantMessageAddresses` on iOS ([#38985](https://github.com/expo/expo/pull/38985) by [@hryhoriiK97](https://github.com/hryhoriiK97)
-- [iOS] Added handling for optional labels. ([#38985](https://github.com/expo/expo/pull/39247) by [@hryhoriiK97](https://github.com/hryhoriiK97)
+- [iOS] Fixed issue with missing `instantMessageAddresses` on iOS ([#38985](https://github.com/expo/expo/pull/38985) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [iOS] Added handling for optional labels. ([#38985](https://github.com/expo/expo/pull/39247) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 💡 Others
 
