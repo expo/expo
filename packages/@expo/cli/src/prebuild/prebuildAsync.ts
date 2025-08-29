@@ -13,6 +13,7 @@ import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
+import { learnMore } from '../utils/link';
 import { upsertGitIgnoreContents } from '../utils/mergeGitIgnorePaths';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
@@ -22,7 +23,7 @@ import { confirmAsync } from '../utils/prompts';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
 
-const cngDocs = 'https://docs.expo.dev/workflow/continuous-native-generation/';
+const cngDocsLink = learnMore('https://docs.expo.dev/workflow/continuous-native-generation/');
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -221,9 +222,9 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
     const workflow = uniqueWorkflows[0];
 
     if (workflow === 'managed') {
-      Log.warn(chalk.default.yellow(`Using Continuous Native Generation. ${cngDocs}\n`));
+      Log.warn(chalk.default.yellow(`Using Continuous Native Generation. ${cngDocsLink}\n`));
     } else {
-      Log.warn(chalk.default.yellow(`NOT using Continuous Native Generation. ${cngDocs}\n`));
+      Log.warn(chalk.default.yellow(`NOT using Continuous Native Generation. ${cngDocsLink}\n`));
     }
   } else {
     let message = '';
@@ -234,7 +235,7 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
         message += `The ${platform} project is NOT using the Continuous Native Generation.\n`;
       }
     });
-    message += `${cngDocs}\n`;
+    message += `${cngDocsLink}\n`;
     Log.warn(chalk.default.yellow(message));
   }
 
@@ -248,7 +249,7 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
     );
 
     const shouldAddToGitignore = await confirmAsync({
-      message: `Would you like to add ${platformFolders.join(' and ')} to .gitignore to use Continuous Native Generation? \n${cngDocs}`,
+      message: `Would you like to add ${platformFolders.join(' and ')} to .gitignore to use Continuous Native Generation? \n${cngDocsLink}`,
       initial: true,
     });
 
