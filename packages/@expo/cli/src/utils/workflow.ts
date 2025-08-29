@@ -4,12 +4,16 @@ import path from 'path';
 
 import getVCSClientAsync from './vcs';
 
-export type Workflow = 'managed' | 'generic' | 'not-configured';
+export type CNGStatus = {
+  hasNativeCode: boolean;
+  isInGitIgnore: boolean;
+  platform: 'ios' | 'android';
+};
 
 export async function resolveWorkflowAsync(
   projectDir: string,
   platform: 'ios' | 'android'
-): Promise<Workflow> {
+): Promise<CNGStatus> {
   const vcsClient = await getVCSClientAsync(projectDir);
 
   let platformWorkflowMarkers: string[];
@@ -22,13 +26,9 @@ export async function resolveWorkflowAsync(
           ]
         : [IOSConfig.Paths.getPBXProjectPath(projectDir)];
   } catch {
-    const isIgnored = await isNativeCodeIgnored(projectDir, platform);
+    const isInGitIgnore = await isNativeCodeIgnored(projectDir, platform);
 
-    if (!isIgnored) {
-      return 'not-configured';
-    }
-
-    return 'generic';
+    return { hasNativeCode: false, isInGitIgnore, platform };
   }
 
   const vcsRootPath = path.normalize(await vcsClient.getRootPathAsync());
@@ -37,10 +37,10 @@ export async function resolveWorkflowAsync(
       fs.existsSync(marker) &&
       !(await vcsClient.isFileIgnoredAsync(path.relative(vcsRootPath, marker)))
     ) {
-      return 'generic';
+      return { hasNativeCode: true, isInGitIgnore: false, platform };
     }
   }
-  return 'managed';
+  return { hasNativeCode: true, isInGitIgnore: true, platform };
 }
 
 export async function isNativeCodeIgnored(projectDir: string, platform: 'ios' | 'android') {
@@ -51,12 +51,4 @@ export async function isNativeCodeIgnored(projectDir: string, platform: 'ios' | 
   const relativePlatformPath = path.relative(vcsRootPath, path.join(projectDir, platformFolder));
 
   return await vcsClient.isFileIgnoredAsync(relativePlatformPath);
-}
-
-export function validateWorkflow(possibleWorkflow: string): Workflow {
-  if (possibleWorkflow === 'managed' || possibleWorkflow === 'generic') {
-    return possibleWorkflow;
-  }
-
-  throw new Error(`Invalid workflow: ${possibleWorkflow}. Must be either 'managed' or 'generic'`);
 }

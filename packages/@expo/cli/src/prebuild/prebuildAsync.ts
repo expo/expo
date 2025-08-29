@@ -20,6 +20,7 @@ import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { confirmAsync } from '../utils/prompts';
+import { CNGStatus } from '../utils/workflow';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
 
@@ -203,49 +204,36 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
   );
   if (nativePlatforms.length === 0) return;
 
-  const workflows: { platform: string; workflow: string }[] = [];
+  const cngStatuses: CNGStatus[] = [];
 
   for (const platform of nativePlatforms) {
     try {
-      const workflow = await resolveWorkflowAsync(projectRoot, platform);
-      workflows.push({ platform, workflow });
+      const status = await resolveWorkflowAsync(projectRoot, platform);
+      cngStatuses.push(status);
     } catch (error) {
-      debug(`Could not determine workflow for ${platform}: ${error}`);
+      debug(`Could not determine CNG status for ${platform}: ${error}`);
     }
   }
 
-  if (workflows.length === 0) return;
+  if (cngStatuses.length === 0) return;
 
-  const uniqueWorkflows = [...new Set(workflows.map((w) => w.workflow))];
+  if (cngStatuses.every((status) => status.isInGitIgnore)) return;
 
-  if (uniqueWorkflows.length === 1) {
-    const workflow = uniqueWorkflows[0];
+  const shouldBeIgnored = cngStatuses.filter(
+    (status) => !status.isInGitIgnore && !status.hasNativeCode
+  );
 
-    if (workflow === 'managed') {
-      Log.warn(chalk.default.yellow(`Using Continuous Native Generation. ${cngDocsLink}\n`));
-    } else {
-      Log.warn(chalk.default.yellow(`NOT using Continuous Native Generation. ${cngDocsLink}\n`));
-    }
-  } else {
-    let message = '';
-    workflows.forEach(({ platform, workflow }) => {
-      if (workflow === 'managed') {
-        message += `The ${platform} project is using the Continuous Native Generation.\n`;
-      } else {
-        message += `The ${platform} project is NOT using the Continuous Native Generation.\n`;
-      }
-    });
-    message += `${cngDocsLink}\n`;
-    Log.warn(chalk.default.yellow(message));
-  }
+  const isPlural = shouldBeIgnored.length > 1;
 
-  const notConfiguredPlatforms = workflows
-    .filter(({ workflow }) => workflow === 'not-configured')
-    .map(({ platform }) => platform);
+  Log.warn(
+    chalk.default.yellow(
+      `Detected that ${shouldBeIgnored.map((item) => (item.platform === 'ios' ? '/ios' : '/android')).join(' and ')} ${isPlural ? 'directories are' : 'directory is'} being tracked by Git. When using Continuous Native Generation (CNG), it is recommended to exclude ${isPlural ? 'these directories' : 'this directory'} from source control. ${cngDocsLink}\n`
+    )
+  );
 
-  if (notConfiguredPlatforms.length > 0 && isInteractive()) {
-    const platformFolders = notConfiguredPlatforms.map((platform) =>
-      platform === 'ios' ? '/ios' : '/android'
+  if (shouldBeIgnored.length > 0 && isInteractive()) {
+    const platformFolders = shouldBeIgnored.map((item) =>
+      item.platform === 'ios' ? '/ios' : '/android'
     );
 
     const shouldAddToGitignore = await confirmAsync({
