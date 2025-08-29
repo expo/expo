@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support in `expo start` for custom app ids.
+- Add support in `expo start` for custom app ids. ([#39236](https://github.com/expo/expo/pull/39236) by [@sebryu](https://github.com/sebryu))
 
 ### 🐛 Bug fixes
 
