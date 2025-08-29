@@ -6,16 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Icon
-import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -38,13 +34,11 @@ fun Warning(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
       ) {
-        Icon(
-          painterResource(R.drawable.alert),
-          contentDescription = "Warning",
-          tint = NewAppTheme.colors.icon.warning,
-          modifier = Modifier
-            .size(18.dp)
+        Icons.Warning(
+          size = 18.dp,
+          tint = NewAppTheme.colors.icon.warning
         )
+
         NewText(
           "Warning",
           color = NewAppTheme.colors.text.warning,
@@ -53,6 +47,7 @@ fun Warning(
           )
         )
       }
+
       NewText(
         text,
         style = NewAppTheme.font.sm

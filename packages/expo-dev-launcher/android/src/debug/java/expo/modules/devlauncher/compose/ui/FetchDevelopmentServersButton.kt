@@ -32,11 +32,8 @@ import kotlin.time.Instant
 
 @Composable
 @OptIn(ExperimentalTime::class)
-fun FetchDevelopmentServersButton(
-  isFetching: Boolean,
-  onAction: (HomeAction) -> Unit
-) {
-  // Users might spam the button, so after debouncing we need to get the current state.
+private fun rememberIsFetchingState(isFetching: Boolean): Boolean {
+// Users might spam the button, so after debouncing we need to get the current state.
   // We can't use `isFetching` directly in the `LaunchedEffect` as it would be captured in the lambda.
   var getCurrentState by remember { mutableStateOf({ isFetching }) }
   var isFetchingUIState by remember { mutableStateOf(isFetching) }
@@ -66,6 +63,16 @@ fun FetchDevelopmentServersButton(
 
     isFetchingUIState = getCurrentState()
   }
+
+  return isFetchingUIState
+}
+
+@Composable
+fun FetchDevelopmentServersButton(
+  isFetching: Boolean,
+  onAction: (HomeAction) -> Unit
+) {
+  val isFetchingUIState = rememberIsFetchingState(isFetching)
 
   RoundedSurface(
     color = NewAppTheme.colors.background.element,

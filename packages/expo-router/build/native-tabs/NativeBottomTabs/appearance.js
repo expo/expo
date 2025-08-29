@@ -6,7 +6,6 @@ exports.appendSelectedStyleToAppearance = appendSelectedStyleToAppearance;
 exports.appendStyleToAppearance = appendStyleToAppearance;
 exports.convertStyleToAppearance = convertStyleToAppearance;
 exports.convertStyleToItemStateAppearance = convertStyleToItemStateAppearance;
-const types_1 = require("./types");
 function createStandardAppearanceFromOptions(options, baseStandardAppearance) {
     const appearance = appendStyleToAppearance({
         ...options.labelStyle,
@@ -49,11 +48,6 @@ const EMPTY_APPEARANCE_ITEM = {
     disabled: {},
 };
 function appendStyleToAppearance(style, appearance, states) {
-    let tabBarBlurEffect = style?.blurEffect;
-    if (tabBarBlurEffect && !supportedBlurEffectsSet.has(tabBarBlurEffect)) {
-        console.warn(`Unsupported blurEffect: ${tabBarBlurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
-        tabBarBlurEffect = undefined;
-    }
     const baseItemAppearance = appearance.stacked || appearance.inline || appearance.compactInline || {};
     const styleAppearance = convertStyleToAppearance(style);
     const newAppearances = states.map((state) => ({
@@ -76,18 +70,12 @@ function appendStyleToAppearance(style, appearance, states) {
         tabBarBackgroundColor: style.backgroundColor === null
             ? undefined
             : (style.backgroundColor ?? appearance.tabBarBackgroundColor),
-        tabBarBlurEffect: tabBarBlurEffect ?? appearance.tabBarBlurEffect,
+        tabBarBlurEffect: styleAppearance.tabBarBlurEffect ?? appearance.tabBarBlurEffect,
     };
 }
-const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
 function convertStyleToAppearance(style) {
     if (!style) {
         return {};
-    }
-    let blurEffect = style.blurEffect;
-    if (style.blurEffect && !supportedBlurEffectsSet.has(style.blurEffect)) {
-        console.warn(`Unsupported blurEffect: ${style.blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
-        blurEffect = undefined;
     }
     const stateAppearance = convertStyleToItemStateAppearance(style);
     const itemAppearance = {
@@ -101,7 +89,7 @@ function convertStyleToAppearance(style) {
         stacked: itemAppearance,
         compactInline: itemAppearance,
         tabBarBackgroundColor: style?.backgroundColor ?? undefined,
-        tabBarBlurEffect: blurEffect,
+        tabBarBlurEffect: style?.blurEffect,
     };
 }
 function convertStyleToItemStateAppearance(style) {

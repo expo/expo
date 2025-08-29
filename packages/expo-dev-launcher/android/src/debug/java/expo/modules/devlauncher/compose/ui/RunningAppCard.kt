@@ -25,7 +25,6 @@ import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.pulseEffect
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun RunningAppCard(
@@ -55,7 +54,7 @@ fun RunningAppCard(
         val dotColor = Color.fromHex("#34C759")
         Box(
           modifier = Modifier
-            .size(Theme.spacing.small)
+            .size(12.dp)
             .drawBehind {
               drawCircle(dotColor)
             }

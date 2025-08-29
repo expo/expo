@@ -22,11 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.composeunstyled.Icon
 import expo.modules.devmenu.R
-import expo.modules.devmenu.compose.primitives.DayNighIcon
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -49,11 +50,11 @@ fun FloatingActionButtonContent(
       .shadow(6.dp, pillShape)
       .border(
         width = 1.dp,
-        color = Theme.colors.border.default,
+        color = NewAppTheme.colors.border.default,
         shape = pillShape
       )
       .background(
-        color = Theme.colors.background.default,
+        color = NewAppTheme.colors.background.default,
         shape = pillShape
       )
       .clip(pillShape)
@@ -66,15 +67,16 @@ fun FloatingActionButtonContent(
       modifier = modifier
         .border(
           width = 1.dp,
-          color = Theme.colors.border.default,
+          color = NewAppTheme.colors.border.default,
           shape = pillShape
         )
         .fillMaxSize()
         .padding(horizontal = horizontalPadding, vertical = verticalPadding)
     ) {
-      DayNighIcon(
-        id = R.drawable.refresh_round_icon,
+      Icon(
+        painter = painterResource(R.drawable.refresh_round_icon),
         contentDescription = "Refresh",
+        tint = NewAppTheme.colors.icon.tertiary,
         modifier = Modifier
           .size(iconSize)
           .rotate(animatedRotation.value)
@@ -98,9 +100,10 @@ fun FloatingActionButtonContent(
           )
       )
 
-      DayNighIcon(
-        id = R.drawable.ellipsis_horizontal,
+      Icon(
+        painter = painterResource(R.drawable.ellipsis_horizontal),
         contentDescription = "Open Dev Menu",
+        tint = NewAppTheme.colors.icon.tertiary,
         modifier = Modifier
           .size(iconSize)
           .scale(animatedScale.value)
@@ -135,7 +138,7 @@ fun VerticalActionPillPreview() {
   Column(
     modifier = Modifier
       .padding(32.dp)
-      .background(Theme.colors.background.default),
+      .background(NewAppTheme.colors.border.default),
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     FloatingActionButtonContent(modifier = Modifier.size(46.dp, 92.dp))

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.0.9 — 2025-08-28
+
+### 🐛 Bug fixes
+
+- [ios] Bring back correct scoping for Expo Go. ([#39186](https://github.com/expo/expo/pull/39186) by [@aleqsio](https://github.com/aleqsio))
+
+## 3.0.8 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.7 — 2025-08-26
 
 ### 🐛 Bug fixes

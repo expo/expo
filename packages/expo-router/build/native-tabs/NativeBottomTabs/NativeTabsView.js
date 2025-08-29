@@ -42,15 +42,21 @@ const utils_1 = require("./utils");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
+const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
 function NativeTabsView(props) {
-    const { builder, minimizeBehavior, disableIndicator, focusedIndex, disableTransparentOnScrollEdge, } = props;
+    const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
     const { state, descriptors, navigation } = builder;
     const { routes } = state;
+    let blurEffect = props.blurEffect;
+    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+        blurEffect = undefined;
+    }
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     let standardAppearance = (0, appearance_1.convertStyleToAppearance)({
         ...props.labelStyle,
         iconColor: props.iconColor,
-        blurEffect: props.blurEffect,
+        blurEffect,
         backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
     });
@@ -60,8 +66,8 @@ function NativeTabsView(props) {
     const scrollEdgeAppearance = (0, appearance_1.convertStyleToAppearance)({
         ...props.labelStyle,
         iconColor: props.iconColor,
-        blurEffect: disableTransparentOnScrollEdge ? props.blurEffect : 'none',
-        backgroundColor: disableTransparentOnScrollEdge ? props.backgroundColor : null,
+        blurEffect,
+        backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
     });
     const appearances = routes.map((route) => ({

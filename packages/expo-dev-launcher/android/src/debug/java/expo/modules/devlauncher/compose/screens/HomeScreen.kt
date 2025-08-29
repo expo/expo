@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.compose.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
@@ -28,8 +26,8 @@ import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
-import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.Spacer
+import expo.modules.devmenu.compose.ui.Section
 import expo.modules.devmenu.compose.ui.Warning
 import kotlin.time.ExperimentalTime
 
@@ -107,30 +105,9 @@ fun HomeScreen(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
       ) {
-        NewText(
-          "DEVELOPMENT SERVERS",
-          style = NewAppTheme.font.sm.merge(
-            fontWeight = FontWeight.Medium,
-            fontFamily = NewAppTheme.font.mono
-          ),
-          color = NewAppTheme.colors.text.quaternary
-        )
+        Section.Header("DEVELOPMENT SERVERS")
 
-        NewText(
-          "INFO",
-          style = NewAppTheme.font.sm.merge(
-            fontWeight = FontWeight.Medium,
-            fontFamily = NewAppTheme.font.mono
-          ),
-          color = NewAppTheme.colors.text.link,
-          modifier = Modifier.clickable(
-            interactionSource = null,
-            indication = null,
-            onClick = {
-              onDevServersClick()
-            }
-          )
-        )
+        Section.Button("INFO", onDevServersClick)
       }
 
       Spacer(NewAppTheme.spacing.`3`)
@@ -170,30 +147,9 @@ fun HomeScreen(
           horizontalArrangement = Arrangement.SpaceBetween,
           modifier = Modifier.fillMaxWidth()
         ) {
-          NewText(
-            "RECENTLY OPENED",
-            style = NewAppTheme.font.sm.merge(
-              fontWeight = FontWeight.Medium,
-              fontFamily = NewAppTheme.font.mono
-            ),
-            color = NewAppTheme.colors.text.quaternary
-          )
+          Section.Header("RECENTLY OPENED")
 
-          NewText(
-            "RESET",
-            style = NewAppTheme.font.sm.merge(
-              fontWeight = FontWeight.Medium,
-              fontFamily = NewAppTheme.font.mono
-            ),
-            color = NewAppTheme.colors.text.link,
-            modifier = Modifier.clickable(
-              interactionSource = null,
-              indication = null,
-              onClick = {
-                onAction(HomeAction.ResetRecentlyOpenedApps)
-              }
-            )
-          )
+          Section.Button("RESET", { onAction(HomeAction.ResetRecentlyOpenedApps) })
         }
 
         Spacer(NewAppTheme.spacing.`3`)
