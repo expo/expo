@@ -12,14 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
-import com.composeunstyled.Icon
-import expo.modules.devlauncher.R
 import expo.modules.devmenu.compose.fromHex
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
@@ -91,12 +88,9 @@ fun RunningAppCard(
           }
         }
 
-        Icon(
-          painter = painterResource(R.drawable.chevron_right),
-          contentDescription = "Open app",
-          tint = NewAppTheme.colors.icon.quaternary,
-          modifier = Modifier
-            .size(20.dp)
+        LauncherIcons.Chevron(
+          size = 20.dp,
+          tint = NewAppTheme.colors.icon.quaternary
         )
       }
     }
@@ -109,6 +103,5 @@ fun RunningAppCardPreview() {
   RunningAppCard(
     appIp = "http://10.0.2.2:8081",
     appName = "Expo Dev Launcher"
-
   )
 }

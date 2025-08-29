@@ -14,7 +14,7 @@ object Section {
       text.uppercase(),
       style = NewAppTheme.font.sm.merge(
         fontFamily = NewAppTheme.font.mono,
-        fontWeight = FontWeight.Companion.Medium
+        fontWeight = FontWeight.Medium
       ),
       color = NewAppTheme.colors.text.quaternary
     )

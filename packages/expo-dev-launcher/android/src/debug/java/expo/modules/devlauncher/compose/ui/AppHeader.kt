@@ -10,15 +10,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composeunstyled.Button
-import com.composeunstyled.Icon
 import expo.modules.devlauncher.MeQuery
-import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.primitives.AsyncImage
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.SessionService
@@ -28,7 +25,6 @@ import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.AppIcon
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
-import expo.modules.devmenu.compose.primitives.Spacer
 
 @Composable
 fun AppHeader(
@@ -79,7 +75,8 @@ fun AppHeader(
     AppIcon()
 
     Column(
-      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`),
+      modifier = Modifier.weight(1f)
     ) {
       NewText(
         appName,
@@ -93,10 +90,6 @@ fun AppHeader(
         color = NewAppTheme.colors.text.secondary
       )
     }
-
-    Spacer(
-      modifier = Modifier.weight(1f)
-    )
 
     RoundedSurface(
       borderRadius = NewAppTheme.borderRadius.full,
@@ -114,12 +107,9 @@ fun AppHeader(
               url = profilePhoto
             )
           } else {
-            Icon(
-              painter = painterResource(R.drawable.user),
-              contentDescription = "User Icon",
-              tint = NewAppTheme.colors.icon.tertiary,
-              modifier = Modifier
-                .size(24.dp)
+            LauncherIcons.User(
+              size = 24.dp,
+              tint = NewAppTheme.colors.icon.tertiary
             )
           }
         }

@@ -13,12 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
-import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.Tab
 import expo.modules.devlauncher.compose.routes.Routes
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
@@ -40,40 +39,42 @@ fun BottomTabBar(
       val navBackStackEntry by navController.currentBackStackEntryAsState()
       val currentDestination = navBackStackEntry?.destination
 
-      val buttonModifier = Modifier
-        .weight(1f)
-        .fillMaxHeight()
-      val icons = listOf(
-        Tab(
-          label = "Home",
-          icon = painterResource(id = R.drawable.home),
-          screen = Routes.Home
-        ),
-        Tab(
-          label = "Updates",
-          icon = painterResource(id = R.drawable.reload),
-          screen = Routes.Updates
-        ),
-        Tab(
-          label = "Settings",
-          icon = painterResource(id = R.drawable.settings),
-          screen = Routes.Settings
-        )
-      )
-      for (tab in icons) {
-        val isSelected = currentDestination?.hasRoute(tab.screen::class) == true
+      val button = @Composable { label: String,
+                                 icon: @Composable (size: Dp, tint: Color) -> Unit,
+                                 screen: Any ->
+        val isSelected = currentDestination?.hasRoute(screen::class) == true
         BottomTabButton(
-          label = tab.label,
-          icon = tab.icon,
-          modifier = buttonModifier,
+          label = label,
+          icon = icon,
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
           isSelected = isSelected,
           onClick = {
-            navController.navigate(tab.screen) {
+            navController.navigate(screen) {
               popUpTo(navController.graph.id) { inclusive = true }
             }
           }
         )
       }
+
+      button(
+        "Home",
+        { size, tint -> LauncherIcons.Home(size, tint) },
+        Routes.Home
+      )
+
+      button(
+        "Updates",
+        { size, tint -> LauncherIcons.UpdatesNav(size, tint) },
+        Routes.Updates
+      )
+
+      button(
+        "Settings",
+        { size, tint -> LauncherIcons.Settings(size, tint) },
+        Routes.Settings
+      )
     }
   }
 }
