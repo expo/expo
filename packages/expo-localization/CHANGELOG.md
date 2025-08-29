@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [Web] Replace deprecated `textInfo` with `getTextInfo()` in `getLocales()`.
+- [Web] Replace deprecated `textInfo` with `getTextInfo()` in `getLocales()`. ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
 
 ## 17.0.4 — 2025-08-27
 
