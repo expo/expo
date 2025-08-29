@@ -141,7 +141,7 @@ it('runs `npx expo install --fix` fails', async () => {
   });
 
   // Install wrong package versions of `expo-sms` and `expo-auth-session`
-  await executeBunAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+  await executeBunAsync(projectRoot, ['install', 'expo-sms@9.0.0', 'expo-auth-session@4.0.0']);
 
   // Load the installed and expected dependency versions
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
@@ -151,7 +151,7 @@ it('runs `npx expo install --fix` fails', async () => {
 
   // Ensure `expo-sms` is fixed to match the expected version
   expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': expect.not.stringContaining('1.0.0'), // Expect the version to change from `1.0.0`
+    'expo-sms': expect.not.stringContaining('9.0.0'), // Expect the version to change from `9.0.0`
   });
 
   // Ensure `expo-auth-session` is still invalid
@@ -161,7 +161,7 @@ it('runs `npx expo install --fix` fails', async () => {
 
   // Ensure `--check` didn't fix the version
   expect(pkg.read().dependencies).toMatchObject({
-    'expo-auth-session': '1.0.0',
+    'expo-auth-session': '4.0.0',
   });
 
   // Fix all versions
@@ -169,8 +169,8 @@ it('runs `npx expo install --fix` fails', async () => {
 
   // Ensure both `expo-sms` and `expo-auth-session` are fixed
   expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': expect.not.stringContaining('1.0.0'), // Expect the version to change from `1.0.0`
-    'expo-auth-session': expect.not.stringContaining('1.0.0'), // Expect the version to change from `1.0.0`
+    'expo-sms': expect.not.stringContaining('9.0.0'), // Expect the version to change from `9.0.0`
+    'expo-auth-session': expect.not.stringContaining('4.0.0'), // Expect the version to change from `4.0.0`
   });
 });
 
@@ -271,7 +271,7 @@ describe('expo-router integration', () => {
     let error: unknown = undefined;
     try {
       // Run `--fix` project dependencies with expo@52 and expo-router from source
-      await executeExpoAsync(projectRoot, ['install', '--fix']);
+      await executeExpoAsync(projectRoot, ['install', '--fix'], { verbose: false });
     } catch (e) {
       error = e;
     }

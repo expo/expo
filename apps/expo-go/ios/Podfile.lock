@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.32.6):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.0-preview.10):
+  - Expo (54.0.0-preview.11):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -78,7 +78,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (14.0.4):
     - ExpoModulesCore
-  - ExpoCalendar (15.0.4):
+  - ExpoCalendar (15.0.5):
     - ExpoModulesCore
   - ExpoCamera (17.0.4):
     - ExpoModulesCore
@@ -110,7 +110,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (15.0.4):
     - ExpoModulesCore
-  - ExpoHead (6.0.0-beta.9):
+  - ExpoHead (6.0.0-beta.10):
     - ExpoModulesCore
     - RNScreens
   - ExpoImage (3.0.4):
@@ -132,13 +132,13 @@ PODS:
     - EXImageLoader
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImagePicker (17.0.4):
+  - ExpoImagePicker (17.0.5):
     - ExpoModulesCore
   - ExpoKeepAwake (15.0.4):
     - ExpoModulesCore
   - ExpoLinearGradient (15.0.4):
     - ExpoModulesCore
-  - ExpoLinking (8.0.4):
+  - ExpoLinking (8.0.5):
     - ExpoModulesCore
   - ExpoLivePhoto (1.0.4):
     - ExpoModulesCore
@@ -159,7 +159,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (0.4.4):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.8):
+  - ExpoModulesCore (3.0.9):
     - boost
     - DoubleConversion
     - fast_float
@@ -188,7 +188,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (3.0.8):
+  - ExpoModulesCore/Tests (3.0.9):
     - boost
     - DoubleConversion
     - ExpoModulesTestCore
@@ -278,7 +278,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (6.0.4):
     - ExpoModulesCore
-  - ExpoVideo (3.0.6):
+  - ExpoVideo (3.0.7):
     - ExpoModulesCore
   - ExpoVideoThumbnails (10.0.4):
     - ExpoModulesCore
@@ -289,7 +289,7 @@ PODS:
   - EXTaskManager (14.0.4):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (29.0.5):
+  - EXUpdates (29.0.6):
     - boost
     - DoubleConversion
     - EASClient
@@ -323,7 +323,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdates/Tests (29.0.5):
+  - EXUpdates/Tests (29.0.6):
     - boost
     - DoubleConversion
     - EASClient
@@ -3356,7 +3356,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNScreens (4.15.3):
+  - RNScreens (4.15.4):
     - boost
     - DoubleConversion
     - fast_float
@@ -3383,10 +3383,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.15.3)
+    - RNScreens/common (= 4.15.4)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.15.3):
+  - RNScreens/common (4.15.4):
     - boost
     - DoubleConversion
     - fast_float
@@ -3472,7 +3472,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.4.1):
+  - RNWorklets (0.4.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3488,6 +3488,7 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
     - React-jsi
     - React-NativeModulesApple
@@ -3498,10 +3499,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets (= 0.4.1)
+    - RNWorklets/worklets (= 0.4.2)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets (0.4.1):
+  - RNWorklets/worklets (0.4.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3517,6 +3518,7 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
     - React-jsi
     - React-NativeModulesApple
@@ -3527,10 +3529,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets/apple (= 0.4.1)
+    - RNWorklets/worklets/apple (= 0.4.2)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets/apple (0.4.1):
+  - RNWorklets/worklets/apple (0.4.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3546,6 +3548,7 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
     - React-jsi
     - React-NativeModulesApple
@@ -4239,7 +4242,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: ba44a6836e3ec4fa5e947c6db39ab1ec9e871de1
   EXNotifications: e4995fac6ea317a55f56679342962256d15b1865
-  Expo: 3455e7ccf2cd80cf9d093e2186c9e28166b948b6
+  Expo: 6adecfc8b89d44116fbd0490410014db38c674e2
   ExpoAppleAuthentication: 00cb9ae1572a39af3d76d829e22c58d096638620
   ExpoAsset: 88b5636713bc233a3819bc83a2e69130d385fadc
   ExpoAudio: 8934673769246bf0c31eed3291c063f0d3d36674
@@ -4248,7 +4251,7 @@ SPEC CHECKSUMS:
   ExpoBattery: 8c21f8fc3dc7d844ce52bdcf497415b939cbf92d
   ExpoBlur: b94d599fc9ac76f9db50c8406613da332d280e4c
   ExpoBrightness: 685d9eeaf88793cd821e303ae6f83cd5e6a5d7a3
-  ExpoCalendar: f56bdfa447f84798eec45d20469573201cbce6ee
+  ExpoCalendar: 292fe70c0142247ad1860339db4ddb558c1d4e07
   ExpoCamera: 58795c3070de5d7f45b1b59283e95b78630337c0
   ExpoCellular: 9c1754931458316970154af3db3da2402fba86fa
   ExpoClipboard: b47fa1d4a8b5390f09feca7a092878bd6ef9e4b3
@@ -4261,13 +4264,13 @@ SPEC CHECKSUMS:
   ExpoFont: e533472deff8181f9b4a27ad39d4a00996a79ceb
   ExpoGL: 5b6ded7547537d06a8a36435f37a01054875b06d
   ExpoHaptics: f20dc9498e94a4b70c8d0097ac04ac3701ae4a0c
-  ExpoHead: bbb16e9eac2187ab7ee32aea2b3edf97f88d31aa
+  ExpoHead: 2fe59a2e507cb50b47b6b9dea02cc6fad26bff89
   ExpoImage: 0cc208541bd217cff611c831dca7d0c3bfb4fd3f
   ExpoImageManipulator: a761ed203e6cceb550ef6ec38e45cb26f90e7424
-  ExpoImagePicker: 5b8605982bf41611fa1fb9e537971125cf2c3c36
+  ExpoImagePicker: 073778b34905c6a28b2a496e852db629e1b8d303
   ExpoKeepAwake: cf946c3cb68c4aae9d042a1f245d74984e349b98
   ExpoLinearGradient: e3651d3cafe53a2a5a1cdccdca2a3e6e9928b0fa
-  ExpoLinking: dc1f27352a9223dbb3b0e78a51add62ccf7f4242
+  ExpoLinking: 59166a526315581627dcabec6a55d3bd4ce5d027
   ExpoLivePhoto: 6b60f819ca789bf01818cbce6995d96c4b6275ef
   ExpoLocalAuthentication: c0d2e91f4827126099588a7f8d9964686c36c0a5
   ExpoLocalization: e1447009a5c398706bf79d9f4b3f5e0ec344db20
@@ -4275,7 +4278,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: bd7ef338e2080b28a7364feb6aa33dcdd0909267
   ExpoMediaLibrary: da23763613cfef9afe6784e071ef2e9f9197a346
   ExpoMeshGradient: 372ab0f2ad554416c32fd46675dbb5a068115ad3
-  ExpoModulesCore: 25662cce3e02abd48a6483a24cd0a55965f95094
+  ExpoModulesCore: 6d16d1d272a2127f8649df9bddc7029adc1b8b1a
   ExpoModulesTestCore: be5073c51ffe7c2db9f14aedfce7d8cdc141f55a
   ExpoNetwork: cb29bcf3ac401fcb0b2f10d18ab3507fcf4efe89
   ExpoPrint: 262fbd40c537359c5a708d1cac030cf03bb7fbac
@@ -4291,12 +4294,12 @@ SPEC CHECKSUMS:
   ExpoSymbols: 4c52a4ded26691e398458c7315d955dd1cc5ea61
   ExpoSystemUI: ffed49d2ad5d1166f2dc5326f2f5a0ed17e154b6
   ExpoTrackingTransparency: 1e5aa4ae976898b8407864e562afdf7293dc3f6a
-  ExpoVideo: 1f6c31eb687164ea7907b382cf956d3faa616246
+  ExpoVideo: a76b5a528320f5cb88f5233d5515e69fd8303374
   ExpoVideoThumbnails: 993af250852f5a5e39da4c23810027e9d0613fa8
   ExpoWebBrowser: dc155434ba400538014a6a82ff297901e8354737
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
   EXTaskManager: 868c078452bbbe2c67130628faf9cf58ba0b68c5
-  EXUpdates: 0f0dbe5d1aaffc268954a62120020cb50bd7e3b0
+  EXUpdates: b231c6ae5b30b999b9d072142a57d067bdf0e7b2
   EXUpdatesInterface: 5adf50cb41e079c861da6d9b4b954c3db9a50734
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: b8f1312d48447cca7b4abc21ed155db14742bd03
@@ -4408,9 +4411,9 @@ SPEC CHECKSUMS:
   RNDateTimePicker: cda4c045beca864cebb3209ef9cc4094f974864c
   RNGestureHandler: 3a73f098d74712952870e948b3d9cf7b6cae9961
   RNReanimated: b43b4178f9c5c355badd51bc0df933d1eabddc83
-  RNScreens: 83be436fa9efeb1ea225e11243d4c4d0655d7e00
+  RNScreens: db22525a8ed56bb87ab038b8f03a050bf40e6ed8
   RNSVG: 6f39605a4c4d200b11435c35bd077553c6b5963a
-  RNWorklets: 32ea3225502c57b559c76f684fc2abac865b7728
+  RNWorklets: f115e8b64e3df5427c68792b3abda90d0f173bb6
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c

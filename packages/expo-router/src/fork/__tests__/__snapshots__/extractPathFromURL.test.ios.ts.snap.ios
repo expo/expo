@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`extractExpoPathFromURL Bare parses "/?url=https://expo.dev" 1`] = `"?url=https://expo.dev"`;
+
 exports[`extractExpoPathFromURL Bare parses "app.bacon.expo://expo-development-client" 1`] = `""`;
 
 exports[`extractExpoPathFromURL Bare parses "custom://" 1`] = `""`;
@@ -77,6 +79,8 @@ exports[`extractExpoPathFromURL Bare parses "scheme://expo-development-client/?u
 exports[`extractExpoPathFromURL Bare parses "scheme_with|unusual%characters:///" 1`] = `""`;
 
 exports[`extractExpoPathFromURL Bare parses "scheme_with|unusual%characters://expo.host/?hello-bar" 1`] = `"expo.host/?hello-bar"`;
+
+exports[`extractExpoPathFromURL Expo Go parses "/?url=https://expo.dev" 1`] = `"?url=https://expo.dev"`;
 
 exports[`extractExpoPathFromURL Expo Go parses "app.bacon.expo://expo-development-client" 1`] = `""`;
 
