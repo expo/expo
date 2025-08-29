@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add stubs for legacy methods imported from "expo-file-system". ([#39244](https://github.com/expo/expo/pull/39244) by [@aleqsio](https://github.com/aleqsio))
+
 ## 19.0.7 — 2025-08-31
 
 ### 🎉 New features
