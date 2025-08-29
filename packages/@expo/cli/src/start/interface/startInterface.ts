@@ -38,7 +38,7 @@ const PLATFORM_SETTINGS: Record<
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
   options: Pick<StartOptions, 'devClient' | 'platforms'>,
-  platformsOptions?: { appId?: string }
+  platformsOptions: { appId?: string }
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
 
@@ -125,7 +125,7 @@ export async function startInterfaceAsync(
         );
       } else {
         try {
-          if (options.devClient && platformsOptions?.appId) {
+          if (options.devClient && platformsOptions.appId) {
             const androidProps = await androidResolveOptions(devServerManager.projectRoot, platformsOptions);
 
             await server.openCustomRuntimeAsync(settings.launchTarget, {
