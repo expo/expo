@@ -655,18 +655,20 @@ jobs:
       platform: string # optional - android | ios | all, defaults to all
       branch: string # optional
       channel: string # optional - cannot be used with branch
+      private_key_path: string # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                                                                                                                                                                                                                         |
-| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| message   | string | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                                          |
-| platform  | string | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                     |
-| branch    | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both. |
-| channel   | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                          |
+| Parameter        | Type   | Description                                                                                                                                                                                                                                                         |
+| ---------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message          | string | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                                          |
+| platform         | string | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                     |
+| branch           | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both. |
+| channel          | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                          |
+| private_key_path | string | Optional. Path to a private key file to use for code signing the update. This gets passed as `--private-key-path` to the EAS CLI.                                                                                                                                   |
 
 #### Outputs
 
