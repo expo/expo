@@ -434,7 +434,10 @@ public final class FileDownloader {
     var directivePartHeadersAndData: ([String: Any], Data)?
 
     let completed = data.isEmpty || reader.readAllParts { headers, content, _ in
-      if let contentDisposition = (headers!).stringValueForCaseInsensitiveKey("content-disposition") {
+      guard let headers else {
+        return
+      }
+      if let contentDisposition = headers.stringValueForCaseInsensitiveKey("content-disposition") {
         guard let scalar = UnicodeScalar(FileDownloader.ParameterParserSemicolonDelimiter) else {
           return
         }
@@ -443,11 +446,11 @@ public final class FileDownloader {
           let contentDispositionNameFieldValue: String = contentDispositionParameters.optionalValue(forKey: "name") {
           switch contentDispositionNameFieldValue {
           case FileDownloader.MultipartManifestPartName:
-            if let headers, let content = content {
+            if let content {
               manifestPartHeadersAndData = (headers, content)
             }
           case FileDownloader.MultipartDirectivePartName:
-            if let headers, let content = content {
+            if let content {
               directivePartHeadersAndData = (headers, content)
             }
           case FileDownloader.MultipartExtensionsPartName:

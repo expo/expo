@@ -57,8 +57,8 @@ public final class UpdatesMultipartStreamReader {
 
       if range.location == NSNotFound {
         if currentHeaders == nil {
-          parseHeadersIfFound(in: content, range: remainingBufferRange, chunkStart: chunkStart) { headers in
-            currentHeaders = headers
+          if let newHeaders = parseHeadersIfFound(in: content, range: remainingBufferRange, chunkStart: chunkStart) {
+            currentHeaders = newHeaders
           }
         }
 
@@ -104,19 +104,18 @@ public final class UpdatesMultipartStreamReader {
   private func parseHeadersIfFound(
     in content: Data,
     range: NSRange,
-    chunkStart: Int,
-    completion: ([String: Any]) -> Void
-  ) {
+    chunkStart: Int
+  ) -> [String: Any]? {
     let marker = Data("\(Constants.crlf)\(Constants.crlf)".utf8)
     let range = content.range(of: marker, options: [], in: range)
     guard range.location != NSNotFound else {
-      return
+      return nil
     }
 
     let startIndex = content.index(content.startIndex, offsetBy: chunkStart)
     let endIndex = content.index(content.startIndex, offsetBy: range.location)
     let data = content[startIndex..<endIndex]
-    completion(parseHeaders(Data(data)))
+    return parseHeaders(Data(data))
   }
 
   private func parseHeaders(_ data: Data) -> [String: Any] {

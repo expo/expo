@@ -9,12 +9,12 @@ import XCTest
 class UpdatesMultipartStreamReaderSpec: XCTestCase {
   func testSimpleCase() {
     let response = "preamble, should be ignored\r\n" +
-                   "--sample_boundary\r\n" +
-                   "Content-Type: application/json; charset=utf-8\r\n" +
-                   "Content-Length: 2\r\n\r\n" +
-                   "{}\r\n" +
-                   "--sample_boundary--\r\n" +
-                   "epilogue, should be ignored"
+      "--sample_boundary\r\n" +
+      "Content-Type: application/json; charset=utf-8\r\n" +
+      "Content-Length: 2\r\n\r\n" +
+      "{}\r\n" +
+      "--sample_boundary--\r\n" +
+      "epilogue, should be ignored"
 
     let inputStream = InputStream(data: response.data(using: .utf8)!)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
@@ -33,14 +33,14 @@ class UpdatesMultipartStreamReaderSpec: XCTestCase {
 
   func testMultipleParts() {
     let response = "preamble, should be ignored\r\n" +
-                   "--sample_boundary\r\n" +
-                   "1\r\n" +
-                   "--sample_boundary\r\n" +
-                   "2\r\n" +
-                   "--sample_boundary\r\n" +
-                   "3\r\n" +
-                   "--sample_boundary--\r\n" +
-                   "epilogue, should be ignored"
+      "--sample_boundary\r\n" +
+      "1\r\n" +
+      "--sample_boundary\r\n" +
+      "2\r\n" +
+      "--sample_boundary\r\n" +
+      "3\r\n" +
+      "--sample_boundary--\r\n" +
+      "epilogue, should be ignored"
 
     let inputStream = InputStream(data: response.data(using: .utf8)!)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
@@ -64,7 +64,11 @@ class UpdatesMultipartStreamReaderSpec: XCTestCase {
   func testNoDelimiter() {
     let response = "content with no delimiter"
 
-    let inputStream = InputStream(data: response.data(using: .utf8)!)
+    guard let responseData = response.data(using: .utf8) else {
+      XCTFail("Failed to convert response to UTF-8 data")
+      return
+    }
+    let inputStream = InputStream(data: responseData)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
 
     var count = 0
@@ -78,19 +82,27 @@ class UpdatesMultipartStreamReaderSpec: XCTestCase {
 
   func testEmptyContent() {
     let response = "--sample_boundary\r\n" +
-                   "Content-Type: application/json\r\n" +
-                   "\r\n" +
-                   "\r\n" +
-                   "--sample_boundary--\r\n"
+      "Content-Type: application/json\r\n" +
+      "\r\n" +
+      "\r\n" +
+      "--sample_boundary--\r\n"
 
-    let inputStream = InputStream(data: response.data(using: .utf8)!)
+    guard let responseData = response.data(using: .utf8) else {
+      XCTFail("Failed to convert response to UTF-8 data")
+      return
+    }
+    let inputStream = InputStream(data: responseData)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
 
     var count = 0
     let success = reader.readAllParts { headers, content, done in
       XCTAssertTrue(done)
       XCTAssertEqual(headers?["Content-Type"] as? String, "application/json")
-      XCTAssertEqual(String(data: content!, encoding: .utf8), "")
+      guard let contentData = content else {
+        XCTFail("Content should not be nil")
+        return
+      }
+      XCTAssertEqual(String(data: contentData, encoding: .utf8), "")
       count += 1
     }
 
@@ -100,19 +112,27 @@ class UpdatesMultipartStreamReaderSpec: XCTestCase {
 
   func testFirstBoundaryAsBoundary() {
     let response = "--sample_boundary\r\n" +
-                   "Content-Type: application/json\r\n" +
-                   "\r\n" +
-                   "{}\r\n" +
-                   "--sample_boundary--\r\n"
+      "Content-Type: application/json\r\n" +
+      "\r\n" +
+      "{}\r\n" +
+      "--sample_boundary--\r\n"
 
-    let inputStream = InputStream(data: response.data(using: .utf8)!)
+    guard let responseData = response.data(using: .utf8) else {
+      XCTFail("Failed to convert response to UTF-8 data")
+      return
+    }
+    let inputStream = InputStream(data: responseData)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
 
     var count = 0
     let success = reader.readAllParts { headers, content, done in
       XCTAssertTrue(done)
       XCTAssertEqual(headers?["Content-Type"] as? String, "application/json")
-      XCTAssertEqual(String(data: content!, encoding: .utf8), "{}")
+      guard let contentData = content else {
+        XCTFail("Content should not be nil")
+        return
+      }
+      XCTAssertEqual(String(data: contentData, encoding: .utf8), "{}")
       count += 1
     }
 
