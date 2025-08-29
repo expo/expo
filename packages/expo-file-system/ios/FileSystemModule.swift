@@ -208,6 +208,10 @@ public final class FileSystemModule: Module {
         try file.move(to: to)
       }
 
+      Function("rename") { (file, newName: String) in
+        try file.rename(newName)
+      }
+
       Property("uri") { file in
         return file.url.absoluteString
       }
@@ -270,6 +274,10 @@ public final class FileSystemModule: Module {
 
       Function("move") { (directory, to: FileSystemPath) in
         try directory.move(to: to)
+      }
+
+      Function("rename") { (directory, newName: String) in
+        try directory.rename(newName)
       }
 
       // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
