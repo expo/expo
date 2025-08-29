@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Web] Replace deprecated `textInfo` with `getTextInfo()` in `getLocales()`.
+
 ## 17.0.4 — 2025-08-27
 
 _This version does not introduce any user-facing changes._
