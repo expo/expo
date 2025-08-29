@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 
-const spawnAsync = require('@expo/spawn-async');
+const { spawn } = require('child_process');
 
 const TARGET_DEVICE = 'iPhone 16 Pro';
 const TARGET_DEVICE_IOS_VERSION = 18;
@@ -78,6 +78,61 @@ async function queryDeviceIdAsync(iosVersion = TARGET_DEVICE_IOS_VERSION, device
         name: firstEntry?.[1][0]?.name,
       }
     : null;
+}
+
+// alternative to @expo/spawn-async so that CI job can run this without node_modules installed
+function spawnAsync(command, args = [], options = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, options);
+    let stdout = '';
+    let stderr = '';
+
+    if (child.stdout && !options.stdio) {
+      child.stdout.on('data', (data) => {
+        stdout += data;
+      });
+    }
+
+    if (child.stderr && !options.stdio) {
+      child.stderr.on('data', (data) => {
+        stderr += data;
+      });
+    }
+
+    child.on('close', (code, signal) => {
+      const result = {
+        pid: child.pid,
+        output: [stdout, stderr],
+        stdout,
+        stderr,
+        status: code,
+        signal,
+      };
+
+      if (code !== 0) {
+        const argumentString = args && args.length > 0 ? ` ${args.join(' ')}` : '';
+        const error = signal
+          ? new Error(`${command}${argumentString} exited with signal: ${signal}`)
+          : new Error(`${command}${argumentString} exited with non-zero code: ${code}`);
+        Object.assign(error, result);
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+
+    child.on('error', (error) => {
+      Object.assign(error, {
+        pid: child.pid,
+        output: [stdout, stderr],
+        stdout,
+        stderr,
+        status: null,
+        signal: null,
+      });
+      reject(error);
+    });
+  });
 }
 
 module.exports = {
