@@ -77,6 +77,11 @@ export declare class Directory {
   move(destination: Directory | File): void;
 
   /**
+   * Renames a directory.
+   */
+  rename(newName: string): void;
+
+  /**
    * @hidden
    * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
    * This function is internal and will be removed in the future (when returning arrays of shared objects is supported).
@@ -220,6 +225,11 @@ export declare class File {
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File): void;
+
+  /**
+   * Renames a file.
+   */
+  rename(newName: string): void;
 
   /**
    * Returns A `FileHandle` object that can be used to read and write data to the file.
