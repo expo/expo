@@ -38,7 +38,7 @@ const PLATFORM_SETTINGS: Record<
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
   options: Pick<StartOptions, 'devClient' | 'platforms'>,
-  platformOptions: { appId?: string }
+  platformsOptions?: { appId?: string }
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
 
@@ -51,8 +51,6 @@ export async function startInterfaceAsync(
   };
 
   actions.printDevServerInfo(usageOptions);
-
-  const androidProps = await androidResolveOptions(devServerManager.projectRoot, platformOptions);
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -127,11 +125,17 @@ export async function startInterfaceAsync(
         );
       } else {
         try {
-          await server.openPlatformAsync(settings.launchTarget,     {
-            applicationId: androidProps.packageName,
-            customAppId: androidProps.customAppId,
-            launchActivity: androidProps.launchActivity,
-          }, { shouldPrompt });
+          if (options.devClient && platformsOptions?.appId) {
+            const androidProps = await androidResolveOptions(devServerManager.projectRoot, platformsOptions);
+
+            await server.openCustomRuntimeAsync(settings.launchTarget, {
+              applicationId: androidProps.packageName,
+              customAppId: androidProps.customAppId,
+              launchActivity: androidProps.launchActivity,
+            }, { shouldPrompt });
+          } else {
+            await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
+          }
           printHelp();
         } catch (error: any) {
           if (!(error instanceof AbortCommandError)) {
