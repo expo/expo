@@ -72,3 +72,21 @@ internal final class MissingPermissionException: GenericException<String> {
     "Missing permission for uri: \(param)"
   }
 }
+
+internal final class PickingInProgressException: Exception {
+  override var reason: String {
+    "File picking is already in progress"
+  }
+}
+
+internal final class MissingViewControllerException: Exception {
+  override var reason: String {
+    "No view controller available for presenting file picker"
+  }
+}
+
+internal final class FilePickingCancelledException: Exception {
+  override var reason: String {
+    "File picking was cancelled by the user"
+  }
+}
