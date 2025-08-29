@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add keepAudioSessionActive option to prevent session deactivation ([#39250](https://github.com/expo/expo/pull/39250) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
