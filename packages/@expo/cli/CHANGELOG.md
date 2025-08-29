@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support in `expo start` for custom app ids.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
