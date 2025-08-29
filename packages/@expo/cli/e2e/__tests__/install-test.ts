@@ -255,7 +255,7 @@ describe('expo-router integration', () => {
       {
         reuseExisting: false,
         sdkVersion: '52.0.0',
-        linkExpoPackages: ['expo-router'],
+        linkExpoPackages: ['expo-router', '@expo/router-core'],
       }
     );
     const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
