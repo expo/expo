@@ -18,13 +18,28 @@ Download and install [Android Studio](https://developer.android.com/studio).
 
 <Step label="2">
 
-Open the **Android Studio** app, click **More Actions** and select **SDK Manager**.
+Open the **Android Studio** app, you will see the **SDK Components setup** screen. Click **Next** to continue to install the Android SDK and Android SDK Platform. Click **Next** again to verify the settings and install.
+
+<ContentSpotlight
+  alt="Android Studio SDK Components setup"
+  src="/static/images/android-studio/sdk-components-setup.png"
+  className="max-w-[540px]"
+/>
 
 </Step>
 
 <Step label="3">
 
-Open Android Studio, go to **Settings** &gt; **Languages & Frameworks** &gt; **Android SDK**. From the **SDK Platforms** tab, select the latest Android version (API level).
+By default, Android Studio will install the latest version of the Android SDK. However, Android 15 (VanillaIceCream) SDK is required to compile a React Native app.
+
+Open Android Studio, go to **Settings** &gt; **Languages & Frameworks** &gt; **Android SDK**. From the **SDK Platforms** tab, and under **Android 15 (VanillaIceCream)**, select:
+
+- **Android SDK Platform 35**
+- **Sources for Android 35**
+- **Google Play ARM 64 v8a System Image**/**Google Play Intel x86_64 Atom System Image**
+- **Pre-Release 16 KB Page Size Google Play ARM 64 v8a System Image**/**Pre-Release 16 KB Page Size Google Play Intel x86_64 Atom System Image**
+
+The last two images are required to set up an [Android Emulator](/workflow/android-studio-emulator/#set-up-an-emulator).
 
 <ContentSpotlight
   alt="Android SDK Platforms"
@@ -39,27 +54,21 @@ Then, click on the **SDK Tools** tab and make sure you have at least one version
   src="/static/images/android-studio/build-tools.png"
   className="max-w-[640px]"
 />
+
 </Step>
 
-<Step label="4">
+<Step label="5">
+
 Copy or remember the path listed in the box that says **Android SDK Location**.
 
 <ContentSpotlight
-  alt="Android SDK location."
+  alt="Android SDK location"
   src="/static/images/android-studio/sdk-location.png"
   className="max-w-[640px]"
 />
 </Step>
 
-<Step label="5">
-
-Click **Apply** and **OK** to install the Android SDK and related build tools.
-
-</Step>
-
 <Step label="6">
-
-If you are on macOS or Linux, add an [environment variable](https://developer.android.com/studio/command-line/variables#envar) pointing to the Android SDK location in **~/.bash_profile** (or **~/.zshrc** if you use Zsh). For example: `export ANDROID_HOME=/your/path/here`.
 
 Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using bash, then **~/.bash_profile** or **~/.bashrc**) config file:
 
