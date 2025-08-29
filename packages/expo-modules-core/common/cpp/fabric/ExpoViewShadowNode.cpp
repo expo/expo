@@ -31,6 +31,12 @@ void ExpoViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
   }
+  // This is needed for display: contents, so that native view is still rendered
+  // https://github.com/facebook/react-native/blob/b02251e7f5c147296fab93c1ae613d27400cec92/packages/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.cpp#L399
+  // Without it the native view is flattened and not added to native hierarchy
+  if (viewProps.collapsable == false) {
+    traits_.unset(react::ShadowNodeTraits::Trait::ForceFlattenView);
+  }
 }
 
 } // namespace expo
