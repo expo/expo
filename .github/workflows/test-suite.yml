@@ -105,6 +105,9 @@ jobs:
           submodules: true
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 📱 Boot iOS Simulator (in background)
+        run: ./scripts/boot-ios-simulator.js &
+        working-directory: apps/bare-expo
       - name: 🌠 Download builds
         uses: actions/download-artifact@v4
         with:
