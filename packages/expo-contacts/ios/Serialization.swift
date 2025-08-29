@@ -308,7 +308,7 @@ func serializeContact(person: CNContact, keys: [String]?, directory: URL?) throw
     }
   }
   if keysToFetch.contains(CNContactInstantMessageAddressesKey) {
-    let values = socialProfilesFor(contact: person)
+    let values = instantMessageAddressesFor(contact: person)
     if let values {
       contact[ContactsKey.instantMessageAddresses] = values
     }
