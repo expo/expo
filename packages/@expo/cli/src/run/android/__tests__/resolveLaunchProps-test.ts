@@ -60,7 +60,8 @@ describe(resolveLaunchPropsAsync, () => {
   });
 
   it(`resolves launch properties with fully custom app id and custom main activity`, async () => {
-    const customAndroidManifest = { 'android/app/src/main/AndroidManifest.xml': `<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.reactnativeproject">
+    const customAndroidManifest = {
+      'android/app/src/main/AndroidManifest.xml': `<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.reactnativeproject">
         <uses-permission android:name="android.permission.INTERNET" />
       
         <queries>
@@ -93,7 +94,7 @@ describe(resolveLaunchPropsAsync, () => {
       
       </manifest>
       `,
-    }
+    };
     vol.fromJSON({ ...rnFixture, ...customAndroidManifest }, '/');
     expect(await resolveLaunchPropsAsync('/', { appId: 'dev.expo.test' })).toEqual({
       launchActivity: 'dev.expo.test/com.reactnativeproject.MainActivity',

@@ -4,6 +4,7 @@ import { KeyPressHandler } from './KeyPressHandler';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
+import { resolveLaunchPropsAsync as androidResolveOptions } from '../../run/android/resolveLaunchProps';
 import { openInEditorAsync } from '../../utils/editor';
 import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
@@ -11,7 +12,6 @@ import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../server/DevServerManager';
-import { resolveLaunchPropsAsync as androidResolveOptions } from '../../run/android/resolveLaunchProps';
 
 const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
 
@@ -126,13 +126,20 @@ export async function startInterfaceAsync(
       } else {
         try {
           if (options.devClient && platformsOptions.appId) {
-            const androidProps = await androidResolveOptions(devServerManager.projectRoot, platformsOptions);
+            const androidProps = await androidResolveOptions(
+              devServerManager.projectRoot,
+              platformsOptions
+            );
 
-            await server.openCustomRuntimeAsync(settings.launchTarget, {
-              applicationId: androidProps.packageName,
-              customAppId: androidProps.customAppId,
-              launchActivity: androidProps.launchActivity,
-            }, { shouldPrompt });
+            await server.openCustomRuntimeAsync(
+              settings.launchTarget,
+              {
+                applicationId: androidProps.packageName,
+                customAppId: androidProps.customAppId,
+                launchActivity: androidProps.launchActivity,
+              },
+              { shouldPrompt }
+            );
           } else {
             await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
           }

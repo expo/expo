@@ -114,9 +114,13 @@ export async function startAsync(
 
   // Present the Terminal UI.
   if (isInteractive()) {
-    await profile(startInterfaceAsync)(devServerManager, {
-      platforms: exp.platforms ?? ['ios', 'android', 'web'],
-    }, options.platformsOptions);
+    await profile(startInterfaceAsync)(
+      devServerManager,
+      {
+        platforms: exp.platforms ?? ['ios', 'android', 'web'],
+      },
+      options.platformsOptions
+    );
   } else {
     // Display the server location in CI...
     const url = devServerManager.getDefaultDevServer()?.getDevServerUrl();

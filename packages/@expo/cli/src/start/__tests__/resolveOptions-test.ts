@@ -183,7 +183,9 @@ describe(resolveOptionsAsync, () => {
     expect((await resolveOptionsAsync('/noop', { '--go': true })).devClient).toBe(false);
   });
   it(`sets appId to the value of --app-id`, async () => {
-    expect((await resolveOptionsAsync('/noop', { '--app-id': 'com.example.app' })).platformsOptions.appId).toBe('com.example.app');
+    expect(
+      (await resolveOptionsAsync('/noop', { '--app-id': 'com.example.app' })).platformsOptions.appId
+    ).toBe('com.example.app');
   });
   it(`sets appId to undefined if --app-id is not provided`, async () => {
     expect((await resolveOptionsAsync('/noop', {})).platformsOptions.appId).toBe(undefined);
