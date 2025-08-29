@@ -99,7 +99,7 @@ export function useAudioPlayer(
   source: AudioSource = null,
   options: AudioPlayerOptions = {}
 ): AudioPlayer {
-  const { updateInterval = 500, downloadFirst = false } = options;
+  const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
 
   // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
   // If downloadFirst is false, we resolve the source here.
@@ -109,8 +109,8 @@ export function useAudioPlayer(
   }, [JSON.stringify(source), downloadFirst]);
 
   const player = useReleasingSharedObject(
-    () => new AudioModule.AudioPlayer(initialSource, updateInterval),
-    [JSON.stringify(initialSource), updateInterval]
+    () => new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive),
+    [JSON.stringify(initialSource), updateInterval, keepAudioSessionActive]
   );
 
   // Handle async source resolution for downloadFirst
@@ -344,9 +344,9 @@ export function createAudioPlayer(
   source: AudioSource | string | number | null = null,
   options: AudioPlayerOptions = {}
 ): AudioPlayer {
-  const { updateInterval = 500, downloadFirst = false } = options;
+  const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
   const initialSource = downloadFirst ? null : resolveSource(source);
-  const player = new AudioModule.AudioPlayer(initialSource, updateInterval);
+  const player = new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive);
 
   if (downloadFirst && source) {
     resolveSourceWithDownload(source)

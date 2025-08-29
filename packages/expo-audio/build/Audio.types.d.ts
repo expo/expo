@@ -65,6 +65,20 @@ export type AudioPlayerOptions = {
      * @default undefined
      */
     crossOrigin?: 'anonymous' | 'use-credentials';
+    /**
+     * If set to `true`, the audio session will not be deactivated when this player pauses or finishes playback.
+     * This prevents interrupting other audio sources (like videos) when the audio ends.
+     *
+     * Useful for sound effects that should not interfere with ongoing video playback or other audio.
+     * The audio session for this player will not be deactivated automatically when the player finishes playback.
+     *
+     * > **Note:** If needed, you can manually deactivate the audio session using `setIsAudioActiveAsync(false)`.
+     *
+     *
+     * @platform ios
+     * @default false
+     */
+    keepAudioSessionActive?: boolean;
 };
 /**
  * @deprecated Use `AudioPlayerOptions` instead.

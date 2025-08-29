@@ -18,6 +18,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ref.rate == 0.0
   }
   var samplingEnabled = false
+  var keepAudioSessionActive = false
 
   // MARK: Observers
   private var timeToken: Any?

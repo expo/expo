@@ -77,12 +77,15 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool) -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         player.owningRegistry = self.registry
+        player.keepAudioSessionActive = keepAudioSessionActive
         player.onPlaybackComplete = { [weak self] in
-          self?.deactivateSession()
+          if !keepAudioSessionActive {
+            self?.deactivateSession()
+          }
         }
         self.registry.add(player)
         return player
@@ -182,7 +185,9 @@ public class AudioModule: Module {
 
       Function("pause") { player in
         player.ref.pause()
-        deactivateSession()
+        if !player.keepAudioSessionActive {
+          deactivateSession()
+        }
       }
 
       Function("remove") { player in
