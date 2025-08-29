@@ -249,7 +249,7 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
     );
 
     const shouldAddToGitignore = await confirmAsync({
-      message: `Would you like to add ${platformFolders.join(' and ')} to .gitignore to use Continuous Native Generation? \n${cngDocsLink}`,
+      message: `Add ${platformFolders.join(' and ')} to .gitignore? \n${cngDocsLink}`,
       initial: true,
     });
 
