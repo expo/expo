@@ -263,7 +263,7 @@ async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
       const gitignoreEntries = platformFolders.join('\n');
       upsertGitIgnoreContents(gitignorePath, gitignoreEntries);
 
-      Log.log(chalk.default.green(`✓ Added ${platformFolders.join(' and ')} to .gitignore`));
+      Log.log(chalk.default.green(`Added ${platformFolders.join(' and ')} to .gitignore`));
     }
   }
 }
