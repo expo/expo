@@ -174,6 +174,7 @@ export const general = [
         makePage('linking/into-your-app.mdx'),
         makePage('linking/android-app-links.mdx'),
         makePage('linking/ios-universal-links.mdx'),
+        makePage('linking/share-content-into-your-app.mdx'),
       ],
       {
         expanded: false,

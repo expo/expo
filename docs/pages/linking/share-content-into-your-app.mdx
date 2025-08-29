@@ -1,0 +1,123 @@
+---
+title: Receiving content to your app
+sidebar_title: Receiving content to your app
+description: Learn how to receive content to your app from another app.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
+
+You may want to let other apps share content into your app &mdash; like articles, images, or files &mdash; using the native system share sheet. This guide explains how that works under the hood and gives an overview of the tools available to help you implement it.
+
+With [`expo-sharing`](/versions/latest/sdk/sharing), you can already share content _from_ your app into other apps. Receiving content works the other way around: your app needs to become a share target, which on iOS means handling a Share Extension and on Android means responding to Intents.
+
+## OS foundations
+
+**Android**
+
+On Android, the system delivers shared data to an Activity. An Activity is a single, focused screen in your app, and it can also act as an entry point that the system launches directly when the user selects your app in the share sheet.
+
+- Apps register intent filters (ACTION_SEND / ACTION_SEND_MULTIPLE) for specific MIME types (e.g., text/plain, image/\*) in AndroidManifest.xml.
+- When selected from the share sheet, your launch Activity receives an Intent containing the data payload.
+- Your Activity must handle the incoming Intent in Java or Kotlin by calling getIntent() and reading extras like EXTRA_TEXT or EXTRA_STREAM.
+
+**iOS**
+
+On iOS, receiving shared data is handled by a Share Extension that runs separately from your main app.
+
+- A Share Extension lets users send content into your app.
+- The system launches your extension with an NSExtensionContext containing NSExtensionItem attachments.
+- The extension processes those items (e.g., reads text/URLs/files). To make them available to the main app, a common approach is to write data to a shared App Group container and then open the app (via a custom URL or universal link).
+- A Share Extension is implemented as its own target. It runs as a separate process from your main app and is written in Swift or Objective-C, since it needs to use iOS system APIs to receive shared content.
+
+For more in-depth details, see the official platform documentation:
+
+- Android: [Receiving simple data from other apps](https://developer.android.com/training/sharing/receive)
+- iOS: [App Extension Programming Guide – Share](https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/Share.html)
+
+## Available libraries
+
+Expo does not currently provide its own official library for receiving shared content. Instead, you'll need to rely on community-maintained packages or build a custom solution. Here are some options that Expo developers commonly use:
+
+**Expo Share Intent**
+
+- Cross-platform support (Android and iOS) for receiving shared data.
+- Adds a Share Extension on iOS and intent support on Android.
+- Works in Expo with a development build and exposes a simple JS hook.
+
+**Expo Apple Targets**
+
+- Enables additional iOS targets such as Share Extensions, widgets, and Siri intents.
+- More powerful and flexible if you're focused on advanced iOS functionality.
+
+**Example app**
+
+The open-source Bluesky app implements [share intent functionality](https://github.com/bluesky-social/social-app/tree/main/plugins/shareExtension) — useful as a production reference.
+
+## Receiving shared data in your app
+
+The exact setup steps vary depending on which library you choose, and since these are not maintained by Expo, the best place to find installation instructions is always the library's own README. Using Expo Share Intent
+as an example, a minimal implementation in code could look like this:
+
+### Handling shared data in JavaScript
+
+```
+// app/shared-content-receiver.tsx
+import { Text } from "react-native";
+import { useShareIntent } from "expo-share-intent";
+
+export default function ShareIntentScreen() {
+  const { hasShareIntent, shareIntent } = useShareIntent();
+
+  if (!hasShareIntent) return <Text>No shared data</Text>;
+
+  return <Text>Incoming: {JSON.stringify(shareIntent)}</Text>;
+}
+```
+
+The useShareIntent hook tells you whether your app was opened from the share sheet and gives you the payload (text, URLs, files, etc.).
+
+### Handling deep links with Expo Router
+
+If you're using Expo Router, you can intercept deep links coming from the share extension with a special file called +native-intent.ts:
+
+```
+// app/+native-intent.ts
+import { getShareExtensionKey } from "expo-share-intent";
+
+export function redirectSystemPath({ path }: { path: string }) {
+  if (path.includes(`dataUrl=${getShareExtensionKey()}`)) {
+    return "/shared-content-receiver"; // redirect to the screen that handles shared data
+  }
+  return path;
+}
+```
+
+This file runs whenever your app is opened with a deep link that doesn't match a normal route. By checking for the share extension key, you can make sure the user is redirected into your ShareIntent screen where the data is handled.
+
+An example project structure might look like this:
+
+<FileTree
+  files={[
+    ['app/_layout.tsx'],
+    ['app/index.tsx'],
+    ['app/+native-intent.tsx'],
+    ['app/share-intent.tsx'],
+  ]}
+/>
+
+### Building custom solutions with Expo Modules
+
+Sometimes existing libraries won't cover all your needs. In those cases, you can use the Expo Modules to implement custom native functionality for receiving shared content.
+
+On **Android**, it means declaring &lt;intent-filter&gt; entries in your manifest, handling incoming Intents, and surfacing the content to your app via an Expo Module.
+
+On **iOS**, this means creating a Share Extension target, handling the NSExtensionContext to access shared items, and then exposing that data through your Expo Module.
+
+The Expo Modules is the recommended approach for building these kinds of extensions because it lets you:
+
+- Write native code in Swift and Kotlin that feels natural to each platform.
+- Expose the parts you need directly to JavaScript in a clean, typed interface.
+- Integrate smoothly with your Expo app.
+
+If community packages are a good fit, they're probably the quickest way to get started. But when you need more control or custom behavior, Expo Modules give you the foundation to build exactly what your app requires.
