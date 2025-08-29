@@ -1,3 +1,351 @@
+// File: package.json
+{
+  "name": "christmas-gift-site",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "13.4.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tailwindcss": "^3.3.2",
+    "framer-motion": "^10.12.16",
+    "@headlessui/react": "^1.7.15",
+    "@heroicons/react": "^2.0.18"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "typescript": "^5.1.6",
+    "@types/react": "^18.2.21",
+    "@types/node": "^20.3.1"
+  }
+}
+
+/* ======================================================================== */
+// File: tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+  "exclude": ["node_modules"]
+}
+
+/* ======================================================================== */
+// File: tailwind.config.js
+module.exports = {
+  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        christmasRed: "#B22222",
+        christmasGreen: "#006400",
+        gold: "#FFD700"
+      }
+    }
+  },
+  plugins: []
+};
+
+/* ======================================================================== */
+// File: pages/_app.tsx
+import '../styles/globals.css';
+import type { AppProps } from 'next/app';
+
+export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+  return <Component {...pageProps} />;
+}
+
+/* ======================================================================== */
+// File: styles/globals.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-white text-gray-800;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Snowfall background (basic CSS animation) */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  z-index: 9999;
+  color: white;
+  user-select: none;
+  animation-name: fall;
+  animation-timing-function: linear;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100vh); }
+}
+
+/* ======================================================================== */
+// File: components/Layout.tsx
+import React from 'react';
+import Link from 'next/link';
+
+type Props = {
+  children: React.ReactNode;
+};
+
+export default function Layout({ children }: Props): JSX.Element {
+  return (
+    <div>
+      <nav className="flex justify-between items-center p-4 bg-christmasRed text-white">
+        <h1 className="text-xl font-bold">🎄 Christmas Gift</h1>
+        <div className="flex gap-4">
+          <Link href="/">Home</Link>
+          <Link href="/quiz">Quiz</Link>
+          <Link href="/catalog">Catalogo</Link>
+          <Link href="/recipes">Ricette</Link>
+          <Link href="/diy">DIY</Link>
+        </div>
+      </nav>
+      <main className="p-4">{children}</main>
+    </div>
+  );
+}
+
+/* ======================================================================== */
+// File: pages/index.tsx
+import React from 'react';
+import Layout from '../components/Layout';
+import { motion } from 'framer-motion';
+
+export default function Home(): JSX.Element {
+  return (
+    <Layout>
+      <div className="text-center">
+        <motion.h1
+          className="text-3xl md:text-5xl font-bold text-christmasGreen"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          🎁 Benvenuto su Christmas Gift 🎁
+        </motion.h1>
+        <p className="mt-4 text-lg">Trova il regalo perfetto, scopri ricette natalizie e tutorial fai-da-te.</p>
+        <img src="/tree.png" alt="Albero di Natale" className="mx-auto mt-8 w-48" />
+      </div>
+    </Layout>
+  );
+}
+
+/* ======================================================================== */
+// File: pages/catalog.tsx
+import React from 'react';
+import Layout from '../components/Layout';
+
+type Product = {
+  id: string;
+  title: string;
+  price: number;
+  image: string;
+};
+
+const sampleProducts: Product[] = [
+  { id: '1', title: 'Cuffie Wireless', price: 79.99, image: 'https://placehold.co/300x200?text=Cuffie' },
+  { id: '2', title: 'Set da cucina', price: 45, image: 'https://placehold.co/300x200?text=Set+Cucina' },
+  { id: '3', title: 'Sciarpa fatta a mano', price: 25, image: 'https://placehold.co/300x200?text=Sciarpa' }
+];
+
+export default function Catalog(): JSX.Element {
+  return (
+    <Layout>
+      <h2 className="text-2xl font-bold mb-4">Catalogo Regali</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {sampleProducts.map((p) => (
+          <div key={p.id} className="bg-white rounded-xl shadow p-4">
+            <img src={p.image} alt={p.title} className="rounded-lg mb-2" />
+            <h3 className="font-semibold">{p.title}</h3>
+            <p className="text-christmasRed font-bold">€{p.price}</p>
+          </div>
+        ))}
+      </div>
+    </Layout>
+  );
+}
+
+/* ======================================================================== */
+// File: pages/quiz.tsx
+import React, { useState } from 'react';
+import Layout from '../components/Layout';
+
+export default function Quiz(): JSX.Element {
+  const [relation, setRelation] = useState<string>('amico');
+  const [budget, setBudget] = useState<number>(50);
+
+  function submit(): void {
+    // In produzione: navigare a /catalog con query params o usare stato condiviso
+    alert(`Consigli per: ${relation}, Budget: €${budget}`);
+  }
+
+  return (
+    <Layout>
+      <h2 className="text-2xl font-bold mb-4">Trova il regalo perfetto</h2>
+      <div className="space-y-4">
+        <div>
+          <label>Relazione</label>
+          <select
+            value={relation}
+            onChange={(e) => setRelation(e.target.value)}
+            className="ml-2 border p-1"
+          >
+            <option value="amico">Amico</option>
+            <option value="partner">Partner</option>
+            <option value="collega">Collega</option>
+            <option value="familiare">Familiare</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Budget: €{budget}</label>
+          <input
+            type="range"
+            min={10}
+            max={500}
+            step={5}
+            value={budget}
+            onChange={(e) => setBudget(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+
+        <button onClick={submit} className="bg-christmasGreen text-white px-4 py-2 rounded-lg">
+          Vedi suggerimenti
+        </button>
+      </div>
+    </Layout>
+  );
+}
+
+/* ======================================================================== */
+// File: pages/recipes.tsx
+import React from 'react';
+import Layout from '../components/Layout';
+
+type Recipe = {
+  id: string;
+  title: string;
+  type: string;
+  time: string;
+  difficulty: string;
+};
+
+export default function Recipes(): JSX.Element {
+  const recipes: Recipe[] = [
+    { id: 'r1', title: 'Panettone', type: 'dolce', time: '3h', difficulty: 'alta' },
+    { id: 'r2', title: 'Biscotti speziati', type: 'dolce', time: '1h', difficulty: 'media' },
+    { id: 'r3', title: 'Arrosto di Natale', type: 'salato', time: '2h', difficulty: 'alta' }
+  ];
+
+  return (
+    <Layout>
+      <h2 className="text-2xl font-bold mb-4">Ricette Natalizie</h2>
+      <ul className="space-y-2">
+        {recipes.map((r) => (
+          <li key={r.id} className="bg-white shadow p-4 rounded-lg">
+            <h3 className="font-semibold">{r.title}</h3>
+            <p>
+              {r.type} — {r.time} — diff. {r.difficulty}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </Layout>
+  );
+}
+
+/* ======================================================================== */
+// File: pages/diy.tsx
+import React from 'react';
+import Layout from '../components/Layout';
+
+type Tutorial = {
+  id: string;
+  title: string;
+  time: string;
+  difficulty: string;
+};
+
+export default function DIY(): JSX.Element {
+  const tutorials: Tutorial[] = [
+    { id: 'd1', title: 'Candele decorate', time: '30min', difficulty: 'facile' },
+    { id: 'd2', title: 'Biglietti di auguri creativi', time: '20min', difficulty: 'facile' },
+    { id: 'd3', title: 'Sciarpa ai ferri', time: '2h', difficulty: 'media' }
+  ];
+
+  return (
+    <Layout>
+      <h2 className="text-2xl font-bold mb-4">Regali DIY</h2>
+      <ul className="space-y-2">
+        {tutorials.map((t) => (
+          <li key={t.id} className="bg-white shadow p-4 rounded-lg">
+            <h3 className="font-semibold">{t.title}</h3>
+            <p>
+              {t.time} — diff. {t.difficulty}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </Layout>
+  );
+}
+
+/* ======================================================================== */
+// File: README.md
+# Christmas Gift Site — Starter (Next.js + Tailwind)
+
+## Avvio
+```bash
+npm install
+npm run dev
+```
+Apri [http://localhost:3000](http://localhost:3000)
+
+## Funzioni incluse
+- Homepage festiva con albero di Natale e testo animato
+- Catalogo con 3 prodotti di esempio
+- Quiz interattivo (relazione + budget)
+- Ricette con lista base
+- Sezione DIY con tutorial
+
+## Nota sul problema originale
+Il progetto originale era distribuito con file `.js`, ma alcuni ambienti Next.js potrebbero tentare di risolvere pagine con estensione `.tsx` (TypeScript). Questo generava un errore di parsing come `Missing semicolon` se il file era trattato come TypeScript ma conteneva sintassi non valida per `.tsx`.
+
+Per risolvere il problema ho:
+- Convertito le pagine principali e il componente `Layout` in file TypeScript (`.tsx`) con sintassi valida e punti e virgola coerenti.
+- Aggiunto un `tsconfig.json` minimale.
+- Aggiornato `package.json` devDependencies per includere `typescript` e tipi base.
+
+Se preferisci tornare a JavaScript puro, dimmi e ripristino i file `.js` (oppure rimuoverò TypeScript dalle dipendenze).
+
+## Prossimi passi suggeriti
+- Aggiungere Tailwind e configurare i file (se non già presenti). Vedi: https://tailwindcss.com/docs/guides/nextjs
+- Collegare un CMS o Firebase per il catalogo dinamico
+- Implementare wishlist (LocalStorage o Firebase) e condivisione social
+
+Buon lavoro e dimmi se vuoi che generi i file scaricabili in un archivio ZIP o che li adatti a JavaScript invece che TypeScript.
 ---
 title: Start developing
 description: Make your first change to an Expo project and see it live on your device.
