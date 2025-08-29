@@ -71,6 +71,8 @@
 	</array>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>
@@ -121,6 +123,8 @@
       <string>location</string>
       <string>processing</string>
     </array>
+    <key>UIFileSharingEnabled</key>
+	<true/>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
