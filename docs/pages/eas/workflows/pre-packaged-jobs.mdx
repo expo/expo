@@ -668,7 +668,7 @@ You can pass the following parameters into the `params` list:
 | platform         | string | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                     |
 | branch           | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both. |
 | channel          | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                          |
-| private_key_path | string | Optional. Path to a private key file to use for code signing the update. This gets passed as `--private-key-path` to the EAS CLI.                                                                                                                                   |
+| private_key_path | string | Optional. Path to a private key file or an [EAS Environment variable](/eas/environment-variables/) containing the private key to use for code signing the update. This gets passed as `--private-key-path` to the EAS CLI.                                          |
 
 #### Outputs
 
