@@ -1,7 +1,7 @@
+import type { RouteNode } from '@expo/router-core';
 import React from 'react';
 
 import { Toast, ToastWrapper } from './Toast';
-import { RouteNode } from '../Route';
 
 export function SuspenseFallback({ route }: { route: RouteNode }) {
   if (__DEV__) {

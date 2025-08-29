@@ -40,9 +40,9 @@ exports.appendQueryAndHash = appendQueryAndHash;
 exports.appendBaseUrl = appendBaseUrl;
 exports.getPathWithConventionsCollapsed = getPathWithConventionsCollapsed;
 exports.isDynamicPart = isDynamicPart;
+const router_core_1 = require("@expo/router-core");
 const native_1 = require("@react-navigation/native");
 const queryString = __importStar(require("query-string"));
-const matchers_1 = require("../matchers");
 function validatePathConfig({ preserveDynamicRoutes, preserveGroups, shouldEncodeURISegment, ...options }) {
     (0, native_1.validatePathConfig)(options);
 }
@@ -127,7 +127,7 @@ function getPathWithConventionsCollapsed({ pattern, route, params, preserveGroup
             }
             return (shouldEncodeURISegment ? encodeURISegment(value) : value) ?? 'undefined';
         }
-        if (!preserveGroups && (0, matchers_1.matchGroupName)(p) != null) {
+        if (!preserveGroups && (0, router_core_1.matchGroupName)(p) != null) {
             // When the last part is a group it could be a shared URL
             // if the route has an initialRouteName defined, then we should
             // use that as the component path as we can assume it will be shown.
@@ -156,7 +156,7 @@ function isDynamicPart(p) {
     return p.startsWith(':') || p.startsWith('*');
 }
 function segmentMatchesConvention(segment) {
-    return (segment === 'index' || (0, matchers_1.matchGroupName)(segment) != null || (0, matchers_1.matchDynamicName)(segment) != null);
+    return (segment === 'index' || (0, router_core_1.matchGroupName)(segment) != null || (0, router_core_1.matchDynamicName)(segment) != null);
 }
 function encodeURISegment(str, { preserveBrackets = false } = {}) {
     // Valid characters according to

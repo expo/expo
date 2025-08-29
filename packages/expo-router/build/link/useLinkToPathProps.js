@@ -2,12 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = useLinkToPathProps;
 exports.shouldHandleMouseEvent = shouldHandleMouseEvent;
+const router_core_1 = require("@expo/router-core");
 const react_native_1 = require("react-native");
 const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
 const routing_1 = require("../global-state/routing");
-const matchers_1 = require("../matchers");
-const url_1 = require("../utils/url");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -36,9 +35,9 @@ function useLinkToPathProps({ href, ...options }) {
             (0, routing_1.linkTo)(href, options);
         }
     };
-    let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
+    let strippedHref = (0, router_core_1.stripGroupSegmentsFromPath)(href) || '/';
     // Append base url only if needed.
-    if (!(0, url_1.shouldLinkExternally)(strippedHref)) {
+    if (!(0, router_core_1.shouldLinkExternally)(strippedHref)) {
         strippedHref = (0, getPathFromState_forks_1.appendBaseUrl)(strippedHref);
     }
     return {

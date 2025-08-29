@@ -1,4 +1,4 @@
-import type { DynamicConvention, RouteNode } from './Route';
+import type { DynamicConvention, RouteNode } from '@expo/router-core';
 
 export async function loadStaticParamsAsync(route: RouteNode): Promise<RouteNode> {
   const expandedChildren = await Promise.all(

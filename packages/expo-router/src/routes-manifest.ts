@@ -1,8 +1,9 @@
 // This file runs in Node.js environments.
 // no relative imports
+import type { RequireContext } from '@expo/router-core';
+
 import { type Options, getRoutes } from './getRoutesSSR';
 import { getServerManifest } from './getServerManifest';
-import { type RequireContext } from './types';
 
 export { Options };
 

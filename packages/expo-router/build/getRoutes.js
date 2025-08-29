@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.extrapolateGroups = exports.generateDynamic = void 0;
 exports.getRoutes = getRoutes;
 exports.getExactRoutes = getExactRoutes;
-const getRoutesCore_1 = require("./getRoutesCore");
+const router_core_1 = require("@expo/router-core");
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -17,7 +17,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  *      - If multiple routes have the same name, the most specific route is used
  */
 function getRoutes(contextModule, options = {}) {
-    return (0, getRoutesCore_1.getRoutes)(contextModule, {
+    return (0, router_core_1.getRoutes)(contextModule, {
         getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
@@ -95,7 +95,7 @@ function getExactRoutes(contextModule, options = {}) {
         skipGenerated: true,
     });
 }
-var getRoutesCore_2 = require("./getRoutesCore");
-Object.defineProperty(exports, "generateDynamic", { enumerable: true, get: function () { return getRoutesCore_2.generateDynamic; } });
-Object.defineProperty(exports, "extrapolateGroups", { enumerable: true, get: function () { return getRoutesCore_2.extrapolateGroups; } });
+var router_core_2 = require("@expo/router-core");
+Object.defineProperty(exports, "generateDynamic", { enumerable: true, get: function () { return router_core_2.generateDynamic; } });
+Object.defineProperty(exports, "extrapolateGroups", { enumerable: true, get: function () { return router_core_2.extrapolateGroups; } });
 //# sourceMappingURL=getRoutes.js.map

@@ -1,7 +1,7 @@
+import type { RequireContext, RouteNode } from '@expo/router-core';
 import { getActionFromState, LinkingOptions } from '@react-navigation/native';
 import { Platform } from 'expo-modules-core';
 
-import { RouteNode } from './Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { Options, State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
@@ -9,7 +9,7 @@ import { applyRedirects } from './getRoutesRedirects';
 import { UrlObject } from './global-state/routeInfo';
 import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
-import { NativeIntent, RequireContext } from './types';
+import { NativeIntent } from './types';
 
 export function getNavigationConfig(
   routes: RouteNode,

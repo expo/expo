@@ -110,11 +110,15 @@
     ]
   },
   "peerDependencies": {
+    "@expo/router-core": "*",
     "expo": "*",
     "expo-router": "*",
     "react-native": "*"
   },
   "peerDependenciesMeta": {
+    "@expo/router-core": {
+      "optional": true
+    },
     "expo-router": {
       "optional": true
     },

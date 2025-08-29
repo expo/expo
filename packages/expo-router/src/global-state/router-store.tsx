@@ -1,5 +1,7 @@
 'use client';
 
+import type { RedirectConfig, RequireContext, RouteNode } from '@expo/router-core';
+import { shouldLinkExternally } from '@expo/router-core';
 import {
   NavigationContainerRefWithCurrent,
   NavigationState,
@@ -11,20 +13,17 @@ import Constants from 'expo-constants';
 import { ComponentType, Fragment, useEffect, useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';
 
-import { RouteNode } from '../Route';
 import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
-import { RedirectConfig } from '../getRoutesCore';
 import { defaultRouteInfo, getRouteInfoFromState, UrlObject } from './routeInfo';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { RequireContext, type Href } from '../types';
+import { type Href } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { type LinkToOptions } from './routing';
 import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
-import { shouldLinkExternally } from '../utils/url';
 import * as SplashScreen from '../views/Splash';
 
 export type StoreRedirects = readonly [RegExp, RedirectConfig, boolean];

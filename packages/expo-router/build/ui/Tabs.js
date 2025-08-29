@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tabs = Tabs;
 exports.useTabsWithChildren = useTabsWithChildren;
 exports.useTabsWithTriggers = useTabsWithTriggers;
+const router_core_1 = require("@expo/router-core");
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -30,7 +31,6 @@ const useComponent_1 = require("./useComponent");
 const Route_1 = require("../Route");
 const hooks_1 = require("../hooks");
 const href_1 = require("../link/href");
-const url_1 = require("../utils/url");
 const Navigator_1 = require("../views/Navigator");
 __exportStar(require("./TabContext"), exports);
 __exportStar(require("./TabList"), exports);
@@ -168,7 +168,7 @@ function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = 
             return;
         }
         const resolvedHref = (0, href_1.resolveHref)(href);
-        if ((0, url_1.shouldLinkExternally)(resolvedHref)) {
+        if ((0, router_core_1.shouldLinkExternally)(resolvedHref)) {
             return screenTriggers.push({
                 type: 'external',
                 name,

@@ -1,11 +1,10 @@
+import { stripGroupSegmentsFromPath, shouldLinkExternally } from '@expo/router-core';
 import { MouseEvent } from 'react';
 import { GestureResponderEvent, Platform } from 'react-native';
 
 import { emitDomLinkEvent } from '../domComponents/emitDomEvent';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { linkTo, LinkToOptions } from '../global-state/routing';
-import { stripGroupSegmentsFromPath } from '../matchers';
-import { shouldLinkExternally } from '../utils/url';
 
 function eventShouldPreventDefault(
   e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent

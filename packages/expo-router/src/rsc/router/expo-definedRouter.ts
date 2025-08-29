@@ -1,11 +1,10 @@
+import type { RouteNode } from '@expo/router-core';
+import { getContextKey, sortRoutes } from '@expo/router-core';
 import { ctx } from 'expo-router/_ctx';
 
 import { createExpoPages } from './create-expo-pages';
-import type { RouteNode } from '../../Route';
 import { getRoutes } from '../../getRoutesSSR';
 import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
-import { getContextKey } from '../../matchers';
-import { sortRoutes } from '../../sortRoutes';
 
 const UNIMPLEMENTED_PARAMS = new Proxy(
   {},

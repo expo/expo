@@ -1,9 +1,9 @@
+import { matchGroupName, stripGroupSegmentsFromPath } from '@expo/router-core';
 import { InitialState } from '@react-navigation/native';
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
 
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
-import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 
 export type ExpoOptions = {
   previousSegments?: string[];

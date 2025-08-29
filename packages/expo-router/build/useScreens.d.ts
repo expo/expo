@@ -1,6 +1,6 @@
+import type { RouteNode } from '@expo/router-core';
 import { type EventMapBase, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from '@react-navigation/native';
 import React from 'react';
-import { RouteNode } from './Route';
 import { UnknownOutputParams } from './types';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, TState extends NavigationState = NavigationState, TEventMap extends EventMapBase = EventMapBase> = {
     /** Name is required when used inside a Layout component. */

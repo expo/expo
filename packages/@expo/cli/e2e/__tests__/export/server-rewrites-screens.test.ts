@@ -1,11 +1,11 @@
 /* eslint-env jest */
-import { RewriteConfig } from 'expo-router/build/getRoutesCore';
+import type { RewriteConfig } from '@expo/router-core';
 import * as htmlParser from 'node-html-parser';
+import path from 'node:path';
 
 import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
-import path from 'node:path';
 
 runExportSideEffects();
 

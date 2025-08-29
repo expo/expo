@@ -42,7 +42,7 @@ export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
 export type { ResultState } from './fork/getStateFromPath';
 
-export type { RedirectConfig } from './getRoutesCore';
+export type { RedirectConfig } from '@expo/router-core';
 export type { SingularOptions } from './useScreens';
 
 export type * from './types';

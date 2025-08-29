@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ViewSlot = void 0;
 exports.triggersToScreens = triggersToScreens;
 exports.stateToAction = stateToAction;
+const router_core_1 = require("@expo/router-core");
 const href_1 = require("../link/href");
-const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
 const Slot_1 = require("./Slot");
 const constants_1 = require("../constants");
@@ -82,7 +82,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             action: stateToAction(state, layoutRouteNode.route),
         });
     }
-    const sortFn = (0, sortRoutes_1.sortRoutesWithInitial)(initialRouteName);
+    const sortFn = (0, router_core_1.sortRoutesWithInitial)(initialRouteName);
     const sortedConfigs = configs.sort((a, b) => {
         // External routes should be last. They will eventually be dropped
         if (a.type === 'external' && b.type === 'external') {

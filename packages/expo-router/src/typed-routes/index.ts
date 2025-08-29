@@ -1,9 +1,9 @@
+import { isTypedRoute } from '@expo/router-core';
 import { EXPO_ROUTER_CTX_IGNORE } from 'expo-router/_ctx-shared';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { getTypedRoutesDeclarationFile } from './generate';
-import { isTypedRoute } from '../matchers';
 import requireContext, {
   RequireContextPonyFill,
 } from '../testing-library/require-context-ponyfill';

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
+const router_core_1 = require("@expo/router-core");
 const getRoutes_1 = require("../getRoutes");
-const matchers_1 = require("../matchers");
 // /[...param1]/ - Match [...param1]
 const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
@@ -119,7 +119,7 @@ function groupRouteNodes(routeNode, groupedContextKeys = {
         routeKey = routeNode.route;
     }
     else {
-        routeKey = (0, matchers_1.removeSupportedExtensions)(routeNode.contextKey)
+        routeKey = (0, router_core_1.removeSupportedExtensions)(routeNode.contextKey)
             .replace(/\/index$/, '') // Remove any trailing /index
             .replace(/^\./, ''); // Remove any leading .
     }

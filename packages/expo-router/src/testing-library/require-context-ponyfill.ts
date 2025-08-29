@@ -1,9 +1,8 @@
 // @ts-ignore: types node
+import type { RequireContext } from '@expo/router-core';
 import fs from 'node:fs';
 // @ts-ignore: types node
 import path from 'node:path';
-
-import type { RequireContext } from '../types';
 
 export interface RequireContextPonyFill extends RequireContext {
   __add(file: string): void;

@@ -1,4 +1,4 @@
-import type { RouteNode } from './Route';
+import type { RouteNode } from '@expo/router-core';
 export type Screen = string | {
     path: string;
     screens: Record<string, Screen>;

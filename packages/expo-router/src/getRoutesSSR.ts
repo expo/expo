@@ -1,6 +1,5 @@
-import type { RouteNode } from './Route';
-import { getRoutes as getRoutesCore, type Options as OptionsCore } from './getRoutesCore';
-import type { RequireContext } from './types';
+import type { RequireContext, RouteNode, Options as OptionsCore } from '@expo/router-core';
+import { getRoutes as getRoutesCore } from '@expo/router-core';
 
 export type Options = Omit<OptionsCore, 'getSystemRoute'>;
 /**
@@ -93,4 +92,4 @@ export function getExactRoutes(
   });
 }
 
-export { generateDynamic, extrapolateGroups } from './getRoutesCore';
+export { generateDynamic, extrapolateGroups } from '@expo/router-core';

@@ -1,10 +1,10 @@
+import type { RouteNode } from '@expo/router-core';
+import { sortRoutesWithInitial } from '@expo/router-core';
 import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
 
 import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';
-import { RouteNode } from '../Route';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { sortRoutesWithInitial } from '../sortRoutes';
 import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';

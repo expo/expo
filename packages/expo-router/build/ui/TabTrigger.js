@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TabTrigger = TabTrigger;
 exports.isTabTrigger = isTabTrigger;
 exports.useTabTrigger = useTabTrigger;
+const router_core_1 = require("@expo/router-core");
 const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -10,7 +11,6 @@ const TabContext_1 = require("./TabContext");
 const getPathFromState_1 = require("../fork/getPathFromState");
 const imperative_api_1 = require("../imperative-api");
 const useLinkToPathProps_1 = require("../link/useLinkToPathProps");
-const matchers_1 = require("../matchers");
 const Navigator_1 = require("../views/Navigator");
 const TabTriggerSlot = react_slot_1.Slot;
 /**
@@ -71,7 +71,7 @@ function useTabTrigger(options) {
         return {
             isFocused: state.index === config.index,
             route: state.routes[config.index],
-            resolvedHref: (0, matchers_1.stripGroupSegmentsFromPath)((0, getPathFromState_1.appendBaseUrl)(config.href)),
+            resolvedHref: (0, router_core_1.stripGroupSegmentsFromPath)((0, getPathFromState_1.appendBaseUrl)(config.href)),
             ...config,
         };
     }, [triggerMap]);

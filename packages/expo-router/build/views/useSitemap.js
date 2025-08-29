@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSitemap = useSitemap;
+const router_core_1 = require("@expo/router-core");
 const react_1 = require("react");
 const Route_1 = require("../Route");
 const router_store_1 = require("../global-state/router-store");
-const matchers_1 = require("../matchers");
 const routeSegments = (route, parents) => [
     ...parents,
     ...route.route.split('/'),
@@ -13,7 +13,7 @@ const routeHref = (route, parents) => '/' +
     routeSegments(route, parents)
         .map((segment) => {
         // add an extra layer of entropy to the url for deep dynamic routes
-        if ((0, matchers_1.matchDynamicName)(segment)?.deep) {
+        if ((0, router_core_1.matchDynamicName)(segment)?.deep) {
             return segment + '/' + Date.now();
         }
         // index must be erased but groups can be preserved.

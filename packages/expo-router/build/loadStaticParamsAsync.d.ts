@@ -1,4 +1,4 @@
-import type { RouteNode } from './Route';
+import type { RouteNode } from '@expo/router-core';
 export declare function loadStaticParamsAsync(route: RouteNode): Promise<RouteNode>;
 export declare function evalStaticParamsAsync(route: RouteNode, props: {
     parentParams: any;

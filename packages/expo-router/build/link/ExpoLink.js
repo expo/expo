@@ -38,13 +38,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoLink = ExpoLink;
+const router_core_1 = require("@expo/router-core");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importStar(require("react"));
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const LinkWithPreview_1 = require("./LinkWithPreview");
 const elements_1 = require("./elements");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
-const url_1 = require("../utils/url");
 function ExpoLink(props) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
     if (process.env.EXPO_OS === 'ios' &&
@@ -61,7 +61,7 @@ function ExpoLink(props) {
     return <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} children={children}/>;
 }
 function isLinkWithPreview(props) {
-    const isExternal = (0, url_1.shouldLinkExternally)(String(props.href));
+    const isExternal = (0, router_core_1.shouldLinkExternally)(String(props.href));
     return react_1.Children.toArray(props.children).some((child) => (0, react_1.isValidElement)(child) &&
         ((!isExternal && child.type === elements_1.LinkPreview) || child.type === elements_1.LinkMenu));
 }

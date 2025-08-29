@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getServerManifest = getServerManifest;
 exports.parseParameter = parseParameter;
-const matchers_1 = require("./matchers");
-const sortRoutes_1 = require("./sortRoutes");
-const url_1 = require("./utils/url");
+const router_core_1 = require("@expo/router-core");
 function isNotFoundRoute(route) {
     return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
@@ -32,16 +30,16 @@ function getServerManifest(route) {
         // copies should be rendered. However, an API route is always the same regardless of parent segments.
         let key;
         if (route.type.includes('api')) {
-            key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
+            key = (0, router_core_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
         }
         else {
-            key = (0, matchers_1.getContextKey)(absoluteRoute).replace(/\/index$/, '') ?? '/';
+            key = (0, router_core_1.getContextKey)(absoluteRoute).replace(/\/index$/, '') ?? '/';
         }
         return [[key, '/' + absoluteRoute, route]];
     }
     // Remove duplicates from the runtime manifest which expands array syntax.
     const flat = getFlatNodes(route)
-        .sort(([, , a], [, , b]) => (0, sortRoutes_1.sortRoutes)(b, a))
+        .sort(([, , a], [, , b]) => (0, router_core_1.sortRoutes)(b, a))
         .reverse();
     const apiRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'api'), ([path]) => path);
     const otherRoutes = uniqueBy(flat.filter(([, , route]) => route.type === 'route' ||
@@ -50,7 +48,7 @@ function getServerManifest(route) {
         .map((redirect) => {
         // TODO(@hassankhan): ENG-16577
         // For external redirects, use `destinationContextKey` as the destination URL
-        if ((0, url_1.shouldLinkExternally)(redirect[2].destinationContextKey)) {
+        if ((0, router_core_1.shouldLinkExternally)(redirect[2].destinationContextKey)) {
             redirect[1] = redirect[2].destinationContextKey;
         }
         else {
@@ -184,7 +182,7 @@ function getNamedParametrizedRoute(route) {
                     : `/(?<${cleanedKey}>[^/]+?)`;
             }
             else if (/^\(.*\)$/.test(segment)) {
-                const groupName = (0, matchers_1.matchGroupName)(segment)
+                const groupName = (0, router_core_1.matchGroupName)(segment)
                     .split(',')
                     .map((group) => group.trim())
                     .filter(Boolean);

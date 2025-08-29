@@ -1,6 +1,6 @@
+import type { RequireContext } from '@expo/router-core';
 import React, { type PropsWithChildren, type ComponentType } from 'react';
 import { ExpoLinkingOptions } from './getLinkingConfig';
-import { RequireContext } from './types';
 export type ExpoRootProps = {
     context: RequireContext;
     location?: URL | string;

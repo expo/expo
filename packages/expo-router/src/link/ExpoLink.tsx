@@ -1,5 +1,6 @@
 'use client';
 
+import { shouldLinkExternally } from '@expo/router-core';
 import Constants from 'expo-constants';
 import React, { Children, isValidElement } from 'react';
 
@@ -8,7 +9,6 @@ import { LinkWithPreview } from './LinkWithPreview';
 import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { LinkProps } from './useLinkHooks';
-import { shouldLinkExternally } from '../utils/url';
 
 export function ExpoLink(props: LinkProps) {
   const isPreview = useIsPreview();

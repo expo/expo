@@ -1,5 +1,6 @@
 'use client';
 
+import type { RouteNode } from '@expo/router-core';
 import {
   NavigationContext,
   type NavigationProp,
@@ -9,7 +10,6 @@ import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 import { PreviewRouteContext } from './PreviewRouteContext';
-import { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
 import { type ResultState } from '../../exports';
 import { store } from '../../global-state/router-store';
