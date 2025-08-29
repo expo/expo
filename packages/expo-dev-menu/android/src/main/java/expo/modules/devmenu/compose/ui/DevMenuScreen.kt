@@ -41,19 +41,19 @@ fun DevMenuScreen(
 
     Row(
       horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
-      verticalAlignment = Alignment.Companion.CenterVertically
+      verticalAlignment = Alignment.CenterVertically
     ) {
       QuickAction(
         label = "Reload",
-        icon = { Icons.Reload(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
-        modifier = Modifier.Companion.weight(1f),
+        icon = { MenuIcons.Reload(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
+        modifier = Modifier.weight(1f),
         onClick = { onAction(DevMenuAction.Reload) }
       )
 
       QuickAction(
         label = "Go home",
-        icon = { Icons.Home(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
-        modifier = Modifier.Companion.weight(1f),
+        icon = { MenuIcons.Home(size = 20.dp, tint = NewAppTheme.colors.icon.default) },
+        modifier = Modifier.weight(1f),
         onClick = { onAction(DevMenuAction.GoHome) }
       )
     }
@@ -62,7 +62,7 @@ fun DevMenuScreen(
 
     ToolsSection(onAction, devToolsSettings)
 
-    Box(modifier = Modifier.Companion.padding(vertical = NewAppTheme.spacing.`6`)) {
+    Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`6`)) {
       Warning("Debugging not working? Try manually reloading first")
     }
 

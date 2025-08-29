@@ -34,7 +34,7 @@ fun Warning(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
       ) {
-        Icons.Warning(
+        MenuIcons.Warning(
           size = 18.dp,
           tint = NewAppTheme.colors.icon.warning
         )

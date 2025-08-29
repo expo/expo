@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import io.github.lukmccall.colors.blue
 import io.github.lukmccall.colors.gray
-
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 

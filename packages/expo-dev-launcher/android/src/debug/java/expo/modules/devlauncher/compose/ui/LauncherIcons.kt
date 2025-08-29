@@ -1,4 +1,4 @@
-package expo.modules.devmenu.compose.ui
+package expo.modules.devlauncher.compose.ui
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -7,18 +7,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import com.composeunstyled.Icon
-import expo.modules.devmenu.R
+import expo.modules.devlauncher.R
 
-object Icons {
+object LauncherIcons {
   @Composable
-  fun Close(
+  fun Plus(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.x_close),
-      contentDescription = "Close",
+      painter = painterResource(R.drawable.plus),
+      contentDescription = "Plus",
       tint = tint,
       modifier = Modifier
         .size(size)
@@ -27,14 +27,14 @@ object Icons {
   }
 
   @Composable
-  fun Copy(
+  fun ExpoLogo(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.copy),
-      contentDescription = "Copy",
+      painter = painterResource(R.drawable.expo_logo),
+      contentDescription = "Expo Logo",
       tint = tint,
       modifier = Modifier
         .size(size)
@@ -43,14 +43,94 @@ object Icons {
   }
 
   @Composable
-  fun Reload(
+  fun ShowAtLaunch(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.refresh),
-      contentDescription = "Reload",
+      painter = painterResource(R.drawable.show_at_launch),
+      contentDescription = "Show at launch",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun Settings(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.settings),
+      contentDescription = "Settings",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun User(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.user),
+      contentDescription = "User",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun CheckCircle(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.check_circle),
+      contentDescription = "Check",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun UpdatesNav(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.updates_nav),
+      contentDescription = "Updates",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun Updates(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.update_icon),
+      contentDescription = "Updates",
       tint = tint,
       modifier = Modifier
         .size(size)
@@ -75,14 +155,14 @@ object Icons {
   }
 
   @Composable
-  fun Performance(
+  fun Download(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.performance),
-      contentDescription = "Performance monitor",
+      painter = painterResource(R.drawable.download),
+      contentDescription = "Download",
       tint = tint,
       modifier = Modifier
         .size(size)
@@ -91,14 +171,14 @@ object Icons {
   }
 
   @Composable
-  fun Inspect(
+  fun Scan(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.inspect),
-      contentDescription = "Element inspector",
+      painter = painterResource(R.drawable.scan),
+      contentDescription = "Scan",
       tint = tint,
       modifier = Modifier
         .size(size)
@@ -107,14 +187,14 @@ object Icons {
   }
 
   @Composable
-  fun Bug(
+  fun Chevron(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.bug),
-      contentDescription = "JS debugger",
+      painter = painterResource(R.drawable.chevron_right),
+      contentDescription = "Chevron",
       tint = tint,
       modifier = Modifier
         .size(size)
@@ -123,46 +203,14 @@ object Icons {
   }
 
   @Composable
-  fun Refresh(
+  fun Branch(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.refresh),
-      contentDescription = "Fast Refresh",
-      tint = tint,
-      modifier = Modifier
-        .size(size)
-        .then(modifier)
-    )
-  }
-
-  @Composable
-  fun Fab(
-    size: Dp,
-    tint: Color,
-    modifier: Modifier = Modifier
-  ) {
-    Icon(
-      painter = painterResource(R.drawable.dev_menu_fab_icon),
-      contentDescription = "Toggle Dev Menu",
-      tint = tint,
-      modifier = Modifier
-        .size(size)
-        .then(modifier)
-    )
-  }
-
-  @Composable
-  fun Warning(
-    size: Dp,
-    tint: Color,
-    modifier: Modifier = Modifier
-  ) {
-    Icon(
-      painter = painterResource(R.drawable.alert),
-      contentDescription = "Warning",
+      painter = painterResource(R.drawable.branch_icon),
+      contentDescription = "Branch",
       tint = tint,
       modifier = Modifier
         .size(size)
