@@ -882,6 +882,27 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Saving screenshots and recordings">
+
+To save assets created by Maestro commands (such as [`takeScreenshot`](https://docs.maestro.dev/api-reference/commands/takescreenshot) or [`startRecording`](https://docs.maestro.dev/api-reference/commands/startrecording)) to use for debugging later, use the `MAESTRO_TESTS_DIR` environment variable.
+
+In your Maestro flow file, specify the asset locations:
+
+```yaml maestro/flows/test-flow.yaml
+appId: com.myapp
+---
+- launchApp
+- startRecording: ${MAESTRO_TESTS_DIR}/my_recording
+- takeScreenshot: ${MAESTRO_TESTS_DIR}/my_screenshot
+- tapOn: 'Login Button'
+- takeScreenshot: ${MAESTRO_TESTS_DIR}/after_login_screenshot
+- stopRecording
+```
+
+The assets will be available within the "Maestro Test Results" artifact in the Artifacts section.
+
+</Collapsible>
+
 ## Maestro Cloud
 
 Run Maestro tests on Maestro Cloud.

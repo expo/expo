@@ -47,7 +47,7 @@
     "@expo/env": "~2.0.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.4"
+    "expo-module-scripts": "^5.0.5"
   },
   "peerDependencies": {
     "expo": "*",

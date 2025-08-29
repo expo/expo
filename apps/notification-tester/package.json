@@ -18,13 +18,13 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/native": "^7.1.8",
-    "expo": "~54.0.0-preview.10",
+    "expo": "~54.0.0-preview.11",
     "expo-font": "14.0.5",
-    "expo-linking": "8.0.4",
-    "expo-router": "6.0.0-beta.9",
+    "expo-linking": "8.0.5",
+    "expo-router": "6.0.0-beta.10",
     "expo-device": "8.0.4",
     "expo-constants": "18.0.5",
-    "expo-splash-screen": "31.0.5",
+    "expo-splash-screen": "31.0.6",
     "expo-sqlite": "16.0.5",
     "expo-status-bar": "3.0.5",
     "expo-notifications": "0.32.6",
@@ -33,7 +33,7 @@
     "react": "19.1.0",
     "react-native": "0.81.1",
     "react-native-safe-area-context": "5.6.0",
-    "react-native-screens": "4.15.3"
+    "react-native-screens": "4.15.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

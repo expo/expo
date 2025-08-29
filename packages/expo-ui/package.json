@@ -27,7 +27,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.1.10",
-    "expo-module-scripts": "^5.0.4"
+    "expo-module-scripts": "^5.0.5"
   },
   "peerDependencies": {
     "expo": "*",

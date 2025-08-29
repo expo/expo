@@ -325,8 +325,9 @@ export interface PluginConfigTypeIos {
     privacyManifestAggregationEnabled?: boolean;
     /**
      * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * Setting this value to `true` will enable building React Native from source and disable the use of precompiled xcframeworks.
      * This feature is available from React Native 0.80 and later when using the new architecture.
-     * From React Native 0.81, this setting will also use a precompiled React Native Core (`React.xcframework`).
+     * From React Native 0.81, this setting will also control the use of a precompiled React Native Core (`React.xcframework`).
      *
      * @default false
      * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
