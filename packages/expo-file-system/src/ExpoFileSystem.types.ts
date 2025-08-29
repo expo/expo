@@ -1,11 +1,24 @@
-export type CreateOptions = {
+export type FileCreateOptions = {
   /**
    * Whether to create intermediate directories if they do not exist.
    * @default false
    */
   intermediates?: boolean;
   /**
-   * Whether to overwrite the file or directory if it exists.
+   * Whether to overwrite the file if it exists.
+   * @default false
+   */
+  overwrite?: boolean;
+};
+
+export type DirectoryCreateOptions = {
+  /**
+   * Whether to create intermediate directories if they do not exist.
+   * @default false
+   */
+  intermediates?: boolean;
+  /**
+   * Whether to overwrite the directory if it exists.
    * @default false
    */
   overwrite?: boolean;
@@ -60,7 +73,7 @@ export declare class Directory {
    *
    * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists (unless `idempotent` is `true`).
    */
-  create(options?: CreateOptions): void;
+  create(options?: DirectoryCreateOptions): void;
 
   createFile(name: string, mimeType: string | null): File;
 
@@ -214,7 +227,7 @@ export declare class File {
    *
    * @throws Error if the containing folder doesn't exist, the application has no read access to it or the file (or directory with the same path) already exists.
    */
-  create(options?: Omit<CreateOptions, 'idempotent'>): void;
+  create(options?: FileCreateOptions): void;
 
   /**
    * Copies a file.
