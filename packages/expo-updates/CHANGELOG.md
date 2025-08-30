@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix invalid path pattern in podspec for projects with spaces ([#38695](https://github.com/expo/expo/pull/38695) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Surface iOS compilation errors in updates E2E tests. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
