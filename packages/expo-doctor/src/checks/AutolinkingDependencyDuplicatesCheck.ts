@@ -1,4 +1,7 @@
-import type { BaseDependencyResolution, DependencyResolution } from 'expo-modules-autolinking/exports';
+import type {
+  BaseDependencyResolution,
+  DependencyResolution,
+} from 'expo-modules-autolinking/exports';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,22 +13,24 @@ import {
   scanNativeModuleResolutions,
 } from '../utils/autolinkingResolutions';
 
-export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<AutolinkingResolutionsCache> {
+type DoctorCache = AutolinkingResolutionsCache;
+
+export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorCache> {
   description = 'Check that no duplicate dependencies are installed';
 
   sdkVersionRange = '>=54.0.0';
 
   async runAsync(
     { projectRoot, exp }: DoctorCheckParams,
-    cache: AutolinkingResolutionsCache
+    cache: DoctorCache
   ): Promise<DoctorCheckResult> {
     const packagesWithIssues = new Map<string, DependencyResolution>();
 
     try {
-      const resolutions = await scanNativeModuleResolutions(
-        cache,
-        { projectRoot, sdkVersion: exp.sdkVersion! },
-      );
+      const resolutions = await scanNativeModuleResolutions(cache, {
+        projectRoot,
+        sdkVersion: exp.sdkVersion!,
+      });
       for (const [dependencyName, dependency] of resolutions) {
         if (dependency.duplicates && dependency.duplicates.length > 0) {
           packagesWithIssues.set(dependencyName, dependency);

@@ -1,7 +1,10 @@
 import type { DependencyResolution } from 'expo-modules-autolinking/exports';
 import resolveFrom from 'resolve-from';
 
-import { getVersionedNativeModuleNamesAsync } from './versionedNativeModules';
+import {
+  getVersionedNativeModuleNamesAsync,
+  VersionedNativeModuleNamesCache,
+} from './versionedNativeModules';
 
 export function importAutolinkingExportsFromProject(
   projectDir: string
@@ -42,7 +45,7 @@ export function importAutolinkingExportsFromProject(
 
 export class ExpoExportMissingError extends Error {}
 
-export interface AutolinkingResolutionsCache {
+export interface AutolinkingResolutionsCache extends VersionedNativeModuleNamesCache {
   resolutions?: Promise<Map<string, DependencyResolution>>;
 }
 
@@ -51,15 +54,12 @@ const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
 export const scanNativeModuleResolutions = (
   cache: AutolinkingResolutionsCache,
   params: {
-    projectRoot: string,
-    sdkVersion: string | undefined,
-  },
+    projectRoot: string;
+    sdkVersion: string | undefined;
+  }
 ): Promise<Map<string, DependencyResolution>> => {
   const _task = async () => {
-    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(
-      params.projectRoot,
-      params.sdkVersion!
-    );
+    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(cache, params);
 
     const autolinking = importAutolinkingExportsFromProject(params.projectRoot);
     const linker = autolinking.makeCachedDependenciesLinker({ projectRoot: params.projectRoot });
@@ -68,7 +68,7 @@ export const scanNativeModuleResolutions = (
         return autolinking.scanDependencyResolutionsForPlatform(
           linker,
           platform,
-          bundledNativeModules || undefined
+          bundledNativeModules ?? undefined
         );
       })
     );
