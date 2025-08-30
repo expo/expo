@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `forceFlattenDisplayContents` to support `asChild` prop in Link. ([#39262](https://github.com/expo/expo/pull/39262) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
