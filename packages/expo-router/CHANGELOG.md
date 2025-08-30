@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Move shared code from `expo-router` into `@expo/router-core` ([#39259](https://github.com/expo/expo/pull/39259) by [@hassankhan](https://github.com/hassankhan))
+
 ## 6.0.0-beta.10 — 2025-08-28
 
 ### 🐛 Bug fixes
