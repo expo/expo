@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Parse and print code frames above import stack for native bundling errors ([#39150](https://github.com/expo/expo/pull/39150) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 0.26.5 — 2025-08-28

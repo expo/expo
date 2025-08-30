@@ -1,6 +1,7 @@
 import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
+import { stripVTControlCharacters } from 'util';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import {
@@ -325,11 +326,27 @@ export function isNodeStdLibraryModule(moduleName: string): boolean {
 
 /** If the code frame can be found then append it to the existing message.  */
 function maybeAppendCodeFrame(message: string, rawMessage: string): string {
-  const codeFrame = stripMetroInfo(rawMessage);
+  const codeFrame = extractCodeFrame(stripMetroInfo(rawMessage));
   if (codeFrame) {
     message += '\n' + codeFrame;
   }
   return message;
+}
+
+/** Extract fist code frame presented in the error message */
+export function extractCodeFrame(errorMessage: string): string {
+  const codeFrameLine = /^(?:\s*(?:>?\s*\d+\s*\||\s*\|).*\n?)+/;
+  let wasPreviousLineCodeFrame: boolean | null = null;
+  return errorMessage
+    .split('\n')
+    .filter((line) => {
+      if (wasPreviousLineCodeFrame === false) return false;
+      const keep = codeFrameLine.test(stripVTControlCharacters(line));
+      if (keep && wasPreviousLineCodeFrame === null) wasPreviousLineCodeFrame = true;
+      else if (!keep && wasPreviousLineCodeFrame) wasPreviousLineCodeFrame = false;
+      return keep;
+    })
+    .join('\n');
 }
 
 /**
@@ -337,15 +354,15 @@ function maybeAppendCodeFrame(message: string, rawMessage: string): string {
  * In future versions we won't need this.
  * Returns the remaining code frame logs.
  */
-export function stripMetroInfo(errorMessage: string): string | null {
+export function stripMetroInfo(errorMessage: string): string {
   // Newer versions of Metro don't include the list.
   if (!errorMessage.includes('4. Remove the cache')) {
-    return null;
+    return errorMessage;
   }
   const lines = errorMessage.split('\n');
   const index = lines.findIndex((line) => line.includes('4. Remove the cache'));
   if (index === -1) {
-    return null;
+    return errorMessage;
   }
   return lines.slice(index + 1).join('\n');
 }
