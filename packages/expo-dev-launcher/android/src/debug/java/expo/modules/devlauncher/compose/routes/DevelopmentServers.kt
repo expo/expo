@@ -28,7 +28,9 @@ fun DevelopmentServersRoute(
           fontWeight = FontWeight.SemiBold,
           textAlign = TextAlign.Center
         ),
-        modifier = Modifier.padding(vertical = NewAppTheme.spacing.`4`).fillMaxWidth()
+        modifier = Modifier
+          .padding(vertical = NewAppTheme.spacing.`4`)
+          .fillMaxWidth()
       )
 
       Spacer(NewAppTheme.spacing.`3`)

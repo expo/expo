@@ -12,6 +12,16 @@
 
 ### 💡 Others
 
+## 0.26.5 — 2025-08-28
+
+### 💡 Others
+
+- Bump to `@react-native/dev-middleware@0.81.1` ([#39206](https://github.com/expo/expo/pull/39206) by [@kitten](https://github.com/kitten))
+
+## 0.26.4 — 2025-08-27
+
+### 💡 Others
+
 - Remove unused `@babel/runtime` dependency from CLI ([#39040](https://github.com/expo/expo/pull/39040) by [@kitten](https://github.com/kitten))
 
 ## 0.26.3 — 2025-08-25

@@ -5,6 +5,7 @@ import ExpoModulesCore
 struct CreateOptions: Record {
   @Field var intermediates: Bool = false
   @Field var overwrite: Bool = false
+  @Field var idempotent: Bool = false
 }
 
 struct DownloadOptions: Record {

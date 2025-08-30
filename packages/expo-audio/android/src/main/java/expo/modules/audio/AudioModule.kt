@@ -260,7 +260,7 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean ->
         val mediaSource = createMediaItem(source)
         runOnMain {
           val player = AudioPlayer(

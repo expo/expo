@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.ToggleSwitch
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun ToggleSwitch(
@@ -38,7 +37,7 @@ fun ToggleSwitch(
   ToggleSwitch(
     toggled = isToggled,
     onToggled = onToggled,
-    shape = RoundedCornerShape(Theme.sizing.borderRadius.full),
+    shape = RoundedCornerShape(NewAppTheme.borderRadius.full),
     backgroundColor = animatedBackgroundColor,
     modifier = Modifier.width(52.dp),
     thumb = {

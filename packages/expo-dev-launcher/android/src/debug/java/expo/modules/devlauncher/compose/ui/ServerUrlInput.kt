@@ -24,20 +24,11 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import com.composeunstyled.TextField
 import com.composeunstyled.TextInput
+import expo.modules.devlauncher.compose.utils.validateUrl
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
-
-private fun validateUrl(url: String): Boolean {
-  return try {
-    val uri = url.toUri()
-    uri.scheme != null && uri.host != null
-  } catch (_: Throwable) {
-    false
-  }
-}
 
 @Composable
 fun ServerUrlInput(

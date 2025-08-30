@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- [iOS] Migrate multipart parsers to Swift. ([#39144](https://github.com/expo/expo/pull/39144) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.6 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
 ## 29.0.5 — 2025-08-26
 
 _This version does not introduce any user-facing changes._

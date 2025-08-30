@@ -65,7 +65,7 @@ function NativeTabTriggerImpl(props) {
             if (navigation.getState()?.type !== 'tab') {
                 throw new Error(`Trigger component can only be used in the tab screen. Current route: ${route.name}`);
             }
-            const options = convertTabPropsToOptions(props);
+            const options = convertTabPropsToOptions(props, true);
             navigation.setOptions(options);
         }
     }, [isFocused, props, isInPreview]);
@@ -74,18 +74,20 @@ function NativeTabTriggerImpl(props) {
 exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     TabBar: NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
 });
-function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }) {
-    const initialOptions = {
-        ...options,
-        hidden: !!hidden,
-        specialEffects: {
-            repeatedTabSelection: {
-                popToRoot: !disablePopToTop,
-                scrollToTop: !disableScrollToTop,
+function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop }, isDynamic = false) {
+    const initialOptions = isDynamic
+        ? { ...options }
+        : {
+            ...options,
+            hidden: !!hidden,
+            specialEffects: {
+                repeatedTabSelection: {
+                    popToRoot: !disablePopToTop,
+                    scrollToTop: !disableScrollToTop,
+                },
             },
-        },
-        role: role ?? options?.role,
-    };
+            role: role ?? options?.role,
+        };
     const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
         elements_1.Badge,
         elements_1.Label,

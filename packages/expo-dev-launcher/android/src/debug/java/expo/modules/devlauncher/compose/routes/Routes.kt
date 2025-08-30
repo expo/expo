@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 
 object Routes {
   @Serializable
+  object Main
+
+  @Serializable
   object Home
 
   @Serializable
