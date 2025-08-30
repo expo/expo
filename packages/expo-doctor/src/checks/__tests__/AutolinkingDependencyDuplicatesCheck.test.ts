@@ -16,12 +16,15 @@ const additionalProjectProps = {
 describe('AutolinkingDependencyDuplicatesCheck', () => {
   it('outputs an error if the export is unavailable', async () => {
     const check = new AutolinkingDependencyDuplicatesCheck();
-    const result = await check.runAsync({
-      pkg: {},
-      ...additionalProjectProps,
-    }, {
-      resolutions: Promise.reject(new ExpoExportMissingError('Test message')),
-    });
+    const result = await check.runAsync(
+      {
+        pkg: {},
+        ...additionalProjectProps,
+      },
+      {
+        resolutions: Promise.reject(new ExpoExportMissingError('Test message')),
+      }
+    );
 
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toMatchInlineSnapshot(`
@@ -38,35 +41,43 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
 
   it('returns failing result for duplicates dependencies exist', async () => {
     const check = new AutolinkingDependencyDuplicatesCheck();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          react: '*',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            react: '*',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    }, {
-      resolutions: Promise.resolve(new Map([
-        ['react', {
-          source: 0 as any,
-          depth: 0,
-          name: 'react',
-          version: '19.1.0',
-          path: '/tmp/root/node_modules/react',
-          originPath: '/tmp/root/node_modules/react',
-          duplicates: [
-            {
-              name: 'react',
-              version: '18.3.0',
-              path: '/tmp/root/node_modules/duplicate/node_modules/react',
-              originPath: '/tmp/root/node_modules/duplicate/node_modules/react',
-            },
-          ],
-        }],
-      ])),
-    });
+      {
+        resolutions: Promise.resolve(
+          new Map([
+            [
+              'react',
+              {
+                source: 0 as any,
+                depth: 0,
+                name: 'react',
+                version: '19.1.0',
+                path: '/tmp/root/node_modules/react',
+                originPath: '/tmp/root/node_modules/react',
+                duplicates: [
+                  {
+                    name: 'react',
+                    version: '18.3.0',
+                    path: '/tmp/root/node_modules/duplicate/node_modules/react',
+                    originPath: '/tmp/root/node_modules/duplicate/node_modules/react',
+                  },
+                ],
+              },
+            ],
+          ])
+        ),
+      }
+    );
 
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toMatchInlineSnapshot(`
@@ -87,41 +98,49 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
 
   it('returns failing result with advice for corrupted node_modules folders', async () => {
     const check = new AutolinkingDependencyDuplicatesCheck();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          react: '*',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            react: '*',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    }, {
-      resolutions: Promise.resolve(new Map([
-        ['react', {
-          source: 0 as any,
-          depth: 0,
-          name: 'expo-constants',
-          version: '18.0.2',
-          path: '/tmp/root/node_modules/expo-constants',
-          originPath: '/tmp/root/node_modules/expo-constants',
-          duplicates: [
-            {
-              name: 'expo-constants',
-              version: '18.0.2',
-              path: '/tmp/root/node_modules/expo/node_modules/expo-constants',
-              originPath: '/tmp/root/node_modules/expo/node_modules/expo-constants',
-            },
-            {
-              name: 'expo-constants',
-              version: '18.0.2',
-              path: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
-              originPath: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
-            },
-          ],
-        }]
-      ])),
-    });
+      {
+        resolutions: Promise.resolve(
+          new Map([
+            [
+              'react',
+              {
+                source: 0 as any,
+                depth: 0,
+                name: 'expo-constants',
+                version: '18.0.2',
+                path: '/tmp/root/node_modules/expo-constants',
+                originPath: '/tmp/root/node_modules/expo-constants',
+                duplicates: [
+                  {
+                    name: 'expo-constants',
+                    version: '18.0.2',
+                    path: '/tmp/root/node_modules/expo/node_modules/expo-constants',
+                    originPath: '/tmp/root/node_modules/expo/node_modules/expo-constants',
+                  },
+                  {
+                    name: 'expo-constants',
+                    version: '18.0.2',
+                    path: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
+                    originPath: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
+                  },
+                ],
+              },
+            ],
+          ])
+        ),
+      }
+    );
 
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toMatchInlineSnapshot(`
