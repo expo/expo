@@ -10,6 +10,10 @@ import {
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
 } from '../utils/doctorConfig';
 import { checkLibraries } from '../utils/reactNativeDirectoryApi';
+import {
+  getVersionedNativeModuleNamesAsync,
+  VersionedNativeModuleNamesCache,
+} from '../utils/versionedNativeModules';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
 export const DEFAULT_PACKAGES_TO_IGNORE = [
@@ -35,14 +39,16 @@ export function filterPackages(packages: string[], ignoredPackages: (RegExp | st
   });
 }
 
-export class ReactNativeDirectoryCheck implements DoctorCheck<AutolinkingResolutionsCache> {
+type DoctorCache = AutolinkingResolutionsCache & VersionedNativeModuleNamesCache;
+
+export class ReactNativeDirectoryCheck implements DoctorCheck<DoctorCache> {
   description = 'Validate packages against React Native Directory package metadata';
 
   sdkVersionRange = '>=51.0.0';
 
   async runAsync(
     { projectRoot, pkg, exp }: DoctorCheckParams,
-    cache: AutolinkingResolutionsCache
+    cache: DoctorCache
   ): Promise<DoctorCheckResult> {
     const issues: string[] = [];
     const newArchUnsupportedPackages: string[] = [];
@@ -60,9 +66,14 @@ export class ReactNativeDirectoryCheck implements DoctorCheck<AutolinkingResolut
         projectRoot,
         sdkVersion: exp.sdkVersion!,
       });
+      const bundledNativeModuleNames = await getVersionedNativeModuleNamesAsync(cache, {
+        projectRoot,
+        sdkVersion: exp.sdkVersion!,
+      });
+      const ignoreModuleNames = new Set(bundledNativeModuleNames);
       for (const dependencyName of resolutions.keys()) {
-        // We'll only include direct dependencies
-        if (pkgDependencies[dependencyName]) {
+        // We'll only include direct dependencies and ignore bundled native modules
+        if (pkgDependencies[dependencyName] && !ignoreModuleNames.has(dependencyName)) {
           basePackageNames.push(dependencyName);
         }
       }
