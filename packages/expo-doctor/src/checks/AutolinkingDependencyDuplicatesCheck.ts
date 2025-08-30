@@ -1,7 +1,4 @@
-import type {
-  BaseDependencyResolution,
-  DependencyResolution,
-} from 'expo-modules-autolinking/exports';
+import type { BaseDependencyResolution, DependencyResolution } from 'expo-modules-autolinking/exports';
 import fs from 'fs';
 import path from 'path';
 
@@ -9,21 +6,31 @@ import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.type
 import { learnMore } from '../utils/TerminalLink';
 import {
   ExpoExportMissingError,
-  importAutolinkingExportsFromProject,
-} from '../utils/autolinkingExportsLoader';
-import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
+  AutolinkingResolutionsCache,
+  scanNativeModuleResolutions,
+} from '../utils/autolinkingResolutions';
 
-const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
-
-export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
+export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<AutolinkingResolutionsCache> {
   description = 'Check that no duplicate dependencies are installed';
 
   sdkVersionRange = '>=54.0.0';
 
-  async runAsync({ projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
-    let autolinking: ReturnType<typeof importAutolinkingExportsFromProject>;
+  async runAsync(
+    { projectRoot, exp }: DoctorCheckParams,
+    cache: AutolinkingResolutionsCache
+  ): Promise<DoctorCheckResult> {
+    const packagesWithIssues = new Map<string, DependencyResolution>();
+
     try {
-      autolinking = importAutolinkingExportsFromProject(projectRoot);
+      const resolutions = await scanNativeModuleResolutions(
+        cache,
+        { projectRoot, sdkVersion: exp.sdkVersion! },
+      );
+      for (const [dependencyName, dependency] of resolutions) {
+        if (dependency.duplicates && dependency.duplicates.length > 0) {
+          packagesWithIssues.set(dependencyName, dependency);
+        }
+      }
     } catch (error) {
       if (error instanceof ExpoExportMissingError) {
         return {
@@ -37,34 +44,6 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck {
           issues: [],
           advice: [],
         };
-      }
-    }
-
-    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(
-      projectRoot,
-      exp.sdkVersion!
-    );
-    const packagesWithIssues = new Map<string, DependencyResolution>();
-
-    const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
-    const dependenciesPerPlatform = await Promise.all(
-      AUTOLINKING_PLATFORMS.map((platform) => {
-        return autolinking.scanDependencyResolutionsForPlatform(
-          linker,
-          platform,
-          bundledNativeModules || undefined
-        );
-      })
-    );
-
-    for (const dependencyForPlatform of dependenciesPerPlatform) {
-      for (const dependencyName in dependencyForPlatform) {
-        const dependency = dependencyForPlatform[dependencyName];
-        if (!dependency || packagesWithIssues.has(dependencyName)) {
-          continue;
-        } else if (dependency.duplicates && dependency.duplicates.length > 0) {
-          packagesWithIssues.set(dependencyName, dependency);
-        }
       }
     }
 
