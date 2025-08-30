@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Use autolinking information to filter out packages that aren't native modules from React Native Directory check
+- Use autolinking information to filter out packages that aren't native modules from React Native Directory check ([#39272](https://github.com/expo/expo/pull/39272) by [@kitten](https://github.com/kitten))
 
 ## 1.17.2 — 2025-08-27
 
