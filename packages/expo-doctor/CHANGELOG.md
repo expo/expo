@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use autolinking information to filter out packages that aren't native modules from React Native Directory check
+
 ## 1.17.2 — 2025-08-27
 
 ### 💡 Others
