@@ -1,10 +1,4 @@
-import { type ResolutionResult } from 'expo/internal/unstable-autolinking-exports';
-
-import {
-  ExpoExportMissingError,
-  importAutolinkingExportsFromProject,
-} from '../../utils/autolinkingExportsLoader';
-import { getVersionedNativeModuleNamesAsync } from '../../utils/versionedNativeModules';
+import { ExpoExportMissingError } from '../../utils/autolinkingResolutions';
 import { AutolinkingDependencyDuplicatesCheck } from '../AutolinkingDependencyDuplicatesCheck';
 
 const additionalProjectProps = {
@@ -19,25 +13,14 @@ const additionalProjectProps = {
   dynamicConfigPath: null,
 };
 
-jest.mock('../../utils/versionedNativeModules', () => ({
-  getVersionedNativeModuleNamesAsync: jest.fn(() => ({})),
-}));
-
-jest.mock('../../utils/autolinkingExportsLoader', () => ({
-  ...jest.requireActual('../../utils/autolinkingExportsLoader'),
-  importAutolinkingExportsFromProject: jest.fn(() => ({})),
-}));
-
 describe('AutolinkingDependencyDuplicatesCheck', () => {
   it('outputs an error if the export is unavailable', async () => {
-    jest.mocked(importAutolinkingExportsFromProject).mockImplementationOnce(() => {
-      throw new ExpoExportMissingError('Test message');
-    });
-
     const check = new AutolinkingDependencyDuplicatesCheck();
     const result = await check.runAsync({
       pkg: {},
       ...additionalProjectProps,
+    }, {
+      resolutions: Promise.reject(new ExpoExportMissingError('Test message')),
     });
 
     expect(result.isSuccessful).toBeFalsy();
@@ -54,33 +37,6 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
   });
 
   it('returns failing result for duplicates dependencies exist', async () => {
-    const dependencies: ResolutionResult = {
-      react: {
-        source: 0 as any,
-        depth: 0,
-        name: 'react',
-        version: '19.1.0',
-        path: '/tmp/root/node_modules/react',
-        originPath: '/tmp/root/node_modules/react',
-        duplicates: [
-          {
-            name: 'react',
-            version: '18.3.0',
-            path: '/tmp/root/node_modules/duplicate/node_modules/react',
-            originPath: '/tmp/root/node_modules/duplicate/node_modules/react',
-          },
-        ],
-      },
-    };
-
-    jest.mocked(importAutolinkingExportsFromProject).mockReturnValue({
-      ...jest.requireActual('expo/internal/unstable-autolinking-exports'),
-      makeCachedDependenciesLinker: () => ({}) as any,
-      scanDependencyResolutionsForPlatform: async () => dependencies,
-    });
-
-    jest.mocked(getVersionedNativeModuleNamesAsync).mockResolvedValue(['react']);
-
     const check = new AutolinkingDependencyDuplicatesCheck();
     const result = await check.runAsync({
       pkg: {
@@ -91,7 +47,27 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
         },
       },
       ...additionalProjectProps,
+    }, {
+      resolutions: Promise.resolve(new Map([
+        ['react', {
+          source: 0 as any,
+          depth: 0,
+          name: 'react',
+          version: '19.1.0',
+          path: '/tmp/root/node_modules/react',
+          originPath: '/tmp/root/node_modules/react',
+          duplicates: [
+            {
+              name: 'react',
+              version: '18.3.0',
+              path: '/tmp/root/node_modules/duplicate/node_modules/react',
+              originPath: '/tmp/root/node_modules/duplicate/node_modules/react',
+            },
+          ],
+        }],
+      ])),
     });
+
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toMatchInlineSnapshot(`
       [
@@ -110,39 +86,6 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
   });
 
   it('returns failing result with advice for corrupted node_modules folders', async () => {
-    const dependencies: ResolutionResult = {
-      react: {
-        source: 0 as any,
-        depth: 0,
-        name: 'expo-constants',
-        version: '18.0.2',
-        path: '/tmp/root/node_modules/expo-constants',
-        originPath: '/tmp/root/node_modules/expo-constants',
-        duplicates: [
-          {
-            name: 'expo-constants',
-            version: '18.0.2',
-            path: '/tmp/root/node_modules/expo/node_modules/expo-constants',
-            originPath: '/tmp/root/node_modules/expo/node_modules/expo-constants',
-          },
-          {
-            name: 'expo-constants',
-            version: '18.0.2',
-            path: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
-            originPath: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
-          },
-        ],
-      },
-    };
-
-    jest.mocked(importAutolinkingExportsFromProject).mockReturnValue({
-      ...jest.requireActual('expo/internal/unstable-autolinking-exports'),
-      makeCachedDependenciesLinker: () => ({}) as any,
-      scanDependencyResolutionsForPlatform: async () => dependencies,
-    });
-
-    jest.mocked(getVersionedNativeModuleNamesAsync).mockResolvedValue(['react']);
-
     const check = new AutolinkingDependencyDuplicatesCheck();
     const result = await check.runAsync({
       pkg: {
@@ -153,7 +96,33 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
         },
       },
       ...additionalProjectProps,
+    }, {
+      resolutions: Promise.resolve(new Map([
+        ['react', {
+          source: 0 as any,
+          depth: 0,
+          name: 'expo-constants',
+          version: '18.0.2',
+          path: '/tmp/root/node_modules/expo-constants',
+          originPath: '/tmp/root/node_modules/expo-constants',
+          duplicates: [
+            {
+              name: 'expo-constants',
+              version: '18.0.2',
+              path: '/tmp/root/node_modules/expo/node_modules/expo-constants',
+              originPath: '/tmp/root/node_modules/expo/node_modules/expo-constants',
+            },
+            {
+              name: 'expo-constants',
+              version: '18.0.2',
+              path: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
+              originPath: '/tmp/root/node_modules/expo-asset/node_modules/expo-constants',
+            },
+          ],
+        }]
+      ])),
     });
+
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toMatchInlineSnapshot(`
       [
