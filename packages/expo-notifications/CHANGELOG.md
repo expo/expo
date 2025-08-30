@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix @react-native-firebase/messaging overriding Expo Notifications ([#33666](https://github.com/expo/expo/pull/33666) by [@scarlac](https://github.com/scarlac))
+
 ### 💡 Others
 
 - deprecate two async functions in favor of their sync variants ([#39174](https://github.com/expo/expo/pull/39174) by [@vonovak](https://github.com/vonovak))
