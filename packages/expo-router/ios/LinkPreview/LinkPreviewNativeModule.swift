@@ -78,7 +78,7 @@ public class LinkPreviewNativeModule: Module {
       Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool) in
         view.displayInline = displayInline
       }
-      
+
       Events("onSelected")
     }
   }
