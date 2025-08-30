@@ -101,7 +101,7 @@ Pod::Spec.new do |s|
     force_bundling_flag = ex_updates_native_debug ? "export FORCE_BUNDLING=1\n" : ""
     s.script_phase = {
       :name => 'Generate updates resources for expo-updates',
-      :script => force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh"',
+      :script => force_bundling_flag + 'bash -l -c \'"$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh"\'',
       :execution_position => :before_compile
     }
 

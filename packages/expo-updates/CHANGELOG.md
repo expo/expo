@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix invalid path pattern in podspec for projects with spaces ([#38695](https://github.com/expo/expo/pull/38695) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - [iOS] Migrate multipart parsers to Swift. ([#39144](https://github.com/expo/expo/pull/39144) by [@alanjhughes](https://github.com/alanjhughes))
