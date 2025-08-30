@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

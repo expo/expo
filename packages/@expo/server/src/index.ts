@@ -1,7 +1,8 @@
 import { ImmutableRequest } from './ImmutableRequest';
 import { ExpoError } from './error';
-import { Manifest, Middleware, MiddlewareFunction, Route } from './types';
+import { Manifest, Middleware, MiddlewareFunction, MiddlewareModule, Route } from './types';
 import { getRedirectRewriteLocation, isResponse, parseParams } from './utils';
+import { shouldRunMiddleware } from './utils/middleware';
 
 /**
  * @deprecated Use Fetch API `Request` instead.
@@ -88,10 +89,10 @@ export function createRequestHandler({
     let request = incomingRequest;
     let url = new URL(request.url);
 
-    if (manifest.middleware && shouldRunMiddleware(request, manifest.middleware)) {
+    if (manifest.middleware) {
       try {
-        const middlewareModule = await getMiddleware(manifest.middleware);
-        if (middlewareModule?.default) {
+        const middlewareModule: MiddlewareModule = await getMiddleware(manifest.middleware);
+        if (shouldRunMiddleware(request, middlewareModule)) {
           const middlewareFn = middlewareModule.default as MiddlewareFunction;
           const middlewareResponse = await middlewareFn(new ImmutableRequest(request));
           if (middlewareResponse instanceof Response) {
@@ -324,17 +325,4 @@ export function createRequestHandler({
 
     return Response.redirect(target, status);
   }
-}
-
-/**
- * Determines whether middleware should run for a given request based on matcher configuration.
- */
-function shouldRunMiddleware(request: Request, middleware: Middleware): boolean {
-  // TODO(@hassankhan): Implement pattern matching for middleware
-  return true;
-
-  // No matcher means middleware runs on all requests
-  // if (!middleware.matcher) {
-  //   return true;
-  // }
 }

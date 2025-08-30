@@ -8,7 +8,6 @@
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
 import type { RouteNode } from './Route';
-import type { MiddlewareMatcher } from './routes-manifest';
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     file: string;
     page: string;
@@ -36,11 +35,6 @@ export type ExpoRouterServerManifestV1Middleware = {
      * @example _expo/functions/+middleware.js
      */
     file: string;
-    /**
-     * Optional matcher configuration for conditional middleware execution.
-     * When undefined, middleware runs on all requests.
-     */
-    matcher?: MiddlewareMatcher;
 };
 export type ExpoRouterServerManifestV1<TRegex = string> = {
     /**

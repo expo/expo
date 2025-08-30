@@ -5,6 +5,7 @@ exports.createRequestHandler = createRequestHandler;
 const ImmutableRequest_1 = require("./ImmutableRequest");
 const error_1 = require("./error");
 const utils_1 = require("./utils");
+const middleware_1 = require("./utils/middleware");
 var error_2 = require("./error");
 Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return error_2.ExpoError; } });
 function noopBeforeResponse(responseInit, _route) {
@@ -29,10 +30,10 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
         }
         let request = incomingRequest;
         let url = new URL(request.url);
-        if (manifest.middleware && shouldRunMiddleware(request, manifest.middleware)) {
+        if (manifest.middleware) {
             try {
                 const middlewareModule = await getMiddleware(manifest.middleware);
-                if (middlewareModule?.default) {
+                if ((0, middleware_1.shouldRunMiddleware)(request, middlewareModule)) {
                     const middlewareFn = middlewareModule.default;
                     const middlewareResponse = await middlewareFn(new ImmutableRequest_1.ImmutableRequest(request));
                     if (middlewareResponse instanceof Response) {
@@ -226,16 +227,5 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, handleR
         }
         return Response.redirect(target, status);
     }
-}
-/**
- * Determines whether middleware should run for a given request based on matcher configuration.
- */
-function shouldRunMiddleware(request, middleware) {
-    // TODO(@hassankhan): Implement pattern matching for middleware
-    return true;
-    // No matcher means middleware runs on all requests
-    // if (!middleware.matcher) {
-    //   return true;
-    // }
 }
 //# sourceMappingURL=index.js.map

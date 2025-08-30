@@ -9,7 +9,6 @@
  */
 import type { RouteNode } from './Route';
 import { getContextKey, matchGroupName } from './matchers';
-import type { MiddlewareMatcher } from './routes-manifest';
 import { sortRoutes } from './sortRoutes';
 import { shouldLinkExternally } from './utils/url';
 
@@ -42,11 +41,6 @@ export type ExpoRouterServerManifestV1Middleware = {
    * @example _expo/functions/+middleware.js
    */
   file: string;
-  /**
-   * Optional matcher configuration for conditional middleware execution.
-   * When undefined, middleware runs on all requests.
-   */
-  matcher?: MiddlewareMatcher;
 };
 
 export type ExpoRouterServerManifestV1<TRegex = string> = {
@@ -193,7 +187,6 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
   if (route.middleware) {
     manifest.middleware = {
       file: route.middleware.contextKey,
-      matcher: route.middleware.loadRoute().unstable_settings?.matcher ?? undefined,
     };
   }
 
