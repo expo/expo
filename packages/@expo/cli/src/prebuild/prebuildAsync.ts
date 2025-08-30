@@ -1,8 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
-import fs from 'fs';
-import path from 'path';
 
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
@@ -12,19 +10,13 @@ import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
-import { isInteractive } from '../utils/interactive';
-import { learnMore } from '../utils/link';
-import { upsertGitIgnoreContents } from '../utils/mergeGitIgnorePaths';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { confirmAsync } from '../utils/prompts';
-import { CNGStatus } from '../utils/workflow';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
-
-const cngDocsLink = learnMore('https://docs.expo.dev/workflow/continuous-native-generation/');
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -86,9 +78,6 @@ export async function prebuildAsync(
       );
     }
   }
-
-  await checkCNG(options.platforms, projectRoot);
-
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
@@ -192,66 +181,4 @@ export async function prebuildAsync(
     hasNewProjectFiles,
     exp,
   };
-}
-
-async function checkCNG(platforms: ModPlatform[], projectRoot: string) {
-  const { resolveWorkflowAsync } = await import('../utils/workflow.js');
-  const { Log } = await import('../log.js');
-  const chalk = await import('chalk');
-
-  const nativePlatforms = platforms.filter(
-    (platform) => platform === 'ios' || platform === 'android'
-  );
-  if (nativePlatforms.length === 0) return;
-
-  const cngStatuses: CNGStatus[] = [];
-
-  for (const platform of nativePlatforms) {
-    try {
-      const status = await resolveWorkflowAsync(projectRoot, platform);
-      cngStatuses.push(status);
-    } catch (error) {
-      debug(`Could not determine CNG status for ${platform}: ${error}`);
-    }
-  }
-
-  if (cngStatuses.length === 0) return;
-
-  if (cngStatuses.every((status) => status.isInGitIgnore)) return;
-
-  const shouldBeIgnored = cngStatuses.filter(
-    (status) => !status.isInGitIgnore && !status.hasNativeCode
-  );
-
-  const isPlural = shouldBeIgnored.length > 1;
-
-  Log.warn(
-    chalk.default.yellow(
-      `Detected that ${shouldBeIgnored.map((item) => (item.platform === 'ios' ? '/ios' : '/android')).join(' and ')} ${isPlural ? 'directories are' : 'directory is'} being tracked by Git. When using Continuous Native Generation (CNG), it is recommended to exclude ${isPlural ? 'these directories' : 'this directory'} from source control. ${cngDocsLink}\n`
-    )
-  );
-
-  if (shouldBeIgnored.length > 0 && isInteractive()) {
-    const platformFolders = shouldBeIgnored.map((item) =>
-      item.platform === 'ios' ? '/ios' : '/android'
-    );
-
-    const shouldAddToGitignore = await confirmAsync({
-      message: `Add ${platformFolders.join(' and ')} to .gitignore? \n${cngDocsLink}`,
-      initial: true,
-    });
-
-    if (shouldAddToGitignore) {
-      const gitignorePath = path.join(projectRoot, '.gitignore');
-
-      if (!fs.existsSync(gitignorePath)) {
-        fs.writeFileSync(gitignorePath, '');
-      }
-
-      const gitignoreEntries = platformFolders.join('\n');
-      upsertGitIgnoreContents(gitignorePath, gitignoreEntries);
-
-      Log.log(chalk.default.green(`Added ${platformFolders.join(' and ')} to .gitignore`));
-    }
-  }
 }
