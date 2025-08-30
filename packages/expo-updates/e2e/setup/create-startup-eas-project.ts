@@ -1,5 +1,6 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
+import fs from 'fs';
 import path from 'path';
 
 import {
@@ -27,7 +28,15 @@ const runtimeVersion = '1.0.0';
   if (!repoRoot || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
     throw new Error('Missing one or more environment variables; see instructions in e2e/README.md');
   }
-  const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');
+
+  let projectRoot: string;
+  if (process.env.TEST_PROJECT_ROOT) {
+    projectRoot = path.resolve(workingDir, process.env.TEST_PROJECT_ROOT);
+    await fs.promises.mkdir(path.dirname(projectRoot), { recursive: true });
+  } else {
+    projectRoot = path.join(workingDir, 'updates-e2e');
+  }
+
   const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
 
   await initAsync(projectRoot, {
