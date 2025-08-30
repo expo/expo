@@ -14,6 +14,7 @@ export const ModalsRenderer = ({
   modalConfigs,
   onDismissed,
   onShow,
+  onDetentChange,
 }: ModalsRendererProps) => {
   const rootId = useRef(nanoid());
 
@@ -59,6 +60,12 @@ export const ModalsRenderer = ({
           }}
           onAppear={() => {
             onShow?.(config.uniqueId);
+          }}
+          onSheetDetentChanged={(event) => {
+            onDetentChange?.(config.uniqueId, {
+              index: event.nativeEvent.index,
+              stable: event.nativeEvent.isStable,
+            });
           }}>
           <ModalComponent modalConfig={config} />
         </ScreenStackItem>
