@@ -23,4 +23,6 @@ export * from './Switch';
 export * from './Text';
 export * from './TextField';
 export * from './SecureField';
+export * from './NamespaceProvider';
+export * from './GlassEffectContainer';
 //# sourceMappingURL=index.js.map
