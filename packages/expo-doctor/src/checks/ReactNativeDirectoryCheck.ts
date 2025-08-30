@@ -57,7 +57,6 @@ export class ReactNativeDirectoryCheck implements DoctorCheck<DoctorCache> {
     const unknownPackages: string[] = [];
     const userDefinedIgnoredPackages = getReactNativeDirectoryCheckExcludes(pkg);
     const listUnknownPackagesEnabled = getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg);
-    const pkgDependencies = pkg.dependencies || {};
 
     const basePackageNames: string[] = [];
     try {
@@ -72,15 +71,15 @@ export class ReactNativeDirectoryCheck implements DoctorCheck<DoctorCache> {
       });
       const ignoreModuleNames = new Set(bundledNativeModuleNames);
       for (const dependencyName of resolutions.keys()) {
-        // We'll only include direct dependencies and ignore bundled native modules
-        if (pkgDependencies[dependencyName] && !ignoreModuleNames.has(dependencyName)) {
+        // We'll forcefully ignore bundled native modules
+        if (!ignoreModuleNames.has(dependencyName)) {
           basePackageNames.push(dependencyName);
         }
       }
     } catch {
       // However, if this fails, we fall back to the old logic, which just
       // looks at all direct dependencies
-      basePackageNames.push(...Object.keys(pkgDependencies));
+      basePackageNames.push(...Object.keys(pkg.dependencies || {}));
     }
 
     const packageNames = filterPackages(basePackageNames, [
