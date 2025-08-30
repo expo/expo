@@ -65,6 +65,10 @@ public extension ExpoSwiftUIView {
   static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
   }
+
+  var appContext: AppContext? {
+    return props.appContext
+  }
 }
 
 extension ExpoSwiftUI {
@@ -88,6 +92,7 @@ extension ExpoSwiftUI {
     public override func createView(appContext: AppContext) -> AppleView? {
 #if RCT_NEW_ARCH_ENABLED
       let props = Props()
+      props.appContext = appContext
 
       if ViewType.self is WithHostingView.Type {
         let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)

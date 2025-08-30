@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added `appContext` to `ExpoSwiftUI.ViewProps`. ([#39231](https://github.com/expo/expo/pull/39231) by [@kudo](https://github.com/kudo))
+
 ## 3.0.9 — 2025-08-28
 
 ### 🐛 Bug fixes
