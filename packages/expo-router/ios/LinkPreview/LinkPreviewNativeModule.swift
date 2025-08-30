@@ -19,6 +19,10 @@ public class LinkPreviewNativeModule: Module {
         }
       }
 
+      Prop("forceFlattenDisplayContents") { (view: NativeLinkPreviewView, forceFlattenDisplayContents: Bool) in
+        // This component supports forceFlattenDisplayContents prop, it is handled in ExpoViewShadowNode to disable flattening for display: contents views
+      }
+
       Events(
         "onPreviewTapped",
         "onPreviewTappedAnimationCompleted",
@@ -74,7 +78,7 @@ public class LinkPreviewNativeModule: Module {
       Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool) in
         view.displayInline = displayInline
       }
-
+      
       Events("onSelected")
     }
   }
