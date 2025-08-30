@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `forceFlattenDisplayContents` prop to control flattening of display:contents views. ([#39262](https://github.com/expo/expo/pull/39262) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
