@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Improved type safety with NewContact and ExistingContact types. ([#39269](https://github.com/expo/expo/pull/39269) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ## 15.0.5 — 2025-08-27
 
 _This version does not introduce any user-facing changes._
