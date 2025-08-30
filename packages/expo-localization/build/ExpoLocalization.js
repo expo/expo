@@ -28,6 +28,8 @@ const USES_FAHRENHEIT = [
     'PW',
     'KY',
 ];
+// https://localizejs.com/articles/localizing-for-right-to-left-languages-the-issues-to-consider
+const USES_RTL = ['ar', 'arc', 'ckb', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ps', 'sd', 'ur', 'yi'];
 export function addLocaleListener(
 // NOTE(@kitten): We never use the event's data
 listener) {
@@ -51,13 +53,12 @@ export default {
     getLocales() {
         const locales = getNavigatorLocales();
         return locales?.map((languageTag) => {
-            // TextInfo is an experimental API that is not available in all browsers.
-            // We might want to consider using a locale lookup table instead.
             let locale = {};
             // Properties added only for compatibility with native, use `toLocaleString` instead.
             let digitGroupingSeparator = null;
             let decimalSeparator = null;
             let temperatureUnit = null;
+            let textDirection = null;
             // Gracefully handle language codes like `en-GB-oed` which is unsupported
             // but is otherwise a valid language tag (grandfathered)
             try {
@@ -70,7 +71,8 @@ export default {
                 }
             }
             catch { }
-            const { region, textInfo, language, script } = locale;
+            const { region, language, script } = locale;
+            textDirection = languageTextDirection(locale);
             if (region) {
                 temperatureUnit = regionToTemperatureUnit(region);
             }
@@ -78,7 +80,7 @@ export default {
                 languageTag,
                 languageCode: language || languageTag.split('-')[0] || 'en',
                 languageScriptCode: script || null,
-                textDirection: textInfo?.direction || null,
+                textDirection,
                 digitGroupingSeparator,
                 decimalSeparator,
                 measurementSystem: null,
@@ -109,5 +111,12 @@ export default {
 };
 function regionToTemperatureUnit(region) {
     return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
+}
+function languageTextDirection(locale) {
+    // getTextInfo API is not available in all browsers.
+    if (typeof locale.getTextInfo === 'function') {
+        return locale.getTextInfo()?.direction;
+    }
+    return USES_RTL.includes(locale.language) ? 'rtl' : 'ltr';
 }
 //# sourceMappingURL=ExpoLocalization.js.map
