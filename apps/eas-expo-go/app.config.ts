@@ -28,6 +28,12 @@ const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
     ...base,
     slug: 'unversioned-expo-go',
     name: 'Expo Go (unversioned)',
+    ios: {
+      bundleIdentifier: 'ignored-but-requied-by-build-job',
+    },
+    android: {
+      package: 'ignored-but-requied-by-build-job',
+    },
     extra: {
       eas: {
         projectId: '09066dbe-ef65-460e-9201-b7aa931abbf4',
