@@ -2,6 +2,10 @@ import chalk from 'chalk';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import {
+  AutolinkingResolutionsCache,
+  scanNativeModuleResolutions,
+} from '../utils/autolinkingResolutions';
+import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
 } from '../utils/doctorConfig';
@@ -31,22 +35,44 @@ export function filterPackages(packages: string[], ignoredPackages: (RegExp | st
   });
 }
 
-export class ReactNativeDirectoryCheck implements DoctorCheck {
+export class ReactNativeDirectoryCheck implements DoctorCheck<AutolinkingResolutionsCache> {
   description = 'Validate packages against React Native Directory package metadata';
 
   sdkVersionRange = '>=51.0.0';
 
-  async runAsync({ pkg }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync(
+    { projectRoot, pkg, exp }: DoctorCheckParams,
+    cache: AutolinkingResolutionsCache
+  ): Promise<DoctorCheckResult> {
     const issues: string[] = [];
     const newArchUnsupportedPackages: string[] = [];
     const newArchUntestedPackages: string[] = [];
     const unmaintainedPackages: string[] = [];
     const unknownPackages: string[] = [];
-    const dependencies = pkg.dependencies ?? {};
     const userDefinedIgnoredPackages = getReactNativeDirectoryCheckExcludes(pkg);
     const listUnknownPackagesEnabled = getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg);
+    const pkgDependencies = pkg.dependencies || {};
 
-    const packageNames = filterPackages(Object.keys(dependencies), [
+    const basePackageNames: string[] = [];
+    try {
+      // We try to do an autolinking to filter RNDirectory checks to only apply to native modules
+      const resolutions = await scanNativeModuleResolutions(cache, {
+        projectRoot,
+        sdkVersion: exp.sdkVersion!,
+      });
+      for (const dependencyName of resolutions.keys()) {
+        // We'll only include direct dependencies
+        if (pkgDependencies[dependencyName]) {
+          basePackageNames.push(dependencyName);
+        }
+      }
+    } catch {
+      // However, if this fails, we fall back to the old logic, which just
+      // looks at all direct dependencies
+      basePackageNames.push(...Object.keys(pkgDependencies));
+    }
+
+    const packageNames = filterPackages(basePackageNames, [
       ...DEFAULT_PACKAGES_TO_IGNORE,
       ...userDefinedIgnoredPackages,
     ]);
