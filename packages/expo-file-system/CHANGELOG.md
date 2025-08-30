@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add stubs for legacy methods imported from "expo-file-system".
+
 ## 19.0.6 — 2025-08-26
 
 _This version does not introduce any user-facing changes._
