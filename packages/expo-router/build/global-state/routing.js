@@ -49,6 +49,7 @@ exports.setParams = setParams;
 exports.linkTo = linkTo;
 exports.getPayloadFromStateRoute = getPayloadFromStateRoute;
 exports.findDivergentState = findDivergentState;
+const router_core_1 = require("@expo/router-core");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
@@ -56,9 +57,7 @@ const router_store_1 = require("./router-store");
 const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
-const matchers_1 = require("../matchers");
 const navigationParams_1 = require("../navigationParams");
-const url_1 = require("../utils/url");
 function assertIsReady() {
     if (!router_store_1.store.navigationRef.isReady()) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
@@ -175,7 +174,7 @@ function linkTo(originalHref, options = {}) {
     if ((0, emitDomEvent_1.emitDomLinkEvent)(href, options)) {
         return;
     }
-    if ((0, url_1.shouldLinkExternally)(href)) {
+    if ((0, router_core_1.shouldLinkExternally)(href)) {
         if (href.startsWith('//') && react_native_1.Platform.OS !== 'web') {
             href = `https:${href}`;
         }
@@ -319,7 +318,7 @@ lookThroughAllTabs = false) {
         })();
         const childState = actionStateRoute.state;
         const nextNavigationState = stateRoute.state;
-        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
+        const dynamicName = (0, router_core_1.matchDynamicName)(actionStateRoute.name);
         const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
             !childState ||
             !nextNavigationState ||

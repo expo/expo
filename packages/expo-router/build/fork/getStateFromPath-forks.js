@@ -21,8 +21,8 @@ exports.getRouteConfigSorter = getRouteConfigSorter;
 exports.parseQueryParams = parseQueryParams;
 exports.cleanPath = cleanPath;
 exports.routePatternToRegex = routePatternToRegex;
+const router_core_1 = require("@expo/router-core");
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const matchers_1 = require("../matchers");
 /**
  * In Expo Router, the params are available at all levels of the routing config
  * @param routes
@@ -60,7 +60,7 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
     }
     const pathname = parsed.pathname;
     const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
-    const pathWithoutGroups = (0, matchers_1.stripGroupSegmentsFromPath)(stripBaseUrl(path, baseUrl));
+    const pathWithoutGroups = (0, router_core_1.stripGroupSegmentsFromPath)(stripBaseUrl(path, baseUrl));
     // Make sure there is a trailing slash
     return {
         // The slashes are at the end, not the beginning
@@ -80,7 +80,7 @@ function createConfig(screen, pattern, routeNames, config = {}) {
             // If any part is dynamic, then the route is dynamic
             const isDynamicPart = part.startsWith(':') || part.startsWith('*') || part.includes('*not-found');
             isDynamic ||= isDynamicPart;
-            if (!(0, matchers_1.matchGroupName)(part)) {
+            if (!(0, router_core_1.matchGroupName)(part)) {
                 parts.push(part);
                 if (!isDynamicPart) {
                     staticPartCount++;
@@ -143,7 +143,7 @@ function formatRegexPattern(it) {
         return `((.*\\/)${it.endsWith('?') ? '?' : ''})`;
     }
     // Strip groups from the matcher
-    if ((0, matchers_1.matchGroupName)(it) != null) {
+    if ((0, router_core_1.matchGroupName)(it) != null) {
         // Groups are optional segments
         // this enables us to match `/bar` and `/(foo)/bar` for the same route
         // NOTE(EvanBacon): Ignore this match in the regex to avoid capturing the group
@@ -195,7 +195,7 @@ function matchForEmptyPath(configs) {
             ...value,
             // Collapse all levels of group segments before testing.
             // This enables `app/(one)/(two)/index.js` to be matched.
-            path: (0, matchers_1.stripGroupSegmentsFromPath)(value.path),
+            path: (0, router_core_1.stripGroupSegmentsFromPath)(value.path),
         };
     });
     const match = leafNodes.find((config) => 

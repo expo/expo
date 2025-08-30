@@ -1,4 +1,4 @@
-import { RequireContext } from '../types';
+import type { RequireContext } from '@expo/router-core';
 export type GetTypedRoutesDeclarationFileOptions = {
     partialTypedGroups?: boolean;
     testIgnoreComments?: boolean;

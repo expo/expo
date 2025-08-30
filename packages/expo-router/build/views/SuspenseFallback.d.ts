@@ -1,5 +1,5 @@
+import type { RouteNode } from '@expo/router-core';
 import React from 'react';
-import { RouteNode } from '../Route';
 export declare function SuspenseFallback({ route }: {
     route: RouteNode;
 }): React.JSX.Element | null;

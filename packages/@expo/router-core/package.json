@@ -1,0 +1,40 @@
+{
+  "name": "@expo/router-core",
+  "version": "6.0.0-beta.10",
+  "description": "Expo Router is a file-based router for React Native and web applications.",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "main": "build/index",
+  "types": "build/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "build"
+  ],
+  "repository": {
+    "url": "https://github.com/expo/expo.git",
+    "type": "git",
+    "directory": "packages/expo-router"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "scripts": {
+    "build": "bash -c 'if [ -z \"$1\" ]; then expo-module build -p tsconfig.json; else expo-module build \"$1\"; fi' --",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "peerDependencies": {
+    "react": "*"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

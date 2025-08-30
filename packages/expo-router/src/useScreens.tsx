@@ -1,5 +1,6 @@
 'use client';
 
+import type { LoadedRoute, RouteNode } from '@expo/router-core';
 import {
   useIsFocused,
   useStateForPath,
@@ -11,7 +12,7 @@ import {
 } from '@react-navigation/native';
 import React from 'react';
 
-import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import { Route, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { Screen } from './primitives';

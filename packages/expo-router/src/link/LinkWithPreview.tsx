@@ -1,5 +1,6 @@
 'use client';
 
+import { shouldLinkExternally } from '@expo/router-core';
 import React, {
   isValidElement,
   useEffect,
@@ -18,7 +19,6 @@ import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
-import { shouldLinkExternally } from '../utils/url';
 
 const isPad = Platform.OS === 'ios' && Platform.isPad;
 

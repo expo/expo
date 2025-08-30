@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkWithPreview = LinkWithPreview;
+const router_core_1 = require("@expo/router-core");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
@@ -44,7 +45,6 @@ const elements_1 = require("./elements");
 const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
 const native_1 = require("./preview/native");
 const useNextScreenId_1 = require("./preview/useNextScreenId");
-const url_1 = require("../utils/url");
 const isPad = react_native_1.Platform.OS === 'ios' && react_native_1.Platform.isPad;
 function LinkWithPreview({ children, ...rest }) {
     const router = (0, hooks_1.useRouter)();
@@ -86,7 +86,7 @@ function LinkWithPreview({ children, ...rest }) {
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
     const highlightBorderRadius = rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
-    const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
+    const preview = react_1.default.useMemo(() => ((0, router_core_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
         path: tabPath,

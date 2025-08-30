@@ -5,11 +5,10 @@ exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsCon
 exports.useRouteNode = useRouteNode;
 exports.useContextKey = useContextKey;
 exports.Route = Route;
+const router_core_1 = require("@expo/router-core");
+Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return router_core_1.sortRoutesWithInitial; } });
+Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return router_core_1.sortRoutes; } });
 const react_1 = require("react");
-const matchers_1 = require("./matchers");
-const sortRoutes_1 = require("./sortRoutes");
-Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithInitial; } });
-Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
 const CurrentRouteContext = (0, react_1.createContext)(null);
 exports.LocalRouteParamsContext = (0, react_1.createContext)({});
 if (process.env.NODE_ENV !== 'production') {
@@ -24,7 +23,7 @@ function useContextKey() {
     if (node == null) {
         throw new Error('No filename found. This is likely a bug in expo-router.');
     }
-    return (0, matchers_1.getContextKey)(node.contextKey);
+    return (0, router_core_1.getContextKey)(node.contextKey);
 }
 /** Provides the matching routes and filename to the children. */
 function Route({ children, node, route }) {

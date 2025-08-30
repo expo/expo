@@ -1,11 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const router_core_1 = require("@expo/router-core");
 const _ctx_1 = require("expo-router/_ctx");
 const create_expo_pages_1 = require("./create-expo-pages");
 const getRoutesSSR_1 = require("../../getRoutesSSR");
 const loadStaticParamsAsync_1 = require("../../loadStaticParamsAsync");
-const matchers_1 = require("../../matchers");
-const sortRoutes_1 = require("../../sortRoutes");
 const UNIMPLEMENTED_PARAMS = new Proxy({}, {
     // Assert that params is unimplemented when accessed.
     get() {
@@ -55,7 +54,7 @@ exports.default = (0, create_expo_pages_1.createExpoPages)(async ({ createPage, 
         return staticPaths;
     }
     async function addLayout(route) {
-        const normal = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '');
+        const normal = (0, router_core_1.getContextKey)(route.contextKey).replace(/\/index$/, '');
         const loaded = route.loadRoute();
         if (loaded.generateStaticParams) {
             throw new Error('generateStaticParams is not supported in _layout routes with React Server Components enabled yet.');
@@ -67,12 +66,12 @@ exports.default = (0, create_expo_pages_1.createExpoPages)(async ({ createPage, 
             render: 'static',
             ...loaded.unstable_settings,
         });
-        await Promise.all(route.children.sort(sortRoutes_1.sortRoutes).map(async (child) => {
+        await Promise.all(route.children.sort(router_core_1.sortRoutes).map(async (child) => {
             if (child.type === 'layout') {
                 await addLayout(child);
             }
             else {
-                const normal = (0, matchers_1.getContextKey)(child.contextKey).replace(/\/index$/, '');
+                const normal = (0, router_core_1.getContextKey)(child.contextKey).replace(/\/index$/, '');
                 const loaded = child.loadRoute();
                 const settings = loaded.unstable_settings;
                 // Support generateStaticParams for dynamic routes by defining the route twice.

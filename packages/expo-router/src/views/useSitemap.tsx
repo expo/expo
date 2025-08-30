@@ -1,8 +1,9 @@
+import type { RouteNode } from '@expo/router-core';
+import { matchDynamicName } from '@expo/router-core';
 import { useMemo } from 'react';
 
-import { RouteNode, sortRoutes } from '../Route';
+import { sortRoutes } from '../Route';
 import { store } from '../global-state/router-store';
-import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 
 const routeSegments = (route: RouteNode, parents: string[]) => [
