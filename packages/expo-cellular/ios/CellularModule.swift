@@ -2,11 +2,33 @@ import CoreTelephony
 import ExpoModulesCore
 
 public class CellularModule: Module {
+  let carrier = currentCarrier()
+
   public func definition() -> ModuleDefinition {
     Name("ExpoCellular")
 
-    Constants {
-      Self.getCurrentCellularInfo()
+    Constant("allowsVoip") {
+      carrier?.allowsVOIP
+    }
+
+    Constant("carrier") {
+      carrier?.carrierName
+    }
+
+    Constant("isoCountryCode") {
+      carrier?.isoCountryCode
+    }
+
+    Constant("mobileCountryCode") {
+      carrier?.mobileCountryCode
+    }
+
+    Constant("mobileNetworkCode") {
+      carrier?.mobileNetworkCode
+    }
+
+    Constant("generation") {
+      Self.currentCellularGeneration().rawValue
     }
 
     AsyncFunction("getCellularGenerationAsync") { () -> Int in
@@ -74,20 +96,6 @@ public class CellularModule: Module {
       }
       return .unknown
     }
-  }
-
-  static func getCurrentCellularInfo() -> [String: Any?] {
-    let carrier = Self.currentCarrier()
-    let generation = Self.currentCellularGeneration()
-
-    return [
-      "allowsVoip": carrier?.allowsVOIP,
-      "carrier": carrier?.carrierName,
-      "isoCountryCode": carrier?.isoCountryCode,
-      "mobileCountryCode": carrier?.mobileCountryCode,
-      "mobileNetworkCode": carrier?.mobileNetworkCode,
-      "generation": generation.rawValue
-    ]
   }
 
   static func currentRadioAccessTechnology() -> String? {

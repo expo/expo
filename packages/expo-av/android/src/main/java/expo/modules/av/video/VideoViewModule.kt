@@ -53,12 +53,10 @@ class VideoViewModule : Module() {
 
     //region Native module
 
-    Constants(
-      "ScaleNone" to ScalableType.LEFT_TOP.ordinal.toString(),
-      "ScaleToFill" to ScalableType.FIT_XY.ordinal.toString(),
-      "ScaleAspectFit" to ScalableType.FIT_CENTER.ordinal.toString(),
-      "ScaleAspectFill" to ScalableType.CENTER_CROP.ordinal.toString()
-    )
+    Constant("ScaleNone") { ScalableType.LEFT_TOP.ordinal.toString() }
+    Constant("ScaleToFill") { ScalableType.FIT_XY.ordinal.toString() }
+    Constant("ScaleAspectFit") { ScalableType.FIT_CENTER.ordinal.toString() }
+    Constant("ScaleAspectFill") { ScalableType.CENTER_CROP.ordinal.toString() }
 
     AsyncFunction("setFullscreen") { tag: Int, shouldBeFullscreen: Boolean, promise: Promise ->
       ViewUtils.tryRunWithVideoView(

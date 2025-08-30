@@ -40,6 +40,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 19.0.0 — 2025-08-13
 
