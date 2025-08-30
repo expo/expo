@@ -33,6 +33,7 @@ import {
 } from './saveAssets';
 import { createAssetMap } from './writeContents';
 import * as Log from '../log';
+import { getServerDeploymentScript, runServerDeployCommandAsync } from './deployServer';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
@@ -161,6 +162,47 @@ export async function exportAppAsync(
       // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
       // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
       await copyPublicFolderAsync(publicPath, outputPath);
+    }
+
+    const apiRoutesEnabled =
+      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
+    // Only export server for native updates if API routes are enabled.
+    if (apiRoutesEnabled && (platforms.includes('ios') || platforms.includes('android'))) {
+      await exportApiRoutesStandaloneAsync(devServer, {
+        files,
+        platform: 'web',
+        apiRoutesOnly: true,
+      });
+
+      // Copy over public folder items
+      await copyPublicFolderAsync(publicPath, outputPath);
+
+      // Copy over the server output on top of the public folder.
+      await persistMetroFilesAsync(files, outputPath);
+
+      // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
+      const userDefinedServerUrl = exp.extra?.router?.origin;
+
+      // Add an opaque flag to disable server deployment.
+      if (env.EXPO_NO_DEPLOY) {
+        Log.log('Skipping server deployment because environment variable EXPO_NO_DEPLOY is set.');
+        Log.log();
+      } else {
+        const deployedServerUrl = await runServerDeployCommandAsync(projectRoot, {
+          distDirectory: outputDir,
+          deployScript: getServerDeploymentScript(projectConfig.pkg.scripts),
+        });
+
+        if (deployedServerUrl && userDefinedServerUrl == null) {
+          files.set('server-deployment.json', {
+            contents: JSON.stringify({ serverUrl: deployedServerUrl }),
+          });
+        } else if (deployedServerUrl && userDefinedServerUrl) {
+          Log.log(
+            `Using custom server URL: ${userDefinedServerUrl} (ignoring deployment URL: ${deployedServerUrl})`
+          );
+        }
+      }
     }
 
     let templateHtml: string | undefined;
