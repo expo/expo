@@ -1,7 +1,7 @@
 /* eslint-env browser */
-import { Platform, type EventSubscription } from 'expo-modules-core';
+import { type EventSubscription, Platform } from 'expo-modules-core';
 
-import { Calendar, Locale, CalendarIdentifier } from './Localization.types';
+import { Calendar, CalendarIdentifier, Locale } from './Localization.types';
 
 const getNavigatorLocales = () => {
   if (Platform.isDOMAvailable) {
@@ -16,8 +16,10 @@ const getNavigatorLocales = () => {
 
 type ExtendedLocale = Intl.Locale &
   // typescript definitions for navigator language don't include some modern Intl properties
+  // textInfo is deprecated. It is used for backward compatibility
   Partial<{
     getTextInfo: () => { direction: 'ltr' | 'rtl' };
+    textInfo: { direction: 'ltr' | 'rtl' };
     timeZones: string[];
     weekInfo: { firstDay: number };
     hourCycles: string[];
@@ -98,7 +100,11 @@ export default {
 
       const { region, language, script } = locale;
 
-      textDirection = languageTextDirection(locale);
+      textDirection =
+        locale.textInfo?.direction ??
+        locale.getTextInfo?.()?.direction ??
+        languageTextDirection(locale);
+
       if (region) {
         temperatureUnit = regionToTemperatureUnit(region);
       }
@@ -142,9 +148,6 @@ function regionToTemperatureUnit(region: string) {
 }
 
 function languageTextDirection(locale: ExtendedLocale) {
-  // getTextInfo API is not available in all browsers.
-  if (typeof locale.getTextInfo === 'function') {
-    return locale.getTextInfo()?.direction;
-  }
+  // getTextInfo fallback
   return USES_RTL.includes(locale.language) ? 'rtl' : 'ltr';
 }

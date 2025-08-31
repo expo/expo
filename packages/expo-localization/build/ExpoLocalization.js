@@ -72,7 +72,10 @@ export default {
             }
             catch { }
             const { region, language, script } = locale;
-            textDirection = languageTextDirection(locale);
+            textDirection =
+                locale.textInfo?.direction ??
+                    locale.getTextInfo?.()?.direction ??
+                    languageTextDirection(locale);
             if (region) {
                 temperatureUnit = regionToTemperatureUnit(region);
             }
@@ -113,10 +116,7 @@ function regionToTemperatureUnit(region) {
     return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
 }
 function languageTextDirection(locale) {
-    // getTextInfo API is not available in all browsers.
-    if (typeof locale.getTextInfo === 'function') {
-        return locale.getTextInfo()?.direction;
-    }
+    // getTextInfo fallback
     return USES_RTL.includes(locale.language) ? 'rtl' : 'ltr';
 }
 //# sourceMappingURL=ExpoLocalization.js.map

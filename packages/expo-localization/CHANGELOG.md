@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [Web] Add fallback for deprecated Intl.Locale.prototype properties ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
+- [Web] Add `getTextInfo()` fallback for deprecated `textInfo` in `getLocales()` ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
 
 ## 17.0.5 — 2025-08-31
 
