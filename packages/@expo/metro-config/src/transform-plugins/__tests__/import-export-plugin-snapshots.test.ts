@@ -274,6 +274,11 @@ describe.each([
       var Z = () => {};
       export { x as Z };
     `,
+    test('export specifier shadowing import specifier with overlapping name')`
+      import A, { B } from "react";
+      test(A, B);
+      export { B as A, A as B };
+    `,
 
     // Export destructure object
     test('export destructured object from imported namespace by specifier')`

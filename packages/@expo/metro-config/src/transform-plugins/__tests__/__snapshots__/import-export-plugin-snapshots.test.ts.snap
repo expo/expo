@@ -365,6 +365,29 @@ var x = () => {};
 exports.A = x;"
 `;
 
+exports[`with live bindings transforms export specifier shadowing import specifier with overlapping name 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+Object.defineProperty(exports, "A", {
+  enumerable: true,
+  get: function () {
+    return _react.B;
+  }
+});
+Object.defineProperty(exports, "B", {
+  enumerable: true,
+  get: function () {
+    return function (m) {
+      return m && m.__esModule ? m.default : m;
+    }(_react);
+  }
+});
+var _react = require("react");
+var A = _$$_IMPORT_DEFAULT("react");
+test(A, _react.B);"
+`;
+
 exports[`with live bindings transforms export specifier shadowing local specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -1245,6 +1268,17 @@ var _react = require("react"),
 test(A, B);
 var x = () => {};
 exports.A = x;"
+`;
+
+exports[`without live bindings transforms export specifier shadowing import specifier with overlapping name 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var B = require("react").B;
+var A = _$$_IMPORT_DEFAULT("react");
+test(A, B);
+exports.A = B;
+exports.B = A;"
 `;
 
 exports[`without live bindings transforms export specifier shadowing local specifier 1`] = `
