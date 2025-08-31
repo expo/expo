@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
 
-import { importExportPlugin } from '../import-export-plugin';
+import { importExportPlugin, importExportLiveBindingsPlugin } from '../index';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
 
 // This file includes test for functionality that was added to the import-export-plugin
@@ -15,8 +15,10 @@ describe.each([
   ['with live bindings', true],
   ['without live bindings', false],
 ])('%s', (_message, liveBindings) => {
-  const getExpected = (code: string) =>
-    generate(transformToAst([importExportPlugin], code, { ...opts, liveBindings })).code;
+  const getExpected = (code: string) => {
+    const plugin = liveBindings ? importExportLiveBindingsPlugin : importExportPlugin;
+    return generate(transformToAst([plugin], code, { ...opts })).code;
+  };
 
   let n = 0;
   const test =
