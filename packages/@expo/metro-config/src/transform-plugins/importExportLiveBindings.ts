@@ -480,11 +480,6 @@ export function importExportLiveBindingsPlugin({
           // Add `__esModule` marker if we have any exports
           if (esmStatements.length) {
             preambleStatements.push(esModuleExportTemplate(template));
-            if (state.opts.out) {
-              state.opts.out.isESModule = true;
-            }
-          } else if (state.opts.out) {
-            state.opts.out.isESModule = false;
           }
           // Reference locals that are referenced by import declarations
           for (const importDeclaration of state.importDeclarations) {
@@ -520,6 +515,12 @@ export function importExportLiveBindingsPlugin({
             } else {
               esmStatements.push(importStatement);
             }
+          }
+
+          // WARN(@kitten): This isn't only dependent on exports! If we set this to `false` but
+          // added any imports, then those imports will accidentally be shifted back to CJS-mode
+          if (esmStatements.length && state.opts.out) {
+            state.opts.out.isESModule = true;
           }
 
           path.node.body = [...preambleStatements, ...esmStatements, ...path.node.body];
