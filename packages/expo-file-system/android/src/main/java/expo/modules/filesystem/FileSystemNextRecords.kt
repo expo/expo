@@ -12,7 +12,9 @@ data class CreateOptions(
   @Field
   val intermediates: Boolean = false,
   @Field
-  val overwrite: Boolean = false
+  val overwrite: Boolean = false,
+  @Field
+  val idempotent: Boolean = false
 ) : Record
 
 data class DownloadOptions(

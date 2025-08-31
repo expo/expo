@@ -301,6 +301,30 @@ export async function test({ describe, expect, it, ...t }) {
       expect(folder.exists).toBe(false);
     });
 
+    it('throws an error if the directory already exists and idempotent is false', () => {
+      const directory = new Directory(testDirectory, 'test');
+      directory.create();
+      let error;
+      try {
+        directory.create({ idempotent: false });
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeDefined();
+    });
+
+    it('does not throw an error if the directory already exists and idempotent is true', () => {
+      const directory = new Directory(testDirectory, 'test');
+      directory.create();
+      let error;
+      try {
+        directory.create({ idempotent: true });
+      } catch (e) {
+        error = e;
+      }
+      expect(error).not.toBeDefined();
+    });
+
     it('Creates an empty file', () => {
       const file = new File(testDirectory, 'newFolder');
       file.create();
@@ -693,6 +717,17 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('Downloads files', () => {
+      let originalTimeout: number;
+
+      t.beforeAll(async () => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+      });
+
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+
       it('downloads a file to a target file', async () => {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'image.jpeg');
