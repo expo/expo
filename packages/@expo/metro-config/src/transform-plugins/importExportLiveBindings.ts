@@ -110,11 +110,17 @@ export function importExportPlugin({
     const moduleSpecifiers = addModuleSpecifiers(state, source);
     let id = moduleSpecifiers[ImportDeclarationKind.IMPORT_DEFAULT];
     if (!id) {
-      id = path.scope.generateUid(name);
+      // Use the given name, if possible, or generate one. If no initial name is given,
+      // we'll create one based on the parent import
+      const parentImportLocal = addImport(path, state, source);
+      id =
+        !name || !t.isValidIdentifier(name)
+          ? path.scope.generateUid(name ?? parentImportLocal)
+          : name;
       moduleSpecifiers[ImportDeclarationKind.IMPORT_DEFAULT] = id;
       state.importDeclarations.push({
         kind: ImportDeclarationKind.IMPORT_DEFAULT,
-        local: addImport(path, state, source),
+        local: parentImportLocal,
         source,
       });
     }
@@ -129,11 +135,17 @@ export function importExportPlugin({
     const moduleSpecifiers = addModuleSpecifiers(state, source);
     let id = moduleSpecifiers[ImportDeclarationKind.IMPORT_NAMESPACE];
     if (!id) {
-      id = path.scope.generateUid(name);
+      // Use the given name, if possible, or generate one. If no initial name is given,
+      // we'll create one based on the parent import
+      const parentImportLocal = addImport(path, state, source);
+      id =
+        !name || !t.isValidIdentifier(name)
+          ? path.scope.generateUid(name ?? parentImportLocal)
+          : name;
       moduleSpecifiers[ImportDeclarationKind.IMPORT_NAMESPACE] = id;
       state.importDeclarations.push({
         kind: ImportDeclarationKind.IMPORT_NAMESPACE,
-        local: addImport(path, state, source),
+        local: parentImportLocal,
         source,
       });
     }
@@ -340,7 +352,7 @@ export function importExportPlugin({
             // then replace this ID with the InlineRef
             state.referencedLocals.add(inlineRef.parentId);
             if (inlineRef.member == null) {
-              return inlineRef.parentId !== localId ? t.identifier(inlineRef.parentId) : node;
+              return t.identifier(inlineRef.parentId);
             } else if (node.type === 'JSXIdentifier') {
               return t.jsxMemberExpression(
                 t.jsxIdentifier(inlineRef.parentId),
@@ -414,10 +426,11 @@ export function importExportPlugin({
                 const localBinding = path.scope.getBinding(localId);
                 const rootBinding = state.programScope.getBinding(localId);
                 if (rootBinding !== localBinding) return;
-
+                // Replace the local ID with the inlined reference, if there is one
                 const inlineRefExpression = getInlineRefExpression(path.node, localId);
-                if (inlineRefExpression && inlineRefExpression !== path.node) {
+                if (inlineRefExpression) {
                   path.replaceWith(inlineRefExpression);
+                  path.skip();
                 }
               },
             },
