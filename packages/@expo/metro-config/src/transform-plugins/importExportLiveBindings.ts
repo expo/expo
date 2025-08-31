@@ -11,6 +11,7 @@ import {
   esModuleExportTemplate,
   varDeclaratorCallHelper,
   withLocation,
+  sideEffectRequireCall,
 } from './helpers';
 
 export interface Options {
@@ -34,6 +35,8 @@ interface ModuleSpecifiers {
   [ImportDeclarationKind.REQUIRE]?: ID;
   [ImportDeclarationKind.IMPORT_DEFAULT]?: ID;
   [ImportDeclarationKind.IMPORT_NAMESPACE]?: ID;
+  /** Marks that the require call should be kept due to a side-effect */
+  sideEffect?: boolean;
 }
 
 /** Instruction for how to replace an expression when inlining */
@@ -159,7 +162,9 @@ export function importExportLiveBindingsPlugin({
     return id;
   };
   const addSideeffectImport = (path: NodePath, state: State, source: ModuleRequest): void => {
-    state.referencedLocals.add(addImport(path, state, source));
+    const moduleSpecifiers = addModuleSpecifiers(state, source);
+    moduleSpecifiers.sideEffect = true;
+    addImport(path, state, source);
   };
 
   return {
@@ -525,9 +530,15 @@ export function importExportLiveBindingsPlugin({
           let earlyImportSkew = 0;
           for (const importDeclaration of state.importDeclarations) {
             const source = importDeclaration.source;
-            const local = addModuleSpecifiers(state, source)[importDeclaration.kind];
+            const moduleSpecifiers = addModuleSpecifiers(state, source);
+            const local = moduleSpecifiers[importDeclaration.kind];
             if (!local || !state.referencedLocals.has(local)) {
-              // Don't add imports that aren't referenced
+              // Don't add imports that aren't referenced, unless they're required for a side-effect
+              if (moduleSpecifiers.sideEffect) {
+                esmStatements.push(
+                  withLocation(sideEffectRequireCall(t, source), importDeclaration.loc)
+                );
+              }
               continue;
             }
             let importStatement: t.Statement;

@@ -118,6 +118,12 @@ export const requireCall = (
     t.variableDeclarator(t.identifier(id), t.callExpression(t.identifier('require'), [source])),
   ]);
 
+/** `var %id% = require("%source%");` */
+export const sideEffectRequireCall = (
+  t: typeof types,
+  source: types.StringLiteral
+): types.Statement => t.expressionStatement(t.callExpression(t.identifier('require'), [source]));
+
 /** `var %id% = %fnName%(%source%);` */
 export const varDeclaratorCallHelper = (
   t: typeof types,
