@@ -60,7 +60,7 @@
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
     "@vercel/ncc": "^0.38.3",
-    "expo-module-scripts": "^5.0.5",
+    "expo-module-scripts": "^5.0.6",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "js-yaml": "^4.1.0",

@@ -34,7 +34,7 @@
     "expo-image-loader": "~6.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.5"
+    "expo-module-scripts": "^5.0.6"
   },
   "peerDependencies": {
     "expo": "*"

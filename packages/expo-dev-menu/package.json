@@ -42,7 +42,7 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~14.0.5",
     "expo-dev-client-components": "3.0.5",
-    "expo-module-scripts": "^5.0.5",
+    "expo-module-scripts": "^5.0.6",
     "fuse.js": "^6.4.6",
     "react": "19.1.0",
     "react-native": "0.81.1",

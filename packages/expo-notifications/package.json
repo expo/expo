@@ -51,7 +51,7 @@
     "expo-constants": "~18.0.6"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.5",
+    "expo-module-scripts": "^5.0.6",
     "memfs": "^3.2.0"
   },
   "peerDependencies": {

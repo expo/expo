@@ -90,7 +90,7 @@
     "expo-intent-launcher": "~13.0.5",
     "expo-keep-awake": "~15.0.5",
     "expo-linear-gradient": "~15.0.5",
-    "expo-linking": "~8.0.5",
+    "expo-linking": "~8.0.6",
     "expo-live-photo": "~1.0.5",
     "expo-local-authentication": "~17.0.5",
     "expo-localization": "~17.0.5",
@@ -113,7 +113,7 @@
     "expo-sharing": "~14.0.5",
     "expo-sms": "~14.0.5",
     "expo-speech": "~14.0.5",
-    "expo-splash-screen": "^31.0.6",
+    "expo-splash-screen": "^31.0.7",
     "expo-sqlite": "~16.0.6",
     "expo-standard-web-crypto": "~3.0.5",
     "expo-status-bar": "^3.0.6",
@@ -167,7 +167,7 @@
     "@types/react": "~19.1.10",
     "@types/three": "^0.137.0",
     "babel-jest": "^29.2.1",
-    "expo-module-scripts": "^5.0.5",
+    "expo-module-scripts": "^5.0.6",
     "jest": "^29.2.1",
     "react-test-renderer": "19.1.0"
   }

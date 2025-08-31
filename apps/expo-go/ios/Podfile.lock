@@ -110,7 +110,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (15.0.5):
     - ExpoModulesCore
-  - ExpoHead (6.0.0-beta.10):
+  - ExpoHead (6.0.0-preview.12):
     - ExpoModulesCore
     - RNScreens
   - ExpoImage (3.0.5):
@@ -138,7 +138,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (15.0.5):
     - ExpoModulesCore
-  - ExpoLinking (8.0.5):
+  - ExpoLinking (8.0.6):
     - ExpoModulesCore
   - ExpoLivePhoto (1.0.5):
     - ExpoModulesCore
@@ -4264,13 +4264,13 @@ SPEC CHECKSUMS:
   ExpoFont: 2aadd5bc56d83292f8371883444cec3acd140063
   ExpoGL: aad49f7c3e97b5dba611dbc7e29bb0d6a06dbf05
   ExpoHaptics: 98b5b50732240063b7088bd0cb9d6d545ac6747a
-  ExpoHead: 2fe59a2e507cb50b47b6b9dea02cc6fad26bff89
+  ExpoHead: e9b8673af3793b9d9ad50ac04abed669da2d237e
   ExpoImage: e66398bc985dd2cd1c9fa412dfcad048ed89fa58
   ExpoImageManipulator: caf173ac707f71ac2e8c88839a811ac38747f8fd
   ExpoImagePicker: 073778b34905c6a28b2a496e852db629e1b8d303
   ExpoKeepAwake: c9f339892b5467d55da8170acc95b0c741e6d7e0
   ExpoLinearGradient: ff9d01bf45130f1248e6347fcc780fa367f915b9
-  ExpoLinking: 59166a526315581627dcabec6a55d3bd4ce5d027
+  ExpoLinking: fc45db83c53e0f322b99df697f14c603673a4f8f
   ExpoLivePhoto: c861478fd0441309faf48b4d5079d4b7df918eff
   ExpoLocalAuthentication: 5ce810f79b9e0bf41bb189d4f00d98c3241b1c66
   ExpoLocalization: b46aab8133ef96b2bd84be2841fa877a88ede066

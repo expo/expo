@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "8.0.5",
+  "version": "8.0.6",
   "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
@@ -42,7 +42,7 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.5"
+    "expo-module-scripts": "^5.0.6"
   },
   "peerDependencies": {
     "react": "*",

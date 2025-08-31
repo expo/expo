@@ -432,7 +432,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (15.0.5):
     - ExpoModulesCore
-  - ExpoLinking (8.0.5):
+  - ExpoLinking (8.0.6):
     - ExpoModulesCore
   - ExpoLivePhoto (1.0.5):
     - ExpoModulesCore
@@ -546,7 +546,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (14.0.5):
     - ExpoModulesCore
-  - ExpoSplashScreen (31.0.6):
+  - ExpoSplashScreen (31.0.7):
     - ExpoModulesCore
   - ExpoSQLite (16.0.6):
     - ExpoModulesCore
@@ -3586,7 +3586,7 @@ SPEC CHECKSUMS:
   ExpoInsights: 3cc463aa91832db928a11f7c3caba022a94f118a
   ExpoKeepAwake: c9f339892b5467d55da8170acc95b0c741e6d7e0
   ExpoLinearGradient: ff9d01bf45130f1248e6347fcc780fa367f915b9
-  ExpoLinking: 59166a526315581627dcabec6a55d3bd4ce5d027
+  ExpoLinking: fc45db83c53e0f322b99df697f14c603673a4f8f
   ExpoLivePhoto: c861478fd0441309faf48b4d5079d4b7df918eff
   ExpoLocalAuthentication: 5ce810f79b9e0bf41bb189d4f00d98c3241b1c66
   ExpoLocalization: b46aab8133ef96b2bd84be2841fa877a88ede066
@@ -3606,7 +3606,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 3c00e10f5a773bdb864c8b6cea683fa903382562
   ExpoSMS: 4414cf5ab2d778fb4ba48a4aef0d5eab9ef5d060
   ExpoSpeech: 7e25dce8b046c265fffeed4cf95bd777c1a4d4f0
-  ExpoSplashScreen: 4cc00da004ee799097c0680e77c35cb53ee9e025
+  ExpoSplashScreen: 6a230bf016911e50d2e151acb8524084055e4d19
   ExpoSQLite: 2a76a9f87ea0769bb746e0e0b889aae3230181fb
   ExpoStoreReview: d104340f28d1f80299f28563bc3d61d66809f316
   ExpoSymbols: ac7d94453cc7d404be60699afeecd06ea7ccf2d3
