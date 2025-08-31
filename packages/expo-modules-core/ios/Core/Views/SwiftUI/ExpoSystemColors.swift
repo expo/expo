@@ -5,7 +5,7 @@ import SwiftUI
 // Wrap system colors to hide platform differences
 
 public extension Color {
-  #if os(tvOS)
+  #if os(tvOS) || os(macOS)
   private static let _systemGray6: Color = Color(.systemGray.withAlphaComponent(0.5))
   private static let _systemGray5: Color = Color(.systemGray.withAlphaComponent(0.6))
   private static let _systemGray4: Color = Color(.systemGray.withAlphaComponent(0.7))
