@@ -483,7 +483,14 @@ export function importExportLiveBindingsPlugin({
           }
           // Reference locals that are referenced by import declarations
           for (const importDeclaration of state.importDeclarations) {
-            if (importDeclaration.local) {
+            // NOTE(@kitten): The first check removes default/namespace import wrappers when they're unused.
+            // This diverges from the previous implementation a lot, and is basically unused local elimination
+            // If we don't want this, this can safely be removed
+            const source = importDeclaration.source;
+            const local = addModuleSpecifiers(state, source)[importDeclaration.kind];
+            if (!local || !state.referencedLocals.has(local)) {
+              continue;
+            } else if (importDeclaration.local) {
               state.referencedLocals.add(importDeclaration.local);
             }
           }
