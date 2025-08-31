@@ -675,9 +675,6 @@ export function importExportPlugin({
               if (namespace && namespace.name === 'default') {
                 // import name from 'module'; (or import { default as name } from 'module')
                 // export { name }
-
-                // To avoid overwriting local use of the import default variable
-                _namespaceForLocal.delete(name);
                 liveExports.push(
                   withLocation(
                     liveBindExportDefaultTemplate({
@@ -761,7 +758,7 @@ export function importExportPlugin({
                   const localName = path.node.name;
                   const { namespace, name } = state.namespaceForLocal.get(localName) ?? {};
                   // not from a namespace
-                  if (!namespace || !name) return;
+                  if (!namespace || !name || name === 'default') return;
 
                   const localBinding = path.scope.getBinding(localName);
                   const rootBinding = state.programScope.getBinding(localName);

@@ -339,7 +339,7 @@ exports[`with live bindings transforms export specifier shadowing default 1`] = 
 var _react = require("react");
 var A = _$$_IMPORT_DEFAULT("react");
 var B = _$$_IMPORT_DEFAULT("react");
-test(_react.default, B);
+test(A, B);
 var x = () => {};
 exports.A = x;"
 `;
