@@ -37,11 +37,10 @@ exports.applyRedirects = applyRedirects;
 exports.getRedirectModule = getRedirectModule;
 exports.convertRedirect = convertRedirect;
 exports.mergeVariablesWithPath = mergeVariablesWithPath;
+const router_core_1 = require("@expo/router-core");
 const Linking = __importStar(require("expo-linking"));
 const react_1 = require("react");
 const getStateFromPath_forks_1 = require("./fork/getStateFromPath-forks");
-const matchers_1 = require("./matchers");
-const url_1 = require("./utils/url");
 function applyRedirects(url, redirects) {
     if (typeof url !== 'string' || !redirects) {
         return url;
@@ -66,7 +65,7 @@ function getRedirectModule(redirectConfig) {
     return {
         default: function RedirectComponent() {
             const pathname = require('./hooks').usePathname();
-            const isExternal = (0, url_1.shouldLinkExternally)(redirectConfig.destination);
+            const isExternal = (0, router_core_1.shouldLinkExternally)(redirectConfig.destination);
             (0, react_1.useEffect)(() => {
                 if (isExternal) {
                     let href = redirectConfig.destination;
@@ -91,7 +90,7 @@ function convertRedirect(path, config) {
     const parts = path.split('/');
     const sourceParts = config.source.split('/');
     for (const [index, sourcePart] of sourceParts.entries()) {
-        const dynamicName = (0, matchers_1.matchDynamicName)(sourcePart);
+        const dynamicName = (0, router_core_1.matchDynamicName)(sourcePart);
         if (!dynamicName) {
             continue;
         }
@@ -110,7 +109,7 @@ function mergeVariablesWithPath(path, params) {
     return path
         .split('/')
         .map((part) => {
-        const dynamicName = (0, matchers_1.matchDynamicName)(part);
+        const dynamicName = (0, router_core_1.matchDynamicName)(part);
         if (!dynamicName) {
             return part;
         }

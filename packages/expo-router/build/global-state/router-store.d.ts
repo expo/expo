@@ -1,10 +1,9 @@
+import type { RedirectConfig, RequireContext, RouteNode } from '@expo/router-core';
 import { NavigationContainerRefWithCurrent, NavigationState, PartialState, useStateForPath } from '@react-navigation/native';
 import { ComponentType } from 'react';
-import { RouteNode } from '../Route';
 import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
-import { RedirectConfig } from '../getRoutesCore';
 import { UrlObject } from './routeInfo';
-import { RequireContext, type Href } from '../types';
+import { type Href } from '../types';
 import { type LinkToOptions } from './routing';
 export type StoreRedirects = readonly [RegExp, RedirectConfig, boolean];
 export type ReactNavigationState = NavigationState | PartialState<NavigationState>;

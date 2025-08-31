@@ -1,3 +1,4 @@
+import { shouldLinkExternally } from '@expo/router-core';
 import {
   DefaultNavigatorOptions,
   LinkingContext,
@@ -35,7 +36,6 @@ import { useComponent } from './useComponent';
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
 import { resolveHref } from '../link/href';
-import { shouldLinkExternally } from '../utils/url';
 import { NavigatorContext, NavigatorContextValue } from '../views/Navigator';
 
 export * from './TabContext';

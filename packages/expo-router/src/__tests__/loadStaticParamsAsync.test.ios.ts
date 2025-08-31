@@ -1,7 +1,7 @@
-import { RouteNode } from '../Route';
+import type { RequireContext, RouteNode } from '@expo/router-core';
+
 import { getExactRoutes } from '../getRoutes';
 import { loadStaticParamsAsync, assertStaticParams } from '../loadStaticParamsAsync';
-import { RequireContext } from '../types';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
   const contextModule = jest.fn((key) => map[key]);

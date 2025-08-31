@@ -1,4 +1,3 @@
-import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -9,7 +8,8 @@ import {
   removeSupportedExtensions,
   stripInvisibleSegmentsFromPath,
 } from './matchers';
-import type { RequireContext } from './types';
+import type { RequireContext } from './types/metro';
+import type { DynamicConvention, MiddlewareNode, RouteNode } from './types/routes';
 import { shouldLinkExternally } from './utils/url';
 
 export type Options = {

@@ -1,7 +1,7 @@
-import { RouteNode } from '../Route';
+import type { RequireContext, RouteNode } from '@expo/router-core';
+import { removeSupportedExtensions } from '@expo/router-core';
+
 import { getRoutes } from '../getRoutes';
-import { removeSupportedExtensions } from '../matchers';
-import { RequireContext } from '../types';
 
 // /[...param1]/ - Match [...param1]
 const CATCH_ALL = /\[\.\.\..+?\]/g;

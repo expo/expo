@@ -128,6 +128,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "6.1.1",
+    "@expo/router-core": "6.0.0-beta.10",
     "@expo/schema-utils": "^0.1.4",
     "@expo/server": "^0.7.2",
     "@radix-ui/react-slot": "1.2.0",

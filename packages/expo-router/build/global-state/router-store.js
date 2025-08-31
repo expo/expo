@@ -40,6 +40,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = void 0;
 exports.useStore = useStore;
 exports.useRouteInfo = useRouteInfo;
+const router_core_1 = require("@expo/router-core");
 const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = require("react");
@@ -53,7 +54,6 @@ const routeInfo_1 = require("./routeInfo");
 const href_1 = require("../link/href");
 const useScreens_1 = require("../useScreens");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
-const url_1 = require("../utils/url");
 const SplashScreen = __importStar(require("../views/Splash"));
 const storeRef = {
     current: {},
@@ -151,7 +151,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         return [
             (0, getStateFromPath_forks_1.routePatternToRegex)((0, getReactNavigationConfig_1.parseRouteSegments)(route.source)),
             route,
-            (0, url_1.shouldLinkExternally)(route.destination),
+            (0, router_core_1.shouldLinkExternally)(route.destination),
         ];
     });
     if (routeNode) {

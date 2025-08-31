@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRoutesManifest = createRoutesManifest;
-// This file runs in Node.js environments.
-// no relative imports
 const getRoutesSSR_1 = require("./getRoutesSSR");
 const getServerManifest_1 = require("./getServerManifest");
 function createMockContextModule(map = []) {

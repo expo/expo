@@ -1,3 +1,4 @@
+import { matchDynamicName, shouldLinkExternally } from '@expo/router-core';
 import {
   NavigationAction,
   type NavigationState,
@@ -22,11 +23,9 @@ import {
 import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { matchDynamicName } from '../matchers';
 import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
-import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady() {
   if (!store.navigationRef.isReady()) {

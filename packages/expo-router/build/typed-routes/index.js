@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.regenerateDeclarations = exports.version = void 0;
 exports.getWatchHandler = getWatchHandler;
+const router_core_1 = require("@expo/router-core");
 const _ctx_shared_1 = require("expo-router/_ctx-shared");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const generate_1 = require("./generate");
-const matchers_1 = require("../matchers");
 const require_context_ponyfill_1 = __importDefault(require("../testing-library/require-context-ponyfill"));
 const defaultCtx = (0, require_context_ponyfill_1.default)(process.env.EXPO_ROUTER_APP_ROOT, true, _ctx_shared_1.EXPO_ROUTER_CTX_IGNORE);
 /**
@@ -22,7 +22,7 @@ exports.version = 52;
  */
 function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.regenerateDeclarations } = {} // Exposed for testing
 ) {
-    const routeFiles = new Set(ctx.keys().filter((key) => (0, matchers_1.isTypedRoute)(key)));
+    const routeFiles = new Set(ctx.keys().filter((key) => (0, router_core_1.isTypedRoute)(key)));
     return async function callback({ filePath, type }) {
         // Sanity check that we are in an Expo Router project
         if (!process.env.EXPO_ROUTER_APP_ROOT)
@@ -44,7 +44,7 @@ function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.r
         }
         else if (type === 'add') {
             ctx.__add(relativePath);
-            if ((0, matchers_1.isTypedRoute)(basename)) {
+            if ((0, router_core_1.isTypedRoute)(basename)) {
                 routeFiles.add(relativePath);
                 shouldRegenerate = true;
             }

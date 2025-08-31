@@ -1,5 +1,6 @@
 'use client';
 
+import type { RequireContext } from '@expo/router-core';
 import {
   LinkingOptions,
   NavigationAction,
@@ -21,7 +22,6 @@ import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils'
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { ModalContextProvider } from './modal/ModalContext';
 import { Screen } from './primitives';
-import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';

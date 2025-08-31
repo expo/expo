@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseRouteSegments = parseRouteSegments;
 exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
 exports.getReactNavigationConfig = getReactNavigationConfig;
-const matchers_1 = require("./matchers");
+const router_core_1 = require("@expo/router-core");
 // `[page]` -> `:page`
 // `page` -> `page`
 function convertDynamicRouteToReactNavigation(segment) {
@@ -14,7 +14,7 @@ function convertDynamicRouteToReactNavigation(segment) {
     if (segment === '+not-found') {
         return '*not-found';
     }
-    const dynamicName = (0, matchers_1.matchDynamicName)(segment);
+    const dynamicName = (0, router_core_1.matchDynamicName)(segment);
     if (dynamicName && !dynamicName.deep) {
         return `:${dynamicName.name}`;
     }

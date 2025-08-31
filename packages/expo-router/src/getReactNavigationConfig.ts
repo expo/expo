@@ -1,5 +1,5 @@
-import type { RouteNode } from './Route';
-import { matchDynamicName } from './matchers';
+import type { RouteNode } from '@expo/router-core';
+import { matchDynamicName } from '@expo/router-core';
 
 export type Screen =
   | string
