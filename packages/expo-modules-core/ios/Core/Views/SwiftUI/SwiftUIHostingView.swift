@@ -81,6 +81,11 @@ extension ExpoSwiftUI {
         self.setViewSize(size)
         #endif
       }
+      shadowNodeProxy.setViewIntrinsicSize = { size in
+        #if RCT_NEW_ARCH_ENABLED
+        self.setViewIntrinsicSize(size)
+        #endif
+      }
       shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)

@@ -20,6 +20,9 @@ internal enum ExpoColorScheme: String, Enumerable {
 internal final class HostViewProps: ExpoSwiftUI.ViewProps {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
+  @Field var measureableNode: Bool?;
+  @Field var matchContentsVertical: Bool = false
+  @Field var matchContentsHorizontal: Bool = false
   var onLayoutContent = EventDispatcher()
 }
 
@@ -128,8 +131,17 @@ private struct ViewportSizeMeasurementLayout: Layout {
  */
 private struct GeometryChangeModifier: ViewModifier {
   let props: HostViewProps
+  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
 
   private func dispatchOnLayoutContent(_ size: CGSize) {
+    if (props.matchContentsVertical && props.matchContentsHorizontal) {
+      shadowNodeProxy.setViewIntrinsicSize?(size)
+    } else if (props.matchContentsVertical) {
+      shadowNodeProxy.setViewIntrinsicSize?(CGSize(width: 0, height: size.height))
+    } else if (props.matchContentsHorizontal) {
+      shadowNodeProxy.setViewIntrinsicSize?(CGSize(width: size.width, height: 0))
+    }
+
     props.onLayoutContent([
       "width": size.width,
       "height": size.height

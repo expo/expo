@@ -5,6 +5,8 @@ import { Platform, StatusBar } from 'react-native';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
+import { Host, HStack, Text } from '@expo/ui/swift-ui';
+import { frame } from '@expo/ui/swift-ui/modifiers';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,8 +38,13 @@ export default function App() {
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('dark-content', false);
     }
+    3;
     await loadAssetsAsync();
   });
 
-  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
+  return (
+    <Host style={{ backgroundColor: 'red', maxWidth: 200 }}>
+      <Text>Hello</Text>
+    </Host>
+  );
 }

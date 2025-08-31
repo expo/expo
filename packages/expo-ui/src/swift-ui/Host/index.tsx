@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { useState } from 'react';
 import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -11,6 +10,18 @@ export type HostProps = {
    * @default false
    */
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
+
+  /**
+   * When true, the host view will update its vertical size in the React Native view tree to match the content's layout from SwiftUI.
+   * @default false
+   */
+  matchContentsVertical?: boolean;
+
+  /**
+   * When true, the host view will update its horizontal size in the React Native view tree to match the content's layout from SwiftUI.
+   * @default false
+   */
+  matchContentsHorizontal?: boolean;
 
   /**
    * When true and no explicit size is provided, the host will use the viewport size as the proposed size for SwiftUI layout.
@@ -40,32 +51,33 @@ const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, style, modifiers, ...restProps } = props;
-  const [containerStyle, setContainerStyle] = useState<ViewStyle | null>(null);
+  const {
+    matchContents,
+    matchContentsVertical,
+    matchContentsHorizontal,
+    onLayoutContent,
+    modifiers,
+    ...restProps
+  } = props;
+  const matchContentsVerticalProp =
+    matchContentsVertical ??
+    (typeof matchContents === 'object' ? matchContents.vertical : matchContents);
+  const matchContentsHorizontalProp =
+    matchContentsHorizontal ??
+    (typeof matchContents === 'object' ? matchContents.horizontal : matchContents);
 
   return (
     <HostNativeView
       modifiers={modifiers}
+      matchContentsVertical={matchContentsVerticalProp}
+      matchContentsHorizontal={matchContentsHorizontalProp}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      style={[style, containerStyle]}
       onLayoutContent={(e) => {
         onLayoutContent?.(e);
-        if (matchContents) {
-          const matchVertical =
-            typeof matchContents === 'object' ? matchContents.vertical : matchContents;
-          const matchHorizontal =
-            typeof matchContents === 'object' ? matchContents.horizontal : matchContents;
-          const newContainerStyle: ViewStyle = {};
-          if (matchVertical) {
-            newContainerStyle.height = e.nativeEvent.height;
-          }
-          if (matchHorizontal) {
-            newContainerStyle.width = e.nativeEvent.width;
-          }
-          setContainerStyle(newContainerStyle);
-        }
       }}
       {...restProps}
+      // @ts-expect-error
+      measureableNode
     />
   );
 }

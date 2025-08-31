@@ -5,6 +5,7 @@
 #ifdef __cplusplus
 
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
+#include <react/renderer/core/LayoutConstraints.h>
 
 #include "ExpoViewEventEmitter.h"
 #include "ExpoViewProps.h"
@@ -26,6 +27,10 @@ public:
 
   ExpoViewShadowNode(const facebook::react::ShadowNode &sourceShadowNode,
                      const facebook::react::ShadowNodeFragment &fragment);
+
+  facebook::react::Size measureContent(
+      const facebook::react::LayoutContext& layoutContext,
+      const facebook::react::LayoutConstraints& layoutConstraints) const override;
 
 public:
   static facebook::react::ShadowNodeTraits BaseTraits() {

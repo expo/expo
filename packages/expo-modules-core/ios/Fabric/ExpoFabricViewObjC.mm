@@ -173,6 +173,14 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   }
 }
 
+- (void)setViewIntrinsicSize:(float)width height:(float)height
+{
+  if (_state) {
+    auto currentState = _state->getData();
+    _state->updateState(ExpoViewState(currentState._width, currentState._height, width, height));
+  }
+}
+
 - (BOOL)supportsPropWithName:(nonnull NSString *)name
 {
   // Implemented in `ExpoFabricView.swift`

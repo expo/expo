@@ -29,6 +29,29 @@ public:
     }
   };
 
+  ExpoViewState(float width, float height, float intrinsicWidth, float intrinsicHeight) {
+    if (width >= 0) {
+      _width = width;
+    } else {
+      _width = std::numeric_limits<float>::quiet_NaN();
+    }
+    if (height >= 0) {
+      _height = height;
+    } else {
+      _height = std::numeric_limits<float>::quiet_NaN();
+    }
+    if (intrinsicWidth >= 0) {
+      _intrinsicWidth = intrinsicWidth;
+    } else {
+      _intrinsicWidth = std::numeric_limits<float>::quiet_NaN();
+    }
+    if (intrinsicHeight >= 0) {
+      _intrinsicHeight = intrinsicHeight;
+    } else {
+      _intrinsicHeight = std::numeric_limits<float>::quiet_NaN();
+    }
+  };
+
 #ifdef ANDROID
   ExpoViewState(ExpoViewState const &previousState, folly::dynamic data)
   : _width((float)data["width"].getDouble()),
@@ -44,6 +67,8 @@ public:
   
   float _width = std::numeric_limits<float>::quiet_NaN();
   float _height = std::numeric_limits<float>::quiet_NaN();
+  float _intrinsicWidth = std::numeric_limits<float>::quiet_NaN();
+  float _intrinsicHeight = std::numeric_limits<float>::quiet_NaN();
 
 };
 
