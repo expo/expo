@@ -1,0 +1,137 @@
+import type { types, template } from '@babel/core';
+
+export const defaultWrapHelper = ({ statement }: typeof template, name: string): types.Statement =>
+  statement(`
+    function %%name%%(e) {
+      return e && e.__esModule ? e : { default: e };
+    }
+  `)({ name });
+
+export const strictNamespaceWrapHelper = (
+  { statement }: typeof template,
+  name: string
+): types.Statement => {
+  return statement(`
+    function %%name%%(e) {
+      if (e && e.__esModule) return e;
+      var n = Object.create(null);
+      if (e) {
+        Object.keys(e).forEach(function (k) {
+          if (k !== 'default') {
+            var d = Object.getOwnPropertyDescriptor(e, k);
+            Object.defineProperty(n, k, d.get ? d : {
+              enumerable: true,
+              get: function () { return e[k]; }
+            });
+          }
+        });
+      }
+      n.default = e;
+      return Object.freeze(n);
+    }
+  `)({ name });
+};
+
+export const namespaceWrapHelper = (
+  { statement }: typeof template,
+  name: string
+): types.Statement => {
+  // NOTE(@kitten): A looser option than the above that matches Metro's legacy behaviour
+  return statement(`
+    function %%name%%(e) {
+      if (e && e.__esModule) return e;
+      var n = {};
+      if (e) Object.keys(e).forEach(function (k) {
+        n[k] = e[k];
+      });
+      n.default = e;
+      return n;
+    }
+  `)({ name });
+};
+
+export const liveExportAllHelper = (
+  { statement }: typeof template,
+  id: string
+): types.Statement => {
+  return statement(`
+    Object.keys(%%id%%).forEach(function (k) {
+      if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+        Object.defineProperty(exports, k, {
+          enumerable: true,
+          get: function () { return %%id%%[k]; }
+        });
+      }
+    });
+  `)({ id });
+};
+
+export const liveExportHelper = (
+  t: typeof types,
+  exportName: string,
+  expr: types.Expression
+): types.Statement => {
+  return t.expressionStatement(
+    t.callExpression(t.memberExpression(t.identifier('Object'), t.identifier('defineProperty')), [
+      t.identifier('exports'),
+      t.stringLiteral(exportName),
+      t.objectExpression([
+        t.objectProperty(t.identifier('enumerable'), t.booleanLiteral(true)),
+        t.objectProperty(
+          t.identifier('get'),
+          t.functionExpression(null, [], t.blockStatement([t.returnStatement(expr)]))
+        ),
+      ]),
+    ])
+  );
+};
+
+export const assignExportHelper = (
+  t: typeof types,
+  exportName: string,
+  expr: types.Expression
+): types.Statement => {
+  const member = t.isValidIdentifier(exportName)
+    ? t.identifier(exportName)
+    : t.stringLiteral(exportName);
+  return t.expressionStatement(
+    t.assignmentExpression('=', t.memberExpression(t.identifier('exports'), member), expr)
+  );
+};
+
+export const varDeclaratorHelper = (
+  t: typeof types,
+  name: string,
+  expr: types.Expression
+): types.Statement =>
+  t.variableDeclaration('var', [
+    t.variableDeclarator(t.identifier(name), expr),
+  ]);
+
+/** `var %id% = require("%source%");` */
+export const requireCall = (
+  t: typeof types,
+  id: string,
+  source: types.StringLiteral
+): types.VariableDeclaration =>
+  t.variableDeclaration('var', [
+    t.variableDeclarator(t.identifier(id), t.callExpression(t.identifier('require'), [source])),
+  ]);
+
+/** `var %id% = %fnName%(%source%);` */
+export const varDeclaratorCallHelper = (
+  t: typeof types,
+  id: string,
+  fn: string,
+  arg: string
+): types.Statement =>
+  t.variableDeclaration('var', [
+    t.variableDeclarator(t.identifier(id), t.callExpression(t.identifier(fn), [t.identifier(arg)])),
+  ]);
+
+// Needs to be kept in 1:1 compatibility with Babel.
+export const esModuleExportTemplate = ({ statement }: typeof template): types.Statement => {
+  return statement(`
+    Object.defineProperty(exports, '__esModule', {value: true});
+  `)();
+};
