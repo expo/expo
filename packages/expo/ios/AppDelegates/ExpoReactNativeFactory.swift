@@ -42,10 +42,7 @@ import React
       return weakDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
     }
 
-    // TODO: Remove this check when react-native-macos releases v0.79
-    if configuration.responds(to: Selector(("setJsRuntimeConfiguratorDelegate:"))) {
-      configuration.setValue(delegate, forKey: "jsRuntimeConfiguratorDelegate")
-    }
+    configuration.jsRuntimeConfiguratorDelegate = delegate
 
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
       weakDelegate.createBridge(with: delegate, launchOptions: launchOptions)
