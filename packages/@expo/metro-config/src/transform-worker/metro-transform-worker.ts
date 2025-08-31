@@ -49,7 +49,7 @@ import collectDependencies, {
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
-import { importExportPlugin } from '../transform-plugins/import-export-plugin';
+import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 
 export { JsTransformOptions };
 
@@ -240,17 +240,12 @@ export function applyImportSupport<TFile extends t.File>(
   // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
   // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
   if (options.experimentalImportSupport === true) {
+    const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
     plugins.push(
       // Ensure the iife "globals" don't have conflicting variables in the module.
       renameTopLevelModuleVariables,
       //
-      [
-        importExportPlugin,
-        {
-          ...babelPluginOpts,
-          liveBindings: options.customTransformOptions?.liveBindings !== 'false',
-        },
-      ]
+      [liveBindings ? importExportLiveBindingsPlugin : importExportPlugin, { ...babelPluginOpts }]
     );
   }
 
