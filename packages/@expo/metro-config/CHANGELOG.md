@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent default imports from being replaced with `.default` accesses on live binding namespace when an export specifier shadows its local name ([#39276](https://github.com/expo/expo/pull/39276) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.21.6 — 2025-08-27
