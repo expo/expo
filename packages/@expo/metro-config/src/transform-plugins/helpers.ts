@@ -135,3 +135,29 @@ export const esModuleExportTemplate = ({ statement }: typeof template): types.St
     Object.defineProperty(exports, '__esModule', {value: true});
   `)();
 };
+
+function withLocation<TNode extends types.Node>(
+  node: TNode,
+  loc: types.SourceLocation | null | undefined
+): TNode;
+
+function withLocation<TNode extends types.Node>(
+  nodeArray: readonly TNode[],
+  loc: types.SourceLocation | null | undefined
+): TNode[];
+
+function withLocation<TNode extends types.Node>(
+  nodeOrArray: TNode | readonly TNode[],
+  loc: types.SourceLocation | null | undefined
+): TNode | TNode[] {
+  if (Array.isArray(nodeOrArray)) {
+    return nodeOrArray.map((n) => withLocation(n, loc));
+  }
+  const node = nodeOrArray as TNode;
+  if (!node.loc) {
+    node.loc = loc;
+  }
+  return node;
+}
+
+export { withLocation };
