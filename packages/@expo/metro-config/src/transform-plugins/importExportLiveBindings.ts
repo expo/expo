@@ -74,7 +74,7 @@ interface State {
   importDeclarations: ImportDeclaration[];
 }
 
-export function importExportPlugin({
+export function importExportLiveBindingsPlugin({
   template,
   types: t,
 }: ConfigAPI & typeof import('@babel/core')): PluginObj<State> {
