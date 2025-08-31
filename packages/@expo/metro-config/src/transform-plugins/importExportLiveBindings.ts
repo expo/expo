@@ -10,6 +10,7 @@ import {
   varDeclaratorHelper,
   esModuleExportTemplate,
   varDeclaratorCallHelper,
+  withLocation,
 } from './helpers';
 
 export interface Options {
@@ -41,12 +42,15 @@ interface InlineRef {
   parentId: ID;
   /** Specifier property to access (undefined for direct namespace access) */
   member: 'default' | (string & {}) | undefined;
+  /** The original source location */
+  loc: t.SourceLocation | null | undefined;
 }
 
 interface ImportDeclaration {
   kind: ImportDeclarationKind;
   source: ModuleRequest;
   local: ID | undefined;
+  loc: t.SourceLocation | null | undefined;
 }
 
 interface ExportDeclaration {
@@ -97,6 +101,7 @@ export function importExportLiveBindingsPlugin({
         kind: ImportDeclarationKind.REQUIRE,
         local: undefined,
         source,
+        loc: path.node.loc,
       });
     }
     return id;
@@ -122,6 +127,7 @@ export function importExportLiveBindingsPlugin({
         kind: ImportDeclarationKind.IMPORT_DEFAULT,
         local: parentImportLocal,
         source,
+        loc: path.node.loc,
       });
     }
     return id;
@@ -147,6 +153,7 @@ export function importExportLiveBindingsPlugin({
         kind: ImportDeclarationKind.IMPORT_NAMESPACE,
         local: parentImportLocal,
         source,
+        loc: path.node.loc,
       });
     }
     return id;
@@ -199,7 +206,11 @@ export function importExportLiveBindingsPlugin({
               break;
           }
 
-          state.inlineBodyRefs.set(localId, { parentId: importId, member });
+          state.inlineBodyRefs.set(localId, {
+            parentId: importId,
+            member,
+            loc: path.node.loc,
+          });
         }
         path.remove();
       },
@@ -210,11 +221,12 @@ export function importExportLiveBindingsPlugin({
           path.remove();
           return;
         }
+        const loc = path.node.loc;
         const source: ModuleRequest = path.node.source;
         const importId = addImport(path, state, source);
         if (!state.exportAll.has(importId)) {
           state.referencedLocals.add(importId);
-          state.exportAll.set(importId, liveExportAllHelper(template, importId));
+          state.exportAll.set(importId, withLocation(liveExportAllHelper(template, importId), loc));
         }
         path.remove();
       },
@@ -238,10 +250,18 @@ export function importExportLiveBindingsPlugin({
           path.replaceWith(path.node.declaration);
         } else {
           localId = path.scope.generateUid('_default');
-          path.replaceWith(varDeclaratorHelper(t, localId, path.node.declaration));
+          path.replaceWith(
+            withLocation(
+              varDeclaratorHelper(t, localId, path.node.declaration),
+              path.node.loc
+            )
+          );
         }
         state.exportDeclarations.push({
-          statement: liveExportHelper(t, 'default', t.identifier(localId)),
+          statement: withLocation(
+            liveExportHelper(t, 'default', t.identifier(localId)),
+            path.node.loc
+          ),
           local: undefined,
         });
       },
@@ -314,7 +334,10 @@ export function importExportLiveBindingsPlugin({
             : specifier.exported.value;
           state.referencedLocals.add(importId);
           state.exportDeclarations.push({
-            statement: liveExportHelper(t, exportName, exportExpression),
+            statement: withLocation(
+              liveExportHelper(t, exportName, exportExpression),
+              path.node.loc
+            ),
             local: importId,
           });
         }
@@ -351,19 +374,21 @@ export function importExportLiveBindingsPlugin({
             // Reference count the target ID to ensure its import will be added,
             // then replace this ID with the InlineRef
             state.referencedLocals.add(inlineRef.parentId);
+            let refNode: t.Node;
             if (inlineRef.member == null) {
-              return t.identifier(inlineRef.parentId);
+              refNode = t.identifier(inlineRef.parentId);
             } else if (node.type === 'JSXIdentifier') {
-              return t.jsxMemberExpression(
+              refNode = t.jsxMemberExpression(
                 t.jsxIdentifier(inlineRef.parentId),
                 t.jsxIdentifier(inlineRef.member)
               );
             } else {
-              return t.memberExpression(
+              refNode = t.memberExpression(
                 t.identifier(inlineRef.parentId),
                 t.identifier(inlineRef.member)
               );
             }
+            return withLocation(refNode, inlineRef.loc);
           }
 
           // (3): Process all "deferred" export declarations in `state.exportDeclarations`
@@ -383,7 +408,10 @@ export function importExportLiveBindingsPlugin({
                 const exportExpression =
                   getInlineRefExpression(specifier.local, specifier.local.name) ?? specifier.local;
                 state.exportDeclarations.push({
-                  statement: liveExportHelper(t, exportName, exportExpression),
+                  statement: withLocation(
+                    liveExportHelper(t, exportName, exportExpression),
+                    exportStatement.loc
+                  ),
                   local: undefined,
                 });
               }
@@ -401,10 +429,9 @@ export function importExportLiveBindingsPlugin({
               const exportBindings = t.getBindingIdentifiers(declaration, false, true);
               for (const exportName in exportBindings) {
                 state.exportDeclarations.push({
-                  statement: exportHelper(
-                    t,
-                    exportName,
-                    t.identifier(exportBindings[exportName].name)
+                  statement: withLocation(
+                    exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)),
+                    exportStatement.loc
                   ),
                   local: undefined,
                 });
@@ -515,6 +542,7 @@ export function importExportLiveBindingsPlugin({
                 importStatement = wrapNamespace(local, importDeclaration.local!);
                 break;
             }
+            importStatement = withLocation(importStatement, importDeclaration.loc);
             if (earlyImports[local] != null) {
               // An `exportAll` reexport, requires this import to be higher up
               const startIndex = earlyImports[local] + earlyImportSkew++;

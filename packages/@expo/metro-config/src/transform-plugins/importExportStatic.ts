@@ -12,6 +12,9 @@
 import { template } from '@babel/core';
 import type { ConfigAPI, NodePath, PluginObj, types as t } from '@babel/core';
 import assert from 'node:assert';
+
+import { withLocation } from './helpers';
+
 const debug = require('debug')('expo:metro-config:import-export-plugin') as typeof console.log;
 
 function nullthrows<T>(x: T | null, message?: string): NonNullable<T> {
@@ -116,31 +119,6 @@ function resolvePath<TNode extends t.Node>(node: TNode, resolve: boolean): t.Exp
   return resolveTemplate({
     NODE: node,
   });
-}
-
-function withLocation<TNode extends t.Node>(
-  node: TNode,
-  loc: t.SourceLocation | null | undefined
-): TNode;
-
-function withLocation<TNode extends t.Node>(
-  nodeArray: readonly TNode[],
-  loc: t.SourceLocation | null | undefined
-): TNode[];
-
-function withLocation<TNode extends t.Node>(
-  nodeOrArray: TNode | readonly TNode[],
-  loc: t.SourceLocation | null | undefined
-): TNode | TNode[] {
-  if (Array.isArray(nodeOrArray)) {
-    return nodeOrArray.map((n) => withLocation(n, loc));
-  }
-
-  const node = nodeOrArray as TNode;
-  if (!node.loc) {
-    return { ...node, loc };
-  }
-  return node;
 }
 
 export function importExportPlugin({
