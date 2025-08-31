@@ -11,16 +11,17 @@ const opts = {
   importDefault: '_$$_IMPORT_DEFAULT',
 };
 
-const test =
-  (name: string) =>
-  ([code]: readonly string[]) => [name, code];
-
 describe.each([
   ['with live bindings', true],
   ['without live bindings', false],
 ])('%s', (_message, liveBindings) => {
   const getExpected = (code: string) =>
     generate(transformToAst([importExportPlugin], code, { ...opts, liveBindings })).code;
+
+  let n = 0;
+  const test =
+    (name: string) =>
+    ([code]: readonly string[]) => [`${++n}. ${name}`, code];
 
   it.each([
     // Exports
@@ -297,7 +298,7 @@ describe.each([
     test('import side effect')`
       import 'apple-icons';
     `,
-  ])('transforms %s', (_name, code) => {
+  ])('%s', (_name, code) => {
     expect(getExpected(code)).toMatchSnapshot();
   });
 });
