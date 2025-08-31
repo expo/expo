@@ -1,6 +1,6 @@
 {
   "name": "@expo/devtools",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "DevTools plugin helpers for Expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",

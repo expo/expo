@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.0-preview.12 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
 ## 54.0.0-preview.11 — 2025-08-28
 
 _This version does not introduce any user-facing changes._

@@ -80,7 +80,7 @@
     "@react-navigation/drawer": "^7.5.0",
     "@testing-library/react-native": ">= 12.0.0",
     "expo": "*",
-    "expo-constants": "^18.0.5",
+    "expo-constants": "^18.0.6",
     "expo-linking": "^8.0.5",
     "react": "*",
     "react-dom": "*",
@@ -128,7 +128,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "6.1.1",
-    "@expo/schema-utils": "^0.1.4",
+    "@expo/schema-utils": "^0.1.5",
     "@expo/server": "^0.7.2",
     "@radix-ui/react-slot": "1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
