@@ -248,6 +248,32 @@ describe.each([
       import { default as local } from 'apple-icons';
       export const _local = local;
     `,
+    test('export specifier shadowing default')`
+      import A from "react";
+      import B from "react";
+      test(A, B);
+      var x = () => {};
+      export { x as A };
+    `,
+    test('export specifier shadowing import specifier')`
+      import { A } from "react";
+      import { B } from "react";
+      test(A, B);
+      var x = () => {};
+      export { x as A };
+    `,
+    test('export specifier shadowing import namespace')`
+      import * as A from "react";
+      import * as B from "react";
+      test(A, B);
+      var x = () => {};
+      export { x as A };
+    `,
+    test('export specifier shadowing local specifier')`
+      var x = () => {};
+      var Z = () => {};
+      export { x as Z };
+    `,
 
     // Export destructure object
     test('export destructured object from imported namespace by specifier')`

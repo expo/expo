@@ -332,6 +332,48 @@ var _appleIcons = _$$_IMPORT_ALL('apple-icons');
 exports.AppleIcons = _appleIcons;"
 `;
 
+exports[`with live bindings transforms export specifier shadowing default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _react = require("react");
+var A = _$$_IMPORT_DEFAULT("react");
+var B = _$$_IMPORT_DEFAULT("react");
+test(_react.default, B);
+var x = () => {};
+exports.A = x;"
+`;
+
+exports[`with live bindings transforms export specifier shadowing import namespace 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var A = _$$_IMPORT_ALL("react");
+var B = _$$_IMPORT_ALL("react");
+test(A, B);
+var x = () => {};
+exports.A = x;"
+`;
+
+exports[`with live bindings transforms export specifier shadowing import specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _react = require("react");
+test(_react.A, _react.B);
+var x = () => {};
+exports.A = x;"
+`;
+
+exports[`with live bindings transforms export specifier shadowing local specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var x = () => {};
+var Z = () => {};
+exports.Z = x;"
+`;
+
 exports[`with live bindings transforms export-default import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -1169,6 +1211,49 @@ exports[`without live bindings transforms export namespace by specifier 1`] = `
 });
 var _AppleIcons = _$$_IMPORT_ALL('apple-icons');
 exports.AppleIcons = _AppleIcons;"
+`;
+
+exports[`without live bindings transforms export specifier shadowing default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var A = _$$_IMPORT_DEFAULT("react");
+var B = _$$_IMPORT_DEFAULT("react");
+test(A, B);
+var x = () => {};
+exports.A = x;"
+`;
+
+exports[`without live bindings transforms export specifier shadowing import namespace 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var A = _$$_IMPORT_ALL("react");
+var B = _$$_IMPORT_ALL("react");
+test(A, B);
+var x = () => {};
+exports.A = x;"
+`;
+
+exports[`without live bindings transforms export specifier shadowing import specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _react = require("react"),
+  A = _react.A,
+  B = _react.B;
+test(A, B);
+var x = () => {};
+exports.A = x;"
+`;
+
+exports[`without live bindings transforms export specifier shadowing local specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var x = () => {};
+var Z = () => {};
+exports.Z = x;"
 `;
 
 exports[`without live bindings transforms export-default import default 1`] = `
