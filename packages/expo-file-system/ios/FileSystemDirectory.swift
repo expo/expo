@@ -81,25 +81,25 @@ internal final class FileSystemDirectory: FileSystemPath {
 
   func info() throws -> DirectoryInfo {
     try withCorrectTypeAndScopedAccess(permission: .read) {
-    if !exists {
-      let result = DirectoryInfo()
-      result.exists = false
-      result.uri = url.absoluteString
-      return result
-    }
-    switch url.scheme {
-    case "file":
-      let result = DirectoryInfo()
-      result.exists = true
-      result.uri = url.absoluteString
-      result.size = try size
-      result.files = (try? FileManager.default.contentsOfDirectory(atPath: url.path)) ?? []
-      result.modificationTime = try modificationTime
-      result.creationTime = try creationTime
-      return result
-    default:
-      throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
-    }
+      if !exists {
+        let result = DirectoryInfo()
+        result.exists = false
+        result.uri = url.absoluteString
+        return result
+      }
+      switch url.scheme {
+      case "file":
+        let result = DirectoryInfo()
+        result.exists = true
+        result.uri = url.absoluteString
+        result.size = try size
+        result.files = (try? FileManager.default.contentsOfDirectory(atPath: url.path)) ?? []
+        result.modificationTime = try modificationTime
+        result.creationTime = try creationTime
+        return result
+      default:
+        throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
+      }
     }
   }
 
