@@ -1,10 +1,9 @@
 package versioned.host.exp.exponent.modules.universal.notifications
 
-import android.os.Bundle
 import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule
 import expo.modules.notifications.notifications.categories.NotificationActionRecord
-import expo.modules.notifications.notifications.model.NotificationCategory
+import expo.modules.notifications.notifications.categories.NotificationCategoryRecord
 import host.exp.exponent.kernel.ExperienceKey
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils
 
@@ -31,9 +30,12 @@ class ScopedExpoNotificationCategoriesModule(
     super.deleteNotificationCategoryAsync(scopedCategoryIdentifier, promise)
   }
 
-  override fun serializeCategories(categories: Collection<NotificationCategory>): List<Bundle?> {
-    return categories
-      .filter { ScopedNotificationsIdUtils.checkIfCategoryBelongsToExperience(experienceKey, it) }
-      .map(serializer::toBundle)
+  override fun setNotificationCategoriesAsync(categories: List<NotificationCategoryRecord>, promise: Promise) {
+    promise.reject("ERR_UNAVAILABLE", "Replacing all notification categories is not supported in Expo Go because categories are shared between projects. Use a development build or setNotificationCategoryAsync instead.", null)
+  }
+
+  override fun filterCategories(categories: Collection<NotificationCategoryRecord>): Collection<NotificationCategoryRecord> {
+    val prefix = ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, "")
+    return categories.filter { it.identifier.startsWith(prefix) }
   }
 }

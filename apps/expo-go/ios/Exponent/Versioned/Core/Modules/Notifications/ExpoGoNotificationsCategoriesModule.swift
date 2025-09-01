@@ -28,6 +28,10 @@ final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
       }
   }
 
+  public override func setNotificationCategoriesAsync(categories: [CategoryRecord]) async throws {
+    throw Exception(name: "Unavailable", description: "Replacing all notification categories is not supported in Expo Go because categories are shared between projects. Use a development build or setNotificationCategoryAsync instead.")
+  }
+
   public override func setNotificationCategoryAsync(
     identifier: String,
     actions: [CategoryActionRecord],
