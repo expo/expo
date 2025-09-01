@@ -104,9 +104,7 @@ export const varDeclaratorHelper = (
   name: string,
   expr: types.Expression
 ): types.Statement =>
-  t.variableDeclaration('var', [
-    t.variableDeclarator(t.identifier(name), expr),
-  ]);
+  t.variableDeclaration('var', [t.variableDeclarator(t.identifier(name), expr)]);
 
 /** `var %id% = require("%source%");` */
 export const requireCall = (
