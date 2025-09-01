@@ -16,9 +16,9 @@ import type {
 } from './legacy/FileSystem.types';
 
 function errorOnLegacyMethodUse(methodName: string): Error {
-  return new Error(
-    `Method ${methodName} imported from "expo-file-system" is deprecated.\nYou can migrate to the new filesystem API using "File" and "Directory" classes or import the legacy API from "expo-file-system/legacy".\nAPI reference and examples are available in the filesystem docs: https://docs.expo.dev/versions/v54.0.0/sdk/filesystem/`
-  );
+  const message = `Method ${methodName} imported from "expo-file-system" is deprecated.\nYou can migrate to the new filesystem API using "File" and "Directory" classes or import the legacy API from "expo-file-system/legacy".\nAPI reference and examples are available in the filesystem docs: https://docs.expo.dev/versions/v54.0.0/sdk/filesystem/`;
+  console.warn(message);
+  return new Error(message);
 }
 
 /**
