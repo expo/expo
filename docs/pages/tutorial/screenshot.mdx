@@ -41,7 +41,7 @@ Add the following code snippet inside the **app/(tabs)/index.tsx**:
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
-import { /* @tutinfo */useEffect/* @end */, useState } from "react";
+import { /* @tutinfo */useEffect/* @end */, useState } from 'react';
 /* @tutinfo Import <CODE>expo-media-library</CODE>. */import * as MediaLibrary from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
@@ -114,23 +114,23 @@ Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with t
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
-import { useEffect, useRef, useState } from "react";
-import { ImageSourcePropType, StyleSheet, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { captureRef } from "react-native-view-shot";
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { useEffect, useRef, useState } from 'react';
+import { ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { captureRef } from 'react-native-view-shot';
 
-import Button from "@/components/Button";
-import CircleButton from "@/components/CircleButton";
-import EmojiList from "@/components/EmojiList";
-import EmojiPicker from "@/components/EmojiPicker";
-import IconButton from "@/components/IconButton";
-import ImageViewer from "@/components/ImageViewer";
+import Button from '@/components/Button';
+import CircleButton from '@/components/CircleButton';
+import EmojiList from '@/components/EmojiList';
+import EmojiPicker from '@/components/EmojiPicker';
+import IconButton from '@/components/IconButton';
+import ImageViewer from '@/components/ImageViewer';
 
-import EmojiSticker from "@/components/EmojiSticker";
+import EmojiSticker from '@/components/EmojiSticker';
 
-const PlaceholderImage = require("@/assets/images/background-image.png");
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
@@ -152,7 +152,7 @@ export default function Index() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -161,7 +161,7 @@ export default function Index() {
       setSelectedImage(result.assets[0].uri);
       setShowAppOptions(true);
     } else {
-      alert("You did not select any image.");
+      alert('You did not select any image.');
     }
   };
 
