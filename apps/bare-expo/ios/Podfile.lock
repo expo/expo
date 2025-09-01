@@ -611,6 +611,9 @@ PODS:
   - ExpoNotifications/Tests (58.1.6):
     - ExpoModulesCore
     - ExpoModulesTestCore
+    - ExpoNotifications/TestsApp
+  - ExpoNotifications/TestsApp (58.1.6):
+    - ExpoModulesCore
   - ExpoObserve (58.0.16):
     - EASClient
     - ExpoAppMetrics
@@ -4450,7 +4453,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
   ExpoModulesWorkletsAdapter: 893a97c0f76a086a0fdf883545629b0b205e167a
   ExpoNetwork: 1f6c118baf2856c389fbb106a89e2acab185ce33
-  ExpoNotifications: d0ab853f324bacf76f0fe32d06eba2e1f8532ca5
+  ExpoNotifications: 15f4579d449a634c78973a5ba823f54e4890bf1d
   ExpoObserve: 7be2ac3a9e099c593fd6b93a8fcb12ce28afd300
   ExpoPrint: e6103f99d8bfdcdc9fe4513b3c37e31b5c8cb7a9
   ExpoRouter: c5f712d2c761df71f8c9a42739f6ecae38ba8315
