@@ -1,6 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports.namespace2 = exports.namespace1 = void 0;

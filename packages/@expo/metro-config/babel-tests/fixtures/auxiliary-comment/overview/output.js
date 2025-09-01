@@ -1,7 +1,7 @@
 /*before*/
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports.test2 = exports.test = void 0;

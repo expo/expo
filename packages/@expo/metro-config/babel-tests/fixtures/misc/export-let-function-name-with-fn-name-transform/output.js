@@ -1,6 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports.e = exports.d = exports.c = exports.b = exports.a = void 0;
