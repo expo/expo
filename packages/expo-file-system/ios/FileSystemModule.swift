@@ -108,9 +108,9 @@ public final class FileSystemModule: Module {
       )
     }.runOnQueue(.main)
 
-    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, options: FilePickerOptions?, promise: Promise) in
       filePickingHandler.presentDocumentPicker(
-        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
+        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType, openAsCopy: options?.openAsCopy ?? true),
         isDirectory: false,
         initialUri: initialUri,
         mimeType: mimeType,

@@ -34,3 +34,7 @@ struct DirectoryInfo: Record {
   @Field var modificationTime: Int64?
   @Field var creationTime: Int64?
 }
+
+struct FilePickerOptions: Record {
+  @Field var openAsCopy: Bool = true
+}

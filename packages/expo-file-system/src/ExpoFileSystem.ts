@@ -1,6 +1,6 @@
 import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
-import type { Directory, File, DownloadOptions } from './ExpoFileSystem.types';
+import type { Directory, File, DownloadOptions, FilePickerOptions } from './ExpoFileSystem.types';
 
 declare class ExpoFileSystemModule extends NativeModule {
   FileSystemDirectory: typeof Directory;
@@ -11,7 +11,7 @@ declare class ExpoFileSystemModule extends NativeModule {
     options?: DownloadOptions
   ): Promise<string>;
   pickDirectoryAsync(initialUri?: string): Promise<Directory>;
-  pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
+  pickFileAsync(initialUri?: string, mimeType?: string, options?: FilePickerOptions): Promise<File>;
   totalDiskSpace: number;
   availableDiskSpace: number;
   documentDirectory: string;

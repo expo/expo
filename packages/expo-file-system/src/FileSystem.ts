@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
+import type { DownloadOptions, FilePickerOptions, PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -138,8 +138,12 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
-File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
-  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
+File.pickFileAsync = async function (
+  initialUri?: string,
+  mimeType?: string,
+  options?: FilePickerOptions
+) {
+  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType, options)).uri;
   return new File(file);
 };
 

@@ -8,6 +8,7 @@
 
 - [iOS] Add `pickFileAsync` support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
 - [iOS] Add `pickDirectoryAsync` support ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- [iOS] Add `openAsCopy` option to the `pickFileAsync` ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 

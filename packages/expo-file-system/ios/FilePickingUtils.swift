@@ -62,7 +62,7 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
   }
 }
 
-internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumentPickerViewController {
+internal func createFilePicker(initialUri: URL?, mimeType: String?, openAsCopy: Bool = true) -> UIDocumentPickerViewController {
   if #available(iOS 14.0, *) {
     let utTypes: [UTType]
     if let mimeType = mimeType {
@@ -75,7 +75,7 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumen
       utTypes = [UTType.item]
     }
 
-    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: true)
+    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: openAsCopy)
 
     if let initialUri = initialUri {
       picker.directoryURL = initialUri
