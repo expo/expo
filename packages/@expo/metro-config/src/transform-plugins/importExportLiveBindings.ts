@@ -46,8 +46,6 @@ interface InlineRef {
   parentId: ID;
   /** Specifier property to access (undefined for direct namespace access) */
   member: 'default' | (string & {}) | undefined;
-  /** The original source location */
-  loc: t.SourceLocation | null | undefined;
 }
 
 interface ImportDeclaration {
@@ -215,7 +213,6 @@ export function importExportLiveBindingsPlugin({
           state.inlineBodyRefs.set(localId, {
             parentId: importId,
             member,
-            loc: path.node.loc,
           });
         }
         path.remove();
@@ -292,7 +289,8 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          addSideeffectImport(path, state, source);
+          // NOTE(@kitten): The tree-shaking plugin leaves around empty specifiers, so we should
+          // handle this properly. This doesn't indicate a side-effect!
           path.remove();
           return;
         }
@@ -377,21 +375,19 @@ export function importExportLiveBindingsPlugin({
             // Reference count the target ID to ensure its import will be added,
             // then replace this ID with the InlineRef
             state.referencedLocals.add(inlineRef.parentId);
+            node.name = inlineRef.parentId;
             let refNode: t.Node;
             if (inlineRef.member == null) {
-              refNode = t.identifier(inlineRef.parentId);
-            } else if (node.type === 'JSXIdentifier') {
+              refNode = node;
+            } else if (node.type !== 'JSXIdentifier') {
+              refNode = t.memberExpression(node, t.identifier(inlineRef.member));
+            } else {
               refNode = t.jsxMemberExpression(
                 t.jsxIdentifier(inlineRef.parentId),
                 t.jsxIdentifier(inlineRef.member)
               );
-            } else {
-              refNode = t.memberExpression(
-                t.identifier(inlineRef.parentId),
-                t.identifier(inlineRef.member)
-              );
             }
-            return withLocation(refNode, inlineRef.loc);
+            return refNode;
           }
 
           // (3): Process all "deferred" export declarations in `state.exportDeclarations`
