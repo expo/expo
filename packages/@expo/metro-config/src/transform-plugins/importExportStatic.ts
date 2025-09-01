@@ -384,12 +384,17 @@ export function importExportPlugin({
         exit(path: NodePath<t.Program>, state: State): void {
           const body = path.node.body;
 
-          const hasEsmExports =
+          const hasESExports =
             state.exportDefault.length ||
             state.exportAllFrom.size ||
             state.exportNamed.length ||
             state.exportAllFromAs.size ||
             state.exportNamedFrom.size;
+          const hasESImports =
+            state.importAllFromAs.size ||
+            state.importDefaultFromAs.size ||
+            state.importNamedFrom.size ||
+            state.importSideEffect.size;
 
           const imports: t.Statement[] = [];
           const exportAll: t.Statement[] = [];
@@ -628,13 +633,11 @@ export function importExportPlugin({
           body.push(...staticExports);
           body.push(...defaultStaticExports);
 
-          if (hasEsmExports) {
+          if (hasESExports) {
             body.unshift(esModuleExportTemplate());
-            if (state.opts.out) {
-              state.opts.out.isESModule = true;
-            }
-          } else if (state.opts.out) {
-            state.opts.out.isESModule = false;
+          }
+          if (state.opts.out && (hasESExports || hasESImports)) {
+            state.opts.out.isESModule = true;
           }
         },
       },
