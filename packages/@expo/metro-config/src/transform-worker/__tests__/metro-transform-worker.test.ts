@@ -414,7 +414,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
 
   expect(originalPositionFor(trace, { line: 11, column: 7 })).toMatchObject({
     line: 1,
-    column: 25,
+    column: 26,
     name: 'c',
   });
 

@@ -273,29 +273,29 @@ describe('cjs', () => {
     expect(artifacts[0].source).toMatch('_$$_REQUIRE(_dependencyMap[0]);');
 
     expect(artifacts[0].source).toMatchInlineSnapshot(`
-          "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-            const {
-              add
-            } = _$$_REQUIRE(_dependencyMap[0]);
-            console.log('keep', add(1, 2));
-          },"/app/index.js",["/app/math.js"]);
-          __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-            "use strict";
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        const {
+          add
+        } = _$$_REQUIRE(_dependencyMap[0]);
+        console.log('keep', add(1, 2));
+      },"/app/index.js",["/app/math.js"]);
+      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "use strict";
 
-            Object.defineProperty(exports, '__esModule', {
-              value: true
-            });
-            function add(a, b) {
-              return subtract(a, b);
-            }
-            function subtract(a, b) {
-              return a - b;
-            }
-            exports.add = add;
-            exports.subtract = subtract;
-          },"/app/math.js",[]);
-          TEST_RUN_MODULE("/app/index.js");"
-        `);
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        exports.add = add;
+        exports.subtract = subtract;
+        function add(a, b) {
+          return subtract(a, b);
+        }
+        function subtract(a, b) {
+          return a - b;
+        }
+      },"/app/math.js",[]);
+      TEST_RUN_MODULE("/app/index.js");"
+    `);
   });
 });
 
@@ -380,28 +380,25 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      var _exportedNames = {};
-      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (_key) {
-        if (_key === "default" || _key === "__esModule") return;
-        if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-        if (_key in exports && exports[_key] === _$$_REQUIRE(_dependencyMap[0])[_key]) return;
-        Object.defineProperty(exports, _key, {
-          enumerable: true,
-          get: function () {
-            return _$$_REQUIRE(_dependencyMap[0])[_key];
-          }
-        });
+      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (k) {
+        if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+          Object.defineProperty(exports, k, {
+            enumerable: true,
+            get: function () {
+              return _$$_REQUIRE(_dependencyMap[0])[k];
+            }
+          });
+        }
       });
-      Object.keys(_$$_REQUIRE(_dependencyMap[1])).forEach(function (_key2) {
-        if (_key2 === "default" || _key2 === "__esModule") return;
-        if (Object.prototype.hasOwnProperty.call(_exportedNames, _key2)) return;
-        if (_key2 in exports && exports[_key2] === _$$_REQUIRE(_dependencyMap[1])[_key2]) return;
-        Object.defineProperty(exports, _key2, {
-          enumerable: true,
-          get: function () {
-            return _$$_REQUIRE(_dependencyMap[1])[_key2];
-          }
-        });
+      Object.keys(_$$_REQUIRE(_dependencyMap[1])).forEach(function (k) {
+        if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+          Object.defineProperty(exports, k, {
+            enumerable: true,
+            get: function () {
+              return _$$_REQUIRE(_dependencyMap[1])[k];
+            }
+          });
+        }
       });
     },"/app/x0.js",["/app/x1.js","/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -410,22 +407,23 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      var _exportedNames = {
-        "z1": true
-      };
-      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (_key) {
-        if (_key === "default" || _key === "__esModule") return;
-        if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-        if (_key in exports && exports[_key] === _$$_REQUIRE(_dependencyMap[0])[_key]) return;
-        Object.defineProperty(exports, _key, {
-          enumerable: true,
-          get: function () {
-            return _$$_REQUIRE(_dependencyMap[0])[_key];
-          }
-        });
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return z1;
+        }
+      });
+      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (k) {
+        if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+          Object.defineProperty(exports, k, {
+            enumerable: true,
+            get: function () {
+              return _$$_REQUIRE(_dependencyMap[0])[k];
+            }
+          });
+        }
       });
       const z1 = 0;
-      exports.z1 = z1;
     },"/app/x1.js",["/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -433,10 +431,20 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
+      Object.defineProperty(exports, "z2", {
+        enumerable: true,
+        get: function () {
+          return z2;
+        }
+      });
+      Object.defineProperty(exports, "z3", {
+        enumerable: true,
+        get: function () {
+          return z3;
+        }
+      });
       const z2 = 0;
       const z3 = 0;
-      exports.z2 = z2;
-      exports.z3 = z3;
     },"/app/x2.js",[]);
     TEST_RUN_MODULE("/app/index.js");"
   `);
