@@ -72,14 +72,14 @@ if (!Platform.isTV || Platform.OS !== 'ios') {
  * ```
  */
 export function useAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
     // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
     // If downloadFirst is false, we resolve the source here.
     // we call .replace() in the useEffect below to replace the source with the downloaded one.
     const initialSource = useMemo(() => {
         return downloadFirst ? null : resolveSource(source);
     }, [JSON.stringify(source), downloadFirst]);
-    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval), [JSON.stringify(initialSource), updateInterval]);
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive), [JSON.stringify(initialSource), updateInterval, keepAudioSessionActive]);
     // Handle async source resolution for downloadFirst
     useEffect(() => {
         if (!downloadFirst || source === null) {
@@ -283,9 +283,9 @@ export function useAudioRecorderState(recorder, interval = 500) {
  * @param options Audio player configuration options.
  */
 export function createAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
     const initialSource = downloadFirst ? null : resolveSource(source);
-    const player = new AudioModule.AudioPlayer(initialSource, updateInterval);
+    const player = new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive);
     if (downloadFirst && source) {
         resolveSourceWithDownload(source)
             .then((resolved) => {

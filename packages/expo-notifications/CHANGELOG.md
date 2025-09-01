@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.32.7 — 2025-08-31
+
+### 💡 Others
+
+- deprecate two async functions in favor of their sync variants ([#39174](https://github.com/expo/expo/pull/39174) by [@vonovak](https://github.com/vonovak))
+
 ## 0.32.6 — 2025-08-27
 
 ### 🐛 Bug fixes

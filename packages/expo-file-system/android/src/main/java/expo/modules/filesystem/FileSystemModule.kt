@@ -193,6 +193,10 @@ class FileSystemModule : Module() {
         file.move(destination)
       }
 
+      Function("rename") { file: FileSystemFile, newName: String ->
+        file.rename(newName)
+      }
+
       Property("uri") { file ->
         file.asString()
       }
@@ -284,6 +288,10 @@ class FileSystemModule : Module() {
 
       Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
         directory.move(destination)
+      }
+
+      Function("rename") { directory: FileSystemDirectory, newName: String ->
+        directory.rename(newName)
       }
 
       Property("uri") { directory ->

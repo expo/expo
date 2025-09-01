@@ -38,7 +38,7 @@ fun BundlerInfo(
       }
     },
     rightComponent = {
-      Icons.Copy(
+      MenuIcons.Copy(
         size = 20.dp,
         tint = NewAppTheme.colors.icon.tertiary
       )
