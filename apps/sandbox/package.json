@@ -10,17 +10,17 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
-    "expo": "~54.0.0-preview.10",
-    "expo-linking": "~8.0.4",
-    "expo-router": "^6.0.0-beta.9",
-    "expo-splash-screen": "~31.0.5",
+    "expo": "~54.0.0-preview.12",
+    "expo-linking": "~8.0.6",
+    "expo-router": "^6.0.0-preview.12",
+    "expo-splash-screen": "~31.0.7",
     "react": "19.1.0",
     "react-native": "0.81.1",
     "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "4.11.1-nightly-20250611-8b82e081e"
   },
   "devDependencies": {
-    "babel-preset-expo": "~14.0.4"
+    "babel-preset-expo": "~14.0.5"
   },
   "private": true
 }

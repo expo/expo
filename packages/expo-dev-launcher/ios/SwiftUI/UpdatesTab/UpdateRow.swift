@@ -22,7 +22,9 @@ struct UpdateRow: View {
         openButton
       }
     }
-    .padding(.vertical, 4)
+    .padding()
+    .background(Color.expoSecondarySystemBackground)
+    .cornerRadius(12)
   }
 
   private var openButton: some View {

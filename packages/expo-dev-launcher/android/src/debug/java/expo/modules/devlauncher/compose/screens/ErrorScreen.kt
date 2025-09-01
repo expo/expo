@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -12,9 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.compose.models.ErrorAction
 import expo.modules.devlauncher.compose.ui.ActionButton
+import expo.modules.devlauncher.compose.ui.StackTrace
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
-import expo.modules.devmenu.compose.primitives.Spacer
 
 @Composable
 fun ErrorScreen(
@@ -27,8 +28,14 @@ fun ErrorScreen(
       .fillMaxSize()
       .statusBarsPadding()
   ) {
-    Column(modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`2`)) {
-      Spacer(NewAppTheme.spacing.`3`)
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`),
+      modifier = Modifier
+        .padding(
+          horizontal = NewAppTheme.spacing.`2`,
+          vertical = NewAppTheme.spacing.`3`
+        )
+    ) {
       NewText(
         "There was a problem loading the project.",
         style = NewAppTheme.font.lg.merge(
@@ -36,10 +43,7 @@ fun ErrorScreen(
         )
       )
 
-      Spacer(NewAppTheme.spacing.`3`)
       NewText("This development build encountered the following error.")
-
-      Spacer(NewAppTheme.spacing.`3`)
     }
 
     StackTrace(
@@ -49,6 +53,7 @@ fun ErrorScreen(
     )
 
     Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
       modifier = Modifier
         .background(NewAppTheme.colors.background.default)
         .padding(NewAppTheme.spacing.`3`)
@@ -63,8 +68,6 @@ fun ErrorScreen(
           onAction(ErrorAction.Reload)
         }
       )
-
-      Spacer(NewAppTheme.spacing.`2`)
 
       ActionButton(
         "Go To Home",

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,21 +32,23 @@ import androidx.compose.ui.unit.sp
 import com.composeunstyled.Icon
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.Branch
-import expo.modules.devlauncher.compose.DefaultScreenContainer
 import expo.modules.devlauncher.compose.Update
 import expo.modules.devlauncher.compose.models.BranchesAction
 import expo.modules.devlauncher.compose.primitives.CircularProgressBar
 import expo.modules.devlauncher.compose.ui.ActionButton
 import expo.modules.devlauncher.compose.ui.AppHeader
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
+import expo.modules.devlauncher.compose.ui.LauncherIcons
 import expo.modules.devlauncher.compose.utils.DateFormat
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
+import expo.modules.devmenu.compose.ui.MenuIcons
 import kotlin.time.ExperimentalTime
 
 @Composable
-fun BranchBadge(
+private fun BranchBadge(
   name: String
 ) {
   val backgroundColor = NewAppTheme.colors.background.info
@@ -61,11 +62,9 @@ fun BranchBadge(
       .background(backgroundColor)
       .padding(NewAppTheme.spacing.`2`)
   ) {
-    Icon(
-      painter = painterResource(R.drawable.branch_icon),
-      contentDescription = "Branch Icon",
-      tint = textColor,
-      modifier = Modifier.size(16.dp)
+    LauncherIcons.Branch(
+      size = 16.dp,
+      tint = textColor
     )
 
     NewText(
@@ -80,7 +79,7 @@ fun BranchBadge(
 }
 
 @Composable
-fun NeedToSingInComponent(
+private fun NeedToSingInComponent(
   onProfileClick: () -> Unit = {}
 ) {
   Box(
@@ -203,11 +202,9 @@ fun BranchesScreen(
               ) {
                 BranchBadge(branch.name)
 
-                Icon(
-                  painter = painterResource(R.drawable.chevron_right),
-                  contentDescription = "Chevron Icon",
-                  tint = NewAppTheme.colors.icon.quaternary,
-                  modifier = Modifier.size(20.dp)
+                LauncherIcons.Chevron(
+                  size = 20.dp,
+                  tint = NewAppTheme.colors.icon.quaternary
                 )
               }
 
@@ -222,11 +219,9 @@ fun BranchesScreen(
                     .background(NewAppTheme.colors.background.warning)
                     .padding(NewAppTheme.spacing.`2`)
                 ) {
-                  Icon(
-                    painter = painterResource(expo.modules.devmenu.R.drawable.alert),
-                    contentDescription = "Warning Icon",
-                    tint = NewAppTheme.colors.icon.warning,
-                    modifier = Modifier.size(20.dp)
+                  MenuIcons.Warning(
+                    size = 20.dp,
+                    tint = NewAppTheme.colors.icon.warning
                   )
 
                   NewText(
@@ -244,11 +239,9 @@ fun BranchesScreen(
                   verticalAlignment = Alignment.CenterVertically,
                   horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
                 ) {
-                  Icon(
-                    painter = painterResource(R.drawable.update_icon),
-                    contentDescription = "Update Icon",
-                    tint = NewAppTheme.colors.icon.quaternary,
-                    modifier = Modifier.size(20.dp)
+                  LauncherIcons.Updates(
+                    size = 20.dp,
+                    tint = NewAppTheme.colors.icon.quaternary
                   )
 
                   Column(

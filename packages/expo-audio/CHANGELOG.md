@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.0.7 — 2025-08-31
+
+### 🎉 New features
+
+- [iOS] Add keepAudioSessionActive option to prevent session deactivation ([#39250](https://github.com/expo/expo/pull/39250) by [@hirbod](https://github.com/hirbod))
+
 ## 1.0.6 — 2025-08-27
 
 _This version does not introduce any user-facing changes._
