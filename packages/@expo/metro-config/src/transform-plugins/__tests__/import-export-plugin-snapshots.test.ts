@@ -273,6 +273,10 @@ describe.each([
       import { default as local } from 'apple-icons';
       export const { a, b } = local;
     `,
+    test('export nested destructured object w/ rest from import specifier')`
+      import { test } from 'apple-icons';
+      export const { a, _b: { b, ...rest } } = test;
+    `,
 
     // Export destructure array
     test('export destructured array from imported namespace by specifier')`
