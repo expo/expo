@@ -623,6 +623,8 @@ Object.keys(_appleIcons).forEach(function (_key) {
     }
   });
 });
+var _appleIcons2 = _$$_IMPORT_ALL('apple-icons');
+var _appleIcons3 = _$$_IMPORT_ALL('apple-icons');
 var _androidIcons = require('android-icons');
 Object.keys(_androidIcons).forEach(function (_key2) {
   if (_key2 === "default" || _key2 === "__esModule") return;
@@ -647,8 +649,6 @@ Object.keys(_windowsIcons).forEach(function (_key3) {
     }
   });
 });
-var _appleIcons2 = _$$_IMPORT_ALL('apple-icons');
-var _appleIcons3 = _$$_IMPORT_ALL('apple-icons');
 exports.AppleIcons = _appleIcons2;
 exports.default = _appleIcons3;"
 `;

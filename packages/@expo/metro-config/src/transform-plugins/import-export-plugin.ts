@@ -483,7 +483,6 @@ export function importExportPlugin({
           if (state.opts.liveBindings) {
             const _namespaceForLocal = new Map<string, { namespace: string; name: string }>();
             const liveExports: t.Statement[] = [];
-            const exportAll: t.Statement[] = [];
             const imports: t.Statement[] = [];
             const staticExports: t.Statement[] = [];
             const defaultStaticExports: t.Statement[] = [];
@@ -538,7 +537,7 @@ export function importExportPlugin({
               if (exportAllFrom) {
                 // export * from 'module'
                 namespace = path.scope.generateUidIdentifier(module.value);
-                exportAll.push(
+                imports.push(
                   ...withLocation(
                     liveBindExportAllTemplate({
                       keyId: path.scope.generateUidIdentifier('key'),
@@ -727,7 +726,6 @@ export function importExportPlugin({
             }
 
             body.unshift(...imports);
-            body.unshift(...exportAll);
             body.unshift(...liveExports);
             // program body
             body.push(...staticExports);
