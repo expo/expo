@@ -47,7 +47,7 @@ export default function ContactsScreen({ navigation }: Props) {
             disabled={Platform.select({ web: true, default: false })}
             name="add"
             onPress={() => {
-              const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
+              const randomContact = { note: 'Likes expo...' } as Contacts.NewContact;
               ContactUtils.presentNewContactFormAsync({ contact: randomContact });
             }}
           />
@@ -91,7 +91,9 @@ function ContactsView({ navigation }: Props) {
   const [contacts, setContacts] = React.useState<Contacts.ExistingContact[]>([]);
   const [hasNextPage, setHasNextPage] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [selectedContact, setSelectedContact] = React.useState<Contacts.Contact | null>(null);
+  const [selectedContact, setSelectedContact] = React.useState<Contacts.ExistingContact | null>(
+    null
+  );
 
   const onPressItem = React.useCallback(
     (id: string) => {
