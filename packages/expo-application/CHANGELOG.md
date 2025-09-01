@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- add isLiquidGlassAvailable constant ([#39289](https://github.com/expo/expo/pull/39289) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
