@@ -494,6 +494,11 @@ export function importExportLiveBindingsPlugin({
             return varDeclaratorCallHelper(t, localId, _namespaceWrapName, sourceId);
           };
 
+          // Add `__esModule` marker if we have any exports
+          if (state.exportDeclarations.length || state.exportAll.size) {
+            preambleStatements.push(esModuleExportTemplate(template));
+          }
+
           // (5): Add all exports, and all referenced imports
           for (const exportDeclaration of state.exportDeclarations) {
             esmStatements.push(exportDeclaration.statement);
@@ -501,18 +506,7 @@ export function importExportLiveBindingsPlugin({
               state.referencedLocals.add(exportDeclaration.local);
             }
           }
-          // Namespace exports must be placed after all explicitly named exports
-          const earlyImports: Record<ID, number | undefined> = Object.create(null);
-          for (const [localId, exportNamespaceStatement] of state.exportAll) {
-            // We must hoist the import for this export-namespace early
-            earlyImports[localId] ??= esmStatements.length;
-            esmStatements.push(exportNamespaceStatement);
-            state.referencedLocals.add(localId);
-          }
-          // Add `__esModule` marker if we have any exports
-          if (esmStatements.length) {
-            preambleStatements.push(esModuleExportTemplate(template));
-          }
+
           // Reference locals that are referenced by import declarations
           for (const importDeclaration of state.importDeclarations) {
             // NOTE(@kitten): The first check removes default/namespace import wrappers when they're unused.
@@ -527,7 +521,6 @@ export function importExportLiveBindingsPlugin({
             }
           }
           // Insert imports, if they're referenced
-          let earlyImportSkew = 0;
           for (const importDeclaration of state.importDeclarations) {
             const source = importDeclaration.source;
             const moduleSpecifiers = addModuleSpecifiers(state, source);
@@ -554,12 +547,10 @@ export function importExportLiveBindingsPlugin({
                 break;
             }
             importStatement = withLocation(importStatement, importDeclaration.loc);
-            if (earlyImports[local] != null) {
-              // An `exportAll` reexport, requires this import to be higher up
-              const startIndex = earlyImports[local] + earlyImportSkew++;
-              esmStatements.splice(startIndex, 0, importStatement);
-            } else {
-              esmStatements.push(importStatement);
+            esmStatements.push(importStatement);
+            const exportAllStatement = state.exportAll.get(local);
+            if (exportAllStatement != null) {
+              esmStatements.push(exportAllStatement);
             }
           }
 
