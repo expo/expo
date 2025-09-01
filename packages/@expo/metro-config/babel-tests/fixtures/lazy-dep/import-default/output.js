@@ -1,5 +1,3 @@
-"use strict";
-
 function _foo() {
   const data = babelHelpers.interopRequireDefault(require("foo"));
   _foo = function () {

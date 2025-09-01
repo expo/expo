@@ -1,5 +1,3 @@
-"use strict";
-
 require("d");
 function _e() {
   const data = require("e");

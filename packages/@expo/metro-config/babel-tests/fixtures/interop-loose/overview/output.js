@@ -1,5 +1,3 @@
-"use strict";
-
 exports.__esModule = true;
 exports.test2 = exports.test = void 0;
 require("foo");

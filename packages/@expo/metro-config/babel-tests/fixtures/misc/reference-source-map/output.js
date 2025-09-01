@@ -1,5 +1,3 @@
-"use strict";
-
 var _one = babelHelpers.interopRequireDefault(require("one"));
 var _two = require("two");
 var _three = require("three");

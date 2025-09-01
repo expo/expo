@@ -1,5 +1,3 @@
-"use strict";
-
 exports.baz = exports.bar = void 0;
 const {
   foo: bar,

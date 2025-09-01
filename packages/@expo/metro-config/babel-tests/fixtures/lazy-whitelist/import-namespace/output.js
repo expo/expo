@@ -1,5 +1,3 @@
-"use strict";
-
 function foo1() {
   const data = babelHelpers.interopRequireWildcard(require("white"));
   foo1 = function () {

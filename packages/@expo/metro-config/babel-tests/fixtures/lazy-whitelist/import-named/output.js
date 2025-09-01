@@ -1,5 +1,3 @@
-"use strict";
-
 function _white() {
   const data = require("white");
   _white = function () {

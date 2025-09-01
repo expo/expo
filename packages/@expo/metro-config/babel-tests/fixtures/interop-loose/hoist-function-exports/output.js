@@ -1,5 +1,3 @@
-"use strict";
-
 exports.__esModule = true;
 exports.isOdd = void 0;
 exports.nextOdd = nextOdd;

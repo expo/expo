@@ -1,5 +1,3 @@
-"use strict";
-
 exports.__esModule = true;
 var _foo = require("foo");
 Object.keys(_foo).forEach(function (key) {
