@@ -13,7 +13,7 @@ actor CategoryManager {
     let current = await loadCategories()
     let updated = current.filter { $0.identifier != identifier }.union([newCategory])
 
-    await updateCategories(updated)
+    updateCategories(updated)
     return CategoryRecord(newCategory)
   }
 
@@ -23,9 +23,16 @@ actor CategoryManager {
 
     if exists {
       let updated = current.filter { $0.identifier != identifier }
-      await updateCategories(updated)
+      updateCategories(updated)
     }
     return exists
+  }
+
+  func setCategories(_ categories: [CategoryRecord]) throws {
+    guard Set(categories.map { $0.identifier }).count == categories.count else {
+      throw Exception(name: "DuplicateCategoryIdentifier", description: "Could not replace notification categories because identifiers are duplicated. Use a unique identifier for each category.")
+    }
+    updateCategories(Set(categories.map { $0.toUNNotificationCategory() }))
   }
 
   private func loadCategories() async -> Set<UNNotificationCategory> {
@@ -33,11 +40,14 @@ actor CategoryManager {
       return cached
     }
     let fresh = await UNUserNotificationCenter.current().notificationCategories()
+    if let cached = categories {
+      return cached
+    }
     categories = fresh
     return fresh
   }
 
-  private func updateCategories(_ newCategories: Set<UNNotificationCategory>) async {
+  private func updateCategories(_ newCategories: Set<UNNotificationCategory>) {
     categories = newCategories
     UNUserNotificationCenter.current().setNotificationCategories(newCategories)
   }
@@ -54,6 +64,10 @@ open class CategoriesModule: Module {
       return filterAndSerializeCategories(categories)
     }
 
+    AsyncFunction("setNotificationCategoriesAsync") { (categories: [CategoryRecord]) in
+      try await setNotificationCategoriesAsync(categories: categories)
+    }
+
     AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) in
       return await setNotificationCategoryAsync(identifier: identifier, actions: actions, options: options)
     }
@@ -65,6 +79,10 @@ open class CategoriesModule: Module {
 
   open func filterAndSerializeCategories(_ categories: Set<UNNotificationCategory>) -> [CategoryRecord] {
     return categories.map { CategoryRecord($0) }
+  }
+
+  open func setNotificationCategoriesAsync(categories: [CategoryRecord]) async throws {
+    try await categoryManager.setCategories(categories)
   }
 
   open func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) async -> CategoryRecord {

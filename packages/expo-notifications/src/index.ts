@@ -34,6 +34,7 @@ export { cancelScheduledNotificationAsync } from './cancelScheduledNotificationA
 export { cancelAllScheduledNotificationsAsync } from './cancelAllScheduledNotificationsAsync';
 export { getNotificationCategoriesAsync } from './getNotificationCategoriesAsync';
 export { setNotificationCategoryAsync } from './setNotificationCategoryAsync';
+export { setNotificationCategoriesAsync } from './setNotificationCategoriesAsync';
 export { deleteNotificationCategoryAsync } from './deleteNotificationCategoryAsync';
 export { getNextTriggerDateAsync } from './getNextTriggerDateAsync';
 export { useLastNotificationResponse } from './useLastNotificationResponse';

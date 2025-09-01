@@ -168,6 +168,7 @@ exports[`Notifications exports 1`] = `
   "scheduleNotificationAsync": [Function],
   "setAutoServerRegistrationEnabledAsync": [Function],
   "setBadgeCountAsync": [Function],
+  "setNotificationCategoriesAsync": [Function],
   "setNotificationCategoryAsync": [Function],
   "setNotificationChannelAsync": [Function],
   "setNotificationChannelGroupAsync": [Function],

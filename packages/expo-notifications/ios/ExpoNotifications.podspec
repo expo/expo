@@ -27,7 +27,26 @@ Pod::Spec.new do |s|
   }
 
   s.exclude_files = 'Tests/'
+  s.app_spec 'TestsApp' do |app_spec|
+    app_spec.source_files = 'TestsApp/**/*.swift'
+    app_spec.libraries = 'c++'
+    app_spec.info_plist = {
+      'UIApplicationSceneManifest' => {
+        'UIApplicationSupportsMultipleScenes' => false,
+        'UISceneConfigurations' => {
+          'UIWindowSceneSessionRoleApplication' => [{
+            'UISceneConfigurationName' => 'Default Configuration',
+            'UISceneDelegateClassName' => '$(PRODUCT_MODULE_NAME).SceneDelegate'
+          }]
+        }
+      }
+    }
+  end
+
   s.test_spec 'Tests' do |test_spec|
+    test_spec.requires_app_host = true
+    test_spec.app_host_name = 'ExpoNotifications/TestsApp'
+    test_spec.dependency 'ExpoNotifications/TestsApp'
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = "Tests/**/*.{m,mm,swift}"
