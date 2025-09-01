@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Fix JavaScriptRuntimeSpec tests ([#39281](https://github.com/expo/expo/pull/39281) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 3.0.10 — 2025-08-31
 
 _This version does not introduce any user-facing changes._
