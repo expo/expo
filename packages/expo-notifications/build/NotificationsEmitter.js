@@ -119,7 +119,6 @@ export function getLastNotificationResponse() {
  * this call will also clear the value returned by the hook.
  *
  * @deprecated Use `clearLastNotificationResponse` instead.
- *
  * @return A promise that resolves if the native call was successful.
  */
 export async function clearLastNotificationResponseAsync() {
