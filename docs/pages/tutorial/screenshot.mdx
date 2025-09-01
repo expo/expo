@@ -33,26 +33,29 @@ To install `react-native-view-shot` and `expo-media-library`, run the following 
 
 ## Prompt for permissions
 
-An app that requires sensitive information, such as accessing a device's media library, has to prompt permission to allow or deny access. Using `usePermissions()` hook from `expo-media-library`, we can use the permission `status` and `requestPermission()` method to ask for access.
+An app that requires sensitive information, such as accessing a device's media library, has to prompt permission to allow or deny access. Using `usePermissions()` hook from `expo-media-library`, we can use the permission `permissionResponse` and `requestPermission()` method to ask for access.
 
-When the app loads for the first time and the permission status is neither granted nor denied, the value of the `status` is `null`. When asked for permission, a user can either grant the permission or deny it. We can add a condition to check if it is `null`, and if it is, trigger the `requestPermission()` method. After getting the access, the value of the `status` changes to `granted`.
+When the app loads for the first time and the permission status is neither granted nor denied, the value of the `permissionResponse` is `null`. When asked for permission, a user can either grant the permission or deny it. We can add a condition to check if it is not granted. If it is not granted, trigger the `requestPermission()` method. After getting the access, the value of the `permissionResponse` changes to `granted`.
 
 Add the following code snippet inside the **app/(tabs)/index.tsx**:
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
+import { /* @tutinfo */useEffect/* @end */, useState } from "react";
 /* @tutinfo Import <CODE>expo-media-library</CODE>. */import * as MediaLibrary from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo Add this statement to import the permissions status and <CODE>requestPermission()</CODE> method from the hook. */const [status, requestPermission] = MediaLibrary.usePermissions();/* @end */
+  /* @tutinfo Add this statement to import the permissions response and <CODE>requestPermission()</CODE> method from the hook. */const const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();/* @end */
   // ...rest of the code remains same
 
-  /* @tutinfo Add an if statement to check the status of permission. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
-  if (status === null) {
-    requestPermission();
-  }
+  /* @tutinfo Add an if statement to check the permission status. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
+  useEffect(() => {
+    if (!permissionResponse?.granted) {
+      requestPermission();
+    }
+  }, []);
   /* @end */
 
   // ...rest of the code remains same
@@ -73,7 +76,7 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-/* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */import { useState, useRef } from 'react';/* @end */
+import { useEffect, useState, /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */useRef/* @end */ } from 'react';
 /* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
@@ -111,38 +114,45 @@ Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with t
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import { ImageSourcePropType, StyleSheet, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { useState, useRef } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import * as MediaLibrary from 'expo-media-library';
-import { captureRef } from 'react-native-view-shot';
+import * as ImagePicker from "expo-image-picker";
+import * as MediaLibrary from "expo-media-library";
+import { useEffect, useRef, useState } from "react";
+import { ImageSourcePropType, StyleSheet, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { captureRef } from "react-native-view-shot";
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
-import EmojiPicker from '@/components/EmojiPicker';
-import EmojiList from '@/components/EmojiList';
-import EmojiSticker from '@/components/EmojiSticker';
+import Button from "@/components/Button";
+import CircleButton from "@/components/CircleButton";
+import EmojiList from "@/components/EmojiList";
+import EmojiPicker from "@/components/EmojiPicker";
+import IconButton from "@/components/IconButton";
+import ImageViewer from "@/components/ImageViewer";
 
-const PlaceholderImage = require('@/assets/images/background-image.png');
+import EmojiSticker from "@/components/EmojiSticker";
+
+const PlaceholderImage = require("@/assets/images/background-image.png");
 
 export default function Index() {
-  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(
+    undefined
+  );
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
-  const [status, requestPermission] = MediaLibrary.usePermissions();
+  const [pickedEmoji, setPickedEmoji] = useState<
+    ImageSourcePropType | undefined
+  >(undefined);
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const imageRef = useRef<View>(null);
 
-  if (status === null) {
-    requestPermission();
-  }
+  useEffect(() => {
+    if (!permissionResponse?.granted) {
+      requestPermission();
+    }
+  }, []);
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ["images"],
       allowsEditing: true,
       quality: 1,
     });
@@ -151,7 +161,7 @@ export default function Index() {
       setSelectedImage(result.assets[0].uri);
       setShowAppOptions(true);
     } else {
-      alert('You did not select any image.');
+      alert("You did not select any image.");
     }
   };
 
