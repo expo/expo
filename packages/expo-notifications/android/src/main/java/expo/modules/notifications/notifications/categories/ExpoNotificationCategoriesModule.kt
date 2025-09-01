@@ -7,9 +7,6 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.records.Required
 import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
@@ -19,36 +16,11 @@ import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.TextInputNotificationAction
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.deleteCategory
-import expo.modules.notifications.service.NotificationsService.Companion.getCategories
 import expo.modules.notifications.service.NotificationsService.Companion.setCategory
+import expo.modules.notifications.service.delegates.HybridNotificationCategoriesStore
+import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 
-class NotificationActionRecord : Record {
-  @Field
-  @Required
-  val identifier: String = ""
-
-  @Field
-  @Required
-  val buttonTitle: String = ""
-
-  @Field
-  val textInput: TextInput? = null
-
-  @Field
-  val options = Options()
-
-  class TextInput : Record {
-    @Field
-    @Required
-    val placeholder: String = ""
-  }
-
-  class Options : Record {
-    @Field
-    val opensAppToForeground = true
-  }
-}
-
+// subclassed in Expo Go's ScopedExpoNotificationCategoriesModule.kt
 open class ExpoNotificationCategoriesModule : Module() {
 
   protected val serializer by lazy {
@@ -59,21 +31,18 @@ open class ExpoNotificationCategoriesModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+  private val hybridStore by lazy {
+    HybridNotificationCategoriesStore(context, SharedPreferencesNotificationCategoriesStore(context))
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationCategoriesModule")
 
+    AsyncFunction("setNotificationCategoriesAsync", this@ExpoNotificationCategoriesModule::setNotificationCategoriesAsync)
+
     AsyncFunction("getNotificationCategoriesAsync") { promise: Promise ->
-      getCategories(
-        context,
-        createResultReceiver { resultCode: Int, resultData: Bundle? ->
-          val categories = resultData?.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
-          if (resultCode == NotificationsService.SUCCESS_CODE && categories != null) {
-            promise.resolve(serializeCategories(categories))
-          } else {
-            promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.", null)
-          }
-        }
-      )
+      val categories = hybridStore.getAllCategories()
+      promise.resolve(filterCategories(categories).toList())
     }
 
     AsyncFunction("setNotificationCategoryAsync", this@ExpoNotificationCategoriesModule::setNotificationCategoryAsync)
@@ -129,6 +98,11 @@ open class ExpoNotificationCategoriesModule : Module() {
     )
   }
 
+  open fun setNotificationCategoriesAsync(categories: List<NotificationCategoryRecord>, promise: Promise) {
+    hybridStore.setBulkCategories(categories)
+    promise.resolve()
+  }
+
   open fun deleteNotificationCategoryAsync(identifier: String, promise: Promise) {
     deleteCategory(
       context,
@@ -143,7 +117,9 @@ open class ExpoNotificationCategoriesModule : Module() {
     )
   }
 
-  protected open fun serializeCategories(categories: Collection<NotificationCategory>): List<Bundle?> {
-    return categories.map(serializer::toBundle)
+  open fun filterCategories(categories: Collection<NotificationCategoryRecord>): Collection<NotificationCategoryRecord> {
+    // to be used by expo go
+    return categories
   }
+
 }

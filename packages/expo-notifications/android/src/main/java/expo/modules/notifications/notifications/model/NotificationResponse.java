@@ -3,6 +3,8 @@ package expo.modules.notifications.notifications.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import expo.modules.notifications.notifications.categories.NotificationActionRecord;
+
 /**
  * A POJO representing user's response to a notification. It may be a default action,
  * i.e. a tap on the notification ({@link #DEFAULT_ACTION_IDENTIFIER}).
@@ -10,15 +12,15 @@ import android.os.Parcelable;
 public class NotificationResponse implements Parcelable {
   public static final String DEFAULT_ACTION_IDENTIFIER = "expo.modules.notifications.actions.DEFAULT";
 
-  private NotificationAction mAction;
+  private NotificationActionRecord mAction;
   private Notification mNotification;
 
-  public NotificationResponse(NotificationAction action, Notification notification) {
+  public NotificationResponse(NotificationActionRecord action, Notification notification) {
     mAction = action;
     mNotification = notification;
   }
 
-  public NotificationAction getAction() {
+  public NotificationActionRecord getAction() {
     return mAction;
   }
 

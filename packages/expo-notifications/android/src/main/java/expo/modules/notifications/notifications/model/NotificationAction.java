@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 /**
+ * @deprecated in favor of NotificationActionRecord
  * A class representing a single notification action button.
  *
  * TODO vonovak: no need to implement serializable, parcelable is enough for storing
