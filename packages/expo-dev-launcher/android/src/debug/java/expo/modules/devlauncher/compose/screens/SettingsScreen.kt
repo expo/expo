@@ -4,21 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.Icon
-import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.DefaultScreenContainer
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.models.SettingsAction
 import expo.modules.devlauncher.compose.models.SettingsState
+import expo.modules.devlauncher.compose.ui.LauncherIcons
 import expo.modules.devlauncher.services.ApplicationInfo
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Divider
@@ -26,6 +23,7 @@ import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.ToggleSwitch
+import expo.modules.devmenu.compose.ui.MenuIcons
 import expo.modules.devmenu.compose.ui.NewMenuButton
 import expo.modules.devmenu.compose.ui.Section
 import expo.modules.devmenu.compose.ui.SystemSection
@@ -47,10 +45,9 @@ fun SettingsScreen(
         .fillMaxWidth()
         .padding(vertical = NewAppTheme.spacing.`6`)
     ) {
-      Icon(
-        painterResource(R.drawable.settings),
-        contentDescription = "Settings icon",
-        modifier = Modifier.size(48.dp)
+      LauncherIcons.Settings(
+        size = 48.dp,
+        tint = NewAppTheme.colors.icon.quaternary
       )
 
       NewText(
@@ -63,11 +60,9 @@ fun SettingsScreen(
 
     NewMenuButton(
       icon = {
-        Icon(
-          painter = painterResource(R.drawable.show_at_launch),
-          contentDescription = "Show at launch icon",
-          tint = NewAppTheme.colors.icon.tertiary,
-          modifier = Modifier.size(20.dp)
+        LauncherIcons.ShowAtLaunch(
+          size = 20.dp,
+          tint = NewAppTheme.colors.icon.tertiary
         )
       },
       content = {
@@ -85,20 +80,44 @@ fun SettingsScreen(
 
     Spacer(NewAppTheme.spacing.`6`)
 
-    Section.Header("MENU GESTURES")
+    MenuGesturesSection(state, onAction)
 
     Spacer(NewAppTheme.spacing.`3`)
+
+    NewText(
+      "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools.",
+      style = NewAppTheme.font.md.merge(
+        lineHeight = 21.sp
+      ),
+      color = NewAppTheme.colors.text.quaternary
+    )
+
+    Spacer(NewAppTheme.spacing.`6`)
+
+    val info = state.applicationInfo
+    SystemSection(
+      appVersion = info?.appVersion,
+      runtimeVersion = (info as? ApplicationInfo.Updates)?.runtimeVersion,
+      fullDataProvider = { info?.toJson() ?: "No application info available" }
+    )
+  }
+}
+
+@Composable
+private fun MenuGesturesSection(state: SettingsState, onAction: (SettingsAction) -> Unit) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
+  ) {
+    Section.Header("MENU GESTURES")
 
     RoundedSurface {
       Column {
         NewMenuButton(
           withSurface = false,
           icon = {
-            Icon(
-              painter = painterResource(R.drawable.pulse),
-              contentDescription = "Shake device icon",
-              tint = NewAppTheme.colors.icon.tertiary,
-              modifier = Modifier.size(20.dp)
+            MenuIcons.Performance(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
             )
           },
           content = {
@@ -122,11 +141,9 @@ fun SettingsScreen(
         NewMenuButton(
           withSurface = false,
           icon = {
-            Icon(
-              painter = painterResource(R.drawable.inspect),
-              contentDescription = "3 fingers long press icon",
-              tint = NewAppTheme.colors.icon.tertiary,
-              modifier = Modifier.size(20.dp)
+            MenuIcons.Inspect(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
             )
           },
           content = {
@@ -150,11 +167,9 @@ fun SettingsScreen(
         NewMenuButton(
           withSurface = false,
           icon = {
-            Icon(
-              painter = painterResource(R.drawable.dev_menu_fab_icon),
-              contentDescription = "Action button icon",
-              tint = NewAppTheme.colors.icon.tertiary,
-              modifier = Modifier.size(20.dp)
+            MenuIcons.Fab(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
             )
           },
           content = {
@@ -171,25 +186,6 @@ fun SettingsScreen(
         )
       }
     }
-
-    Spacer(NewAppTheme.spacing.`3`)
-
-    NewText(
-      "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools.",
-      style = NewAppTheme.font.md.merge(
-        lineHeight = 21.sp
-      ),
-      color = NewAppTheme.colors.text.quaternary
-    )
-
-    Spacer(NewAppTheme.spacing.`6`)
-
-    val info = state.applicationInfo
-    SystemSection(
-      appVersion = info?.appVersion,
-      runtimeVersion = (info as? ApplicationInfo.Updates)?.runtimeVersion,
-      fullDataProvider = { info?.toJson() ?: "No application info available" }
-    )
   }
 }
 

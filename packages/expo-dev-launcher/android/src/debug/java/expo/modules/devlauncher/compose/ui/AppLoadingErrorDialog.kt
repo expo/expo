@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,12 +23,30 @@ import com.composables.core.DialogState
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
-import com.composeunstyled.Icon
 import com.composeunstyled.Text
-import expo.modules.devlauncher.R
+import expo.modules.devlauncher.compose.models.HomeAction
+import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.NewText
+import expo.modules.devmenu.compose.ui.MenuIcons
+
+@Composable
+fun rememberAppLoadingErrorDialogState(state: HomeState, onAction: (HomeAction) -> Unit): DialogState {
+  val errorDialogState = rememberDialogState(initiallyVisible = false)
+  LaunchedEffect(state.loadingError) {
+    if (state.loadingError != null) {
+      errorDialogState.visible = true
+    }
+  }
+
+  LaunchedEffect(errorDialogState.visible) {
+    if (!errorDialogState.visible) {
+      onAction(HomeAction.ClearLoadingError)
+    }
+  }
+  return errorDialogState
+}
 
 @Composable
 fun AppLoadingErrorDialog(
@@ -64,9 +82,8 @@ fun AppLoadingErrorDialog(
           Button(onClick = {
             dialogState.visible = false
           }) {
-            Icon(
-              painter = painterResource(R.drawable.x_icon),
-              contentDescription = "Close dialog",
+            MenuIcons.Close(
+              size = 20.dp,
               tint = NewAppTheme.colors.icon.tertiary
             )
           }

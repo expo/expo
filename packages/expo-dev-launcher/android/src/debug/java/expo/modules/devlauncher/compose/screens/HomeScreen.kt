@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
-import expo.modules.devlauncher.compose.DefaultScreenContainer
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
@@ -22,6 +20,7 @@ import expo.modules.devlauncher.compose.ui.AppLoadingErrorDialog
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionActions
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionSection
 import expo.modules.devlauncher.compose.ui.RunningAppCard
+import expo.modules.devlauncher.compose.ui.rememberAppLoadingErrorDialogState
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
 import expo.modules.devlauncher.services.PackagerInfo
@@ -59,21 +58,8 @@ fun HomeScreen(
   onProfileClick: () -> Unit,
   onDevServersClick: () -> Unit
 ) {
-  val hasPackager = state.runningPackagers.isNotEmpty()
-  val errorDialogState = rememberDialogState(initiallyVisible = false)
   val scrollState = rememberScrollState()
-
-  LaunchedEffect(state.loadingError) {
-    if (state.loadingError != null) {
-      errorDialogState.visible = true
-    }
-  }
-
-  LaunchedEffect(errorDialogState.visible) {
-    if (!errorDialogState.visible) {
-      onAction(HomeAction.ClearLoadingError)
-    }
-  }
+  val errorDialogState = rememberAppLoadingErrorDialogState(state, onAction)
 
   AppLoadingErrorDialog(
     errorDialogState,
@@ -112,59 +98,90 @@ fun HomeScreen(
 
       Spacer(NewAppTheme.spacing.`3`)
 
-      if (hasPackager) {
-        Column(
-          verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
-        ) {
-          for (packager in state.runningPackagers) {
-            RunningAppCard(
-              appIp = packager.url,
-              appName = packager.description
-            ) {
-              onAction(HomeAction.OpenApp(packager.url))
-            }
-          }
-        }
-
-        Spacer(NewAppTheme.spacing.`2`)
-
-        Accordion(
-          "New development server",
-          initialState = false,
-          modifier = Modifier
-            .fillMaxWidth()
-        ) {
-          DevelopmentSessionActions(state.isFetchingPackagers, onAction)
-        }
+      val runningPackagers = state.runningPackagers
+      if (runningPackagers.isNotEmpty()) {
+        LocalPackagers(
+          state.isFetchingPackagers,
+          runningPackagers,
+          onAction
+        )
       } else {
         DevelopmentSessionSection(state.isFetchingPackagers, onAction)
       }
 
-      if (state.recentlyOpenedApps.isNotEmpty()) {
-        Spacer(NewAppTheme.spacing.`6`)
+      Spacer(NewAppTheme.spacing.`6`)
 
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          modifier = Modifier.fillMaxWidth()
+      RecentlyOpenedApps(
+        state.recentlyOpenedApps,
+        onAction
+      )
+    }
+  }
+}
+
+@Composable
+private fun LocalPackagers(
+  isFetchingPackagers: Boolean,
+  runningPackagers: Set<PackagerInfo>,
+  onAction: (HomeAction) -> Unit
+) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+    ) {
+      for (packager in runningPackagers) {
+        RunningAppCard(
+          appIp = packager.url,
+          appName = packager.description
         ) {
-          Section.Header("RECENTLY OPENED")
-
-          Section.Button("RESET", { onAction(HomeAction.ResetRecentlyOpenedApps) })
+          onAction(HomeAction.OpenApp(packager.url))
         }
+      }
+    }
 
-        Spacer(NewAppTheme.spacing.`3`)
+    Accordion(
+      "New development server",
+      initialState = false,
+      modifier = Modifier
+        .fillMaxWidth()
+    ) {
+      DevelopmentSessionActions(isFetchingPackagers, onAction)
+    }
+  }
+}
 
-        Column(
-          verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+@Composable
+private fun RecentlyOpenedApps(
+  recentlyOpenedApps: List<DevLauncherAppEntry>,
+  onAction: (HomeAction) -> Unit
+) {
+  if (recentlyOpenedApps.isEmpty()) {
+    return
+  }
+
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxWidth()
+    ) {
+      Section.Header("RECENTLY OPENED")
+
+      Section.Button("RESET", { onAction(HomeAction.ResetRecentlyOpenedApps) })
+    }
+
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+    ) {
+      for (packager in recentlyOpenedApps) {
+        RunningAppCard(
+          appIp = packager.url,
+          appName = packager.name
         ) {
-          for (packager in state.recentlyOpenedApps) {
-            RunningAppCard(
-              appIp = packager.url,
-              appName = packager.name
-            ) {
-              onAction(HomeAction.OpenApp(packager.url))
-            }
-          }
+          onAction(HomeAction.OpenApp(packager.url))
         }
       }
     }
@@ -190,6 +207,14 @@ fun HomeScreenPreview() {
           )
         ),
         recentlyOpenedApps = listOf(
+          DevLauncherAppEntry(
+            timestamp = 1752249592809L,
+            name = "BareExpo",
+            url = "http://10.0.2.2:8081",
+            isEASUpdate = false,
+            updateMessage = null,
+            branchName = null
+          ),
           DevLauncherAppEntry(
             timestamp = 1752249592809L,
             name = "BareExpo",

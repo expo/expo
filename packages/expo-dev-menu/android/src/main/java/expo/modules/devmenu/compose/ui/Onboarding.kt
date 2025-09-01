@@ -74,8 +74,8 @@ fun Onboarding(onOnboardingFinished: () -> Unit = {}) {
       indication = ripple(color = NewAppTheme.colors.buttons.primary.foreground)
     ) {
       Box(
-        contentAlignment = Alignment.Companion.Center,
-        modifier = Modifier.Companion
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
           .padding(vertical = NewAppTheme.spacing.`2`)
           .fillMaxWidth()
       ) {

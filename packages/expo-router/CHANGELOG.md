@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.0-preview.12 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.0-beta.10 — 2025-08-28
 
 ### 🐛 Bug fixes

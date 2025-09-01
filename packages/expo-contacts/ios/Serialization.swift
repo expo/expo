@@ -371,9 +371,7 @@ private func relationsFor(contact person: CNContact) -> [[String: Any]]? {
     var relation = [String: Any]()
     relation["name"] = val.name
     relation["id"] = container.identifier
-    if let label = container.label {
-      relation["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
-    }
+    relation["label"] = getLocalizedLabel(from: container.label)
     results.append(relation)
   }
 
@@ -390,7 +388,7 @@ private func instantMessageAddressesFor(contact person: CNContact) -> [[String: 
     address["localizedService"] = CNInstantMessageAddress.localizedString(forKey: val.service)
     address["username"] = val.username
     address["id"] = container.identifier
-    address["label"] = container.label
+    address["label"] = getLocalizedLabel(from: container.label)
     results.append(address)
   }
 
@@ -409,9 +407,7 @@ private func socialProfilesFor(contact person: CNContact) -> [[String: Any]]? {
     profile["username"] = val.username
     profile["userId"] = val.userIdentifier
     profile["id"] = container.identifier
-    if let label = container.label {
-      profile["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
-    }
+    profile["label"] = getLocalizedLabel(from: container.label)
     results.append(profile)
   }
 
@@ -423,15 +419,7 @@ private func emailsFor(contact person: CNContact) -> [[String: Any]]? {
 
   for container in person.emailAddresses {
     let emailAddress = container.value as String
-    let emailLabel: String
-    if let label = container.label {
-      emailLabel = CNLabeledValue<NSString>.localizedString(forLabel: label)
-    } else {
-      // Use localized "other" label to match iOS's standard.
-      // This ensures iCloud contacts (which could have no label) still have a consistent label.
-      emailLabel = CNLabeledValue<NSString>.localizedString(forLabel: CNLabelOther)
-    }
-    results.append(["email": emailAddress, "label": emailLabel, "id": container.identifier])
+    results.append(["email": emailAddress, "label": getLocalizedLabel(from: container.label), "id": container.identifier])
   }
 
   return results.isEmpty ? nil : results
@@ -447,9 +435,7 @@ private func phoneNumbersFor(contact person: CNContact) -> [[String: Any]]? {
     phoneNumber["countryCode"] = val.value(forKey: "countryCode")
     phoneNumber["digits"] = val.value(forKey: "digits")
     phoneNumber["id"] = container.identifier
-    if let label = container.label {
-      phoneNumber["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
-    }
+    phoneNumber["label"] = getLocalizedLabel(from: container.label)
     results.append(phoneNumber)
   }
 
@@ -470,11 +456,7 @@ private func addressesFor(contact person: CNContact) -> [[String: Any]]? {
     address["country"] = val.country
     address["isoCountryCode"] = val.isoCountryCode
     address["id"] = container.identifier
-
-    if let label = container.label {
-      address["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
-    }
-
+    address["label"] = getLocalizedLabel(from: container.label)
     results.append(address)
   }
 
@@ -508,12 +490,7 @@ private func urlsFor(contact person: CNContact) -> [[String: Any]]? {
 
   for container in person.urlAddresses {
     let urlAddress = container.value
-    if let label = container.label {
-      let urlLabel = CNLabeledValue<NSString>.localizedString(forLabel: label)
-      results.append(["url": urlAddress, "label": urlLabel, "id": container.identifier])
-    } else {
-      results.append(["url": urlAddress, "id": container.identifier])
-    }
+    results.append(["url": urlAddress, "label": getLocalizedLabel(from: container.label), "id": container.identifier])
   }
 
   return results.isEmpty ? nil : results
@@ -521,7 +498,6 @@ private func urlsFor(contact person: CNContact) -> [[String: Any]]? {
 
 private func datesFor(contact person: CNContact) -> [[String: Any]]? {
   var results = [[String: Any]]()
-
   for container in person.dates {
     let val = container.value
     var date = [String: Any]()
@@ -532,9 +508,7 @@ private func datesFor(contact person: CNContact) -> [[String: Any]]? {
     if let calendar = val.calendar {
       date["format"] = calendarFormatToString(calendar.identifier)
     }
-    if let label = container.label {
-      date["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
-    }
+    date["label"] = getLocalizedLabel(from: container.label)
     results.append(date)
   }
 
@@ -543,6 +517,15 @@ private func datesFor(contact person: CNContact) -> [[String: Any]]? {
 
 private func fieldHasValue(field: String) -> Bool {
   return !field.isEmpty
+}
+
+private func getLocalizedLabel(from label: String?) -> String {
+  if let label = label {
+    return CNLabeledValue<NSString>.localizedString(forLabel: label)
+  }
+  // Use localized "other" label to match iOS's standard.
+  // Since label is optional (String?), we provide a default value to ensure consistent label handling.
+  return CNLabeledValue<NSString>.localizedString(forLabel: CNLabelOther)
 }
 
 private func calendarFormatToString(_ identifier: Calendar.Identifier) -> String {

@@ -1,14 +1,37 @@
-export type CreateOptions = {
+export type FileCreateOptions = {
   /**
    * Whether to create intermediate directories if they do not exist.
    * @default false
    */
   intermediates?: boolean;
   /**
-   * Whether to overwrite the file or directory if it exists.
+   * Whether to overwrite the file if it exists.
    * @default false
    */
   overwrite?: boolean;
+};
+
+export type DirectoryCreateOptions = {
+  /**
+   * Whether to create intermediate directories if they do not exist.
+   * @default false
+   */
+  intermediates?: boolean;
+  /**
+   * Whether to overwrite the directory if it exists.
+   * @default false
+   */
+  overwrite?: boolean;
+  /**
+   * This flag controls whether the `create` operation is idempotent
+   * (safe to call multiple times without error).
+   *
+   * If `true`, creating a file or directory that already exists will succeed silently.
+   * If `false`, an error will be thrown when the target already exists.
+   *
+   * @default false
+   */
+  idempotent?: boolean;
 };
 
 export declare class Directory {
@@ -48,9 +71,9 @@ export declare class Directory {
   /**
    * Creates a directory that the current uri points to.
    *
-   * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists.
+   * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists (unless `idempotent` is `true`).
    */
-  create(options?: CreateOptions): void;
+  create(options?: DirectoryCreateOptions): void;
 
   createFile(name: string, mimeType: string | null): File;
 
@@ -65,6 +88,11 @@ export declare class Directory {
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File): void;
+
+  /**
+   * Renames a directory.
+   */
+  rename(newName: string): void;
 
   /**
    * @hidden
@@ -199,7 +227,7 @@ export declare class File {
    *
    * @throws Error if the containing folder doesn't exist, the application has no read access to it or the file (or directory with the same path) already exists.
    */
-  create(options?: CreateOptions): void;
+  create(options?: FileCreateOptions): void;
 
   /**
    * Copies a file.
@@ -210,6 +238,11 @@ export declare class File {
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File): void;
+
+  /**
+   * Renames a file.
+   */
+  rename(newName: string): void;
 
   /**
    * Returns A `FileHandle` object that can be used to read and write data to the file.

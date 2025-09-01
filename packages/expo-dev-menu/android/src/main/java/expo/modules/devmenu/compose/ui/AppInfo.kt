@@ -71,7 +71,7 @@ fun AppInfo(
         .align(Alignment.CenterVertically)
         .size(36.dp)
     ) {
-      Icons.Close(
+      MenuIcons.Close(
         size = 16.dp,
         tint = NewAppTheme.colors.icon.tertiary
       )
