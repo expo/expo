@@ -1,26 +1,3 @@
----
-title: Reference
-hideTOC: true
----
-
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import RedirectNotification from '~/ui/components/RedirectNotification';
-import {
-  AndroidIOSCompatibilityTable,
-  ReactNativeCompatibilityTable,
-} from '~/ui/components/SDKTables';
-import { Terminal } from '~/ui/components/Snippet';
-import { CODE } from '~/ui/components/Text';
-
-<RedirectNotification>
-  The page you are looking for does not exist in this SDK version. It may have been deprecated or
-  added to a newer SDK version.
-</RedirectNotification>
-
-The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, and so on, in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
 
 <Terminal cmd={['$ npx expo install expo-camera expo-contacts expo-sensors']} />
 
