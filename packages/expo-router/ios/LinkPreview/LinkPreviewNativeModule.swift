@@ -19,10 +19,6 @@ public class LinkPreviewNativeModule: Module {
         }
       }
 
-      Prop("forceFlattenDisplayContents") { (_: NativeLinkPreviewView, _: Bool) in
-        // This component supports forceFlattenDisplayContents prop, it is handled in ExpoViewShadowNode to disable flattening for display: contents views
-      }
-
       Events(
         "onPreviewTapped",
         "onPreviewTappedAnimationCompleted",
