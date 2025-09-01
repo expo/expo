@@ -1,0 +1,4 @@
+{
+  "sourceType": "module",
+  "plugins": ["./plugin.js", "transform-modules-commonjs"]
+}

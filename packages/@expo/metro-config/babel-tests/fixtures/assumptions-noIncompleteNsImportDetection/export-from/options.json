@@ -1,0 +1,7 @@
+{
+  "assumptions": {
+    "noIncompleteNsImportDetection": true,
+    "constantReexports": true
+  },
+  "plugins": ["transform-modules-commonjs"]
+}

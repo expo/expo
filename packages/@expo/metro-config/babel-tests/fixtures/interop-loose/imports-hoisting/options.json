@@ -1,0 +1,8 @@
+{
+  "externalHelpers": false,
+  "plugins": [
+    ["transform-runtime", { "version": "7.100.0" }],
+    "transform-template-literals",
+    ["transform-modules-commonjs", { "loose": true }]
+  ]
+}
