@@ -1,9 +1,12 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import UIKit
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
+  private lazy var filePickingHandler = FilePickingHandler(module: self)
+
   var documentDirectory: URL? {
     return appContext?.config.documentDirectory
   }
@@ -94,6 +97,26 @@ public final class FileSystemModule: Module {
       }
       downloadTask.resume()
     }
+
+    AsyncFunction("pickDirectoryAsync") { (initialUri: URL?, promise: Promise) in
+      filePickingHandler.presentDocumentPicker(
+        picker: createDirectoryPicker(initialUri: initialUri),
+        isDirectory: true,
+        initialUri: initialUri,
+        mimeType: nil,
+        promise: promise
+      )
+    }.runOnQueue(.main)
+
+    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+      filePickingHandler.presentDocumentPicker(
+        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
+        isDirectory: false,
+        initialUri: initialUri,
+        mimeType: mimeType,
+        promise: promise
+      )
+    }.runOnQueue(.main)
 
     Function("info") { (url: URL) in
       let output = PathInfo()
