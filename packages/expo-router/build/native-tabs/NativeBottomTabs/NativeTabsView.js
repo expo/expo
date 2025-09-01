@@ -42,15 +42,21 @@ const utils_1 = require("./utils");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
+const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
 function NativeTabsView(props) {
-    const { builder, minimizeBehavior, disableIndicator, focusedIndex, disableTransparentOnScrollEdge, } = props;
+    const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
     const { state, descriptors, navigation } = builder;
     const { routes } = state;
+    let blurEffect = props.blurEffect;
+    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+        blurEffect = undefined;
+    }
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     let standardAppearance = (0, appearance_1.convertStyleToAppearance)({
         ...props.labelStyle,
         iconColor: props.iconColor,
-        blurEffect: props.blurEffect,
+        blurEffect,
         backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
     });
@@ -60,8 +66,8 @@ function NativeTabsView(props) {
     const scrollEdgeAppearance = (0, appearance_1.convertStyleToAppearance)({
         ...props.labelStyle,
         iconColor: props.iconColor,
-        blurEffect: disableTransparentOnScrollEdge ? props.blurEffect : 'none',
-        backgroundColor: disableTransparentOnScrollEdge ? props.backgroundColor : null,
+        blurEffect,
+        backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
     });
     const appearances = routes.map((route) => ({
@@ -110,34 +116,16 @@ function NativeTabsView(props) {
       {children}
     </BottomTabsWrapper>);
 }
-// TODO: remove after fix is merged in screens
-const rolesIcons = {
-    bookmarks: 'book.fill',
-    contacts: 'person.crop.circle.fill',
-    downloads: 'square.and.arrow.down.fill',
-    favorites: 'star.fill',
-    featured: 'star.fill',
-    history: 'clock.fill',
-    more: 'ellipsis',
-    mostRecent: 'clock.fill',
-    mostViewed: 'list.number',
-    recents: 'clock.fill',
-    search: 'magnifyingglass',
-    topRated: 'star.fill',
-};
 function Screen(props) {
     const { routeKey, name, descriptor, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, } = props;
+    const role = descriptor.options.role;
+    // To align with apple documentation and prevent untested cases,
+    // title and icon cannot be changed when role is defined
+    const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios';
     const title = descriptor.options.title ?? name;
-    let icon = useAwaitedScreensIcon(descriptor.options.icon);
-    let selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
-    // Fix for an issue in screens
-    if (descriptor.options.role) {
-        if (descriptor.options.role && descriptor.options.role in rolesIcons) {
-            icon = { sf: rolesIcons[descriptor.options.role] };
-            selectedIcon = icon;
-        }
-    }
-    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={convertOptionsIconToPropsIcon(icon)} selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
+    const icon = useAwaitedScreensIcon(descriptor.options.icon);
+    const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
+    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(icon)} selectedIcon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(selectedIcon)} title={shouldResetTitleAndIcon ? undefined : title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
       {descriptor.render()}
     </react_native_screens_1.BottomTabsScreen>);
 }

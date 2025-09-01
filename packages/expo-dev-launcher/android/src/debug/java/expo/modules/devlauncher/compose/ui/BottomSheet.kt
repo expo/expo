@@ -74,7 +74,10 @@ fun BottomSheet(
           Box(
             modifier = Modifier
               .size(width = 60.dp, height = 5.dp)
-              .background(NewAppTheme.colors.border.secondary, shape = RoundedCornerShape(size = 5.dp))
+              .background(
+                NewAppTheme.colors.border.secondary,
+                shape = RoundedCornerShape(size = 5.dp)
+              )
           )
         }
         content()

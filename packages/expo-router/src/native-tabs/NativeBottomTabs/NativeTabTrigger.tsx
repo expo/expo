@@ -12,6 +12,7 @@ import type {
   NativeTabTriggerProps,
 } from './types';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
+import { useIsPreview } from '../../link/preview/PreviewRouteContext';
 import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import {
   Icon,
@@ -69,21 +70,22 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
   const isFocused = navigation.isFocused();
+  const isInPreview = useIsPreview();
 
   useSafeLayoutEffect(() => {
     // This will cause the tab to update only when it is focused.
     // As long as all tabs are loaded at the start, we don't need this check.
     // It is here to ensure similar behavior to stack
-    if (isFocused) {
+    if (isFocused && !isInPreview) {
       if (navigation.getState()?.type !== 'tab') {
         throw new Error(
           `Trigger component can only be used in the tab screen. Current route: ${route.name}`
         );
       }
-      const options = convertTabPropsToOptions(props);
+      const options = convertTabPropsToOptions(props, true);
       navigation.setOptions(options);
     }
-  }, [isFocused, props]);
+  }, [isFocused, props, isInPreview]);
 
   return null;
 }
@@ -92,25 +94,23 @@ export const NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
   TabBar: NativeTabsTriggerTabBar,
 });
 
-export function convertTabPropsToOptions({
-  options,
-  hidden,
-  children,
-  role,
-  disablePopToTop,
-  disableScrollToTop,
-}: NativeTabTriggerProps) {
-  const initialOptions: ExtendedNativeTabOptions = {
-    ...options,
-    hidden: !!hidden,
-    specialEffects: {
-      repeatedTabSelection: {
-        popToRoot: !disablePopToTop,
-        scrollToTop: !disableScrollToTop,
-      },
-    },
-    role: role ?? options?.role,
-  };
+export function convertTabPropsToOptions(
+  { options, hidden, children, role, disablePopToTop, disableScrollToTop }: NativeTabTriggerProps,
+  isDynamic: boolean = false
+) {
+  const initialOptions: ExtendedNativeTabOptions = isDynamic
+    ? { ...options }
+    : {
+        ...options,
+        hidden: !!hidden,
+        specialEffects: {
+          repeatedTabSelection: {
+            popToRoot: !disablePopToTop,
+            scrollToTop: !disableScrollToTop,
+          },
+        },
+        role: role ?? options?.role,
+      };
   const allowedChildren = filterAllowedChildrenElements(children, [
     Badge,
     Label,

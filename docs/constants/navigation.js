@@ -120,6 +120,7 @@ export const home = [
         makePage('config-plugins/plugins.mdx'),
         makePage('config-plugins/mods.mdx'),
         makePage('config-plugins/dangerous-mods.mdx'),
+        makePage('config-plugins/development-for-libraries.mdx'),
         makePage('config-plugins/development-and-debugging.mdx'),
         makePage('config-plugins/patch-project.mdx'),
       ],
@@ -354,6 +355,7 @@ export const general = [
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
+        makePage('guides/expo-ui-swift-ui.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),

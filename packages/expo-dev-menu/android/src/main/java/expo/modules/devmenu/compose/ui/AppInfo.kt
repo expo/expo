@@ -8,13 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
-import com.composeunstyled.Icon
-import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuActionHandler
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -35,25 +32,25 @@ fun AppInfo(
     horizontalArrangement = Arrangement.Center,
     modifier = modifier
   ) {
-    AppIcon(size = 44.dp)
+    AppIcon()
 
     Spacer(NewAppTheme.spacing.`3`)
 
-    Column {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+    ) {
       NewText(
         appName,
         style = NewAppTheme.font.lg.merge(fontWeight = FontWeight.SemiBold)
       )
 
       if (runtimeVersion != null) {
-        Spacer(NewAppTheme.spacing.`1`)
         NewText(
           "Runtime version: $runtimeVersion",
           style = NewAppTheme.font.md,
           color = NewAppTheme.colors.text.secondary
         )
       } else if (sdkVersion != null) {
-        Spacer(NewAppTheme.spacing.`1`)
         NewText(
           "SDK version: $sdkVersion",
           style = NewAppTheme.font.md,
@@ -74,12 +71,9 @@ fun AppInfo(
         .align(Alignment.CenterVertically)
         .size(36.dp)
     ) {
-      Icon(
-        painter = painterResource(R.drawable.x_close),
-        contentDescription = "Close",
-        tint = NewAppTheme.colors.icon.tertiary,
-        modifier = Modifier
-          .size(16.dp)
+      MenuIcons.Close(
+        size = 16.dp,
+        tint = NewAppTheme.colors.icon.tertiary
       )
     }
   }

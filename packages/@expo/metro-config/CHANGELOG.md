@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.21.7 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.21.6 — 2025-08-27
+
+### 💡 Others
+
+- Set default `enableBabelRuntime` minimum Babel runtime version to the project's installed version, if any ([#39040](https://github.com/expo/expo/pull/39040) by [@kitten](https://github.com/kitten))
+
 ## 0.21.5 — 2025-08-25
 
 ### 💡 Others

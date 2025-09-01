@@ -72,7 +72,7 @@ private val provider = object : ModulesProvider {
 class KotlinInteropModuleRegistryTest {
   private val interopModuleRegistry = KotlinInteropModuleRegistry(
     provider,
-    mockk(),
+    mockk(relaxed = true),
     WeakReference(mockk(relaxed = true))
   )
 

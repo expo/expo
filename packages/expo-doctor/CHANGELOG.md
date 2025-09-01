@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.17.3 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 1.17.2 — 2025-08-27
+
+### 💡 Others
+
+- Add link to FYI about excluding dependencies from packages validation check. ([#39132](https://github.com/expo/expo/pull/39132) by by [@betomoedano](https://github.com/betomoedano))
+
 ## 1.17.1 — 2025-08-25
 
 ### 🐛 Bug fixes

@@ -163,6 +163,20 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
   }
 
+  fun rename(newName: String) {
+    validateType()
+    validatePermission(Permission.WRITE)
+    val newFile = File(javaFile.parent, newName)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      javaFile.toPath().moveTo(newFile.toPath())
+      uri = newFile.toUri()
+    } else {
+      javaFile.copyTo(newFile)
+      javaFile.delete()
+      uri = newFile.toUri()
+    }
+  }
+
   val modificationTime: Long? get() {
     validateType()
     return file.lastModified()

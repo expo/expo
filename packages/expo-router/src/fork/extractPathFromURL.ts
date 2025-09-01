@@ -82,6 +82,11 @@ function fromDeepLink(url: string): string {
      * - It has a valid App scheme, but the scheme isn't a valid URL scheme (e.g. `my_app://`)
      */
 
+    // If `url` is already a path (starts with `/`), return it as-is
+    if (url.startsWith('/')) {
+      return url;
+    }
+
     /**
      * App schemes are not valid URL schemes, so they will fail to parse.
      * We need to strip the scheme from these URLs

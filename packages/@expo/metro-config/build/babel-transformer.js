@@ -76,6 +76,10 @@ function getBabelCaller({ filename, options, }) {
         supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)
             ? true
             : undefined,
+        // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
+        // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
+        // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
+        babelRuntimeVersion: typeof options.enableBabelRuntime === 'string' ? options.enableBabelRuntime : undefined,
     };
 }
 function stringOrUndefined(value) {
