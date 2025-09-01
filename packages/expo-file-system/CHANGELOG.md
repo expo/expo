@@ -16,6 +16,7 @@
 
 - Add `rename` method for files and directories ([#39138](https://github.com/expo/expo/pull/39138) by [@kosmydel](https://github.com/kosmydel))
 - Add `idempotent` option for creating directories ([#39121](https://github.com/expo/expo/pull/39121) by [@kosmydel](https://github.com/kosmydel))
+- [iOS] Add file sharing config options ([#39286](https://github.com/expo/expo/pull/39286) by [@kosmydel](https://github.com/kosmydel))
 
 ## 19.0.6 — 2025-08-26
 
