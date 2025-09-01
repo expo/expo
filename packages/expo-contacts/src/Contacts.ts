@@ -262,9 +262,9 @@ export type Image = {
 };
 
 /**
- * Base contact type. For better type safety, consider using:
- * - `Contact` when creating new contacts
- * - `ExistingContact` when working with contacts returned from the system
+ * Base contact type without ID. For better type safety, consider using:
+ * - `Contact` when creating new contacts (no ID needed)
+ * - `ExistingContact` when working with contacts returned from the system (ID guaranteed)
  */
 export type Contact = {
   /**
