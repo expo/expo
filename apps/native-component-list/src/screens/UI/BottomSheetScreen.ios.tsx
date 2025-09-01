@@ -28,7 +28,7 @@ export default function BottomSheetScreen() {
       <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
       <Host style={{ position: 'absolute', width }}>
         <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
-          <Animated.View style={[{ padding: 20, backgroundColor: 'red' }, animatedStyles]}>
+          <Animated.View style={[{ padding: 20 }, animatedStyles]}>
             <Button onPress={handleIncreaseHeight}>Increase height</Button>
           </Animated.View>
         </BottomSheet>
@@ -39,7 +39,7 @@ export default function BottomSheetScreen() {
 
 function Button(props: React.ComponentProps<typeof ButtonPrimitive>) {
   return (
-    <Host matchContents style={{ backgroundColor: 'pink', alignSelf: 'flex-start' }}>
+    <Host matchContents>
       <ButtonPrimitive {...props}>{props.children}</ButtonPrimitive>
     </Host>
   );
