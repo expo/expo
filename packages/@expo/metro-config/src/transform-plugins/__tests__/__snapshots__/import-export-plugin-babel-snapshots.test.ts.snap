@@ -57,27 +57,34 @@ exports[`importInterop-node export-default-from 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return function (m) {
-      return m && m.__esModule ? m.default : m;
-    }(_dep);
+    return _dep2.default;
   }
 });
-var _dep = require('dep');"
+var _dep = require('dep');
+var _dep2 = _interopDefault(_dep);"
 `;
 
 exports[`importInterop-node export-named-and-default-from 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return function (m) {
-      return m && m.__esModule ? m.default : m;
-    }(_dep);
+    return _dep2.default;
   }
 });
 Object.defineProperty(exports, "name", {
@@ -86,7 +93,8 @@ Object.defineProperty(exports, "name", {
     return _dep.name;
   }
 });
-var _dep = require('dep');"
+var _dep = require('dep');
+var _dep2 = _interopDefault(_dep);"
 `;
 
 exports[`importInterop-node export-named-from 1`] = `
@@ -103,8 +111,14 @@ var _dep = require('dep');"
 `;
 
 exports[`importInterop-node import-default 1`] = `
-"var foo = _$$_IMPORT_DEFAULT("foo");
-foo();"
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("foo");
+var foo = _interopDefault(_foo);
+foo.default();"
 `;
 
 exports[`importInterop-node import-named 1`] = `
@@ -113,14 +127,29 @@ _foo.named();"
 `;
 
 exports[`importInterop-node import-named-and-default 1`] = `
-"var _foo = require("foo");
-var foo = _$$_IMPORT_DEFAULT("foo");
-foo();
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("foo");
+var foo = _interopDefault(_foo);
+foo.default();
 _foo.named();"
 `;
 
 exports[`importInterop-node import-wildcard 1`] = `
-"var foo = _$$_IMPORT_ALL('foo');
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require('foo');
+var foo = _interopNamespace(_foo);
 foo.bar();
 foo.baz();"
 `;
@@ -129,24 +158,44 @@ exports[`importInterop-none export-from 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
-    return function (m) {
-      return m && m.__esModule ? m.default : m;
-    }(_foo);
+    return _foo2.default;
   }
 });
-var _foo = require('foo');"
+var _foo = require('foo');
+var _foo2 = _interopDefault(_foo);"
 `;
 
 exports[`importInterop-none import-default-only 1`] = `
-"var foo = _$$_IMPORT_DEFAULT("foo");
-foo();"
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("foo");
+var foo = _interopDefault(_foo);
+foo.default();"
 `;
 
 exports[`importInterop-none import-wildcard 1`] = `
-"var foo = _$$_IMPORT_ALL('foo');
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require('foo');
+var foo = _interopNamespace(_foo);
 foo.bar();
 foo.baz();"
 `;
@@ -155,123 +204,203 @@ exports[`interop export-all 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exportedNames = {};
-var _react = require('react');
-Object.keys(_react).forEach(function (_key) {
-  if (_key === "default" || _key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-  if (_key in exports && exports[_key] === _react[_key]) return;
-  Object.defineProperty(exports, _key, {
-    enumerable: true,
-    get: function () {
-      return _react[_key];
-    }
-  });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default2;
+  }
 });
-var _default = _$$_IMPORT_DEFAULT('react');
-var _default2 = _default; // The fact that this exports both a normal default, and all of the names via
+var _react = require('react');
+Object.keys(_react).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _react[k];
+      }
+    });
+  }
+});
+var _default = _interopDefault(_react);
+// The fact that this exports both a normal default, and all of the names via
 // re-export is an edge case that is important not to miss. See
 // https://github.com/babel/babel/issues/8306 as an example.
 
-exports.default = _default2;"
+var _default2 = _default.default;"
 `;
 
 exports[`interop export-default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = 42;
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+var _default = 42;"
 `;
 
 exports[`interop export-default-2 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = {};
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+var _default = {};"
 `;
 
 exports[`interop export-default-3 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = [];
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+var _default = [];"
 `;
 
 exports[`interop export-default-4 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = foo;
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+var _default = foo;"
 `;
 
 exports[`interop export-default-5 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _default() {}
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _ref;
+  }
+});
+function _ref() {}"
 `;
 
 exports[`interop export-default-6 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-class _default {}
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _ref;
+  }
+});
+class _ref {}"
 `;
 
 exports[`interop export-default-7 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function foo() {}
-exports.default = foo;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+function foo() {}"
 `;
 
 exports[`interop export-default-8 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-class Foo {}
-exports.default = Foo;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return Foo;
+  }
+});
+class Foo {}"
 `;
 
 exports[`interop export-default-9 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo;
-exports.default = foo;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+var foo;"
 `;
 
 exports[`interop export-default-10 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
 var _default = function () {
   return "foo";
-}();
-exports.default = _default;"
+}();"
 `;
 
 exports[`interop export-default-11 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = new Cacher();
-function Cacher(databaseName) {}
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
 exports.Cacher = Cacher;
-exports.default = _default;"
+var _default = new Cacher();
+function Cacher(databaseName) {}"
 `;
 
 exports[`interop export-destructured 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "x", {
+  enumerable: true,
+  get: function () {
+    return x;
+  }
+});
+Object.defineProperty(exports, "y", {
+  enumerable: true,
+  get: function () {
+    return y;
+  }
+});
+exports.f1 = f1;
+exports.f2 = f2;
+exports.f3 = f3;
+exports.f4 = f4;
 let x = 0;
 let y = 0;
 function f1() {
@@ -295,31 +424,23 @@ function f3() {
 }
 function f4() {
   [x,, y] = [3, 4, 5];
-}
-exports.x = x;
-exports.y = y;
-exports.f1 = f1;
-exports.f2 = f2;
-exports.f3 = f3;
-exports.f4 = f4;"
+}"
 `;
 
 exports[`interop export-from 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exportedNames = {};
 var _foo = require("foo");
-Object.keys(_foo).forEach(function (_key) {
-  if (_key === "default" || _key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-  if (_key in exports && exports[_key] === _foo[_key]) return;
-  Object.defineProperty(exports, _key, {
-    enumerable: true,
-    get: function () {
-      return _foo[_key];
-    }
-  });
+Object.keys(_foo).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _foo[k];
+      }
+    });
+  }
 });"
 `;
 
@@ -404,15 +525,19 @@ exports[`interop export-from-7 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
 Object.defineProperty(exports, "foo", {
   enumerable: true,
   get: function () {
-    return function (m) {
-      return m && m.__esModule ? m.default : m;
-    }(_foo);
+    return _foo2.default;
   }
 });
-var _foo = require("foo");"
+var _foo = require("foo");
+var _foo2 = _interopDefault(_foo);"
 `;
 
 exports[`interop export-from-8 1`] = `
@@ -1045,61 +1170,166 @@ exports[`interop export-named 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo;
-exports.foo = foo;"
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+var foo;"
 `;
 
 exports[`interop export-named-2 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo, bar;
-exports.foo = foo;
-exports.bar = bar;"
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+var foo, bar;"
 `;
 
 exports[`interop export-named-3 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo;
-exports.bar = foo;"
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+var foo;"
 `;
 
 exports[`interop export-named-4 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo;
-exports.default = foo;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+var foo;"
 `;
 
 exports[`interop export-named-5 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo, bar;
-exports.default = foo;
-exports.bar = bar;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+var foo, bar;"
 `;
 
 exports[`interop export-named-6 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "__proto__", {
+  enumerable: true,
+  get: function () {
+    return __proto__;
+  }
+});
+Object.defineProperty(exports, "a", {
+  enumerable: true,
+  get: function () {
+    return a;
+  }
+});
+Object.defineProperty(exports, "_", {
+  enumerable: true,
+  get: function () {
+    return _;
+  }
+});
 var _inputJs = require("./input.js");
 const __proto__ = null;
 const a = 1;
 const _ = 2;
-console.log(_inputJs.__proto__);
-exports.__proto__ = __proto__;
-exports.a = a;
-exports._ = _;"
+console.log(_inputJs.__proto__);"
 `;
 
 exports[`interop exports-variable 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
+});
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "foo2", {
+  enumerable: true,
+  get: function () {
+    return foo2;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+Object.defineProperty(exports, "foo3", {
+  enumerable: true,
+  get: function () {
+    return foo3;
+  }
+});
+Object.defineProperty(exports, "foo4", {
+  enumerable: true,
+  get: function () {
+    return foo4;
+  }
+});
+Object.defineProperty(exports, "foo5", {
+  enumerable: true,
+  get: function () {
+    return foo5;
+  }
+});
+Object.defineProperty(exports, "foo6", {
+  enumerable: true,
+  get: function () {
+    return foo6;
+  }
+});
+Object.defineProperty(exports, "foo7", {
+  enumerable: true,
+  get: function () {
+    return foo7;
+  }
+});
+exports.foo8 = foo8;
+Object.defineProperty(exports, "foo9", {
+  enumerable: true,
+  get: function () {
+    return foo9;
+  }
 });
 var foo = 1;
 var foo2 = 1,
@@ -1110,22 +1340,19 @@ let foo5 = 2;
 let foo6;
 const foo7 = 3;
 function foo8() {}
-class foo9 {}
-exports.foo = foo;
-exports.foo2 = foo2;
-exports.bar = bar;
-exports.foo3 = foo3;
-exports.foo4 = foo4;
-exports.foo5 = foo5;
-exports.foo6 = foo6;
-exports.foo7 = foo7;
-exports.foo8 = foo8;
-exports.foo9 = foo9;"
+class foo9 {}"
 `;
 
 exports[`interop hoist-function-exports 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
+});
+exports.nextOdd = nextOdd;
+Object.defineProperty(exports, "isOdd", {
+  enumerable: true,
+  get: function () {
+    return isOdd;
+  }
 });
 var _evens = require("./evens");
 function nextOdd(n) {
@@ -1135,25 +1362,33 @@ var isOdd = function (isEven) {
   return function (n) {
     return !isEven(n);
   };
-}(_evens.isEven);
-exports.nextOdd = nextOdd;
-exports.isOdd = isOdd;"
+}(_evens.isEven);"
 `;
 
 exports[`interop illegal-export-esmodule 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var __esModule = false;
-exports.__esModule = __esModule;"
+Object.defineProperty(exports, "__esModule", {
+  enumerable: true,
+  get: function () {
+    return __esModule;
+  }
+});
+var __esModule = false;"
 `;
 
 exports[`interop illegal-export-esmodule-2 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var __esModule;
-exports.__esModule = __esModule;"
+Object.defineProperty(exports, "__esModule", {
+  enumerable: true,
+  get: function () {
+    return __esModule;
+  }
+});
+var __esModule;"
 `;
 
 exports[`interop imports 1`] = `
@@ -1163,20 +1398,30 @@ require("./directory/foo-bar");"
 `;
 
 exports[`interop imports-default 1`] = `
-"var foo = _$$_IMPORT_DEFAULT("foo");
-var foo2 = _$$_IMPORT_DEFAULT("foo");
-foo;
-foo2;"
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("foo");
+var foo = _interopDefault(_foo);
+foo.default;
+foo.default;"
 `;
 
-exports[`interop imports-glob 1`] = `"var foo = _$$_IMPORT_ALL("foo");"`;
+exports[`interop imports-glob 1`] = `""`;
 
 exports[`interop imports-hoisting 1`] = `"tag\`foo\`;"`;
 
 exports[`interop imports-mixing 1`] = `
-"var _foo = require("foo");
-var foo = _$$_IMPORT_DEFAULT("foo");
-foo;
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("foo");
+var foo = _interopDefault(_foo);
+foo.default;
 _foo.baz;"
 `;
 
@@ -1192,17 +1437,15 @@ _foo.xyz;"
 
 exports[`interop imports-ordering 1`] = `
 "require('./foo');
-var bar = _$$_IMPORT_DEFAULT('./bar');
-require('./derp');
-var _qux = require('./qux');"
+require('./derp');"
 `;
 
 exports[`interop module-shadow 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _module() {}
-exports.module = _module;"
+exports.module = module;
+function module() {}"
 `;
 
 exports[`interop multi-load 1`] = `"console.log(helper);"`;
@@ -1211,25 +1454,70 @@ exports[`interop overview 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+Object.defineProperty(exports, "test", {
+  enumerable: true,
+  get: function () {
+    return test;
+  }
+});
+Object.defineProperty(exports, "test2", {
+  enumerable: true,
+  get: function () {
+    return test2;
+  }
+});
 require("foo");
 require("foo-bar");
 require("./directory/foo-bar");
-var foo = _$$_IMPORT_DEFAULT("foo2");
-var foo2 = _$$_IMPORT_ALL("foo3");
-var _foo = require("foo4");
-var _foo2 = require("foo5");
+var _foo2 = require("foo2");
+var foo = _interopDefault(_foo2);
+var _foo4 = require("foo4");
+var _foo5 = require("foo5");
 var test;
 var test2 = 5;
-_foo.bar;
-_foo2.foo;
-foo;
-exports.test = test;
-exports.test2 = test2;"
+_foo4.bar;
+_foo5.foo;
+foo.default;"
 `;
 
 exports[`interop remap 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
+});
+Object.defineProperty(exports, "test", {
+  enumerable: true,
+  get: function () {
+    return test;
+  }
+});
+Object.defineProperty(exports, "a", {
+  enumerable: true,
+  get: function () {
+    return a;
+  }
+});
+Object.defineProperty(exports, "c", {
+  enumerable: true,
+  get: function () {
+    return b;
+  }
+});
+Object.defineProperty(exports, "e", {
+  enumerable: true,
+  get: function () {
+    return d;
+  }
+});
+Object.defineProperty(exports, "f", {
+  enumerable: true,
+  get: function () {
+    return d;
+  }
 });
 var test = 2;
 test = 5;
@@ -1244,17 +1532,18 @@ a = 3;
 var b = 2;
 b = 3;
 var d = 3;
-d = 4;
-exports.test = test;
-exports.a = a;
-exports.c = b;
-exports.e = d;
-exports.f = d;"
+d = 4;"
 `;
 
 exports[`lazy-dep import-default 1`] = `
-"var foo = _$$_IMPORT_DEFAULT("foo");
-console.log(foo);"
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("foo");
+var foo = _interopDefault(_foo);
+console.log(foo.default);"
 `;
 
 exports[`lazy-dep import-named 1`] = `
@@ -1263,38 +1552,64 @@ console.log(_foo.foo);"
 `;
 
 exports[`lazy-dep import-namespace 1`] = `
-"var foo = _$$_IMPORT_ALL("foo");
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require("foo");
+var foo = _interopNamespace(_foo);
 console.log(foo);"
 `;
 
 exports[`lazy-dep import-namespace-and-named 1`] = `
-"var _foo = require("foo");
-var foo = _$$_IMPORT_ALL("foo");
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require("foo");
+var foo = _interopNamespace(_foo);
 console.log(foo, _foo.bar);"
 `;
 
 exports[`lazy-dep import-namespace-multiple 1`] = `
-"var foo = _$$_IMPORT_ALL("foo");
-var foo2 = _$$_IMPORT_ALL("foo");
-console.log(foo, foo2);"
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require("foo");
+var foo = _interopNamespace(_foo);
+console.log(foo, foo);"
 `;
 
 exports[`lazy-dep reexport-all 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exportedNames = {};
 var _foo = require("foo");
-Object.keys(_foo).forEach(function (_key) {
-  if (_key === "default" || _key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-  if (_key in exports && exports[_key] === _foo[_key]) return;
-  Object.defineProperty(exports, _key, {
-    enumerable: true,
-    get: function () {
-      return _foo[_key];
-    }
-  });
+Object.keys(_foo).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _foo[k];
+      }
+    });
+  }
 });"
 `;
 
@@ -1302,8 +1617,19 @@ exports[`lazy-dep reexport-default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo = _$$_IMPORT_DEFAULT("foo");
-exports.default = foo;"
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo.default;
+  }
+});
+var _foo = require("foo");
+var foo = _interopDefault(_foo);"
 `;
 
 exports[`lazy-dep reexport-named 1`] = `
@@ -1323,17 +1649,29 @@ exports[`lazy-dep reexport-namespace 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var namespace = _$$_IMPORT_ALL("foo");
-exports.namespace = namespace;"
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+Object.defineProperty(exports, "namespace", {
+  enumerable: true,
+  get: function () {
+    return namespace;
+  }
+});
+var _foo = require("foo");
+var namespace = _interopNamespace(_foo);"
 `;
 
 exports[`lazy-dep sideeffect 1`] = `"require("foo");"`;
 
 exports[`lazy-dep unused 1`] = `
-"var _a = require("a");
-var b = _$$_IMPORT_DEFAULT("b");
-var c = _$$_IMPORT_ALL("c");
-require("d");
+"require("d");
 var _e = require("e");
 var _g = require("g");
 // This is included explicitly for the side effects, so we keep it
@@ -1349,8 +1687,14 @@ _g.h;"
 `;
 
 exports[`lazy-local import-default 1`] = `
-"var foo = _$$_IMPORT_DEFAULT("./foo");
-console.log(foo);"
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("./foo");
+var foo = _interopDefault(_foo);
+console.log(foo.default);"
 `;
 
 exports[`lazy-local import-named 1`] = `
@@ -1359,7 +1703,17 @@ console.log(_foo.foo);"
 `;
 
 exports[`lazy-local import-namespace 1`] = `
-"var foo = _$$_IMPORT_ALL("./foo");
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require("./foo");
+var foo = _interopNamespace(_foo);
 console.log(foo);"
 `;
 
@@ -1367,18 +1721,16 @@ exports[`lazy-local reexport-all 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exportedNames = {};
 var _foo = require("./foo");
-Object.keys(_foo).forEach(function (_key) {
-  if (_key === "default" || _key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-  if (_key in exports && exports[_key] === _foo[_key]) return;
-  Object.defineProperty(exports, _key, {
-    enumerable: true,
-    get: function () {
-      return _foo[_key];
-    }
-  });
+Object.keys(_foo).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _foo[k];
+      }
+    });
+  }
 });"
 `;
 
@@ -1386,8 +1738,19 @@ exports[`lazy-local reexport-default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo = _$$_IMPORT_DEFAULT("./foo");
-exports.default = foo;"
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo.default;
+  }
+});
+var _foo = require("./foo");
+var foo = _interopDefault(_foo);"
 `;
 
 exports[`lazy-local reexport-named 1`] = `
@@ -1407,17 +1770,39 @@ exports[`lazy-local reexport-namespace 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var namespace = _$$_IMPORT_ALL("./foo");
-exports.namespace = namespace;"
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+Object.defineProperty(exports, "namespace", {
+  enumerable: true,
+  get: function () {
+    return namespace;
+  }
+});
+var _foo = require("./foo");
+var namespace = _interopNamespace(_foo);"
 `;
 
 exports[`lazy-local sideeffect 1`] = `"require("./a");"`;
 
 exports[`lazy-whitelist import-default 1`] = `
-"var foo1 = _$$_IMPORT_DEFAULT("white");
-var foo2 = _$$_IMPORT_DEFAULT("black");
-console.log(foo1);
-console.log(foo2);"
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _white = require("white");
+var foo1 = _interopDefault(_white);
+var _black = require("black");
+var foo2 = _interopDefault(_black);
+console.log(foo1.default);
+console.log(foo2.default);"
 `;
 
 exports[`lazy-whitelist import-named 1`] = `
@@ -1428,8 +1813,19 @@ console.log(_black.foo2);"
 `;
 
 exports[`lazy-whitelist import-namespace 1`] = `
-"var foo1 = _$$_IMPORT_ALL("white");
-var foo2 = _$$_IMPORT_ALL("black");
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _white = require("white");
+var foo1 = _interopNamespace(_white);
+var _black = require("black");
+var foo2 = _interopNamespace(_black);
 console.log(foo1);
 console.log(foo2);"
 `;
@@ -1438,30 +1834,27 @@ exports[`lazy-whitelist reexport-all 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exportedNames = {};
 var _white = require("white");
-Object.keys(_white).forEach(function (_key) {
-  if (_key === "default" || _key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-  if (_key in exports && exports[_key] === _white[_key]) return;
-  Object.defineProperty(exports, _key, {
-    enumerable: true,
-    get: function () {
-      return _white[_key];
-    }
-  });
+Object.keys(_white).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _white[k];
+      }
+    });
+  }
 });
 var _black = require("black");
-Object.keys(_black).forEach(function (_key2) {
-  if (_key2 === "default" || _key2 === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key2)) return;
-  if (_key2 in exports && exports[_key2] === _black[_key2]) return;
-  Object.defineProperty(exports, _key2, {
-    enumerable: true,
-    get: function () {
-      return _black[_key2];
-    }
-  });
+Object.keys(_black).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _black[k];
+      }
+    });
+  }
 });"
 `;
 
@@ -1469,8 +1862,19 @@ exports[`lazy-whitelist reexport-default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo = _$$_IMPORT_DEFAULT("white");
-exports.default = foo;"
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo.default;
+  }
+});
+var _white = require("white");
+var foo = _interopDefault(_white);"
 `;
 
 exports[`lazy-whitelist reexport-named 1`] = `
@@ -1497,10 +1901,31 @@ exports[`lazy-whitelist reexport-namespace 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var namespace1 = _$$_IMPORT_ALL("white");
-var namespace2 = _$$_IMPORT_ALL("black");
-exports.namespace1 = namespace1;
-exports.namespace2 = namespace2;"
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+Object.defineProperty(exports, "namespace1", {
+  enumerable: true,
+  get: function () {
+    return namespace1;
+  }
+});
+Object.defineProperty(exports, "namespace2", {
+  enumerable: true,
+  get: function () {
+    return namespace2;
+  }
+});
+var _white = require("white");
+var namespace1 = _interopNamespace(_white);
+var _black = require("black");
+var namespace2 = _interopNamespace(_black);"
 `;
 
 exports[`lazy-whitelist sideeffect 1`] = `
@@ -1528,12 +1953,15 @@ exports[`misc copy-getters-setters 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
 Object.defineProperty(exports, "Foo", {
   enumerable: true,
   get: function () {
-    return function (m) {
-      return m && m.__esModule ? m.default : m;
-    }(_moduleWithGetter);
+    return Foo.default;
   }
 });
 Object.defineProperty(exports, "baz", {
@@ -1543,52 +1971,136 @@ Object.defineProperty(exports, "baz", {
   }
 });
 var _moduleWithGetter = require("./moduleWithGetter");
-var Foo = _$$_IMPORT_DEFAULT("./moduleWithGetter");"
+var Foo = _interopDefault(_moduleWithGetter);"
 `;
 
 exports[`misc copy-getters-setters-star 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo = _$$_IMPORT_ALL("./moduleWithGetter");
-exports.foo = foo;"
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+var _moduleWithGetter = require("./moduleWithGetter");
+var foo = _interopNamespace(_moduleWithGetter);"
+`;
+
+exports[`misc export-expr-with-same-name 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+var _default = function someFunction() {};"
 `;
 
 exports[`misc export-let-function-name 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "a", {
+  enumerable: true,
+  get: function () {
+    return a;
+  }
+});
+Object.defineProperty(exports, "b", {
+  enumerable: true,
+  get: function () {
+    return b;
+  }
+});
+Object.defineProperty(exports, "c", {
+  enumerable: true,
+  get: function () {
+    return c;
+  }
+});
+Object.defineProperty(exports, "d", {
+  enumerable: true,
+  get: function () {
+    return d;
+  }
+});
+Object.defineProperty(exports, "e", {
+  enumerable: true,
+  get: function () {
+    return e;
+  }
+});
 let a = function () {};
 let b = function X() {};
 let c = () => {};
 let d = class {};
-let e = class Y {};
-exports.a = a;
-exports.b = b;
-exports.c = c;
-exports.d = d;
-exports.e = e;"
+let e = class Y {};"
 `;
 
 exports[`misc export-let-function-name-with-fn-name-transform 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "a", {
+  enumerable: true,
+  get: function () {
+    return a;
+  }
+});
+Object.defineProperty(exports, "b", {
+  enumerable: true,
+  get: function () {
+    return b;
+  }
+});
+Object.defineProperty(exports, "c", {
+  enumerable: true,
+  get: function () {
+    return c;
+  }
+});
+Object.defineProperty(exports, "d", {
+  enumerable: true,
+  get: function () {
+    return d;
+  }
+});
+Object.defineProperty(exports, "e", {
+  enumerable: true,
+  get: function () {
+    return e;
+  }
+});
 let a = function () {};
 let b = function X() {};
 let c = () => {};
 let d = class {};
-let e = class Y {};
-exports.a = a;
-exports.b = b;
-exports.c = c;
-exports.d = d;
-exports.e = e;"
+let e = class Y {};"
 `;
 
 exports[`misc export-var-and-modify 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
+});
+Object.defineProperty(exports, "a", {
+  enumerable: true,
+  get: function () {
+    return a;
+  }
 });
 var a;
 a += 1;
@@ -1605,13 +2117,24 @@ a ^= 1;
 a |= 1;
 a &&= 1;
 a ||= 1;
-a ??= 1;
-exports.a = a;"
+a ??= 1;"
 `;
 
 exports[`misc for-of-in-export 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
+});
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
 });
 let foo;
 for (foo of []) {}
@@ -1640,14 +2163,28 @@ for (foo of []);
 {
   let foo;
   for (foo of []) {}
-}
-exports.foo = foo;
-exports.bar = foo;"
+}"
 `;
 
 exports[`misc import-const-throw 1`] = `
-"var Foo = _$$_IMPORT_DEFAULT("foo");
-var Bar = _$$_IMPORT_ALL("bar");
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require("foo");
+var Foo = _interopDefault(_foo);
+var _bar = require("bar");
+var Bar = _interopNamespace(_bar);
 var _baz = require("baz");
 Foo = 42;
 Bar = 43;
@@ -1679,13 +2216,13 @@ Baz >>>= 3;
 Foo &&= 4;
 Bar &&= 4;
 Baz &&= 4;
---Foo;
+--Foo.default;
 --Bar;
 --_baz.Baz;
-Foo++;
+Foo.default++;
 Bar++;
 _baz.Baz++;
-for (Foo in {});
+for (Foo.default in {});
 for (Bar in {}) {}
 for (_baz.Baz of []) {
   let Baz;
@@ -1698,8 +2235,7 @@ for ([...Baz] in {}) {}"
 `;
 
 exports[`misc import-shadowed-assign 1`] = `
-"var _x = require("x");
-function f(foo) {
+"function f(foo) {
   foo = 2;
   [foo] = [];
   ({
@@ -1715,41 +2251,46 @@ foo = 2;
 
 exports[`misc local-exports-decl-top-level 1`] = `
 "require("foo");
-var _exports = "local exports";
-var _module = "local module";
-console.log(_exports);
-console.log(_exports.prop);
-_exports++;
-_exports += 4;
+var exports = "local exports";
+var module = "local module";
+console.log(exports);
+console.log(exports.prop);
+exports++;
+exports += 4;
 ({
-  exports: _exports
+  exports
 } = {});
-[_exports] = [];
-_exports = {};
-_exports.prop = "";
-console.log(_module);
-console.log(_module.exports);
-_module++;
-_module += 4;
+[exports] = [];
+exports = {};
+exports.prop = "";
+console.log(module);
+console.log(module.exports);
+module++;
+module += 4;
 ({
-  module: _module
+  module
 } = {});
-[_module] = [];
-_module = {};
-_module.prop = "";"
+[module] = [];
+module = {};
+module.prop = "";"
 `;
 
 exports[`misc local-exports-decl-with-esm-exports 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exports = 1;
+Object.defineProperty(exports, "x", {
+  enumerable: true,
+  get: function () {
+    return x;
+  }
+});
+var exports = 1;
 let x = 2;
 function fn() {
   x = 3;
   var exports = 4;
-}
-exports.x = x;"
+}"
 `;
 
 exports[`misc local-exports-inject-var-declarations 1`] = `""`;
@@ -1760,6 +2301,24 @@ exports[`misc local-exports-var-declarations 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "A", {
+  enumerable: true,
+  get: function () {
+    return A;
+  }
+});
+Object.defineProperty(exports, "B", {
+  enumerable: true,
+  get: function () {
+    return B;
+  }
+});
+Object.defineProperty(exports, "C", {
+  enumerable: true,
+  get: function () {
+    return C;
+  }
+});
 {
   var A;
   switch (0) {
@@ -1767,10 +2326,7 @@ exports[`misc local-exports-var-declarations 1`] = `
       var B;
       if (2) var C;
   }
-}
-exports.A = A;
-exports.B = B;
-exports.C = C;"
+}"
 `;
 
 exports[`misc module-exports 1`] = `
@@ -1798,15 +2354,31 @@ module.prop = "";"
 `;
 
 exports[`misc reference-source-map 1`] = `
-"var aDefault = _$$_IMPORT_DEFAULT("one");
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _one = require("one");
+var aDefault = _interopDefault(_one);
 var _two = require("two");
 var _three = require("three");
-var aNamespace = _$$_IMPORT_ALL("four");
-console.log(aDefault);
+var _four = require("four");
+var aNamespace = _interopNamespace(_four);
+console.log(aDefault.default);
 console.log(_two.aNamed);
 console.log(_three.orig);
 console.log(aNamespace);
-console.log(aDefault());
+console.log(aDefault.default());
 console.log(_two.aNamed());
 console.log(_three.orig());
 console.log(aNamespace());"
@@ -1818,10 +2390,15 @@ exports[`misc undefined-this-computed-class-method-1 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "C", {
+  enumerable: true,
+  get: function () {
+    return C;
+  }
+});
 class C {
   [this.name]() {}
-}
-exports.C = C;"
+}"
 `;
 
 exports[`misc undefined-this-computed-class-method-2 1`] = `
@@ -1842,10 +2419,15 @@ exports[`misc undefined-this-computed-class-property-name 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "C", {
+  enumerable: true,
+  get: function () {
+    return C;
+  }
+});
 class C {
   [this.name] = 42;
-}
-exports.C = C;"
+}"
 `;
 
 exports[`misc undefined-this-root-call 1`] = `"this.foo();"`;
@@ -1858,96 +2440,146 @@ exports[`regression 4462-T7565 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "yy", {
+  enumerable: true,
+  get: function () {
+    return yy;
+  }
+});
+Object.defineProperty(exports, "zz", {
+  enumerable: true,
+  get: function () {
+    return zz;
+  }
+});
 var yy = 0;
-var zz = yy++;
-exports.yy = yy;
-exports.zz = zz;"
+var zz = yy++;"
 `;
 
 exports[`regression T7160 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
 var foo = function (gen, ctx = null) {};
-var bar = (gen, ctx = null) => {};
-exports.foo = foo;
-exports.bar = bar;"
+var bar = (gen, ctx = null) => {};"
 `;
 
 exports[`regression T7165 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exportedNames = {};
 var _bar = require('bar');
-Object.keys(_bar).forEach(function (_key) {
-  if (_key === "default" || _key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-  if (_key in exports && exports[_key] === _bar[_key]) return;
-  Object.defineProperty(exports, _key, {
-    enumerable: true,
-    get: function () {
-      return _bar[_key];
-    }
-  });
+Object.keys(_bar).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _bar[k];
+      }
+    });
+  }
 });
-var foo = _$$_IMPORT_DEFAULT('foo');
 const anything = {};"
 `;
 
-exports[`regression T7199 1`] = `
-"var foo = _$$_IMPORT_DEFAULT('foo');
-const [x] = bar;"
-`;
+exports[`regression T7199 1`] = `"const [x] = bar;"`;
 
 exports[`regression T7272 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-const state = state => state.a;
-exports.state = state;"
+Object.defineProperty(exports, "state", {
+  enumerable: true,
+  get: function () {
+    return state;
+  }
+});
+const state = state => state.a;"
 `;
 
 exports[`regression es3-compatibility 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo = _$$_IMPORT_DEFAULT('foo');
-console.log(foo);
-var _default = 5;
-exports.default = _default;"
+function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+var _foo = require('foo');
+var foo = _interopDefault(_foo);
+console.log(foo.default);
+var _default = 5;"
 `;
 
 exports[`regression es3-compatibility-class 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-class _default {}
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _ref;
+  }
+});
+class _ref {}"
 `;
 
 exports[`regression es3-compatibility-function 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function _default() {}
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _ref;
+  }
+});
+function _ref() {}"
 `;
 
 exports[`regression es3-compatibility-named-class 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-class Foo {}
-exports.default = Foo;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return Foo;
+  }
+});
+class Foo {}"
 `;
 
 exports[`regression es3-compatibility-named-function 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function bat() {}
-exports.default = bat;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return bat;
+  }
+});
+function bat() {}"
 `;
 
 exports[`regression issue-9155 1`] = `""`;
@@ -1956,14 +2588,27 @@ exports[`regression issue-9611 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var x = _$$_IMPORT_DEFAULT('./x');
-function _default(x) {}
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _ref;
+  }
+});
+function _ref(x) {}"
 `;
 
 exports[`regression lazy-7176 1`] = `
-"var _mod = require("mod");
-var mod = _$$_IMPORT_ALL("mod");
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _mod = require("mod");
+var mod = _interopNamespace(_mod);
 _mod.named;
 mod;"
 `;
@@ -1971,6 +2616,1506 @@ mod;"
 exports[`regression many-exports-chunked 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
+});
+Object.defineProperty(exports, "a000", {
+  enumerable: true,
+  get: function () {
+    return a000;
+  }
+});
+Object.defineProperty(exports, "a001", {
+  enumerable: true,
+  get: function () {
+    return a001;
+  }
+});
+Object.defineProperty(exports, "a002", {
+  enumerable: true,
+  get: function () {
+    return a002;
+  }
+});
+Object.defineProperty(exports, "a003", {
+  enumerable: true,
+  get: function () {
+    return a003;
+  }
+});
+Object.defineProperty(exports, "a004", {
+  enumerable: true,
+  get: function () {
+    return a004;
+  }
+});
+Object.defineProperty(exports, "a005", {
+  enumerable: true,
+  get: function () {
+    return a005;
+  }
+});
+Object.defineProperty(exports, "a006", {
+  enumerable: true,
+  get: function () {
+    return a006;
+  }
+});
+Object.defineProperty(exports, "a007", {
+  enumerable: true,
+  get: function () {
+    return a007;
+  }
+});
+Object.defineProperty(exports, "a008", {
+  enumerable: true,
+  get: function () {
+    return a008;
+  }
+});
+Object.defineProperty(exports, "a009", {
+  enumerable: true,
+  get: function () {
+    return a009;
+  }
+});
+Object.defineProperty(exports, "a010", {
+  enumerable: true,
+  get: function () {
+    return a010;
+  }
+});
+Object.defineProperty(exports, "a011", {
+  enumerable: true,
+  get: function () {
+    return a011;
+  }
+});
+Object.defineProperty(exports, "a012", {
+  enumerable: true,
+  get: function () {
+    return a012;
+  }
+});
+Object.defineProperty(exports, "a013", {
+  enumerable: true,
+  get: function () {
+    return a013;
+  }
+});
+Object.defineProperty(exports, "a014", {
+  enumerable: true,
+  get: function () {
+    return a014;
+  }
+});
+Object.defineProperty(exports, "a015", {
+  enumerable: true,
+  get: function () {
+    return a015;
+  }
+});
+Object.defineProperty(exports, "a016", {
+  enumerable: true,
+  get: function () {
+    return a016;
+  }
+});
+Object.defineProperty(exports, "a017", {
+  enumerable: true,
+  get: function () {
+    return a017;
+  }
+});
+Object.defineProperty(exports, "a018", {
+  enumerable: true,
+  get: function () {
+    return a018;
+  }
+});
+Object.defineProperty(exports, "a019", {
+  enumerable: true,
+  get: function () {
+    return a019;
+  }
+});
+Object.defineProperty(exports, "a020", {
+  enumerable: true,
+  get: function () {
+    return a020;
+  }
+});
+Object.defineProperty(exports, "a021", {
+  enumerable: true,
+  get: function () {
+    return a021;
+  }
+});
+Object.defineProperty(exports, "a022", {
+  enumerable: true,
+  get: function () {
+    return a022;
+  }
+});
+Object.defineProperty(exports, "a023", {
+  enumerable: true,
+  get: function () {
+    return a023;
+  }
+});
+Object.defineProperty(exports, "a024", {
+  enumerable: true,
+  get: function () {
+    return a024;
+  }
+});
+Object.defineProperty(exports, "a025", {
+  enumerable: true,
+  get: function () {
+    return a025;
+  }
+});
+Object.defineProperty(exports, "a026", {
+  enumerable: true,
+  get: function () {
+    return a026;
+  }
+});
+Object.defineProperty(exports, "a027", {
+  enumerable: true,
+  get: function () {
+    return a027;
+  }
+});
+Object.defineProperty(exports, "a028", {
+  enumerable: true,
+  get: function () {
+    return a028;
+  }
+});
+Object.defineProperty(exports, "a029", {
+  enumerable: true,
+  get: function () {
+    return a029;
+  }
+});
+Object.defineProperty(exports, "a030", {
+  enumerable: true,
+  get: function () {
+    return a030;
+  }
+});
+Object.defineProperty(exports, "a031", {
+  enumerable: true,
+  get: function () {
+    return a031;
+  }
+});
+Object.defineProperty(exports, "a032", {
+  enumerable: true,
+  get: function () {
+    return a032;
+  }
+});
+Object.defineProperty(exports, "a033", {
+  enumerable: true,
+  get: function () {
+    return a033;
+  }
+});
+Object.defineProperty(exports, "a034", {
+  enumerable: true,
+  get: function () {
+    return a034;
+  }
+});
+Object.defineProperty(exports, "a035", {
+  enumerable: true,
+  get: function () {
+    return a035;
+  }
+});
+Object.defineProperty(exports, "a036", {
+  enumerable: true,
+  get: function () {
+    return a036;
+  }
+});
+Object.defineProperty(exports, "a037", {
+  enumerable: true,
+  get: function () {
+    return a037;
+  }
+});
+Object.defineProperty(exports, "a038", {
+  enumerable: true,
+  get: function () {
+    return a038;
+  }
+});
+Object.defineProperty(exports, "a039", {
+  enumerable: true,
+  get: function () {
+    return a039;
+  }
+});
+Object.defineProperty(exports, "a040", {
+  enumerable: true,
+  get: function () {
+    return a040;
+  }
+});
+Object.defineProperty(exports, "a041", {
+  enumerable: true,
+  get: function () {
+    return a041;
+  }
+});
+Object.defineProperty(exports, "a042", {
+  enumerable: true,
+  get: function () {
+    return a042;
+  }
+});
+Object.defineProperty(exports, "a043", {
+  enumerable: true,
+  get: function () {
+    return a043;
+  }
+});
+Object.defineProperty(exports, "a044", {
+  enumerable: true,
+  get: function () {
+    return a044;
+  }
+});
+Object.defineProperty(exports, "a045", {
+  enumerable: true,
+  get: function () {
+    return a045;
+  }
+});
+Object.defineProperty(exports, "a046", {
+  enumerable: true,
+  get: function () {
+    return a046;
+  }
+});
+Object.defineProperty(exports, "a047", {
+  enumerable: true,
+  get: function () {
+    return a047;
+  }
+});
+Object.defineProperty(exports, "a048", {
+  enumerable: true,
+  get: function () {
+    return a048;
+  }
+});
+Object.defineProperty(exports, "a049", {
+  enumerable: true,
+  get: function () {
+    return a049;
+  }
+});
+Object.defineProperty(exports, "a050", {
+  enumerable: true,
+  get: function () {
+    return a050;
+  }
+});
+Object.defineProperty(exports, "a051", {
+  enumerable: true,
+  get: function () {
+    return a051;
+  }
+});
+Object.defineProperty(exports, "a052", {
+  enumerable: true,
+  get: function () {
+    return a052;
+  }
+});
+Object.defineProperty(exports, "a053", {
+  enumerable: true,
+  get: function () {
+    return a053;
+  }
+});
+Object.defineProperty(exports, "a054", {
+  enumerable: true,
+  get: function () {
+    return a054;
+  }
+});
+Object.defineProperty(exports, "a055", {
+  enumerable: true,
+  get: function () {
+    return a055;
+  }
+});
+Object.defineProperty(exports, "a056", {
+  enumerable: true,
+  get: function () {
+    return a056;
+  }
+});
+Object.defineProperty(exports, "a057", {
+  enumerable: true,
+  get: function () {
+    return a057;
+  }
+});
+Object.defineProperty(exports, "a058", {
+  enumerable: true,
+  get: function () {
+    return a058;
+  }
+});
+Object.defineProperty(exports, "a059", {
+  enumerable: true,
+  get: function () {
+    return a059;
+  }
+});
+Object.defineProperty(exports, "a060", {
+  enumerable: true,
+  get: function () {
+    return a060;
+  }
+});
+Object.defineProperty(exports, "a061", {
+  enumerable: true,
+  get: function () {
+    return a061;
+  }
+});
+Object.defineProperty(exports, "a062", {
+  enumerable: true,
+  get: function () {
+    return a062;
+  }
+});
+Object.defineProperty(exports, "a063", {
+  enumerable: true,
+  get: function () {
+    return a063;
+  }
+});
+Object.defineProperty(exports, "a064", {
+  enumerable: true,
+  get: function () {
+    return a064;
+  }
+});
+Object.defineProperty(exports, "a065", {
+  enumerable: true,
+  get: function () {
+    return a065;
+  }
+});
+Object.defineProperty(exports, "a066", {
+  enumerable: true,
+  get: function () {
+    return a066;
+  }
+});
+Object.defineProperty(exports, "a067", {
+  enumerable: true,
+  get: function () {
+    return a067;
+  }
+});
+Object.defineProperty(exports, "a068", {
+  enumerable: true,
+  get: function () {
+    return a068;
+  }
+});
+Object.defineProperty(exports, "a069", {
+  enumerable: true,
+  get: function () {
+    return a069;
+  }
+});
+Object.defineProperty(exports, "a070", {
+  enumerable: true,
+  get: function () {
+    return a070;
+  }
+});
+Object.defineProperty(exports, "a071", {
+  enumerable: true,
+  get: function () {
+    return a071;
+  }
+});
+Object.defineProperty(exports, "a072", {
+  enumerable: true,
+  get: function () {
+    return a072;
+  }
+});
+Object.defineProperty(exports, "a073", {
+  enumerable: true,
+  get: function () {
+    return a073;
+  }
+});
+Object.defineProperty(exports, "a074", {
+  enumerable: true,
+  get: function () {
+    return a074;
+  }
+});
+Object.defineProperty(exports, "a075", {
+  enumerable: true,
+  get: function () {
+    return a075;
+  }
+});
+Object.defineProperty(exports, "a076", {
+  enumerable: true,
+  get: function () {
+    return a076;
+  }
+});
+Object.defineProperty(exports, "a077", {
+  enumerable: true,
+  get: function () {
+    return a077;
+  }
+});
+Object.defineProperty(exports, "a078", {
+  enumerable: true,
+  get: function () {
+    return a078;
+  }
+});
+Object.defineProperty(exports, "a079", {
+  enumerable: true,
+  get: function () {
+    return a079;
+  }
+});
+Object.defineProperty(exports, "a080", {
+  enumerable: true,
+  get: function () {
+    return a080;
+  }
+});
+Object.defineProperty(exports, "a081", {
+  enumerable: true,
+  get: function () {
+    return a081;
+  }
+});
+Object.defineProperty(exports, "a082", {
+  enumerable: true,
+  get: function () {
+    return a082;
+  }
+});
+Object.defineProperty(exports, "a083", {
+  enumerable: true,
+  get: function () {
+    return a083;
+  }
+});
+Object.defineProperty(exports, "a084", {
+  enumerable: true,
+  get: function () {
+    return a084;
+  }
+});
+Object.defineProperty(exports, "a085", {
+  enumerable: true,
+  get: function () {
+    return a085;
+  }
+});
+Object.defineProperty(exports, "a086", {
+  enumerable: true,
+  get: function () {
+    return a086;
+  }
+});
+Object.defineProperty(exports, "a087", {
+  enumerable: true,
+  get: function () {
+    return a087;
+  }
+});
+Object.defineProperty(exports, "a088", {
+  enumerable: true,
+  get: function () {
+    return a088;
+  }
+});
+Object.defineProperty(exports, "a089", {
+  enumerable: true,
+  get: function () {
+    return a089;
+  }
+});
+Object.defineProperty(exports, "a090", {
+  enumerable: true,
+  get: function () {
+    return a090;
+  }
+});
+Object.defineProperty(exports, "a091", {
+  enumerable: true,
+  get: function () {
+    return a091;
+  }
+});
+Object.defineProperty(exports, "a092", {
+  enumerable: true,
+  get: function () {
+    return a092;
+  }
+});
+Object.defineProperty(exports, "a093", {
+  enumerable: true,
+  get: function () {
+    return a093;
+  }
+});
+Object.defineProperty(exports, "a094", {
+  enumerable: true,
+  get: function () {
+    return a094;
+  }
+});
+Object.defineProperty(exports, "a095", {
+  enumerable: true,
+  get: function () {
+    return a095;
+  }
+});
+Object.defineProperty(exports, "a096", {
+  enumerable: true,
+  get: function () {
+    return a096;
+  }
+});
+Object.defineProperty(exports, "a097", {
+  enumerable: true,
+  get: function () {
+    return a097;
+  }
+});
+Object.defineProperty(exports, "a098", {
+  enumerable: true,
+  get: function () {
+    return a098;
+  }
+});
+Object.defineProperty(exports, "a099", {
+  enumerable: true,
+  get: function () {
+    return a099;
+  }
+});
+Object.defineProperty(exports, "a100", {
+  enumerable: true,
+  get: function () {
+    return a100;
+  }
+});
+Object.defineProperty(exports, "a101", {
+  enumerable: true,
+  get: function () {
+    return a101;
+  }
+});
+Object.defineProperty(exports, "a102", {
+  enumerable: true,
+  get: function () {
+    return a102;
+  }
+});
+Object.defineProperty(exports, "a103", {
+  enumerable: true,
+  get: function () {
+    return a103;
+  }
+});
+Object.defineProperty(exports, "a104", {
+  enumerable: true,
+  get: function () {
+    return a104;
+  }
+});
+Object.defineProperty(exports, "a105", {
+  enumerable: true,
+  get: function () {
+    return a105;
+  }
+});
+Object.defineProperty(exports, "a106", {
+  enumerable: true,
+  get: function () {
+    return a106;
+  }
+});
+Object.defineProperty(exports, "a107", {
+  enumerable: true,
+  get: function () {
+    return a107;
+  }
+});
+Object.defineProperty(exports, "a108", {
+  enumerable: true,
+  get: function () {
+    return a108;
+  }
+});
+Object.defineProperty(exports, "a109", {
+  enumerable: true,
+  get: function () {
+    return a109;
+  }
+});
+Object.defineProperty(exports, "a110", {
+  enumerable: true,
+  get: function () {
+    return a110;
+  }
+});
+Object.defineProperty(exports, "a111", {
+  enumerable: true,
+  get: function () {
+    return a111;
+  }
+});
+Object.defineProperty(exports, "a112", {
+  enumerable: true,
+  get: function () {
+    return a112;
+  }
+});
+Object.defineProperty(exports, "a113", {
+  enumerable: true,
+  get: function () {
+    return a113;
+  }
+});
+Object.defineProperty(exports, "a114", {
+  enumerable: true,
+  get: function () {
+    return a114;
+  }
+});
+Object.defineProperty(exports, "a115", {
+  enumerable: true,
+  get: function () {
+    return a115;
+  }
+});
+Object.defineProperty(exports, "a116", {
+  enumerable: true,
+  get: function () {
+    return a116;
+  }
+});
+Object.defineProperty(exports, "a117", {
+  enumerable: true,
+  get: function () {
+    return a117;
+  }
+});
+Object.defineProperty(exports, "a118", {
+  enumerable: true,
+  get: function () {
+    return a118;
+  }
+});
+Object.defineProperty(exports, "a119", {
+  enumerable: true,
+  get: function () {
+    return a119;
+  }
+});
+Object.defineProperty(exports, "a120", {
+  enumerable: true,
+  get: function () {
+    return a120;
+  }
+});
+Object.defineProperty(exports, "a121", {
+  enumerable: true,
+  get: function () {
+    return a121;
+  }
+});
+Object.defineProperty(exports, "a122", {
+  enumerable: true,
+  get: function () {
+    return a122;
+  }
+});
+Object.defineProperty(exports, "a123", {
+  enumerable: true,
+  get: function () {
+    return a123;
+  }
+});
+Object.defineProperty(exports, "a124", {
+  enumerable: true,
+  get: function () {
+    return a124;
+  }
+});
+Object.defineProperty(exports, "a125", {
+  enumerable: true,
+  get: function () {
+    return a125;
+  }
+});
+Object.defineProperty(exports, "a126", {
+  enumerable: true,
+  get: function () {
+    return a126;
+  }
+});
+Object.defineProperty(exports, "a127", {
+  enumerable: true,
+  get: function () {
+    return a127;
+  }
+});
+Object.defineProperty(exports, "a128", {
+  enumerable: true,
+  get: function () {
+    return a128;
+  }
+});
+Object.defineProperty(exports, "a129", {
+  enumerable: true,
+  get: function () {
+    return a129;
+  }
+});
+Object.defineProperty(exports, "a130", {
+  enumerable: true,
+  get: function () {
+    return a130;
+  }
+});
+Object.defineProperty(exports, "a131", {
+  enumerable: true,
+  get: function () {
+    return a131;
+  }
+});
+Object.defineProperty(exports, "a132", {
+  enumerable: true,
+  get: function () {
+    return a132;
+  }
+});
+Object.defineProperty(exports, "a133", {
+  enumerable: true,
+  get: function () {
+    return a133;
+  }
+});
+Object.defineProperty(exports, "a134", {
+  enumerable: true,
+  get: function () {
+    return a134;
+  }
+});
+Object.defineProperty(exports, "a135", {
+  enumerable: true,
+  get: function () {
+    return a135;
+  }
+});
+Object.defineProperty(exports, "a136", {
+  enumerable: true,
+  get: function () {
+    return a136;
+  }
+});
+Object.defineProperty(exports, "a137", {
+  enumerable: true,
+  get: function () {
+    return a137;
+  }
+});
+Object.defineProperty(exports, "a138", {
+  enumerable: true,
+  get: function () {
+    return a138;
+  }
+});
+Object.defineProperty(exports, "a139", {
+  enumerable: true,
+  get: function () {
+    return a139;
+  }
+});
+Object.defineProperty(exports, "a140", {
+  enumerable: true,
+  get: function () {
+    return a140;
+  }
+});
+Object.defineProperty(exports, "a141", {
+  enumerable: true,
+  get: function () {
+    return a141;
+  }
+});
+Object.defineProperty(exports, "a142", {
+  enumerable: true,
+  get: function () {
+    return a142;
+  }
+});
+Object.defineProperty(exports, "a143", {
+  enumerable: true,
+  get: function () {
+    return a143;
+  }
+});
+Object.defineProperty(exports, "a144", {
+  enumerable: true,
+  get: function () {
+    return a144;
+  }
+});
+Object.defineProperty(exports, "a145", {
+  enumerable: true,
+  get: function () {
+    return a145;
+  }
+});
+Object.defineProperty(exports, "a146", {
+  enumerable: true,
+  get: function () {
+    return a146;
+  }
+});
+Object.defineProperty(exports, "a147", {
+  enumerable: true,
+  get: function () {
+    return a147;
+  }
+});
+Object.defineProperty(exports, "a148", {
+  enumerable: true,
+  get: function () {
+    return a148;
+  }
+});
+Object.defineProperty(exports, "a149", {
+  enumerable: true,
+  get: function () {
+    return a149;
+  }
+});
+Object.defineProperty(exports, "a150", {
+  enumerable: true,
+  get: function () {
+    return a150;
+  }
+});
+Object.defineProperty(exports, "a151", {
+  enumerable: true,
+  get: function () {
+    return a151;
+  }
+});
+Object.defineProperty(exports, "a152", {
+  enumerable: true,
+  get: function () {
+    return a152;
+  }
+});
+Object.defineProperty(exports, "a153", {
+  enumerable: true,
+  get: function () {
+    return a153;
+  }
+});
+Object.defineProperty(exports, "a154", {
+  enumerable: true,
+  get: function () {
+    return a154;
+  }
+});
+Object.defineProperty(exports, "a155", {
+  enumerable: true,
+  get: function () {
+    return a155;
+  }
+});
+Object.defineProperty(exports, "a156", {
+  enumerable: true,
+  get: function () {
+    return a156;
+  }
+});
+Object.defineProperty(exports, "a157", {
+  enumerable: true,
+  get: function () {
+    return a157;
+  }
+});
+Object.defineProperty(exports, "a158", {
+  enumerable: true,
+  get: function () {
+    return a158;
+  }
+});
+Object.defineProperty(exports, "a159", {
+  enumerable: true,
+  get: function () {
+    return a159;
+  }
+});
+Object.defineProperty(exports, "a160", {
+  enumerable: true,
+  get: function () {
+    return a160;
+  }
+});
+Object.defineProperty(exports, "a161", {
+  enumerable: true,
+  get: function () {
+    return a161;
+  }
+});
+Object.defineProperty(exports, "a162", {
+  enumerable: true,
+  get: function () {
+    return a162;
+  }
+});
+Object.defineProperty(exports, "a163", {
+  enumerable: true,
+  get: function () {
+    return a163;
+  }
+});
+Object.defineProperty(exports, "a164", {
+  enumerable: true,
+  get: function () {
+    return a164;
+  }
+});
+Object.defineProperty(exports, "a165", {
+  enumerable: true,
+  get: function () {
+    return a165;
+  }
+});
+Object.defineProperty(exports, "a166", {
+  enumerable: true,
+  get: function () {
+    return a166;
+  }
+});
+Object.defineProperty(exports, "a167", {
+  enumerable: true,
+  get: function () {
+    return a167;
+  }
+});
+Object.defineProperty(exports, "a168", {
+  enumerable: true,
+  get: function () {
+    return a168;
+  }
+});
+Object.defineProperty(exports, "a169", {
+  enumerable: true,
+  get: function () {
+    return a169;
+  }
+});
+Object.defineProperty(exports, "a170", {
+  enumerable: true,
+  get: function () {
+    return a170;
+  }
+});
+Object.defineProperty(exports, "a171", {
+  enumerable: true,
+  get: function () {
+    return a171;
+  }
+});
+Object.defineProperty(exports, "a172", {
+  enumerable: true,
+  get: function () {
+    return a172;
+  }
+});
+Object.defineProperty(exports, "a173", {
+  enumerable: true,
+  get: function () {
+    return a173;
+  }
+});
+Object.defineProperty(exports, "a174", {
+  enumerable: true,
+  get: function () {
+    return a174;
+  }
+});
+Object.defineProperty(exports, "a175", {
+  enumerable: true,
+  get: function () {
+    return a175;
+  }
+});
+Object.defineProperty(exports, "a176", {
+  enumerable: true,
+  get: function () {
+    return a176;
+  }
+});
+Object.defineProperty(exports, "a177", {
+  enumerable: true,
+  get: function () {
+    return a177;
+  }
+});
+Object.defineProperty(exports, "a178", {
+  enumerable: true,
+  get: function () {
+    return a178;
+  }
+});
+Object.defineProperty(exports, "a179", {
+  enumerable: true,
+  get: function () {
+    return a179;
+  }
+});
+Object.defineProperty(exports, "a180", {
+  enumerable: true,
+  get: function () {
+    return a180;
+  }
+});
+Object.defineProperty(exports, "a181", {
+  enumerable: true,
+  get: function () {
+    return a181;
+  }
+});
+Object.defineProperty(exports, "a182", {
+  enumerable: true,
+  get: function () {
+    return a182;
+  }
+});
+Object.defineProperty(exports, "a183", {
+  enumerable: true,
+  get: function () {
+    return a183;
+  }
+});
+Object.defineProperty(exports, "a184", {
+  enumerable: true,
+  get: function () {
+    return a184;
+  }
+});
+Object.defineProperty(exports, "a185", {
+  enumerable: true,
+  get: function () {
+    return a185;
+  }
+});
+Object.defineProperty(exports, "a186", {
+  enumerable: true,
+  get: function () {
+    return a186;
+  }
+});
+Object.defineProperty(exports, "a187", {
+  enumerable: true,
+  get: function () {
+    return a187;
+  }
+});
+Object.defineProperty(exports, "a188", {
+  enumerable: true,
+  get: function () {
+    return a188;
+  }
+});
+Object.defineProperty(exports, "a189", {
+  enumerable: true,
+  get: function () {
+    return a189;
+  }
+});
+Object.defineProperty(exports, "a190", {
+  enumerable: true,
+  get: function () {
+    return a190;
+  }
+});
+Object.defineProperty(exports, "a191", {
+  enumerable: true,
+  get: function () {
+    return a191;
+  }
+});
+Object.defineProperty(exports, "a192", {
+  enumerable: true,
+  get: function () {
+    return a192;
+  }
+});
+Object.defineProperty(exports, "a193", {
+  enumerable: true,
+  get: function () {
+    return a193;
+  }
+});
+Object.defineProperty(exports, "a194", {
+  enumerable: true,
+  get: function () {
+    return a194;
+  }
+});
+Object.defineProperty(exports, "a195", {
+  enumerable: true,
+  get: function () {
+    return a195;
+  }
+});
+Object.defineProperty(exports, "a196", {
+  enumerable: true,
+  get: function () {
+    return a196;
+  }
+});
+Object.defineProperty(exports, "a197", {
+  enumerable: true,
+  get: function () {
+    return a197;
+  }
+});
+Object.defineProperty(exports, "a198", {
+  enumerable: true,
+  get: function () {
+    return a198;
+  }
+});
+Object.defineProperty(exports, "a199", {
+  enumerable: true,
+  get: function () {
+    return a199;
+  }
+});
+Object.defineProperty(exports, "a200", {
+  enumerable: true,
+  get: function () {
+    return a200;
+  }
+});
+Object.defineProperty(exports, "a201", {
+  enumerable: true,
+  get: function () {
+    return a201;
+  }
+});
+Object.defineProperty(exports, "a202", {
+  enumerable: true,
+  get: function () {
+    return a202;
+  }
+});
+Object.defineProperty(exports, "a203", {
+  enumerable: true,
+  get: function () {
+    return a203;
+  }
+});
+Object.defineProperty(exports, "a204", {
+  enumerable: true,
+  get: function () {
+    return a204;
+  }
+});
+Object.defineProperty(exports, "a205", {
+  enumerable: true,
+  get: function () {
+    return a205;
+  }
+});
+Object.defineProperty(exports, "a206", {
+  enumerable: true,
+  get: function () {
+    return a206;
+  }
+});
+Object.defineProperty(exports, "a207", {
+  enumerable: true,
+  get: function () {
+    return a207;
+  }
+});
+Object.defineProperty(exports, "a208", {
+  enumerable: true,
+  get: function () {
+    return a208;
+  }
+});
+Object.defineProperty(exports, "a209", {
+  enumerable: true,
+  get: function () {
+    return a209;
+  }
+});
+Object.defineProperty(exports, "a210", {
+  enumerable: true,
+  get: function () {
+    return a210;
+  }
+});
+Object.defineProperty(exports, "a211", {
+  enumerable: true,
+  get: function () {
+    return a211;
+  }
+});
+Object.defineProperty(exports, "a212", {
+  enumerable: true,
+  get: function () {
+    return a212;
+  }
+});
+Object.defineProperty(exports, "a213", {
+  enumerable: true,
+  get: function () {
+    return a213;
+  }
+});
+Object.defineProperty(exports, "a214", {
+  enumerable: true,
+  get: function () {
+    return a214;
+  }
+});
+Object.defineProperty(exports, "a215", {
+  enumerable: true,
+  get: function () {
+    return a215;
+  }
+});
+Object.defineProperty(exports, "a216", {
+  enumerable: true,
+  get: function () {
+    return a216;
+  }
+});
+Object.defineProperty(exports, "a217", {
+  enumerable: true,
+  get: function () {
+    return a217;
+  }
+});
+Object.defineProperty(exports, "a218", {
+  enumerable: true,
+  get: function () {
+    return a218;
+  }
+});
+Object.defineProperty(exports, "a219", {
+  enumerable: true,
+  get: function () {
+    return a219;
+  }
+});
+Object.defineProperty(exports, "a220", {
+  enumerable: true,
+  get: function () {
+    return a220;
+  }
+});
+Object.defineProperty(exports, "a221", {
+  enumerable: true,
+  get: function () {
+    return a221;
+  }
+});
+Object.defineProperty(exports, "a222", {
+  enumerable: true,
+  get: function () {
+    return a222;
+  }
+});
+Object.defineProperty(exports, "a223", {
+  enumerable: true,
+  get: function () {
+    return a223;
+  }
+});
+Object.defineProperty(exports, "a224", {
+  enumerable: true,
+  get: function () {
+    return a224;
+  }
+});
+Object.defineProperty(exports, "a225", {
+  enumerable: true,
+  get: function () {
+    return a225;
+  }
+});
+Object.defineProperty(exports, "a226", {
+  enumerable: true,
+  get: function () {
+    return a226;
+  }
+});
+Object.defineProperty(exports, "a227", {
+  enumerable: true,
+  get: function () {
+    return a227;
+  }
+});
+Object.defineProperty(exports, "a228", {
+  enumerable: true,
+  get: function () {
+    return a228;
+  }
+});
+Object.defineProperty(exports, "a229", {
+  enumerable: true,
+  get: function () {
+    return a229;
+  }
+});
+Object.defineProperty(exports, "a230", {
+  enumerable: true,
+  get: function () {
+    return a230;
+  }
+});
+Object.defineProperty(exports, "a231", {
+  enumerable: true,
+  get: function () {
+    return a231;
+  }
+});
+Object.defineProperty(exports, "a232", {
+  enumerable: true,
+  get: function () {
+    return a232;
+  }
+});
+Object.defineProperty(exports, "a233", {
+  enumerable: true,
+  get: function () {
+    return a233;
+  }
+});
+Object.defineProperty(exports, "a234", {
+  enumerable: true,
+  get: function () {
+    return a234;
+  }
+});
+Object.defineProperty(exports, "a235", {
+  enumerable: true,
+  get: function () {
+    return a235;
+  }
+});
+Object.defineProperty(exports, "a236", {
+  enumerable: true,
+  get: function () {
+    return a236;
+  }
+});
+Object.defineProperty(exports, "a237", {
+  enumerable: true,
+  get: function () {
+    return a237;
+  }
+});
+Object.defineProperty(exports, "a238", {
+  enumerable: true,
+  get: function () {
+    return a238;
+  }
+});
+Object.defineProperty(exports, "a239", {
+  enumerable: true,
+  get: function () {
+    return a239;
+  }
+});
+Object.defineProperty(exports, "a240", {
+  enumerable: true,
+  get: function () {
+    return a240;
+  }
+});
+Object.defineProperty(exports, "a241", {
+  enumerable: true,
+  get: function () {
+    return a241;
+  }
+});
+Object.defineProperty(exports, "a242", {
+  enumerable: true,
+  get: function () {
+    return a242;
+  }
+});
+Object.defineProperty(exports, "a243", {
+  enumerable: true,
+  get: function () {
+    return a243;
+  }
+});
+Object.defineProperty(exports, "a244", {
+  enumerable: true,
+  get: function () {
+    return a244;
+  }
+});
+Object.defineProperty(exports, "a245", {
+  enumerable: true,
+  get: function () {
+    return a245;
+  }
+});
+Object.defineProperty(exports, "a246", {
+  enumerable: true,
+  get: function () {
+    return a246;
+  }
+});
+Object.defineProperty(exports, "a247", {
+  enumerable: true,
+  get: function () {
+    return a247;
+  }
+});
+Object.defineProperty(exports, "a248", {
+  enumerable: true,
+  get: function () {
+    return a248;
+  }
+});
+Object.defineProperty(exports, "a249", {
+  enumerable: true,
+  get: function () {
+    return a249;
+  }
 });
 const a000 = 0;
 const a001 = 1;
@@ -2221,265 +4366,20 @@ const a245 = 245;
 const a246 = 246;
 const a247 = 247;
 const a248 = 248;
-const a249 = 249;
-exports.a000 = a000;
-exports.a001 = a001;
-exports.a002 = a002;
-exports.a003 = a003;
-exports.a004 = a004;
-exports.a005 = a005;
-exports.a006 = a006;
-exports.a007 = a007;
-exports.a008 = a008;
-exports.a009 = a009;
-exports.a010 = a010;
-exports.a011 = a011;
-exports.a012 = a012;
-exports.a013 = a013;
-exports.a014 = a014;
-exports.a015 = a015;
-exports.a016 = a016;
-exports.a017 = a017;
-exports.a018 = a018;
-exports.a019 = a019;
-exports.a020 = a020;
-exports.a021 = a021;
-exports.a022 = a022;
-exports.a023 = a023;
-exports.a024 = a024;
-exports.a025 = a025;
-exports.a026 = a026;
-exports.a027 = a027;
-exports.a028 = a028;
-exports.a029 = a029;
-exports.a030 = a030;
-exports.a031 = a031;
-exports.a032 = a032;
-exports.a033 = a033;
-exports.a034 = a034;
-exports.a035 = a035;
-exports.a036 = a036;
-exports.a037 = a037;
-exports.a038 = a038;
-exports.a039 = a039;
-exports.a040 = a040;
-exports.a041 = a041;
-exports.a042 = a042;
-exports.a043 = a043;
-exports.a044 = a044;
-exports.a045 = a045;
-exports.a046 = a046;
-exports.a047 = a047;
-exports.a048 = a048;
-exports.a049 = a049;
-exports.a050 = a050;
-exports.a051 = a051;
-exports.a052 = a052;
-exports.a053 = a053;
-exports.a054 = a054;
-exports.a055 = a055;
-exports.a056 = a056;
-exports.a057 = a057;
-exports.a058 = a058;
-exports.a059 = a059;
-exports.a060 = a060;
-exports.a061 = a061;
-exports.a062 = a062;
-exports.a063 = a063;
-exports.a064 = a064;
-exports.a065 = a065;
-exports.a066 = a066;
-exports.a067 = a067;
-exports.a068 = a068;
-exports.a069 = a069;
-exports.a070 = a070;
-exports.a071 = a071;
-exports.a072 = a072;
-exports.a073 = a073;
-exports.a074 = a074;
-exports.a075 = a075;
-exports.a076 = a076;
-exports.a077 = a077;
-exports.a078 = a078;
-exports.a079 = a079;
-exports.a080 = a080;
-exports.a081 = a081;
-exports.a082 = a082;
-exports.a083 = a083;
-exports.a084 = a084;
-exports.a085 = a085;
-exports.a086 = a086;
-exports.a087 = a087;
-exports.a088 = a088;
-exports.a089 = a089;
-exports.a090 = a090;
-exports.a091 = a091;
-exports.a092 = a092;
-exports.a093 = a093;
-exports.a094 = a094;
-exports.a095 = a095;
-exports.a096 = a096;
-exports.a097 = a097;
-exports.a098 = a098;
-exports.a099 = a099;
-exports.a100 = a100;
-exports.a101 = a101;
-exports.a102 = a102;
-exports.a103 = a103;
-exports.a104 = a104;
-exports.a105 = a105;
-exports.a106 = a106;
-exports.a107 = a107;
-exports.a108 = a108;
-exports.a109 = a109;
-exports.a110 = a110;
-exports.a111 = a111;
-exports.a112 = a112;
-exports.a113 = a113;
-exports.a114 = a114;
-exports.a115 = a115;
-exports.a116 = a116;
-exports.a117 = a117;
-exports.a118 = a118;
-exports.a119 = a119;
-exports.a120 = a120;
-exports.a121 = a121;
-exports.a122 = a122;
-exports.a123 = a123;
-exports.a124 = a124;
-exports.a125 = a125;
-exports.a126 = a126;
-exports.a127 = a127;
-exports.a128 = a128;
-exports.a129 = a129;
-exports.a130 = a130;
-exports.a131 = a131;
-exports.a132 = a132;
-exports.a133 = a133;
-exports.a134 = a134;
-exports.a135 = a135;
-exports.a136 = a136;
-exports.a137 = a137;
-exports.a138 = a138;
-exports.a139 = a139;
-exports.a140 = a140;
-exports.a141 = a141;
-exports.a142 = a142;
-exports.a143 = a143;
-exports.a144 = a144;
-exports.a145 = a145;
-exports.a146 = a146;
-exports.a147 = a147;
-exports.a148 = a148;
-exports.a149 = a149;
-exports.a150 = a150;
-exports.a151 = a151;
-exports.a152 = a152;
-exports.a153 = a153;
-exports.a154 = a154;
-exports.a155 = a155;
-exports.a156 = a156;
-exports.a157 = a157;
-exports.a158 = a158;
-exports.a159 = a159;
-exports.a160 = a160;
-exports.a161 = a161;
-exports.a162 = a162;
-exports.a163 = a163;
-exports.a164 = a164;
-exports.a165 = a165;
-exports.a166 = a166;
-exports.a167 = a167;
-exports.a168 = a168;
-exports.a169 = a169;
-exports.a170 = a170;
-exports.a171 = a171;
-exports.a172 = a172;
-exports.a173 = a173;
-exports.a174 = a174;
-exports.a175 = a175;
-exports.a176 = a176;
-exports.a177 = a177;
-exports.a178 = a178;
-exports.a179 = a179;
-exports.a180 = a180;
-exports.a181 = a181;
-exports.a182 = a182;
-exports.a183 = a183;
-exports.a184 = a184;
-exports.a185 = a185;
-exports.a186 = a186;
-exports.a187 = a187;
-exports.a188 = a188;
-exports.a189 = a189;
-exports.a190 = a190;
-exports.a191 = a191;
-exports.a192 = a192;
-exports.a193 = a193;
-exports.a194 = a194;
-exports.a195 = a195;
-exports.a196 = a196;
-exports.a197 = a197;
-exports.a198 = a198;
-exports.a199 = a199;
-exports.a200 = a200;
-exports.a201 = a201;
-exports.a202 = a202;
-exports.a203 = a203;
-exports.a204 = a204;
-exports.a205 = a205;
-exports.a206 = a206;
-exports.a207 = a207;
-exports.a208 = a208;
-exports.a209 = a209;
-exports.a210 = a210;
-exports.a211 = a211;
-exports.a212 = a212;
-exports.a213 = a213;
-exports.a214 = a214;
-exports.a215 = a215;
-exports.a216 = a216;
-exports.a217 = a217;
-exports.a218 = a218;
-exports.a219 = a219;
-exports.a220 = a220;
-exports.a221 = a221;
-exports.a222 = a222;
-exports.a223 = a223;
-exports.a224 = a224;
-exports.a225 = a225;
-exports.a226 = a226;
-exports.a227 = a227;
-exports.a228 = a228;
-exports.a229 = a229;
-exports.a230 = a230;
-exports.a231 = a231;
-exports.a232 = a232;
-exports.a233 = a233;
-exports.a234 = a234;
-exports.a235 = a235;
-exports.a236 = a236;
-exports.a237 = a237;
-exports.a238 = a238;
-exports.a239 = a239;
-exports.a240 = a240;
-exports.a241 = a241;
-exports.a242 = a242;
-exports.a243 = a243;
-exports.a244 = a244;
-exports.a245 = a245;
-exports.a246 = a246;
-exports.a247 = a247;
-exports.a248 = a248;
-exports.a249 = a249;"
+const a249 = 249;"
 `;
 
 exports[`shadowed-namespace-import transformed-name 1`] = `
-"var e = _$$_IMPORT_ALL("mod");
-var t = _$$_IMPORT_DEFAULT("mod");
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _mod = require("mod");
+var t = _interopDefault(_mod);
 const foo = e => {
   return {
-    amount: t.format(1)
+    amount: t.default.format(1)
   };
 };"
 `;
@@ -2488,24 +4388,34 @@ exports[`strict export 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-function foo() {}
-exports.foo = foo;"
+exports.foo = foo;
+function foo() {}"
 `;
 
 exports[`strict export-1 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _default = foo;
-exports.default = _default;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+var _default = foo;"
 `;
 
 exports[`strict export-2 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var foo;
-exports.default = foo;"
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+var foo;"
 `;
 
 exports[`strict export-3 1`] = `""`;
@@ -2514,32 +4424,59 @@ exports[`strict export-all 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var _exportedNames = {
-  "c": true,
-  "z": true,
-  "a": true,
-  "b": true,
-  "d": true,
-  "e": true,
-  "f": true
-};
 Object.defineProperty(exports, "c", {
   enumerable: true,
   get: function () {
     return _mod.c;
   }
 });
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _ref;
+  }
+});
+Object.defineProperty(exports, "z", {
+  enumerable: true,
+  get: function () {
+    return z;
+  }
+});
+Object.defineProperty(exports, "a", {
+  enumerable: true,
+  get: function () {
+    return a;
+  }
+});
+exports.b = b;
+Object.defineProperty(exports, "d", {
+  enumerable: true,
+  get: function () {
+    return d;
+  }
+});
+Object.defineProperty(exports, "e", {
+  enumerable: true,
+  get: function () {
+    return e;
+  }
+});
+Object.defineProperty(exports, "f", {
+  enumerable: true,
+  get: function () {
+    return f;
+  }
+});
 var _mod = require('mod');
-Object.keys(_mod).forEach(function (_key) {
-  if (_key === "default" || _key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-  if (_key in exports && exports[_key] === _mod[_key]) return;
-  Object.defineProperty(exports, _key, {
-    enumerable: true,
-    get: function () {
-      return _mod[_key];
-    }
-  });
+Object.keys(_mod).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+    Object.defineProperty(exports, k, {
+      enumerable: true,
+      get: function () {
+        return _mod[k];
+      }
+    });
+  }
 });
 let z = 100;
 class a {}
@@ -2547,45 +4484,89 @@ function b() {}
 let d = 42;
 let e = 1,
   f = 2;
-function _default() {}
-exports.z = z;
-exports.a = a;
-exports.b = b;
-exports.d = d;
-exports.e = e;
-exports.f = f;
-exports.default = _default;"
+function _ref() {}"
 `;
 
 exports[`strict export-const-destructuring-array 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-const [foo, bar] = [];
-exports.foo = foo;
-exports.bar = bar;"
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+const [foo, bar] = [];"
 `;
 
 exports[`strict export-const-destructuring-array-default-params 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-const [foo, bar = 2] = [];
-exports.foo = foo;"
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+const [foo, bar = 2] = [];"
 `;
 
 exports[`strict export-const-destructuring-array-rest 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-const [foo, bar, ...baz] = [];
-exports.foo = foo;
-exports.bar = bar;
-exports.baz = baz;"
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+Object.defineProperty(exports, "baz", {
+  enumerable: true,
+  get: function () {
+    return baz;
+  }
+});
+const [foo, bar, ...baz] = [];"
 `;
 
 exports[`strict export-const-destructuring-deep 1`] = `
-"const {
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+Object.defineProperty(exports, "baz", {
+  enumerable: true,
+  get: function () {
+    return baz;
+  }
+});
+Object.defineProperty(exports, "qux", {
+  enumerable: true,
+  get: function () {
+    return qux;
+  }
+});
+const {
   foo: {
     bar: [baz, qux]
   }
@@ -2596,44 +4577,78 @@ exports[`strict export-const-destructuring-object 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+Object.defineProperty(exports, "baz", {
+  enumerable: true,
+  get: function () {
+    return baz;
+  }
+});
 const {
   foo: bar,
   baz
-} = {};
-exports.bar = bar;
-exports.baz = baz;"
+} = {};"
 `;
 
 exports[`strict export-const-destructuring-object-default-params 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
 const {
   foo,
   bar = 1
-} = {};
-exports.foo = foo;"
+} = {};"
 `;
 
 exports[`strict export-const-destructuring-object-rest 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
 const {
   foo,
   ...bar
-} = {};
-exports.foo = foo;
-exports.bar = bar;"
+} = {};"
 `;
 
 exports[`strict import 1`] = `
-"var _foo = require("foo");
-var foo4 = _$$_IMPORT_ALL("foo");
-var foo = _$$_IMPORT_DEFAULT("foo");
-var foo2 = _$$_IMPORT_DEFAULT("foo");
-foo;
-foo2;
+"function _interopDefault(e) {
+  return e && e.__esModule ? e : {
+    default: e
+  };
+}
+var _foo = require("foo");
+var foo = _interopDefault(_foo);
+foo.default;
+foo.default;
 _foo.foo3;
 _foo.foo3();
 _foo.foo3\`\`;
@@ -2641,7 +4656,17 @@ _foo.foo3?.();"
 `;
 
 exports[`strict import-wildcard 1`] = `
-"var foo = _$$_IMPORT_ALL('foo');
+"function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = {};
+  if (e) Object.keys(e).forEach(function (k) {
+    n[k] = e[k];
+  });
+  n.default = e;
+  return n;
+}
+var _foo = require('foo');
+var foo = _interopNamespace(_foo);
 foo.bar();
 foo.baz();"
 `;
@@ -2649,6 +4674,42 @@ foo.baz();"
 exports[`update-expression bigint 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
+});
+Object.defineProperty(exports, "foo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "bar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+Object.defineProperty(exports, "baz", {
+  enumerable: true,
+  get: function () {
+    return baz;
+  }
+});
+Object.defineProperty(exports, "foofoo", {
+  enumerable: true,
+  get: function () {
+    return foo;
+  }
+});
+Object.defineProperty(exports, "barbar", {
+  enumerable: true,
+  get: function () {
+    return bar;
+  }
+});
+Object.defineProperty(exports, "bazbaz", {
+  enumerable: true,
+  get: function () {
+    return baz;
+  }
 });
 let foo = 1n;
 let bar = foo++;
@@ -2658,39 +4719,43 @@ expect(bar).toBe(2n);
 expect(baz).toBe(2n);
 --foo;
 bar--;
-baz--;
-exports.foo = foo;
-exports.bar = bar;
-exports.baz = baz;
-exports.foofoo = foo;
-exports.barbar = bar;
-exports.bazbaz = baz;"
+baz--;"
 `;
 
 exports[`update-expression negative-suffix 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "diffLevel", {
+  enumerable: true,
+  get: function () {
+    return diffLevel;
+  }
+});
+exports.diff = diff;
 let diffLevel = 0;
 function diff() {
   if (! --diffLevel) {
     console.log("hey");
   }
-}
-exports.diffLevel = diffLevel;
-exports.diff = diff;"
+}"
 `;
 
 exports[`update-expression positive-suffix 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
+Object.defineProperty(exports, "diffLevel", {
+  enumerable: true,
+  get: function () {
+    return diffLevel;
+  }
+});
+exports.diff = diff;
 let diffLevel = 0;
 function diff() {
   if (!++diffLevel) {
     console.log("hey");
   }
-}
-exports.diffLevel = diffLevel;
-exports.diff = diff;"
+}"
 `;
