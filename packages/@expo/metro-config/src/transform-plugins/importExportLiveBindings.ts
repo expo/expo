@@ -22,6 +22,7 @@ export interface Options {
 }
 
 type ModuleRequest = t.StringLiteral;
+type ModuleSource = string;
 type ID = string;
 
 const enum ImportDeclarationKind {
@@ -64,7 +65,7 @@ interface ExportDeclaration {
 interface State {
   readonly opts: Options;
 
-  importSpecifiers: Map<ModuleRequest, ModuleSpecifiers>;
+  importSpecifiers: Map<ModuleSource, ModuleSpecifiers>;
 
   /** Identifiers referencing import specifiers that should be rewritten (ID/key will be replaced) */
   inlineBodyRefs: Map<ID, InlineRef>;
@@ -86,10 +87,10 @@ export function importExportLiveBindingsPlugin({
   types: t,
 }: ConfigAPI & typeof import('@babel/core')): PluginObj<State> {
   const addModuleSpecifiers = (state: State, source: ModuleRequest): ModuleSpecifiers => {
-    let moduleSpecifiers = state.importSpecifiers.get(source);
+    let moduleSpecifiers = state.importSpecifiers.get(source.value);
     if (!moduleSpecifiers) {
       moduleSpecifiers = Object.create(null) as ModuleSpecifiers;
-      state.importSpecifiers.set(source, moduleSpecifiers);
+      state.importSpecifiers.set(source.value, moduleSpecifiers);
     }
     return moduleSpecifiers;
   };
@@ -256,10 +257,7 @@ export function importExportLiveBindingsPlugin({
         } else {
           localId = path.scope.generateUid('_default');
           path.replaceWith(
-            withLocation(
-              varDeclaratorHelper(t, localId, path.node.declaration),
-              path.node.loc
-            )
+            withLocation(varDeclaratorHelper(t, localId, path.node.declaration), path.node.loc)
           );
         }
         state.exportDeclarations.push({
