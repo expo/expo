@@ -1,0 +1,3 @@
+{
+  "throws": "Export namespace should be first transformed by `@babel/plugin-transform-export-namespace-from`."
+}

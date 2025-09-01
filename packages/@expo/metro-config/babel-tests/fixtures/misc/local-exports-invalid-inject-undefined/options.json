@@ -1,0 +1,5 @@
+{
+  "sourceType": "module",
+  "plugins": ["./plugin.js", "transform-modules-commonjs"],
+  "throws": "Exporting local \"invalid\", which is not declared. (This is an error on an internal node. Probably an internal error.)"
+}

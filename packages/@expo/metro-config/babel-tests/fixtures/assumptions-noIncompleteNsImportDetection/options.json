@@ -1,0 +1,6 @@
+{
+  "assumptions": {
+    "noIncompleteNsImportDetection": true
+  },
+  "plugins": ["transform-modules-commonjs"]
+}

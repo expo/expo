@@ -1,0 +1,3 @@
+{
+  "presets": [["env", { "targets": { "browsers": "ie 6" } }]]
+}

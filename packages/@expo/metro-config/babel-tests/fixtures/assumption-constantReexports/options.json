@@ -1,0 +1,6 @@
+{
+  "assumptions": {
+    "constantReexports": true
+  },
+  "plugins": ["transform-modules-commonjs"]
+}

@@ -1,0 +1,8 @@
+{
+  "externalHelpers": true,
+  "plugins": [
+    "transform-modules-commonjs",
+    "transform-function-name",
+    "transform-classes"
+  ]
+}
