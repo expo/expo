@@ -7,14 +7,14 @@ import ContactsListItem from './ContactsListItem';
 type Props = {
   onPressItem: (id: string) => void;
   style?: StyleProp<ViewStyle>;
-  data: Contacts.Contact[];
+  data: Contacts.ExistingContact[];
 } & Pick<
-  FlatListProps<Contacts.Contact>,
-  Exclude<keyof FlatListProps<Contacts.Contact>, 'renderItem' | 'keyExtractor' | 'data'>
+  FlatListProps<Contacts.ExistingContact>,
+  Exclude<keyof FlatListProps<Contacts.ExistingContact>, 'renderItem' | 'keyExtractor' | 'data'>
 >;
 
 export default function ContactsList({ data, style, onPressItem, ...props }: Props) {
-  const renderItem: ListRenderItem<Contacts.Contact> = React.useCallback(
+  const renderItem: ListRenderItem<Contacts.ExistingContact> = React.useCallback(
     ({ item }) => (
       <ContactsListItem
         key={item.id}
@@ -27,7 +27,7 @@ export default function ContactsList({ data, style, onPressItem, ...props }: Pro
   );
 
   return (
-    <FlatList<Contacts.Contact>
+    <FlatList<Contacts.ExistingContact>
       {...props}
       style={[{ flex: 1 }, style]}
       keyExtractor={(item) => item.id!}
