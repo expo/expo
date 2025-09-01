@@ -7,18 +7,21 @@ import { type CommonViewModifierProps } from '../types';
 export type HostProps = {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
+   * You can only set it once
    * @default false
    */
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
 
   /**
    * When true, the host view will update its vertical size in the React Native view tree to match the content's layout from SwiftUI.
+   * You can only set it once
    * @default false
    */
   matchContentsVertical?: boolean;
 
   /**
    * When true, the host view will update its horizontal size in the React Native view tree to match the content's layout from SwiftUI.
+   * You can only set it once
    * @default false
    */
   matchContentsHorizontal?: boolean;
@@ -77,7 +80,7 @@ export function Host(props: HostProps) {
       }}
       {...restProps}
       // @ts-expect-error
-      measureableNode
+      measureableNode={matchContentsVerticalProp || matchContentsHorizontalProp}
     />
   );
 }

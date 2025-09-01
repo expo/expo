@@ -14,6 +14,6 @@ export function Host(props) {
             onLayoutContent?.(e);
         }} {...restProps} 
     // @ts-expect-error
-    measureableNode/>);
+    measureableNode={matchContentsVerticalProp || matchContentsHorizontalProp}/>);
 }
 //# sourceMappingURL=index.js.map
