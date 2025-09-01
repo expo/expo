@@ -238,8 +238,8 @@ export type Image = {
     base64?: string;
 };
 /**
- * Base contact type with optional ID. For better type safety, consider using:
- * - `NewContact` when creating new contacts
+ * Base contact type. For better type safety, consider using:
+ * - `Contact` when creating new contacts
  * - `ExistingContact` when working with contacts returned from the system
  */
 export type Contact = {
