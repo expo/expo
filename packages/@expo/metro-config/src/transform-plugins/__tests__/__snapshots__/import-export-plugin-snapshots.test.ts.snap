@@ -1270,7 +1270,39 @@ const {
 } = local.default;"
 `;
 
-exports[`with live bindings 58. export destructured array from imported namespace by specifier 1`] = `
+exports[`with live bindings 58. export nested destructured object w/ rest from import specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+Object.defineProperty(exports, "a", {
+  enumerable: true,
+  get: function () {
+    return a;
+  }
+});
+Object.defineProperty(exports, "b", {
+  enumerable: true,
+  get: function () {
+    return b;
+  }
+});
+Object.defineProperty(exports, "rest", {
+  enumerable: true,
+  get: function () {
+    return rest;
+  }
+});
+var _appleIcons = require('apple-icons');
+const {
+  a,
+  _b: {
+    b,
+    ...rest
+  }
+} = _appleIcons.test;"
+`;
+
+exports[`with live bindings 59. export destructured array from imported namespace by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1300,7 +1332,7 @@ var AppleIcons = _interopNamespace(_appleIcons);
 const [a, b] = AppleIcons;"
 `;
 
-exports[`with live bindings 59. export destructured array from import default 1`] = `
+exports[`with live bindings 60. export destructured array from import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1326,7 +1358,7 @@ var AppleIcons = _interopDefault(_appleIcons);
 const [a, b] = AppleIcons.default;"
 `;
 
-exports[`with live bindings 60. export destructured array from import specifier 1`] = `
+exports[`with live bindings 61. export destructured array from import specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1346,7 +1378,7 @@ var _appleIcons = require('apple-icons');
 const [a, b] = _appleIcons.test;"
 `;
 
-exports[`with live bindings 61. export destructured array from import specifier as local 1`] = `
+exports[`with live bindings 62. export destructured array from import specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1366,7 +1398,7 @@ var _appleIcons = require('apple-icons');
 const [a, b] = _appleIcons.test;"
 `;
 
-exports[`with live bindings 62. export destructured array from import default specifier as local 1`] = `
+exports[`with live bindings 63. export destructured array from import default specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1392,7 +1424,7 @@ var local = _interopDefault(_appleIcons);
 const [a, b] = local.default;"
 `;
 
-exports[`with live bindings 63. import side effect 1`] = `"require('apple-icons');"`;
+exports[`with live bindings 64. import side effect 1`] = `"require('apple-icons');"`;
 
 exports[`without live bindings 1. export namespace by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
@@ -1964,7 +1996,22 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings 58. export destructured array from imported namespace by specifier 1`] = `
+exports[`without live bindings 58. export nested destructured object w/ rest from import specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var test = require('apple-icons').test;
+const {
+  a,
+  _b: {
+    b,
+    ...rest
+  }
+} = test;
+exports.a = a;"
+`;
+
+exports[`without live bindings 59. export destructured array from imported namespace by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1974,7 +2021,7 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings 59. export destructured array from import default 1`] = `
+exports[`without live bindings 60. export destructured array from import default 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1984,7 +2031,7 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings 60. export destructured array from import specifier 1`] = `
+exports[`without live bindings 61. export destructured array from import specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -1994,7 +2041,7 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings 61. export destructured array from import specifier as local 1`] = `
+exports[`without live bindings 62. export destructured array from import specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -2004,7 +2051,7 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings 62. export destructured array from import default specifier as local 1`] = `
+exports[`without live bindings 63. export destructured array from import default specifier as local 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
@@ -2014,4 +2061,4 @@ exports.a = a;
 exports.b = b;"
 `;
 
-exports[`without live bindings 63. import side effect 1`] = `"require('apple-icons');"`;
+exports[`without live bindings 64. import side effect 1`] = `"require('apple-icons');"`;
