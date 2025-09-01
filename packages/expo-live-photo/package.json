@@ -1,7 +1,7 @@
 {
   "name": "expo-live-photo",
   "title": "Expo Video",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Library, which makes it possible to display live photos on iOS",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -39,7 +39,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^5.0.5"
+    "expo-module-scripts": "^5.0.6"
   },
   "peerDependencies": {
     "expo": "*",

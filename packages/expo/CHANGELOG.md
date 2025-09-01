@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Add support for React Native Factory when extending ExpoAppDelegate on macOS. ([#35061](https://github.com/expo/expo/pull/35061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 54.0.0-preview.12 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
 
 ## 54.0.0-preview.11 — 2025-08-28
 
