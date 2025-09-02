@@ -521,7 +521,11 @@ export function importExportLiveBindingsPlugin({
             const local = moduleSpecifiers[importDeclaration.kind];
             if (!local || !state.referencedLocals.has(local)) {
               // Don't add imports that aren't referenced, unless they're required for a side-effect
-              if (moduleSpecifiers.sideEffect) {
+              // We check for REQUIRE, to make sure we only ever add a single side-effect require
+              if (
+                importDeclaration.kind === ImportDeclarationKind.REQUIRE &&
+                moduleSpecifiers.sideEffect
+              ) {
                 esmStatements.push(
                   withLocation(sideEffectRequireCall(t, source), importDeclaration.loc)
                 );
