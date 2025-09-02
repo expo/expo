@@ -10,6 +10,11 @@ protocol AnyEither: AnyArgument {
    An array of dynamic equivalents for generic either types.
    */
   static func dynamicTypes() -> [AnyDynamicType]
+
+  /**
+   A dynamic either type for the current either type.
+   */
+  static func getDynamicType() -> any AnyDynamicType
 }
 
 /*

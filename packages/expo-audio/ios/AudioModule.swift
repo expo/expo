@@ -21,9 +21,9 @@ public class AudioModule: Module {
       self.appContext?.permissions?.register([
         AudioRecordingRequester()
       ])
+      #endif
 
       setupInterruptionHandling()
-      #endif
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
@@ -77,12 +77,15 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool) -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         player.owningRegistry = self.registry
+        player.keepAudioSessionActive = keepAudioSessionActive
         player.onPlaybackComplete = { [weak self] in
-          self?.deactivateSession()
+          if !keepAudioSessionActive {
+            self?.deactivateSession()
+          }
         }
         self.registry.add(player)
         return player
@@ -135,7 +138,11 @@ public class AudioModule: Module {
       }
 
       Property("playbackRate") { player in
-        player.ref.rate
+        return if player.isPlaying {
+          player.ref.rate
+        } else {
+          player.currentRate
+        }
       }
 
       Property("paused") { player in
@@ -160,8 +167,12 @@ public class AudioModule: Module {
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        player.ref.rate = playerRate
         player.currentRate = playerRate
+
+        if player.isPlaying {
+          player.ref.rate = playerRate
+        }
+
         if player.shouldCorrectPitch {
           player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .varispeed
           player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
@@ -174,7 +185,9 @@ public class AudioModule: Module {
 
       Function("pause") { player in
         player.ref.pause()
-        deactivateSession()
+        if !player.keepAudioSessionActive {
+          deactivateSession()
+        }
       }
 
       Function("remove") { player in
@@ -230,9 +243,29 @@ public class AudioModule: Module {
         try recorder.prepare(options: options, sessionOptions: sessionOptions)
       }
 
-      Function("record") { (recorder: AudioRecorder) -> [String: Any] in
+      Function("record") { (recorder: AudioRecorder, options: RecordOptions?) in
         try checkPermissions()
-        return try recorder.startRecording()
+
+        switch (options?.atTime, options?.forDuration) {
+        case let (atTime?, forDuration?):
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime, forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case let (atTime?, nil):
+          // Convert relative delay to absolute device time
+          let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
+          recorder.ref.record(atTime: absoluteTime)
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case let (nil, forDuration?):
+          recorder.ref.record(forDuration: TimeInterval(forDuration))
+          recorder.updateStateForDirectRecording()
+          return recorder.getRecordingStatus()
+        case (nil, nil):
+          return try recorder.startRecording()
+        }
       }
 
       Function("pause") { recorder in

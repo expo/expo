@@ -233,7 +233,7 @@ public final class ImageModule: Module {
 
   func generatePlaceholder(
     source: Either<Image, URL>,
-    generator: @escaping (UIImage) -> Void,
+    generator: @escaping (UIImage) -> Void
   ) {
     if let image: Image = source.get() {
       generator(image.ref)

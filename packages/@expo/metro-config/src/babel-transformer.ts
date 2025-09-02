@@ -7,7 +7,7 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
+import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import assert from 'node:assert';
 
 import type { TransformOptions } from './babel-core';
@@ -15,6 +15,7 @@ import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
+  babelRuntimeVersion?: string;
   metroSourceType?: 'script' | 'module' | 'asset';
   supportsReactCompiler?: boolean;
   isReactServer?: boolean;
@@ -128,6 +129,12 @@ function getBabelCaller({
     supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)
       ? true
       : undefined,
+
+    // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
+    // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
+    // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
+    babelRuntimeVersion:
+      typeof options.enableBabelRuntime === 'string' ? options.enableBabelRuntime : undefined,
   };
 }
 

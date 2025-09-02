@@ -14,18 +14,21 @@ public class PushTokenModule: Module, NotificationDelegate {
 
     Events([onDevicePushTokenEventName])
 
-    OnStartObserving(onDevicePushTokenEventName) {
+    OnCreate {
       NotificationCenterManager.shared.addDelegate(self)
     }
 
-    OnStopObserving(onDevicePushTokenEventName) {
+    OnDestroy {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
     AsyncFunction("getDevicePushTokenAsync") { (promise: Promise) in
-      if promiseNotYetResolved != nil {
-        promise.reject("E_AWAIT_PROMISE", "Another async call to getDevicePushTokenAsync() is in progress. Await the first Promise.")
-        return
+      if let existingPromise = promiseNotYetResolved {
+        let message = """
+A newer async call to getDevicePushTokenAsync() was started.
+To obtain the push token, await the result of the newer call.
+"""
+        existingPromise.reject("E_PROMISE_REPLACED", message)
       }
       promiseNotYetResolved = promise
       UIApplication.shared.registerForRemoteNotifications()

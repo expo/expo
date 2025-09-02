@@ -1,7 +1,7 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, NodePath, types } from '@babel/core';
+import type { ConfigAPI, PluginObj, NodePath } from '@babel/core';
 
 import { getIsReactServer } from './common';
 
@@ -10,8 +10,8 @@ const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
 
 /** Prevent importing certain known imports in given environments. This is for sanity to ensure a module never accidentally gets imported unexpectedly. */
 export function environmentRestrictedImportsPlugin(
-  api: ConfigAPI & { types: typeof types }
-): babel.PluginObj {
+  api: ConfigAPI & typeof import('@babel/core')
+): PluginObj {
   const { types: t } = api;
 
   const isReactServer = api.caller(getIsReactServer);

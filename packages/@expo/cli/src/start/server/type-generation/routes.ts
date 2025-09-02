@@ -1,5 +1,5 @@
+import type Server from '@expo/metro/metro/Server';
 import fs from 'fs/promises';
-import { Server } from 'metro';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 

@@ -6,16 +6,65 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.8 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.7 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.5 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.4 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.3 — 2025-08-18
+
+### 💡 Others
+
+- [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+
+## 6.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- [ios] Fix tvOS and Swiftlint after UI refresh. ([#38808](https://github.com/expo/expo/pull/38808) by [@douglowder](https://github.com/douglowder))
+
+## 6.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - [iOS] Reimplement UI in SwiftUI. ([#37413](https://github.com/expo/expo/pull/37413) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Add floating action button option in the settings menu. ([#38247](https://github.com/expo/expo/pull/38247) by [@behenate](https://github.com/behenate))
+- [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Use same strings in UI as iOS. ([#37786](https://github.com/expo/expo/pull/37786) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix an issue where the packager commands stop working after a reload. ([#38579](https://github.com/expo/expo/pull/38579) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
+- [Android] RN 0.81.0: patched some reflection issues after kotlin upgrade ([#38451](https://github.com/expo/expo/pull/38451) by [@chrfalch](https://github.com/chrfalch))
 - Fixed release build error on Android. ([#37579](https://github.com/expo/expo/pull/37579) by [@kudo](https://github.com/kudo))
+- Informational message for tvOS on signin page. ([#38518](https://github.com/expo/expo/pull/38518) by [@douglowder](https://github.com/douglowder))
 
 ### ⚠️ Notices
 

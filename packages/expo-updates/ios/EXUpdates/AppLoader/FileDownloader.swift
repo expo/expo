@@ -11,6 +11,7 @@ import EASClient
 
 public typealias SuccessBlock = (_ data: Data?, _ urlResponse: URLResponse) -> Void
 public typealias ErrorBlock = (_ error: UpdatesError) -> Void
+public typealias FileDownloadProgressBlock = (_ fractionCompleted: Double) -> Void
 public typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
 
 internal typealias RemoteUpdateDownloadSuccessBlock = (_ updateResponse: UpdateResponse) -> Void
@@ -91,12 +92,14 @@ public final class FileDownloader {
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
     extraHeaders: [String: Any],
+    progressBlock: FileDownloadProgressBlock? = nil,
     successBlock: @escaping HashSuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
     downloadData(
       fromURL: url,
-      extraHeaders: extraHeaders
+      extraHeaders: extraHeaders,
+      progressBlock: progressBlock
     ) { data, response in
       guard let data = data else {
         let error = UpdatesError.fileDownloaderAssetDownloadEmptyResponse(url: url)
@@ -137,11 +140,12 @@ public final class FileDownloader {
   func downloadData(
     fromURL url: URL,
     extraHeaders: [String: Any],
+    progressBlock: FileDownloadProgressBlock?,
     successBlock: @escaping SuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
     let request = createGenericRequest(withURL: url, extraHeaders: extraHeaders)
-    downloadData(withRequest: request, successBlock: successBlock, errorBlock: errorBlock)
+    downloadData(withRequest: request, progressBlock: progressBlock, successBlock: successBlock, errorBlock: errorBlock)
   }
 
   func downloadRemoteUpdate(
@@ -153,7 +157,8 @@ public final class FileDownloader {
   ) {
     let request = createManifestRequest(withURL: url, extraHeaders: extraHeaders)
     downloadData(
-      withRequest: request
+      withRequest: request,
+      progressBlock: nil
     ) { data, response in
       guard let response = response as? HTTPURLResponse else {
         let error = UpdatesError.fileDownloaderResponseNotHTTPURLResponse
@@ -368,10 +373,11 @@ public final class FileDownloader {
     let contentType = httpResponse.value(forHTTPHeaderField: "content-type") ?? ""
 
     if contentType.lowercased().hasPrefix("multipart/") {
-      guard let contentTypeParameters = EXUpdatesParameterParser().parseParameterString(
-        contentType,
-        withDelimiter: FileDownloader.ParameterParserSemicolonDelimiter
-      ) as? [String: Any],
+      guard let scalar = UnicodeScalar(FileDownloader.ParameterParserSemicolonDelimiter) else {
+        return
+      }
+      let contentTypeParameters = UpdatesParameterParser().parseParameterString(contentType, withDelimiter: Character(scalar))
+      guard
         let boundaryParameterValue: String = contentTypeParameters.optionalValue(forKey: "boundary") else {
         let cause = UpdatesError.fileDownloaderMissingMultipartBoundary
         logger.error(cause: cause, code: UpdatesErrorCode.unknown)
@@ -420,7 +426,7 @@ public final class FileDownloader {
     successBlock: @escaping RemoteUpdateDownloadSuccessBlock,
     errorBlock: @escaping RemoteUpdateDownloadErrorBlock
   ) {
-    let reader = EXUpdatesMultipartStreamReader(inputStream: InputStream(data: data), boundary: boundary)
+    let reader = UpdatesMultipartStreamReader(inputStream: InputStream(data: data), boundary: boundary)
 
     var manifestPartHeadersAndData: ([String: Any], Data)?
     var extensionsData: Data?
@@ -428,19 +434,23 @@ public final class FileDownloader {
     var directivePartHeadersAndData: ([String: Any], Data)?
 
     let completed = data.isEmpty || reader.readAllParts { headers, content, _ in
-      if let contentDisposition = (headers as! [String: Any]).stringValueForCaseInsensitiveKey("content-disposition") {
-        if let contentDispositionParameters = EXUpdatesParameterParser().parseParameterString(
-          contentDisposition,
-          withDelimiter: FileDownloader.ParameterParserSemicolonDelimiter
-        ) as? [String: Any],
+      guard let headers else {
+        return
+      }
+      if let contentDisposition = headers.stringValueForCaseInsensitiveKey("content-disposition") {
+        guard let scalar = UnicodeScalar(FileDownloader.ParameterParserSemicolonDelimiter) else {
+          return
+        }
+        let contentDispositionParameters = UpdatesParameterParser().parseParameterString(contentDisposition, withDelimiter: Character(scalar))
+        if
           let contentDispositionNameFieldValue: String = contentDispositionParameters.optionalValue(forKey: "name") {
           switch contentDispositionNameFieldValue {
           case FileDownloader.MultipartManifestPartName:
-            if let headers = headers as? [String: Any], let content = content {
+            if let content {
               manifestPartHeadersAndData = (headers, content)
             }
           case FileDownloader.MultipartDirectivePartName:
-            if let headers = headers as? [String: Any], let content = content {
+            if let content {
               directivePartHeadersAndData = (headers, content)
             }
           case FileDownloader.MultipartExtensionsPartName:
@@ -805,13 +815,17 @@ public final class FileDownloader {
 
   private func downloadData(
     withRequest request: URLRequest,
+    progressBlock: FileDownloadProgressBlock?,
     successBlock: @escaping SuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
+    var progressObservation: NSKeyValueObservation?
     let task = session.dataTask(with: request) { data, response, error in
+      // cleanup observer when task completes
+      if progressObservation != nil {
+        progressObservation?.invalidate()
+      }
       guard let response = response else {
-        // error is non-nil when data and response are both nil
-        // swiftlint:disable:next force_unwrapping
         let cause = UpdatesError.fileDownloaderUnknownError(cause: error!)
         self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
@@ -832,6 +846,15 @@ public final class FileDownloader {
 
       successBlock(data, response)
     }
+
+    if let progressBlock = progressBlock {
+      progressObservation = task.progress.observe(\.fractionCompleted) { progress, _ in
+        if !progress.isIndeterminate {
+          progressBlock(progress.fractionCompleted)
+        }
+      }
+    }
+
     task.resume()
   }
 

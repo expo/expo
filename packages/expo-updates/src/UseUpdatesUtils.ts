@@ -74,6 +74,7 @@ export const updatesStateFromContext: (
     downloadedUpdate,
     checkError: context.checkError,
     downloadError: context.downloadError,
+    downloadProgress: context.downloadProgress,
     lastCheckForUpdateTimeSinceRestart: context.lastCheckForUpdateTime,
   };
 };

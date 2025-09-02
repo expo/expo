@@ -350,25 +350,33 @@ internal struct ImageUtils {
   }
 
   /*
-   * Extracts the pixel dimensions from an image file.
-   * This method efficiently reads metadata without loading the entire image into memory.
+   * Extracts the visual dimensions from an image file, accounting for EXIF orientation.
+   * This ensures portrait images return portrait dimensions (height > width).
    * @param url The file URL of the image to analyze
-   * @return A CGSize containing the width and height, or nil if the dimensions cannot be determined
+   * @return A CGSize containing the visual width and height, or nil if the dimensions cannot be determined
    */
-  static func readSizeFrom(url: URL) -> CGSize? {
-    // First, try to fetch the dimensions from the image metadata as this is the fastest way
-    if let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
+  static func readVisualSizeFrom(url: URL) -> CGSize? {
+    // Try to fetch the dimensions from the image metadata as this is the fastest way
+    guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
       let properties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
       let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
-      let height = properties[kCGImagePropertyPixelHeight] as? CGFloat {
-      return CGSize(width: width, height: height)
+      let height = properties[kCGImagePropertyPixelHeight] as? CGFloat else {
+      // Fallback: minimally decode the image using UIImage when metadata is not available
+      if let img = UIImage(contentsOfFile: url.path) {
+        return CGSize(width: img.size.width, height: img.size.height)
+      }
+      return nil
     }
 
-    // Fallback: minimally decode the image using UIImage when metadata is not available
-    if let img = UIImage(contentsOfFile: url.path) {
-      return CGSize(width: img.size.width, height: img.size.height)
+    // Check EXIF orientation to determine if dimensions should be swapped
+    let orientation = properties[kCGImagePropertyOrientation] as? Int ?? 1
+
+    // Orientations 5,6,7,8 (left/right rotated) need dimension swapping
+    if orientation >= 5 && orientation <= 8 {
+      return CGSize(width: height, height: width) // Swap for portrait
     }
 
-    return nil
+    // Keep as is for landscape
+    return CGSize(width: width, height: height)
   }
 }

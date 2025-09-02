@@ -16,7 +16,6 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,7 +31,8 @@ data class TextInputProps(
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
-  val autoCapitalize: MutableState<String> = mutableStateOf("none")
+  val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -66,14 +66,22 @@ class TextInputView(context: Context, appContext: AppContext) :
   override val props = TextInputProps()
   private val onValueChanged by EventDispatcher()
 
+  private val textState = mutableStateOf<String?>(null)
+
+  var text: String?
+    get() = textState.value
+    set(value) {
+      textState.value = value
+      onValueChanged(mapOf("value" to (value ?: "")))
+    }
+
   @Composable
   override fun Content(modifier: Modifier) {
-    var value by remember { props.defaultValue }
     AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
       TextField(
-        value = value,
+        value = requireNotNull(textState.value),
         onValueChange = {
-          value = it
+          textState.value = it
           onValueChanged(mapOf("value" to it))
         },
         placeholder = { Text(props.placeholder.value) },
@@ -83,7 +91,8 @@ class TextInputView(context: Context, appContext: AppContext) :
           keyboardType = props.keyboardType.value.keyboardType(),
           autoCorrectEnabled = props.autocorrection.value,
           capitalization = props.autoCapitalize.value.autoCapitalize()
-        )
+        ),
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
       )
     }
   }

@@ -1,3 +1,4 @@
+import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -5,7 +6,7 @@ import { store } from '../global-state/router-store';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
-import { act, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 /**
  * anchor sets the "default" screen for a navigator, with the functionality changing per navigator
@@ -125,7 +126,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -135,7 +136,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+          routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
@@ -215,7 +216,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -225,7 +226,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+          routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),

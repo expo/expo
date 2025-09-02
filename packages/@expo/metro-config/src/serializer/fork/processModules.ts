@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { Module } from 'metro';
+import type { Module } from '@expo/metro/metro/DeltaBundler';
 
 import { isJsModule, wrapModule } from './js';
 

@@ -20,7 +20,7 @@ const ModalsRenderer = ({ children, modalConfigs, onDismissed, onShow, }) => {
                 hidden: true,
             }} contentStyle={[
                 {
-                    flex: 1,
+                    flex: config.presentationStyle !== 'formSheet' ? 1 : undefined,
                     backgroundColor: config.transparent ? 'transparent' : 'white',
                 },
                 config.viewProps?.style,

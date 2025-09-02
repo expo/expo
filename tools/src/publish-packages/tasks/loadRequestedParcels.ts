@@ -25,7 +25,7 @@ export const loadRequestedParcels = new Task<TaskArgs>(
 
     const allPackages = await runWithSpinner(
       'Loading requested workspace packages',
-      () => getListOfPackagesAsync(),
+      async () => await getListOfPackagesAsync(),
       'Loaded requested workspace packages'
     );
 
@@ -45,6 +45,11 @@ export const loadRequestedParcels = new Task<TaskArgs>(
     const filteredPackages = allPackages.filter((pkg) => {
       const isPrivate = pkg.packageJson.private;
       const isIncluded = packageNames.length === 0 || packageNames.includes(pkg.packageName);
+      const isTemplate = pkg.isTemplate();
+      if (options.templatesOnly) {
+        // Only include templates when the flag is on
+        return !isPrivate && isIncluded && isTemplate;
+      }
       return !isPrivate && isIncluded;
     });
 
@@ -60,7 +65,7 @@ export const loadRequestedParcels = new Task<TaskArgs>(
 
         // Include dependencies if only some specific packages were requested.
         const dependenciesParcels =
-          options.deps && packageNames.length > 0
+          options.deps && !options.templatesOnly && packageNames.length > 0
             ? await createParcelsForDependenciesOf(requestedParcels)
             : new Set<Parcel>();
 

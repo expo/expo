@@ -1,8 +1,8 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions } from './Audio.types';
+import { AudioMode, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
-    constructor(source: AudioSource, interval: number);
+    constructor(source: AudioSource, options?: AudioPlayerOptions);
     id: number;
     isAudioSamplingSupported: boolean;
     isBuffering: boolean;
@@ -12,6 +12,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private interval;
     private isPlaying;
     private loaded;
+    private crossOrigin?;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
@@ -47,9 +48,10 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     private mediaRecorderIsRecording;
     private timeoutIds;
     get isRecording(): boolean;
-    record(): void;
+    record(options?: RecordingStartOptions): void;
+    private startActualRecording;
     getAvailableInputs(): RecordingInput[];
-    getCurrentInput(): RecordingInput;
+    getCurrentInput(): Promise<RecordingInput>;
     prepareToRecordAsync(): Promise<void>;
     getStatus(): RecorderState;
     pause(): void;

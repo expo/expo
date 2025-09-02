@@ -2,6 +2,7 @@
 package versioned.host.exp.exponent
 
 import android.content.Context
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -16,7 +17,6 @@ import com.reactnativecommunity.webview.RNCWebViewPackage
 import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.rnmaps.maps.MapsPackage
-import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
@@ -172,6 +172,7 @@ class ExponentPackage : ReactPackage {
       viewManagers,
       listOf(
         SvgPackage(),
+        LottiePackage(),
         MapsPackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),
@@ -184,7 +185,6 @@ class ExponentPackage : ReactPackage {
         SafeAreaContextPackage(),
         stripePackage,
         skiaPackage,
-        ReactNativeFlashListPackage(),
         KeyboardControllerPackage()
       )
     )

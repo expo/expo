@@ -180,7 +180,7 @@ Think of these functions like React Server Functions, but instead of residing on
 
 ## Passing refs
 
-> **warning** **Warning:** This is experimental and may change in the future.
+> **important** This is experimental and may change in the future.
 
 You can use the `useDOMImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
 
@@ -292,7 +292,7 @@ const IS_DOM = typeof ReactNativeWebView !== 'undefined';
 
 ## Public assets
 
-> **warning** **Warning:** This is experimental and may change in the future. Public assets are not supported in EAS Update. Use `require()` to load local assets instead.
+> **important** **Warning:** This is experimental and may change in the future. Public assets are not supported in EAS Update. Use `require()` to load local assets instead.
 
 The contents of the root **public** directory are copied to the native app's binary to support the use of public assets in DOM components. Since these public assets will be served from the local filesystem, use the `process.env.EXPO_BASE_URL` prefix to reference the correct path. For example:
 

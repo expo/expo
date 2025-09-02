@@ -185,14 +185,14 @@ private fun injectLocalBundleLoader(
     // [0] Disable `mAllowPackagerServerAccess`
     // so that ReactHost could use jsBundlerLoader from ReactHostDelegate
     val reactHostClass = ReactHostImpl::class.java
-    val mAllowPackagerServerAccessField = reactHostClass.getDeclaredField("mAllowPackagerServerAccess")
+    val mAllowPackagerServerAccessField = reactHostClass.getDeclaredField("allowPackagerServerAccess")
     mAllowPackagerServerAccessField.isAccessible = true
     mAllowPackagerServerAccessField[reactHost] = false
 
     val newJsBundleLoader = JSBundleLoader.createFileLoader(bundlePath)
 
     // [1] Replace the ReactHostDelegate.jsBundlerLoader with our new loader
-    val mReactHostDelegateField = reactHostClass.getDeclaredField("mReactHostDelegate")
+    val mReactHostDelegateField = reactHostClass.getDeclaredField("reactHostDelegate")
     mReactHostDelegateField.isAccessible = true
     val reactHostDelegate = mReactHostDelegateField[reactHost] as ReactHostDelegate
     if (reactHostDelegate.javaClass.canonicalName == EXPO_REACT_HOST_DELEGATE_CLASS) {

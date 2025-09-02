@@ -11,7 +11,6 @@ on:
       - packages/expo-updates/**
       - templates/expo-template-bare-minimum/**
   pull_request:
-    branches: [main]
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-old-arch.yml
       - packages/expo-asset/**
@@ -50,7 +49,7 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           yarn generate-test-update-bundles ios
-          npx pod-install
+          yarn ios:pod-install-old-arch
       - name: Build E2E test app (release)
         id: buildrelease
         working_directory: ../../../updates-e2e

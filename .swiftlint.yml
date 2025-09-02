@@ -37,7 +37,6 @@ opt_in_rules:
   - closure_spacing
   - collection_alignment
   - comma_inheritance
-  - conditional_returns_on_newline
   - direct_return
   - discouraged_object_literal
   - empty_collection_literal
@@ -410,3 +409,10 @@ void_return: warning
 
 # The variable should be placed on the left, the constant on the right of a comparison operator.
 yoda_condition: warning
+
+custom_rules:
+  no_trailing_comma_in_function_calls:
+    name: 'No trailing comma in function calls'
+    regex: ',\s*(\n\s*)?\)'
+    message: 'Remove trailing comma before closing parenthesis'
+    severity: error

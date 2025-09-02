@@ -156,12 +156,17 @@ class Env {
     return boolish('EXPO_NO_METRO_LAZY', false);
   }
 
-  /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
+  /**
+   * Enable the unstable inverse dependency stack trace for Metro bundling errors.
+   * @deprecated This will be removed in the future.
+   */
   get EXPO_METRO_UNSTABLE_ERRORS() {
-    return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
+    return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
   }
 
-  /** Enable the experimental sticky resolver for Metro. */
+  /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
+   * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
+   */
   get EXPO_USE_STICKY_RESOLVER() {
     return boolish('EXPO_USE_STICKY_RESOLVER', false);
   }
@@ -264,6 +269,11 @@ class Env {
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
   get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
+  }
+
+  /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
+  get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
+    return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
   }
 }
 

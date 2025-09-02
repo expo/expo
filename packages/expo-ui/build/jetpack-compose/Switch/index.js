@@ -30,6 +30,8 @@ export function transformSwitchProps(props) {
         onValueChange: ({ nativeEvent: { value } }) => {
             props?.onValueChange?.(value);
         },
+        // @ts-expect-error
+        modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
     };
 }
 export function Switch(props) {

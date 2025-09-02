@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 8.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.5 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.4 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.3 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
 ## 7.1.7 - 2025-07-03
 
 ### 🐛 Bug fixes

@@ -8,32 +8,32 @@
  * Fork of the Metro transformer worker, but with additional transforms moved to `babel-preset-expo` and modifications made for web support.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
-import { transformFromAstSync } from '@babel/core';
-import type { ParseResult, PluginItem } from '@babel/core';
+import { transformFromAstSync, parse, types as t, template } from '@babel/core';
+import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import * as babylon from '@babel/parser';
-import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
-import * as t from '@babel/types';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
+import JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
 import {
   importLocationsPlugin,
   locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
-import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
-import { stableHash } from 'metro-cache';
-import getMetroCacheKey from 'metro-cache-key';
+} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import { stableHash } from '@expo/metro/metro-cache';
+import { getCacheKey as getMetroCacheKey } from '@expo/metro/metro-cache-key';
 import {
   fromRawMappings,
   functionMapBabelPlugin,
   toBabelSegments,
   toSegmentTuple,
-} from 'metro-source-map';
-import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import metroTransformPlugins from 'metro-transform-plugins';
-import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
-import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
+} from '@expo/metro/metro-source-map';
+import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import * as metroTransformPlugins from '@expo/metro/metro-transform-plugins';
+import type {
+  JsTransformerConfig,
+  JsTransformOptions,
+  Type,
+} from '@expo/metro/metro-transform-worker';
+import getMinifier from '@expo/metro/metro-transform-worker/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
@@ -183,7 +183,7 @@ function renameTopLevelModuleVariables() {
   };
 }
 
-function applyUseStrictDirective(ast: t.File | babylon.ParseResult<t.File>) {
+function applyUseStrictDirective(ast: t.File | ParseResult) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -210,7 +210,10 @@ export function applyImportSupport<TFile extends t.File>(
 
     options: Pick<
       JsTransformOptions,
-      'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires'
+      | 'experimentalImportSupport'
+      | 'inlineRequires'
+      | 'nonInlinedRequires'
+      | 'customTransformOptions'
     >;
     importDefault: string;
     importAll: string;
@@ -241,7 +244,13 @@ export function applyImportSupport<TFile extends t.File>(
       // Ensure the iife "globals" don't have conflicting variables in the module.
       renameTopLevelModuleVariables,
       //
-      [importExportPlugin, babelPluginOpts]
+      [
+        importExportPlugin,
+        {
+          ...babelPluginOpts,
+          liveBindings: options.customTransformOptions?.liveBindings !== 'false',
+        },
+      ]
     );
   }
 
@@ -289,10 +298,7 @@ export function applyImportSupport<TFile extends t.File>(
   return { ast };
 }
 
-function performConstantFolding(
-  ast: t.File | babylon.ParseResult<t.File>,
-  { filename }: { filename: string }
-) {
+function performConstantFolding(ast: t.File | ParseResult, { filename }: { filename: string }) {
   // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
   // references, and hence the `constantFoldingPlugin` below will remove them.
   // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
@@ -310,7 +316,7 @@ function performConstantFolding(
   // Run the constant folding plugin in its own pass, avoiding race conditions
   // with other plugins that have exit() visitors on Program (e.g. the ESM
   // transform).
-  ast = nullthrows<babylon.ParseResult<t.File>>(
+  ast = nullthrows<ParseResult>(
     // @ts-expect-error
     transformFromAstSync(ast, '', {
       ast: true,
@@ -356,8 +362,8 @@ async function transformJS(
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
-  let ast: t.File | babylon.ParseResult<t.File> =
-    file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
+  let ast: t.File | ParseResult =
+    file.ast ?? nullthrows(parse(file.code, { sourceType: 'unambiguous' }));
 
   // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
   const { importDefault, importAll } = generateImportNames(ast);
@@ -776,17 +782,26 @@ export async function transform(
 }
 
 export function getCacheKey(config: JsTransformerConfig): string {
-  const { babelTransformerPath, minifierPath, ...remainingConfig } = config;
+  const {
+    // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
+    expo_customTransformerPath: _customTransformerPath,
+    babelTransformerPath,
+    minifierPath,
+    // Pull out of the cache key to prevent accidental cache invalidation.
+    asyncRequireModulePath,
+    ...remainingConfig
+  } = config;
 
+  // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
   const filesKey = getMetroCacheKey([
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
-    require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
-    require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
-    require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
+    require.resolve('@expo/metro/metro/ModuleGraph/worker/generateImportNames'),
+    require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
   ]);
 
@@ -835,7 +850,7 @@ const disabledDependencyTransformer: DependencyTransformer = {
 };
 
 export function collectDependenciesForShaking(
-  ast: babylon.ParseResult<t.File>,
+  ast: ParseResult,
   options: CollectDependenciesOptions
 ) {
   const collectDependenciesOptions = {

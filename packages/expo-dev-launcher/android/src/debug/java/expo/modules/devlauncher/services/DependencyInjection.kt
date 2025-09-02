@@ -2,6 +2,7 @@ package expo.modules.devlauncher.services
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import expo.modules.devlauncher.DevLauncherController
 
@@ -34,6 +35,9 @@ object DependencyInjection {
   var appService: AppService = AppService()
     private set
 
+  var errorRegistryService: ErrorRegistryService? = null
+    private set
+
   fun init(context: Context, devLauncherController: DevLauncherController) = synchronized(this) {
     if (wasInitialized) {
       return
@@ -53,6 +57,8 @@ object DependencyInjection {
       apolloClientService = apolloClientService,
       httpClientService = httpClientService
     )
+
+    errorRegistryService = ErrorRegistryService(context.applicationContext)
   }
 }
 
@@ -66,6 +72,7 @@ internal inline fun <reified T> injectService(): T {
     DevLauncherController::class -> DependencyInjection.devLauncherController
     PackagerService::class -> DependencyInjection.packagerService
     AppService::class -> DependencyInjection.appService
+    ErrorRegistryService::class -> DependencyInjection.errorRegistryService
     else -> throw IllegalArgumentException("Unknown service type: ${T::class}")
   } as T
 }
@@ -76,5 +83,5 @@ inline fun <reified T> ViewModel.inject(): T {
 
 @Composable
 inline fun <reified T> inject(): T {
-  return injectService<T>()
+  return remember { injectService<T>() }
 }

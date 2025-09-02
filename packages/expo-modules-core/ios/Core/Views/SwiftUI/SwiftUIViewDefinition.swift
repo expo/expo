@@ -65,6 +65,10 @@ public extension ExpoSwiftUIView {
   static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
   }
+
+  var appContext: AppContext? {
+    return props.appContext
+  }
 }
 
 extension ExpoSwiftUI {
@@ -88,6 +92,7 @@ extension ExpoSwiftUI {
     public override func createView(appContext: AppContext) -> AppleView? {
 #if RCT_NEW_ARCH_ENABLED
       let props = Props()
+      props.appContext = appContext
 
       if ViewType.self is WithHostingView.Type {
         let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)
@@ -117,12 +122,14 @@ extension ExpoSwiftUI {
     }
 
     public override func getSupportedEventNames() -> [String] {
-      return dummyPropsMirror.children.compactMap { (label: String?, value: Any) in
+      let builtInEventNames = [GLOBAL_EVENT_NAME]
+      let propEventNames: [String] = dummyPropsMirror.children.compactMap { (label: String?, value: Any) in
         guard let event = value as? EventDispatcher else {
           return nil
         }
         return event.customName ?? convertLabelToKey(label)
       }
+      return builtInEventNames + propEventNames
     }
   }
 }

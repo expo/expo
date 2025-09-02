@@ -10,6 +10,7 @@ import {
   UpdateFetchResultSuccess,
   UpdatesLogEntry,
   UpdatesNativeStateMachineContext,
+  ReloadScreenOptions,
 } from './Updates.types';
 
 export type UpdatesEvents = {
@@ -112,7 +113,7 @@ export declare class ExpoUpdatesModule
     rollbackString?: string;
   };
 
-  reload: () => Promise<void>;
+  reload: (options?: ReloadScreenOptions | null) => Promise<void>;
   checkForUpdateAsync: () => Promise<
     | UpdateCheckResultRollBack
     | (Omit<UpdateCheckResultAvailable, 'manifest'> &

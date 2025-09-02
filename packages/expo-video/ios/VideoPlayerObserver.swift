@@ -398,7 +398,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
       status = .error
     }
 
-    if let player, !loadedCurrentItem && (status == .readyToPlay || status == .error) {
+    if let player, !loadedCurrentItem && (newStatus == .readyToPlay || newStatus == .error) {
       onLoadedPlayerItem(player: player, playerItem: playerItem)
     }
 

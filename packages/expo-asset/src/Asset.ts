@@ -206,8 +206,9 @@ export class Asset {
     // The hash of the whole asset, not to be confused with the hash of a specific file returned
     // from `selectAssetSource`
     const metaHash = meta.hash;
-    if (Asset.byHash[metaHash]) {
-      return Asset.byHash[metaHash];
+    const assetByHash = Asset.byHash[metaHash];
+    if (assetByHash) {
+      return assetByHash;
     }
 
     const { uri, hash } = selectAssetSource(meta);
@@ -257,6 +258,14 @@ export class Asset {
    * to a local file containing the asset data. The asset is only downloaded if an up-to-date local
    * file for the asset isn't already present due to an earlier download. The downloaded `Asset`
    * will be returned when the promise is resolved.
+   *
+   * > **Note:** There is no guarantee that files downloaded via `downloadAsync` persist between app sessions.
+   * `downloadAsync` stores files in the caches directory, so it's up to the OS to clear this folder at its
+   * own discretion or when the user manually purges the caches directory. Downloaded assets are stored as
+   * `ExponentAsset-{cacheFileId}.{extension}` within the cache directory.
+   * > To manually clear cached assets, you can use [`expo-file-system`](./filesystem/) to
+   * delete the cache directory: `Paths.cache.delete()` or use the legacy API `deleteAsync(cacheDirectory)`.
+   *
    * @return Returns a Promise which fulfills with an `Asset` instance.
    */
   async downloadAsync(): Promise<this> {

@@ -7,7 +7,7 @@ import {
 } from '../exportStaticAsync';
 
 jest.mock('expo-router/build/views/Navigator', () => ({}));
-
+jest.mock('expo-constants', () => ({}));
 jest.mock('react-native', () => ({}));
 jest.mock('expo-linking', () => ({}));
 jest.mock('expo-modules-core', () => ({}));

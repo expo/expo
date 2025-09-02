@@ -51,7 +51,7 @@ internal class NativeDatabaseBinding : Closeable {
   external fun sqlite3_exec(source: String): Int
   external fun sqlite3_get_autocommit(): Int
   external fun sqlite3_last_insert_rowid(): Long
-  external fun sqlite3_load_extension(libPath: String, entryProc: String): Int
+  external fun sqlite3_load_extension(libPath: String, entryPoint: String): Int
   external fun sqlite3_open(dbPath: String): Int
   external fun sqlite3_prepare_v2(source: String, statement: NativeStatementBinding): Int
   external fun sqlite3_serialize(databaseName: String): ByteArray

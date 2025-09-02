@@ -22,10 +22,25 @@ public final class SQLiteModule: Module {
     Name("ExpoSQLite")
 
     Constants {
+      #if os(tvOS)
+      let defaultDatabaseDirectory =
+        appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
+      #else
       let defaultDatabaseDirectory =
         appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+      #endif
+
+      var bundledExtensions: [String: [String: String?]] = [:]
+      #if WITH_SQLITE_VEC
+      bundledExtensions["sqlite-vec"] = [
+        "libPath": Bundle(identifier: "sqlite-vec")?.path(forResource: "vec", ofType: ""),
+        "entryPoint": "sqlite3_vec_init"
+      ]
+      #endif
+
       return [
-        "defaultDatabaseDirectory": defaultDatabaseDirectory
+        "defaultDatabaseDirectory": defaultDatabaseDirectory,
+        "bundledExtensions": bundledExtensions
       ]
     }
 
@@ -165,6 +180,13 @@ public final class SQLiteModule: Module {
       }.runOnQueue(moduleQueue)
       Function("createSessionSync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
         try sessionCreate(database: database, session: session, dbName: dbName)
+      }
+
+      AsyncFunction("loadExtensionAsync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
+        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
+      }.runOnQueue(moduleQueue)
+      Function("loadExtensionSync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
+        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
       }
     }
 
@@ -548,6 +570,18 @@ public final class SQLiteModule: Module {
     contextPair.toOpaque())
   }
 
+  private func loadExtension(database: NativeDatabase, libPath: String, entryPoint: String?) throws {
+    try maybeThrowForClosedDatabase(database)
+    exsqlite3_enable_load_extension(database.pointer, 1)
+    var error: UnsafeMutablePointer<CChar>?
+    let ret = exsqlite3_load_extension(database.pointer, libPath.cString(using: .utf8), entryPoint, &error)
+    if ret != SQLITE_OK, let error = error {
+      let errorString = String(cString: error)
+      exsqlite3_free(error)
+      throw SQLiteErrorException(errorString)
+    }
+  }
+
   private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
     try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(exsqlite3_column_count(statement.pointer))
@@ -698,7 +732,7 @@ public final class SQLiteModule: Module {
       let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
       let ret = exsqlite3_finalize(currentStmt)
       if ret != SQLITE_OK {
-        ExpoModulesCore.log.warn("sqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
+        ExpoModulesCore.log.warn("exsqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
       }
       stmt = nextStmt
     }

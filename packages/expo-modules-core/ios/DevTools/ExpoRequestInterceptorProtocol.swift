@@ -135,7 +135,23 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
         redirectResponse: response
       )
     }
-    completionHandler(request)
+
+    // The `shouldFollowRedirects` property is set by `expo/fetch`.
+    // It tells `ExpoRequestInterceptorProtocol` whether to follow HTTP redirects.
+    let shouldFollowRedirects = URLProtocol.property(forKey: "shouldFollowRedirects", in: request) as? Bool ?? true
+    if shouldFollowRedirects {
+      completionHandler(request)
+    } else {
+      completionHandler(nil)
+
+      // NOTE (kudo): The exact usage of
+      // `urlProtocol(_:wasRedirectedTo:redirectResponse:)` isn’t fully clear.
+      // My understanding is that this delegate method informs the client
+      // about a redirect when you’re handling it yourself.
+      // Since we’re not following the redirect and are stopping at the
+      // current request/response, we call it here with those values.
+      client?.urlProtocol(self, wasRedirectedTo: request, redirectResponse: response)
+    }
   }
 
   public func urlSession(

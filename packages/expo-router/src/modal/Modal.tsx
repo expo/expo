@@ -3,7 +3,7 @@
 import { type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
 import { useEffect, useState } from 'react';
-import { ViewProps } from 'react-native';
+import { StyleSheet, ViewProps } from 'react-native';
 import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
@@ -62,8 +62,19 @@ export interface ModalProps extends ViewProps {
    * Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.
    * You can pass an array of ascending values each defining allowed sheet detent. iOS accepts any number of detents,
    * while **Android is limited to three**.
+   *
+   * @default 'fitToContents'
    */
   detents?: ModalConfig['detents'];
+  /**
+   * Determines whether the modal should close when navigating away from the screen that opened it.
+   *
+   * If set to `true`, the modal will close when the user navigates to a different screen.
+   *
+   * If set to `false`, the modal will remain open when pushing a new screen.
+   * However, it will still close when navigating back or replacing the current screen.
+   */
+  closeOnNavigation?: boolean;
 }
 
 /**
@@ -101,6 +112,7 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
+    closeOnNavigation,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -112,6 +124,20 @@ export function Modal(props: ModalProps) {
     }
   }, [detents]);
   useEffect(() => {
+    if (
+      __DEV__ &&
+      presentationStyle === 'formSheet' &&
+      detents !== 'fitToContents' &&
+      process.env.EXPO_OS === 'ios' &&
+      StyleSheet.flatten(props.style)?.flex
+    ) {
+      console.warn(
+        // TODO: ENG-16230: Add warning link to documentation
+        'The `formSheet` presentation style does not support flex styles on iOS. Consider using a fixed height view or scroll view with `fitToContents` detent instead. See '
+      );
+    }
+  }, [props.style, presentationStyle, detents]);
+  useEffect(() => {
     if (visible) {
       const newId = nanoid();
       openModal({
@@ -122,7 +148,7 @@ export function Modal(props: ModalProps) {
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,
-        detents,
+        detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
       });
       setCurrentModalId(newId);
       return () => {
@@ -131,6 +157,17 @@ export function Modal(props: ModalProps) {
     }
     return () => {};
   }, [visible]);
+
+  useEffect(() => {
+    if (navigation.isFocused()) {
+      return navigation.addListener('blur', () => {
+        if (currentModalId && closeOnNavigation) {
+          closeModal(currentModalId);
+        }
+      });
+    }
+    return () => {};
+  }, [navigation, closeModal, currentModalId, closeOnNavigation]);
 
   useEffect(() => {
     if (currentModalId && visible) {

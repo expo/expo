@@ -52,7 +52,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
   private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
-  val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
+  val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
   val trackSelector = DefaultTrackSelector(context)
@@ -173,6 +173,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   var availableVideoTracks: List<VideoTrack> = emptyList()
     private set
+
+  var keepScreenOnWhilePlaying by VideoPlayerKeepAwake(this, appContext)
 
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -311,6 +313,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
     uncommittedSource = null
     commitedSource = null
+    // Releases the listeners from VideoPlayerKeepAwake
+    keepScreenOnWhilePlaying = false
   }
 
   override fun deallocate() {

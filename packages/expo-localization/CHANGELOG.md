@@ -6,11 +6,35 @@
 
 ### 🎉 New features
 
-- Add `supportedLocales` option to set app language from settings ([#37232](https://github.com/expo/expo/pull/37232) by [@alextoudic](https://github.com/alextoudic))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 17.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add `supportedLocales` option to set app language from settings ([#37232](https://github.com/expo/expo/pull/37232) by [@alextoudic](https://github.com/alextoudic))
 
 ## 16.1.6 - 2025-07-01
 

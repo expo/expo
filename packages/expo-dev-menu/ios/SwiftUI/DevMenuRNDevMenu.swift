@@ -4,8 +4,9 @@ struct DevMenuRNDevMenu: View {
   let onOpenRNDevMenu: () -> Void
 
   var body: some View {
-    Button { onOpenRNDevMenu() }
-    label: {
+    Button {
+      onOpenRNDevMenu()
+    } label: {
       HStack {
         Text("Open React Native dev menu")
           .foregroundColor(.primary)
@@ -13,10 +14,8 @@ struct DevMenuRNDevMenu: View {
       }
       .padding()
     }
-    .background(Color(.systemBackground))
-    .cornerRadius(12)
-    .padding(.horizontal)
-    .padding(.vertical, 8)
+    .background(Color.expoSecondarySystemBackground)
+    .cornerRadius(18)
   }
 }
 

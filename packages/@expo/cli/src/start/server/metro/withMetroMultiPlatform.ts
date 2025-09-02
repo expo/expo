@@ -4,31 +4,33 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, Platform } from '@expo/config';
+import type { ExpoConfig, Platform } from '@expo/config';
+import type Bundler from '@expo/metro/metro/Bundler';
+import type { ConfigT } from '@expo/metro/metro-config';
+import type {
+  Resolution,
+  ResolutionContext,
+  CustomResolutionContext,
+} from '@expo/metro/metro-resolver';
+import { resolve as metroResolver } from '@expo/metro/metro-resolver';
 import chalk from 'chalk';
 import fs from 'fs';
-import Bundler from 'metro/src/Bundler';
-import { ConfigT } from 'metro-config';
-import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
-import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import {
+  createAutolinkingModuleResolverInput,
+  createAutolinkingModuleResolver,
+  AutolinkingModuleResolverInput,
+} from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
-import {
-  createStickyModuleResolverInput,
-  createStickyModuleResolver,
-  StickyModuleResolverInput,
-} from './createExpoStickyResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
-import {
-  withMetroErrorReportingResolver,
-  withMetroMutatedResolverContext,
-  withMetroResolvers,
-} from './withMetroResolvers';
+import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
+import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
+import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
@@ -88,23 +90,39 @@ function withWebPolyfills(
       })()
     );
 
+    const virtualModulesPolyfills = [virtualModuleId, virtualEnvVarId];
+
     if (ctx.platform === 'web') {
-      return [
-        virtualModuleId,
-        virtualEnvVarId,
-        // Ensure that the error-guard polyfill is included in the web polyfills to
-        // make metro-runtime work correctly.
-        // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
-        require.resolve('@react-native/js-polyfills/error-guard'),
-      ];
+      try {
+        const rnGetPolyfills: () => string[] = require('react-native/rn-get-polyfills');
+        return [
+          ...virtualModulesPolyfills,
+          // Ensure that the error-guard polyfill is included in the web polyfills to
+          // make metro-runtime work correctly.
+          // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
+          // NOTE(@kitten): This is technically the public API to get polyfills rather than resolving directly into
+          // `@react-native/js-polyfills`. We should really just start vendoring these, but for now, this exclusion works
+          ...rnGetPolyfills().filter((x: string) => !x.includes('/console')),
+        ];
+      } catch (error: any) {
+        if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+          // If react-native is not installed, because we're targeting web, we still continue
+          // This should be rare, but we add it so we don't unnecessarily have a fixed peer dependency on react-native
+          debug(
+            'Skipping react-native/rn-get-polyfills from getPolyfills. react-native is not installed.'
+          );
+          return virtualModulesPolyfills;
+        } else {
+          throw error;
+        }
+      }
     }
 
-    // Generally uses `rn-get-polyfills`
+    // Generally uses `@expo/metro-config`'s `getPolyfills` function, unless overridden
     const polyfills = originalGetPolyfills(ctx);
     return [
       ...polyfills,
-      virtualModuleId,
-      virtualEnvVarId,
+      ...virtualModulesPolyfills,
       // Removed on server platforms during the transform.
       require.resolve('expo/virtual/streams.js'),
     ];
@@ -149,7 +167,7 @@ export function withExtendedResolver(
   config: ConfigT,
   {
     tsconfig,
-    stickyModuleResolverInput,
+    autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
@@ -158,7 +176,7 @@ export function withExtendedResolver(
     getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
-    stickyModuleResolverInput?: StickyModuleResolverInput;
+    autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
@@ -176,11 +194,8 @@ export function withExtendedResolver(
   if (isFastResolverEnabled) {
     Log.log(chalk.dim`Fast resolver is enabled.`);
   }
-  if (stickyModuleResolverInput) {
-    Log.log(chalk.dim`Sticky resolver is enabled.`);
-  }
 
-  const defaultResolver = metroResolver.resolve;
+  const defaultResolver = metroResolver;
   const resolver = isFastResolverEnabled
     ? createFastResolver({
         preserveSymlinks: true,
@@ -621,7 +636,7 @@ export function withExtendedResolver(
       return null;
     },
 
-    createStickyModuleResolver(stickyModuleResolverInput, {
+    createAutolinkingModuleResolver(autolinkingModuleResolverInput, {
       getStrictResolver,
     }),
 
@@ -642,10 +657,19 @@ export function withExtendedResolver(
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
-          // // Disallow importing confusing native modules on web
-          if (moduleName.includes('react-native/Libraries/Utilities/codegenNativeCommands')) {
+          // Disallow importing confusing native modules on web
+          if (
+            [
+              'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
+              'react-native/Libraries/Utilities/codegenNativeCommands',
+              'react-native/Libraries/Utilities/codegenNativeComponent',
+            ].some((matcher) =>
+              // Support absolute and modules with .js extensions.
+              moduleName.includes(matcher)
+            )
+          ) {
             throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
+              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
             );
           }
 
@@ -796,7 +820,9 @@ export function withExtendedResolver(
     }
   );
 
-  return withMetroErrorReportingResolver(metroConfigWithCustomContext);
+  return withMetroErrorReportingResolver(
+    withMetroSupervisingTransformWorker(metroConfigWithCustomContext)
+  );
 }
 
 /** @returns `true` if the incoming resolution should be swapped. */
@@ -823,7 +849,7 @@ export async function withMetroMultiPlatformAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled,
-    isStickyResolverEnabled,
+    isAutolinkingResolverEnabled,
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
@@ -835,7 +861,7 @@ export async function withMetroMultiPlatformAsync(
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
-    isStickyResolverEnabled?: boolean;
+    isAutolinkingResolverEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
@@ -847,9 +873,10 @@ export async function withMetroMultiPlatformAsync(
   if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
-    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
-      '@expo/cli/build/metro-require/require'
-    );
+    const metroDefaults: Mutable<
+      typeof import('@expo/metro/metro-config/defaults/defaults')
+    > = require('@expo/metro/metro-config/defaults/defaults');
+    metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
   }
 
   if (!config.projectRoot) {
@@ -862,6 +889,7 @@ export async function withMetroMultiPlatformAsync(
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
   if (!isDirectoryIn(__dirname, projectRoot)) {
+    // TODO(@kitten): Remove ts-export-errors here and replace with cast for type safety
     if (!config.watchFolders) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders = [];
@@ -879,10 +907,6 @@ export async function withMetroMultiPlatformAsync(
       config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
     }
   }
-
-  // TODO: Remove this
-  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
-  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 
   let tsconfig: null | TsConfigPaths = null;
 
@@ -905,16 +929,16 @@ export async function withMetroMultiPlatformAsync(
 
   config = withWebPolyfills(config, { getMetroBundler });
 
-  let stickyModuleResolverInput: StickyModuleResolverInput | undefined;
-  if (isStickyResolverEnabled) {
-    stickyModuleResolverInput = await createStickyModuleResolverInput({
+  let autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined;
+  if (isAutolinkingResolverEnabled) {
+    autolinkingModuleResolverInput = await createAutolinkingModuleResolverInput({
       platforms: expoConfigPlatforms,
       projectRoot,
     });
   }
 
   return withExtendedResolver(config, {
-    stickyModuleResolverInput,
+    autolinkingModuleResolverInput,
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,

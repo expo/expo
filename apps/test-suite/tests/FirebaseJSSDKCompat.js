@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import firebase from 'firebase/compat';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';

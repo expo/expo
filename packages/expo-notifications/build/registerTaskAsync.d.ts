@@ -22,9 +22,9 @@
  *
  * const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
  *
- * defineTask<Notifications.NotificationTaskPayload>(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+ * TaskManager.defineTask<Notifications.NotificationTaskPayload>(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
  *   console.log('Received a notification task payload!');
- *   const isNotificationResponse = 'actionIdentifier' in taskPayload;
+ *   const isNotificationResponse = 'actionIdentifier' in data;
  *   if (isNotificationResponse) {
  *     // Do something with the notification response from user
  *   } else {

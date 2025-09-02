@@ -1,0 +1,48 @@
+import { ESLintUtils } from '@typescript-eslint/utils';
+
+const createRule = ESLintUtils.RuleCreator(
+  (name) =>
+    `https://github.com/expo/expo/blob/main/packages/eslint-plugin-expo/docs/rules/${name}.md`
+);
+
+export const preferBoxShadow = createRule({
+  name: 'prefer-box-shadow',
+  meta: {
+    type: 'suggestion',
+    docs: {
+      description:
+        'Box shadow is a simpler, more consistent way of defining shadows on components. It is recommended for web builds.',
+    },
+    schema: [],
+    messages: {
+      preferBoxShadow: 'prefer box shadow',
+    },
+  },
+  defaultOptions: [],
+  create(context) {
+    const oldShadowProps = [
+      'shadowColor',
+      'shadowOffset',
+      'shadowOpacity',
+      'shadowRadius',
+      'elevation',
+    ];
+
+    return {
+      ObjectExpression(node) {
+        for (const property of node.properties) {
+          if (
+            property.type === 'Property' &&
+            property.key.type === 'Identifier' &&
+            oldShadowProps.includes(property.key.name)
+          ) {
+            context.report({
+              node: property,
+              messageId: 'preferBoxShadow',
+            });
+          }
+        }
+      },
+    };
+  },
+});

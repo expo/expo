@@ -1,45 +1,58 @@
-import path from 'path';
-
+import { AutolinkingOptions, createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
+import { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform } from '../types';
 import { findModulesAsync } from './findModules';
-import {
-  getProjectPackageJsonPathAsync,
-  getProjectPackageJsonPathSync,
-  mergeLinkingOptionsAsync,
-  resolveSearchPathsAsync,
-} from './mergeLinkingOptions';
 import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
-import type { ModuleDescriptor, SearchOptions } from '../types';
-import { getConfiguration } from './getConfiguration';
+
+export { getConfiguration } from './getConfiguration';
+export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
+
+/** @deprecated */
+export interface SearchOptions extends Partial<AutolinkingOptions> {
+  projectRoot: string;
+  platform: SupportedPlatform;
+  [extra: string]: unknown;
+}
+
+/** @deprecated */
+export interface ResolveOptions {
+  projectRoot: string;
+  platform: SupportedPlatform;
+  [extra: string]: unknown;
+}
+
+/** @deprecated */
+async function apiFindModulesAsync(providedOptions: SearchOptions): Promise<SearchResults> {
+  const autolinkingOptionsLoader = createAutolinkingOptionsLoader(providedOptions);
+  return findModulesAsync({
+    appRoot: await autolinkingOptionsLoader.getAppRoot(),
+    autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform),
+  });
+}
+
+/** @deprecated */
+async function apiResolveExtraBuildDependenciesAsync(
+  providedOptions: ResolveOptions
+): Promise<ExtraDependencies> {
+  return resolveExtraBuildDependenciesAsync({
+    commandRoot: providedOptions.projectRoot,
+    platform: providedOptions.platform,
+  });
+}
+
+/** @deprecated */
+async function apiResolveModulesAsync(
+  searchResults: SearchResults,
+  providedOptions: SearchOptions
+): Promise<ModuleDescriptor[]> {
+  const autolinkingOptionsLoader = createAutolinkingOptionsLoader(providedOptions);
+  return resolveModulesAsync(
+    searchResults,
+    await autolinkingOptionsLoader.getPlatformOptions(providedOptions.platform)
+  );
+}
 
 export {
-  findModulesAsync,
-  getProjectPackageJsonPathAsync,
-  mergeLinkingOptionsAsync,
-  resolveExtraBuildDependenciesAsync,
-  resolveModulesAsync,
-  resolveSearchPathsAsync,
-  getConfiguration,
+  apiFindModulesAsync as findModulesAsync,
+  apiResolveExtraBuildDependenciesAsync as resolveExtraBuildDependenciesAsync,
+  apiResolveModulesAsync as resolveModulesAsync,
 };
-export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
-export { verifySearchResults } from './verifySearchResults';
-export * from '../types';
-
-/**
- * Programmatic API to query autolinked modules for a project.
- */
-export async function queryAutolinkingModulesFromProjectAsync(
-  projectRoot: string,
-  options: Pick<SearchOptions, 'platform' | 'exclude' | 'onlyProjectDeps'>
-): Promise<ModuleDescriptor[]> {
-  const searchPaths = await resolveSearchPathsAsync(null, projectRoot);
-  const linkOptions = await mergeLinkingOptionsAsync({ ...options, projectRoot, searchPaths });
-  const searchResults = await findModulesAsync(linkOptions);
-  return await resolveModulesAsync(searchResults, linkOptions);
-}
-
-/**
- * Get the project root directory from the current working directory.
- */
-export function findProjectRootSync(cwd: string = process.cwd()): string {
-  return path.dirname(getProjectPackageJsonPathSync(cwd));
-}

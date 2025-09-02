@@ -3,6 +3,7 @@ title: Send notifications with the Expo Push Service
 description: Learn how to call Expo Push Service API to send push notifications from your server.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 The [`expo-notifications`](/versions/latest/sdk/notifications) library provides all the client-side functionality for push notifications. Expo also handles sending push notifications off to FCM and APNs which then send them to particular devices. All you need to do is send a request to Expo Push API with the `ExpoPushToken` you obtain with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions).
@@ -344,3 +345,54 @@ Expo makes a best effort to deliver notifications to the push notification servi
 After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful. A push receipt denotes whether the underlying push notification service received the notification.
 
 Finally, the push notification services from Google and Apple follow their own policies to deliver the notifications to the device.
+
+## Troubleshooting
+
+<Collapsible summary="Network connectivity issues">
+This section helps you diagnose and resolve common network issues. Your server must have connectivity to Google Cloud Platform services in the United States region, as this is where Expo's push notification service is hosted.
+
+#### DNS resolution
+
+Test if your server can resolve Expo's push service domain name:
+
+```bash
+dig exp.host
+
+# Check with a public DNS server
+dig @8.8.8.8 exp.host
+```
+
+#### Network routing and connectivity
+
+Verify your server can reach Expo's endpoints:
+
+```bash
+# Use traceroute to identify routing issues
+traceroute exp.host
+
+# Test basic connectivity
+ping exp.host
+
+# Test HTTPS connectivity to the push server.
+# You should receive HTTP response headers with a 200 status code.
+curl --verbose https://exp.host/
+```
+
+Common issues to check:
+
+- Firewall rules blocking outbound HTTPS (port 443) traffic
+- Corporate proxy servers that may require authentication or special configuration
+- Network ACLs or security groups (in cloud environments) restricting outbound connections
+- Packet fragmentation due to MTU size issues
+
+#### TLS certificate validation
+
+Ensure your server can validate the server's TLS certificate:
+
+```bash
+openssl s_client -connect exp.host:443 -servername exp.host
+```
+
+We use standard TLS certificates signed by major service providers including Cloudflare, Google, and Let's Encrypt.
+
+</Collapsible>

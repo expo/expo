@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type PickerProps = {
   /**
@@ -30,7 +30,7 @@ export type PickerProps = {
    * Picker color. On iOS it only applies to the `'menu'` variant.
    */
   color?: string;
-};
+} & CommonViewModifierProps;
 
 const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
   'ExpoUI',
@@ -39,32 +39,20 @@ const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
 
 type NativePickerProps = PickerProps;
 
-/**
- * @hidden
- */
-export function transformPickerProps(props: PickerProps): NativePickerProps {
+function transformPickerProps(props: PickerProps): NativePickerProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     variant: props.variant ?? 'segmented',
     color: props.color,
   };
 }
 
 /**
- * `<Picker>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function PickerPrimitive(props: PickerProps) {
-  return <PickerNativeView {...transformPickerProps(props)} />;
-}
-
-/**
  * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
  */
-export function Picker(props: PickerProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <PickerPrimitive {...props} />
-    </Host>
-  );
+export function Picker(props: PickerProps) {
+  return <PickerNativeView {...transformPickerProps(props)} />;
 }

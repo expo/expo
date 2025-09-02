@@ -1,7 +1,9 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import * as semver from 'semver';
 
 import {
+  createParcelAsync,
   createParcelsForDependenciesOf,
   createParcelsForGraphNodes,
   loadRequestedParcels,
@@ -17,7 +19,7 @@ import {
   resolveReleaseTypeAndVersion,
   validateVersion,
 } from '../helpers';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, ReleaseType, TaskArgs } from '../types';
 
 const { green, cyan } = chalk;
 
@@ -39,10 +41,78 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     }
 
     // A set of parcels to prompt for.
-    const parcelsToSelect = new Set<Parcel>(parcels);
+    const parcelsToSelect = new Set<Parcel>(
+      options.templatesOnly
+        ? parcels.filter((p) => p.pkg.packageName !== 'expo-template-bare-minimum')
+        : parcels
+    );
 
     // A set of parcels selected to publish which will be passed to the next task.
     const parcelsToPublish = new Set<Parcel>();
+
+    // Fast-path: auto-select packages whose current package.json version has not been published yet.
+    if (options.autoSelectUnpublished && !process.env.CI) {
+      const candidates: Parcel[] = [];
+
+      for (const parcel of parcelsToSelect) {
+        const currentVersion = parcel.pkg.packageVersion;
+        const publishedVersions = parcel.pkgView?.versions ?? [];
+        const isUnpublishedVersion = !publishedVersions.includes(currentVersion);
+
+        // If the package was never published (pkgView is null) or the current version is not published yet.
+        if (parcel.pkgView === null || isUnpublishedVersion) {
+          candidates.push(parcel);
+        }
+      }
+
+      if (candidates.length > 0) {
+        // Resolve target release versions up-front to show in the checklist.
+        const resolvedVersions = new Map<Parcel, string>();
+        for (const parcel of candidates) {
+          const { releaseVersion } = await resolveReleaseTypeAndVersion(parcel, options);
+          resolvedVersions.set(parcel, releaseVersion);
+        }
+
+        const { selectedParcels } = await inquirer.prompt([
+          {
+            type: 'checkbox',
+            name: 'selectedParcels',
+            message:
+              'Auto-selected packages whose current version is not published yet. Deselect any you do not want to publish:',
+            choices: candidates.map((p) => {
+              const name = p.pkg.packageName;
+              const current = p.pkg.packageVersion;
+              const target = resolvedVersions.get(p) ?? current;
+              return {
+                name: `${green(name)} (${cyan(target)})`,
+                value: p,
+                checked: true,
+              };
+            }),
+            pageSize: Math.min(20, candidates.length + 2),
+          },
+        ]);
+
+        // Apply selections
+        for (const parcel of candidates) {
+          if (selectedParcels.includes(parcel)) {
+            parcel.state.releaseVersion = resolvedVersions.get(parcel) ?? parcel.pkg.packageVersion;
+            parcelsToPublish.add(parcel);
+          } else {
+            parcel.state.releaseVersion = null;
+          }
+        }
+
+        // Cleanup: remove non-selected parcels from dependency sets of others in this run
+        for (const parcel of parcelsToSelect) {
+          if (!parcelsToPublish.has(parcel)) {
+            parcel.dependents.forEach((dependent) => {
+              dependent.dependencies.delete(parcel);
+            });
+          }
+        }
+      }
+    }
 
     // This call mutates `parcelsToPublish` set, adding the selected parcels.
     await selectParcelsToPublish(parcelsToSelect, parcelsToPublish, options);
@@ -53,10 +123,14 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
         .filter((parcel) => parcel.state.isRequested && parcelsToPublish.has(parcel))
         .map((parcel) => parcel.graphNode.getAllDependents())
         .flat()
+        // If templates-only, do not suggest dependents since we are restricting to templates
+        .filter((node) => !options.templatesOnly || node.pkg.isTemplate())
     );
 
     // From the dependents select these that should be published too.
-    const selectedDependentNodes = await promptForDependentNodes([...dependentNodes]);
+    const selectedDependentNodes = options.templatesOnly
+      ? []
+      : await promptForDependentNodes([...dependentNodes]);
 
     logger.log();
 
@@ -82,6 +156,37 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
       logger.success('🤷‍♂️ There is nothing to be published.');
       return Task.STOP;
     }
+
+    // Enforce publishing expo-template-bare-minimum if expo is selected.
+    const expoParcel = [...parcelsToPublish].find((parcel) => parcel.pkg.packageName === 'expo');
+    const isBareTemplateSelected =
+      [...parcelsToPublish].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      ) !== undefined;
+    if (!options.templatesOnly && expoParcel && !isBareTemplateSelected) {
+      const bareTemplateNode = [...dependentNodes].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      )!;
+      const templateParcel = await createParcelAsync(bareTemplateNode);
+
+      // Template don't not have changelog so we need to match Expo's release type.
+      const newExpoVersion = expoParcel.state.releaseVersion || '';
+      templateParcel.minReleaseType =
+        semver.minor(newExpoVersion) === 0 &&
+        semver.patch(newExpoVersion) === 0 &&
+        !semver.prerelease(newExpoVersion)
+          ? ReleaseType.MAJOR
+          : ReleaseType.PATCH;
+      const { releaseVersion } = await resolveReleaseTypeAndVersion(templateParcel, options);
+
+      parcelsToPublish.add(templateParcel);
+      logger.log(
+        `📦 ${green('expo-template-bare-minimum')} is required to be published with ${green(
+          'expo'
+        )} package, will be published as ${cyan.bold(releaseVersion)}.`
+      );
+    }
+
     return [[...parcelsToPublish], options];
   }
 );

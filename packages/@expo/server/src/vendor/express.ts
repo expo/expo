@@ -4,6 +4,13 @@ import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from '../index';
+import {
+  getApiRoute,
+  getHtml,
+  getMiddleware,
+  getRoutesManifest,
+  handleRouteError,
+} from '../runtime/node';
 
 export type RequestHandler = (
   req: express.Request,
@@ -16,9 +23,16 @@ export type RequestHandler = (
  */
 export function createRequestHandler(
   { build }: { build: string },
-  setup?: Parameters<typeof createExpoHandler>[1]
+  setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
 ): RequestHandler {
-  const handleRequest = createExpoHandler(build, setup);
+  const handleRequest = createExpoHandler({
+    getRoutesManifest: getRoutesManifest(build),
+    getHtml: getHtml(build),
+    getApiRoute: getApiRoute(build),
+    getMiddleware: getMiddleware(build),
+    handleRouteError: handleRouteError(),
+    ...setup,
+  });
 
   return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (!req?.url || !req.method) {

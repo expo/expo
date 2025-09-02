@@ -2,7 +2,9 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { processColor } from 'react-native';
 
 import ExpoFontUtils from './ExpoFontUtils';
-import { RenderToImageOptions } from './FontUtils.types';
+import type { RenderToImageOptions, RenderToImageResult } from './FontUtils.types';
+
+export type { RenderToImageOptions, RenderToImageResult };
 
 /**
  * Creates an image with provided text.
@@ -15,7 +17,7 @@ import { RenderToImageOptions } from './FontUtils.types';
 export async function renderToImageAsync(
   glyphs: string,
   options?: RenderToImageOptions
-): Promise<string> {
+): Promise<RenderToImageResult> {
   if (!ExpoFontUtils) {
     throw new UnavailabilityError('expo-font', 'ExpoFontUtils.renderToImageAsync');
   }

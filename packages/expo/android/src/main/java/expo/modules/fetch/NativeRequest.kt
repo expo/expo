@@ -20,11 +20,17 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
   private var task: Call? = null
 
   fun start(client: OkHttpClient, url: URL, requestInit: NativeRequestInit, requestBody: ByteArray?) {
-    val newClient = if (requestInit.credentials == NativeRequestCredentials.INCLUDE) {
-      client
-    } else {
-      client.newBuilder().cookieJar(CookieJar.NO_COOKIES).build()
+    val clientBuilder = client.newBuilder()
+    if (requestInit.credentials != NativeRequestCredentials.INCLUDE) {
+      clientBuilder.cookieJar(CookieJar.NO_COOKIES)
     }
+    if (requestInit.redirect != NativeRequestRedirect.FOLLOW) {
+      clientBuilder.followRedirects(false)
+      clientBuilder.followSslRedirects(false)
+    }
+
+    val newClient = clientBuilder.build()
+    response.redirectMode = requestInit.redirect
 
     val headers = requestInit.headers.toHeaders()
     val mediaType = headers["Content-Type"]?.toMediaTypeOrNull()

@@ -1,17 +1,16 @@
 package expo.modules.devlauncher.compose.primitives
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,12 +18,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import com.composables.core.Icon
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
+import androidx.compose.ui.unit.dp
+import expo.modules.devlauncher.compose.ui.LauncherIcons
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import expo.modules.devmenu.compose.primitives.NewText
+import expo.modules.devmenu.compose.primitives.RoundedSurface
+import expo.modules.devmenu.compose.primitives.Spacer
 
 @Composable
 fun Accordion(
@@ -34,34 +35,34 @@ fun Accordion(
   accordionContent: @Composable () -> Unit = {}
 ) {
   var expanded by remember { mutableStateOf(initialState) }
-  val arrowRotation by animateFloatAsState(
-    targetValue = if (expanded) 90f else 0f,
-    label = "accordion-arrow"
-  )
 
-  Box(
-    modifier = modifier
+  RoundedSurface(
+    color = NewAppTheme.colors.background.subtle,
+    borderRadius = NewAppTheme.borderRadius.xl
   ) {
-    Column {
-      Box(
-        modifier = Modifier
-          .clickable { expanded = !expanded }
-      ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable(
+          role = Role.Button
+        ) { expanded = !expanded }
+        .padding(NewAppTheme.spacing.`3`)
+    ) {
+      Box {
         Row(
+          horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .padding(Theme.spacing.medium)
+          modifier = modifier
         ) {
-          Icon(
-            painter = painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_chevronrighticon),
-            contentDescription = "Accordion Arrow",
-            modifier = Modifier
-              .rotate(arrowRotation)
+          LauncherIcons.Plus(
+            size = 16.dp,
+            tint = NewAppTheme.colors.text.link
           )
-          Spacer(Modifier.size(Theme.spacing.small))
-          Text(
+
+          NewText(
             text = text,
-            modifier = Modifier.weight(1f)
+            style = NewAppTheme.font.sm,
+            color = NewAppTheme.colors.text.link
           )
         }
       }
@@ -77,10 +78,8 @@ fun Accordion(
           animationSpec = tween()
         )
       ) {
-        Box(
-          modifier = Modifier
-            .padding(horizontal = Theme.spacing.small)
-        ) {
+        Column {
+          Spacer(NewAppTheme.spacing.`3`)
           accordionContent()
         }
       }
@@ -89,9 +88,9 @@ fun Accordion(
 }
 
 @Composable
-@Preview(showBackground = true, heightDp = 200)
+@Preview(showBackground = true, heightDp = 200, widthDp = 300)
 fun AccordionVariantPreview() {
   Accordion(text = "Enter URL manually") {
-    Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac nisl interdum, mattis purus a, consequat ipsum. Aliquam sem mauris, egestas a elit a, lacinia efficitur nisi. Maecenas scelerisque erat nisi, ac interdum mauris volutpat vel. Proin sed lectus at purus interdum porta. Ut mollis feugiat dignissim.")
+    NewText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac nisl interdum, mattis purus a, consequat ipsum. Aliquam sem mauris, egestas a elit a, lacinia efficitur nisi. Maecenas scelerisque erat nisi, ac interdum mauris volutpat vel. Proin sed lectus at purus interdum porta. Ut mollis feugiat dignissim.")
   }
 }

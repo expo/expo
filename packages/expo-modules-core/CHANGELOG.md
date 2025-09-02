@@ -6,19 +6,96 @@
 
 ### 🎉 New features
 
-- Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
-- [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
-- [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))
-- [iOS] Support cast from JavaScriptValue in DynamicArrayType. ([#37891](https://github.com/expo/expo/pull/37891) by [@jakex7](https://github.com/jakex7))
-- [Android] Add `testID` support to `ExpoComposeView`. ([#38005](https://github.com/expo/expo/pull/38005) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Add `disableForceFlatten` prop to control flattening of display contents views. ([#39262](https://github.com/expo/expo/pull/39262) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
-- [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
-- [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix Color extension on macOS. ([#39280](https://github.com/expo/expo/pull/39280) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
+- Fix JavaScriptRuntimeSpec tests ([#39281](https://github.com/expo/expo/pull/39281) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added `appContext` to `ExpoSwiftUI.ViewProps`. ([#39231](https://github.com/expo/expo/pull/39231) by [@kudo](https://github.com/kudo))
+
+## 3.0.10 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.9 — 2025-08-28
+
+### 🐛 Bug fixes
+
+- [ios] Bring back correct scoping for Expo Go. ([#39186](https://github.com/expo/expo/pull/39186) by [@aleqsio](https://github.com/aleqsio))
+
+## 3.0.8 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.7 — 2025-08-26
+
+### 🐛 Bug fixes
+
+- [Android] Fix ErrorManager not receiving error/warning events on the JS side. ([#39126](https://github.com/expo/expo/pull/39126) by [@behenate](https://github.com/behenate))
+
+## 3.0.6 — 2025-08-25
+
+### 🎉 New features
+
+- [Android] Add new type - `ValueOrUndefined`. ([#39116](https://github.com/expo/expo/pull/39116) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.0.5 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.4 — 2025-08-19
+
+### 🐛 Bug fixes
+
+- [Android] Fix invalid array buffer offset in typed arrays. ([#38958](https://github.com/expo/expo/pull/38958) by [@aleqsio](https://github.com/aleqsio))
+
+## 3.0.3 — 2025-08-18
+
+### 💡 Others
+
+- [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+- [Android] Update min, target, and compile SDK versions. ([#38938](https://github.com/expo/expo/pull/38938) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 3.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
+- [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
+- [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))
+- [Android] Add `testID` support to `ExpoComposeView`. ([#38005](https://github.com/expo/expo/pull/38005) by [@mateoguzmana](https://github.com/mateoguzmana))
+- [iOS] Return proper dynamic type for AnyEither. ([#38072](https://github.com/expo/expo/pull/38072) by [@jakex7](https://github.com/jakex7))
+- [Android] Add VRUtilities for VR-related values and utils ([#37744](https://github.com/expo/expo/pull/37744) by [@behenate](https://github.com/behenate))
+- [Andorid] Start using experimental converters in properties. ([#38597](https://github.com/expo/expo/pull/38597) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Rethrow pending Jni exceptions. ([#38625](https://github.com/expo/expo/pull/38625) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add new type - `ValueOrUndefined`. ([#38620](https://github.com/expo/expo/pull/38620) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix view functions for SwiftUI views. ([#38275](https://github.com/expo/expo/pull/38275) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- [android] Fix android build without coreFeatures compose ([#38153](https://github.com/expo/expo/pull/38153) by [@Ubax](https://github.com/Ubax))
+- [iOS] Fix `ExpoRequestInterceptorProtocol` to properly notify client about HTTP redirects. ([#38078](https://github.com/expo/expo/pull/38078) by [@kudo](https://github.com/kudo))
+- [Android] Conditionally register `RuntimeHolder` bindings. ([#38345](https://github.com/expo/expo/pull/38345) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix null string conversion. ([#38284](https://github.com/expo/expo/pull/38284) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- Add package exports support. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Cleaned up iOS header files for precompilation ([#38441](https://github.com/expo/expo/pull/38441) by [@chrfalch](https://github.com/chrfalch))
+- [Android] RN 0.81.0: patched some reflection issues after kotlin upgrade ([#38451](https://github.com/expo/expo/pull/38451) by [@chrfalch](https://github.com/chrfalch))
 - Restructure Jest polyfills to not import forbidden platform extension directly. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Improve time to retrieve the Expo module. ([#37082](https://github.com/expo/expo/pull/37082) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Reduce the memory footprint of calling function from the native module. ([#37080](https://github.com/expo/expo/pull/37080) by [@lukmccall](https://github.com/lukmccall))
@@ -27,6 +104,21 @@
 - Updated `ExpoComposeView` to support virtual view. ([#36255](https://github.com/expo/expo/pull/36255) by [@kudo](https://github.com/kudo))
 - [iOS] Support throwing errors in shared object constructor. ([#37618](https://github.com/expo/expo/pull/37618) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove boilerplate from function factories. ([#37884](https://github.com/expo/expo/pull/37884) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Remove react-native 0.74 support files ([#38216](https://github.com/expo/expo/pull/38216) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add missing peer dependencies for `react` and `react-native` ([#38528](https://github.com/expo/expo/pull/38528) by [@kitten](https://github.com/kitten))
+- Deprecate `Constants` in favor of `Constant` and `Property`. ([#38748](https://github.com/expo/expo/pull/38748) by [@jakex7](https://github.com/jakex7))
+- Refactor typings to replace `ExpoGlobal` with namespace and to preserve type+value overlay on re-exported core globals ([#38649](https://github.com/expo/expo/pull/38649) by [@kitten](https://github.com/kitten))
+- Fixed internal `JavaScriptValue` and added `props.globalEventDispatcher` for expo-ui. ([#38542](https://github.com/expo/expo/pull/38542) by [@kudo](https://github.com/kudo))
+
+## 2.5.0 - 2025-07-17
+
+### 🎉 New features
+
+- [iOS] Support cast from JavaScriptValue in DynamicArrayType. ([#37891](https://github.com/expo/expo/pull/37891) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
 
 ## 2.4.2 - 2025-07-02
 

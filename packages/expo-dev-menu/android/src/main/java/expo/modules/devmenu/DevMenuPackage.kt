@@ -23,7 +23,6 @@ import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.compose.BindingView
 import expo.modules.devmenu.compose.DevMenuViewModel
-import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {

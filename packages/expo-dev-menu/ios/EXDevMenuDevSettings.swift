@@ -19,7 +19,7 @@ class EXDevMenuDevSettings: NSObject {
     let manager = DevMenuManager.shared
 
     if let bridge = manager.currentBridge,
-        let bridgeSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
+      let bridgeSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
       let perfMonitor = bridge.module(forName: "PerfMonitor")
       let isPerfMonitorAvailable = perfMonitor != nil
 

@@ -1,4 +1,4 @@
-import { ConfigAPI, TransformOptions } from '@babel/core';
+import type { ConfigAPI, TransformOptions } from '@babel/core';
 type BabelPresetExpoPlatformOptions = {
     /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
     decorators?: false | {
@@ -21,7 +21,7 @@ type BabelPresetExpoPlatformOptions = {
     disableImportExportTransform?: boolean;
     disableDeepImportWarnings?: boolean;
     disableFlowStripTypesTransform?: boolean;
-    enableBabelRuntime?: boolean;
+    enableBabelRuntime?: boolean | string;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
     /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
     'react-compiler'?: false | {

@@ -1,3 +1,3 @@
 export * from './FileSystem';
-export * from './FileSystem.types';
+export { type FileCreateOptions, type DirectoryCreateOptions, type FileHandle, type FileInfo, type InfoOptions, type PathInfo, type DirectoryInfo, } from './ExpoFileSystem.types';
 //# sourceMappingURL=index.d.ts.map

@@ -135,6 +135,11 @@
               }
             }
           }
+        },
+        "unstable_useServerMiddleware": {
+          "description": "Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config.",
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false

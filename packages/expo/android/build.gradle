@@ -32,7 +32,7 @@ buildscript {
 def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
 
 group = 'host.exp.exponent'
-version = '53.0.9'
+version = '54.0.0-preview.12'
 
 expoModule {
   // We can't prebuild the module because it depends on the generated files.
@@ -43,7 +43,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "53.0.9"
+    versionName "54.0.0-preview.12"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {
@@ -57,15 +57,6 @@ android {
           srcDirs += new File(project.buildDir, generatedFilesSrcDir)
         }
       }
-    }
-  }
-
-  sourceSets.main.java {
-    if (reactNativeVersion.isAtLeast(new Version(0, 78, 0))) {
-      srcDirs += 'src/rn78/main'
-    } else if (reactNativeVersion.isAtLeast(new Version(0, 74, 0))) {
-      // TODO(kudo,20241217): Remove this when we drop react-native 0.77 support
-      srcDirs += 'src/rn74/main'
     }
   }
 }

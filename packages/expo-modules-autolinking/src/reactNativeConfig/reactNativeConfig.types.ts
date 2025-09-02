@@ -1,22 +1,10 @@
 import type { SupportedPlatform } from '../types';
 
-/**
- * Options for 'react-native-config' command.
- */
-export interface RNConfigCommandOptions {
-  platform: SupportedPlatform;
-  projectRoot: string;
-  searchPaths: string[];
-  transitiveLinkingDependencies: string[];
-}
-
-/**
- * Dependency configuration for Android platform.
- */
+/** Dependency configuration for Android platform. */
 export interface RNConfigDependencyAndroid {
   sourceDir: string;
-  packageImportPath: string;
-  packageInstance: string;
+  packageImportPath: string | null;
+  packageInstance: string | null;
   dependencyConfiguration?: string;
   buildTypes: string[];
   libraryName?: string | null;
@@ -25,11 +13,10 @@ export interface RNConfigDependencyAndroid {
   cxxModuleCMakeListsModuleName?: string | null;
   cxxModuleCMakeListsPath?: string | null;
   cxxModuleHeaderName?: string | null;
+  isPureCxxDependency?: boolean;
 }
 
-/**
- * Dependency configuration for iOS platform.
- */
+/** Dependency configuration for iOS platform. */
 export interface RNConfigDependencyIos {
   podspecPath: string;
   version: string;
@@ -37,9 +24,7 @@ export interface RNConfigDependencyIos {
   scriptPhases: any[];
 }
 
-/**
- * Dependency configuration.
- */
+/** Dependency configuration. */
 export interface RNConfigDependency {
   root: string;
   name: string;
@@ -49,9 +34,7 @@ export interface RNConfigDependency {
   };
 }
 
-/**
- * Result of 'react-native-config' command.
- */
+/** Result of 'react-native-config' command. */
 export interface RNConfigResult {
   root: string;
   reactNativePath: string;

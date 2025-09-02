@@ -35,6 +35,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-battery': ['Battery.ts'],
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
+  'expo-blob': ['ExpoBlob.types.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
@@ -50,7 +51,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
   'expo-file-system': ['index.ts'],
-  'expo-file-system-next': ['next/index.ts', 'expo-file-system'],
+  'expo-file-system-legacy': ['legacy/index.ts', 'expo-file-system'],
   'expo-font': ['index.ts'],
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],
@@ -89,6 +90,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-print': ['Print.ts'],
   'expo-router': ['exports.ts'],
   'expo-router-ui': ['ui/index.ts', 'expo-router'],
+  'expo-router-native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
@@ -97,7 +99,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
-  'expo-status-bar': ['StatusBar.tsx'],
+  'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
   'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
@@ -110,6 +112,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
   '@expo/fingerprint': ['index.ts'],
+  'expo-app-integrity': ['index.ts'],
 };
 
 const executeCommand = async (

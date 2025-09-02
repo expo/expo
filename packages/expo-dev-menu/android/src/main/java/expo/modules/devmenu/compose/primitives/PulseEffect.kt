@@ -20,8 +20,8 @@ import androidx.compose.runtime.getValue
 @Composable
 fun Modifier.pulseEffect(
   initialScale: Float = 1f,
-  targetScale: Float = 1.5f,
-  brush: Brush = SolidColor(Color.Companion.Black.copy(alpha = 0.3f)),
+  targetScale: Float = 2f,
+  brush: Brush = SolidColor(Color.Black.copy(alpha = 0.3f)),
   shape: Shape = CircleShape,
   animationSpect: DurationBasedAnimationSpec<Float> = tween(durationMillis = 1200)
 ): Modifier {

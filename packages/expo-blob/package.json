@@ -1,0 +1,39 @@
+{
+  "name": "expo-blob",
+  "version": "0.1.4",
+  "description": "Provides a Blob implementation for handling binary data across platforms, with web API compatibility for creating, reading, and manipulating binary objects.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-blob"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-blob"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/blob/",
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "^5.0.6"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

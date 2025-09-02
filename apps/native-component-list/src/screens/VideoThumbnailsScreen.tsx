@@ -22,7 +22,9 @@ export default function VideoThumbnailsScreen() {
       <Text>{image}</Text>
       <Button
         onPress={() =>
-          generateThumbnail('https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4')
+          generateThumbnail(
+            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+          )
         }
         title="Check Valid Source"
       />

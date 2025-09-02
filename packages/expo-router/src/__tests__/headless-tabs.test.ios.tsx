@@ -1,10 +1,11 @@
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { forwardRef, Ref, useState } from 'react';
 import { ViewProps, View, Text, Button } from 'react-native';
 
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
-import { RenderRouterOptions, act, fireEvent, renderRouter, screen } from '../testing-library';
+import { type RenderRouterOptions, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs } from '../ui';
 import { Pressable, PressableProps } from '../views/Pressable';
 
@@ -332,30 +333,6 @@ describe('warnings/errors', () => {
       },
       index: () => null,
     });
-
-    expect(error).not.toHaveBeenCalled();
-    expect(warn).toHaveBeenCalledWith(
-      "Tab trigger 'apple' has the href '/apple' which points to a +not-found route."
-    );
-  });
-
-  it('should warn when there are no valid tabs', () => {
-    expect(() => {
-      renderRouter({
-        _layout: () => {
-          return (
-            <Tabs>
-              <TabList>
-                <TabTrigger name="apple" href="/apple" />
-              </TabList>
-              <TabSlot />
-            </Tabs>
-          );
-        },
-      });
-    }).toThrow(
-      "Couldn't find any screens for the navigator. Have you defined any screens as its children?"
-    );
 
     expect(error).not.toHaveBeenCalled();
     expect(warn).toHaveBeenCalledWith(

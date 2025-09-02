@@ -199,8 +199,12 @@ function babelPresetExpo(api, options = {}) {
                 const presetOpts = {
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
-                    // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-                    enableBabelRuntime: platformOptions.enableBabelRuntime,
+                    // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
+                    // Set to `false` to disable `@babel/plugin-transform-runtime`
+                    enableBabelRuntime: platformOptions.enableBabelRuntime == null ||
+                        platformOptions.enableBabelRuntime === true
+                        ? (0, common_1.getBabelRuntimeVersion)()
+                        : platformOptions.enableBabelRuntime,
                     // This reduces the amount of transforms required, as Hermes supports many modern language features.
                     unstable_transformProfile: platformOptions.unstable_transformProfile,
                     // Set true to disable `@babel/plugin-transform-react-jsx` and

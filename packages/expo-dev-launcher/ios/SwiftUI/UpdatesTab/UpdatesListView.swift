@@ -1,4 +1,5 @@
 import SwiftUI
+// swiftlint:disable closure_body_length
 
 struct UpdatesListView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
@@ -11,20 +12,20 @@ struct UpdatesListView: View {
   @State private var errorMessage: String?
 
   var body: some View {
-    List {
-      Section {
-        HStack {
-          Toggle("Compatible only", isOn: $filterByCompatibility)
-          Spacer()
-          Button(sortByRecency ? "Newest first" : "Oldest first") {
-            sortByRecency.toggle()
-            applyFilters()
-          }
-          .font(.caption)
-          .foregroundColor(.blue)
+    VStack(spacing: 20) {
+      HStack {
+        Toggle("Compatible only", isOn: $filterByCompatibility)
+        Spacer()
+        Button(sortByRecency ? "Newest first" : "Oldest first") {
+          sortByRecency.toggle()
+          applyFilters()
         }
-        .padding(.vertical, 4)
+        .font(.caption)
+        .foregroundColor(.blue)
       }
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .cornerRadius(12)
 
       if isLoading {
         loading
@@ -33,14 +34,17 @@ struct UpdatesListView: View {
       } else if filteredUpdates.isEmpty {
         emptyUpdates
       } else {
-        Section("Updates (\(filteredUpdates.count))") {
+        LazyVStack(alignment: .leading) {
+          Text("Updates (\(filteredUpdates.count))".uppercased())
+            .font(.caption)
+            .foregroundColor(.primary.opacity(0.6))
           ForEach(filteredUpdates, id: \.update.id) { tuple in
             UpdateRow(update: tuple.update, branchName: tuple.branchName, isCompatible: viewModel.isCompatibleRuntime(tuple.update.runtimeVersion))
           }
         }
       }
     }
-    .background(Color(.systemGroupedBackground))
+    .padding()
     .onChange(of: filterByCompatibility) { _ in
       applyFilters()
     }
@@ -135,40 +139,36 @@ struct UpdatesListView: View {
   }
 
   private var loading: some View {
-    Section {
-      HStack {
-        Spacer()
-        ProgressView()
-          .scaleEffect(1.2)
-        Spacer()
-      }
-      .padding()
+    HStack {
+      Spacer()
+      ProgressView()
+        .scaleEffect(1.2)
+      Spacer()
     }
+    .padding()
   }
 
   @ViewBuilder
   func createError(message: String) -> some View {
-    Section {
-      VStack(spacing: 12) {
-        Image(systemName: "exclamationmark.triangle")
-          .foregroundColor(.red)
-          .font(.title2)
+    VStack(spacing: 12) {
+      Image(systemName: "exclamationmark.triangle")
+        .foregroundColor(.red)
+        .font(.title2)
 
-        Text("Error loading updates")
-          .font(.headline)
+      Text("Error loading updates")
+        .font(.headline)
 
-        Text(message)
-          .font(.caption)
-          .foregroundStyle(.secondary)
-          .multilineTextAlignment(.center)
+      Text(message)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
 
-        Button("Retry") {
-          loadBranches()
-        }
-        .buttonStyle(.borderedProminent)
+      Button("Retry") {
+        loadBranches()
       }
-      .padding()
+      .buttonStyle(.borderedProminent)
     }
+    .padding()
   }
 
   private var emptyUpdates: some View {
@@ -194,3 +194,4 @@ struct UpdatesListView: View {
 #Preview {
   UpdatesListView()
 }
+// swiftlint:enable closure_body_length

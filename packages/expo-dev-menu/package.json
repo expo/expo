@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "6.1.10",
+  "version": "7.0.7",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -8,15 +8,11 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint ./app/*",
-    "ts:check": "expo-module tsc --project tsconfig.app.json --noEmit & expo-module tsc --noEmit",
+    "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare && ./scripts/reset-dev-menu-packager-host.sh",
+    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "start": "./scripts/start.sh",
-    "bundle:dev": "NODE_ENV=development ./scripts/write_embedded_bundle.sh",
-    "bundle:prod": "NODE_ENV=production ./scripts/write_embedded_bundle.sh"
+    "expo-module": "expo-module"
   },
   "keywords": [
     "expo",
@@ -36,30 +32,20 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
-  "jest": {
-    "preset": "react-native",
-    "setupFilesAfterEnv": [
-      "./setupTests.ts"
-    ],
-    "transformIgnorePatterns": [
-      "/node_modules/(?!@?react-native(-reanimated)?)"
-    ]
-  },
   "dependencies": {
-    "expo-dev-menu-interface": "1.10.0"
+    "expo-dev-menu-interface": "2.0.0"
   },
   "devDependencies": {
     "@apollo/client": "^3.4.10",
     "@babel/preset-typescript": "^7.7.4",
-    "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^13.1.0",
+    "@testing-library/react-native": "^13.2.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "babel-preset-expo": "~13.1.11",
-    "expo-dev-client-components": "2.1.4",
-    "expo-module-scripts": "^4.1.7",
+    "babel-preset-expo": "~14.0.5",
+    "expo-dev-client-components": "3.0.5",
+    "expo-module-scripts": "^5.0.6",
     "fuse.js": "^6.4.6",
     "react": "19.1.0",
-    "react-native": "0.80.1",
+    "react-native": "0.81.1",
     "url": "^0.11.0",
     "use-subscription": "^1.8.0"
   },

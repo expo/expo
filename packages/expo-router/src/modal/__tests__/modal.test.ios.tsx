@@ -1,7 +1,8 @@
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { Fragment, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
-import { act, fireEvent, renderRouter, screen } from '../../testing-library';
+import { renderRouter } from '../../testing-library';
 import { Modal } from '../Modal';
 
 const ComponentWithModal = (props?: { onModalClose?: () => void }) => {
@@ -289,6 +290,33 @@ describe('ScreenStackItem props', () => {
     expect(ScreenStackItem.mock.calls[2][0]).toEqual(
       expect.objectContaining({
         sheetAllowedDetents: detents,
+      })
+    );
+  });
+
+  it('When detents are not defined and presentationStyle is formSheet, detents should default to fitToContents', async () => {
+    const CustomComponentWithModal = (props?: { onModalClose: () => void }) => {
+      const [isOpen, setIsOpen] = useState(false);
+      return (
+        <View testID="CustomComponentWithModal">
+          <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
+          <Modal visible={isOpen} onClose={props.onModalClose} presentationStyle="formSheet">
+            <View testID="modal-content" />
+          </Modal>
+        </View>
+      );
+    };
+
+    renderRouter({
+      index: CustomComponentWithModal,
+    });
+
+    const ScreenStackItem = require('react-native-screens').ScreenStackItem;
+    showModal();
+
+    expect(ScreenStackItem.mock.calls[2][0]).toEqual(
+      expect.objectContaining({
+        sheetAllowedDetents: 'fitToContents',
       })
     );
   });

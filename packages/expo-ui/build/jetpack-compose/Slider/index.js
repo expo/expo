@@ -23,6 +23,8 @@ export function transformSliderProps(props) {
                 }
                 : undefined,
         color: props.color,
+        // @ts-expect-error
+        modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
     };
 }
 export function Slider(props) {

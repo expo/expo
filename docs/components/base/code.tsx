@@ -93,7 +93,7 @@ export function Code({ className, children, title }: CodeProps) {
 
   const commonClasses = mergeClasses(
     wordWrap && '!break-words !whitespace-pre-wrap',
-    showExpand && !isExpanded && `!overflow-hidden`
+    showExpand && !isExpanded && `!overflow-y-hidden [&::-webkit-scrollbar-track]:!bg-default`
   );
 
   return codeBlockTitle ? (
@@ -108,12 +108,14 @@ export function Code({ className, children, title }: CodeProps) {
           style={{
             maxHeight: collapseBound,
           }}
-          className={mergeClasses('relative whitespace-pre p-4', commonClasses)}
+          className={mergeClasses('relative whitespace-pre', commonClasses)}
           {...attributes}>
-          <code
-            className="text-2xs text-default"
-            dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
-          />
+          <div className="w-fit p-4">
+            <code
+              className="text-2xs text-default"
+              dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
+            />
+          </div>
           {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
         </pre>
       </SnippetContent>
@@ -125,16 +127,18 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle p-4',
+        'relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
       )}
       {...attributes}>
-      <code
-        className="text-2xs text-default"
-        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-      />
+      <div className="w-fit p-4">
+        <code
+          className="text-2xs text-default"
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+        />
+      </div>
       {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
     </pre>
   );
