@@ -31,4 +31,5 @@ export async function setBackgroundColorAsync(color) {
 export async function getBackgroundColorAsync() {
     return await ExpoSystemUI.getBackgroundColorAsync();
 }
+export { Material3DynamicColor } from './Material3DynamicColor';
 //# sourceMappingURL=SystemUI.js.map
