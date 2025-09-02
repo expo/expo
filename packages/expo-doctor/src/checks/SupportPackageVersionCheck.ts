@@ -1,22 +1,7 @@
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
+import { getDeepDependenciesWarningWithPackageNameAsync } from '../utils/explainDependencies';
 import { getRemoteVersionsForSdkAsync } from '../utils/getRemoteVersionsForSdkAsync';
 import { joinWithCommasAnd } from '../utils/strings';
-
-async function getDeepDependenciesWarningWithPackageNameAsync(
-  packageName: string,
-  version: string,
-  projectRoot: string
-): Promise<{ packageName: string; message: string } | null> {
-  const maybeWarning = await getDeepDependenciesWarningAsync(
-    { name: packageName, version },
-    projectRoot
-  );
-  if (maybeWarning) {
-    return { packageName, message: maybeWarning };
-  }
-  return null;
-}
 
 export class SupportPackageVersionCheck implements DoctorCheck {
   description =
