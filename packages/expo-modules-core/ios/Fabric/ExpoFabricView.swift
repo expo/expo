@@ -105,13 +105,13 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   private func areValuesEqual(_ lhs: Any?, _ rhs: Any?) -> Bool {
     switch (lhs, rhs) {
     case (nil, nil):
-        return true
+      return true
     case let (lhsValue as AnyHashable, rhsValue as AnyHashable):
-        return lhsValue == rhsValue
+      return lhsValue == rhsValue
     case let (lhsValue as NSObjectProtocol, rhsValue as NSObjectProtocol):
-        return lhsValue.isEqual(rhsValue)
+      return lhsValue.isEqual(rhsValue)
     default:
-        return false
+      return false
     }
   }
   /**
