@@ -102,18 +102,16 @@ public final class FileSystemModule: Module {
       filePickingHandler.presentDocumentPicker(
         picker: createDirectoryPicker(initialUri: initialUri),
         isDirectory: true,
-        initialUri: initialUri,
-        mimeType: nil,
+        options: nil,
         promise: promise
       )
     }.runOnQueue(.main)
 
-    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, options: FilePickerOptions?, promise: Promise) in
+    AsyncFunction("pickFileAsync") { (options: FilePickerOptions, promise: Promise) in
       filePickingHandler.presentDocumentPicker(
-        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType, openAsCopy: options?.openAsCopy ?? true),
+        picker: createFilePicker(options: options),
         isDirectory: false,
-        initialUri: initialUri,
-        mimeType: mimeType,
+        options: options,
         promise: promise
       )
     }.runOnQueue(.main)

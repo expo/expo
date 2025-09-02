@@ -323,9 +323,15 @@ export default class FileSystemScreen extends React.Component<object, State> {
     }
   };
 
-  _pickFile = async () => {
-    const file = await File.pickFileAsync();
-    Alert.alert('Result', JSON.stringify(file, null, 2));
+  _pickFile = async (allowsMultipleSelection: boolean) => {
+    try {
+      const file = await File.pickFileAsync({
+        allowsMultipleSelection,
+      });
+      Alert.alert('Result', JSON.stringify(file, null, 2));
+    } catch (e) {
+      Alert.alert('Error', e.message);
+    }
   };
 
   _pickDirectory = async () => {
@@ -345,7 +351,8 @@ export default class FileSystemScreen extends React.Component<object, State> {
     return (
       <ScrollView style={{ padding: 10 }}>
         <HeadingText>FileSystem</HeadingText>
-        <ListButton onPress={this._pickFile} title="Pick file" />
+        <ListButton onPress={() => this._pickFile(false)} title="Pick file" />
+        <ListButton onPress={() => this._pickFile(true)} title="Pick multiple files" />
         <ListButton onPress={this._pickDirectory} title="Pick directory" />
         <HeadingText>FileSystem Legacy</HeadingText>
         <ListButton onPress={this._download} title="Download file (1.1MB)" />

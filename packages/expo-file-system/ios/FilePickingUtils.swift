@@ -4,16 +4,13 @@ import UIKit
 import UniformTypeIdentifiers
 
 internal protocol FilePickingResultHandler {
-  func didPickFileAt(url: URL)
+  func didPickFilesAt(urls: [URL])
   func didPickDirectoryAt(url: URL)
   func didCancelPicking()
 }
 
 internal struct FilePickingContext {
   let promise: Promise
-  let initialUri: URL?
-  let mimeType: String?
-  let isDirectory: Bool
   let delegate: FilePickingDelegate
   var pickedUrl: URL?
 }
@@ -49,7 +46,7 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
         self.resultHandler.didCancelPicking()
       }
     } else {
-      self.resultHandler.didPickFileAt(url: url)
+      self.resultHandler.didPickFilesAt(urls: urls)
     }
   }
 
@@ -62,10 +59,10 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
   }
 }
 
-internal func createFilePicker(initialUri: URL?, mimeType: String?, openAsCopy: Bool = true) -> UIDocumentPickerViewController {
+internal func createFilePicker(options: FilePickerOptions) -> UIDocumentPickerViewController {
   if #available(iOS 14.0, *) {
     let utTypes: [UTType]
-    if let mimeType = mimeType {
+    if let mimeType = options.mimeType {
       if let utType = UTType(mimeType: mimeType) {
         utTypes = [utType]
       } else {
@@ -75,9 +72,9 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?, openAsCopy: 
       utTypes = [UTType.item]
     }
 
-    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: openAsCopy)
+    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: options.openAsCopy)
 
-    if let initialUri = initialUri {
+    if let initialUri = options.initialUri {
       picker.directoryURL = initialUri
     }
 
@@ -85,7 +82,7 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?, openAsCopy: 
   }
 
   let utiTypes: [String]
-  if let mimeType = mimeType {
+  if let mimeType = options.mimeType {
     utiTypes = [toUTI(mimeType: mimeType)]
   } else {
     utiTypes = [kUTTypeItem as String]
@@ -93,7 +90,7 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?, openAsCopy: 
 
   let picker = UIDocumentPickerViewController(documentTypes: utiTypes, in: .import)
 
-  if let initialUri = initialUri {
+  if let initialUri = options.initialUri {
     picker.directoryURL = initialUri
   }
 

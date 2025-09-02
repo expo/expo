@@ -36,5 +36,8 @@ struct DirectoryInfo: Record {
 }
 
 struct FilePickerOptions: Record {
+  @Field var initialUri: URL?
+  @Field var mimeType: String?
   @Field var openAsCopy: Bool = true
+  @Field var allowsMultipleSelection: Bool = false
 }

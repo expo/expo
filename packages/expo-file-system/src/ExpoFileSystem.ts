@@ -11,7 +11,7 @@ declare class ExpoFileSystemModule extends NativeModule {
     options?: DownloadOptions
   ): Promise<string>;
   pickDirectoryAsync(initialUri?: string): Promise<Directory>;
-  pickFileAsync(initialUri?: string, mimeType?: string, options?: FilePickerOptions): Promise<File>;
+  pickFileAsync(options?: FilePickerOptions): Promise<File[]>;
   totalDiskSpace: number;
   availableDiskSpace: number;
   documentDirectory: string;

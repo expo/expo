@@ -142,6 +142,14 @@ export type DownloadOptions = {
 
 export type FilePickerOptions = {
   /**
+   * An optional URI pointing to an initial folder on which the file picker is opened.
+   */
+  initialUri?: string;
+  /**
+   * A mime type that is used to filter out files that can be picked out.
+   */
+  mimeType?: string;
+  /**
    * Whether to open the picked file as a copy.
    * If you want to disable it, make sure you set `supportsOpeningDocumentsInPlace` in [app config](#configuration-in-app-config) to `true`.
    * @default true
@@ -149,6 +157,13 @@ export type FilePickerOptions = {
    * @platform ios
    */
   openAsCopy?: boolean;
+  /**
+   * Allows multiple files to be selected from the system UI.
+   * @default false
+   *
+   * @platform ios
+   */
+  allowsMultipleSelection?: boolean;
 };
 
 /**
@@ -287,16 +302,10 @@ export declare class File {
    *
    * On iOS, by default, this method returns a temporary copy of the selected file, ensuring the original remains unchanged. To open the original file in place (without copying), set `openAsCopy` to `false` in the options.
    *
-   * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
-   * @param mimeType A mime type that is used to filter out files that can be picked out.
    * @param options An optional [`FilePickerOptions`](#filepickeroptions) object containing options for the file picker.
-   * @returns a `File` instance.
+   * @returns a `File` instance or an array of `File` instances if `allowsMultipleSelection` is `true`.
    */
-  static pickFileAsync(
-    initialUri?: string,
-    mimeType?: string,
-    options?: FilePickerOptions
-  ): Promise<File>;
+  static pickFileAsync(options?: FilePickerOptions): Promise<File | File[]>;
 
   /**
    * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.

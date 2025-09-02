@@ -138,13 +138,12 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
-File.pickFileAsync = async function (
-  initialUri?: string,
-  mimeType?: string,
-  options?: FilePickerOptions
-) {
-  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType, options)).uri;
-  return new File(file);
+File.pickFileAsync = async function (options: FilePickerOptions = {}) {
+  const result = (await ExpoFileSystem.pickFileAsync(options)).map((file) => new File(file.uri));
+  if (options.allowsMultipleSelection) {
+    return result;
+  }
+  return result[0];
 };
 
 /**
