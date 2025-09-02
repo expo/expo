@@ -4,7 +4,7 @@ import ExpoModulesCore
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
-  #if os(iOS) || os(tvOS)
+  #if os(iOS)
   private lazy var filePickingHandler = FilePickingHandler(module: self)
   #endif
 
@@ -107,7 +107,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
-      #if os(iOS) || os(tvOS)
+      #if os(iOS)
       filePickingHandler.presentDocumentPicker(
         picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
         isDirectory: false,
