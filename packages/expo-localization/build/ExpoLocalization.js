@@ -73,8 +73,8 @@ export default {
             catch { }
             const { region, language, script } = locale;
             textDirection =
-                locale.textInfo?.direction ??
-                    locale.getTextInfo?.()?.direction ??
+                locale.getTextInfo?.()?.direction ??
+                    locale.textInfo?.direction ??
                     languageTextDirection(locale);
             if (region) {
                 temperatureUnit = regionToTemperatureUnit(region);
