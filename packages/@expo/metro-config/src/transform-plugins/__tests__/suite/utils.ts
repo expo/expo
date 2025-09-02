@@ -48,6 +48,7 @@ export const makeEval = ({
           path: request,
         });
       if (!mod.loaded) {
+        mod.loaded = true;
         const code = transform(input[request]);
         // eslint-disable-next-line no-new-func
         const wrapper = new Function(
@@ -59,8 +60,12 @@ export const makeEval = ({
           code
         );
         const { exports, require, path: dirname } = mod;
-        Reflect.apply(wrapper, exports, [exports, require, mod, request, dirname]);
-        mod.loaded = true;
+        try {
+          Reflect.apply(wrapper, exports, [exports, require, mod, request, dirname]);
+        } catch (error) {
+          error.message += ` (eval: ${dirname})`;
+          throw error;
+        }
       }
       return mod.exports;
     }
