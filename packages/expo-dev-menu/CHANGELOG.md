@@ -31,6 +31,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+- [iOS] Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 7.0.2 — 2025-08-16
 
