@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { MissingHostErrorView, isMissingHost, markChildrenAsNestedInSwiftUI } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const ButtonNativeView = requireNativeView('ExpoUI', 'Button');
 /**

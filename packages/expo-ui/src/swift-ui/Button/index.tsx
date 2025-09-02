@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { MissingHostErrorView, isMissingHost, markChildrenAsNestedInSwiftUI } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { MissingHostErrorView, isMissingHost, markChildrenAsNestedInSwiftUI } from '../Host';
 
 /**
  * The role of the button.
