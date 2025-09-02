@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Add deep dependency version check for expo-modules-core against recommended range. ([#39316](https://github.com/expo/expo/pull/39316) by by [@entiendonull](https://github.com/entiendonull))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
