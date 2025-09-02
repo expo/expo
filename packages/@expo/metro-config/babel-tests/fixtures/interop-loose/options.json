@@ -1,5 +1,0 @@
-{
-  "externalHelpers": true,
-  "sourceType": "module",
-  "plugins": [["transform-modules-commonjs", { "loose": true }]]
-}

@@ -1,4 +1,0 @@
-{
-  "externalHelpers": true,
-  "plugins": [["transform-modules-commonjs", { "lazy": true }]]
-}

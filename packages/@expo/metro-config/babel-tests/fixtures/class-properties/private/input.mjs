@@ -1,3 +1,0 @@
-class Example {
-  #property = this;
-}

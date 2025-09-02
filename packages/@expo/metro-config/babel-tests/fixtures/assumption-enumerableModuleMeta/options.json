@@ -1,6 +1,0 @@
-{
-  "assumptions": {
-    "enumerableModuleMeta": true
-  },
-  "plugins": ["transform-modules-commonjs"]
-}
