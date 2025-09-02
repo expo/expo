@@ -8,14 +8,14 @@ import React, {
   useState,
   type ReactElement,
 } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { useRouter } from '../hooks';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
-import { NativeLinkPreview, NativeLinkPreviewTrigger } from './preview/native';
+import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
 import { shouldLinkExternally } from '../utils/url';
@@ -134,11 +134,11 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         if (!isPad) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
-      }}>
+      }}
+      style={StyleSheet.flatten([{ display: 'contents', borderRadius: highlightBorderRadius }])}
+      disableForceFlatten>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>
-          <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
-        </NativeLinkPreviewTrigger>
+        <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
         {preview}
         {menuElement}
       </InternalLinkPreviewContext>

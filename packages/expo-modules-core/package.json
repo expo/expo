@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "3.0.5",
+  "version": "3.0.10",
   "description": "The core of Expo Modules architecture",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -8,6 +8,22 @@
     "*.fx.ts",
     "./src/polyfill/*.ts"
   ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./types": "./types.d.ts",
+    "./src/polyfill/dangerous-internal": {
+      "types": "./build/polyfill/dangerous-internal.d.ts",
+      "default": "./src/polyfill/dangerous-internal.ts"
+    },
+    "./src/uuid": {
+      "types": "./build/uuid/index.d.ts",
+      "default": "./src/uuid/index.ts"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -47,6 +63,6 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.3"
+    "expo-module-scripts": "^5.0.6"
   }
 }

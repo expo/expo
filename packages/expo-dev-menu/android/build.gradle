@@ -12,7 +12,7 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
-version = '7.0.3'
+version = '7.0.7'
 
 expoModule {
   canBePublished false
@@ -22,7 +22,7 @@ android {
   namespace "expo.modules.devmenu"
   defaultConfig {
     versionCode 10
-    versionName '7.0.3'
+    versionName '7.0.7'
   }
   buildFeatures {
     compose true
@@ -77,7 +77,7 @@ dependencies {
 
   implementation("com.composables:core:1.37.0")
 
-  implementation 'io.github.lukmccall:radix-ui-colors:1.0.1'
+  api 'io.github.lukmccall:radix-ui-colors:1.0.1'
 
   // Needed by gesture handler
   implementation "androidx.core:core-ktx:1.6.0"

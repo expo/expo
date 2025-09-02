@@ -1,14 +1,36 @@
-export type CreateOptions = {
+export type FileCreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
      * @default false
      */
     intermediates?: boolean;
     /**
-     * Whether to overwrite the file or directory if it exists.
+     * Whether to overwrite the file if it exists.
      * @default false
      */
     overwrite?: boolean;
+};
+export type DirectoryCreateOptions = {
+    /**
+     * Whether to create intermediate directories if they do not exist.
+     * @default false
+     */
+    intermediates?: boolean;
+    /**
+     * Whether to overwrite the directory if it exists.
+     * @default false
+     */
+    overwrite?: boolean;
+    /**
+     * This flag controls whether the `create` operation is idempotent
+     * (safe to call multiple times without error).
+     *
+     * If `true`, creating a file or directory that already exists will succeed silently.
+     * If `false`, an error will be thrown when the target already exists.
+     *
+     * @default false
+     */
+    idempotent?: boolean;
 };
 export declare class Directory {
     /**
@@ -42,9 +64,9 @@ export declare class Directory {
     /**
      * Creates a directory that the current uri points to.
      *
-     * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists.
+     * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists (unless `idempotent` is `true`).
      */
-    create(options?: CreateOptions): void;
+    create(options?: DirectoryCreateOptions): void;
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
     /**
@@ -55,6 +77,10 @@ export declare class Directory {
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
     move(destination: Directory | File): void;
+    /**
+     * Renames a directory.
+     */
+    rename(newName: string): void;
     /**
      * @hidden
      * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
@@ -81,14 +107,10 @@ export declare class Directory {
      */
     size: number | null;
     /**
-     *
      * A static method that opens a file picker to select a directory.
-     *
+     * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
+     * @returns a `Directory` instance. The underlying uri will be a content URI on Android.
      * @platform android
-     *
-     * @param initialUri An optional URI pointing to an initial folder on which the directory picker is opened.
-     *
-     * @returns A `Directory` instance. The underlying URI will be a content URI on Android.
      */
     static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
@@ -176,7 +198,7 @@ export declare class File {
      *
      * @throws Error if the containing folder doesn't exist, the application has no read access to it or the file (or directory with the same path) already exists.
      */
-    create(options?: CreateOptions): void;
+    create(options?: FileCreateOptions): void;
     /**
      * Copies a file.
      */
@@ -185,6 +207,10 @@ export declare class File {
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
     move(destination: Directory | File): void;
+    /**
+     * Renames a file.
+     */
+    rename(newName: string): void;
     /**
      * Returns A `FileHandle` object that can be used to read and write data to the file.
      * @throws Error if the file does not exist or cannot be opened.
@@ -205,16 +231,15 @@ export declare class File {
      */
     static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
     /**
-     * A static method that opens a file picker to select a single file of specified type.
+     * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
      *
-     * @platform android
+     * Selecting multiple files is not supported yet.
      *
      * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
-     *
-     * @returns A `File` instance.
+     * @returns a `File` instance or an array of `File` instances.
      */
-    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
+    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */

@@ -97,7 +97,7 @@ internal struct MediaHandler {
           imageData: imageData, orImageFileUrl: targetUrl, tryReadingFile: fileWasCopied) : nil
 
       let exif = options.exif ? await ImageUtils.readExifFrom(mediaInfo: mediaInfo) : nil
-      let size = ImageUtils.readSizeFrom(url: targetUrl) ?? .zero
+      let size = CGSize(width: image.size.width, height: image.size.height)
 
       return AssetInfo(
         assetId: asset?.localIdentifier,
@@ -144,7 +144,7 @@ internal struct MediaHandler {
         let cachedUrl = targetUrl
         let fileExtension = "." + cachedUrl.pathExtension
 
-        let size = ImageUtils.readSizeFrom(url: cachedUrl) ?? .zero
+        let size = ImageUtils.readVisualSizeFrom(url: cachedUrl) ?? .zero
         let fileSize = getFileSize(from: cachedUrl)
         let mimeType = getMimeType(from: cachedUrl.pathExtension)
         let fileName = itemProvider.suggestedName.map { $0 + fileExtension }
@@ -197,7 +197,7 @@ internal struct MediaHandler {
     let exif = options.exif ? ImageUtils.readExifFrom(data: rawData) : nil
     let base64 = options.base64 ? imageData?.base64EncodedString() : nil
 
-    let size = ImageUtils.readSizeFrom(url: targetUrl) ?? .zero
+    let size = CGSize(width: image.size.width, height: image.size.height)
 
     return AssetInfo(
       assetId: selectedImage.assetIdentifier,

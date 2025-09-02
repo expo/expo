@@ -18,37 +18,46 @@ export type Options = Readonly<{
     };
 }>;
 type State = {
-    exportAll: {
-        file: string;
-        loc?: t.SourceLocation | null;
-        [key: string]: unknown;
-    }[];
-    exportDefault: {
-        local: string;
-        loc?: t.SourceLocation | null;
-        namespace?: string;
-        [key: string]: unknown;
-    }[];
-    exportNamed: {
-        local: string;
-        remote: string;
-        loc?: t.SourceLocation | null;
-        namespace?: string;
-        [key: string]: unknown;
-    }[];
-    imports: {
-        node: t.Statement;
-    }[];
     importDefault: t.Node;
     importAll: t.Node;
     opts: Options;
-    importedIdentifiers: Map<string, {
-        source: string;
-        imported: string;
+    originalImportOrder: Map<string, t.StringLiteral>;
+    exportAllFrom: Map<string, {
+        loc: t.SourceLocation | null | undefined;
     }>;
-    namespaceForLocal: Map<string, {
-        namespace: string;
-        remote: string;
+    importAllFromAs: Map<string, {
+        loc: t.SourceLocation | null | undefined;
+        as: string;
+    }[]>;
+    exportAllFromAs: Map<string, {
+        loc: t.SourceLocation | null | undefined;
+        as: string;
+    }[]>;
+    importDefaultFromAs: Map<string, {
+        loc: t.SourceLocation | null | undefined;
+        as: t.Identifier;
+    }[]>;
+    exportDefault: {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+    }[];
+    exportNamedFrom: Map<string, {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+        as: string;
+    }[]>;
+    importNamedFrom: Map<string, {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+        as: string;
+    }[]>;
+    exportNamed: {
+        loc: t.SourceLocation | null | undefined;
+        name: string;
+        as: string;
+    }[];
+    importSideEffect: Map<string, {
+        loc: t.SourceLocation | null | undefined;
     }>;
     [key: string]: unknown;
 };

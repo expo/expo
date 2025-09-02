@@ -43,7 +43,7 @@ With Expo Go, you only needed to build the JavaScript bundle, but with developme
 
 Once you've built your native app, you won't need to build it again unless you add or update a library with native code, or change any native code or configuration, such as the app name.
 
-> After generating your **android** and/or **ios** directories, make sure you add them to **.gitignore** instead of checking them into Git. This ensures you can always regenerate the code locally or on CI when needed and never have to edit native code manually.
+> The **android** and **ios** directories are automatically added to **.gitignore** when you create a new project, so they won't be checked into Git. This ensures you can always regenerate the code locally or on CI with [CNG](/workflow/continuous-native-generation/) when needed and never have to edit native code manually.
 
 ### Option 1: Build on your local machine
 

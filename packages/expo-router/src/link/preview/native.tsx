@@ -38,20 +38,6 @@ export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
 }
 // #endregion
 
-// #region Trigger View
-export type NativeLinkPreviewTriggerProps = ViewProps;
-const NativeLinkPreviewTriggerView: React.ComponentType<NativeLinkPreviewTriggerProps> | null =
-  areNativeViewsAvailable
-    ? requireNativeView('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewTrigger')
-    : null;
-export function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps) {
-  if (!NativeLinkPreviewTriggerView) {
-    return null;
-  }
-  return <NativeLinkPreviewTriggerView {...props} />;
-}
-// #endregion
-
 // #region Preview View
 export interface TabPath {
   oldTabKey: string;
@@ -64,6 +50,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
         path: TabPath[];
       }
     | undefined;
+  disableForceFlatten?: boolean;
   onWillPreviewOpen?: () => void;
   onDidPreviewOpen?: () => void;
   onPreviewWillClose?: () => void;
@@ -101,6 +88,8 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
     props.style,
     {
       position: 'absolute',
+      top: 0,
+      left: 0,
     } as const,
   ]);
   return <NativeLinkPreviewContentView {...props} style={style} />;

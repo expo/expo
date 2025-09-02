@@ -26,7 +26,9 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
+import expo.modules.kotlin.defaultmodules.AppDirectoriesModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
+import expo.modules.kotlin.defaultmodules.FilePermissionModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -107,9 +109,14 @@ class AppContext(
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
       // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
-      hostingRuntimeContext.registry.register(ErrorManagerModule())
-      hostingRuntimeContext.registry.register(NativeModulesProxyModule())
-      hostingRuntimeContext.registry.register(modulesProvider)
+      registry.register(ErrorManagerModule())
+      registry.register(NativeModulesProxyModule())
+
+      // Registering modules that were previously provided by legacy FileSystem module.
+      legacyModuleRegistry.registerInternalModule(FilePermissionModule())
+      legacyModuleRegistry.registerInternalModule(AppDirectoriesModule(this))
+
+      registry.register(modulesProvider)
 
       logger.info("✅ AppContext was initialized")
     }
@@ -132,7 +139,8 @@ class AppContext(
    */
   inline fun <reified Module> legacyModule(): Module? {
     return try {
-      legacyModuleRegistry.getModule(Module::class.java)
+      val module = legacyModuleRegistry.getModule(Module::class.java)
+      return module
     } catch (_: Exception) {
       null
     }

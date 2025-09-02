@@ -53,6 +53,9 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...
     const builder = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
         children,
         backBehavior,
+        screenOptions: {
+            disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
+        },
     });
     const { state, descriptors } = builder;
     const { routes } = state;

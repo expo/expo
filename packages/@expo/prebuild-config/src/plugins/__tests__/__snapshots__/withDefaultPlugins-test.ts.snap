@@ -13,7 +13,7 @@ exports[`built-in plugins compiles mods 1`] = `
               "launchScreen": "YES",
               "propertyAccessControl": "none",
               "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "32700.99.1234",
+              "toolsVersion": "24093.7",
               "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
               "useAutolayout": "YES",
               "useSafeAreas": "YES",
@@ -37,6 +37,12 @@ exports[`built-in plugins compiles mods 1`] = `
                   },
                   {
                     "$": {
+                      "minToolsVersion": "11.0",
+                      "name": "System colors in document resources",
+                    },
+                  },
+                  {
+                    "$": {
                       "minToolsVersion": "8.0",
                       "name": "documents saved in the Xcode 8 format",
                     },
@@ -53,7 +59,7 @@ exports[`built-in plugins compiles mods 1`] = `
                   {
                     "$": {
                       "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "22685",
+                      "version": "24053.1",
                     },
                   },
                 ],
@@ -77,6 +83,23 @@ exports[`built-in plugins compiles mods 1`] = `
                       "name": "SplashScreenLogo",
                       "width": "100",
                     },
+                  },
+                ],
+                "systemColor": [
+                  {
+                    "$": {
+                      "name": "systemBackgroundColor",
+                    },
+                    "color": [
+                      {
+                        "$": {
+                          "alpha": "1",
+                          "colorSpace": "custom",
+                          "customColorSpace": "genericGamma22GrayColorSpace",
+                          "white": "1",
+                        },
+                      },
+                    ],
                   },
                 ],
               },
@@ -123,6 +146,14 @@ exports[`built-in plugins compiles mods 1`] = `
                                       "flexibleMaxX": "YES",
                                       "flexibleMaxY": "YES",
                                       "key": "autoresizingMask",
+                                    },
+                                  },
+                                ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "key": "backgroundColor",
+                                      "systemColor": "systemBackgroundColor",
                                     },
                                   },
                                 ],
@@ -1210,7 +1241,7 @@ exports[`built-in plugins introspects mods 1`] = `
               "launchScreen": "YES",
               "propertyAccessControl": "none",
               "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "32700.99.1234",
+              "toolsVersion": "24093.7",
               "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
               "useAutolayout": "YES",
               "useSafeAreas": "YES",
@@ -1234,6 +1265,12 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
+                      "minToolsVersion": "11.0",
+                      "name": "System colors in document resources",
+                    },
+                  },
+                  {
+                    "$": {
                       "minToolsVersion": "8.0",
                       "name": "documents saved in the Xcode 8 format",
                     },
@@ -1250,7 +1287,7 @@ exports[`built-in plugins introspects mods 1`] = `
                   {
                     "$": {
                       "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "22685",
+                      "version": "24053.1",
                     },
                   },
                 ],
@@ -1274,6 +1311,23 @@ exports[`built-in plugins introspects mods 1`] = `
                       "name": "SplashScreenLogo",
                       "width": "100",
                     },
+                  },
+                ],
+                "systemColor": [
+                  {
+                    "$": {
+                      "name": "systemBackgroundColor",
+                    },
+                    "color": [
+                      {
+                        "$": {
+                          "alpha": "1",
+                          "colorSpace": "custom",
+                          "customColorSpace": "genericGamma22GrayColorSpace",
+                          "white": "1",
+                        },
+                      },
+                    ],
                   },
                 ],
               },
@@ -1320,6 +1374,14 @@ exports[`built-in plugins introspects mods 1`] = `
                                       "flexibleMaxX": "YES",
                                       "flexibleMaxY": "YES",
                                       "key": "autoresizingMask",
+                                    },
+                                  },
+                                ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "key": "backgroundColor",
+                                      "systemColor": "systemBackgroundColor",
                                     },
                                   },
                                 ],

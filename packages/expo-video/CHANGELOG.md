@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 3.0.7 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 — 2025-08-27
+
+### 💡 Others
+
+- [Android] Bump media3 version to 1.8.0. ([#39184](https://github.com/expo/expo/pull/39184) by [@behenate](https://github.com/behenate))
+
+## 3.0.5 — 2025-08-25
+
+### 🛠 Breaking changes
+
+- [Android] Always keep the native controls always enabled in fullscreen mode to mimic iOS. ([#39015](https://github.com/expo/expo/pull/39015) by [@behenate](https://github.com/behenate))
+
 ## 3.0.4 — 2025-08-21
 
 ### 🎉 New features
@@ -20,6 +36,7 @@
 
 - [iOS] Fix `sourceLoad` event not being emitted. ([#39023](https://github.com/expo/expo/pull/39023) by [@behenate](https://github.com/behenate))
 - [Web] Fix audio not playing due to conflicting CORS and AudioNode settings. ([#39039](https://github.com/expo/expo/pull/39039) by [@behenate](https://github.com/behenate))
+- [iOS] Background mode playback fix. ([#33706](https://github.com/expo/expo/pull/33706) by [@hromovp](https://github.com/hromovp))
 
 ## 3.0.3 — 2025-08-21
 

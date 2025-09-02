@@ -4,12 +4,12 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '6.0.2'
+version = '6.0.5'
 
 android {
   namespace "org.unimodules.apploader"
   defaultConfig {
     versionCode 8
-    versionName '6.0.2'
+    versionName '6.0.5'
   }
 }

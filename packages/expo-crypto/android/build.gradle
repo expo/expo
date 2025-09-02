@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '15.0.2'
+version = '15.0.5'
 
 android {
   namespace "expo.modules.crypto"
   defaultConfig {
     versionCode 25
-    versionName "15.0.2"
+    versionName "15.0.5"
   }
 }
 

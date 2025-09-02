@@ -119,11 +119,9 @@ function LinkWithPreview({ children, ...rest }) {
             if (!isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
-        }}>
+        }} style={react_native_1.StyleSheet.flatten([{ display: 'contents', borderRadius: highlightBorderRadius }])} disableForceFlatten>
       <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <native_1.NativeLinkPreviewTrigger style={{ borderRadius: highlightBorderRadius }}>
-          <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
-        </native_1.NativeLinkPreviewTrigger>
+        <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
         {preview}
         {menuElement}
       </InternalLinkPreviewContext_1.InternalLinkPreviewContext>

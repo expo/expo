@@ -131,7 +131,12 @@ function TabNavigator(props: { theme: string }) {
         name="HomeStack"
         component={HomeStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <HomeFilledIcon style={styles.icon} color={color} size={24} />,
+          tabBarIcon: (props: any) =>
+            Platform.OS === 'ios' ? (
+              { sfSymbolName: 'house.fill' }
+            ) : (
+              <HomeFilledIcon {...props} style={styles.icon} size={24} />
+            ),
           tabBarLabel: 'Home',
         }}
       />
@@ -141,7 +146,12 @@ function TabNavigator(props: { theme: string }) {
           name="DiagnosticsStack"
           component={DiagnosticsStackScreen}
           options={{
-            tabBarIcon: (props) => <DiagnosticsIcon {...props} style={styles.icon} size={24} />,
+            tabBarIcon: (props: any) =>
+              Platform.OS === 'ios' ? (
+                { sfSymbolName: 'ecg.text.page.fill' }
+              ) : (
+                <DiagnosticsIcon {...props} style={styles.icon} size={24} />
+              ),
             tabBarLabel: 'Diagnostics',
           }}
         />
@@ -151,7 +161,12 @@ function TabNavigator(props: { theme: string }) {
         component={SettingsStackScreen}
         options={{
           title: 'Settings',
-          tabBarIcon: (props) => <SettingsFilledIcon {...props} style={styles.icon} size={24} />,
+          tabBarIcon: (props: any) =>
+            Platform.OS === 'ios' ? (
+              { sfSymbolName: 'gearshape.fill' }
+            ) : (
+              <SettingsFilledIcon {...props} style={styles.icon} size={24} />
+            ),
           tabBarLabel: 'Settings',
         }}
       />

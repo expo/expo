@@ -12,8 +12,6 @@ export interface NativeLinkPreviewActionProps {
     onSelected: () => void;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
-export type NativeLinkPreviewTriggerProps = ViewProps;
-export declare function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps): import("react").JSX.Element | null;
 export interface TabPath {
     oldTabKey: string;
     newTabKey: string;
@@ -23,6 +21,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
     tabPath: {
         path: TabPath[];
     } | undefined;
+    disableForceFlatten?: boolean;
     onWillPreviewOpen?: () => void;
     onDidPreviewOpen?: () => void;
     onPreviewWillClose?: () => void;
