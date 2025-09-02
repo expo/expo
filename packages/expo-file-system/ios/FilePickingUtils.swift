@@ -1,3 +1,4 @@
+#if os(iOS) || os(tvOS)
 import ExpoModulesCore
 import MobileCoreServices
 import UIKit
@@ -129,3 +130,4 @@ private func toUTI(mimeType: String) -> String {
   }
   return uti as String
 }
+#endif
