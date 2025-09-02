@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Revamp Import Export Plugin for higher compliance, reliable removal of double-requires, and tracing of unused imports. This also fixes an edge case for colliding export names and reexport-all order ([#39282](https://github.com/expo/expo/pull/39282) by [@kitten](https://github.com/kitten))
+- Merge renameTopLevelModuleVariables into importExportLiveBindings plugin
 
 ## 0.21.7 — 2025-08-31
 

@@ -1343,8 +1343,13 @@ exports[`interop module-shadow 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.module = module;
-function module() {}"
+Object.defineProperty(exports, "module", {
+  enumerable: true,
+  get: function () {
+    return _module;
+  }
+});
+function _module() {}"
 `;
 
 exports[`interop multi-load 1`] = `"console.log(helper);"`;
@@ -1791,28 +1796,28 @@ exports[`misc keep-this-root-reference 1`] = `"this;"`;
 
 exports[`misc local-exports-decl-top-level 1`] = `
 "require("foo");
-var exports = "local exports";
-var module = "local module";
-console.log(exports);
-console.log(exports.prop);
-exports++;
-exports += 4;
+var _exports = "local exports";
+var _module = "local module";
+console.log(_exports);
+console.log(_exports.prop);
+_exports++;
+_exports += 4;
 ({
-  exports
+  exports: _exports
 } = {});
-[exports] = [];
-exports = {};
-exports.prop = "";
-console.log(module);
-console.log(module.exports);
-module++;
-module += 4;
+[_exports] = [];
+_exports = {};
+_exports.prop = "";
+console.log(_module);
+console.log(_module.exports);
+_module++;
+_module += 4;
 ({
-  module
+  module: _module
 } = {});
-[module] = [];
-module = {};
-module.prop = "";"
+[_module] = [];
+_module = {};
+_module.prop = "";"
 `;
 
 exports[`misc local-exports-decl-with-esm-exports 1`] = `
@@ -1825,7 +1830,7 @@ Object.defineProperty(exports, "x", {
     return x;
   }
 });
-var exports = 1;
+var _exports = 1;
 let x = 2;
 function fn() {
   x = 3;
