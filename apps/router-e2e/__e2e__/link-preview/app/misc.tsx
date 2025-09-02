@@ -1,6 +1,13 @@
 import { Link, usePathname } from 'expo-router';
 import React from 'react';
-import { View, Text, useWindowDimensions, TouchableOpacity, ScrollView, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  useWindowDimensions,
+  TouchableOpacity,
+  ScrollView,
+  Pressable,
+} from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
 
@@ -18,10 +25,14 @@ const HomeIndex = () => {
         <Text>Misc</Text>
         <Text>Current Path: {pathname}</Text>
       </View>
-      <Text style={{ marginBottom: 16 }}>Time: {time}</Text>
+      <Text>Time: {time}</Text>
       <Spacer />
       <Link href="/">
         <Link.Trigger>Link.Preview: /</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/misc">
+        <Link.Trigger>Link.Preview: /misc</Link.Trigger>
         <Link.Preview />
       </Link>
       <Spacer />

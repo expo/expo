@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- fix link preview navigation to same href ([#39329](https://github.com/expo/expo/pull/39329) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.0-preview.12 — 2025-08-31
