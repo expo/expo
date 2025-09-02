@@ -1,6 +1,6 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
-import { MaterialIcon } from '../MaterialIcon/types';
+import { MaterialIcon } from './types';
+import { ExpoModifier, ViewEvent } from '../../types';
 /**
  * The built-in button styles available on Android.
  * - `outlined` - A button with an outline.
@@ -51,6 +51,8 @@ export type ButtonProps = {
      * Disabled state of the button.
      */
     disabled?: boolean;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 /**
  * @hidden
