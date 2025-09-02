@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add runtime warning if SwiftUI components are not wrapped with host ([#39317](https://github.com/expo/expo/pull/39317) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
