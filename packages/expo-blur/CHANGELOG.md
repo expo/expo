@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `GlassView` using `UIGlassEffect` ([#39322](https://github.com/expo/expo/pull/39322) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
