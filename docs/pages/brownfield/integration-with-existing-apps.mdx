@@ -112,6 +112,19 @@ includeBuild(expoAutolinking.reactNativeGradlePlugin)
 // include(":app")
 ```
 
+If you're using a custom folder structure, you need to explicitly set your project root in **settings.gradle** for autolinking to work. Modify the following lines:
+
+```diff settings.gradle
++expoAutolinking {
++  projectRoot = new File(rootDir, "exp")
++}
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+-  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
++  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand, file(rootDir), files("yarn.lock"))
+}
+```
+
 </Step>
 
 <Step label="2">
