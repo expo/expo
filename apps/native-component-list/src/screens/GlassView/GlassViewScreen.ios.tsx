@@ -2,7 +2,8 @@ import { GlassStyle, GlassView } from 'expo-blur';
 import Checkbox from 'expo-checkbox';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 // Static color options for tinting
@@ -64,21 +65,13 @@ export default function GlassViewScreen() {
 
       <View style={styles.controlsSection}>
         <Text style={styles.sectionTitle}>Glass Effect Style</Text>
-        <View style={styles.checkboxContainer}>
-          {glassStyles.map((style) => (
-            <TouchableOpacity
-              key={style}
-              style={styles.checkboxRow}
-              onPress={() => setSelectedStyle(style)}>
-              <Checkbox
-                value={selectedStyle === style}
-                onValueChange={() => setSelectedStyle(style)}
-                color="#007AFF"
-              />
-              <Text style={styles.checkboxLabel}>{style}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <SegmentedControl
+          values={glassStyles}
+          selectedIndex={glassStyles.indexOf(selectedStyle)}
+          onChange={(event) => {
+            setSelectedStyle(event.nativeEvent.value as GlassStyle);
+          }}
+        />
 
         <Text style={styles.sectionTitle}>Interactive Mode</Text>
         <TouchableOpacity
