@@ -1,0 +1,603 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`interop-loose export-default 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _default = 42;
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-default-2 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _default = {};
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-default-3 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _default = [];
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-default-4 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _default = foo;
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-default-5 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+function _default() {}
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-default-6 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+class _default {}
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-default-7 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+function foo() {}
+exports.default = foo;"
+`;
+
+exports[`interop-loose export-default-8 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+class Foo {}
+exports.default = Foo;"
+`;
+
+exports[`interop-loose export-default-9 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var foo;
+exports.default = foo;"
+`;
+
+exports[`interop-loose export-default-10 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _default = function () {
+  return "foo";
+}();
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-default-11 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _default = new Cacher();
+function Cacher(databaseName) {}
+exports.Cacher = Cacher;
+exports.default = _default;"
+`;
+
+exports[`interop-loose export-destructured 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+let x = 0;
+let y = 0;
+function f1() {
+  ({
+    x
+  } = {
+    x: 1
+  });
+}
+function f2() {
+  ({
+    x,
+    y
+  } = {
+    x: 2,
+    y: 3
+  });
+}
+function f3() {
+  [x, y, z] = [3, 4, 5];
+}
+function f4() {
+  [x,, y] = [3, 4, 5];
+}
+exports.x = x;
+exports.y = y;
+exports.f1 = f1;
+exports.f2 = f2;
+exports.f3 = f3;
+exports.f4 = f4;"
+`;
+
+exports[`interop-loose export-from 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _foo = require("foo");
+for (var _key in _foo) {
+  exports[_key] = _foo[_key];
+}"
+`;
+
+exports[`interop-loose export-from-2 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _foo = require("foo").foo;
+exports.foo = _foo;"
+`;
+
+exports[`interop-loose export-from-3 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _foo = require("foo").foo;
+var _bar = require("foo").bar;
+exports.foo = _foo;
+exports.bar = _bar;"
+`;
+
+exports[`interop-loose export-from-4 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _foo = require("foo").foo;
+exports.bar = _foo;"
+`;
+
+exports[`interop-loose export-from-5 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _foo = require("foo").foo;
+exports.default = _foo;"
+`;
+
+exports[`interop-loose export-from-6 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _foo = require("foo").foo;
+var _bar = require("foo").bar;
+exports.default = _foo;
+exports.bar = _bar;"
+`;
+
+exports[`interop-loose export-from-7 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _default = _$$_IMPORT_DEFAULT("foo");
+exports.foo = _default;"
+`;
+
+exports[`interop-loose export-from-8 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var _foo = require("foo"),
+  foo = _foo.foo,
+  foo1 = _foo.foo1,
+  foo2 = _foo.foo2,
+  foo3 = _foo.foo3,
+  foo4 = _foo.foo4,
+  foo5 = _foo.foo5,
+  foo6 = _foo.foo6,
+  foo7 = _foo.foo7,
+  foo8 = _foo.foo8,
+  foo9 = _foo.foo9,
+  foo10 = _foo.foo10,
+  foo11 = _foo.foo11,
+  foo12 = _foo.foo12,
+  foo13 = _foo.foo13,
+  foo14 = _foo.foo14,
+  foo15 = _foo.foo15,
+  foo16 = _foo.foo16,
+  foo17 = _foo.foo17,
+  foo18 = _foo.foo18,
+  foo19 = _foo.foo19,
+  foo20 = _foo.foo20,
+  foo21 = _foo.foo21,
+  foo22 = _foo.foo22,
+  foo23 = _foo.foo23,
+  foo24 = _foo.foo24,
+  foo25 = _foo.foo25,
+  foo26 = _foo.foo26,
+  foo27 = _foo.foo27,
+  foo28 = _foo.foo28,
+  foo29 = _foo.foo29,
+  foo30 = _foo.foo30,
+  foo31 = _foo.foo31,
+  foo32 = _foo.foo32,
+  foo33 = _foo.foo33,
+  foo34 = _foo.foo34,
+  foo35 = _foo.foo35,
+  foo36 = _foo.foo36,
+  foo37 = _foo.foo37,
+  foo38 = _foo.foo38,
+  foo39 = _foo.foo39,
+  foo40 = _foo.foo40,
+  foo41 = _foo.foo41,
+  foo42 = _foo.foo42,
+  foo43 = _foo.foo43,
+  foo44 = _foo.foo44,
+  foo45 = _foo.foo45,
+  foo46 = _foo.foo46,
+  foo47 = _foo.foo47,
+  foo48 = _foo.foo48,
+  foo49 = _foo.foo49,
+  foo50 = _foo.foo50,
+  foo51 = _foo.foo51,
+  foo52 = _foo.foo52,
+  foo53 = _foo.foo53,
+  foo54 = _foo.foo54,
+  foo55 = _foo.foo55,
+  foo56 = _foo.foo56,
+  foo57 = _foo.foo57,
+  foo58 = _foo.foo58,
+  foo59 = _foo.foo59,
+  foo60 = _foo.foo60,
+  foo61 = _foo.foo61,
+  foo62 = _foo.foo62,
+  foo63 = _foo.foo63,
+  foo64 = _foo.foo64,
+  foo65 = _foo.foo65,
+  foo66 = _foo.foo66,
+  foo67 = _foo.foo67,
+  foo68 = _foo.foo68,
+  foo69 = _foo.foo69,
+  foo70 = _foo.foo70,
+  foo71 = _foo.foo71,
+  foo72 = _foo.foo72,
+  foo73 = _foo.foo73,
+  foo74 = _foo.foo74,
+  foo75 = _foo.foo75,
+  foo76 = _foo.foo76,
+  foo77 = _foo.foo77,
+  foo78 = _foo.foo78,
+  foo79 = _foo.foo79,
+  foo80 = _foo.foo80,
+  foo81 = _foo.foo81,
+  foo82 = _foo.foo82,
+  foo83 = _foo.foo83,
+  foo84 = _foo.foo84,
+  foo85 = _foo.foo85,
+  foo86 = _foo.foo86,
+  foo87 = _foo.foo87,
+  foo88 = _foo.foo88,
+  foo89 = _foo.foo89,
+  foo90 = _foo.foo90,
+  foo91 = _foo.foo91,
+  foo92 = _foo.foo92,
+  foo93 = _foo.foo93,
+  foo94 = _foo.foo94,
+  foo95 = _foo.foo95,
+  foo96 = _foo.foo96,
+  foo97 = _foo.foo97,
+  foo98 = _foo.foo98,
+  foo99 = _foo.foo99,
+  foo100 = _foo.foo100;
+exports.foo = foo;
+exports.foo1 = foo1;
+exports.foo2 = foo2;
+exports.foo3 = foo3;
+exports.foo4 = foo4;
+exports.foo5 = foo5;
+exports.foo6 = foo6;
+exports.foo7 = foo7;
+exports.foo8 = foo8;
+exports.foo9 = foo9;
+exports.foo10 = foo10;
+exports.foo11 = foo11;
+exports.foo12 = foo12;
+exports.foo13 = foo13;
+exports.foo14 = foo14;
+exports.foo15 = foo15;
+exports.foo16 = foo16;
+exports.foo17 = foo17;
+exports.foo18 = foo18;
+exports.foo19 = foo19;
+exports.foo20 = foo20;
+exports.foo21 = foo21;
+exports.foo22 = foo22;
+exports.foo23 = foo23;
+exports.foo24 = foo24;
+exports.foo25 = foo25;
+exports.foo26 = foo26;
+exports.foo27 = foo27;
+exports.foo28 = foo28;
+exports.foo29 = foo29;
+exports.foo30 = foo30;
+exports.foo31 = foo31;
+exports.foo32 = foo32;
+exports.foo33 = foo33;
+exports.foo34 = foo34;
+exports.foo35 = foo35;
+exports.foo36 = foo36;
+exports.foo37 = foo37;
+exports.foo38 = foo38;
+exports.foo39 = foo39;
+exports.foo40 = foo40;
+exports.foo41 = foo41;
+exports.foo42 = foo42;
+exports.foo43 = foo43;
+exports.foo44 = foo44;
+exports.foo45 = foo45;
+exports.foo46 = foo46;
+exports.foo47 = foo47;
+exports.foo48 = foo48;
+exports.foo49 = foo49;
+exports.foo50 = foo50;
+exports.foo51 = foo51;
+exports.foo52 = foo52;
+exports.foo53 = foo53;
+exports.foo54 = foo54;
+exports.foo55 = foo55;
+exports.foo56 = foo56;
+exports.foo57 = foo57;
+exports.foo58 = foo58;
+exports.foo59 = foo59;
+exports.foo60 = foo60;
+exports.foo61 = foo61;
+exports.foo62 = foo62;
+exports.foo63 = foo63;
+exports.foo64 = foo64;
+exports.foo65 = foo65;
+exports.foo66 = foo66;
+exports.foo67 = foo67;
+exports.foo68 = foo68;
+exports.foo69 = foo69;
+exports.foo70 = foo70;
+exports.foo71 = foo71;
+exports.foo72 = foo72;
+exports.foo73 = foo73;
+exports.foo74 = foo74;
+exports.foo75 = foo75;
+exports.foo76 = foo76;
+exports.foo77 = foo77;
+exports.foo78 = foo78;
+exports.foo79 = foo79;
+exports.foo80 = foo80;
+exports.foo81 = foo81;
+exports.foo82 = foo82;
+exports.foo83 = foo83;
+exports.foo84 = foo84;
+exports.foo85 = foo85;
+exports.foo86 = foo86;
+exports.foo87 = foo87;
+exports.foo88 = foo88;
+exports.foo89 = foo89;
+exports.foo90 = foo90;
+exports.foo91 = foo91;
+exports.foo92 = foo92;
+exports.foo93 = foo93;
+exports.foo94 = foo94;
+exports.foo95 = foo95;
+exports.foo96 = foo96;
+exports.foo97 = foo97;
+exports.foo98 = foo98;
+exports.foo99 = foo99;
+exports.foo100 = foo100;"
+`;
+
+exports[`interop-loose export-named 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var foo;
+exports.foo = foo;"
+`;
+
+exports[`interop-loose export-named-2 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var foo, bar;
+exports.foo = foo;
+exports.bar = bar;"
+`;
+
+exports[`interop-loose export-named-3 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var foo;
+exports.bar = foo;"
+`;
+
+exports[`interop-loose export-named-4 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var foo;
+exports.default = foo;"
+`;
+
+exports[`interop-loose export-named-5 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var foo, bar;
+exports.default = foo;
+exports.bar = bar;"
+`;
+
+exports[`interop-loose exports-variable 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var foo = 1;
+var foo2 = 1,
+  bar = 2;
+var foo3 = function () {};
+var foo4;
+let foo5 = 2;
+let foo6;
+const foo7 = 3;
+function foo8() {}
+class foo9 {}
+exports.foo = foo;
+exports.foo2 = foo2;
+exports.bar = bar;
+exports.foo3 = foo3;
+exports.foo4 = foo4;
+exports.foo5 = foo5;
+exports.foo6 = foo6;
+exports.foo7 = foo7;
+exports.foo8 = foo8;
+exports.foo9 = foo9;"
+`;
+
+exports[`interop-loose hoist-function-exports 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var isEven = require("./evens").isEven;
+function nextOdd(n) {
+  return isEven(n) ? n + 1 : n + 2;
+}
+var isOdd = function (isEven) {
+  return function (n) {
+    return !isEven(n);
+  };
+}(isEven);
+exports.nextOdd = nextOdd;
+exports.isOdd = isOdd;"
+`;
+
+exports[`interop-loose illegal-export-esmodule 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var __esModule = false;
+exports.__esModule = __esModule;"
+`;
+
+exports[`interop-loose illegal-export-esmodule-2 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var __esModule;
+exports.__esModule = __esModule;"
+`;
+
+exports[`interop-loose imports 1`] = `
+"require("foo");
+require("foo-bar");
+require("./directory/foo-bar");"
+`;
+
+exports[`interop-loose imports-default 1`] = `
+"var foo = _$$_IMPORT_DEFAULT("foo");
+var foo2 = _$$_IMPORT_DEFAULT("foo");
+foo;
+foo2;"
+`;
+
+exports[`interop-loose imports-glob 1`] = `"var foo = _$$_IMPORT_ALL("foo");"`;
+
+exports[`interop-loose imports-hoisting 1`] = `"tag\`foo\`;"`;
+
+exports[`interop-loose imports-mixing 1`] = `
+"var xyz = require("foo").baz;
+var foo = _$$_IMPORT_DEFAULT("foo");
+foo;
+xyz;"
+`;
+
+exports[`interop-loose imports-named 1`] = `
+"var _foo = require("foo"),
+  bar = _foo.bar,
+  bar2 = _foo.bar2,
+  baz = _foo.baz,
+  baz2 = _foo.bar,
+  baz3 = _foo.bar,
+  xyz = _foo.xyz;
+bar;
+bar2;
+baz;
+baz2;
+baz3;
+xyz;"
+`;
+
+exports[`interop-loose imports-ordering 1`] = `
+"require('./foo');
+var bar = _$$_IMPORT_DEFAULT('./bar');
+require('./derp');
+var qux = require('./qux').qux;"
+`;
+
+exports[`interop-loose module-shadow 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+function _module() {}
+exports.module = _module;"
+`;
+
+exports[`interop-loose multi-load 1`] = `"console.log(helper);"`;
+
+exports[`interop-loose overview 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+require("foo");
+require("foo-bar");
+require("./directory/foo-bar");
+var foo = _$$_IMPORT_DEFAULT("foo2");
+var foo2 = _$$_IMPORT_ALL("foo3");
+var bar = require("foo4").bar;
+var bar2 = require("foo5").foo;
+var test;
+var test2 = 5;
+bar;
+bar2;
+foo;
+exports.test = test;
+exports.test2 = test2;"
+`;
+
+exports[`interop-loose remap 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var test = 2;
+test = 5;
+test++;
+(function () {
+  var test = 2;
+  test = 3;
+  test++;
+})();
+var a = 2;
+a = 3;
+var b = 2;
+b = 3;
+var d = 3;
+d = 4;
+exports.test = test;
+exports.a = a;
+exports.c = b;
+exports.e = d;
+exports.f = d;"
+`;
