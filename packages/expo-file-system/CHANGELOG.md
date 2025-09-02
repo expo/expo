@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- `File.pickFileAsync` now accepts a single `FilePickerOptions` object instead of multiple parameters, and may return an array of files if `allowsMultipleSelection` is true.
+- `File.pickFileAsync` now accepts a single `FilePickerOptions` object instead of multiple parameters, and may return an array of files if `allowsMultipleSelection` is true. ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🎉 New features
 
