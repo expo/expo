@@ -4,8 +4,6 @@ import ExpoModulesCore
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
-  // UIKit is unavailable on macOS, so platform checks are necessary.
-  // For macOS support, we should consider using NSOpenPanel: https://developer.apple.com/documentation/appkit/nsopenpanel
   #if os(iOS) || os(tvOS)
   private lazy var filePickingHandler = FilePickingHandler(module: self)
   #endif
