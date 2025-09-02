@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { MissingHostErrorView, isMissingHost } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const ChartNativeView = requireNativeView('ExpoUI', 'ChartView');
 /**
  * Renders a native Chart component using Swift Charts.

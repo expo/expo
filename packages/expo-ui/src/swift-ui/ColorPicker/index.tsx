@@ -2,9 +2,9 @@ import { requireNativeView } from 'expo';
 import { useCallback } from 'react';
 import { NativeSyntheticEvent, processColor } from 'react-native';
 
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { MissingHostErrorView, isMissingHost } from '../Host';
 
 export type ColorPickerProps = {
   /**

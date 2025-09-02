@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const BottomSheetNativeView = requireNativeView('ExpoUI', 'BottomSheetView');
 function transformBottomSheetProps(props) {
     const { modifiers, children, ...restProps } = props;

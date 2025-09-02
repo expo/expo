@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
 import { useCallback } from 'react';
 import { processColor } from 'react-native';
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { MissingHostErrorView, isMissingHost } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const ColorPickerNativeView = requireNativeView('ExpoUI', 'ColorPickerView');
 /**
  * Renders a `ColorPicker` component using SwiftUI.

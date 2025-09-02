@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
 
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { MissingHostErrorView, isMissingHost } from '../Host';
 
 export interface ContentUnavailableViewProps extends CommonViewModifierProps {
   /**

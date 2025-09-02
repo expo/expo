@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { CommonViewModifierProps } from '../types';
-import { MissingHostErrorView, isMissingHost } from '../Host';
 
 /**
  * The type of chart to display.

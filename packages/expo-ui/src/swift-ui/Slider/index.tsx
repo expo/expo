@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { isMissingHost, MissingHostErrorView } from '../Host';
 
 export type SliderProps = {
   /**
