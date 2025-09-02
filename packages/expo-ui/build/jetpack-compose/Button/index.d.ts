@@ -1,6 +1,6 @@
 import { StyleProp, ViewStyle } from 'react-native';
-import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
+import { MaterialIcon } from '../MaterialIcon/types';
 /**
  * The built-in button styles available on Android.
  * - `outlined` - A button with an outline.

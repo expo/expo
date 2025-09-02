@@ -32,12 +32,9 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
-<<<<<<< HEAD
   val leadingIcon: MutableState<String?> = mutableStateOf(null),
-  val trailingIcon: MutableState<String?> = mutableStateOf(null)
-=======
+  val trailingIcon: MutableState<String?> = mutableStateOf(null),
   val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
->>>>>>> 4acb7c51075528940849146349571137809fc36d
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
