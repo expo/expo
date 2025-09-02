@@ -484,59 +484,87 @@ internal struct GlassEffectIdModifier: ViewModifier, Record {
   }
 }
 
-internal struct AnimationModifier: ViewModifier {
-  let animationConfig: [String: Any]
-  let animatedValue: AnyHashable?
+internal enum AnimationType: String, Enumerable {
+  case easeInOut
+  case easeIn
+  case easeOut
+  case linear
+  case spring
+  case interpolatingSpring
+  case `default`
+}
+
+internal struct AnimationConfig: Record {
+  @Field var type: AnimationType = .default
+  @Field var duration: Double?
+  @Field var response: Double?
+  @Field var dampingFraction: Double?
+  @Field var blendDuration: Double?
+  @Field var bounce: Double?
+  @Field var mass: Double?
+  @Field var stiffness: Double?
+  @Field var damping: Double?
+  @Field var initialVelocity: Double?
+  @Field var delay: Double?
+  @Field var repeatCount: Int?
+  @Field var autoreverses: Bool?
+}
+
+internal struct AnimationModifier: ViewModifier, Record {
+  @Field var animation: AnimationConfig
+  @Field var animatedValue: Either<Bool, Double>?
 
   func body(content: Content) -> some View {
-    let animationValue = parseAnimation(animationConfig)
-    if let value = animatedValue {
+    let animationValue = parseAnimation(animation)
+    if let value: Bool = animatedValue?.get() {
+      content.animation(animationValue, value: value)
+    } else if let value: Double = animatedValue?.get() {
       content.animation(animationValue, value: value)
     } else {
       content
     }
   }
 
-  private func parseAnimation(_ config: [String: Any]) -> Animation {
-    let type = config["type"] as? String ?? "default"
+  private func parseAnimation(_ config: AnimationConfig) -> Animation {
+    let type = config.type
 
     var animation: Animation
 
     switch type {
-    case "easeIn":
-      if let duration = config["duration"] as? Double {
+    case .easeIn:
+      if let duration = config.duration {
         animation = .easeIn(duration: duration)
       } else {
         animation = .easeIn
       }
 
-    case "easeOut":
-      if let duration = config["duration"] as? Double {
+    case .easeOut:
+      if let duration = config.duration {
         animation = .easeOut(duration: duration)
       } else {
         animation = .easeOut
       }
 
-    case "linear":
-      if let duration = config["duration"] as? Double {
+    case .linear:
+      if let duration = config.duration {
         animation = .linear(duration: duration)
       } else {
         animation = .linear
       }
 
-    case "easeInOut":
-      if let duration = config["duration"] as? Double {
+    case .easeInOut:
+      if let duration = config.duration {
         animation = .easeInOut(duration: duration)
       } else {
         animation = .easeInOut
       }
 
-    case "spring":
-      let duration = config["duration"] as? Double
-      let bounce = config["bounce"] as? Double
-      let response = config["response"] as? Double
-      let dampingFraction = config["dampingFraction"] as? Double
-      let blendDuration = config["blendDuration"] as? Double
+    case .spring:
+      let duration = config.duration
+      let bounce = config.bounce
+      let response = config.response
+      let dampingFraction = config.dampingFraction
+      let blendDuration = config.blendDuration
 
       if response != nil || dampingFraction != nil {
         // default values are 0.5, 0.825, 0.0
@@ -550,13 +578,13 @@ internal struct AnimationModifier: ViewModifier {
         animation = .spring
       }
 
-    case "interpolatingSpring":
-      let duration = config["duration"] as? Double
-      let bounce = config["bounce"] as? Double
-      let mass = config["mass"] as? Double
-      let stiffness = config["stiffness"] as? Double
-      let damping = config["damping"] as? Double
-      let initialVelocity = config["initialVelocity"] as? Double
+    case .interpolatingSpring:
+      let duration = config.duration
+      let bounce = config.bounce
+      let mass = config.mass
+      let stiffness = config.stiffness
+      let damping = config.stiffness
+      let initialVelocity = config.initialVelocity
 
       if duration != nil || bounce != nil {
         animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
@@ -570,12 +598,12 @@ internal struct AnimationModifier: ViewModifier {
       animation = .default
     }
 
-    if let delay = config["delay"] as? Double {
+    if let delay = config.delay {
       animation = animation.delay(delay)
     }
 
-    if let repeatCount = config["repeatCount"] as? Int {
-      let autoreverses = config["autoreverses"] as? Bool ?? false
+    if let repeatCount = config.repeatCount {
+      let autoreverses = config.autoreverses ?? false
       animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
     }
 
@@ -784,11 +812,8 @@ extension ViewModifierRegistry {
       return try GlassEffectModifier(from: params, appContext: appContext)
     }
 
-    register("animation") { params, _, _ in
-      let animationConfig = params["animation"] as? [String: Any] ?? ["type": "default"]
-      let animatedValue = params["animatedValue"] as? AnyHashable
-
-      return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
+    register("animation") { params, appContext, _ in
+      return try AnimationModifier.init(from: params, appContext: appContext)
     }
 
     register("glassEffectId") { params, appContext, _ in
