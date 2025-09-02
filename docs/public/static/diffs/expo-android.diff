@@ -16,7 +16,7 @@ index 1789e54..b6ac31d 100644
 +      ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
  }
 diff --git a/android/app/src/main/java/com/myapp/MainApplication.kt b/android/app/src/main/java/com/myapp/MainApplication.kt
-index 6f58c28..24e3a00 100644
+index 46c8f72..6edfde8 100644
 --- a/android/app/src/main/java/com/myapp/MainApplication.kt
 +++ b/android/app/src/main/java/com/myapp/MainApplication.kt
 @@ -1,4 +1,7 @@
@@ -27,7 +27,7 @@ index 6f58c28..24e3a00 100644
 
  import android.app.Application
  import com.facebook.react.PackageList
-@@ -15,7 +18,7 @@ import com.facebook.soloader.SoLoader
+@@ -13,7 +16,7 @@ import com.facebook.react.defaults.DefaultReactNativeHost
  class MainApplication : Application(), ReactApplication {
 
    override val reactNativeHost: ReactNativeHost =
@@ -36,7 +36,7 @@ index 6f58c28..24e3a00 100644
          override fun getPackages(): List<ReactPackage> =
              PackageList(this).packages.apply {
                // Packages that cannot be autolinked yet can be added manually here, for example:
-@@ -28,10 +31,10 @@ class MainApplication : Application(), ReactApplication {
+@@ -26,13 +29,19 @@ class MainApplication : Application(), ReactApplication {
 
          override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
          override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
@@ -49,10 +49,7 @@ index 6f58c28..24e3a00 100644
 
    override fun onCreate() {
      super.onCreate()
-@@ -40,5 +43,11 @@ class MainApplication : Application(), ReactApplication {
-       // If you opted-in for the New Architecture, we load the native entry point for this app.
-       load()
-     }
+     loadReactNative(this)
 +    ApplicationLifecycleDispatcher.onApplicationCreate(this)
 +  }
 +
@@ -62,39 +59,13 @@ index 6f58c28..24e3a00 100644
    }
  }
 diff --git a/android/settings.gradle b/android/settings.gradle
-index 8762b63..1e69c41 100644
+index 8762b63..12bcbde 100644
 --- a/android/settings.gradle
 +++ b/android/settings.gradle
-@@ -1,6 +1,20 @@
--pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
--plugins { id("com.facebook.react.settings") }
--extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
-+pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin")
-+  def expoPluginsPath = new File(
-+    providers.exec {
-+      workingDir(rootDir)
-+      commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
-+    }.standardOutput.asText.get().trim(),
-+    "../android/expo-gradle-plugin"
-+  ).absolutePath
-+  includeBuild(expoPluginsPath)
-+}
-+plugins { id("com.facebook.react.settings")
-+id("expo-autolinking-settings")
-+}
-+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand) }
+@@ -4,3 +4,6 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autoli
  rootProject.name = 'myapp'
  include ':app'
  includeBuild('../node_modules/@react-native/gradle-plugin')
-+expoAutolinking.useExpoModules()
-+expoAutolinking.useExpoVersionCatalog()
-+includeBuild(expoAutolinking.reactNativeGradlePlugin)
-diff --git a/android/build.gradle b/android/build.gradle
-index 9766946..6ee6b73 100644
---- a/android/build.gradle
-+++ b/android/build.gradle
-@@ -19,3 +19,4 @@ buildscript {
- }
-
- apply plugin: "com.facebook.react.rootproject"
-+apply plugin: "expo-root-project"
++
++apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
++useExpoModules()
