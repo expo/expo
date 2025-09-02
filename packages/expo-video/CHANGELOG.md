@@ -8,8 +8,6 @@
 
 ### 🎉 New features
 
-- [Android] Support Foreground service when `showNowPlayingNotification` and `supportsBackgroundPlayback` are configured. ([#37225](https://github.com/expo/expo/pull/37566) by [@kerwanp](https://github.com/kerwanp))
-
 ### 🐛 Bug fixes
 
 - [Android] Fix video player stopping playback a few minutes after locking the device. ([#38980](https://github.com/expo/expo/pull/38980) by [@kerwanp](https://github.com/kerwanp))

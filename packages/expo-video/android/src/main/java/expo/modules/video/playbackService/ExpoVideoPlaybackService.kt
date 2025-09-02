@@ -22,6 +22,7 @@ import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.video.NowPlayingException
 import expo.modules.video.R
 import expo.modules.video.player.VideoPlayer
 import kotlinx.coroutines.launch
@@ -191,8 +192,8 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       try {
         startForeground(notificationId, notificationCompat)
         isForeground = true
-      } catch (_: Exception) {
-        notificationManager.notify(notificationId, notificationCompat)
+      } catch (e: Exception) {
+        appContext.errorManager?.reportExceptionToLogBox(NowPlayingException("Failed to start the expo-video foreground service", e))
       }
     } else {
       notificationManager.notify(notificationId, notificationCompat)
@@ -241,7 +242,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     const val SESSION_SHOW_NOTIFICATION = "showNotification"
     const val SEEK_INTERVAL_MS = 10000L
 
-    fun startService(appContext: AppContext, context: Context, serviceConnection: PlaybackServiceConnection) {
+    fun startService(appContext: AppContext, context: Context, serviceConnection: PlaybackServiceConnection): Boolean {
       appContext.reactContext?.apply {
         val intent = Intent(context, ExpoVideoPlaybackService::class.java)
         intent.action = SERVICE_INTERFACE
@@ -249,13 +250,14 @@ class ExpoVideoPlaybackService : MediaSessionService() {
         startService(intent)
 
         val flags = if (Build.VERSION.SDK_INT >= 29) {
-          BIND_AUTO_CREATE or Context.BIND_INCLUDE_CAPABILITIES
+          BIND_AUTO_CREATE or BIND_INCLUDE_CAPABILITIES
         } else {
           BIND_AUTO_CREATE
         }
 
-        bindService(intent, serviceConnection, flags)
+        return bindService(intent, serviceConnection, flags)
       }
+      return false
     }
   }
 }
