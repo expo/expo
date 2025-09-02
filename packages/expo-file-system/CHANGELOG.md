@@ -4,7 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- `File.pickFileAsync` now accepts a single `FilePickerOptions` object instead of multiple parameters, and may return an array of files if `allowsMultipleSelection` is true. ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🎉 New features
+
+- [iOS] Add `pickFileAsync` support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
+- [iOS] Add `pickDirectoryAsync` support ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- [iOS] Add `openAsCopy` and `allowsMultipleSelection ` options to the `pickFileAsync` ([#39295](https://github.com/expo/expo/pull/39295) by [@kosmydel](https://github.com/kosmydel))
 
 ### 🐛 Bug fixes
 
@@ -16,6 +22,7 @@
 
 - Add `rename` method for files and directories ([#39138](https://github.com/expo/expo/pull/39138) by [@kosmydel](https://github.com/kosmydel))
 - Add `idempotent` option for creating directories ([#39121](https://github.com/expo/expo/pull/39121) by [@kosmydel](https://github.com/kosmydel))
+- [iOS] Add file sharing config options ([#39286](https://github.com/expo/expo/pull/39286) by [@kosmydel](https://github.com/kosmydel))
 
 ## 19.0.6 — 2025-08-26
 

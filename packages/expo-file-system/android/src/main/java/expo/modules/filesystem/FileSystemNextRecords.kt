@@ -1,5 +1,6 @@
 package expo.modules.filesystem
 
+import android.net.Uri
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -44,4 +45,9 @@ data class DirectoryInfo(
   @Field var size: Long? = null,
   @Field var modificationTime: Long? = null,
   @Field var creationTime: Long? = null
+) : Record
+
+data class FilePickerOptions(
+  @Field var initialUri: Uri? = null,
+  @Field var mimeType: String? = null,
 ) : Record

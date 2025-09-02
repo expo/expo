@@ -108,9 +108,11 @@ export declare class Directory {
     size: number | null;
     /**
      * A static method that opens a file picker to select a directory.
+     *
+     * On iOS, the selected directory grants temporary read and write access for the current app session only. After the app restarts, you must prompt the user again to regain access.
+     *
      * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
-     * @returns a `Directory` instance. The underlying uri will be a content URI on Android.
-     * @platform android
+     * @returns a `Directory` instance. On Android, the underlying uri will be a content URI.
      */
     static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
@@ -121,6 +123,31 @@ export type DownloadOptions = {
     headers?: {
         [key: string]: string;
     };
+};
+export type FilePickerOptions = {
+    /**
+     * An optional URI pointing to an initial folder on which the file picker is opened.
+     */
+    initialUri?: string;
+    /**
+     * A mime type that is used to filter out files that can be picked out.
+     */
+    mimeType?: string;
+    /**
+     * Whether to open the picked file as a copy.
+     * If you want to disable it, make sure you set `supportsOpeningDocumentsInPlace` in [app config](#configuration-in-app-config) to `true`.
+     * @default true
+     *
+     * @platform ios
+     */
+    openAsCopy?: boolean;
+    /**
+     * Allows multiple files to be selected from the system UI.
+     * @default false
+     *
+     * @platform ios
+     */
+    allowsMultipleSelection?: boolean;
 };
 /**
  * Represents a file on the file system.
@@ -233,14 +260,12 @@ export declare class File {
     /**
      * A static method that opens a file picker to select a single file of specified type.
      *
-     * @platform android
+     * On iOS, by default, this method returns a temporary copy of the selected file, ensuring the original remains unchanged. To open the original file in place (without copying), set `openAsCopy` to `false` in the options.
      *
-     * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
-     * @param mimeType A mime type that is used to filter out files that can be picked out.
-     * @returns a `File` instance.
-     * @platform android
+     * @param options An optional [`FilePickerOptions`](#filepickeroptions) object containing options for the file picker.
+     * @returns a `File` instance or an array of `File` instances if `allowsMultipleSelection` is `true`.
      */
-    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
+    static pickFileAsync(options?: FilePickerOptions): Promise<File | File[]>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */

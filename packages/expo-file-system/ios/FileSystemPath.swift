@@ -4,6 +4,10 @@ import ExpoModulesCore
 internal class FileSystemPath: SharedObject {
   var url: URL
 
+  func validateType() throws {
+    throw NotImplementedException()
+  }
+
   init(url: URL, isDirectory: Bool) {
     let standardizedUrl = url.deletingLastPathComponent().appendingPathComponent(url.lastPathComponent, isDirectory: isDirectory)
     self.url = standardizedUrl
@@ -114,5 +118,18 @@ internal class FileSystemPath: SharedObject {
       throw UnableToGetFileAttribute("\(key) is not of expected type")
     }
     return attributeCasted
+  }
+
+  @discardableResult
+  func withCorrectTypeAndScopedAccess<T>(
+    permission: FileSystemPermissionFlags,
+    _ work: () throws -> T
+  ) throws -> T {
+    let accessed = url.startAccessingSecurityScopedResource()
+    defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+
+    try validatePermission(permission)
+
+    return try work()
   }
 }
