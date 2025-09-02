@@ -463,17 +463,15 @@ internal struct GlassEffectModifier: ViewModifier, Record {
   #endif
 }
 
-internal struct GlassEffectIdModifier: ViewModifier {
-  let id: String?
-  let namespace: String?
-  @Environment(\.namespaceProvider) private var namespaceProvider
+internal struct GlassEffectIdModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
 
   func body(content: Content) -> some View {
     if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
-      if let provideNamespace = namespaceProvider, let namespace = namespace {
-        let namespaceId = provideNamespace(namespace)
-        content.glassEffectID(id, in: namespaceId)
+      if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+        content.glassEffectID(id, in: namespace)
       } else {
         content
       }
@@ -793,10 +791,8 @@ extension ViewModifierRegistry {
       return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
     }
 
-    register("glassEffectId") { params, _ in
-      let id = params["id"] as? String
-      let namespace = params["namespace"] as? String
-      return GlassEffectIdModifier(id: id, namespace: namespace)
+    register("glassEffectId") { params, appContext, _ in
+      return try GlassEffectIdModifier.init(from: params, appContext: appContext)
     }
   }
 }

@@ -6,6 +6,12 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
+    OnDestroy {
+      Task { @MainActor in
+        NamespaceRegistry.shared.removeAll()
+      }
+    }
+
     View(BottomSheetView.self)
     View(Button.self)
     View(ChartView.self)
@@ -43,7 +49,7 @@ public final class ExpoUIModule: Module {
       }
     }
     View(VStackView.self)
-    View(NamespaceProvider.self)
+    View(NamespaceView.self)
     View(GlassEffectContainerView.self)
   }
 }

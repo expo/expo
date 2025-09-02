@@ -1,12 +1,11 @@
 import {
   Host,
   HStack,
-  NamespaceProvider,
   GlassEffectContainer,
   Image,
+  Namespace,
   VStack,
   Button,
-  NAMESPACES,
   Text,
 } from '@expo/ui/swift-ui';
 import {
@@ -19,11 +18,13 @@ import {
   cornerRadius,
   frame,
 } from '@expo/ui/swift-ui/modifiers';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { View } from 'react-native';
 
 export default function GlassEffect() {
   const [isGlassExpanded, setIsGlassExpanded] = useState(false);
+  const namespaceId = useId();
+
   return (
     <View
       style={{
@@ -34,7 +35,7 @@ export default function GlassEffect() {
         <VStack
           spacing={60}
           modifiers={[animation(Animation.spring({ duration: 0.8 }), isGlassExpanded)]}>
-          <NamespaceProvider>
+          <Namespace id={namespaceId}>
             <GlassEffectContainer
               spacing={30}
               modifiers={[
@@ -55,7 +56,7 @@ export default function GlassEffect() {
                           variant: 'clear',
                         },
                       }),
-                      glassEffectId('paintbrush', NAMESPACES.$1),
+                      glassEffectId('paintbrush', namespaceId),
                       cornerRadius(15),
                     ]}
                   />
@@ -70,7 +71,7 @@ export default function GlassEffect() {
                           variant: 'clear',
                         },
                       }),
-                      glassEffectId('scribble', NAMESPACES.$1),
+                      glassEffectId('scribble', namespaceId),
                       cornerRadius(15),
                     ]}
                   />
@@ -85,7 +86,7 @@ export default function GlassEffect() {
                           variant: 'clear',
                         },
                       }),
-                      glassEffectId('pencil', NAMESPACES.$1),
+                      glassEffectId('pencil', namespaceId),
                       cornerRadius(15),
                     ]}
                   />
@@ -104,7 +105,7 @@ export default function GlassEffect() {
                             variant: 'clear',
                           },
                         }),
-                        glassEffectId('eraser', NAMESPACES.$1),
+                        glassEffectId('eraser', namespaceId),
                         cornerRadius(15),
                       ]}
                     />
@@ -119,7 +120,7 @@ export default function GlassEffect() {
                             variant: 'clear',
                           },
                         }),
-                        glassEffectId('highlighter', NAMESPACES.$1),
+                        glassEffectId('highlighter', namespaceId),
                         cornerRadius(15),
                       ]}
                     />
@@ -134,7 +135,7 @@ export default function GlassEffect() {
                             variant: 'clear',
                           },
                         }),
-                        glassEffectId('heart.fill', NAMESPACES.$1),
+                        glassEffectId('heart.fill', namespaceId),
                         cornerRadius(15),
                       ]}
                     />
@@ -142,7 +143,7 @@ export default function GlassEffect() {
                 )}
               </VStack>
             </GlassEffectContainer>
-          </NamespaceProvider>
+          </Namespace>
 
           <VStack spacing={15}>
             <Button
