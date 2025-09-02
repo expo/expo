@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add `ExpoLiquidGlassConstants` to expoModules mocks ([#39333](https://github.com/expo/expo/pull/39333) by [@Ubax](https://github.com/Ubax))
+
 ## 54.0.6 — 2025-08-31
 
 _This version does not introduce any user-facing changes._
