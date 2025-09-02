@@ -26,6 +26,7 @@ import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
+import { DeepNativeModuleVersionCheck } from '../checks/DeepNativeModuleVersionCheck';
 
 /**
  * Resolves the checks that should be run for a given project.
@@ -55,6 +56,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     // Version Checks
     new SupportPackageVersionCheck(),
     new NativeToolingVersionCheck(),
+    new DeepNativeModuleVersionCheck(),
 
     // Compatibility Checks
     new StoreCompatibilityCheck(),
