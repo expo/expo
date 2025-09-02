@@ -1,8 +1,8 @@
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { GlassStyle, GlassView } from 'expo-blur';
 import Checkbox from 'expo-checkbox';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
