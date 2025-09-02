@@ -16,34 +16,6 @@ open class ExpoAppDelegate: NSObject, @preconcurrency ReactNativeFactoryProvider
   private let defaultModuleName = "main"
   private let defaultInitialProps = [AnyHashable: Any]()
 
-  func loadMacOSWindow(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-#if os(macOS)
-    if let rootView = factory?.rootViewFactory.view(
-      withModuleName: defaultModuleName,
-      initialProperties: defaultInitialProps,
-      launchOptions: launchOptions
-    ) {
-      let frame = NSRect(x: 0, y: 0, width: 1280, height: 720)
-      let window = NSWindow(
-        contentRect: NSRect.zero,
-        styleMask: [.titled, .resizable, .closable, .miniaturizable],
-        backing: .buffered,
-        defer: false)
-
-      window.title = defaultModuleName
-      window.autorecalculatesKeyViewLoop = true
-
-      let rootViewController = NSViewController()
-      rootViewController.view = rootView
-      rootView.frame = frame
-
-      window.contentViewController = rootViewController
-      window.makeKeyAndOrderFront(self)
-      window.center()
-    }
-#endif
-  }
-
   public func bindReactNativeFactory(_ factory: RCTReactNativeFactory) {
     self.factory = factory
   }
@@ -141,9 +113,6 @@ open class ExpoAppDelegate: NSObject, @preconcurrency ReactNativeFactoryProvider
   }
 
   open func applicationDidFinishLaunching(_ notification: Notification) {
-    let launchOptions = notification.userInfo as? [String: Any]
-    loadMacOSWindow(launchOptions: launchOptions)
-
     ExpoAppDelegateSubscriberRepository
       .subscribers
       .forEach { subscriber in

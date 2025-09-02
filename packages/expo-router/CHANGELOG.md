@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
+- apply display contents to link ([#39245](https://github.com/expo/expo/pull/39245) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.0-preview.12 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0-beta.10 — 2025-08-28
+
 ### 🐛 Bug fixes
 
 - Prevent incorrect path rewrites when a URL is present in query parameters ([#39146](https://github.com/expo/expo/pull/39146) by [@hassankhan](https://github.com/hassankhan))
-
-### 💡 Others
 
 ## 6.0.0-beta.9 — 2025-08-27
 

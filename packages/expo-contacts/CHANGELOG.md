@@ -10,6 +10,15 @@
 
 ### 💡 Others
 
+- Improved type safety with NewContact and ExistingContact types. ([#39269](https://github.com/expo/expo/pull/39269) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
+## 15.0.6 — 2025-08-31
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed issue with missing `instantMessageAddresses` on iOS ([#38985](https://github.com/expo/expo/pull/38985) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [iOS] Added handling for optional labels. ([#38985](https://github.com/expo/expo/pull/39247) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ## 15.0.5 — 2025-08-27
 
 _This version does not introduce any user-facing changes._
@@ -23,6 +32,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - fix `CNContactViewController` presentation ([#39004](https://github.com/expo/expo/pull/39004) by [@vonovak](https://github.com/vonovak))
+- [iOS] Fixed undefined labels for emails in contacts. ([#39222](https://github.com/expo/expo/pull/39222) by [@NorseGaud](https://github.com/hryhoriiK97)
 
 ## 15.0.2 — 2025-08-16
 

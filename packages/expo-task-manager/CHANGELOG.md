@@ -12,6 +12,10 @@
 
 - [Android] Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
+## 14.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.4 — 2025-08-27
 
 _This version does not introduce any user-facing changes._

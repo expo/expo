@@ -65,7 +65,7 @@ private fun CopyButton(fullDataProvider: () -> String) {
         style = NewAppTheme.font.sm
       )
 
-      Icons.Copy(
+      MenuIcons.Copy(
         size = 12.dp,
         tint = NewAppTheme.colors.text.link
       )

@@ -28,7 +28,7 @@ fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSetti
       NewMenuButton(
         withSurface = false,
         icon = {
-          Icons.Performance(
+          MenuIcons.Performance(
             size = 20.dp,
             tint = NewAppTheme.colors.icon.tertiary
           )
@@ -48,7 +48,7 @@ fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSetti
       NewMenuButton(
         withSurface = false,
         icon = {
-          Icons.Inspect(
+          MenuIcons.Inspect(
             size = 20.dp,
             tint = NewAppTheme.colors.icon.tertiary
           )
@@ -68,7 +68,7 @@ fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSetti
       NewMenuButton(
         withSurface = false,
         icon = {
-          Icons.Bug(
+          MenuIcons.Bug(
             size = 20.dp,
             tint = NewAppTheme.colors.icon.tertiary
           )
@@ -88,7 +88,7 @@ fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSetti
       NewMenuButton(
         withSurface = false,
         icon = {
-          Icons.Refresh(
+          MenuIcons.Refresh(
             size = 20.dp,
             tint = NewAppTheme.colors.icon.tertiary
           )
@@ -113,7 +113,7 @@ fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSetti
       NewMenuButton(
         withSurface = false,
         icon = {
-          Icons.Fab(
+          MenuIcons.Fab(
             size = 20.dp,
             tint = NewAppTheme.colors.icon.tertiary
           )

@@ -76,6 +76,19 @@ internal class FileSystemPath: SharedObject {
     url = destinationUrl
   }
 
+  func getRenamedUrl(newName: String) -> URL {
+    return url.deletingLastPathComponent().appendingPathComponent(newName)
+  }
+
+  func rename(_ newName: String) throws {
+    try validatePermission(.write)
+    let newUrl = getRenamedUrl(newName: newName)
+    try FileManager.default.moveItem(at: url, to: newUrl)
+    // Refetch the URL to ensure it has the correct trailing slash, which differs for directories and files.
+    let updatedUrl = getRenamedUrl(newName: newName)
+    url = updatedUrl
+  }
+
   var modificationTime: Int64 {
     get throws {
       let modificationDate: Date = try getAttribute(.modificationDate, atPath: url.path)

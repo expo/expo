@@ -19,7 +19,7 @@ fun QuickAction(
     content = {
       NewText(
         text = label,
-        style = NewAppTheme.font.md.merge(fontWeight = FontWeight.Companion.Medium)
+        style = NewAppTheme.font.md.merge(fontWeight = FontWeight.Medium)
       )
     },
     onClick = onClick
