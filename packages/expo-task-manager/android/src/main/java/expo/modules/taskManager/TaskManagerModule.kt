@@ -28,9 +28,9 @@ class TaskManagerModule : Module() {
 
     Events(TaskManagerInterface.EVENT_NAME)
 
-    Constants(
-      "EVENT_NAME" to TaskManagerInterface.EVENT_NAME
-    )
+    Constant("EVENT_NAME") {
+      TaskManagerInterface.EVENT_NAME
+    }
 
     OnCreate {
       // Slightly hacky way to be able to emit events using the new event emitter from legacy modules.

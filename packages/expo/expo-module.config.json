@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["ExpoFetchModule"],
+    "modules": ["ExpoFetchModule", "ExpoLiquidGlassConstantsModule"],
     "podspecPath": "Expo.podspec"
   },
   "android": {

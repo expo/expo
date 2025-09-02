@@ -2,6 +2,7 @@ import './Expo.fx';
 export { disableErrorHandling } from './errors/ExpoErrorManager';
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { isRunningInExpoGo, getExpoGoProjectConfig } from './environment/ExpoGo';
+export { isLiquidGlassAvailable } from './environment/isLiquidGlassAvailable';
 export { EventEmitter, SharedObject, SharedRef, NativeModule, requireNativeModule, requireOptionalNativeModule, requireNativeViewManager as requireNativeView, registerWebModule, reloadAppAsync, } from 'expo-modules-core';
 export type { 
 /** @deprecated Move to `SharedRef` with a type-only import instead */

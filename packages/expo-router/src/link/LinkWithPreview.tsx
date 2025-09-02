@@ -8,7 +8,7 @@ import React, {
   useState,
   type ReactElement,
 } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { useRouter } from '../hooks';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
@@ -135,7 +135,8 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
           router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }
       }}
-      style={{ borderRadius: highlightBorderRadius }}>
+      style={StyleSheet.flatten([{ display: 'contents', borderRadius: highlightBorderRadius }])}
+      disableForceFlatten>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
         <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
         {preview}

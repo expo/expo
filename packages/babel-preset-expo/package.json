@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "14.0.4",
+  "version": "14.0.6",
   "description": "The Babel preset for Expo projects",
   "main": "build/index.js",
   "files": [
@@ -81,7 +81,7 @@
     "@babel/core": "^7.26.0",
     "@types/babel__core": "^7.20.5",
     "@expo/metro": "~0.1.1",
-    "expo-module-scripts": "^5.0.5",
+    "expo-module-scripts": "^5.0.6",
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2"
   }
