@@ -138,3 +138,18 @@ export async function getDeepDependenciesWarningAsync(
 
   return getExplanationsAsync(pkg, explanations);
 }
+
+export async function getDeepDependenciesWarningWithPackageNameAsync(
+  packageName: string,
+  version: string,
+  projectRoot: string
+): Promise<{ packageName: string; message: string } | null> {
+  const maybeWarning = await getDeepDependenciesWarningAsync(
+    { name: packageName, version },
+    projectRoot
+  );
+  if (maybeWarning) {
+    return { packageName, message: maybeWarning };
+  }
+  return null;
+}
