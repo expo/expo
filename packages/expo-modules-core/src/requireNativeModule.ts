@@ -34,10 +34,16 @@ export function requireOptionalNativeModule<ModuleType = any>(
 ): ModuleType | null {
   ensureNativeModulesAreInstalled();
 
-  return (
-    globalThis.expo?.modules?.[moduleName] ??
-    NativeModulesProxy[moduleName] ??
-    createTurboModuleToExpoProxy(TurboModuleRegistry.get(moduleName), moduleName) ??
-    null
-  );
+  try {
+    return (
+      globalThis.expo?.modules?.[moduleName] ??
+      NativeModulesProxy[moduleName] ??
+      createTurboModuleToExpoProxy(TurboModuleRegistry.get(moduleName), moduleName) ??
+      null
+    );
+  } catch (e) {
+    const error = e as Error;
+    console.warn(`An error occurred while requiring the '${moduleName}' module: ${error.message}`);
+    return null;
+  }
 }
