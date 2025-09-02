@@ -1,4 +1,21 @@
----
+--{
+  "expo": {
+    "name": "SK General Store",
+    "slug": "sk-general-store",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.sk.generalstore",
+      "versionCode": 1
+    }
+  }
+}
 title: Develop an app with Expo
 description: An overview of the development process of building an Expo app to help build a mental model of the core development loop.
 ---
