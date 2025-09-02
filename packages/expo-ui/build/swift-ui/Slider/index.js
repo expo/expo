@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { isMissingHost, MissingHostErrorView } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
 const SliderNativeView = requireNativeView('ExpoUI', 'SliderView');
 function transformSliderProps(props) {
     const { modifiers, ...restProps } = props;
