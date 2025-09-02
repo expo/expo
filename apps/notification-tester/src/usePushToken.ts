@@ -11,6 +11,7 @@ export function usePushToken() {
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => {
+        console.log(token);
         setExpoPushToken(token);
       })
       .catch(console.error);
@@ -18,6 +19,7 @@ export function usePushToken() {
     getDevicePushTokenAsync()
       .then((token) => {
         const tokenString = JSON.stringify(token);
+        console.log(tokenString);
         setDevicePushToken(tokenString);
       })
       .catch(console.error);
