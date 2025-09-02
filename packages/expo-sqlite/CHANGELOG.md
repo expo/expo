@@ -8,9 +8,45 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
+### 💡 Others
+
+## 16.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.5 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 — 2025-08-18
 
 ### 💡 Others
+
+- Updated API doc for `loadExtensionAsync()` and `loadExtensionSync()`. ([#38905](https://github.com/expo/expo/pull/38905) by [@kudo](https://github.com/kudo))
+
+## 16.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [iOS] Support Apple TV. ([#38475](https://github.com/expo/expo/pull/38475) by [@douglowder](https://github.com/douglowder))
+- Added `loadExtensionAsync` / `loadExtensionSync` APIs and pre-bundled [sqlite-vec](https://github.com/asg017/sqlite-vec) extension. ([#38693](https://github.com/expo/expo/pull/38693) by [@kudo](https://github.com/kudo))
+- Added `expo-sqlite/localStorage/install` for [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) drop-in replacement API. ([#38699](https://github.com/expo/expo/pull/38699) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
 
 ### 📚 3rd party library updates
 

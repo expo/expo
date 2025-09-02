@@ -134,24 +134,43 @@ export async function exportAssetsAsync(
     bundles: { web, ...bundles },
     baseUrl,
     files = new Map(),
+    hostedNative,
   }: {
     exp: ExpoConfig;
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
     baseUrl: string;
     files?: ExportAssetMap;
+    hostedNative?: boolean;
   }
-) {
-  // NOTE: We use a different system for static web
-  if (web) {
+): Promise<{
+  exp: ExpoConfig;
+  assets: BundleAssetWithFileHashes[];
+  embeddedHashSet: Set<string>;
+  files: ExportAssetMap;
+}> {
+  const hostedAssets: BundleAssetWithFileHashes[] = web ? [...web.assets] : [];
+
+  // If the native assets should be hosted like web, then we can add them to the hosted assets to export.
+  if (hostedNative) {
+    hostedAssets.push(...Object.values(bundles).flatMap((bundle) => bundle!.assets ?? []));
+  }
+
+  if (hostedAssets.length) {
     // Save assets like a typical bundler, preserving the file paths on web.
     // TODO: Update React Native Web to support loading files from asset hashes.
-    await persistMetroAssetsAsync(projectRoot, web.assets, {
+    await persistMetroAssetsAsync(projectRoot, hostedAssets, {
       files,
       platform: 'web',
       outputDirectory: outputDir,
       baseUrl,
     });
+  }
+
+  if (hostedNative) {
+    // Add google services file if it exists
+    await resolveGoogleServicesFile(projectRoot, exp);
+    return { exp, assets: [], embeddedHashSet: new Set(), files };
   }
 
   const assets: BundleAssetWithFileHashes[] = uniqBy(

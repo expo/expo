@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 15.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.4 — 2025-08-26
+
+### 🐛 Bug fixes
+
+- [Android] Use the last path segment of the `uri` as the job name. ([#39133](https://github.com/expo/expo/pull/39133) by [@ouwargui](https://github.com/ouwargui))
+
+## 15.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2025-08-13
+
+### 💡 Others
+
 - Mark `uri` option as supported on iOS and Android only. ([#37312](https://github.com/expo/expo/pull/37312) by [@aleqsio](https://github.com/aleqsio))
 
 ## 14.1.4 — 2025-04-30

@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
+import { Ref } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 import { MaterialIcon } from '../MaterialIcon/types';
 
 /**
@@ -9,7 +10,15 @@ import { MaterialIcon } from '../MaterialIcon/types';
  */
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 
+export type TextInputRef = {
+  setText: (newText: string) => Promise<void>;
+};
+
 export type TextInputProps = {
+  /**
+   * Can be used for imperatively setting text on the TextInput component.
+   */
+  ref?: Ref<TextInputRef>;
   /**
    * Additional styles to apply to the TextInput.
    */
@@ -83,6 +92,8 @@ export type TextInputProps = {
    * Optional trailing icon to be displayed at the end of the text input container.
    */
   trailingIcon?: MaterialIcon;
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<
@@ -105,6 +116,8 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

@@ -17,8 +17,8 @@ struct HeaderView: View {
         Image(uiImage: image)
           .resizable()
           .aspectRatio(contentMode: .fit)
-          .frame(width: 42, height: 42)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .frame(width: 38, height: 38)
+          .clipShape(RoundedRectangle(cornerRadius: 16))
       }
 
       versionInfo
@@ -28,15 +28,18 @@ struct HeaderView: View {
       Button {
         viewModel.hideMenu()
       } label: {
-        Image(systemName: "xmark")
-          .font(.title2)
-          .foregroundColor(.primary)
-          .frame(width: 24, height: 24)
+        ZStack {
+          Circle()
+            .fill(Color.expoSystemGray6)
+            .frame(width: 36, height: 36)
+
+          Image(systemName: "xmark")
+            .font(.headline)
+            .tint(.gray.opacity(0.6))
+        }
       }
     }
-    .padding(.horizontal)
-    .padding(.vertical, 12)
-    .background(Color(.systemBackground))
+    .padding()
   }
 
   private var versionInfo: some View {
@@ -59,8 +62,4 @@ struct HeaderView: View {
       }
     }
   }
-}
-
-#Preview {
-  HeaderView()
 }

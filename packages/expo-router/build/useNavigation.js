@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigation = useNavigation;
 const native_1 = require("@react-navigation/native");
-const constants_1 = require("./constants");
+const utils_1 = require("./global-state/utils");
 const href_1 = require("./link/href");
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
@@ -58,7 +58,8 @@ const href_1 = require("./link/href");
  * for more information.
  */
 function useNavigation(parent) {
-    let navigation = (0, native_1.useNavigation)();
+    const rnNavigation = (0, native_1.useNavigation)();
+    let navigation = rnNavigation;
     let state = (0, native_1.useStateForPath)();
     if (parent === undefined) {
         // If no parent is provided, return the current navigation object
@@ -102,17 +103,19 @@ function useNavigation(parent) {
         }
         parent = names[index];
         // Expo Router navigators use the context key as the name which has a leading `/`
-        // The exception to this is the INTERNAL_SLOT_NAME, and the root navigator which uses ''
-        if (parent && parent !== constants_1.INTERNAL_SLOT_NAME) {
+        // The exception to this are the root stack routes, and the root navigator which uses ''
+        if (parent && !(0, utils_1.getRootStackRouteNames)().includes(parent)) {
             parent = `/${parent}`;
         }
     }
     navigation = navigation.getParent(parent);
     if (process.env.NODE_ENV !== 'production') {
         if (!navigation) {
+            navigation = rnNavigation;
             const ids = [];
             while (navigation) {
-                ids.push(navigation.getId() || '/');
+                if (navigation.getId())
+                    ids.push(navigation.getId());
                 navigation = navigation.getParent();
             }
             throw new Error(`Could not find parent navigation with route "${parent}". Available routes are: '${ids.join("', '")}'`);

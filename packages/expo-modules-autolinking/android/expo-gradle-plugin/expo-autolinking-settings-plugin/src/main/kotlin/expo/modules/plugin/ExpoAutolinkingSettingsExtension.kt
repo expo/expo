@@ -12,12 +12,27 @@ open class ExpoAutolinkingSettingsExtension(
   @Inject val objects: ObjectFactory
 ) {
   /**
+   * The root directory of the react native project.
+   * Should be used by projects that don't follow the /android folder structure.
+   *
+   * Defaults to `settings.rootDir`.
+   */
+  var projectRoot: File = settings.rootDir
+
+  /**
    * Command that should be provided to `react-native` to resolve the configuration.
    */
-  val rnConfigCommand = AutolinkigCommandBuilder()
-    .command("react-native-config")
-    .useJson()
-    .build()
+  val rnConfigCommand by lazy {
+    val commandBuilder = AutolinkingCommandBuilder()
+      .command("react-native-config")
+      .useJson()
+
+    if (projectRoot != settings.rootDir) {
+      commandBuilder.option("project-root", projectRoot.absolutePath)
+      commandBuilder.option("source-dir", settings.rootDir.absolutePath)
+    }
+    commandBuilder.build()
+  }
 
   /**
    * A list of paths relative to the app's root directory where
@@ -41,7 +56,7 @@ open class ExpoAutolinkingSettingsExtension(
   val reactNativeGradlePlugin: File by lazy {
     File(
       settings.providers.exec { env ->
-        env.workingDir(settings.rootDir)
+        env.workingDir(projectRoot)
         env.commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })")
       }.standardOutput.asText.get().trim(),
     ).parentFile
@@ -53,7 +68,7 @@ open class ExpoAutolinkingSettingsExtension(
   val reactNative: File by lazy {
     File(
       settings.providers.exec { env ->
-        env.workingDir(settings.rootDir)
+        env.workingDir(projectRoot)
         env.commandLine("node", "--print", "require.resolve('react-native/package.json')")
       }.standardOutput.asText.get().trim(),
     ).parentFile
@@ -65,6 +80,7 @@ open class ExpoAutolinkingSettingsExtension(
   fun useExpoModules() {
     SettingsManager(
       settings,
+      projectRoot,
       searchPaths,
       ignorePaths,
       exclude

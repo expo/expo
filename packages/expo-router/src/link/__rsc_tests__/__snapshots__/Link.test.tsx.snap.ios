@@ -8,7 +8,7 @@ exports[`renders Link 1`] = `
 `;
 
 exports[`renders Link.Preview 1`] = `
-"1:I["src/link/LinkWithPreview.tsx",[],"LinkPreview",1]
+"1:I["src/link/elements.tsx",[],"LinkPreview",1]
 3:I["src/link/ExpoLink.tsx",[],"ExpoLink",1]
 2:{"name":"Link","env":"Server","key":null,"owner":null,"props":{"href":"/","children":["$","$L1",null,{"children":"Preview"},null]}}
 0:D"$2"
@@ -16,7 +16,7 @@ exports[`renders Link.Preview 1`] = `
 `;
 
 exports[`renders Link.Trigger 1`] = `
-"1:I["src/link/LinkWithPreview.tsx",[],"LinkTrigger",1]
+"1:I["src/link/elements.tsx",[],"LinkTrigger",1]
 3:I["src/link/ExpoLink.tsx",[],"ExpoLink",1]
 2:{"name":"Link","env":"Server","key":null,"owner":null,"props":{"href":"/","children":["$","$L1",null,{"children":"Trigger"},null]}}
 0:D"$2"

@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
-internal final class IntegrityException: GenericException<String> {
-  override var reason: String {
-    return "[ExpoAppIntegrity]: \(param)"
+internal final class IntegrityException: Exception {
+  init(_ message: String, code: String? = nil) {
+    super.init(name: "IntegrityException", description: "[ExpoAppIntegrity]: \(message)", code: code)
   }
 }

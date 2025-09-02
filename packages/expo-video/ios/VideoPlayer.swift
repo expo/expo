@@ -272,23 +272,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     return
   }
 
-  /**
-   * iOS automatically pauses videos when the app enters the background. Only way to avoid this is to detach the player from the playerLayer.
-   * Typical way of doing this for `AVPlayerViewController` is setting `playerViewController.player = nil`, but that makes the
-   * video invisible for around a second after foregrounding, disabling the tracks requires more code, but works a lot faster.
-   */
-  func setTracksEnabled(_ enabled: Bool) {
-    ref.currentItem?.tracks.forEach({ track in
-      guard let assetTrack = track.assetTrack else {
-        return
-      }
-
-      if assetTrack.hasMediaCharacteristic(AVMediaCharacteristic.visual) {
-        track.isEnabled = enabled
-      }
-    })
-  }
-
   private func getBufferedPosition() -> Double {
     guard let currentItem = ref.currentItem else {
       return -1

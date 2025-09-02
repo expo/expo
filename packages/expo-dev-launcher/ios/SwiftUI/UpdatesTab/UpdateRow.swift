@@ -22,7 +22,9 @@ struct UpdateRow: View {
         openButton
       }
     }
-    .padding(.vertical, 4)
+    .padding()
+    .background(Color.expoSecondarySystemBackground)
+    .cornerRadius(12)
   }
 
   private var openButton: some View {
@@ -32,7 +34,9 @@ struct UpdateRow: View {
       Text("Open")
     }
     .buttonStyle(.bordered)
+    #if !os(tvOS)
     .controlSize(.small)
+    #endif
     .disabled(!isCompatible)
   }
 

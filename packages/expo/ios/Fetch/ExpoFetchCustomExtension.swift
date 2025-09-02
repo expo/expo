@@ -5,7 +5,7 @@
  */
 @objc(EXFetchCustomExtension)
 public class ExpoFetchCustomExtension: NSObject {
-  @objc
+  @MainActor @objc
   public static func setCustomURLSessionConfigurationProvider(_ provider: NSURLSessionConfigurationProvider?) {
     urlSessionConfigurationProvider = provider
   }

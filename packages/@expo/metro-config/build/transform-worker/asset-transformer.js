@@ -15,7 +15,7 @@ exports.transform = transform;
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
 const core_1 = require("@babel/core");
-const util_1 = require("metro/src/Bundler/util");
+const util_1 = require("@expo/metro/metro/Bundler/util");
 const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");
@@ -35,6 +35,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
     const useMd5Filename = options.customTransformOptions?.useMd5Filename;
     const isExport = options.publicPath.includes('?export_path=');
+    const isHosted = options.platform === 'web' || (options.customTransformOptions?.hosted && isExport);
     const isReactServer = options.customTransformOptions?.environment === 'react-server';
     const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
     const absolutePath = node_path_1.default.resolve(options.projectRoot, filename);
@@ -61,7 +62,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
             // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
             `/assets?export_path=assets`
-        : options.publicPath);
+        : options.publicPath, isHosted);
     if (isServerEnv || options.platform === 'web') {
         const type = !data.type ? '' : `.${data.type}`;
         let assetPath;

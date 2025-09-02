@@ -103,6 +103,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL allowsLinkPreview;
 @property (nonatomic, assign) BOOL showsHorizontalScrollIndicator;
 @property (nonatomic, assign) BOOL showsVerticalScrollIndicator;
+@property (nonatomic, copy) NSString * _Nullable indicatorStyle;
 @property (nonatomic, assign) BOOL directionalLockEnabled;
 @property (nonatomic, assign) BOOL ignoreSilentHardwareSwitch;
 @property (nonatomic, copy) NSString * _Nullable allowingReadAccessToURL;

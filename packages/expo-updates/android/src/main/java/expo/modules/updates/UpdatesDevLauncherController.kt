@@ -21,10 +21,13 @@ import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.reloadscreen.ReloadScreenManager
+import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
+import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
+import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.SelectionPolicy
-import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
@@ -67,8 +70,10 @@ class UpdatesDevLauncherController(
   private val controllerScope = CoroutineScope(Dispatchers.IO)
 
   private var mSelectionPolicy: SelectionPolicy? = null
-  private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
-    initialUpdatesConfiguration?.getRuntimeVersion() ?: "1"
+  private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicy(
+    launcherSelectionPolicy = LauncherSelectionPolicyDevelopmentClient(initialUpdatesConfiguration?.getRuntimeVersion() ?: "1", initialUpdatesConfiguration),
+    loaderSelectionPolicy = LoaderSelectionPolicyDevelopmentClient(initialUpdatesConfiguration),
+    reaperSelectionPolicy = ReaperSelectionPolicyFilterAware()
   )
   private val selectionPolicy: SelectionPolicy
     get() = mSelectionPolicy ?: defaultSelectionPolicy
@@ -94,6 +99,8 @@ class UpdatesDevLauncherController(
 
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
+
+  override val reloadScreenManager = ReloadScreenManager()
 
   override fun onEventListenerStartObserving() {
     // no-op for UpdatesDevLauncherController
@@ -356,6 +363,10 @@ class UpdatesDevLauncherController(
 
   override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {
     throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
+  }
+
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    throw NotAvailableInDevClientException("Updates.setUpdateRequestHeadersOverride() is not supported in development builds.")
   }
 
   override fun shutdown() {

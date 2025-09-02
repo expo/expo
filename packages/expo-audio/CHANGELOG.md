@@ -8,8 +8,72 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.0.7 — 2025-08-31
+
+### 🎉 New features
+
+- [iOS] Add keepAudioSessionActive option to prevent session deactivation ([#39250](https://github.com/expo/expo/pull/39250) by [@hirbod](https://github.com/hirbod))
+
+## 1.0.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.5 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Correctly export enum values. ([#38940](https://github.com/expo/expo/pull/38940) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Repurpose audio recording tests. ([#38940](https://github.com/expo/expo/pull/38940) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- [Android] Emit state update after reload. ([#39003](https://github.com/expo/expo/pull/39003) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.3 — 2025-08-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix regression in playing bundled assets in production. ([#38928](https://github.com/expo/expo/pull/38928) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- [iOS] tvOS fixes. ([#38815](https://github.com/expo/expo/pull/38815) by [@douglowder](https://github.com/douglowder))
+
+## 1.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- [iOS][Android][Web]: Change `useAudioPlayer` and `createAudioPlayer` to accept options object as second parameter instead of `updateInterval`. Moved `updateInterval` to options and add `downloadFirst` option for pre-downloading assets ([#38563](https://github.com/expo/expo/pull/38563) by [@hirbod](https://github.com/hirbod))
+
+### 🎉 New features
+
+- [Android] Add support for `recordForDuration`. ([#38405](https://github.com/expo/expo/pull/38405) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS][Android][Web]: Add downloadFirst option for audio playback and update related documentation ([#38563](https://github.com/expo/expo/pull/38563) by [@hirbod](https://github.com/hirbod))
+
+### 🐛 Bug fixes
+
 - [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Exclude setting `.allowBluetooth` on tvOS. ([#37950](https://github.com/expo/expo/pull/37950) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Prevent autoplaying when setting the playback rate. ([#38293](https://github.com/expo/expo/pull/38293) by [@alanjhughes](https://github.com/alanjhughes))
+- Add shallow state comparison to prevent unnecessary re-renders in `useAudioRecorderState`. ([#38273](https://github.com/expo/expo/pull/38273) by [@alanjhughes](https://github.com/alanjhughes))
+- [web] Fixed broken player state when `replace` was called while audio was running, added missing `updateInterval` to web, and improved audio status event emitting. ([#38505](https://github.com/expo/expo/pull/38505) by [@hirbod](https://github.com/hirbod))
+- [android][iOS][web] Fix recordForDuration status updates and add new record() options API ([#38612](https://github.com/expo/expo/pull/38612) by [@hirbod](https://github.com/hirbod))
+- [android]: Handle exceptions when retrieving maxAmplitude from MediaRecorder ([#38690](https://github.com/expo/expo/pull/38690) by [@hirbod](https://github.com/hirbod))
+- [iOS] Report correct playback rate. ([#38729](https://github.com/expo/expo/pull/38729) by [@aleqsio](https://github.com/aleqsio))
+- [web] Added crossOrigin property to useAudioPlayer and createAudioPlayer ([#38818](https://github.com/expo/expo/pull/38818) by [@hirbod](https://github.com/hirbod)
 
 ### 💡 Others
 

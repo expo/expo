@@ -59,7 +59,9 @@ test.describe(baseDir, () => {
       const bundleContent = fs.readFileSync(bundleFile, 'utf8');
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
-      expect(bundleContent).toContain('Object.defineProperty(e,"useBananas",{enumerable:!0,get:function(){return n.useBananas}})}');
+      expect(bundleContent).toMatch(
+        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+      );
     });
 
     // This test generally ensures no errors are thrown during an export loading.
@@ -124,7 +126,9 @@ test.describe(baseDir, () => {
       const bundleContent = fs.readFileSync(bundleFile, 'utf8');
 
       // The useBananas code which causes the application to crash uses static bindings.
-      expect(bundleContent).not.toContain('Object.defineProperty(e,"useBananas",{enumerable:!0,get:function(){return n.useBananas}})}');
+      expect(bundleContent).not.toMatch(
+        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+      );
       expect(bundleContent).toContain('e.useBananas=function()');
     });
 

@@ -13,6 +13,7 @@ exports.treeShakeSerializer = treeShakeSerializer;
  */
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
+const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const assert_1 = __importDefault(require("assert"));
 const jsOutput_1 = require("./jsOutput");
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
@@ -190,7 +191,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
             // If the dependency was already removed, then we don't need to do anything.
             const importInstance = value.dependencies.get(targetHashId);
-            const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+            const graphEntryForTargetImport = importInstance &&
+                (0, isResolvedDependency_1.isResolvedDependency)(importInstance) &&
+                graph.dependencies.get(importInstance.absolutePath);
             // Should never happen but we're playing with fire here.
             if (!graphEntryForTargetImport) {
                 throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${value.path}. Options: ${[...value.dependencies.values()].map((v) => v.data.name).join(', ')}`);
@@ -297,6 +300,8 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             return;
         // Recursively remove all dependencies.
         for (const dep of node.dependencies.values()) {
+            if (!(0, isResolvedDependency_1.isResolvedDependency)(dep))
+                continue;
             const child = graph.dependencies.get(dep.absolutePath);
             if (!child)
                 continue;
@@ -329,7 +334,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
         // If the dependency was already removed, then we don't need to do anything.
         const importInstance = graphModule.dependencies.get(targetHashId);
-        const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+        const graphEntryForTargetImport = importInstance &&
+            (0, isResolvedDependency_1.isResolvedDependency)(importInstance) &&
+            graph.dependencies.get(importInstance.absolutePath);
         // Should never happen but we're playing with fire here.
         if (!graphEntryForTargetImport) {
             throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`);
@@ -631,7 +638,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 // The hash key for the dependency instance in the module.
                 const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
                 const importInstance = value.dependencies.get(targetHashId);
-                if (importInstance) {
+                if (importInstance && (0, isResolvedDependency_1.isResolvedDependency)(importInstance)) {
                     dirtyImports.push(importInstance.absolutePath);
                 }
             }
@@ -699,7 +706,8 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             // Optimize all deps without marking as dirty to prevent
             // circular dependencies from creating infinite loops.
             dep.dependencies.forEach((dep) => {
-                paths.push(dep.absolutePath);
+                if ((0, isResolvedDependency_1.isResolvedDependency)(dep))
+                    paths.push(dep.absolutePath);
             });
         }
         if (isDebugEnabled) {

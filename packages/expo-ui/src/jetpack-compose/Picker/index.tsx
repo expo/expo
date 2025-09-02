@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
+import { ExpoModifier } from '../../types';
+
 /**
  * Colors for picker's core elements.
  */
@@ -51,6 +53,10 @@ export type PickerProps = {
    * Picker color.
    */
   color?: string;
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
+  /** Modifiers for the individual buttons */
+  buttonModifiers?: ExpoModifier[];
 };
 
 const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
@@ -75,6 +81,10 @@ export function transformPickerProps(props: PickerProps): NativePickerProps {
           }
         : undefined,
     color: props.color,
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
+    // @ts-expect-error
+    buttonModifiers: props.buttonModifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

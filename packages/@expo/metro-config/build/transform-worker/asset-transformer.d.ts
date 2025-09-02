@@ -9,7 +9,7 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
 import { type ParseResult } from '@babel/core';
-import { BabelTransformerArgs } from 'metro-babel-transformer';
+import type { BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 export declare function transform({ filename, options, }: {
     filename: string;
     options: Pick<BabelTransformerArgs['options'], 'platform' | 'projectRoot' | 'customTransformOptions' | 'publicPath'>;

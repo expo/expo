@@ -13,11 +13,13 @@ import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.RecreateReactContextProcedure
+import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -79,6 +81,8 @@ class DisabledUpdatesController(
 
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
+  override val reloadScreenManager: ReloadScreenManager?
+    get() = null
 
   override fun onEventListenerStartObserving() {
     stateMachine.sendContextToJS()
@@ -167,6 +171,10 @@ class DisabledUpdatesController(
     throw UpdatesDisabledException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported when expo-updates is not enabled.")
   }
 
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    throw UpdatesDisabledException("Updates.setUpdateRequestHeadersOverride() is not supported when expo-updates is not enabled.")
+  }
+
   @Synchronized
   private fun notifyController() {
     controllerScope.launch {
@@ -182,7 +190,7 @@ class DisabledUpdatesController(
   }
 
   override fun shutdown() {
-    // no-op
+    controllerScope.cancel()
   }
 
   companion object {

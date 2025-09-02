@@ -8,6 +8,39 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.12.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add `contentPadding` property to the `GoogleMaps.View` component on Android. ([#38382](https://github.com/expo/expo/pull/38382) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add anchor and zIndex support to GoogleMapsView markers. ([#38357](https://github.com/expo/expo/pull/38357) by [@shollington-rbi](https://github.com/shollington-rbi))
+- Add support for Google Maps styling with JSON configuration and `mapId` property. ([#38493](https://github.com/expo/expo/pull/38493) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add points of interest filter, elevation and emphasis styling to Apple maps. ([#38514](https://github.com/expo/expo/pull/38514) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
 - Fix onMapClick and onMapLongClick nesting. ([#37059](https://github.com/expo/expo/pull/37059) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others

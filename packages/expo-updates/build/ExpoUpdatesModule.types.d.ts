@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo-modules-core';
-import { Manifest, UpdateCheckResultAvailable, UpdateCheckResultNotAvailable, UpdateCheckResultRollBack, UpdateFetchResultRollBackToEmbedded, UpdateFetchResultFailure, UpdateFetchResultSuccess, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
+import { Manifest, UpdateCheckResultAvailable, UpdateCheckResultNotAvailable, UpdateCheckResultRollBack, UpdateFetchResultRollBackToEmbedded, UpdateFetchResultFailure, UpdateFetchResultSuccess, UpdatesLogEntry, UpdatesNativeStateMachineContext, ReloadScreenOptions } from './Updates.types';
 export type UpdatesEvents = {
     'Expo.nativeUpdatesStateChangeEvent': (params: any) => void;
 };
@@ -84,7 +84,7 @@ export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> imple
         lastCheckForUpdateTimeString?: string;
         rollbackString?: string;
     };
-    reload: () => Promise<void>;
+    reload: (options?: ReloadScreenOptions | null) => Promise<void>;
     checkForUpdateAsync: () => Promise<UpdateCheckResultRollBack | (Omit<UpdateCheckResultAvailable, 'manifest'> & ({
         manifestString: string;
     } | {

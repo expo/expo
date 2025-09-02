@@ -105,6 +105,8 @@ public class Update: NSObject {
   public var lastAccessed: Date
   public var successfulLaunchCount: Int
   public var failedLaunchCount: Int
+  public var url: URL?
+  public var requestHeaders: [String: String]?
 
   private let config: UpdatesConfig
   private let database: UpdatesDatabase?
@@ -120,7 +122,9 @@ public class Update: NSObject {
     keep: Bool,
     status: UpdateStatus,
     isDevelopmentMode: Bool,
-    assetsFromManifest: [UpdateAsset]?
+    assetsFromManifest: [UpdateAsset]?,
+    url: URL?,
+    requestHeaders: [String: String]?
   ) {
     self.updateId = updateId
     self.commitTime = commitTime
@@ -132,6 +136,8 @@ public class Update: NSObject {
     self.scopeKey = scopeKey
     self.status = status
     self.assetsFromManifest = assetsFromManifest
+    self.url = url
+    self.requestHeaders = requestHeaders
 
     self.lastAccessed = Date()
     self.successfulLaunchCount = 0

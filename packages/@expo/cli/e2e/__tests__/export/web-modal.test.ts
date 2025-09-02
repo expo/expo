@@ -24,7 +24,6 @@ describe('export web-modal example', () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'web-modal',
         E2E_ROUTER_ASYNC: 'production',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     });
   });
@@ -42,16 +41,22 @@ describe('export web-modal example', () => {
 
   it('injects correct scripts', async () => {
     expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['entry', '_layout', 'index'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index'].map(expectChunkPathMatching)
     );
     expect(await getScriptTagsAsync('modal.html')).toEqual(
-      ['entry', '_layout', 'index', 'modal'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal'].map(
+        expectChunkPathMatching
+      )
     );
     expect(await getScriptTagsAsync('modal-multi.html')).toEqual(
-      ['entry', '_layout', 'index', 'modal-multi'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal-multi'].map(
+        expectChunkPathMatching
+      )
     );
     expect(await getScriptTagsAsync('modal-scroll.html')).toEqual(
-      ['entry', '_layout', 'index', 'modal-scroll'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index', 'modal-scroll'].map(
+        expectChunkPathMatching
+      )
     );
   });
 });

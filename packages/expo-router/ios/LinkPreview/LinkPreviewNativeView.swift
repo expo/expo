@@ -1,10 +1,21 @@
 import ExpoModulesCore
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPreviewModalDismissible {
-  private var trigger: NativeLinkPreviewTrigger?
+class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
+  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable {
+  var triggerBorderRadius: Double = 0
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
-  private var nextScreenId: String?
+  private var directChild: UIView?
+  var nextScreenId: String? {
+    didSet {
+      performUpdateOfPreloadedView()
+    }
+  }
+  var tabPath: TabPathPayload? {
+    didSet {
+      performUpdateOfPreloadedView()
+    }
+  }
   private var actions: [LinkPreviewNativeActionView] = []
 
   private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
@@ -15,7 +26,6 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
   let onDidPreviewOpen = EventDispatcher()
   let onPreviewWillClose = EventDispatcher()
   let onPreviewDidClose = EventDispatcher()
-  let onActionSelected = EventDispatcher()
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -30,55 +40,67 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
 
   // MARK: - Props
 
-  func setNextScreenId(_ screenId: String) {
-    self.nextScreenId = screenId
-    linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
+  func performUpdateOfPreloadedView() {
+    if nextScreenId == nil && tabPath?.path.isEmpty != false {
+      // If we have no tab to change and no screen to push, then we can't update the preloaded view
+      return
+    }
+    // However if one these is defined then we can perform the native update
+    linkPreviewNativeNavigation.updatePreloadedView(
+      screenId: nextScreenId, tabPath: tabPath, responder: self)
   }
 
   // MARK: - Children
-
-  override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if let triggerView = childComponentView as? NativeLinkPreviewTrigger {
-      trigger = triggerView
-      if let interaction = self.interaction, self.preview != nil {
-        trigger?.addInteraction(interaction)
+  #if RCT_NEW_ARCH_ENABLED
+    override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
+      if let previewView = childComponentView as? NativeLinkPreviewContentView {
+        preview = previewView
+      } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
+        actionView.parentMenuUpdatable = self
+        actions.append(actionView)
+      } else {
+        if directChild != nil {
+          print(
+            "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
+          )
+          return
+        }
+        directChild = childComponentView
+        if let interaction = self.interaction {
+          childComponentView.addInteraction(interaction)
+        }
+        super.mountChildComponentView(childComponentView, index: index)
       }
-      super.mountChildComponentView(childComponentView, index: index)
-    } else if let previewView = childComponentView as? NativeLinkPreviewContentView {
-      preview = previewView
-      if let interaction = self.interaction, let trigger = self.trigger {
-        trigger.addInteraction(interaction)
-      }
-    } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
-      actions.append(actionView)
-    } else {
-      print(
-        "ExpoRouter: Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewView"
-      )
     }
-  }
 
-  override func unmountChildComponentView(_ child: UIView, index: Int) {
-    if child is NativeLinkPreviewTrigger {
-      if let interaction = self.interaction {
-        trigger?.removeInteraction(interaction)
+    override func unmountChildComponentView(_ child: UIView, index: Int) {
+      if child is NativeLinkPreviewContentView {
+        preview = nil
+      } else if let actionView = child as? LinkPreviewNativeActionView {
+        actions.removeAll(where: {
+          $0 == actionView
+        })
+      } else {
+        if let directChild = directChild {
+          if directChild != child {
+            print(
+              "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
+            )
+            return
+          }
+          if let interaction = self.interaction {
+            directChild.removeInteraction(interaction)
+          }
+          super.unmountChildComponentView(child, index: index)
+        } else {
+          print(
+            "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
+          )
+          return
+        }
       }
-      trigger = nil
-      super.unmountChildComponentView(child, index: index)
-    } else if child is NativeLinkPreviewContentView {
-      preview = nil
-      if let interaction = self.interaction {
-        trigger?.removeInteraction(interaction)
-      }
-    } else if let actionView = child as? LinkPreviewNativeActionView {
-      actions.removeAll(where: {
-        $0 == actionView
-      })
-    } else {
-      print(
-        "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewView")
     }
-  }
+  #endif
 
   // MARK: - UIContextMenuInteractionDelegate
 
@@ -102,14 +124,18 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
     configuration: UIContextMenuConfiguration,
     highlightPreviewForItemWithIdentifier identifier: any NSCopying
   ) -> UITargetedPreview? {
-    if let trigger = self.trigger {
-      let target = UIPreviewTarget(container: self, center: trigger.center)
+    if let superview = self.superview {
+      if let directChild = self.directChild {
+        let target = UIPreviewTarget(
+          container: superview, center: self.convert(directChild.center, to: superview))
 
-      let parameters = UIPreviewParameters()
-      parameters.backgroundColor = .clear
-      parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: 10)
+        let parameters = UIPreviewParameters()
+        parameters.backgroundColor = .clear
+        parameters.shadowPath = UIBezierPath(
+          roundedRect: directChild.bounds, cornerRadius: self.triggerBorderRadius)
 
-      return UITargetedPreview(view: trigger, parameters: parameters, target: target)
+        return UITargetedPreview(view: directChild, parameters: parameters, target: target)
+      }
     }
     return nil
   }
@@ -153,9 +179,9 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
 
   // MARK: - Context Menu Helpers
 
-  private func createPreviewViewController() -> UIViewController {
+  private func createPreviewViewController() -> UIViewController? {
     guard let preview = preview else {
-      return UIViewController()
+      return nil
     }
 
     let vc = PreviewViewController(linkPreviewNativePreview: preview)
@@ -166,37 +192,22 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
     return vc
   }
 
+  func updateMenu() {
+    self.interaction?.updateVisibleMenu { _ in
+      self.createContextMenu()
+    }
+  }
+
   private func createContextMenu() -> UIMenu {
-    if actions.count == 1, let menu = convertActionViewToUiAction(actions[0]) as? UIMenu {
+    if actions.count == 1, let menu = actions[0].uiAction as? UIMenu {
       return menu
     }
     return UIMenu(
       title: "",
       children: actions.map { action in
-        self.convertActionViewToUiAction(action)
+        action.uiAction
       }
     )
-  }
-
-  private func convertActionViewToUiAction(_ action: LinkPreviewNativeActionView) -> UIMenuElement {
-    if !action.subActions.isEmpty {
-      let subActions = action.subActions.map { subAction in
-        self.convertActionViewToUiAction(subAction)
-      }
-      return UIMenu(
-        title: action.title,
-        image: action.icon.flatMap { UIImage(systemName: $0) },
-        children: subActions
-      )
-    }
-    return UIAction(
-      title: action.title,
-      image: action.icon.flatMap { UIImage(systemName: $0) }
-    ) { _ in
-      self.onActionSelected([
-        "id": action.id
-      ])
-    }
   }
 }
 

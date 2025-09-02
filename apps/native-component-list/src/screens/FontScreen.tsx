@@ -1,17 +1,33 @@
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import FoundationIcons from '@expo/vector-icons/Foundation';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as Font from 'expo-font';
-import { useState } from 'react';
-import { Button, Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RenderToImageResult } from 'expo-font';
+import { Image } from 'expo-image';
+import { useState, useEffect, Fragment } from 'react';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
+const round = (num: number) => Math.round(num * 100) / 100;
+
 export default function FontScreen() {
-  const [preview, setPreview] = useState<string | null>(null);
-  const toImageAsync = async (glyphs: string, options: any) => {
-    const imageURL = await Font.renderToImageAsync(glyphs, options);
-    setPreview(imageURL);
-  };
+  const renderedFontAwesomeImage = useLoadIcon(() =>
+    Font.renderToImageAsync(String.fromCodePoint(62491), {
+      fontFamily: 'FontAwesome5Free-Brand',
+      color: '#61dafb',
+      size: 172,
+    })
+  );
+
+  const renderedFontAsImage = useLoadIcon(() =>
+    Font.renderToImageAsync('ÅBÇD', {
+      fontFamily: 'Inter-BoldItalic',
+      size: 100,
+    })
+  );
 
   return (
     <ScrollView style={{ flex: 1 }}>
@@ -128,28 +144,42 @@ export default function FontScreen() {
             </View>
           </View>
         </Section>
-        <Section title="renderToImageAsync">
-          <Button
-            title="ABCD Inter-ThinItalic"
-            onPress={() =>
-              toImageAsync('ABCD', {
-                fontFamily: 'Inter-BoldItalic',
-                size: 172,
-              })
-            }
-          />
-          <Button
-            title="React from FontAwesome5"
-            onPress={() =>
-              toImageAsync(String.fromCodePoint(62491), {
-                fontFamily: 'FontAwesome5Free-Brand',
-                color: '#61dafb',
-                size: 172,
-              })
-            }
-          />
-          {preview && (
-            <Image source={{ uri: preview }} style={{ height: 64 }} resizeMode="contain" />
+        <VectorIconSection />
+
+        <Section title="renderToImageAsync" gap={5}>
+          {renderedFontAwesomeImage && (
+            <>
+              <Text>
+                FontAwesome5Free rendered to image
+                {round(renderedFontAwesomeImage.width)}x{round(renderedFontAwesomeImage.height)}
+              </Text>
+              <Image
+                source={{ uri: renderedFontAwesomeImage.uri }}
+                style={{
+                  height: renderedFontAwesomeImage.height,
+                  width: renderedFontAwesomeImage.width,
+                  backgroundColor: 'grey',
+                }}
+                contentFit="cover"
+              />
+            </>
+          )}
+          {renderedFontAsImage && (
+            <>
+              <Text>
+                Inter-BoldItalic rendered to image
+                {round(renderedFontAsImage.width)}x{round(renderedFontAsImage.height)}
+              </Text>
+              <Image
+                source={{ uri: renderedFontAsImage.uri }}
+                style={{
+                  height: renderedFontAsImage.height,
+                  width: renderedFontAsImage.width,
+                  backgroundColor: 'grey',
+                }}
+                contentFit="cover"
+              />
+            </>
           )}
         </Section>
       </Page>
@@ -183,3 +213,54 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
+
+const size = 100;
+
+function useLoadIcon(getImage: () => Promise<RenderToImageResult | null>) {
+  const [icon, setIcon] = useState<RenderToImageResult | null>(null);
+  useEffect(() => {
+    const loadIcon = async () => {
+      const icon = await getImage();
+      if (icon) {
+        setIcon(icon);
+      } else {
+        console.error('Failed to load icon');
+      }
+    };
+    loadIcon();
+  }, []);
+  return icon;
+}
+
+function VectorIconSection() {
+  const icons = [
+    useLoadIcon(() => MaterialIcons.getImageSource('camera', size, 'yellow')),
+    useLoadIcon(() => FontAwesome.getImageSource('book', size, 'yellow')),
+    useLoadIcon(() => Ionicons.getImageSource('camera', size, 'yellow')),
+    useLoadIcon(() => FoundationIcons.getImageSource('book', size, 'yellow')),
+  ];
+
+  return (
+    <Section title="vector icon to image" gap={5}>
+      {icons.map((icon) => {
+        return (
+          !!icon && (
+            <Fragment key={icon.uri}>
+              <Text>
+                Icon rendered to image {round(icon.width)}x{round(icon.height)}
+              </Text>
+              <Image
+                source={icon}
+                style={{
+                  height: icon.height,
+                  width: icon.width,
+                  backgroundColor: 'lightgrey',
+                }}
+              />
+            </Fragment>
+          )
+        );
+      })}
+    </Section>
+  );
+}

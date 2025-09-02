@@ -2,6 +2,7 @@ package expo.modules.devlauncher.services
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import expo.modules.devlauncher.DevLauncherController
 
@@ -82,5 +83,5 @@ inline fun <reified T> ViewModel.inject(): T {
 
 @Composable
 inline fun <reified T> inject(): T {
-  return injectService<T>()
+  return remember { injectService<T>() }
 }

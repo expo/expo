@@ -6,7 +6,49 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 7.0.7 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.6 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.5 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.3 — 2025-08-18
+
+### 💡 Others
+
+- [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+
+## 7.0.2 — 2025-08-16
+
+### 🐛 Bug fixes
+
+- [ios] Prevent crash when getting app icon. ([#38888](https://github.com/expo/expo/pull/38888) by [@douglowder](https://github.com/douglowder))
+
+## 7.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2025-08-13
+
+### 🎉 New features
+
 - [iOS] Migrate dev menu UI to SwiftUI ([#37414](https://github.com/expo/expo/pull/37414) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Add floating action button that pulls up the dev menu. ([#38246](https://github.com/expo/expo/pull/38246) by [@behenate](https://github.com/behenate))
+- [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -16,6 +58,7 @@
 ### 💡 Others
 
 - Fixed release build error on Android. ([#37579](https://github.com/expo/expo/pull/37579) by [@kudo](https://github.com/kudo))
+- [Android] Implement new design for the floating action button. ([#38497](https://github.com/expo/expo/pull/38497) by [@behenate](https://github.com/behenate))
 
 ### ⚠️ Notices
 

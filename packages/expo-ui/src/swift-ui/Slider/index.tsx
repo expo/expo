@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
-import { Host } from '../Host';
+import { type ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type SliderProps = {
   /**
@@ -33,7 +33,7 @@ export type SliderProps = {
    * Callback triggered on dragging along the slider.
    */
   onValueChange?: (value: number) => void;
-};
+} & CommonViewModifierProps;
 
 type NativeSliderProps = Omit<SliderProps, 'onValueChange'> &
   ViewEvent<'onValueChanged', { value: number }>;
@@ -43,12 +43,12 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'SliderView'
 );
 
-/**
- * @hidden
- */
-export function transformSliderProps(props: SliderProps): NativeSliderProps {
+function transformSliderProps(props: SliderProps): NativeSliderProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     min: props.min ?? 0,
     max: props.max ?? 1,
     steps: props.steps ?? 0,
@@ -60,14 +60,6 @@ export function transformSliderProps(props: SliderProps): NativeSliderProps {
   };
 }
 
-export function SliderPrimitive(props: SliderProps) {
+export function Slider(props: SliderProps) {
   return <SliderNativeView {...transformSliderProps(props)} />;
-}
-
-export function Slider(props: SliderProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <SliderPrimitive {...props} />
-    </Host>
-  );
 }

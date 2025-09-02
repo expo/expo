@@ -95,7 +95,9 @@ open class DevMenuManager: NSObject {
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
+    // swiftlint:disable notification_center_detachment
     NotificationCenter.default.removeObserver(self)
+    // swiftlint:enable notification_center_detachment
 
     DispatchQueue.main.async {
       self.openMenu()
@@ -107,9 +109,11 @@ open class DevMenuManager: NSObject {
     NotificationCenter.default.removeObserver(self)
     // swiftlint:enable notification_center_detachment
 
+    // swiftlint:disable legacy_objc_type
     if canLaunchDevMenuOnStart && currentBridge != nil && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
       NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
     }
+    // swiftlint:enable legacy_objc_type
   }
 
   private func disableRNDevMenuHoykeys(for bridge: RCTBridge) {

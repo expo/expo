@@ -1,5 +1,5 @@
 ---
-modificationDate: October 31st, 2024
+modificationDate: August 22nd, 2025
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
@@ -7,6 +7,7 @@ description: Learn about the current build server infrastructure when using EAS.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { CopyTextButton } from '~/ui/components/CopyableText';
 import { BuildResourceList } from '~/ui/components/utils/infrastructure';
 
 ## Builder IP addresses
@@ -19,11 +20,12 @@ Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in o
 
 Images for each platform have one specific version of Node.js, Yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
 
-When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-53`.
+When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-54`.
 
 - The use of a specific name guarantees a consistent environment with only minor updates.
 - When using the `auto` alias, the build image will be selected based on the project configuration, Expo SDK version, and React Native version. You can check what image is used for a build in the **Spin up build environment** build logs section.
 - The `latest` alias will be assigned to the image with the most up-to-date versions of the software.
+- The `sdk-54` alias will be assigned to the image best suited for SDK 54 builds.
 - The `sdk-53` alias will be assigned to the image best suited for SDK 53 builds.
 - The `sdk-52` alias will be assigned to the image best suited for SDK 52 builds.
 - The `sdk-51` alias will be assigned to the image best suited for SDK 51 builds.
@@ -54,7 +56,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://10.4.0.19:4873
+  registry=http://npm.production.caches.eas-build.internal
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -62,13 +64,30 @@ Android builders run on virtual machines in an isolated environment. Every build
   ```yaml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'http://10.4.0.19:4873'
+  npmRegistryServer: 'http://npm.production.caches.eas-build.internal'
   enableImmutableInstalls: false
   ```
 
 ### Android server images
 
-#### `ubuntu-22.04-jdk-17-ndk-r26b` (`latest`, `sdk-53`)
+#### <CopyTextButton>`ubuntu-24.04-jdk-17-ndk-r27b` (`sdk-54`)</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- GCE image: `ubuntu-2404-noble-amd64-v20250805`
+- NDK 27.1.12297006
+- Node.js 20.19.4
+- Bun 1.2.20
+- Yarn 1.22.22
+- pnpm 10.14.0
+- npm 10.9.3
+- Java 17
+- node-gyp 11.3.0
+- Maestro 1.41.0
+
+</Collapsible>
+
+#### <CopyTextButton>`ubuntu-22.04-jdk-17-ndk-r26b` (`latest`, `sdk-53`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -84,7 +103,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### Legacy `ubuntu-22.04-jdk-17-ndk-r26b`-like (`sdk-51`, `sdk-52`)
+#### Legacy <CopyTextButton>`ubuntu-22.04-jdk-17-ndk-r26b`-like (`sdk-51`, `sdk-52`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -100,7 +119,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-17-ndk-r25b` (`sdk-50`)
+#### <CopyTextButton>`ubuntu-22.04-jdk-17-ndk-r25b` (`sdk-50`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -116,7 +135,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-11-ndk-r23b` (`sdk-49`)
+#### <CopyTextButton>`ubuntu-22.04-jdk-11-ndk-r23b` (`sdk-49`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -132,7 +151,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-17-ndk-r21e`
+#### <CopyTextButton>`ubuntu-22.04-jdk-17-ndk-r21e`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -148,7 +167,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-11-ndk-r21e`
+#### <CopyTextButton>`ubuntu-22.04-jdk-11-ndk-r21e`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -164,7 +183,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-8-ndk-r21e` (deprecated)
+#### <CopyTextButton>`ubuntu-22.04-jdk-8-ndk-r21e` (deprecated)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -180,7 +199,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-11-ndk-r23b` (deprecated)
+#### <CopyTextButton>`ubuntu-20.04-jdk-11-ndk-r23b` (deprecated)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -196,7 +215,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-11-ndk-r21e` (deprecated)
+#### <CopyTextButton>`ubuntu-20.04-jdk-11-ndk-r21e` (deprecated)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -212,7 +231,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-8-ndk-r21e` (deprecated)
+#### <CopyTextButton>`ubuntu-20.04-jdk-8-ndk-r21e` (deprecated)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -228,7 +247,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-11-ndk-r19c` (deprecated)
+#### <CopyTextButton>`ubuntu-20.04-jdk-11-ndk-r19c` (deprecated)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -244,7 +263,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-8-ndk-r19c` (deprecated)
+#### <CopyTextButton>`ubuntu-20.04-jdk-8-ndk-r19c` (deprecated)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -274,7 +293,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://10.94.183.70:4873
+  registry=http://npm.caches.eas-build.internal
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -282,13 +301,62 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
   ```yaml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'http://10.94.183.70:4873'
+  npmRegistryServer: 'http://npm.caches.eas-build.internal'
   enableImmutableInstalls: false
   ```
 
 ### iOS server images
 
-#### `macos-sequoia-15.5-xcode-16.4` (`latest`, `sdk-53`)
+#### <CopyTextButton>`macos-sequoia-15.5-xcode-26.0`</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- macOS Sequoia 15.5
+- Xcode 26.0 Beta 4 (17A5285i)
+- Node.js 20.19.2
+- Bun 1.2.19
+- Yarn 1.22.22
+- pnpm 9.15.9
+- npm 10.8.2
+- fastlane 2.228.0
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 11.2.0
+- jq 1.8.0
+- Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
+- Git 2.49.0
+- Git LFS 3.6.1
+- applesimutils 0.9.12
+- idb-companion 1.1.8
+
+</Collapsible>
+
+#### <CopyTextButton>`macos-sequoia-15.6-xcode-16.4` (`sdk-54`)</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- macOS Sequoia 15.6
+- Xcode 16.4 (16F6)
+- Node.js 20.19.4
+- Bun 1.2.20
+- Yarn 1.22.22
+- pnpm 10.14.0
+- npm 10.9.3
+- fastlane 2.228.0
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 11.3.0
+- Maestro 1.41.0
+- jq 1.8.0
+- Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
+- Git 2.49.0
+- Git LFS 3.6.1
+- applesimutils 0.9.10
+- idb-companion 1.1.8
+
+</Collapsible>
+
+#### <CopyTextButton>`macos-sequoia-15.5-xcode-16.4` (`latest`, `sdk-53`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -312,7 +380,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-sequoia-15.4-xcode-16.3`
+#### <CopyTextButton>`macos-sequoia-15.4-xcode-16.3`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -336,7 +404,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-sequoia-15.3-xcode-16.2` (`sdk-52`)
+#### <CopyTextButton>`macos-sequoia-15.3-xcode-16.2` (`sdk-52`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -354,7 +422,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-sonoma-14.6-xcode-16.1`
+#### <CopyTextButton>`macos-sonoma-14.6-xcode-16.1`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -372,7 +440,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-sonoma-14.6-xcode-16.0`
+#### <CopyTextButton>`macos-sonoma-14.6-xcode-16.0`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -390,7 +458,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-sonoma-14.5-xcode-15.4` (`sdk-51`, `sdk-50`, `sdk-49`)
+#### <CopyTextButton>`macos-sonoma-14.5-xcode-15.4` (`sdk-51`, `sdk-50`, `sdk-49`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -408,7 +476,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-sonoma-14.4-xcode-15.3`
+#### <CopyTextButton>`macos-sonoma-14.4-xcode-15.3`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -426,7 +494,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-ventura-13.6-xcode-15.2`
+#### <CopyTextButton>`macos-ventura-13.6-xcode-15.2`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -444,7 +512,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-ventura-13.6-xcode-15.1`
+#### <CopyTextButton>`macos-ventura-13.6-xcode-15.1`</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -462,7 +530,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-ventura-13.6-xcode-15.0`
+#### <CopyTextButton>`macos-ventura-13.6-xcode-15.0`</CopyTextButton>
 
 <Collapsible summary="Details">
 

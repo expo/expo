@@ -70,7 +70,7 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHostProvider: () -
     get() {
       if (isBridgelessMode) {
         val reactHostDelegateField: Field =
-          ReactHostImpl::class.java.getDeclaredField("mReactHostDelegate")
+          ReactHostImpl::class.java.getDeclaredField("reactHostDelegate")
         reactHostDelegateField.isAccessible = true
         val reactHostDelegate = reactHostDelegateField.get(reactHost) as ReactHostDelegate
         val className = reactHostDelegate.jsRuntimeFactory::class.simpleName.toString()

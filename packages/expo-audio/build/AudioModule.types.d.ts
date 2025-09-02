@@ -1,5 +1,5 @@
 import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-core';
-import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStatus } from './Audio.types';
+import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions, RecordingStatus } from './Audio.types';
 /**
  * @hidden
  */
@@ -16,7 +16,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * Initializes a new audio player instance with the given source.
      * @hidden
      */
-    constructor(source: AudioSource, updateInterval: number);
+    constructor(source: AudioSource, updateInterval: number, keepAudioSessionActive: boolean);
     /**
      * Unique identifier for the player object.
      */
@@ -168,8 +168,9 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     uri: string | null;
     /**
      * Starts the recording.
+     * @param options Optional recording configuration options.
      */
-    record(): void;
+    record(options?: RecordingStartOptions): void;
     /**
      * Stop the recording.
      */
@@ -187,7 +188,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * Returns the currently-selected recording input. This method can only be called if the `Recording` has been prepared.
      * @return A `Promise` that is fulfilled with a `RecordingInput` object.
      */
-    getCurrentInput(): RecordingInput;
+    getCurrentInput(): Promise<RecordingInput>;
     /**
      * Sets the current recording input.
      * @param inputUid The uid of a `RecordingInput`.
@@ -201,6 +202,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     /**
      * Starts the recording at the given time.
      * @param seconds The time in seconds to start recording at.
+     * @deprecated Use `record({ atTime: seconds })` instead.
      */
     startRecordingAtTime(seconds: number): void;
     /**
@@ -210,6 +212,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     /**
      * Stops the recording once the specified time has elapsed.
      * @param seconds The time in seconds to stop recording at.
+     * @deprecated Use `record({ forDuration: seconds })` instead.
      */
     recordForDuration(seconds: number): void;
 }

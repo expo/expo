@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -92,6 +93,9 @@ class AudioPlayer(
         delay(updateInterval.toLong())
       }
     }
+      .onStart {
+        sendPlayerUpdate()
+      }
       .onEach {
         if (playing) {
           sendPlayerUpdate()

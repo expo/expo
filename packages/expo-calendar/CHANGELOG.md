@@ -8,11 +8,37 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 15.0.5 — 2025-08-28
+
+### 🎉 New features
+
+- [iOS] Added support for all‑day reminders ([#39028](https://github.com/expo/expo/pull/39028)) by [@dominik-miskovic](https://github.com/dominik-miskovic)
+
+## 15.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
 - [iOS] Don't encode event URLs. ([#37243](https://github.com/expo/expo/pull/37243) by [@jakex7](https://github.com/jakex7))
 - [iOS] Don't require permissions for createEventInCalendarAsync. ([#37607](https://github.com/expo/expo/pull/37607) by [@jakex7](https://github.com/jakex7))
 - [iOS] Make location optional. ([#37612](https://github.com/expo/expo/pull/37612) by [@jakex7](https://github.com/jakex7))
-
-### 💡 Others
 
 ## 14.1.4 — 2025-04-30
 

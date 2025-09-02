@@ -24,6 +24,8 @@ import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
 import expo.modules.updates.procedures.StartupProcedure
+import expo.modules.updates.reloadscreen.ReloadScreenManager
+import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
@@ -48,7 +50,7 @@ import kotlin.time.toDuration
  */
 class EnabledUpdatesController(
   private val context: Context,
-  private val updatesConfiguration: UpdatesConfiguration,
+  private var updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
@@ -56,17 +58,16 @@ class EnabledUpdatesController(
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
-  private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
-    updatesConfiguration.getRuntimeVersion()
-  )
+  private val selectionPolicy: SelectionPolicy
+    get() = SelectionPolicyFactory.createFilterAwarePolicy(updatesConfiguration.getRuntimeVersion(), updatesConfiguration)
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val controllerScope = CoroutineScope(Dispatchers.IO)
-  private val fileDownloader by lazy {
-    FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
-  }
+  private val fileDownloader: FileDownloader
+    get() = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
+  override val reloadScreenManager = ReloadScreenManager()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
@@ -161,7 +162,9 @@ class EnabledUpdatesController(
 
     purgeUpdatesLogsOlderThanOneDay()
 
-    BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+    if (!updatesConfiguration.hasUpdatesOverride) {
+      BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+    }
 
     stateMachine.queueExecution(startupProcedure)
   }
@@ -179,6 +182,7 @@ class EnabledUpdatesController(
       getCurrentLauncher = { startupProcedure.launcher!! },
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,
+      reloadScreenManager = reloadScreenManager,
       callback
     )
     stateMachine.queueExecution(procedure)
@@ -276,7 +280,6 @@ class EnabledUpdatesController(
   }
 
   override fun shutdown() {
-    stateMachine.shutdown()
     controllerScope.cancel()
   }
 
@@ -285,6 +288,19 @@ class EnabledUpdatesController(
       throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
     }
     UpdatesConfigurationOverride.save(context, configOverride)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
+  }
+
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    val isValidRequestHeaders = UpdatesConfiguration.isValidRequestHeadersOverride(
+      updatesConfiguration.originalEmbeddedRequestHeaders,
+      requestHeaders
+    )
+    if (!isValidRequestHeaders) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Invalid update requestHeaders override: $requestHeaders", null)
+    }
+    val configOverride = UpdatesConfigurationOverride.saveRequestHeaders(context, requestHeaders)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 
   companion object {

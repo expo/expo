@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`"lazyImports" option accepts ["inline-comp", "./inline-func", "../inline-func-with-side-effects.fx.ts"] 1`] = `
-"var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _possibleConstructorReturn2=_interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));var _getPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _vectorIcons=require("@expo/vector-icons");
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _callSuper2=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _vectorIcons=require("@expo/vector-icons");
 var Boo=_interopRequireWildcard(require("Boo"));
 var _expoAppLoading=_interopRequireDefault(require("expo-app-loading"));
 var _expoAsset=require("expo-asset");
@@ -15,9 +15,9 @@ require("Foo");
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
 function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function _inlineFunc(){return data;};return data;}
-function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));_inlineFuncWithSideEffectsFx=function _inlineFuncWithSideEffectsFx(){return data;};return data;}var _jsxRuntime=require("react/jsx-runtime");function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}function _callSuper(t,o,e){return o=(0,_getPrototypeOf2.default)(o),(0,_possibleConstructorReturn2.default)(t,_isNativeReflectConstruct()?Reflect.construct(o,e||[],(0,_getPrototypeOf2.default)(t).constructor):o.apply(t,e));}function _isNativeReflectConstruct(){try{var t=!Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));}catch(t){}return(_isNativeReflectConstruct=function _isNativeReflectConstruct(){return!!t;})();}var
+function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));_inlineFuncWithSideEffectsFx=function _inlineFuncWithSideEffectsFx(){return data;};return data;}var _jsxRuntime=require("react/jsx-runtime");var
 
-Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _callSuper(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
+Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_callSuper2.default)(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -50,7 +50,7 @@ function unusedFunction(){
 `;
 
 exports[`"lazyImports" option accepts [Function anonymous] 1`] = `
-"var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function _createClass2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function _inherits2(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function _vectorIcons(){return data;};return data;}
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function _createClass2(){return data;};return data;}function _callSuper2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));_callSuper2=function _callSuper2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function _inherits2(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function _vectorIcons(){return data;};return data;}
 function Boo(){var data=_interopRequireWildcard(require("Boo"));Boo=function Boo(){return data;};return data;}
 function _expoAppLoading(){var data=_interopRequireDefault(require("expo-app-loading"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
 function _expoAsset(){var data=require("expo-asset");_expoAsset=function _expoAsset(){return data;};return data;}
@@ -64,9 +64,9 @@ require("Foo");
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
 function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function _inlineFunc(){return data;};return data;}
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function _jsxRuntime(){return data;};return data;}function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}function _callSuper(t,o,e){return o=(0,_getPrototypeOf2().default)(o),(0,_possibleConstructorReturn2().default)(t,_isNativeReflectConstruct()?Reflect.construct(o,e||[],(0,_getPrototypeOf2().default)(t).constructor):o.apply(t,e));}function _isNativeReflectConstruct(){try{var t=!Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));}catch(t){}return(_isNativeReflectConstruct=function _isNativeReflectConstruct(){return!!t;})();}var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function _jsxRuntime(){return data;};return data;}var
 
-Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _callSuper(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
+Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_callSuper2().default)(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -99,7 +99,7 @@ function unusedFunction(){
 `;
 
 exports[`"lazyImports" option accepts false 1`] = `
-"var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _possibleConstructorReturn2=_interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));var _getPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _vectorIcons=require("@expo/vector-icons");
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _callSuper2=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _vectorIcons=require("@expo/vector-icons");
 var Boo=_interopRequireWildcard(require("Boo"));
 var _expoAppLoading=_interopRequireDefault(require("expo-app-loading"));
 var _expoAsset=require("expo-asset");
@@ -113,9 +113,9 @@ require("Foo");
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
 var _inlineFunc=_interopRequireDefault(require("./inline-func"));
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));var _jsxRuntime=require("react/jsx-runtime");function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}function _callSuper(t,o,e){return o=(0,_getPrototypeOf2.default)(o),(0,_possibleConstructorReturn2.default)(t,_isNativeReflectConstruct()?Reflect.construct(o,e||[],(0,_getPrototypeOf2.default)(t).constructor):o.apply(t,e));}function _isNativeReflectConstruct(){try{var t=!Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));}catch(t){}return(_isNativeReflectConstruct=function _isNativeReflectConstruct(){return!!t;})();}var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));var _jsxRuntime=require("react/jsx-runtime");var
 
-Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _callSuper(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
+Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_callSuper2.default)(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
@@ -148,7 +148,7 @@ function unusedFunction(){
 `;
 
 exports[`"lazyImports" option accepts null 1`] = `
-"var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _possibleConstructorReturn2=_interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));var _getPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _vectorIcons=require("@expo/vector-icons");
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _callSuper2=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _vectorIcons=require("@expo/vector-icons");
 var Boo=_interopRequireWildcard(require("Boo"));
 var _expoAppLoading=_interopRequireDefault(require("expo-app-loading"));
 var _expoAsset=require("expo-asset");
@@ -162,9 +162,9 @@ require("Foo");
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
 var _inlineFunc=_interopRequireDefault(require("./inline-func"));
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));var _jsxRuntime=require("react/jsx-runtime");function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}function _callSuper(t,o,e){return o=(0,_getPrototypeOf2.default)(o),(0,_possibleConstructorReturn2.default)(t,_isNativeReflectConstruct()?Reflect.construct(o,e||[],(0,_getPrototypeOf2.default)(t).constructor):o.apply(t,e));}function _isNativeReflectConstruct(){try{var t=!Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));}catch(t){}return(_isNativeReflectConstruct=function _isNativeReflectConstruct(){return!!t;})();}var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));var _jsxRuntime=require("react/jsx-runtime");var
 
-Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _callSuper(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
+Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_callSuper2.default)(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
@@ -197,7 +197,7 @@ function unusedFunction(){
 `;
 
 exports[`"lazyImports" option accepts true 1`] = `
-"var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function _createClass2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function _inherits2(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function _vectorIcons(){return data;};return data;}
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function _createClass2(){return data;};return data;}function _callSuper2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));_callSuper2=function _callSuper2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function _inherits2(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function _vectorIcons(){return data;};return data;}
 function Boo(){var data=_interopRequireWildcard(require("Boo"));Boo=function Boo(){return data;};return data;}
 function _expoAppLoading(){var data=_interopRequireDefault(require("expo-app-loading"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
 var _expoAsset=require("expo-asset");
@@ -211,9 +211,9 @@ require("Foo");
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
 var _inlineFunc=_interopRequireDefault(require("./inline-func"));
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function _jsxRuntime(){return data;};return data;}function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}function _callSuper(t,o,e){return o=(0,_getPrototypeOf2().default)(o),(0,_possibleConstructorReturn2().default)(t,_isNativeReflectConstruct()?Reflect.construct(o,e||[],(0,_getPrototypeOf2().default)(t).constructor):o.apply(t,e));}function _isNativeReflectConstruct(){try{var t=!Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));}catch(t){}return(_isNativeReflectConstruct=function _isNativeReflectConstruct(){return!!t;})();}var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function _jsxRuntime(){return data;};return data;}var
 
-Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _callSuper(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
+Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_callSuper2().default)(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -260,16 +260,16 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`metro supports reanimated worklets 1`] = `
-"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}",version:"[GLOBAL]"};var someWorklet=
-function(){var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
+"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}"};var someWorklet=
+function someWorklet_workletJs1Factory(_ref){var _worklet_14307677064221_init_data=_ref._worklet_14307677064221_init_data;var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"
+};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.4.1";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data:_worklet_14307677064221_init_data});"
 `;
 
 exports[`metro transpiles non-standard exports 1`] = `
-"Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;
-var _default=_interopRequireWildcard(require("./Animated"));exports.default=_default;function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}"
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;
+var _default=_interopRequireWildcard(require("./Animated"));exports.default=_default;"
 `;
 
 exports[`metro uses the platform's react-native import 1`] = `
@@ -292,16 +292,16 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`metro+hermes supports reanimated worklets 1`] = `
-"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}",version:"[GLOBAL]"};var someWorklet=
-function(){var _e=[new global.Error(),1,-27];var someWorklet=function(greeting){
+"var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}"};var someWorklet=
+function someWorklet_workletJs1Factory(_ref){var _worklet_14307677064221_init_data=_ref._worklet_14307677064221_init_data;var _e=[new global.Error(),1,-27];var someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"
+};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.4.1";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data});"
 `;
 
 exports[`metro+hermes transpiles non-standard exports 1`] = `
-"Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;
-var _default=_interopRequireWildcard(require("./Animated"));exports.default=_default;function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}"
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;
+var _default=_interopRequireWildcard(require("./Animated"));exports.default=_default;"
 `;
 
 exports[`metro+hermes uses the platform's react-native import 1`] = `
@@ -324,11 +324,11 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`webpack supports reanimated worklets 1`] = `
-"const _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}",version:"[GLOBAL]"};const someWorklet=
-function(){const _e=[new global.Error(),1,-27];const someWorklet=function(greeting){
+"const _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}"};const someWorklet=
+function someWorklet_workletJs1Factory({_worklet_14307677064221_init_data}){const _e=[new global.Error(),1,-27];const someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"
+};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.4.1";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data});"
 `;
 
 exports[`webpack transpiles non-standard exports 1`] = `

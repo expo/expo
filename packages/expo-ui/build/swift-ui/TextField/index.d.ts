@@ -1,5 +1,6 @@
-import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
+import { Ref } from 'react';
+import { type ViewEvent } from '../../types';
+import { type CommonViewModifierProps } from '../types';
 /**
  * Determines which keyboard to open. For example, `'numeric'`.
  *
@@ -20,7 +21,14 @@ import { ViewEvent } from '../../types';
  * @default default
  */
 export type TextFieldKeyboardType = 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'decimal-pad' | 'twitter' | 'web-search' | 'ascii-capable-number-pad';
+/**
+ * Can be used for imperatively setting text on the TextField component.
+ */
+export type TextFieldRef = {
+    setText: (newText: string) => Promise<void>;
+};
 export type TextFieldProps = {
+    ref?: Ref<TextFieldRef>;
     /**
      * Initial value that the TextField displays when being mounted. As the TextField is an uncontrolled component, change the key prop if you need to change the text value.
      */
@@ -51,19 +59,12 @@ export type TextFieldProps = {
      * @default true
      */
     autocorrection?: boolean;
-};
+} & CommonViewModifierProps;
 export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
 }>;
 /**
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
-export declare function TextField(props: TextFieldProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
-/**
- * `<TextField>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function TextFieldPrimitive(props: TextFieldProps): import("react").JSX.Element;
+export declare function TextField(props: TextFieldProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

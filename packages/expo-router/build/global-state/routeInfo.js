@@ -17,7 +17,18 @@ exports.defaultRouteInfo = {
 function getRouteInfoFromState(state) {
     if (!state)
         return exports.defaultRouteInfo;
-    let route = state.routes[0];
+    const index = 'index' in state ? (state.index ?? 0) : 0;
+    let route = state.routes[index];
+    if (route.name === constants_1.NOT_FOUND_ROUTE_NAME || route.name === constants_1.SITEMAP_ROUTE_NAME) {
+        const path = route.path || (route.name === constants_1.NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
+        return {
+            ...exports.defaultRouteInfo,
+            unstable_globalHref: (0, getPathFromState_forks_1.appendBaseUrl)(path),
+            pathname: path,
+            pathnameWithParams: path,
+            segments: [route.name],
+        };
+    }
     if (route.name !== constants_1.INTERNAL_SLOT_NAME) {
         throw new Error(`Expected the first route to be ${constants_1.INTERNAL_SLOT_NAME}, but got ${route.name}`);
     }

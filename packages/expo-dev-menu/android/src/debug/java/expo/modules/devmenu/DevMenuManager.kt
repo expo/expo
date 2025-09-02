@@ -365,6 +365,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  fun toggleFab() {
+    preferences?.showFab?.let {
+      preferences?.showFab = !it
+    }
+  }
+
   override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
     Log.i(DEV_MENU_TAG, "Set new dev-menu delegate: ${newDelegate.javaClass}")
     // removes event listener for old delegate

@@ -180,8 +180,6 @@ export function GET() {
 You can respond to server errors by using the `Response` object.
 
 ```ts app/blog/[post].ts
-import { Request, Response } from 'expo-router/server';
-
 export async function GET(request: Request, { post }: Record<string, string>) {
   if (!post) {
     return new Response('No post found', {
@@ -231,7 +229,7 @@ You can deploy the server for production using [EAS Hosting](/eas/hosting/get-st
 
 ### Native deployment
 
-> **warning** This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
+> **important** This is an experimental feature starting in SDK 52 and above. The process will be more automated and have better support in future versions.
 
 Server features (API routes, and React Server Components) in Expo Router are centered around native implementations of `window.location` and `fetch` which point to the remote server. In development, we automatically point to the dev server running with `npx expo start`, but for production native builds to work you'll need to deploy the server to a secure host and set the `origin` property of the Expo Router Config Plugin.
 
@@ -354,7 +352,7 @@ You will want to make a clean build before sending to the store to ensure no tra
 
 ## Hosting on third-party services
 
-> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **important** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
 Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following third-party providers have unofficial or experimental support from the Expo team.
 
@@ -382,10 +380,6 @@ Write a server entry file that serves the static files and delegates requests to
 
 ```ts server.ts
 import { createRequestHandler } from '@expo/server/adapter/bun';
-import dotenv from 'dotenv';
-
-import { websocket } from './websocket';
-dotenv.config();
 
 const CLIENT_BUILD_DIR = `${process.cwd()}/dist/client`;
 const SERVER_BUILD_DIR = `${process.cwd()}/dist/server`;
@@ -500,7 +494,7 @@ Start the server with `node` command:
 
 ### Netlify
 
-> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **important** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
 <Step label="1">
 
@@ -581,7 +575,7 @@ If you're using any environment variables or **.env** files, add them to Netlify
 
 ### Vercel
 
-> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **important** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
 <Step label="1">
 

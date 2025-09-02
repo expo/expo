@@ -1,5 +1,6 @@
 // Run a number of basic operations on the minifier to ensure it works as expected
 import * as babel from '@babel/core';
+import constantFoldingPlugin from '@expo/metro/metro-transform-plugins/constant-folding-plugin';
 
 import preset from '..';
 import { minifyLikeMetroAsync } from './minify-util';
@@ -13,7 +14,7 @@ const DEFAULT_OPTS = {
   presets: [[preset]],
   plugins: [
     // Fold constants to emulate Metro
-    require('metro-transform-plugins/src/constant-folding-plugin.js'),
+    constantFoldingPlugin,
   ],
   sourceMaps: true,
   filename: 'unknown',

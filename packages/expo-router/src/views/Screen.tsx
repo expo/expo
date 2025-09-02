@@ -21,8 +21,13 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
 
 /** Component for setting the current screen's options dynamically. */
 export function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>) {
+  if (name) {
+    throw new Error(
+      `The name prop on the Screen component may only be used when it is inside a Layout route`
+    );
+  }
   const route = useRoute();
-  const navigation = useNavigation(name);
+  const navigation = useNavigation();
   const isFocused = navigation.isFocused();
   const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route);
 

@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import invariant from 'invariant';
 
 export const name = 'Asset';

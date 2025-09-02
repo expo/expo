@@ -5,7 +5,7 @@ import ExpoModulesCore
 /**
  An URLSessionDataTask wrapper.
  */
-internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
+internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate, @unchecked Sendable {
   private let delegate: ExpoURLSessionTaskDelegate
   private var task: URLSessionDataTask?
 
@@ -88,7 +88,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
   }
 }
 
-internal protocol ExpoURLSessionTaskDelegate: AnyObject {
+internal protocol ExpoURLSessionTaskDelegate: AnyObject, Sendable {
   func urlSessionDidStart(_ session: ExpoURLSessionTask)
   func urlSession(_ session: ExpoURLSessionTask, didReceive response: URLResponse)
   func urlSession(_ session: ExpoURLSessionTask, didReceive data: Data)

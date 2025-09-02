@@ -6,9 +6,58 @@
 
 ### 🎉 New features
 
-- Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 29.0.7 — 2025-08-31
+
+### 💡 Others
+
+- [iOS] Migrate multipart parsers to Swift. ([#39144](https://github.com/expo/expo/pull/39144) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.6 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.5 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.4 — 2025-08-21
 
 ### 🐛 Bug fixes
+
+- Fix `unexpected ',' separator` issue ([#39027](https://github.com/expo/expo/pull/39027) by [@phil9l](https://github.com/phil9l))
+
+## 29.0.3 — 2025-08-18
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.1 — 2025-08-15
+
+### 💡 Others
+
+- Bump `@vercel/ncc` build ([#38801](https://github.com/expo/expo/pull/38801) by [@kitten](https://github.com/kitten))
+
+## 29.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for a customisable reloading view when `reloadAsync` is called. ([#38074](https://github.com/expo/expo/pull/38074) by [@alanjhughes](https://github.com/alanjhughes)), ([#38362](https://github.com/expo/expo/pull/38362) by [@alanjhughes](https://github.com/alanjhughes)) and ([#38409](https://github.com/expo/expo/pull/38409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add `downloadProgress` state to the `useUpdates` hook to support listening to overall asset download progress. ([#38307](https://github.com/expo/expo/pull/38307)) by [@nishan](https://github.com/intergalacticspacehighway)
+- [iOS] dev-client support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
+- Added reload support to `setUpdateURLAndRequestHeadersOverride`. ([#38167](https://github.com/expo/expo/pull/38167), [#38180](https://github.com/expo/expo/pull/38180) by [@kudo](https://github.com/kudo))
+- Added `setUpdateRequestHeadersOverride` to allow runtime `requestHeaders` override. ([#38623](https://github.com/expo/expo/pull/38623), [#38628](https://github.com/expo/expo/pull/38628), [#38624](https://github.com/expo/expo/pull/38624) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed imports after upgrading to Metro 0.83 ([#38375](https://github.com/expo/expo/pull/38375) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
@@ -22,6 +71,8 @@
 - [CI] Removed Detox dependency and unused files in E2E code. ([#37751](https://github.com/expo/expo/pull/37751) by [@douglowder](https://github.com/douglowder))
 - Updates imports from `@expo/config`, `@expo/config-plugins` to `expo/config`, `expo/config-plugins`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Migrate loaders and file downloader to coroutines. ([#37959](https://github.com/expo/expo/pull/37959) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix procedure scope no surviving app reloads. ([#38073](https://github.com/expo/expo/pull/38073) by [@alanjhughes](https://github.com/alanjhughes))
+- [Internal] Replace dependency chain to `@expo/cli` internals with an internal entrypoint ([#38574](https://github.com/expo/expo/pull/38574) by [@kitten](https://github.com/kitten))
 
 ### 📚 3rd party library updates
 

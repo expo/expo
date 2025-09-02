@@ -8,7 +8,7 @@ import React
 internal final class EXVersionedNetworkInterceptor: NSObject, ExpoRequestCdpInterceptorDelegate {
   private let metroConnection: RCTReconnectingWebSocket
 
-  @objc
+  @MainActor @objc
   init(bundleUrl: URL) {
     assert(Thread.isMainThread)
     self.metroConnection = RCTReconnectingWebSocket(

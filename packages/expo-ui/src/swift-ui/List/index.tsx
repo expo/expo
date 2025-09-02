@@ -1,15 +1,20 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
 
-import { ViewEvent } from '../../types';
-import { Host } from '../Host';
+import { type ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
-const ListNativeView: React.ComponentType<NativeListProps> | null =
-  requireNativeView<NativeListProps>('ExpoUI', 'ListView');
+const ListNativeView: React.ComponentType<NativeListProps> = requireNativeView<NativeListProps>(
+  'ExpoUI',
+  'ListView'
+);
 
 function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeListProps, 'children'> {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     onDeleteItem: ({ nativeEvent: { index } }) => props?.onDeleteItem?.(index),
     onMoveItem: ({ nativeEvent: { from, to } }) => props?.onMoveItem?.(from, to),
     onSelectionChange: ({ nativeEvent: { selection } }) => props?.onSelectionChange?.(selection),
@@ -18,7 +23,7 @@ function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeList
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
 
-export interface ListProps {
+export interface ListProps extends CommonViewModifierProps {
   /**
    * One of the predefined ListStyle types in SwiftUI.
    * @default 'automatic'
@@ -90,7 +95,7 @@ type MoveItemEvent = ViewEvent<'onMoveItem', { from: number; to: number }>;
  */
 type SelectItemEvent = ViewEvent<'onSelectionChange', { selection: number[] }>;
 
-export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelectionChange'> &
+type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelectionChange'> &
   DeleteItemEvent &
   MoveItemEvent &
   SelectItemEvent & {
@@ -98,29 +103,12 @@ export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'o
   };
 
 /**
- * `<List>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function ListPrimitive(props: ListProps) {
-  const { children, ...nativeProps } = props;
-
-  if (!ListNativeView) {
-    return null;
-  }
-
-  return <ListNativeView {...transformListProps(nativeProps)}>{children}</ListNativeView>;
-}
-
-/**
  * A list component that renders its children using a native SwiftUI list.
  * @param {ListProps} props - The properties for the list component.
  * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
  * @platform ios
  */
-export function List(props: ListProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={[props.style, { flex: 1 }]} matchContents>
-      <ListPrimitive {...props} />
-    </Host>
-  );
+export function List(props: ListProps) {
+  const { children, ...nativeProps } = props;
+  return <ListNativeView {...transformListProps(nativeProps)}>{children}</ListNativeView>;
 }

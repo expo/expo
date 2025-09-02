@@ -260,7 +260,7 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean ->
         val mediaSource = createMediaItem(source)
         runOnMain {
           val player = AudioPlayer(
@@ -465,10 +465,17 @@ class AudioModule : Module() {
         recorder.prepareRecording(options)
       }
 
-      Function("record") { recorder: AudioRecorder ->
+      Function("record") { recorder: AudioRecorder, options: RecordOptions? ->
         checkRecordingPermission()
         if (recorder.isPrepared) {
-          recorder.record()
+          recorder.recordWithOptions(options?.atTime, options?.forDuration)
+        }
+      }
+
+      Function("recordForDuration") { recorder: AudioRecorder, seconds: Double ->
+        checkRecordingPermission()
+        if (recorder.isPrepared) {
+          recorder.recordForDuration(seconds)
         }
       }
 
@@ -501,13 +508,23 @@ class AudioModule : Module() {
       Function("setInput") { recorder: AudioRecorder, input: String ->
         recorder.setInput(input, audioManager)
       }
+
+      Function("startRecordingAtTime") { recorder: AudioRecorder, seconds: Double ->
+        checkRecordingPermission()
+        if (recorder.isPrepared) {
+          recorder.startRecordingAtTime(seconds)
+        }
+      }
     }
   }
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
     val uri = uriString.toUri()
-    val mediaItem = when (uri.scheme) {
-      null -> MediaItem.fromUri(getRawResourceURI(uriString))
+    val mediaItem = when {
+      isRawResource(uri) -> {
+        val file = getResourceName(uri, uriString)
+        MediaItem.fromUri(getRawResourceURI(file))
+      }
       else -> MediaItem.fromUri(uri)
     }
 
@@ -525,6 +542,16 @@ class AudioModule : Module() {
       }
     }
   }
+
+  private fun isRawResource(uri: Uri): Boolean =
+    uri.scheme == null || (uri.scheme == "file" && uri.path?.startsWith("/android_res/raw/") == true)
+
+  private fun getResourceName(uri: Uri, fallback: String): String =
+    if (uri.scheme == null) {
+      fallback
+    } else {
+      uri.path?.substringAfterLast("/")?.substringBeforeLast(".") ?: fallback
+    }
 
   private fun getRawResourceURI(file: String): Uri {
     val resId = context.resources.getIdentifier(file, "raw", context.packageName)

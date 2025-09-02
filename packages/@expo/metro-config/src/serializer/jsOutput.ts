@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { types as t } from '@babel/core';
-import { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import { JsTransformerConfig } from 'metro-transform-worker';
+import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 
 import { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 

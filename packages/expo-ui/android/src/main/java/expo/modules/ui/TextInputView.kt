@@ -16,7 +16,6 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,8 +32,12 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+<<<<<<< HEAD
   val leadingIcon: MutableState<String?> = mutableStateOf(null),
   val trailingIcon: MutableState<String?> = mutableStateOf(null)
+=======
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+>>>>>>> 4acb7c51075528940849146349571137809fc36d
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -68,14 +71,22 @@ class TextInputView(context: Context, appContext: AppContext) :
   override val props = TextInputProps()
   private val onValueChanged by EventDispatcher()
 
+  private val textState = mutableStateOf<String?>(null)
+
+  var text: String?
+    get() = textState.value
+    set(value) {
+      textState.value = value
+      onValueChanged(mapOf("value" to (value ?: "")))
+    }
+
   @Composable
   override fun Content(modifier: Modifier) {
-    var value by remember { props.defaultValue }
     AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
       TextField(
-        value = value,
+        value = requireNotNull(textState.value),
         onValueChange = {
-          value = it
+          textState.value = it
           onValueChanged(mapOf("value" to it))
         },
         placeholder = { Text(props.placeholder.value) },
@@ -87,7 +98,8 @@ class TextInputView(context: Context, appContext: AppContext) :
           capitalization = props.autoCapitalize.value.autoCapitalize()
         ),
         leadingIcon = props.leadingIcon.value?.let { { MaterialIcon(it) } },
-        trailingIcon = props.trailingIcon.value?.let { { MaterialIcon(it) } }
+        trailingIcon = props.trailingIcon.value?.let { { MaterialIcon(it) } },
+        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
       )
     }
   }

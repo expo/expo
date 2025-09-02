@@ -1,53 +1,54 @@
-import {
-  ParamListBase,
-  StackNavigationState,
-  type NavigationRoute,
-} from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { store, type ReactNavigationState } from '../../global-state/router-store';
+import { useLinkPreviewContext } from './LinkPreviewContext';
+import { TabPath } from './native';
+import { getPreloadedRouteFromRootStateByHref, getTabPathFromRootStateByHref } from './utils';
+import { store } from '../../global-state/router-store';
+import { useRouter } from '../../hooks';
 import { Href } from '../../types';
-import { resolveHref } from '../href';
 
-export function useNextScreenId(): [string | undefined, (href: Href) => void] {
+export function useNextScreenId(): [
+  { nextScreenId: string | undefined; tabPath: TabPath[] },
+  (href: Href) => void,
+] {
+  const router = useRouter();
+  const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
-  const setNextScreenId = useCallback((href: Href): void => {
-    const preloadedRoute = getPreloadedRouteFromRootStateByHref(href);
-    const routeKey = preloadedRoute?.key;
-    internalSetNextScreenId(routeKey);
-  }, []);
-  return [internalNextScreenId, setNextScreenId];
-}
+  const currentHref = useRef<Href | undefined>(undefined);
+  const [tabPath, setTabPath] = useState<TabPath[]>([]);
 
-function getPreloadedRouteFromRootStateByHref(
-  href: Href
-): NavigationRoute<ParamListBase, string> | undefined {
-  const rootState = store.state;
-  let hrefState = store.getStateForHref(resolveHref(href));
-  let state: ReactNavigationState | undefined = rootState;
-  while (hrefState && state) {
-    const currentHrefRoute = hrefState.routes[0];
-    const currentStateRoute = currentHrefRoute
-      ? state.routes.find((r) => r.name === currentHrefRoute.name)
-      : undefined;
-
-    if (!currentStateRoute) {
-      // Only checking stack, because it is the only native navigator.
-      if (state.type === 'stack') {
-        const stackState = state as StackNavigationState<ParamListBase>;
-        // Sometimes the route is stored inside params
-        const innerRoute = currentHrefRoute.state ? currentHrefRoute.state.routes[0] : undefined;
-        const preloadedRoute = stackState.preloadedRoutes.find(
-          (route) =>
-            route.name === currentHrefRoute.name &&
-            (!innerRoute ||
-              (route.params && 'screen' in route.params && route.params.screen === innerRoute.name))
-        );
-        return preloadedRoute;
+  useEffect(() => {
+    // When screen is prefetched, then the root state is updated with the preloaded route.
+    return store.navigationRef.addListener('state', ({ data: { state } }) => {
+      // If we have the current href, it means that we prefetched the route
+      if (currentHref.current && state) {
+        const preloadedRoute = getPreloadedRouteFromRootStateByHref(currentHref.current, state);
+        const routeKey = preloadedRoute?.key;
+        const tabPathFromRootState = getTabPathFromRootStateByHref(currentHref.current, state);
+        // Without this timeout react-native does not have enough time to mount the new screen
+        // and thus it will not be found on the native side
+        if (routeKey || tabPathFromRootState.length) {
+          setTimeout(() => {
+            internalSetNextScreenId(routeKey);
+            setOpenPreviewKey(routeKey);
+            setTabPath(tabPathFromRootState);
+          });
+        }
+        // We got the preloaded state, so we can reset the currentHref
+        // to prevent unnecessary processing
+        currentHref.current = undefined;
       }
-    }
-    hrefState = currentHrefRoute?.state;
-    state = currentStateRoute?.state;
-  }
-  return undefined;
+    });
+  }, []);
+
+  const prefetch = useCallback(
+    (href: Href): void => {
+      // Resetting the nextScreenId to undefined
+      internalSetNextScreenId(undefined);
+      router.prefetch(href);
+      currentHref.current = href;
+    },
+    [router.prefetch]
+  );
+  return [{ nextScreenId: internalNextScreenId, tabPath }, prefetch];
 }

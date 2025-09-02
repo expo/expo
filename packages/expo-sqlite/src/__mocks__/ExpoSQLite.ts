@@ -15,6 +15,7 @@ export default {
   deleteDatebaseAsync: jest.fn(),
 
   defaultDatabaseDirectory: '.',
+  bundledExtensions: {},
 
   ensureDatabasePathExistsAsync: jest.fn().mockImplementation(async (databasePath: string) => {}),
   ensureDatabasePathExistsSync: jest.fn().mockImplementation((databasePath: string) => {}),

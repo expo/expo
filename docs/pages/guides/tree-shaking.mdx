@@ -5,6 +5,7 @@ description: Learn about how Expo CLI optimizes production JavaScript bundles.
 platforms: ['android', 'ios', 'web', 'tvos']
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -282,7 +283,11 @@ This system scales up to automatically optimize all `import` and `export` syntax
 
 <Step label="1">
 
-Enable `experimentalImportSupport` and ensure your app builds and runs as expected. You may experience issues with require cycles or mixing CommonJS and ESM imports.
+Ensure `experimentalImportSupport` and ensure your app builds and runs as expected.
+
+> **info** **Note**: Enabled by default in SDK 54 and above.
+
+<Collapsible summary="How to enable import support in older SDK versions?">
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -298,7 +303,9 @@ config.transformer.getTransformOptions = async () => ({
 module.exports = config;
 ```
 
-Experimental import support uses Metro's version of the `@babel/plugin-transform-modules-commonjs` plugin. This drastically reduces the number of resolutions and simplifies your output bundle. This feature can be used with `inlineRequires` to further optimize your bundle experimentally.
+Experimental import support uses a custom version of the `@babel/plugin-transform-modules-commonjs` plugin. This drastically reduces the number of resolutions and simplifies your output bundle. This feature can be used with `inlineRequires` to further optimize your bundle experimentally.
+
+</Collapsible>
 
 </Step>
 

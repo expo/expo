@@ -69,6 +69,14 @@ object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
     get() = sharedPreferences.getBoolean("isOnboardingFinished", false)
     set(value) = saveBoolean("isOnboardingFinished", value)
 
+  /**
+   * Whether to show a floating action button that pulls up the DevMenu at launch.
+   */
+  override var showFab: Boolean
+    // TODO: @behenate, on VR this value should be true by default
+    get() = sharedPreferences.getBoolean("showFab", false)
+    set(value) = saveBoolean("showFab", value)
+
   private fun saveBoolean(key: String, value: Boolean) {
     sharedPreferences
       .edit(commit = true) {
@@ -85,6 +93,7 @@ object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
         putBoolean("keyCommandsEnabled", keyCommandsEnabled)
         putBoolean("showsAtLaunch", showsAtLaunch)
         putBoolean("isOnboardingFinished", isOnboardingFinished)
+        putBoolean("showFab", showFab)
       }
 
   fun setPreferences(settings: ReadableMap) {
@@ -102,6 +111,10 @@ object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
 
     if (settings.hasKey("touchGestureEnabled")) {
       touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
+    }
+
+    if (settings.hasKey("showFab")) {
+      showFab = settings.getBoolean("showFab")
     }
   }
 }
