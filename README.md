@@ -1,4 +1,21 @@
-<!-- Banner Image -->
+<!--{
+  "cli": {
+    "version": ">= 3.0.0"
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  }
+}
+ Banner Image -->
 
 <p align="center">
   <a href="https://expo.dev/">
