@@ -116,7 +116,7 @@ public final class ImageView: ExpoView {
 
     addSubview(sdImageView)
   }
-  
+
   deinit {
     // Cancel pending requests when the view is deallocated.
     cancelPendingOperation()
