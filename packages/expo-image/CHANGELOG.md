@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix images not displaying in Material Top Tabs navigator.
+
 ### 💡 Others
 
 ## 3.0.5 — 2025-08-31
