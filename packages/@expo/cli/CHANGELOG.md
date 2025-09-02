@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Promote buildCacheProvider to stable ([#39297](https://github.com/expo/expo/pull/39297) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.26.6 — 2025-08-31
 
 _This version does not introduce any user-facing changes._
