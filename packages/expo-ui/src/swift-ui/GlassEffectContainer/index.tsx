@@ -16,10 +16,7 @@ export type GlassEffectContainerProps = {
   spacing?: number;
 } & CommonViewModifierProps;
 
-/**
- * @hidden
- */
-export type NativeGlassEffectContainerProps = GlassEffectContainerProps;
+type NativeGlassEffectContainerProps = GlassEffectContainerProps;
 
 const GlassEffectContainerNativeView: React.ComponentType<NativeGlassEffectContainerProps> =
   requireNativeView('ExpoUI', 'GlassEffectContainerView');
