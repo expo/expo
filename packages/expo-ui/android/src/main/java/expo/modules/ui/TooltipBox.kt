@@ -33,10 +33,7 @@ class TooltipBox(context: Context, appContext: AppContext) :
       state = rememberTooltipState(),
       modifier = modifier
     ) {
-      for (index in 0..<this.size) {
-        val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-        child.Content(modifier = Modifier)
-      }
+      Children()
     }
   }
 }

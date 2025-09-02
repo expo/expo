@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `TooltipBox` component. ([#38144](https://github.com/expo/expo/pull/38144) by [@mateoguzmana](https://github.com/mateoguzmana))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
