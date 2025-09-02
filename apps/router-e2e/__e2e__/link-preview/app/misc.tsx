@@ -1,6 +1,6 @@
 import { Link, usePathname } from 'expo-router';
 import React from 'react';
-import { View, Text, useWindowDimensions, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, useWindowDimensions, TouchableOpacity, ScrollView, Pressable } from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
 
@@ -54,6 +54,24 @@ const HomeIndex = () => {
       </Link>
       <Link href="/one">
         <Link.Trigger>Link.Preview: /one</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/one">
+        <Link.Trigger>
+          <Text>Link with preview: /one</Text>
+          <View style={{ width: 20, height: 20, backgroundColor: 'orange' }} />
+          <Text>Multiple children</Text>
+        </Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/one" asChild>
+        <Link.Trigger>
+          <Pressable style={{ backgroundColor: '#fff' }}>
+            <Text>Link with preview and asChild: /one</Text>
+            <View style={{ width: 20, height: 20, backgroundColor: 'orange' }} />
+            <Text>Multiple children</Text>
+          </Pressable>
+        </Link.Trigger>
         <Link.Preview />
       </Link>
       <Spacer />

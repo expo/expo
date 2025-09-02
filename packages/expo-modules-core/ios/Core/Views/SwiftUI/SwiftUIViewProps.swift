@@ -17,6 +17,8 @@ extension ExpoSwiftUI {
      */
     @Field public var children: [any AnyChild]?
 
+    public internal(set) weak var appContext: AppContext?
+
     /**
      A global event dispatcher that allows views to call `view.dispatchEvent(_:payload)` directly
      */
