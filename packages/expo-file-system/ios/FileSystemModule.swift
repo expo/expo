@@ -10,7 +10,6 @@ public final class FileSystemModule: Module {
   private lazy var filePickingHandler = FilePickingHandler(module: self)
   #endif
 
-
   var documentDirectory: URL? {
     return appContext?.config.documentDirectory
   }
