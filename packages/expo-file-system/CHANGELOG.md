@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `pickFileAsync` support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

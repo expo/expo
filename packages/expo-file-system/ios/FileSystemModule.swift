@@ -4,6 +4,10 @@ import ExpoModulesCore
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
+  #if os(iOS) || os(tvOS)
+  private lazy var filePickingHandler = FilePickingHandler(module: self)
+  #endif
+
   var documentDirectory: URL? {
     return appContext?.config.documentDirectory
   }
@@ -94,6 +98,20 @@ public final class FileSystemModule: Module {
       }
       downloadTask.resume()
     }
+
+    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+      #if os(iOS) || os(tvOS)
+      filePickingHandler.presentDocumentPicker(
+        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
+        isDirectory: false,
+        initialUri: initialUri,
+        mimeType: mimeType,
+        promise: promise
+      )
+      #else
+      promise.reject(FeatureNotAvailableOnPlatformException())
+      #endif
+    }.runOnQueue(.main)
 
     Function("info") { (url: URL) in
       let output = PathInfo()

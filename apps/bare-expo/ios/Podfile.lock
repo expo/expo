@@ -2683,7 +2683,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNReanimated (4.0.2):
+  - RNReanimated (4.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2705,10 +2705,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated (= 4.0.2)
+    - RNReanimated/reanimated (= 4.1.0)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated (4.0.2):
+  - RNReanimated/reanimated (4.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2730,10 +2730,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated/apple (= 4.0.2)
+    - RNReanimated/reanimated/apple (= 4.1.0)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated/apple (4.0.2):
+  - RNReanimated/reanimated/apple (4.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2849,7 +2849,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.4.2):
+  - RNWorklets (0.5.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2871,9 +2871,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets (= 0.4.2)
+    - RNWorklets/worklets (= 0.5.0)
     - Yoga
-  - RNWorklets/worklets (0.4.2):
+  - RNWorklets/worklets (0.5.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2895,9 +2895,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets/apple (= 0.4.2)
+    - RNWorklets/worklets/apple (= 0.5.0)
     - Yoga
-  - RNWorklets/worklets/apple (0.4.2):
+  - RNWorklets/worklets/apple (0.5.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3709,10 +3709,10 @@ SPEC CHECKSUMS:
   RNCPicker: a7170edbcbf8288de8edb2502e08e7fc757fa755
   RNDateTimePicker: be0e44bcb9ed0607c7c5f47dbedd88cf091f6791
   RNGestureHandler: 2914750df066d89bf9d8f48a10ad5f0051108ac3
-  RNReanimated: 32528e8dfd89cc4cdda0a04498a4ef87938a85ac
+  RNReanimated: 3ab91aa335aa43423ecbf6606b08893718ebcc79
   RNScreens: cbd0bb6537baa89b54bb0493617bc1833fa3d0e0
   RNSVG: 31d6639663c249b7d5abc9728dde2041eb2a3c34
-  RNWorklets: 5f752ee1ef748d5a7d07d7cbbba66ac43adfff60
+  RNWorklets: d2404efd906e19d5656e552982885588738cc599
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
