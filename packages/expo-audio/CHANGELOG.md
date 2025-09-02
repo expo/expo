@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Bump media3 version to 1.8.0. ([#39187](https://github.com/expo/expo/pull/39187) by [@behenate](https://github.com/behenate))
+
 ## 1.0.7 — 2025-08-31
 
 ### 🎉 New features
