@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.0-alpha.8 — 2025-09-02
+
+### 💡 Others
+
 - Used convertibles to process modifiers' parameters. ([#39231](https://github.com/expo/expo/pull/39231) by [@kudo](https://github.com/kudo))
 
 ## 0.2.0-alpha.7 — 2025-08-31

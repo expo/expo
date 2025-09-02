@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.0.6 — 2025-09-02
+
+### 💡 Others
+
 - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 10.0.5 — 2025-08-31
