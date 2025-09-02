@@ -1,49 +1,36 @@
----
-title: Android Studio Emulator
-description: Learn how to set up the Android Emulator to test your app on a virtual Android device.
----
 
-import AndroidEmulatorInstructions from 'scenes/get-started/set-up-your-environment/instructions/_androidEmulatorInstructions.mdx';
-import AndroidStudioEnvironmentInstructions from 'scenes/get-started/set-up-your-environment/instructions/_androidStudioEnvironmentInstructions.mdx';
-import AndroidStudioInstructions from 'scenes/get-started/set-up-your-environment/instructions/_androidStudioInstructions.mdx';
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+import React, { useState, useEffect } from "react"; import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from "react-native"; import auth from "@react-native-firebase/auth"; import firestore from "@react-native-firebase/firestore"; import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
 
-If you don't have an Android device available to test with, we recommend using the default emulator that comes with Android Studio. If you run into any problems setting it up, follow the steps in this guide.
+export default function App() { const [user, setUser] = useState(null); const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [coins, setCoins] = useState(0);
 
-<AndroidStudioEnvironmentInstructions />
+useEffect(() => { const subscriber = auth().onAuthStateChanged(async (user) => { setUser(user); if (user) { const doc = await firestore().collection("users").doc(user.uid).get(); if (doc.exists) setCoins(doc.data().coins || 0); } }); return subscriber; }, []);
 
-<AndroidStudioInstructions />
+const register = async () => { try { const res = await auth().createUserWithEmailAndPassword(email, password); await firestore().collection("users").doc(res.user.uid).set({ coins: 0 }); Alert.alert("Account Created", "Welcome to Utera Cash 💰"); } catch (err) { Alert.alert("Error", err.message); } };
 
-<AndroidEmulatorInstructions />
+const login = async () => { try { await auth().signInWithEmailAndPassword(email, password); } catch (err) { Alert.alert("Error", err.message); } };
 
-## Troubleshooting
+const addCoins = async (amount) => { const uid = user.uid; const ref = firestore().collection("users").doc(uid); await ref.update({ coins: coins + amount }); setCoins(coins + amount); };
 
-### Multiple `adb` versions
+const withdraw = async () => { if (coins < 1) return Alert.alert("Error", "Minimum 1 coin required"); const uid = user.uid; await firestore().collection("withdraws").add({ uid, coins, method: "JazzCash", status: "pending", createdAt: new Date() }); Alert.alert("Request Sent", "Your withdraw request submitted"); };
 
-Having multiple `adb` versions on your system can result in the following error:
+if (!user) { return ( <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}> <Text style={{ fontSize: 24, fontWeight: "bold" }}>Utera Cash 💰</Text> <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={{ borderWidth: 1, margin: 5, padding: 10, width: "80%" }} /> <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry style={{ borderWidth: 1, margin: 5, padding: 10, width: "80%" }} /> <TouchableOpacity onPress={login} style={{ backgroundColor: "green", padding: 10, margin: 5 }}> <Text style={{ color: "white" }}>Login</Text> </TouchableOpacity> <TouchableOpacity onPress={register} style={{ backgroundColor: "blue", padding: 10, margin: 5 }}> <Text style={{ color: "white" }}>Register</Text> </TouchableOpacity> </View> ); }
 
-<Terminal cmd={["$ adb server version (xx) doesn't match this client (xx); killing..."]} />
+return ( <View style={{ flex: 1, padding: 20, backgroundColor: "white" }}> <Text style={{ fontSize: 20, fontWeight: "bold" }}>Welcome {user.email}</Text> <Text style={{ fontSize: 18, marginVertical: 10 }}>Your Coins: {coins}</Text>
 
-This is because the `adb` version on your system is different from the `adb` version on the Android SDK platform-tools.
+<TouchableOpacity onPress={() => addCoins(2)} style={{ backgroundColor: "orange", padding: 10, marginVertical: 5 }}>
+    <Text style={{ color: "white" }}>Watch Ad & Earn 2 Coins</Text>
+  </TouchableOpacity>
 
-<Step label="1">
-Open the terminal and check the `adb` version on the system:
+  <TouchableOpacity onPress={() => addCoins(1)} style={{ backgroundColor: "purple", padding: 10, marginVertical: 5 }}>
+    <Text style={{ color: "white" }}>Write Note & Earn 1 Coin</Text>
+  </TouchableOpacity>
 
-<Terminal cmd={['$ adb version']} />
-</Step>
+  <TouchableOpacity onPress={withdraw} style={{ backgroundColor: "red", padding: 10, marginVertical: 5 }}>
+    <Text style={{ color: "white" }}>Withdraw via JazzCash</Text>
+  </TouchableOpacity>
 
-<Step label="2">
-And from the Android SDK platform-tool directory:
+  <BannerAd unitId={TestIds.BANNER} size={BannerAdSize.FULL_BANNER} />
+</View>
 
-<Terminal cmd={[
-  '$ cd ~/Library/Android/sdk/platform-tools',
-  '$ ./adb version'
-]} cmdCopy="cd ~/Library/Android/sdk/platform-tools && ./adb version" />
-</Step>
+); }
 
-<Step label="3">
-Copy `adb` from Android SDK directory to `usr/bin` directory:
-
-<Terminal cmd={['$ sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin']} />
-</Step>
