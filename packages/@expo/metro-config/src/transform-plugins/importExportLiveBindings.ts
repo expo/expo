@@ -38,6 +38,7 @@ interface ModuleSpecifiers {
   [ImportDeclarationKind.IMPORT_NAMESPACE]?: ID;
   /** Marks that the require call should be kept due to a side-effect */
   sideEffect?: boolean;
+  sideEffectOnly?: boolean;
 }
 
 /** Instruction for how to replace an expression when inlining */
@@ -95,6 +96,7 @@ export function importExportLiveBindingsPlugin({
 
   const addImport = (path: NodePath, state: State, source: ModuleRequest): ID => {
     const moduleSpecifiers = addModuleSpecifiers(state, source);
+    moduleSpecifiers.sideEffect = false;
     let id = moduleSpecifiers[ImportDeclarationKind.REQUIRE];
     if (!id) {
       id = path.scope.generateUid(source.value);
@@ -115,6 +117,7 @@ export function importExportLiveBindingsPlugin({
     name?: string
   ): ID => {
     const moduleSpecifiers = addModuleSpecifiers(state, source);
+    moduleSpecifiers.sideEffectOnly = false;
     let id = moduleSpecifiers[ImportDeclarationKind.IMPORT_DEFAULT];
     if (!id) {
       // Use the given name, if possible, or generate one. If no initial name is given,
@@ -141,6 +144,7 @@ export function importExportLiveBindingsPlugin({
     name?: string
   ): ID => {
     const moduleSpecifiers = addModuleSpecifiers(state, source);
+    moduleSpecifiers.sideEffectOnly = false;
     let id = moduleSpecifiers[ImportDeclarationKind.IMPORT_NAMESPACE];
     if (!id) {
       // Use the given name, if possible, or generate one. If no initial name is given,
@@ -162,8 +166,11 @@ export function importExportLiveBindingsPlugin({
   };
   const addSideeffectImport = (path: NodePath, state: State, source: ModuleRequest): void => {
     const moduleSpecifiers = addModuleSpecifiers(state, source);
-    moduleSpecifiers.sideEffect = true;
+    const originalSideEffectOnly = moduleSpecifiers.sideEffectOnly;
     addImport(path, state, source);
+    if (originalSideEffectOnly === undefined) {
+      moduleSpecifiers.sideEffectOnly = true;
+    }
   };
 
   return {
@@ -289,8 +296,7 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          // NOTE(@kitten): The tree-shaking plugin leaves around empty specifiers, so we should
-          // handle this properly. This doesn't indicate a side-effect!
+          addSideeffectImport(path, state, source);
           path.remove();
           return;
         }
@@ -524,13 +530,10 @@ export function importExportLiveBindingsPlugin({
             const source = importDeclaration.source;
             const moduleSpecifiers = addModuleSpecifiers(state, source);
             const local = moduleSpecifiers[importDeclaration.kind];
-            if (!local || !state.referencedLocals.has(local)) {
-              // Don't add imports that aren't referenced, unless they're required for a side-effect
-              if (moduleSpecifiers.sideEffect) {
-                esmStatements.push(
-                  withLocation(sideEffectRequireCall(t, source), importDeclaration.loc)
-                );
-              }
+            if (!local || moduleSpecifiers.sideEffectOnly) {
+              esmStatements.push(
+                withLocation(sideEffectRequireCall(t, source), importDeclaration.loc)
+              );
               continue;
             }
             let importStatement: t.Statement;
