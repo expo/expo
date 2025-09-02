@@ -190,9 +190,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  '51.0.0': {
-    SharedObject: null,
-  },
   'v52.0.0': {
     EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
