@@ -10,6 +10,8 @@ const swiftUINestingMarker: SwiftUINestingMarker = {
 };
 
 export function markChildrenAsNestedInSwiftUI(children: ReactNode): ReactNode {
+  if (!__DEV__) return children;
+
   return Children.map(children, (child) => {
     if (isValidElement(child)) {
       return cloneElement(child, swiftUINestingMarker);
@@ -19,6 +21,7 @@ export function markChildrenAsNestedInSwiftUI(children: ReactNode): ReactNode {
 }
 
 export function isMissingHost(props: any) {
+  if (!__DEV__) return false;
   return !(props as SwiftUINestingMarker).__expo_isDirectlyInsideSwiftUIHierarchy;
 }
 

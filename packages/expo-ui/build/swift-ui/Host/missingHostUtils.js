@@ -4,6 +4,8 @@ const swiftUINestingMarker = {
     __expo_isDirectlyInsideSwiftUIHierarchy: true,
 };
 export function markChildrenAsNestedInSwiftUI(children) {
+    if (!__DEV__)
+        return children;
     return Children.map(children, (child) => {
         if (isValidElement(child)) {
             return cloneElement(child, swiftUINestingMarker);
@@ -12,6 +14,8 @@ export function markChildrenAsNestedInSwiftUI(children) {
     });
 }
 export function isMissingHost(props) {
+    if (!__DEV__)
+        return false;
     return !props.__expo_isDirectlyInsideSwiftUIHierarchy;
 }
 export function MissingHostErrorView(props) {
