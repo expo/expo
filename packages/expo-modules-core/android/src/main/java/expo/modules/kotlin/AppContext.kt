@@ -110,7 +110,6 @@ class AppContext(
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
       // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
-      registry.register(ErrorManagerModule())
       registry.register(NativeModulesProxyModule())
       registry.register(JSLoggerModule())
 

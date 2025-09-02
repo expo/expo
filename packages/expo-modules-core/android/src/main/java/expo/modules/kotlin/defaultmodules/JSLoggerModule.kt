@@ -55,7 +55,7 @@ class JSLoggerModule : Module() {
     )
   }
 
-  @Deprecated("Use appContext.jsLogger.warn(...) instead")
+  @Deprecated("Use appContext.jsLogger.error(...) instead")
   fun reportExceptionToLogBox(codedException: CodedException) {
     sendEvent(
       onNewError,
