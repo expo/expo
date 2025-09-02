@@ -1,0 +1,232 @@
+import { GlassStyle, GlassView } from 'expo-blur';
+import Checkbox from 'expo-checkbox';
+import React from 'react';
+import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+
+// Static color options for tinting
+const colorOptions = [
+  { name: 'None', value: undefined },
+  { name: 'Red', value: '#FF3B30' },
+  { name: 'Blue', value: '#007AFF' },
+  { name: 'Green', value: '#34C759' },
+];
+
+const glassStyles: GlassStyle[] = ['clear', 'regular'];
+
+const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);
+
+export default function GlassViewScreen() {
+  const [selectedStyle, setSelectedStyle] = React.useState<GlassStyle>('regular');
+  const [isInteractive, setIsInteractive] = React.useState(false);
+  const [tintColor, setTintColor] = React.useState<string | undefined>(undefined);
+
+  const translateX = useSharedValue(100);
+  const translateY = useSharedValue(100);
+  const startPosition = useSharedValue({ x: 0, y: 0 });
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      startPosition.value = { x: translateX.value, y: translateY.value };
+    })
+    .onUpdate((event) => {
+      translateX.value = startPosition.value.x + event.translationX;
+      translateY.value = startPosition.value.y + event.translationY;
+    });
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+    };
+  });
+
+  return (
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+      <Text style={styles.title}>Glass Effect View (iOS 26+)</Text>
+
+      <View style={styles.backgroundContainer}>
+        <Image
+          style={styles.backgroundImage}
+          source={{
+            uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+          }}
+        />
+        <GestureDetector gesture={panGesture}>
+          <AnimatedGlassView
+            style={[styles.glassRect, animatedStyle]}
+            glassEffectStyle={selectedStyle}
+            tintColor={tintColor}
+            isInteractive={isInteractive}
+          />
+        </GestureDetector>
+      </View>
+
+      <View style={styles.controlsSection}>
+        <Text style={styles.sectionTitle}>Glass Effect Style</Text>
+        <View style={styles.checkboxContainer}>
+          {glassStyles.map((style) => (
+            <TouchableOpacity
+              key={style}
+              style={styles.checkboxRow}
+              onPress={() => setSelectedStyle(style)}>
+              <Checkbox
+                value={selectedStyle === style}
+                onValueChange={() => setSelectedStyle(style)}
+                color="#007AFF"
+              />
+              <Text style={styles.checkboxLabel}>{style}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={styles.sectionTitle}>Interactive Mode</Text>
+        <TouchableOpacity
+          style={styles.checkboxRow}
+          onPress={() => setIsInteractive(!isInteractive)}>
+          <Checkbox value={isInteractive} onValueChange={setIsInteractive} color="#007AFF" />
+          <Text style={styles.checkboxLabel}>Enable Interactive Mode</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.sectionTitle}>Tint Color</Text>
+        <View style={styles.colorContainer}>
+          {colorOptions.map((color) => (
+            <TouchableOpacity
+              key={color.name}
+              style={[
+                styles.colorButton,
+                { backgroundColor: color.value || '#f0f0f0' },
+                tintColor === color.value && styles.selectedColorButton,
+              ]}
+              onPress={() => setTintColor(color.value)}>
+              {tintColor === color.value && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    padding: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  description: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 22,
+  },
+  backgroundContainer: {
+    height: 300,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+  },
+  backgroundText: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    padding: 12,
+    backgroundColor: 'rgba(255, 59, 48, 0.8)',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    borderRadius: 8,
+  },
+  glassRect: {
+    position: 'absolute',
+    width: 150,
+    height: 100,
+    borderRadius: 12,
+  },
+  glassContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  glassLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000',
+    textAlign: 'center',
+  },
+  glassSubLabel: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  controlsSection: {
+    backgroundColor: '#f8f9fa',
+    padding: 16,
+    borderRadius: 12,
+    gap: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  checkboxContainer: {
+    gap: 8,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+    gap: 8,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    color: '#000',
+    textTransform: 'capitalize',
+  },
+  colorContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  colorButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#ddd',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedColorButton: {
+    borderColor: '#000',
+    borderWidth: 3,
+  },
+  noneText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#666',
+  },
+  checkmark: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  fallbackText: {
+    fontSize: 14,
+    color: '#ff6b35',
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  scrollViewContent: {
+    gap: 16,
+  },
+});

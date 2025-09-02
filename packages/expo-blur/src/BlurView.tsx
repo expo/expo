@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
 
-const NativeBlurView = requireNativeViewManager('ExpoBlurView');
+const NativeBlurView = requireNativeViewManager('ExpoBlurView', 'BlurView');
 
 // TODO: Class components are not supported with React Server Components.
 export default class BlurView extends React.Component<BlurViewProps> {
