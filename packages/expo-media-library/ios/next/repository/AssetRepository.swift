@@ -43,15 +43,12 @@ final class AssetRepository {
 
   func add(from filePaths: [URL]) async throws -> [String] {
     var assetIds: [String] = []
-
     try await PHPhotoLibrary.shared().performChanges {
-      for filePath in filePaths {
+      assetIds = try filePaths.map { filePath in
         let creationRequest = try self.makeCreationRequest(for: filePath)
-        let id = try self.extractIdentifier(from: creationRequest)
-        assetIds.append(id)
+        return try self.extractIdentifier(from: creationRequest)
       }
     }
-
     return assetIds
   }
 

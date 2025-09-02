@@ -3,9 +3,10 @@ package expo.modules.medialibrary.next.objects.album
 import android.content.Context
 import android.os.Build
 import android.os.Environment
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.medialibrary.next.exceptions.AlbumPropertyNotFoundException
+import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
+import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumAssetsContentUris
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumFilepath
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumRelativePath
@@ -16,10 +17,15 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.io.File
+import java.lang.ref.WeakReference
 
-class Album(val id: String, val context: Context) : SharedObject() {
+class Album(val id: String, context: Context) : SharedObject() {
+  private val contextRef = WeakReference(context)
+
   private val contentResolver
-    get() = context.contentResolver ?: throw Exceptions.ReactContextLost()
+    get() = contextRef
+      .getOrThrow()
+      .contentResolver ?: throw ContentResolverNotObtainedException()
 
   suspend fun getTitle(): String {
     return contentResolver.queryAlbumTitle(id)
@@ -48,7 +54,7 @@ class Album(val id: String, val context: Context) : SharedObject() {
   suspend fun getAssets(): List<Asset> {
     return contentResolver
       .queryAlbumAssetsContentUris(id)
-      .map { contentUri -> Asset(contentUri, context) }
+      .map { contentUri -> Asset(contentUri, contextRef.getOrThrow()) }
   }
 
   suspend fun delete() = coroutineScope {

@@ -4,12 +4,10 @@ import UniformTypeIdentifiers
 
 class Album: SharedObject {
   let id: String
-  private let context: AppContext
   private(set) var collection: PHAssetCollection?
 
-  init(id: String, context: AppContext) {
+  init(id: String) {
     self.id = id
-    self.context = context
   }
 
   func getCollection() async throws -> PHAssetCollection {
@@ -20,7 +18,7 @@ class Album: SharedObject {
   func getAssets() async throws -> [Asset] {
     let collection = try await requirePHAssetCollection()
     let phAssets = AssetRepository.shared.get(by: collection)
-    return phAssets.map { Asset(id: $0.localIdentifier, context: context) }
+    return phAssets.map { Asset(id: $0.localIdentifier) }
   }
 
   func title() async throws -> String {
@@ -34,14 +32,14 @@ class Album: SharedObject {
   func add(_ asset: Asset) async throws {
     let collection = try await requirePHAssetCollection()
     guard let phAsset = AssetRepository.shared.get(by: [asset.id]).first else {
-      throw Exception()
+      throw AssetCouldNotBeAddedToAlbumException("phAsset not found")
     }
-    try await CollectionRepository.shared.add(assets: [phAsset], to: collection)
+    try await AssetCollectionRepository.shared.add(assets: [phAsset], to: collection)
   }
 
   func delete(deleteAssets: Bool = false) async throws {
     let collection = try await requirePHAssetCollection()
-    try await CollectionRepository.shared.delete(by: [collection], deleteAssets: deleteAssets)
+    try await AssetCollectionRepository.shared.delete(by: [collection], deleteAssets: deleteAssets)
   }
 
   private func requirePHAssetCollection() async throws -> PHAssetCollection {

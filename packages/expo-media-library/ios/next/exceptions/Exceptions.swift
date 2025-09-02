@@ -24,9 +24,9 @@ internal final class FailedToDeleteAssetException: GenericException<String> {
   }
 }
 
-internal final class FailedToGrantPermissions: GenericException<String> {
+internal final class FailedToGrantPermissions: Exception {
   override var reason: String {
-    "Unable to grant permissions \(param)"
+    "Unable to grant permissions"
   }
 }
 
@@ -39,6 +39,12 @@ internal final class FailedToGetAlbumException: GenericException<String> {
 internal final class AssetNotFoundException: GenericException<String> {
   override var reason: String {
     "Asset not found: \(param)"
+  }
+}
+
+internal final class AssetCouldNotBeAddedToAlbumException: GenericException<String> {
+  override var reason: String {
+    "Asset could not be added to album: \(param)"
   }
 }
 

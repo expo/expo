@@ -1,7 +1,6 @@
 package expo.modules.medialibrary.next.extensions.resolver
 
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
@@ -61,18 +60,9 @@ suspend fun ContentResolver.queryAlbumAssetsContentUris(bucketId: String): List<
       ensureActive()
       val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
       val typeColumn = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MEDIA_TYPE)
-      cursor.asIterable()
-        .map { row ->
-          val id = row.getLong(idColumn)
-          val mediaType = row.getInt(typeColumn)
-          val baseUri = when (mediaType) {
-            MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-            else -> EXTERNAL_CONTENT_URI
-          }
-          ContentUris.withAppendedId(baseUri, id)
-        }
+      cursor
+        .asIterable()
+        .map { it.extractAssetContentUri(idColumn, typeColumn) }
         .toList()
     } ?: emptyList()
   }

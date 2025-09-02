@@ -2,18 +2,12 @@ import ExpoModulesCore
 import Photos
 
 public final class MediaLibraryNextModule: Module {
-  private var writeOnly = false
-
   public func definition() -> ModuleDefinition {
     Name("ExpoMediaLibraryNext")
-
     // swiftlint:disable:next closure_body_length
     Class(Asset.self) {
       Constructor { (id: String) -> Asset in
-        guard let context = appContext else {
-          throw Exceptions.AppContextLost()
-        }
-        return Asset(id: id, context: context)
+        return Asset(id: id)
       }
 
       Property("id") { (this: Asset) in
@@ -59,10 +53,7 @@ public final class MediaLibraryNextModule: Module {
 
     Class(Album.self) {
       Constructor { (id: String) -> Album in
-        guard let context = appContext else {
-          throw Exceptions.AppContextLost()
-        }
-        return Album(id: id, context: context)
+        return Album(id: id)
       }
 
       Property("id") { (album: Album) in
@@ -89,7 +80,7 @@ public final class MediaLibraryNextModule: Module {
     AsyncFunction("deleteManyAlbums") { (albums: [Album], deleteAssets: Bool) async throws in
       try await checkIfPermissionGranted()
       let albumsIds = albums.map { $0.id }
-      try await CollectionRepository.shared.delete(by: albumsIds, deleteAssets: deleteAssets)
+      try await AssetCollectionRepository.shared.delete(by: albumsIds, deleteAssets: deleteAssets)
     }
 
     AsyncFunction("deleteManyAssets") { (assets: [Asset]) async throws in
@@ -100,42 +91,32 @@ public final class MediaLibraryNextModule: Module {
 
     AsyncFunction("getAllAlbums") {
       try await checkIfPermissionGranted()
-      guard let context = appContext else {
-        throw Exceptions.AppContextLost()
-      }
-      let collections = CollectionRepository.shared.getAll()
-      return collections.map { Album(id: $0.localIdentifier, context: context) }
+      let collections = AssetCollectionRepository.shared.getAll()
+      return collections.map { Album(id: $0.localIdentifier) }
     }
 
     AsyncFunction("createAsset") { (filePath: URL, album: Album?) async throws in
       try await checkIfPermissionGranted()
-      guard let context = appContext else {
-        throw Exceptions.AppContextLost()
-      }
       let newAssetId = try await AssetRepository.shared.add(from: filePath)
       if let guardedAlbum = album {
         guard let asset = AssetRepository.shared.get(by: [newAssetId]).first else {
           throw FailedToCreateAlbumException("Failed to fetch newly created asset")
         }
-        try await CollectionRepository.shared.add(assets: [asset], to: guardedAlbum.id)
+        try await AssetCollectionRepository.shared.add(assets: [asset], to: guardedAlbum.id)
       }
-      return Asset(id: newAssetId, context: context)
+      return Asset(id: newAssetId)
     }
 
     AsyncFunction("createAlbum") { (name: String, assetRefs: Either<[Asset], [URL]>) async throws -> Album in
       try await checkIfPermissionGranted()
-      guard let context = appContext else {
-        throw Exceptions.AppContextLost()
-      }
       let assetIds = try await getAssetIdsFromAssetRefs(from: assetRefs)
-      let newCollectionId = try await CollectionRepository.shared.add(name: name)
+      let newCollectionId = try await AssetCollectionRepository.shared.add(name: name)
       let phAssetsToAdd = AssetRepository.shared.get(by: assetIds)
-      try await CollectionRepository.shared.add(assets: phAssetsToAdd, to: newCollectionId)
-      return Album(id: newCollectionId, context: context)
+      try await AssetCollectionRepository.shared.add(assets: phAssetsToAdd, to: newCollectionId)
+      return Album(id: newCollectionId)
     }
 
     AsyncFunction("getPermissionsAsync") { (writeOnly: Bool, promise: Promise) in
-      self.writeOnly = writeOnly
       appContext?
         .permissions?
         .getPermissionUsingRequesterClass(
@@ -146,7 +127,6 @@ public final class MediaLibraryNextModule: Module {
     }
 
     AsyncFunction("requestPermissionsAsync") { (writeOnly: Bool, promise: Promise) in
-      self.writeOnly = writeOnly
       appContext?
         .permissions?
         .askForPermission(
@@ -179,19 +159,19 @@ public final class MediaLibraryNextModule: Module {
           if let permissions = result as? [String: Any] {
             if permissions["status"] as? String != "granted" ||
               permissions["accessPrivileges"] as? String != "all" {
-              continuation.resume(throwing: FailedToGrantPermissions(""))
+              continuation.resume(throwing: FailedToGrantPermissions())
               return
             }
             continuation.resume(returning: ())
           } else {
-            continuation.resume(throwing: FailedToGrantPermissions(""))
+            continuation.resume(throwing: FailedToGrantPermissions())
           }
         },
         reject: { _, _, error in
           if let error = error {
             continuation.resume(throwing: error)
           } else {
-            continuation.resume(throwing: FailedToGrantPermissions(""))
+            continuation.resume(throwing: FailedToGrantPermissions())
           }
         }
       )

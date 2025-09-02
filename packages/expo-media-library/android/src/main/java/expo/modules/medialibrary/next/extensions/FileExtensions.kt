@@ -12,18 +12,7 @@ fun File.safeMove(destinationDirectory: File): File =
   }
 
 fun File.safeCopy(destinationDirectory: File): File {
-  var newFile = File(destinationDirectory, name)
-  var suffix = 0
-  val (filename, extension) = getFileNameAndExtension(name)
-  val suffixLimit = Short.MAX_VALUE.toInt()
-  while (newFile.exists()) {
-    newFile = File(destinationDirectory, filename + "_" + suffix + extension)
-    suffix++
-    if (suffix > suffixLimit) {
-      throw IOException("File name suffix limit reached ($suffixLimit)")
-    }
-  }
-
+  val newFile = createUniqueFileIn(destinationDirectory, name)
   FileInputStream(this).channel.use { input ->
     FileOutputStream(newFile).channel.use { output ->
       val transferred = input.transferTo(0, input.size(), output)
@@ -34,4 +23,19 @@ fun File.safeCopy(destinationDirectory: File): File {
       return newFile
     }
   }
+}
+
+private fun createUniqueFileIn(directory: File, newFileName: String): File {
+  var newFile = File(directory, newFileName)
+  var suffix = 2
+  val (filename, extension) = getFileNameAndExtension(newFileName)
+  val suffixLimit = Short.MAX_VALUE.toInt()
+  while (newFile.exists()) {
+    newFile = File(directory, filename + "_" + suffix + extension)
+    suffix++
+    if (suffix > suffixLimit) {
+      throw IOException("File name suffix limit reached ($suffixLimit)")
+    }
+  }
+  return newFile
 }

@@ -5,8 +5,8 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
     static create(filePath, album) {
         return ExpoMediaLibraryNext.createAsset(filePath, album);
     }
-    static deleteMany(assets) {
-        return ExpoMediaLibraryNext.deleteManyAssets(assets);
+    static delete(assets) {
+        return ExpoMediaLibraryNext.deleteAssets(assets);
     }
 }
 export class Album extends ExpoMediaLibraryNext.Album {
@@ -16,12 +16,12 @@ export class Album extends ExpoMediaLibraryNext.Album {
         }
         return ExpoMediaLibraryNext.createAlbum(name, assetsRefs, moveAssets);
     }
-    static deleteMany(albums, deleteAssets = false) {
+    static delete(albums, deleteAssets = false) {
         if (Platform.OS === 'ios') {
-            return ExpoMediaLibraryNext.deleteManyAlbums(albums, deleteAssets);
+            return ExpoMediaLibraryNext.deleteAlbums(albums, deleteAssets);
         }
         else {
-            return ExpoMediaLibraryNext.deleteManyAlbums(albums);
+            return ExpoMediaLibraryNext.deleteAlbums(albums);
         }
     }
     static getAll() {

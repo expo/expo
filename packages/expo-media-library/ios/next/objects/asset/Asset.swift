@@ -5,12 +5,10 @@ import ExpoModulesCore
 
 class Asset: SharedObject {
   let id: String
-  let context: AppContext
   var phAsset: PHAsset?
 
-  init(id: String, context: AppContext) {
+  init(id: String) {
     self.id = id
-    self.context = context
   }
 
   func getHeight() async throws -> Int {
@@ -38,18 +36,18 @@ class Asset: SharedObject {
 
   func getCreationTime() async throws -> Int? {
     let phAsset = try await requirePHAsset()
-    if let date = phAsset.creationDate {
-      return Int(date.timeIntervalSince1970)
+    guard let date = phAsset.creationDate else {
+      return nil
     }
-    return nil
+    return Int(date.timeIntervalSince1970)
   }
 
   func getModificationTime() async throws -> Int? {
     let phAsset = try await requirePHAsset()
-    if let date = phAsset.modificationDate {
-      return Int(date.timeIntervalSince1970)
+    guard let date = phAsset.modificationDate else {
+      return nil
     }
-    return nil
+    return Int(date.timeIntervalSince1970)
   }
 
   func getMediaType() async throws -> Int {
@@ -114,11 +112,11 @@ class Asset: SharedObject {
     self.phAsset = fetchedAsset
   }
 
-  static func from(filePath: URL, context: AppContext) async throws -> Asset {
+  static func from(filePath: URL) async throws -> Asset {
     guard FileManager.default.fileExists(atPath: filePath.path) else {
       throw FailedToCreateAssetException("File does not exist at path: \(filePath.path)")
     }
     let id = try await AssetRepository.shared.add(from: filePath)
-    return Asset(id: id, context: context)
+    return Asset(id: id)
   }
 }

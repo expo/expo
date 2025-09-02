@@ -4,17 +4,14 @@ import { Platform } from 'react-native';
 
 export const name = 'MediaLibrary@Next';
 
-const FILES = [
-  require('../assets/icons/app.png'),
-  require('../assets/black-128x256.png'),
-  require('../assets/qrcode_expo.jpg'),
-  require('../assets/big_buck_bunny.mp4'),
-];
-const MP3_FILES = [require('../assets/LLizard.mp3')];
+const mp3Path = require('../assets/LLizard.mp3');
+const mp4Path = require('../assets/big_buck_bunny.mp4');
+const pngPath = require('../assets/icons/app.png');
+const jpgPath = require('../assets/qrcode_expo.jpg');
 
 export async function test(t) {
   let permissions;
-  let files, mp3Files, allTypeFiles;
+  let files, filesWithAudio;
   let jpgFile, pngFile, mp4File, mp3File;
 
   const checkIfAllPermissionsWereGranted = () => {
@@ -25,16 +22,15 @@ export async function test(t) {
   };
 
   t.beforeAll(async () => {
-    files = await ExpoAsset.loadAsync(FILES);
-    mp3Files = await ExpoAsset.loadAsync(MP3_FILES);
-    pngFile = files[0];
-    jpgFile = files[2];
-    mp4File = files[3];
-    mp3File = mp3Files[0];
-    allTypeFiles = [pngFile, jpgFile, mp4File, mp3File];
+    [mp3File] = await ExpoAsset.loadAsync(mp3Path);
+    [pngFile] = await ExpoAsset.loadAsync(pngPath);
+    [jpgFile] = await ExpoAsset.loadAsync(jpgPath);
+    [mp4File] = await ExpoAsset.loadAsync(mp4Path);
+    files = [pngFile, jpgFile, mp4File];
+    filesWithAudio = [pngFile, jpgFile, mp4File, mp3File];
     permissions = await requestPermissionsAsync();
     if (!checkIfAllPermissionsWereGranted()) {
-      console.warn('Tests were skipped - not enough permissions to run them.');
+      console.warn('Tests will fail - not enough permissions to run them.');
     }
   });
 
@@ -42,8 +38,8 @@ export async function test(t) {
   let assetsContainer = [];
 
   t.afterAll(async () => {
-    await Album.deleteMany(albumsContainer.flat(), true);
-    await Asset.deleteMany(assetsContainer.flat());
+    await Album.delete(albumsContainer.flat(), true);
+    await Asset.delete(assetsContainer.flat());
     albumsContainer = [];
     assetsContainer = [];
   });
@@ -129,7 +125,7 @@ export async function test(t) {
     t.it('fails when mixing audio and images', async () => {
       try {
         const albumName = createAlbumName('mixed audio & image');
-        const assets = await Promise.all(allTypeFiles.map((f) => Asset.create(f.localUri)));
+        const assets = await Promise.all(filesWithAudio.map((f) => Asset.create(f.localUri)));
         assetsContainer.push(assets);
         const album = await Album.create(albumName, assets);
         albumsContainer.push(album);
@@ -179,12 +175,12 @@ export async function test(t) {
 
     t.it('creates an asset inside an album', async () => {
       const albumName = createAlbumName('asset inside album');
-      const firstAsset = await Asset.create(files[0].localUri);
+      const firstAsset = await Asset.create(jpgFile.localUri);
       assetsContainer.push(firstAsset);
       const album = await Album.create(albumName, [firstAsset]);
       albumsContainer.push(album);
 
-      const newAsset = await Asset.create(files[1].localUri, album);
+      const newAsset = await Asset.create(jpgFile.localUri, album);
       assetsContainer.push(newAsset);
 
       t.expect(newAsset.id).toBeDefined();
@@ -197,7 +193,7 @@ export async function test(t) {
   t.describe('Album deletion', () => {
     t.it('deletes an album', async () => {
       const albumName = createAlbumName('album deletion');
-      const album = await Album.create(albumName, [files[0].localUri], true);
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
       albumsContainer.push(album);
       assetsContainer.push(await album.getAssets());
 
@@ -216,7 +212,7 @@ export async function test(t) {
   t.describe('Add asset to album', () => {
     t.it('adds an asset to an existing album', async () => {
       const albumName = createAlbumName('add asset');
-      const album = await Album.create(albumName, [files[0].localUri], true);
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
       albumsContainer.push(album);
 
       const newAsset = await Asset.create(files[1].localUri);
@@ -225,6 +221,7 @@ export async function test(t) {
       await album.add(newAsset);
 
       const assets = await album.getAssets();
+      t.expect(await album.getTitle()).toBe(albumName);
       t.expect(assets.length).toBe(2);
       if (Platform.OS === 'android') {
         t.expect(oldUri).not.toBe(await newAsset.getUri());

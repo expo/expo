@@ -32,9 +32,7 @@ class MediaLibraryPermissionPromiseWrapper(
   }
 
   private fun addOnlySelectedInfoToPermissionsBundle(permissionsBundle: Bundle, granularPermissions: List<GranularPermission>): Bundle {
-    val context = contextHolder.get() ?: run {
-      return permissionsBundle
-    }
+    val context = contextHolder.get() ?: return permissionsBundle
     val areGranted = permissionsBundle.getBoolean(PermissionsResponse.Companion.GRANTED_KEY)
 
     // On Android < 14 we always return `all` or `none`, since it doesn't support limited access

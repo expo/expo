@@ -2,9 +2,13 @@ package expo.modules.medialibrary.next.objects.asset.factories
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.DeprecatedSinceApi
 import androidx.core.net.toUri
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
+import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
+import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.copyUriContent
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
@@ -13,11 +17,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.lang.ref.WeakReference
 
-class AssetLegacyFactory(val context: Context) : AssetFactory {
+@DeprecatedSinceApi(Build.VERSION_CODES.Q)
+class AssetLegacyFactory(context: Context) : AssetFactory {
+  private val contextRef = WeakReference(context)
+
   private val contentResolver
-    get() = context.contentResolver
-      ?: throw AssetCouldNotBeCreated("Failed to create asset: ContentResolver is unavailable.")
+    get() = contextRef
+      .getOrThrow()
+      .contentResolver ?: throw ContentResolverNotObtainedException()
 
   override suspend fun create(filePath: Uri, relativePath: RelativePath?): Asset = withContext(Dispatchers.IO) {
     val mimeType = contentResolver.getType(filePath)?.let { MimeType(it) }
@@ -32,12 +41,12 @@ class AssetLegacyFactory(val context: Context) : AssetFactory {
 
     val destFile = File(baseDir, displayName)
     contentResolver.copyUriContent(filePath, destFile.toUri())
-    val (_, uri) = MediaLibraryUtils.scanFile(context, arrayOf(destFile.toString()), null)
+    val (_, uri) = MediaLibraryUtils.scanFile(contextRef.getOrThrow(), arrayOf(destFile.toString()), null)
     coroutineContext.ensureActive()
 
     if (uri == null) {
       throw AssetCouldNotBeCreated("Failed to create asset: could not add asset to MediaStore")
     }
-    return@withContext Asset(uri, context)
+    return@withContext Asset(uri, contextRef.getOrThrow())
   }
 }

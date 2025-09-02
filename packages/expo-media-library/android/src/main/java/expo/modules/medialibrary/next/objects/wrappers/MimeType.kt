@@ -15,8 +15,10 @@ value class MimeType(val value: String?) {
     }
   }
 
-  val type: String? get() = value?.substringBefore('/')
-  val subType: String? get() = value?.substringAfter('/')
+  val type: String?
+    get() = value?.substringBefore('/')
+  val subType: String?
+    get() = value?.substringAfter('/')
 
   fun isImage(): Boolean = type == "image"
   fun isVideo(): Boolean = type == "video"

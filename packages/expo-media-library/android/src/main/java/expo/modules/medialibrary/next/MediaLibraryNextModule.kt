@@ -34,9 +34,9 @@ class MediaLibraryNextModule : Module() {
 
   private val albumFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      AlbumModernFactory(context, assetFactory)
+      AlbumModernFactory(assetFactory, context)
     } else {
-      AlbumLegacyFactory(context, assetFactory)
+      AlbumLegacyFactory(assetFactory, context)
     }
   }
 
@@ -158,12 +158,12 @@ class MediaLibraryNextModule : Module() {
       return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
     }
 
-    AsyncFunction("deleteManyAlbums") Coroutine { albums: List<Album> ->
+    AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->
       systemPermissionsDelegate.requireSystemPermissions(true)
       albums.forEach { album -> album.delete() }
     }
 
-    AsyncFunction("deleteManyAssets") Coroutine { assets: List<Asset> ->
+    AsyncFunction("deleteAssets") Coroutine { assets: List<Asset> ->
       systemPermissionsDelegate.requireSystemPermissions(true)
       val assetIdsToDelete = assets.map { it.contentUri }
       mediaStorePermissionsDelegate.requestMediaLibraryActionPermission(assetIdsToDelete, needsDeletePermission = true)

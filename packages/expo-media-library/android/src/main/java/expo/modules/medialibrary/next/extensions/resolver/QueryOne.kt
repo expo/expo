@@ -19,8 +19,10 @@ suspend fun <T> ContentResolver.queryOne(
   query(contentUri, projection, selection, selectionArgs, sortOrder)?.use { cursor ->
     ensureActive()
     val index = cursor.getColumnIndexOrThrow(column)
-    if (cursor.moveToFirst()) {
-      return@withContext extractor(cursor, index)
+    return@withContext if (cursor.moveToFirst()) {
+      extractor(cursor, index)
+    } else {
+      null
     }
   }
   return@withContext null

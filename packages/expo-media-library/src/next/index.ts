@@ -7,8 +7,8 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
   static create(filePath: string, album?: Album): Promise<Asset> {
     return ExpoMediaLibraryNext.createAsset(filePath, album);
   }
-  static deleteMany(assets: Asset[]): Promise<void> {
-    return ExpoMediaLibraryNext.deleteManyAssets(assets);
+  static delete(assets: Asset[]): Promise<void> {
+    return ExpoMediaLibraryNext.deleteAssets(assets);
   }
 }
 
@@ -23,11 +23,11 @@ export class Album extends ExpoMediaLibraryNext.Album {
     }
     return ExpoMediaLibraryNext.createAlbum(name, assetsRefs, moveAssets);
   }
-  static deleteMany(albums: Album[], deleteAssets: boolean = false): Promise<void> {
+  static delete(albums: Album[], deleteAssets: boolean = false): Promise<void> {
     if (Platform.OS === 'ios') {
-      return ExpoMediaLibraryNext.deleteManyAlbums(albums, deleteAssets);
+      return ExpoMediaLibraryNext.deleteAlbums(albums, deleteAssets);
     } else {
-      return ExpoMediaLibraryNext.deleteManyAlbums(albums);
+      return ExpoMediaLibraryNext.deleteAlbums(albums);
     }
   }
   static getAll(): Promise<Album[]> {

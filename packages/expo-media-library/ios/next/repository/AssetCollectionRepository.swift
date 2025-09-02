@@ -1,7 +1,7 @@
 import Photos
 
-final class CollectionRepository {
-  static let shared = CollectionRepository()
+final class AssetCollectionRepository {
+  static let shared = AssetCollectionRepository()
   private init() {}
 
   func getAll() -> [PHAssetCollection] {
