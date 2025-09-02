@@ -11,9 +11,5 @@ export type GlassEffectContainerProps = {
      */
     spacing?: number;
 } & CommonViewModifierProps;
-/**
- * @hidden
- */
-export type NativeGlassEffectContainerProps = GlassEffectContainerProps;
 export declare function GlassEffectContainer(props: GlassEffectContainerProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
