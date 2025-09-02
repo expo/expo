@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 const SectionNativeView = requireNativeView('ExpoUI', 'SectionView');
 /**
@@ -7,7 +8,10 @@ const SectionNativeView = requireNativeView('ExpoUI', 'SectionView');
  * @platform ios
  */
 export function Section(props) {
-    const { modifiers, ...restProps } = props;
-    return (<SectionNativeView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} {...restProps}/>);
+    const { modifiers, children, ...restProps } = props;
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="Section"/>;
+    }
+    return (<SectionNativeView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} children={markChildrenAsNestedInSwiftUI(children)} {...restProps}/>);
 }
 //# sourceMappingURL=index.js.map

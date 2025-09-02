@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -25,7 +26,7 @@ const DisclosureGroupNativeView: React.ComponentType<NativeDisclosureGroupProps>
   requireNativeView('ExpoUI', 'DisclosureGroupView');
 
 export function DisclosureGroup(props: DisclosureGroupProps) {
-  const { onStateChange, modifiers, ...rest } = props;
+  const { onStateChange, modifiers, children, ...rest } = props;
 
   function handleStateChange(event: { nativeEvent: { isExpanded: boolean } }) {
     onStateChange?.(event.nativeEvent.isExpanded);
@@ -34,8 +35,13 @@ export function DisclosureGroup(props: DisclosureGroupProps) {
   const transformedProps = {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    children: markChildrenAsNestedInSwiftUI(children),
     ...rest,
   };
+
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="DisclosureGroup" />;
+  }
 
   return <DisclosureGroupNativeView {...transformedProps} onStateChange={handleStateChange} />;
 }

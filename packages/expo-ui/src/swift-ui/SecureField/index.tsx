@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { Ref } from 'react';
 
 import { type ViewEvent } from '../../types';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { TextFieldKeyboardType } from '../TextField';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -57,5 +58,8 @@ function transformSecureFieldProps(props: SecureFieldProps): NativeSecureFieldPr
  * Renders a `SecureField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
 export function SecureField(props: SecureFieldProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="SecureField" />;
+  }
   return <SecureFieldNativeView {...transformSecureFieldProps(props)} />;
 }

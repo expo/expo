@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 const ListNativeView = requireNativeView('ExpoUI', 'ListView');
 function transformListProps(props) {
@@ -20,6 +21,11 @@ function transformListProps(props) {
  */
 export function List(props) {
     const { children, ...nativeProps } = props;
-    return <ListNativeView {...transformListProps(nativeProps)}>{children}</ListNativeView>;
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="List"/>;
+    }
+    return (<ListNativeView {...transformListProps(nativeProps)}>
+      {markChildrenAsNestedInSwiftUI(children)}
+    </ListNativeView>);
 }
 //# sourceMappingURL=index.js.map

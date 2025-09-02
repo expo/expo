@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -48,5 +49,8 @@ const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeView
 );
 
 export function Image(props: ImageProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Image" />;
+  }
   return <ImageNativeView {...transformNativeProps(props)} />;
 }

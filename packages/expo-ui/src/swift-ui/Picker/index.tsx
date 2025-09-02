@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -54,5 +55,8 @@ function transformPickerProps(props: PickerProps): NativePickerProps {
  * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
  */
 export function Picker(props: PickerProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Picker" />;
+  }
   return <PickerNativeView {...transformPickerProps(props)} />;
 }

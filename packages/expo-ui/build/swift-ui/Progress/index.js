@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 const NativeProgressView = requireNativeView('ExpoUI', 'ProgressView');
 /**
@@ -6,6 +7,9 @@ const NativeProgressView = requireNativeView('ExpoUI', 'ProgressView');
  */
 export function CircularProgress(props) {
     const { modifiers, ...restProps } = props;
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="CircularProgress"/>;
+    }
     return (<NativeProgressView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} {...restProps} variant="circular"/>);
 }
 /**
@@ -13,6 +17,9 @@ export function CircularProgress(props) {
  */
 export function LinearProgress(props) {
     const { modifiers, ...restProps } = props;
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="LinearProgress"/>;
+    }
     return (<NativeProgressView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} {...restProps} variant="linear"/>);
 }
 //# sourceMappingURL=index.js.map

@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 const ShareLinkNativeView = requireNativeView('ExpoUI', 'ShareLinkView');
 /**
@@ -10,6 +11,9 @@ const ShareLinkNativeView = requireNativeView('ExpoUI', 'ShareLinkView');
  */
 export function ShareLink(props) {
     const { modifiers, ...restProps } = props;
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="ShareLink"/>;
+    }
     return (<ShareLinkNativeView modifiers={modifiers} {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)} {...restProps}/>);
 }
 //# sourceMappingURL=index.js.map

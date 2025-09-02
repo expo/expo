@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 const SwitchNativeView = requireNativeView('ExpoUI', 'SwitchView');
 function transformSwitchProps(props) {
@@ -18,6 +19,9 @@ function transformSwitchProps(props) {
  * Displays a native switch component.
  */
 export function Switch(props) {
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="Switch"/>;
+    }
     return <SwitchNativeView {...transformSwitchProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

@@ -3,6 +3,7 @@ import { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { CommonViewModifierProps } from '../types';
+import { MissingHostErrorView, isMissingHost } from '../Host';
 
 /**
  * The type of chart to display.
@@ -178,6 +179,10 @@ export function Chart({
   modifiers,
   ...props
 }: ChartProps & { style?: StyleProp<ViewStyle> }) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Chart" />;
+  }
+
   return (
     <ChartNativeView
       data={data}

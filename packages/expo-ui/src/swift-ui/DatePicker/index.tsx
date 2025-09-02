@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -65,5 +66,8 @@ const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = require
  * Renders a `DateTimePicker` component.
  */
 export function DateTimePicker(props: DateTimePickerProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="DateTimePicker" />;
+  }
   return <DatePickerNativeView {...transformDateTimePickerProps(props)} />;
 }

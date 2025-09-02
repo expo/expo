@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -28,5 +29,8 @@ function transformSpacerProps(props: SpacerProps): NativeSpacerProps {
 }
 
 export function Spacer(props: SpacerProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Spacer" />;
+  }
   return <SpacerNativeView {...transformSpacerProps(props)} />;
 }

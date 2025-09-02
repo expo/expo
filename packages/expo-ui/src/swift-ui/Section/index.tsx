@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -22,11 +23,15 @@ const SectionNativeView: React.ComponentType<SectionProps> = requireNativeView(
  * @platform ios
  */
 export function Section(props: SectionProps) {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, children, ...restProps } = props;
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Section" />;
+  }
   return (
     <SectionNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      children={markChildrenAsNestedInSwiftUI(children)}
       {...restProps}
     />
   );

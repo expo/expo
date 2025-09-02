@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const TextFieldNativeView = requireNativeView('ExpoUI', 'TextFieldView');
@@ -17,6 +18,9 @@ function transformTextFieldProps(props) {
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
 export function TextField(props) {
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="TextField"/>;
+    }
     return <TextFieldNativeView {...transformTextFieldProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

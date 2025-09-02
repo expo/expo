@@ -4,6 +4,7 @@ import { NativeSyntheticEvent } from 'react-native';
 
 import { type ContextMenuProps, type EventHandlers } from './types';
 import { MenuElement, transformChildrenToElementArray } from './utils';
+import { MissingHostErrorView, isMissingHost, markChildrenAsNestedInSwiftUI } from '../Host';
 
 export * from './Submenu';
 export {
@@ -14,7 +15,7 @@ export {
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
 
-const MenuNativeTriggerView: ComponentType<object> = requireNativeView(
+const MenuNativeTriggerView: ComponentType<{ children: React.ReactNode }> = requireNativeView(
   'ExpoUI',
   'ContextMenuActivationElement'
 );
@@ -58,7 +59,9 @@ Items.tag = 'Items';
  * The component visible all the time that triggers the menu when tapped or long-pressed.
  */
 export function Trigger(props: { children: React.ReactNode }) {
-  return <MenuNativeTriggerView {...props} />;
+  return (
+    <MenuNativeTriggerView {...props} children={markChildrenAsNestedInSwiftUI(props.children)} />
+  );
 }
 
 /**
@@ -100,6 +103,10 @@ function ContextMenu(props: ContextMenuProps) {
       const handler = eventHandlersMap[event.nativeEvent.contextMenuElementID]?.[handlerType];
       handler?.(event);
     };
+
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="ContextMenu" />;
+  }
 
   return (
     <MenuNativeView

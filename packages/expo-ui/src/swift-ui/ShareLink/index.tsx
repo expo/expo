@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -44,6 +45,9 @@ const ShareLinkNativeView: React.ComponentType<ShareLinkProps> = requireNativeVi
  */
 export function ShareLink(props: ShareLinkProps) {
   const { modifiers, ...restProps } = props;
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="ShareLink" />;
+  }
   return (
     <ShareLinkNativeView
       modifiers={modifiers}

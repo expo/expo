@@ -3,6 +3,7 @@ import { requireNativeView } from 'expo';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 
 export type SliderProps = {
   /**
@@ -61,5 +62,8 @@ function transformSliderProps(props: SliderProps): NativeSliderProps {
 }
 
 export function Slider(props: SliderProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Slider" />;
+  }
   return <SliderNativeView {...transformSliderProps(props)} />;
 }

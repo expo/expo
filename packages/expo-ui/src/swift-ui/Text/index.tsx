@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -57,5 +58,8 @@ function transformTextProps(props: TextProps): NativeTextProps {
 }
 
 export function Text(props: TextProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Text" />;
+  }
   return <TextNativeView {...transformTextProps(props)} />;
 }

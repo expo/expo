@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import { createViewModifierEventListener } from '../modifiers/utils';
+import { MissingHostErrorView, isMissingHost, markChildrenAsNestedInSwiftUI } from '../Host';
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const ButtonNativeView = requireNativeView('ExpoUI', 'Button');
 /**
@@ -23,6 +24,9 @@ export function transformButtonProps(props, text) {
  */
 export function Button(props) {
     const { children, ...restProps } = props;
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="Button"/>;
+    }
     if (!children && !restProps.systemImage) {
         throw new Error('Button without systemImage prop should have React children');
     }
@@ -33,6 +37,8 @@ export function Button(props) {
     if (shouldRenderDirectly) {
         return <ButtonNativeView {...transformedProps}/>;
     }
-    return <ButtonNativeView {...transformedProps}>{children}</ButtonNativeView>;
+    return (<ButtonNativeView {...transformedProps}>
+      {markChildrenAsNestedInSwiftUI(children)}
+    </ButtonNativeView>);
 }
 //# sourceMappingURL=index.js.map

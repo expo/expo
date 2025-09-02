@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { Ref } from 'react';
 
 import { type ViewEvent } from '../../types';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -107,5 +108,8 @@ function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
 export function TextField(props: TextFieldProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="TextField" />;
+  }
   return <TextFieldNativeView {...transformTextFieldProps(props)} />;
 }

@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import { createViewModifierEventListener } from '../modifiers/utils';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 const SliderNativeView = requireNativeView('ExpoUI', 'SliderView');
 function transformSliderProps(props) {
     const { modifiers, ...restProps } = props;
@@ -18,6 +19,9 @@ function transformSliderProps(props) {
     };
 }
 export function Slider(props) {
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="Slider"/>;
+    }
     return <SliderNativeView {...transformSliderProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

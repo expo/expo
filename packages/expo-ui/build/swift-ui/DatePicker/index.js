@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 function transformDateTimePickerProps(props) {
     const { variant, modifiers, ...rest } = props;
@@ -17,6 +18,9 @@ const DatePickerNativeView = requireNativeView('ExpoUI', 'DateTimePickerView');
  * Renders a `DateTimePicker` component.
  */
 export function DateTimePicker(props) {
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="DateTimePicker"/>;
+    }
     return <DatePickerNativeView {...transformDateTimePickerProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

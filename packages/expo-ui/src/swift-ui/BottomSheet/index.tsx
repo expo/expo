@@ -3,6 +3,7 @@ import { NativeSyntheticEvent } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
 
 export type BottomSheetProps = {
   /**
@@ -29,10 +30,11 @@ const BottomSheetNativeView: React.ComponentType<NativeBottomSheetProps> = requi
 );
 
 function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetProps {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, children, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    children: markChildrenAsNestedInSwiftUI(children),
     ...restProps,
     onIsOpenedChange: ({ nativeEvent: { isOpened } }) => {
       props?.onIsOpenedChange?.(isOpened);
@@ -41,5 +43,9 @@ function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetPr
 }
 
 export function BottomSheet(props: BottomSheetProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="BottomSheet" />;
+  }
+
   return <BottomSheetNativeView {...transformBottomSheetProps(props)} />;
 }

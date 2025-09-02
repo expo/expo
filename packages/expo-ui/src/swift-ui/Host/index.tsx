@@ -4,6 +4,7 @@ import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { markChildrenAsNestedInSwiftUI } from './missingHostUtils';
 
 export type HostProps = {
   /**
@@ -66,6 +67,13 @@ export function Host(props: HostProps) {
         }
       }}
       {...restProps}
+      children={markChildrenAsNestedInSwiftUI(props.children)}
     />
   );
 }
+
+export {
+  markChildrenAsNestedInSwiftUI,
+  isMissingHost,
+  MissingHostErrorView,
+} from './missingHostUtils';

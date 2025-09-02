@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { ColorValue } from 'react-native';
 
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -67,6 +68,9 @@ const GaugeNativeView: React.ComponentType<GaugeProps> = requireNativeView('Expo
  * @platform ios
  */
 export function Gauge({ type = 'default', modifiers, ...props }: GaugeProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Gauge" />;
+  }
   return (
     <GaugeNativeView
       modifiers={modifiers}

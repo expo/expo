@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -110,5 +111,12 @@ type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelect
  */
 export function List(props: ListProps) {
   const { children, ...nativeProps } = props;
-  return <ListNativeView {...transformListProps(nativeProps)}>{children}</ListNativeView>;
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="List" />;
+  }
+  return (
+    <ListNativeView {...transformListProps(nativeProps)}>
+      {markChildrenAsNestedInSwiftUI(children)}
+    </ListNativeView>
+  );
 }

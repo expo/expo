@@ -4,6 +4,7 @@ import { NativeSyntheticEvent, processColor } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { MissingHostErrorView, isMissingHost } from '../Host';
 
 export type ColorPickerProps = {
   /**
@@ -49,6 +50,9 @@ export function ColorPicker({
     },
     [onValueChanged]
   );
+  if (isMissingHost(restProps)) {
+    return <MissingHostErrorView componentName="ColorPicker" />;
+  }
   return (
     <ColorPickerNativeView
       modifiers={modifiers}

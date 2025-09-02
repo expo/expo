@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { Children, useMemo } from 'react';
 import { transformChildrenToElementArray } from './utils';
+import { MissingHostErrorView, isMissingHost, markChildrenAsNestedInSwiftUI } from '../Host';
 export * from './Submenu';
 const MenuNativeView = requireNativeView('ExpoUI', 'ContextMenu');
 const MenuNativeTriggerView = requireNativeView('ExpoUI', 'ContextMenuActivationElement');
@@ -18,7 +19,7 @@ Items.tag = 'Items';
  * The component visible all the time that triggers the menu when tapped or long-pressed.
  */
 export function Trigger(props) {
-    return <MenuNativeTriggerView {...props}/>;
+    return (<MenuNativeTriggerView {...props} children={markChildrenAsNestedInSwiftUI(props.children)}/>);
 }
 /**
  * The component visible above the menu when it is opened.
@@ -48,6 +49,9 @@ function ContextMenu(props) {
         const handler = eventHandlersMap[event.nativeEvent.contextMenuElementID]?.[handlerType];
         handler?.(event);
     };
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="ContextMenu"/>;
+    }
     return (<MenuNativeView elements={processedElements} onContextMenuButtonPressed={createEventHandler('onPress')} onContextMenuSwitchValueChanged={createEventHandler('onValueChange')} onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')} {...props}/>);
 }
 ContextMenu.Trigger = Trigger;

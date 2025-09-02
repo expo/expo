@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent } from 'react-native';
 
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -70,5 +71,8 @@ function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
  * Displays a native switch component.
  */
 export function Switch(props: SwitchProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Switch" />;
+  }
   return <SwitchNativeView {...transformSwitchProps(props)} />;
 }

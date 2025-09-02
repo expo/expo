@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { MissingHostErrorView, isMissingHost } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -31,6 +32,9 @@ const LabelNativeView: React.ComponentType<LabelProps> = requireNativeView('Expo
  */
 export function Label(props: LabelProps) {
   const { modifiers, ...restProps } = props;
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Label" />;
+  }
   return (
     <LabelNativeView
       modifiers={modifiers}

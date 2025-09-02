@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { MissingHostErrorView, isMissingHost } from '../Host';
 
 export interface ContentUnavailableViewProps extends CommonViewModifierProps {
   /**
@@ -39,5 +40,8 @@ function transformContentUnavailableViewProps(
 }
 
 export function ContentUnavailableView(props: ContentUnavailableViewProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="ContentUnavailableView" />;
+  }
   return <ContentUnavailableViewNativeView {...transformContentUnavailableViewProps(props)} />;
 }

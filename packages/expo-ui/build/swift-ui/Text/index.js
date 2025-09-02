@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { isMissingHost, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 const TextNativeView = requireNativeView('ExpoUI', 'TextView');
 function transformTextProps(props) {
@@ -11,6 +12,9 @@ function transformTextProps(props) {
     };
 }
 export function Text(props) {
+    if (isMissingHost(props)) {
+        return <MissingHostErrorView componentName="Text"/>;
+    }
     return <TextNativeView {...transformTextProps(props)}/>;
 }
 //# sourceMappingURL=index.js.map

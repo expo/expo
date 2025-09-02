@@ -3,6 +3,7 @@ import { requireNativeView } from 'expo';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { MissingHostErrorView, isMissingHost, markChildrenAsNestedInSwiftUI } from '../Host';
 
 /**
  * The role of the button.
@@ -123,6 +124,10 @@ export function transformButtonProps(
 export function Button(props: ButtonProps) {
   const { children, ...restProps } = props;
 
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Button" />;
+  }
+
   if (!children && !restProps.systemImage) {
     throw new Error('Button without systemImage prop should have React children');
   }
@@ -137,5 +142,9 @@ export function Button(props: ButtonProps) {
   if (shouldRenderDirectly) {
     return <ButtonNativeView {...transformedProps} />;
   }
-  return <ButtonNativeView {...transformedProps}>{children}</ButtonNativeView>;
+  return (
+    <ButtonNativeView {...transformedProps}>
+      {markChildrenAsNestedInSwiftUI(children)}
+    </ButtonNativeView>
+  );
 }

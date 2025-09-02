@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
+import { isMissingHost, markChildrenAsNestedInSwiftUI, MissingHostErrorView } from '../Host';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -21,10 +22,11 @@ interface StackBaseProps extends CommonViewModifierProps {
 export type NativeStackProps = Omit<StackBaseProps, 'onPress'> | TapEvent;
 
 function transformNativeProps(props: StackBaseProps): NativeStackProps {
-  const { onPress, modifiers, ...restProps } = props;
+  const { onPress, modifiers, children, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    children: markChildrenAsNestedInSwiftUI(props.children),
     ...restProps,
     ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),
   };
@@ -41,6 +43,9 @@ const HStackNativeView: React.ComponentType<NativeStackProps> = requireNativeVie
 );
 
 export function HStack(props: HStackProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="HStack" />;
+  }
   return <HStackNativeView {...transformNativeProps(props)} />;
 }
 //#endregion
@@ -56,6 +61,9 @@ const VStackNativeView: React.ComponentType<NativeStackProps> = requireNativeVie
 );
 
 export function VStack(props: VStackProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="VStack" />;
+  }
   return <VStackNativeView {...transformNativeProps(props)} />;
 }
 //#endregion
@@ -77,16 +85,20 @@ const GroupNativeView: React.ComponentType<NativeGroupProps> = requireNativeView
 );
 
 function transformGroupProps(props: GroupProps): NativeGroupProps {
-  const { onPress, modifiers, ...restProps } = props;
+  const { onPress, modifiers, children, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    children: markChildrenAsNestedInSwiftUI(props.children),
     ...restProps,
     ...(onPress ? { useTapGesture: true, onTap: () => onPress() } : null),
   };
 }
 
 export function Group(props: GroupProps) {
+  if (isMissingHost(props)) {
+    return <MissingHostErrorView componentName="Group" />;
+  }
   return <GroupNativeView {...transformGroupProps(props)} />;
 }
 //#endregion

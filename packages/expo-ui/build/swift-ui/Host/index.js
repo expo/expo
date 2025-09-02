@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { useState } from 'react';
 import { createViewModifierEventListener } from '../modifiers/utils';
+import { markChildrenAsNestedInSwiftUI } from './missingHostUtils';
 const HostNativeView = requireNativeView('ExpoUI', 'HostView');
 /**
  * A hosting component for SwiftUI views.
@@ -22,6 +23,7 @@ export function Host(props) {
                 }
                 setContainerStyle(newContainerStyle);
             }
-        }} {...restProps}/>);
+        }} {...restProps} children={markChildrenAsNestedInSwiftUI(props.children)}/>);
 }
+export { markChildrenAsNestedInSwiftUI, isMissingHost, MissingHostErrorView, } from './missingHostUtils';
 //# sourceMappingURL=index.js.map
