@@ -1,4 +1,4 @@
-import { getDeepDependenciesWarningAsync } from '../../utils/explainDependencies';
+import { getDeepDependenciesWarningWithPackageNameAsync } from '../../utils/explainDependencies';
 import { getRemoteVersionsForSdkAsync } from '../../utils/getRemoteVersionsForSdkAsync';
 import { SupportPackageVersionCheck } from '../SupportPackageVersionCheck';
 
@@ -35,7 +35,7 @@ describe('runAsync', () => {
     jest
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
-    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValue(null);
+    jest.mocked(getDeepDependenciesWarningWithPackageNameAsync).mockResolvedValue(null);
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -48,7 +48,9 @@ describe('runAsync', () => {
     jest
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
-    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
+    jest
+      .mocked(getDeepDependenciesWarningWithPackageNameAsync)
+      .mockResolvedValueOnce({ packageName: 'expo-modules-autolinking', message: 'warning' });
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -61,12 +63,14 @@ describe('runAsync', () => {
     jest
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
-    jest.mocked(getDeepDependenciesWarningAsync).mockImplementation(async (pkg, projectRoot) => {
-      if (pkg.name === 'metro') {
-        return 'warning';
-      }
-      return null;
-    });
+    jest
+      .mocked(getDeepDependenciesWarningWithPackageNameAsync)
+      .mockImplementation(async (pkg, projectRoot) => {
+        if (pkg === 'metro') {
+          return { packageName: 'metro', message: 'warning' };
+        }
+        return null;
+      });
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -82,12 +86,14 @@ describe('runAsync', () => {
     jest
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
-    jest.mocked(getDeepDependenciesWarningAsync).mockImplementation(async (pkg, projectRoot) => {
-      if (pkg.name === 'metro-config') {
-        return 'warning';
-      }
-      return null;
-    });
+    jest
+      .mocked(getDeepDependenciesWarningWithPackageNameAsync)
+      .mockImplementation(async (pkg, projectRoot) => {
+        if (pkg === 'metro-config') {
+          return { packageName: 'metro-config', message: 'warning' };
+        }
+        return null;
+      });
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -103,12 +109,14 @@ describe('runAsync', () => {
     jest
       .mocked(getRemoteVersionsForSdkAsync)
       .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
-    jest.mocked(getDeepDependenciesWarningAsync).mockImplementation(async (pkg, projectRoot) => {
-      if (pkg.name === 'metro') {
-        return 'warning';
-      }
-      return null;
-    });
+    jest
+      .mocked(getDeepDependenciesWarningWithPackageNameAsync)
+      .mockImplementation(async (pkg, projectRoot) => {
+        if (pkg === 'metro') {
+          return { packageName: 'metro', message: 'warning' };
+        }
+        return null;
+      });
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
