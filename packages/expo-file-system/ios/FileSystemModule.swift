@@ -1,11 +1,15 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import UIKit
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
+  // UIKit is unavailable on macOS, so platform checks are necessary.
+  // For macOS support, we should consider using NSOpenPanel: https://developer.apple.com/documentation/appkit/nsopenpanel
+  #if os(iOS) || os(tvOS)
   private lazy var filePickingHandler = FilePickingHandler(module: self)
+  #endif
+
 
   var documentDirectory: URL? {
     return appContext?.config.documentDirectory
@@ -99,6 +103,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+      #if os(iOS) || os(tvOS)
       filePickingHandler.presentDocumentPicker(
         picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
         isDirectory: false,
@@ -106,6 +111,9 @@ public final class FileSystemModule: Module {
         mimeType: mimeType,
         promise: promise
       )
+      #else
+      promise.reject(FeatureNotAvailableOnPlatformException())
+      #endif
     }.runOnQueue(.main)
 
     Function("info") { (url: URL) in

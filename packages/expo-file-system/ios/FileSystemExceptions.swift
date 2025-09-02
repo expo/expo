@@ -90,3 +90,9 @@ internal final class FilePickingCancelledException: Exception {
     "File picking was cancelled by the user"
   }
 }
+
+internal final class FeatureNotAvailableOnPlatformException: Exception {
+  override var reason: String {
+    "This feature is not available on this platform"
+  }
+}
