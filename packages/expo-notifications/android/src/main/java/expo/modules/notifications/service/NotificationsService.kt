@@ -481,7 +481,7 @@ open class NotificationsService : BroadcastReceiver() {
       val notification = extras?.getParcelable<Notification>(NOTIFICATION_KEY)
       val action = extras?.getParcelable<NotificationAction>(NOTIFICATION_ACTION_KEY)
       if (notification == null || action == null) {
-        throw IllegalArgumentException("notification and action should not be null")
+        throw IllegalArgumentException("notification ($notification) and action ($action) should not be null")
       }
       val backgroundAction = NotificationAction(action.identifier, action.title, false)
       val intent = Intent(
