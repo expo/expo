@@ -69,7 +69,7 @@ export interface ExpoConfig {
      */
     icon?: string;
     /**
-     * Configuration for remote (push) notifications.
+     * @deprecated in favor of expo-notifications config plugin. Configuration for remote (push) notifications.
      */
     notification?: {
         /**

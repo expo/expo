@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- warn when using the deprecated notification app config field ([#39325](https://github.com/expo/expo/pull/39325) by [@vonovak](https://github.com/vonovak))
+
 ## 10.0.7 — 2025-08-31
 
 _This version does not introduce any user-facing changes._
