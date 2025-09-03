@@ -1,5 +1,3 @@
-"use strict";
-
 exports.__esModule = true;
 exports.foo7 = exports.foo6 = exports.foo5 = exports.foo4 = exports.foo3 = exports.foo2 = exports.foo = exports.bar = void 0;
 exports.foo8 = foo8;

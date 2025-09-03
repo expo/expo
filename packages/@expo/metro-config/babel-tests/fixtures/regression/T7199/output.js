@@ -1,5 +1,3 @@
-"use strict";
-
 var _foo = _interopRequireDefault(require("foo"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }

@@ -1,5 +1,3 @@
-"use strict";
-
 var _foo = require("./foo.js");
 var y = true;
 function f() {

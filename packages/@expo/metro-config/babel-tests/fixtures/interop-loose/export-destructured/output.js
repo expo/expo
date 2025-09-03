@@ -1,5 +1,3 @@
-"use strict";
-
 exports.__esModule = true;
 exports.f1 = f1;
 exports.f2 = f2;

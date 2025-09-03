@@ -1,5 +1,3 @@
-"use strict";
-
 var _mod = babelHelpers.interopRequireWildcard(require("mod"));
 var e = _mod;
 const foo = e => {

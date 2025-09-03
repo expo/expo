@@ -1,5 +1,3 @@
-"use strict";
-
 exports.__esModule = true;
 exports.Cacher = Cacher;
 exports.default = void 0;

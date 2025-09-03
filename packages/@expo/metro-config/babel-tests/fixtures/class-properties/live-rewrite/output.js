@@ -1,5 +1,3 @@
-"use strict";
-
 var _anywhere = require("anywhere");
 class Example {
   #test1 = _anywhere.test1;

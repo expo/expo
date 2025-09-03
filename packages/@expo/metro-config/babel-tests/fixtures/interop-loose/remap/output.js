@@ -1,5 +1,3 @@
-"use strict";
-
 exports.__esModule = true;
 exports.test = exports.f = exports.e = exports.c = exports.a = void 0;
 var _test;

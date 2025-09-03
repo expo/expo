@@ -1,5 +1,3 @@
-"use strict";
-
 var _foo = _interopRequireDefault(require("foo"));
 var Bar = _interopRequireWildcard(require("bar"));
 var _baz = require("baz");

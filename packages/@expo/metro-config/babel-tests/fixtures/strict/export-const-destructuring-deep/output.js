@@ -1,5 +1,3 @@
-"use strict";
-
 exports.qux = exports.baz = void 0;
 const {
   foo: {
