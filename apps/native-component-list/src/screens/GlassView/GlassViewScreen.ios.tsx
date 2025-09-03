@@ -60,6 +60,8 @@ export default function GlassViewScreen() {
             glassEffectStyle={selectedStyle}
             tintColor={tintColor}
             isInteractive={isInteractive}
+            // known issue: the `isInteractive` prop can only be set once on mount
+            key={isInteractive ? 'interactive' : 'static'}
           />
         </GestureDetector>
       </View>
