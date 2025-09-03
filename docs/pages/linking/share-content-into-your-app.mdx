@@ -18,7 +18,7 @@ On Android, the system delivers shared data to an `Activity`. An `Activity` is a
 
 - Apps register intent filters (`ACTION_SEND`/`ACTION_SEND_MULTIPLE`) for specific MIME types (for example, text/plain, image/\*) in **AndroidManifest.xml**.
 - When selected from the share sheet, your launch `Activity` receives an Intent containing the data payload.
-- Your Activity must handle the incoming Intent in Java or Kotlin by calling getIntent() and reading extras like EXTRA_TEXT or EXTRA_STREAM.
+- Your `Activity` must handle the incoming Intent in Java or Kotlin by calling `getIntent()` and reading extras like `EXTRA_TEXT` or `EXTRA_STREAM`.
 
 **iOS**
 
