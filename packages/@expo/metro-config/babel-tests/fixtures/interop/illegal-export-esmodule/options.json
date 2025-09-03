@@ -1,0 +1,4 @@
+{
+  "throws": "Illegal export \"__esModule\"",
+  "plugins": ["transform-modules-commonjs"]
+}

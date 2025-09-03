@@ -1,0 +1,4 @@
+{
+  "plugins": ["transform-modules-commonjs"],
+  "parserOpts": { "allowReturnOutsideFunction": true }
+}

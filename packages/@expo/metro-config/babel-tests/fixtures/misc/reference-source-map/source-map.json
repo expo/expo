@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "names": [
+    "_one",
+    "babelHelpers",
+    "interopRequireDefault",
+    "require",
+    "_two",
+    "_three",
+    "aNamespace",
+    "interopRequireWildcard",
+    "console",
+    "log",
+    "aDefault",
+    "aNamed",
+    "anAliased"
+  ],
+  "sources": [
+    "misc/reference-source-map/input.mjs"
+  ],
+  "sourcesContent": [
+    "import aDefault from \"one\";\nimport { aNamed } from \"two\";\nimport { orig as anAliased } from \"three\";\nimport * as aNamespace from \"four\";\n\nconsole.log(aDefault);\nconsole.log(aNamed);\nconsole.log(anAliased);\nconsole.log(aNamespace);\n\nconsole.log(aDefault());\nconsole.log(aNamed());\nconsole.log(anAliased());\nconsole.log(aNamespace());"
+  ],
+  "mappings": ";;AAAA,IAAAA,IAAA,GAAAC,YAAA,CAAAC,qBAAA,CAAAC,OAAA;AACA,IAAAC,IAAA,GAAAD,OAAA;AACA,IAAAE,MAAA,GAAAF,OAAA;AACA,IAAAG,UAAA,GAAAL,YAAA,CAAAM,sBAAA,CAAAJ,OAAA;AAEAK,OAAO,CAACC,GAAG,CAACC,YAAQ,CAAC;AACrBF,OAAO,CAACC,GAAG,CAACE,WAAM,CAAC;AACnBH,OAAO,CAACC,GAAG,CAACG,WAAS,CAAC;AACtBJ,OAAO,CAACC,GAAG,CAACH,UAAU,CAAC;AAEvBE,OAAO,CAACC,GAAG,CAAC,IAAAC,YAAQ,EAAC,CAAC,CAAC;AACvBF,OAAO,CAACC,GAAG,CAAC,IAAAE,WAAM,EAAC,CAAC,CAAC;AACrBH,OAAO,CAACC,GAAG,CAAC,IAAAG,WAAS,EAAC,CAAC,CAAC;AACxBJ,OAAO,CAACC,GAAG,CAACH,UAAU,CAAC,CAAC,CAAC",
+  "ignoreList": []
+}

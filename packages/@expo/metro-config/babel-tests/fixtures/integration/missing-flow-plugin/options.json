@@ -1,0 +1,6 @@
+{
+  "externalHelpers": true,
+  "sourceType": "module",
+  "plugins": ["transform-modules-commonjs", "syntax-flow"],
+  "throws": "Cannot transform the imported binding \"A\" since it's also used in a type annotation. Please strip type annotations using @babel/preset-typescript or @babel/preset-flow."
+}
