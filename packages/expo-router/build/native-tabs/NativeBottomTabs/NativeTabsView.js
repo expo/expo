@@ -42,15 +42,21 @@ const utils_1 = require("./utils");
 // We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
 // Otherwise user may see glitches when switching between tabs.
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
+const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
 function NativeTabsView(props) {
-    const { builder, minimizeBehavior, disableIndicator, focusedIndex, disableTransparentOnScrollEdge, } = props;
+    const { builder, minimizeBehavior, disableIndicator, focusedIndex } = props;
     const { state, descriptors, navigation } = builder;
     const { routes } = state;
+    let blurEffect = props.blurEffect;
+    if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
+        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+        blurEffect = undefined;
+    }
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
     let standardAppearance = (0, appearance_1.convertStyleToAppearance)({
         ...props.labelStyle,
         iconColor: props.iconColor,
-        blurEffect: props.blurEffect,
+        blurEffect,
         backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
     });
@@ -60,8 +66,8 @@ function NativeTabsView(props) {
     const scrollEdgeAppearance = (0, appearance_1.convertStyleToAppearance)({
         ...props.labelStyle,
         iconColor: props.iconColor,
-        blurEffect: disableTransparentOnScrollEdge ? props.blurEffect : 'none',
-        backgroundColor: disableTransparentOnScrollEdge ? props.backgroundColor : null,
+        blurEffect,
+        backgroundColor: props.backgroundColor,
         badgeBackgroundColor: props.badgeBackgroundColor,
     });
     const appearances = routes.map((route) => ({
@@ -112,18 +118,37 @@ function NativeTabsView(props) {
 }
 function Screen(props) {
     const { routeKey, name, descriptor, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, } = props;
+    const role = descriptor.options.role;
+    // To align with apple documentation and prevent untested cases,
+    // title and icon cannot be changed when role is defined
+    const shouldResetTitleAndIcon = !!role && process.env.EXPO_OS === 'ios';
     const title = descriptor.options.title ?? name;
-    let icon = convertOptionsIconToPropsIcon(descriptor.options.icon);
-    // Fix for an issue in screens
-    if (descriptor.options.role) {
-        switch (descriptor.options.role) {
-            case 'search':
-                icon = { sfSymbolName: 'magnifyingglass' };
-        }
-    }
-    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(descriptor.options.icon)} iconResource={getAndroidIconResource(descriptor.options.icon)} icon={icon} selectedIcon={convertOptionsIconToPropsIcon(descriptor.options.selectedIcon)} title={title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
+    const icon = useAwaitedScreensIcon(descriptor.options.icon);
+    const selectedIcon = useAwaitedScreensIcon(descriptor.options.selectedIcon);
+    return (<react_native_screens_1.BottomTabsScreen {...descriptor.options} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} iconResourceName={getAndroidIconResourceName(icon)} iconResource={getAndroidIconResource(icon)} icon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(icon)} selectedIcon={shouldResetTitleAndIcon ? undefined : convertOptionsIconToPropsIcon(selectedIcon)} title={shouldResetTitleAndIcon ? undefined : title} freezeContents={false} tabKey={routeKey} systemItem={descriptor.options.role} isFocused={isFocused}>
       {descriptor.render()}
     </react_native_screens_1.BottomTabsScreen>);
+}
+function useAwaitedScreensIcon(icon) {
+    const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+    const [awaitedIcon, setAwaitedIcon] = (0, react_1.useState)(undefined);
+    (0, react_1.useEffect)(() => {
+        const loadIcon = async () => {
+            if (src && src instanceof Promise) {
+                const currentAwaitedIcon = { src: await src };
+                setAwaitedIcon(currentAwaitedIcon);
+            }
+        };
+        loadIcon();
+        // Checking `src` rather then icon here, to avoid unnecessary re-renders
+        // The icon object can be recreated, while src should stay the same
+        // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
+        // So we should be safe with promise resolving
+    }, [src]);
+    return (0, react_1.useMemo)(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
+}
+function isAwaitedIcon(icon) {
+    return !icon || !('src' in icon && icon.src instanceof Promise);
 }
 function convertOptionsIconToPropsIcon(icon) {
     if (!icon) {

@@ -7,10 +7,12 @@ import type { ImageSourcePropType } from 'react-native';
 import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
 import type {
   ExtendedNativeTabOptions,
+  NativeTabOptions,
   NativeTabsTriggerTabBarProps,
   NativeTabTriggerProps,
 } from './types';
 import { filterAllowedChildrenElements, isChildOfType } from './utils';
+import { useIsPreview } from '../../link/preview/PreviewRouteContext';
 import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import {
   Icon,
@@ -19,6 +21,9 @@ import {
   type LabelProps,
   type IconProps,
   type BadgeProps,
+  type SourceIconCombination,
+  VectorIcon,
+  type VectorIconProps,
 } from '../common/elements';
 
 /**
@@ -65,21 +70,22 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
   const isFocused = navigation.isFocused();
+  const isInPreview = useIsPreview();
 
   useSafeLayoutEffect(() => {
     // This will cause the tab to update only when it is focused.
     // As long as all tabs are loaded at the start, we don't need this check.
     // It is here to ensure similar behavior to stack
-    if (isFocused) {
+    if (isFocused && !isInPreview) {
       if (navigation.getState()?.type !== 'tab') {
         throw new Error(
           `Trigger component can only be used in the tab screen. Current route: ${route.name}`
         );
       }
-      const options = convertTabPropsToOptions(props);
+      const options = convertTabPropsToOptions(props, true);
       navigation.setOptions(options);
     }
-  }, [isFocused, props]);
+  }, [isFocused, props, isInPreview]);
 
   return null;
 }
@@ -88,25 +94,23 @@ export const NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
   TabBar: NativeTabsTriggerTabBar,
 });
 
-export function convertTabPropsToOptions({
-  options,
-  hidden,
-  children,
-  role,
-  disablePopToTop,
-  disableScrollToTop,
-}: NativeTabTriggerProps) {
-  const initialOptions: ExtendedNativeTabOptions = {
-    ...options,
-    hidden: !!hidden,
-    specialEffects: {
-      repeatedTabSelection: {
-        popToRoot: !disablePopToTop,
-        scrollToTop: !disableScrollToTop,
-      },
-    },
-    role: role ?? options?.role,
-  };
+export function convertTabPropsToOptions(
+  { options, hidden, children, role, disablePopToTop, disableScrollToTop }: NativeTabTriggerProps,
+  isDynamic: boolean = false
+) {
+  const initialOptions: ExtendedNativeTabOptions = isDynamic
+    ? { ...options }
+    : {
+        ...options,
+        hidden: !!hidden,
+        specialEffects: {
+          repeatedTabSelection: {
+            popToRoot: !disablePopToTop,
+            scrollToTop: !disableScrollToTop,
+          },
+        },
+        role: role ?? options?.role,
+      };
   const allowedChildren = filterAllowedChildrenElements(children, [
     Badge,
     Label,
@@ -151,26 +155,11 @@ function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps
   }
 }
 
-function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) {
+export function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) {
   if ('src' in props && props.src) {
-    if (typeof props.src === 'object' && 'default' in props.src) {
-      options.icon = props.src.default
-        ? {
-            src: props.src.default,
-          }
-        : undefined;
-      options.selectedIcon = props.src.selected
-        ? {
-            src: props.src.selected,
-          }
-        : undefined;
-    } else {
-      options.icon = props.src
-        ? {
-            src: props.src as ImageSourcePropType,
-          }
-        : undefined;
-    }
+    const icon = convertIconSrcToIconOption(props);
+    options.icon = icon?.icon;
+    options.selectedIcon = icon?.selectedIcon;
   } else if ('sf' in props && process.env.EXPO_OS === 'ios') {
     if (typeof props.sf === 'string') {
       options.icon = props.sf
@@ -196,6 +185,40 @@ function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) 
     options.selectedIcon = undefined;
   }
   options.selectedIconColor = props.selectedColor;
+}
+
+function convertIconSrcToIconOption(
+  icon: SourceIconCombination | undefined
+): Pick<NativeTabOptions, 'icon' | 'selectedIcon'> | undefined {
+  if (icon && icon.src) {
+    const { defaultIcon, selected } =
+      typeof icon.src === 'object' && 'selected' in icon.src
+        ? { defaultIcon: icon.src.default, selected: icon.src.selected }
+        : { defaultIcon: icon.src };
+
+    const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
+    options.icon = convertSrcOrComponentToSrc(defaultIcon);
+    options.selectedIcon = convertSrcOrComponentToSrc(selected);
+    return options;
+  }
+
+  return undefined;
+}
+
+function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
+  if (src) {
+    if (isValidElement(src)) {
+      if (src.type === VectorIcon) {
+        const props = src.props as VectorIconProps<string>;
+        return { src: props.family.getImageSource(props.name, 24, 'white') };
+      } else {
+        console.warn('Only VectorIcon is supported as a React element in Icon.src');
+      }
+    } else {
+      return { src };
+    }
+  }
+  return undefined;
 }
 
 function appendTabBarOptions(

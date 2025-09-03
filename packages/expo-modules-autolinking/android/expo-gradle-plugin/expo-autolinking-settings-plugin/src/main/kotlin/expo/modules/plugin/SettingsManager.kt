@@ -26,6 +26,7 @@ import java.io.File
 
 class SettingsManager(
   val settings: Settings,
+  val projectRoot: File,
   searchPaths: List<String>? = null,
   ignorePaths: List<String>? = null,
   exclude: List<String>? = null
@@ -57,7 +58,7 @@ class SettingsManager(
       .build()
 
     val result = settings.providers.exec { env ->
-      env.workingDir(settings.rootDir)
+      env.workingDir(projectRoot.absolutePath)
       env.commandLine(command)
     }.standardOutput.asText.get()
 
@@ -155,7 +156,7 @@ class SettingsManager(
         }
     }
 
-    settings.gradle.extensions.create("expoGradle", ExpoGradleExtension::class.java, config, autolinkingOptions)
+    settings.gradle.extensions.create("expoGradle", ExpoGradleExtension::class.java, config, autolinkingOptions, projectRoot)
   }
 
   /**

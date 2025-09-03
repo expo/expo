@@ -74,6 +74,10 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
     return std::make_shared<MapFrontendConverter>(expectedType->getFirstType());
   }
 
+  if (combinedType == CppType::VALUE_OR_UNDEFINED) {
+    return std::make_shared<ValueOrUndefinedFrontendConverter>(expectedType->getFirstType());
+  }
+
   std::vector<std::shared_ptr<FrontendConverter>> converters;
   auto singleTypes = expectedType->getPossibleTypes();
   size_t size = singleTypes->size();

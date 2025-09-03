@@ -145,7 +145,7 @@ export async function resolveAppProjectConfigAsync(
 ): Promise<RNConfigReactNativeAppProjectConfig> {
   // TODO(@kitten): use the commandRoot here to find these files in non <projectRoot>/<platform> folders
   if (platform === 'android') {
-    const androidDir = path.join(projectRoot, 'android');
+    const androidDir = sourceDir ?? path.join(projectRoot, 'android');
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: false });
     if (gradle == null || manifest == null) {
       return {};

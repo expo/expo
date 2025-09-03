@@ -4,20 +4,15 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import expo.modules.devlauncher.compose.primitives.DefaultScaffold
 import expo.modules.devlauncher.compose.routes.CrashReport
 import expo.modules.devlauncher.compose.routes.CrashReportRoute
+import expo.modules.devlauncher.compose.routes.DevelopmentServersRoute
 import expo.modules.devlauncher.compose.routes.HomeRoute
 import expo.modules.devlauncher.compose.routes.ProfileRoute
 import expo.modules.devlauncher.compose.routes.Routes
@@ -26,47 +21,27 @@ import expo.modules.devlauncher.compose.routes.UpdatesRoute
 import expo.modules.devlauncher.compose.ui.BottomTabBar
 import expo.modules.devlauncher.compose.ui.Full
 import expo.modules.devlauncher.compose.ui.rememberBottomSheetState
-import expo.modules.devmenu.compose.newtheme.NewAppTheme
-import kotlinx.serialization.Serializable
-
-@Composable
-fun DefaultScreenContainer(
-  content: @Composable () -> Unit
-) {
-  Box(
-    modifier = Modifier
-      .fillMaxSize()
-      .background(NewAppTheme.colors.background.default)
-      .statusBarsPadding()
-  ) {
-    content()
-  }
-}
-
-data class Tab(
-  val label: String,
-  val icon: Painter,
-  val screen: Any
-)
-
-@Serializable
-object Main
 
 @Composable
 fun DevLauncherBottomTabsNavigator() {
   val mainNavController = rememberNavController()
   val bottomTabsNavController = rememberNavController()
-  val bottomSheetState = rememberBottomSheetState()
+  val profileBottomSheetState = rememberBottomSheetState()
+  val developmentServersBottomSheetState = rememberBottomSheetState()
 
   val navigateToProfile = remember {
-    { bottomSheetState.targetDetent = Full }
+    { profileBottomSheetState.targetDetent = Full }
+  }
+
+  val openDevelopmentServers = remember {
+    { developmentServersBottomSheetState.targetDetent = Full }
   }
 
   NavHost(
     navController = mainNavController,
-    startDestination = Main
+    startDestination = Routes.Main
   ) {
-    composable<Main>(
+    composable<Routes.Main>(
       enterTransition = {
         slideIntoContainer(
           AnimatedContentTransitionScope.SlideDirection.Right,
@@ -94,7 +69,11 @@ fun DevLauncherBottomTabsNavigator() {
           }
         ) {
           composable<Routes.Home> {
-            HomeRoute(navController = mainNavController, onProfileClick = navigateToProfile)
+            HomeRoute(
+              navController = mainNavController,
+              onProfileClick = navigateToProfile,
+              onDevServersClick = openDevelopmentServers
+            )
           }
           composable<Routes.Updates> {
             UpdatesRoute(onProfileClick = navigateToProfile)
@@ -124,5 +103,7 @@ fun DevLauncherBottomTabsNavigator() {
     }
   }
 
-  ProfileRoute(bottomSheetState)
+  ProfileRoute(profileBottomSheetState)
+
+  DevelopmentServersRoute(developmentServersBottomSheetState)
 }

@@ -6,13 +6,46 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 54.0.0-preview.13 — 2025-09-02
+
+### 🎉 New features
+
+- Add support for React Native Factory when extending ExpoAppDelegate on macOS. ([#35061](https://github.com/expo/expo/pull/35061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add `isLiquidGlassAvailable` function ([#39319](https://github.com/expo/expo/pull/39319) by [@Ubax](https://github.com/Ubax))
+
+## 54.0.0-preview.12 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.11 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.10 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.9 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.8 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0-preview.7 — 2025-08-25
+
+### 🎉 New features
+
 - Add `structuredClone` built-in to native platforms. ([#37503](https://github.com/expo/expo/pull/37503) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 - Temporarily bring back dependency on `expo-file-system`. ([#38792](https://github.com/expo/expo/pull/38792) by [@aleqsio](https://github.com/aleqsio))
-
-### 💡 Others
 
 ## 54.0.0-preview.6 — 2025-08-21
 

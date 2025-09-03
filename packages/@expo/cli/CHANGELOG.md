@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 0.26.7 — 2025-09-02
+
+### 🐛 Bug fixes
+
+- Fix unnecessary version warning when running prebuild for prerelease versions. ([#39298](https://github.com/expo/expo/pull/39298) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Promote buildCacheProvider to stable ([#39297](https://github.com/expo/expo/pull/39297) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.26.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.5 — 2025-08-28
+
+### 💡 Others
+
+- Bump to `@react-native/dev-middleware@0.81.1` ([#39206](https://github.com/expo/expo/pull/39206) by [@kitten](https://github.com/kitten))
+
+## 0.26.4 — 2025-08-27
+
+### 💡 Others
+
+- Remove unused `@babel/runtime` dependency from CLI ([#39040](https://github.com/expo/expo/pull/39040) by [@kitten](https://github.com/kitten))
+
+## 0.26.3 — 2025-08-25
+
+### 💡 Others
+
 - Prevent `EXPO_USE_FAST_RESOLVER` from being force enabled for other experiments ([#39073](https://github.com/expo/expo/pull/39073) by [@kitten](https://github.com/kitten))
 
 ## 0.26.2 — 2025-08-21

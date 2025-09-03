@@ -10,16 +10,13 @@ import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.media.MediaActionSound
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
-import kotlin.math.roundToInt
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
@@ -86,6 +83,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.Float.max
 import java.lang.Float.min
+import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 const val ANIMATION_FAST_MILLIS = 50L
@@ -634,12 +632,6 @@ class ExpoCameraView(
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
   }
 
-  private fun getDeviceOrientation() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    context.display.rotation
-  } else {
-    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
-  }
-
   private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
     val cornerPoints = barcode.cornerPoints
     val previewWidth = previewView.width.toFloat()
@@ -800,8 +792,7 @@ class ExpoCameraView(
     Log.e(CameraViewModule.TAG, "The scope does not have a job in it")
   }
 
-  override fun onDetachedFromWindow() {
-    super.onDetachedFromWindow()
+  fun cleanupCamera() {
     orientationEventListener.disable()
     cancelCoroutineScope()
     cameraProvider?.unbindAll()

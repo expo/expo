@@ -168,7 +168,8 @@ export function updatePkgDependencies(
       // Warn users for outdated dependencies when prebuilding
       const hasRecommendedVersion = versionRangesIntersect(
         pkg.dependencies[dependencyKey],
-        String(defaultDependencies[dependencyKey])
+        String(defaultDependencies[dependencyKey]),
+        true
       );
       if (!hasRecommendedVersion) {
         nonRecommendedPackages.push([
@@ -293,9 +294,13 @@ export function createFileHash(contents: string): string {
  * Determine if two semver ranges are overlapping or intersecting.
  * This is a safe version of `semver.intersects` that does not throw.
  */
-function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | SemverRange) {
+function versionRangesIntersect(
+  rangeA: string | SemverRange,
+  rangeB: string | SemverRange,
+  includePrerelease: boolean = false
+) {
   try {
-    return semverIntersects(rangeA, rangeB);
+    return semverIntersects(rangeA, rangeB, { includePrerelease });
   } catch {
     return false;
   }

@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 17.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.5 — 2025-08-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix wrong dimensions reported for portrait images ([#39230](https://github.com/expo/expo/pull/39230) by [@hirbod](https://github.com/hirbod))
+
+## 17.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
 ## 17.0.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

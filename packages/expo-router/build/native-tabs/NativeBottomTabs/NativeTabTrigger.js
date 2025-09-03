@@ -3,11 +3,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabTrigger = void 0;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
+exports.appendIconOptions = appendIconOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const NativeTabsTriggerTabBar_1 = require("./NativeTabsTriggerTabBar");
 const utils_1 = require("./utils");
+const PreviewRouteContext_1 = require("../../link/preview/PreviewRouteContext");
 const useSafeLayoutEffect_1 = require("../../views/useSafeLayoutEffect");
 const elements_1 = require("../common/elements");
 /**
@@ -54,35 +56,38 @@ function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
     const navigation = (0, native_1.useNavigation)();
     const isFocused = navigation.isFocused();
+    const isInPreview = (0, PreviewRouteContext_1.useIsPreview)();
     (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
         // This will cause the tab to update only when it is focused.
         // As long as all tabs are loaded at the start, we don't need this check.
         // It is here to ensure similar behavior to stack
-        if (isFocused) {
+        if (isFocused && !isInPreview) {
             if (navigation.getState()?.type !== 'tab') {
                 throw new Error(`Trigger component can only be used in the tab screen. Current route: ${route.name}`);
             }
-            const options = convertTabPropsToOptions(props);
+            const options = convertTabPropsToOptions(props, true);
             navigation.setOptions(options);
         }
-    }, [isFocused, props]);
+    }, [isFocused, props, isInPreview]);
     return null;
 }
 exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     TabBar: NativeTabsTriggerTabBar_1.NativeTabsTriggerTabBar,
 });
-function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop, }) {
-    const initialOptions = {
-        ...options,
-        hidden: !!hidden,
-        specialEffects: {
-            repeatedTabSelection: {
-                popToRoot: !disablePopToTop,
-                scrollToTop: !disableScrollToTop,
+function convertTabPropsToOptions({ options, hidden, children, role, disablePopToTop, disableScrollToTop }, isDynamic = false) {
+    const initialOptions = isDynamic
+        ? { ...options }
+        : {
+            ...options,
+            hidden: !!hidden,
+            specialEffects: {
+                repeatedTabSelection: {
+                    popToRoot: !disablePopToTop,
+                    scrollToTop: !disableScrollToTop,
+                },
             },
-        },
-        role: role ?? options?.role,
-    };
+            role: role ?? options?.role,
+        };
     const allowedChildren = (0, utils_1.filterAllowedChildrenElements)(children, [
         elements_1.Badge,
         elements_1.Label,
@@ -128,25 +133,9 @@ function appendLabelOptions(options, props) {
 }
 function appendIconOptions(options, props) {
     if ('src' in props && props.src) {
-        if (typeof props.src === 'object' && 'default' in props.src) {
-            options.icon = props.src.default
-                ? {
-                    src: props.src.default,
-                }
-                : undefined;
-            options.selectedIcon = props.src.selected
-                ? {
-                    src: props.src.selected,
-                }
-                : undefined;
-        }
-        else {
-            options.icon = props.src
-                ? {
-                    src: props.src,
-                }
-                : undefined;
-        }
+        const icon = convertIconSrcToIconOption(props);
+        options.icon = icon?.icon;
+        options.selectedIcon = icon?.selectedIcon;
     }
     else if ('sf' in props && process.env.EXPO_OS === 'ios') {
         if (typeof props.sf === 'string') {
@@ -175,6 +164,35 @@ function appendIconOptions(options, props) {
         options.selectedIcon = undefined;
     }
     options.selectedIconColor = props.selectedColor;
+}
+function convertIconSrcToIconOption(icon) {
+    if (icon && icon.src) {
+        const { defaultIcon, selected } = typeof icon.src === 'object' && 'selected' in icon.src
+            ? { defaultIcon: icon.src.default, selected: icon.src.selected }
+            : { defaultIcon: icon.src };
+        const options = {};
+        options.icon = convertSrcOrComponentToSrc(defaultIcon);
+        options.selectedIcon = convertSrcOrComponentToSrc(selected);
+        return options;
+    }
+    return undefined;
+}
+function convertSrcOrComponentToSrc(src) {
+    if (src) {
+        if ((0, react_1.isValidElement)(src)) {
+            if (src.type === elements_1.VectorIcon) {
+                const props = src.props;
+                return { src: props.family.getImageSource(props.name, 24, 'white') };
+            }
+            else {
+                console.warn('Only VectorIcon is supported as a React element in Icon.src');
+            }
+        }
+        else {
+            return { src };
+        }
+    }
+    return undefined;
 }
 function appendTabBarOptions(options, props) {
     const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, } = props;

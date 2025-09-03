@@ -121,7 +121,7 @@ The following three commands result in more or less the same project:
 
 Continuous Native Generation (CNG) is a process for building an Expo app where your [native projects](#android-and-ios-native-projects) are generated on-demand from your **app.json** and **package.json**, similar to how your **node_modules** are generated from your **package.json**.
 
-You can add the [native project](#android-and-ios-native-projects) directories (**android** and **ios**) to your **.gitignore** and/or delete the project at any time, then re-generate them from the Expo app config with `npx expo prebuild` whenever required. You might never even run prebuild on your own development machine if you use a cloud-based development workflow.
+The [native project](#android-and-ios-native-projects) directories (**android** and **ios**) are automatically added to your **.gitignore** when you create a new project, and you can delete them at any time, then re-generate them from the Expo app config with `npx expo prebuild` whenever required. You might never even run prebuild on your own development machine if you use a cloud-based development workflow.
 
 Using CNG can make upgrading to new versions of React Native much easier. It can simplify project maintenance and facilitate setting up complex features such as [App Clips](https://github.com/bndkt/react-native-app-clip), [share extensions](https://github.com/timedtext/expo-config-plugin-ios-share-extension), and [push notifications](https://github.com/OneSignal/onesignal-expo-plugin). This is all made possible with [config plugins](/config-plugins/introduction/). Learn more about [CNG](/workflow/continuous-native-generation/).
 

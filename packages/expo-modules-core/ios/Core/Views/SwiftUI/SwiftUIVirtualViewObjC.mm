@@ -181,7 +181,7 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
   // when a VirtualView inserted to a standard UIView.
   // We use this call point here for sanity check.
   @throw [NSException exceptionWithName:@"SwiftUIVirtualViewException"
-                                 reason:@"A SwiftUI view is inserted as a child of a standard UIView. Please check that you have wrapped the SwiftUI view in an WithHostingView."
+                                 reason:@"A SwiftUI view is inserted as a child of a standard UIView. Double check that in JSX you have wrapped your component with `<Host>` from '@expo/ui/swift-ui'."
                                userInfo:nil];
   return NO;
 }

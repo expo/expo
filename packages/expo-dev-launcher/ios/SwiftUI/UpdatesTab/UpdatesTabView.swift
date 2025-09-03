@@ -9,13 +9,15 @@ struct UpdatesTabView: View {
     VStack(spacing: 0) {
       DevLauncherNavigationHeader()
 
-      if !viewModel.isLoggedIn {
-        NotSignedInView()
-          .padding()
-      } else if !viewModel.structuredBuildInfo.usesEASUpdates {
-        NotUsingUpdatesView()
-      } else {
-        UpdatesListView()
+      ScrollView {
+        if !viewModel.isLoggedIn {
+          NotSignedInView()
+            .padding()
+        } else if !viewModel.structuredBuildInfo.usesEASUpdates {
+          NotUsingUpdatesView()
+        } else {
+          UpdatesListView()
+        }
       }
     }
   }

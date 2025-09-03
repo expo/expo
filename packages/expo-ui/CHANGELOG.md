@@ -6,16 +6,39 @@
 
 ### 🎉 New features
 
-- [iOS] Add `animation` modifier. ([#38954](https://github.com/expo/expo/pull/38954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] **Button**: Add support for `leadingIcon` and `trailingIcon` props for better icon positioning in buttons and context menus. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#39095](https://github.com/expo/expo/pull/39095) by [@benjaminkomen](https://github.com/benjaminkomen))
 
 ### 🐛 Bug fixes
 
-- [iOS] Apple TV fixes. ([#39060](https://github.com/expo/expo/pull/39060) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
 
 - [Android] **Button**: Deprecate `systemImage` prop in favor of `leadingIcon` and `trailingIcon` for more flexible icon placement. The `systemImage` prop will continue to work as `leadingIcon` for backward compatibility. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#39095](https://github.com/expo/expo/pull/39095) by [@benjaminkomen](https://github.com/benjaminkomen))
+
+## 0.2.0-alpha.8 — 2025-09-02
+
+### 💡 Others
+
+- Used convertibles to process modifiers' parameters. ([#39231](https://github.com/expo/expo/pull/39231) by [@kudo](https://github.com/kudo))
+
+## 0.2.0-alpha.7 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0-alpha.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0-alpha.5 — 2025-08-25
+
+### 🎉 New features
+
+- [iOS] Add `animation` modifier. ([#38954](https://github.com/expo/expo/pull/38954) by [@nishan](https://github.com/intergalacticspacehighway))
+
+- [iOS] Add `GlassEffectContainer`, `glassEffectId` and `Namespaces` support. ([#39070](https://github.com/expo/expo/pull/39070) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- [iOS] Apple TV fixes. ([#39060](https://github.com/expo/expo/pull/39060) by [@douglowder](https://github.com/douglowder))
 
 ## 0.2.0-alpha.4 — 2025-08-19
 
@@ -38,7 +61,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [Android] Add compose modifier support. ([#38630](https://github.com/expo/expo/pull/38630) by [@aleqsio](https://github.com/aleqsio))
-
 - [iOS] Add `glassEffect` modifier. ([#38876](https://github.com/expo/expo/pull/38876) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 0.2.0-alpha.0 — 2025-08-13
