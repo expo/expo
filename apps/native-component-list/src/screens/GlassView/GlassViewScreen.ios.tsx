@@ -1,6 +1,6 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { GlassStyle, GlassView, GlassContainer } from 'expo-glass-effect';
 import Checkbox from 'expo-checkbox';
+import { GlassStyle, GlassView, GlassContainer } from 'expo-glass-effect';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -131,7 +131,7 @@ export default function GlassViewScreen() {
           values={['10', '20', '40', '80']}
           selectedIndex={[10, 20, 40, 80].indexOf(spacing)}
           onChange={(event) => {
-            setSpacing(parseInt(event.nativeEvent.value));
+            setSpacing(parseInt(event.nativeEvent.value, 10));
           }}
         />
       </View>
