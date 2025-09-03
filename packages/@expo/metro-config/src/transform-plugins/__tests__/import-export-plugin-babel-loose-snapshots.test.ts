@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
 
-import { importExportPlugin } from '../import-export-plugin';
+import { importExportPlugin } from '../importExportStatic';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
 
 const opts = {

@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
 
-import { importExportPlugin } from '../import-export-plugin';
+import { importExportLiveBindingsPlugin } from '../importExportLiveBindings';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
 
 const opts = {
@@ -641,7 +641,7 @@ const cases = [
 ];
 
 const getExpected = (code: string) =>
-  generate(transformToAst([importExportPlugin], code, { ...opts, liveBindings: true })).code;
+  generate(transformToAst([importExportLiveBindingsPlugin], code, { ...opts, liveBindings: true })).code;
 
 it.each(cases)('%s', (_name, code) => {
   expect(getExpected(code)).toMatchSnapshot();
