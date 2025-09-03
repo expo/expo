@@ -147,20 +147,20 @@ it(`can create a micro Metro graph fixture`, async () => {
                       5,
                       14,
                       3,
-                      15,
-                      "_foo",
+                      16,
+                      "foo",
                     ],
                     [
                       5,
                       18,
                       3,
-                      15,
+                      19,
                     ],
                     [
                       5,
                       19,
                       3,
-                      15,
+                      19,
                       "foo",
                     ],
                     [
@@ -209,8 +209,13 @@ it(`can create a micro Metro graph fixture`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
+      Object.defineProperty(exports, "foo", {
+        enumerable: true,
+        get: function () {
+          return foo;
+        }
+      });
       const foo = 'foo';
-      exports.foo = foo;
     });",
                   "expoDomComponentReference": undefined,
                   "functionMap": {
@@ -220,86 +225,156 @@ it(`can create a micro Metro graph fixture`, async () => {
                     ],
                   },
                   "hasCjsExports": false,
-                  "lineCount": 9,
+                  "lineCount": 14,
                   "map": [
                     [
                       7,
                       2,
                       2,
-                      11,
+                      4,
+                      "Object",
                     ],
                     [
                       7,
+                      8,
+                      2,
+                      4,
+                    ],
+                    [
+                      7,
+                      9,
+                      2,
+                      4,
+                      "defineProperty",
+                    ],
+                    [
+                      7,
+                      23,
+                      2,
+                      4,
+                    ],
+                    [
+                      7,
+                      24,
+                      2,
+                      4,
+                      "exports",
+                    ],
+                    [
+                      7,
+                      31,
+                      2,
+                      4,
+                    ],
+                    [
+                      8,
+                      4,
+                      2,
+                      4,
+                      "enumerable",
+                    ],
+                    [
+                      8,
+                      14,
+                      2,
+                      4,
+                    ],
+                    [
+                      9,
+                      4,
+                      2,
+                      4,
+                      "get",
+                    ],
+                    [
+                      9,
+                      7,
+                      2,
+                      4,
+                    ],
+                    [
+                      9,
+                      18,
+                      2,
+                      4,
+                      "get",
+                    ],
+                    [
+                      9,
+                      19,
+                      2,
+                      4,
+                    ],
+                    [
+                      10,
+                      6,
+                      2,
+                      4,
+                    ],
+                    [
+                      10,
+                      13,
+                      2,
+                      4,
+                      "foo",
+                    ],
+                    [
+                      10,
+                      16,
+                      2,
+                      4,
+                    ],
+                    [
+                      11,
+                      4,
+                      2,
+                      4,
+                    ],
+                    [
+                      12,
+                      2,
+                      2,
+                      4,
+                    ],
+                    [
+                      13,
+                      2,
+                      2,
+                      11,
+                    ],
+                    [
+                      13,
                       8,
                       2,
                       17,
                       "foo",
                     ],
                     [
-                      7,
+                      13,
                       11,
                       2,
                       20,
                     ],
                     [
-                      7,
+                      13,
                       14,
                       2,
                       23,
                     ],
                     [
-                      7,
+                      13,
                       19,
                       2,
                       28,
                     ],
                     [
-                      8,
-                      2,
-                      2,
-                      4,
-                      "exports",
-                    ],
-                    [
-                      8,
-                      9,
-                      2,
-                      4,
-                    ],
-                    [
-                      8,
-                      10,
-                      2,
-                      4,
-                      "foo",
-                    ],
-                    [
-                      8,
-                      13,
-                      2,
-                      4,
-                    ],
-                    [
-                      8,
-                      16,
-                      2,
-                      4,
-                      "foo",
-                    ],
-                    [
-                      8,
-                      19,
-                      2,
-                      4,
-                    ],
-                    [
-                      9,
+                      14,
                       0,
                       2,
                       29,
                     ],
                     [
-                      9,
+                      14,
                       3,
                     ],
                   ],

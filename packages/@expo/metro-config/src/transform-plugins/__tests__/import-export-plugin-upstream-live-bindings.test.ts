@@ -7,7 +7,7 @@
  */
 // Copy of the upstream test to ensure compatible behavior.
 
-import { importExportPlugin } from '../index';
+import { importExportLiveBindingsPlugin as importExportPlugin } from '../index';
 import { compare } from './__mocks__/test-helpers-upstream';
 import { showTransformedDeps } from './utils';
 
@@ -23,14 +23,36 @@ it('correctly transforms and extracts "import" statements', () => {
     import {x} from 'baz';
     import {y as z} from 'qux';
     import 'side-effect';
+
+    v; w; x; z;
   `;
 
   const expected = `
-    var v = _$$_IMPORT_DEFAULT('foo');
-    var w = _$$_IMPORT_ALL('bar');
-    var x = require('baz').x;
-    var z = require('qux').y;
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
+    function _interopNamespace(e) {
+      if (e && e.__esModule) return e;
+      var n = {};
+      if (e) Object.keys(e).forEach(function (k) {
+        n[k] = e[k];
+      });
+      n.default = e;
+      return n;
+    }
+    var _foo = require('foo');
+    var v = _interopDefault(_foo);
+    var _bar = require('bar');
+    var w = _interopNamespace(_bar);
+    var _baz = require('baz');
+    var _qux = require('qux');
     require('side-effect');
+    v.default;
+    w;
+    _baz.x;
+    _qux.y;
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -58,20 +80,41 @@ it('correctly transforms complex patterns', () => {
     import {g, h} from 'third';
     import 'fourth-with-side-effect';
     import {i} from 'fifth';
+
+    a; b; c; e; f; g; h; i;
   `;
 
   const expected = `
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
+    function _interopNamespace(e) {
+      if (e && e.__esModule) return e;
+      var n = {};
+      if (e) Object.keys(e).forEach(function (k) {
+        n[k] = e[k];
+      });
+      n.default = e;
+      return n;
+    }
     require('first-with-side-effect');
-    var b = _$$_IMPORT_ALL('second');
-    var a = _$$_IMPORT_DEFAULT('second');
-    var _third = require('third'),
-        e = _third.d,
-        f = _third.f,
-        g = _third.g,
-        h = _third.h;
-    var c = _$$_IMPORT_DEFAULT('third');
+    var _second = require('second');
+    var a = _interopDefault(_second);
+    var b = _interopNamespace(_second);
+    var _third = require('third');
+    var c = _interopDefault(_third);
     require('fourth-with-side-effect');
-    var i = require('fifth').i;
+    var _fifth = require('fifth');
+    a.default;
+    b;
+    c.default;
+    _third.d;
+    _third.f;
+    _third.g;
+    _third.h;
+    _fifth.i;
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -102,8 +145,8 @@ it('hoists declarations to the top', () => {
   `;
 
   const expected = `
-    var foo = require('bar').foo;
-    foo();
+    var _bar = require('bar');
+    _bar.foo();
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -122,9 +165,19 @@ it('exports members of another module directly from an import (as named)', () =>
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-
-    var _default = _$$_IMPORT_DEFAULT('bar');
-    exports.foo = _default;
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return _bar2.default;
+      }
+    });
+    var _bar = require('bar');
+    var _bar2 = _interopDefault(_bar);
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -143,11 +196,19 @@ it('exports members of another module directly from an import (as default)', () 
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-
-    var _foo = require('bar').foo;
-    var _baz = require('bar').baz;
-    exports.default = _foo;
-    exports.baz = _baz;
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function () {
+        return _bar.foo;
+      }
+    });
+    Object.defineProperty(exports, "baz", {
+      enumerable: true,
+      get: function () {
+        return _bar.baz;
+      }
+    });
+    var _bar = require('bar');
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -161,54 +222,6 @@ it('exports members of another module directly from an import (as default)', () 
   `);
 });
 
-it('exports named members', () => {
-  const code = `
-    export const foo = 'bar';
-  `;
-
-  const expected = `
-    Object.defineProperty(exports, '__esModule', {value: true});
-    const foo = 'bar';
-    exports.foo = foo;
-  `;
-
-  compare([importExportPlugin], code, expected, opts);
-});
-
-it('renames existing `exports` declarations in module scope', () => {
-  const code = `
-    const exports = 'foo';
-    export const bar = 'bar';
-    console.log(exports, bar);
-  `;
-
-  const expected = `
-    Object.defineProperty(exports, '__esModule', {value: true});
-    const _exports = 'foo';
-    const bar = 'bar';
-    console.log(_exports, bar);
-    exports.bar = bar;
-  `;
-
-  compare([importExportPlugin], code, expected, opts);
-});
-
-it('handles an export named "exports"', () => {
-  const code = `
-    export const exports = {a: 'foo'};
-  `;
-
-  const expected = `
-    Object.defineProperty(exports, '__esModule', {value: true});
-    const _exports = {
-      a: 'foo',
-    };
-    exports.exports = _exports;
-  `;
-
-  compare([importExportPlugin], code, expected, opts);
-});
-
 it('allows mixed esm and cjs exports', () => {
   const code = `
     export const foo = 'foo';
@@ -219,12 +232,22 @@ it('allows mixed esm and cjs exports', () => {
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function () {
+        return _ref;
+      }
+    });
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return foo;
+      }
+    });
     const foo = 'foo';
     exports.bar = 'bar';
     module.exports.baz = 'baz';
-    class _default {}
-    exports.foo = foo;
-    exports.default = _default;
+    class _ref {}
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -237,9 +260,19 @@ it('exports destructured named object members', () => {
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return foo;
+      }
+    });
+    Object.defineProperty(exports, "bar", {
+      enumerable: true,
+      get: function () {
+        return bar;
+      }
+    });
     const {foo,bar} = {foo: 'bar',bar: 'baz'};
-    exports.foo = foo;
-    exports.bar = bar;
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -252,9 +285,19 @@ it('exports destructured named array members', () => {
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
-    const [foo,bar] = ['bar','baz'];
-    exports.foo = foo;
-    exports.bar = bar;
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return foo;
+      }
+    });
+    Object.defineProperty(exports, "bar", {
+      enumerable: true,
+      get: function () {
+        return bar;
+      }
+    });
+    const [foo, bar] = ['bar', 'baz'];
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -270,9 +313,16 @@ it('exports members of another module directly from an import (as all)', () => {
 
     var _bar = require('bar');
 
-    for (var _key in _bar) {
-      exports[_key] = _bar[_key];
-    }
+    Object.keys(_bar).forEach(function (k) {
+      if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+        Object.defineProperty(exports, k, {
+          enumerable: true,
+          get: function () {
+            return _bar[k];
+          }
+        });
+      }
+    });
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -294,11 +344,16 @@ it('enables module exporting when something is exported', () => {
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
 
-    var foo = require('bar').foo;
-    foo();
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function () {
+        return _default;
+      }
+    });
 
-    var _default = foo;
-    exports.default = _default;
+    var _bar = require('bar');
+    _bar.foo();
+    var _default = _bar.foo;
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -310,35 +365,26 @@ it('enables module exporting when something is exported', () => {
   `);
 });
 
-it('renames bindings', () => {
-  const code = `
-    const module = 'foo';
-    let exports = 'bar';
-    var global = 'baz';
-    const require = {};
-  `;
-
-  const expected = `
-    const _module = 'foo';
-    let _exports = 'bar';
-    var _global = 'baz';
-    const _require = {};
-  `;
-
-  compare([importExportPlugin], code, expected, opts);
-});
-
 it('supports `import {default as LocalName}`', () => {
   const code = `
     import {
       Platform,
       default as ReactNative,
     } from 'react-native';
+    Platform;
+    ReactNative;
   `;
 
   const expected = `
-    var Platform = require('react-native').Platform;
-    var ReactNative = _$$_IMPORT_DEFAULT('react-native');
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
+    var _reactNative = require('react-native');
+    var ReactNative = _interopDefault(_reactNative);
+    _reactNative.Platform;
+    ReactNative.default;
   `;
 
   compare([importExportPlugin], code, expected, opts);
