@@ -73,6 +73,7 @@ useExpoModules([
         'expo-blob',
         '@expo/ui',
         'expo-mesh-gradient',
-        '@expo/app-integrity'
+        '@expo/app-integrity',
+        'expo-glass-effect'
     ]
 ])

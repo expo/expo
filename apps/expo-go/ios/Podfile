@@ -54,7 +54,8 @@ target 'Expo Go' do
       'expo-splash-screen',
       'expo-blob',
       '@expo/ui',
-      '@expo/app-integrity'
+      '@expo/app-integrity',
+      'expo-glass-effect'
     ],
     includeTests: true,
     flags: {
