@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Parse and print code frames above import stack for native bundling errors
+
 ### 💡 Others
 
 ## 0.26.7 — 2025-09-02
