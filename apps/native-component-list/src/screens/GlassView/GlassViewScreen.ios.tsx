@@ -9,9 +9,9 @@ import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanima
 // Static color options for tinting
 const colorOptions = [
   { name: 'None', value: undefined },
-  { name: 'Red', value: '#FF3B30' },
-  { name: 'Blue', value: '#007AFF' },
-  { name: 'Green', value: '#34C759' },
+  { name: 'Red', value: 'rgba(255, 59, 48, 0.7)' },
+  { name: 'Blue', value: 'rgba(0, 122, 255, 0.7)' },
+  { name: 'Green', value: 'rgba(52, 199, 89, 0.7)' },
 ];
 
 const glassStyles: GlassStyle[] = ['clear', 'regular'];

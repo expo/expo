@@ -4,30 +4,34 @@ description: React components that render a glass effect using iOS's native UIVi
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-glass-effect'
 packageName: 'expo-glass-effect'
 platforms: ['ios']
+isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-React components that render native iOS liquid glass effect using [UIVisualEffectView](https://developer.apple.com/documentation/uikit/uivisualeffectview). Supports customizable glass styles and tint color.
+> **important** `GlassView` is only available on iOS 26 and above. It will fallback to regular `View` on unsupported platforms.
 
-> **info** `GlassView` is only available on iOS 26+. It will fallback to regular View on unsupported platforms.
+React components that render native iOS liquid glass effect using [`UIVisualEffectView`](https://developer.apple.com/documentation/uikit/uivisualeffectview). Supports customizable glass styles and tint color.
 
 ## Installation
 
 <APIInstallSection />
 
+### Known issues
+
+The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
+
 ## Usage
 
-### Glass view
+### `GlassView`
 
 The `GlassView` component renders the native iOS glass effect. It supports different glass effect styles and can be customized with tint colors for various aesthetic needs.
 
 <SnackInline label='Basic GlassView usage' dependencies={['expo-glass-effect']} platforms={['ios']}>
 
 ```jsx
-import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { GlassView } from 'expo-glass-effect';
 
@@ -92,14 +96,13 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-### Glass container
+### `GlassContainer`
 
-The `GlassContainer` component allows you to combine multiple glass views into a combined effect:
+The `GlassContainer` component allows you to combine multiple glass views into a combined effect.
 
 <SnackInline label='GlassContainer example' dependencies={['expo-glass-effect']} platforms={['ios']}>
 
 ```jsx
-import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { GlassView, GlassContainer } from 'expo-glass-effect';
 
@@ -167,7 +170,3 @@ import { GlassView, GlassContainer } from 'expo-glass-effect';
 ```
 
 <APISection packageName="expo-glass-effect" />
-
-### Known issues
-
-The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
