@@ -733,7 +733,9 @@ export async function treeShakeSerializer(
                 dirtyImports.push(removeRequest.path);
               }
               // TODO: Update source maps
-              markUnused(path); // TODO: Check if nothing breaks by removing only the AST node.
+              // We still want to remove the empty `export {} from 'a'` declaration even if the graph node was kept
+              // due to the duplicate default export
+              markUnused(path);
             }
           }
         },
@@ -831,9 +833,8 @@ export async function treeShakeSerializer(
       const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
 
       const isUsed = (
-        specifier:
-          // import { imported as local } from './foo'
-          | types.ImportSpecifier
+        specifier: // import { imported as local } from './foo'
+        | types.ImportSpecifier
           // import local from './foo'
           | types.ImportDefaultSpecifier
           // import * as local from './foo'
