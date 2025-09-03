@@ -334,13 +334,12 @@ const cases = [
 
     export { Foo, baz };
   `,
-  // NOTE(krystofwoldrich): Causes duplicate Identifier node in the output error
-  // test('misc export-expr-with-same-name')`
-  //   import someFunction from './b';
+  test('misc export-expr-with-same-name')`
+    import someFunction from './b';
 
-  //   export default (function someFunction () {
-  //   });
-  // `,
+    export default (function someFunction () {
+    });
+  `,
   test('misc export-let-function-name-with-fn-name-transform')`
     export let a = function () {};
     export let b = function X() {};
@@ -596,8 +595,6 @@ const cases = [
       };
     };
   `,
-  // TODO(krystofwoldrich): updates to foo, bar and baz are technically done before the export,
-  // but Babel and Rollup do the updates directly on exports
   test('update-expression bigint')`
     export let foo = 1n;
 
@@ -616,7 +613,6 @@ const cases = [
     bar--;
     baz--;
   `,
-  // TODO(krystofwoldrich): --diffLevel should update the exported value
   test('update-expression negative-suffix')`
     export let diffLevel = 0;
 
@@ -626,7 +622,6 @@ const cases = [
       }
     }
   `,
-  // TODO(krystofwoldrich): ++diffLevel should update the exported value
   test('update-expression positive-suffix')`
     export let diffLevel = 0;
 

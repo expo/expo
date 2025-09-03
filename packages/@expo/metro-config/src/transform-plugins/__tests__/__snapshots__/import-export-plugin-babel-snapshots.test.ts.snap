@@ -1506,6 +1506,20 @@ var _moduleWithGetter = require("./moduleWithGetter");
 var foo = _interopNamespace(_moduleWithGetter);"
 `;
 
+exports[`misc export-expr-with-same-name 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+Object.defineProperty(exports, "default", {
+  enumerable: true,
+  get: function () {
+    return _default;
+  }
+});
+require('./b');
+var _default = function someFunction() {};"
+`;
+
 exports[`misc export-let-function-name 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
