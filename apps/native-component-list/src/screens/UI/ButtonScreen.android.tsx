@@ -35,20 +35,24 @@ export default function UIScreen() {
           <Button style={styles.button}>Enabled</Button>
         </Section>
         <Section title="Button Images">
-          <Button variant="bordered" style={styles.button} systemImage="filled.AccountBox">
+          <Button variant="bordered" style={styles.button} leadingIcon="filled.AccountBox">
             Folder
           </Button>
-          <Button variant="elevated" style={styles.button} systemImage="filled.Warning">
+          <Button variant="elevated" style={styles.button} leadingIcon="filled.Warning">
             Tortoise
           </Button>
           <Button
             variant="borderless"
             style={styles.button}
-            systemImage="outlined.Delete"
+            leadingIcon="outlined.Delete"
             elementColors={{ contentColor: '#FF6347' }}>
             Trash
           </Button>
-          <Button variant="outlined" style={styles.button} systemImage="outlined.Favorite">
+          <Button
+            variant="outlined"
+            style={styles.button}
+            leadingIcon="outlined.Favorite"
+            trailingIcon="filled.Favorite">
             Heart
           </Button>
         </Section>

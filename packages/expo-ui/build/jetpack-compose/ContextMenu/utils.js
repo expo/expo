@@ -1,5 +1,5 @@
 import { Children, isValidElement } from 'react';
-import { Submenu } from './index';
+import { Submenu } from './Submenu';
 import { Button, transformButtonProps } from '../Button';
 import { Picker } from '../Picker';
 import { Switch } from '../Switch';
@@ -74,6 +74,6 @@ function createSubmenuElement(uuid, props, handlers) {
     };
 }
 function isSubmenuComponent(child) {
-    return child.type.toString() === Submenu.toString();
+    return child.type === Submenu;
 }
 //# sourceMappingURL=utils.js.map

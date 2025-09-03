@@ -608,10 +608,20 @@ Expo UI is still in active development. We continue to add more functionality an
     <Button
       style={{ flex: 1 }}
       variant="default"
+      leadingIcon="filled.Edit"
       onPress={() => {
         setEditingProfile(true);
       }}>
       Edit profile
+    </Button>
+
+    {/* Button with both leading and trailing icons */}
+    <Button
+      variant="bordered"
+      leadingIcon="filled.Add"
+      trailingIcon="filled.ArrowForward"
+      onPress={() => console.log('Action')}>
+      Add Item
     </Button>
     ```
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/button)*
@@ -660,12 +670,15 @@ Expo UI is still in active development. We continue to add more functionality an
       <ContextMenu.Items>
         <Button
           elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
+          leadingIcon="filled.Person"
           onPress={() => console.log('Pressed1')}>
           Hello
         </Button>
         <Button
           variant="bordered"
           color="#ff0000"
+          leadingIcon="filled.Favorite"
+          trailingIcon="filled.Star"
           onPress={() => console.log('Pressed2')}>
           Love it
         </Button>
