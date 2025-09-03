@@ -1,6 +1,6 @@
 {
   "name": "expo-glass-effect",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A component that renders a native glass effect view on iOS.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

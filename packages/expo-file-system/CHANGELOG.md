@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 19.0.9 — 2025-09-03
+
+### 🎉 New features
+
 - Add stubs for legacy methods imported from "expo-file-system". ([#39244](https://github.com/expo/expo/pull/39244) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix tvOS compile error. ([#39345](https://github.com/expo/expo/pull/39345) by [@douglowder](https://github.com/douglowder))
-
-### 💡 Others
 
 ## 19.0.8 — 2025-09-02
 

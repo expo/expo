@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.26.8 — 2025-09-03
+
+### 🎉 New features
+
 - [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 - Parse and print code frames above import stack for native bundling errors ([#39150](https://github.com/expo/expo/pull/39150) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
-### 💡 Others
 
 ## 0.26.7 — 2025-09-02
 

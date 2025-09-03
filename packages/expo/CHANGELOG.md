@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.0-preview.14 — 2025-09-03
+
+### 💡 Others
+
 - load isLiquidGlassAvailable lazily ([#39361](https://github.com/expo/expo/pull/39361) by [@Ubax](https://github.com/Ubax))
 
 ## 54.0.0-preview.13 — 2025-09-02
