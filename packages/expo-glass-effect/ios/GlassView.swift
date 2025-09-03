@@ -58,6 +58,7 @@ public final class GlassView: ExpoView {
 
   private func updateEffect() {
     if #available(iOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
       if let effect = glassEffect as? UIGlassEffect {
         effect.tintColor = glassTintColor
         effect.isInteractive = glassIsInteractive ?? false
@@ -66,6 +67,7 @@ public final class GlassView: ExpoView {
         setBorderRadius(nil)
         setBorderCurve(nil)
       }
+      #endif
     }
   }
 }
