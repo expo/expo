@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] allow sending a POST, PATCH or PUT request without a body ([#39363](https://github.com/expo/expo/pull/39363))
+
 ### 💡 Others
 
 - load isLiquidGlassAvailable lazily ([#39361](https://github.com/expo/expo/pull/39361) by [@Ubax](https://github.com/Ubax))
