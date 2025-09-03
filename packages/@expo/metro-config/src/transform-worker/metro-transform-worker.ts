@@ -241,12 +241,10 @@ export function applyImportSupport<TFile extends t.File>(
   // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
   if (options.experimentalImportSupport === true) {
     const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
-    plugins.push(
-      // Ensure the iife "globals" don't have conflicting variables in the module.
-      renameTopLevelModuleVariables,
-      //
-      [liveBindings ? importExportLiveBindingsPlugin : importExportPlugin, { ...babelPluginOpts }]
-    );
+    plugins.push([
+      liveBindings ? importExportLiveBindingsPlugin : importExportPlugin,
+      { ...babelPluginOpts },
+    ]);
   }
 
   // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and

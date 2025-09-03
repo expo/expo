@@ -168,11 +168,10 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
         const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
-        plugins.push(
-        // Ensure the iife "globals" don't have conflicting variables in the module.
-        renameTopLevelModuleVariables, 
-        //
-        [liveBindings ? transform_plugins_1.importExportLiveBindingsPlugin : transform_plugins_1.importExportPlugin, { ...babelPluginOpts }]);
+        plugins.push([
+            liveBindings ? transform_plugins_1.importExportLiveBindingsPlugin : transform_plugins_1.importExportPlugin,
+            { ...babelPluginOpts },
+        ]);
     }
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
     // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.
