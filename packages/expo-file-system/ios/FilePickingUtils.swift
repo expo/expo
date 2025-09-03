@@ -1,4 +1,5 @@
-#if os(iOS) || os(tvOS)
+// UIDocumentPickerViewController is unavailable on tvOS
+#if os(iOS)
 import ExpoModulesCore
 import MobileCoreServices
 import UIKit

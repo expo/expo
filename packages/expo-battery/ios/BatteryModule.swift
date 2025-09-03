@@ -8,9 +8,13 @@ public class BatteryModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoBattery")
 
-    Constants([
-      "isSupported": isSupported()
-    ])
+    Constant("isSupported") {
+      #if targetEnvironment(simulator)
+      return false
+      #else
+      return true
+      #endif
+    }
 
     Events(batteryLevelDidChange, batteryStateDidChange, powerModeDidChange)
 
@@ -87,12 +91,4 @@ public class BatteryModule: Module {
       "lowPowerMode": ProcessInfo.processInfo.isLowPowerModeEnabled
     ])
   }
-}
-
-func isSupported() -> Bool {
-  #if targetEnvironment(simulator)
-    return false
-  #else
-    return true
-  #endif
 }

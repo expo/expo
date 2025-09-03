@@ -17,6 +17,15 @@ public final class AppContext: NSObject {
    */
   public let config: AppContextConfig
 
+  public lazy var jsLogger: Logger = {
+    let loggerModule = self.moduleRegistry.get(moduleWithName: JSLoggerModule.name) as? JSLoggerModule
+    guard let logger = loggerModule?.logger else {
+      log.error("Failed to get the JSLoggerModule logger. Falling back to OS logger.")
+      return log
+    }
+    return logger
+  }()
+
   /**
    The module registry for the app context.
    */
@@ -126,6 +135,8 @@ public final class AppContext: NSObject {
     self.config = config ?? AppContextConfig(documentDirectory: nil, cacheDirectory: nil, appGroups: appCodeSignEntitlements.appGroups)
 
     super.init()
+
+    self.moduleRegistry.register(module: JSLoggerModule(appContext: self))
     listenToClientAppNotifications()
   }
 

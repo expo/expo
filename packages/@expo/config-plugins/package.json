@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "11.0.6",
+  "version": "11.0.7",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -55,9 +55,9 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "^54.0.6",
-    "@expo/json-file": "~10.0.5",
-    "@expo/plist": "^0.4.5",
+    "@expo/config-types": "^54.0.7",
+    "@expo/json-file": "~10.0.6",
+    "@expo/plist": "^0.4.6",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",

@@ -295,6 +295,7 @@ module.exports = {
           { name: 'isActivated', argumentsCount: 0, key: 'isActivated' },
         ],
         ExpoLinearGradient: [],
+        ExpoLiquidGlassConstants: [],
         ExpoLivePhoto: [],
         ExpoLocalAuthentication: [
           { name: 'authenticateAsync', argumentsCount: 1, key: 'authenticateAsync' },
@@ -981,6 +982,9 @@ module.exports = {
         ExpoLinearGradient: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
+        },
+        ExpoLiquidGlassConstants: {
+          isLiquidGlassAvailable: { type: 'string' },
         },
         ExpoLivePhoto: { addListener: { type: 'function' }, removeListeners: { type: 'function' } },
         ExpoLocalAuthentication: {
