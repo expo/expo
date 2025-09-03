@@ -12,7 +12,6 @@ public final class GlassContainer: ExpoView {
     super.init(appContext: appContext)
 
     containerEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    clipsToBounds = true
 
     addSubview(containerEffectView)
   }
