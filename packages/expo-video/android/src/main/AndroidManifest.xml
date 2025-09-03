@@ -8,13 +8,5 @@
       android:supportsPictureInPicture="true"
       android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|navigation"
       android:theme="@style/Fullscreen" />
-    <service
-      android:name=".playbackService.ExpoVideoPlaybackService"
-      android:exported="false"
-      android:foregroundServiceType="mediaPlayback">
-      <intent-filter>
-        <action android:name="androidx.media3.session.MediaSessionService" />
-      </intent-filter>
-    </service>
   </application>
 </manifest>

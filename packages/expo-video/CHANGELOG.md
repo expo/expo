@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- [Android] In order to show the now playing notification, the `supportsBackgroundPlayground` property of the config plugin has to be `true`. ([#38980](https://github.com/expo/expo/pull/38980) by [@kerwanp](https://github.com/kerwanp))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- [Android] Fix video player stopping playback a few minutes after locking the device. ([#38980](https://github.com/expo/expo/pull/38980) by [@kerwanp](https://github.com/kerwanp))
 
 ### 💡 Others
 
