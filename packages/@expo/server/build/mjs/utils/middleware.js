@@ -1,3 +1,4 @@
+import { matchDynamicName, matchDeepDynamicRouteName } from '../utils';
 /**
  * Determines whether middleware should run for a given request based on matcher configuration.
  */
@@ -48,28 +49,13 @@ function matchesPattern(pathname, pattern) {
     }
     return false;
 }
-// NOTE(@hassankhan): Duplicated from expo-router to avoid declaring a dependency
-/** Match `[page]` -> `page` or `[...group]` -> `...group` */
-const dynamicNameRe = /^\[([^[\]]+?)\]$/;
-// NOTE(@hassankhan): Duplicated from expo-router to avoid declaring a dependency
-/** Match `[page]` -> `page` */
-function matchDynamicName(name) {
-    const paramName = name.match(dynamicNameRe)?.[1];
-    if (paramName == null) {
-        return undefined;
-    }
-    else if (paramName.startsWith('...')) {
-        return { name: paramName.slice(3), deep: true };
-    }
-    else {
-        return { name: paramName, deep: false };
-    }
-}
 /**
- * Check if a pattern contains named parameters (e.g., [postId], [...slug])
+ * Check if a pattern contains named parameters like `[postId]` or `[...slug]`
  */
 function hasNamedParameters(pattern) {
-    return pattern.split('/').some((segment) => dynamicNameRe.test(segment));
+    return pattern.split('/').some((segment) => {
+        return matchDynamicName(segment) || matchDeepDynamicRouteName(segment);
+    });
 }
 /**
  * Convert a pattern with named parameters to regex
@@ -80,9 +66,11 @@ function namedParamToRegex(pattern) {
     const regexSegments = segments.map((segment) => {
         if (!segment)
             return '';
-        const dynamicMatch = matchDynamicName(segment);
-        if (dynamicMatch) {
-            return dynamicMatch.deep ? '.+' : '[^/]+';
+        if (matchDeepDynamicRouteName(segment)) {
+            return '.+';
+        }
+        if (matchDynamicName(segment)) {
+            return '[^/]+';
         }
         return segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     });
