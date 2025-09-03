@@ -25,8 +25,8 @@ On Android, the system delivers shared data to an `Activity`. An `Activity` is a
 On iOS, receiving shared data is handled by a Share Extension that runs separately from your main app.
 
 - A Share Extension lets users send content into your app.
-- The system launches your extension with an NSExtensionContext containing NSExtensionItem attachments.
-- The extension processes those items (e.g., reads text/URLs/files). To make them available to the main app, a common approach is to write data to a shared App Group container and then open the app (via a custom URL or universal link).
+- The system launches your extension with an `NSExtensionContext` containing `NSExtensionItem` attachments.
+- The extension processes those items (for example, reads text/URLs/files). To make them available to the main app, a common approach is to write data to a shared App Group container and then open the app (via a custom URL or universal link).
 - A Share Extension is implemented as its own target. It runs as a separate process from your main app and is written in Swift or Objective-C, since it needs to use iOS system APIs to receive shared content.
 
 For more in-depth details, see the official platform documentation:
