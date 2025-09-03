@@ -1,45 +1,640 @@
----
-title: Next steps
-description: A list of useful resources to learn more about development builds and EAS Build.
-hideTOC: true
----
+// main.dart
+import 'dart:async';
+import 'package:flutter/material.dart';
 
-import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+void main() => runApp(IITJeeMockTestApp());
 
-import { BoxLink } from '~/ui/components/BoxLink';
+class IITJeeMockTestApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'IIT JEE Mock Test',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
 
-<BoxLink
-  title="Configuring EAS Build with eas.json"
-  description="Learn how a project using EAS services is configured with eas.json."
-  href="/build/eas-json/"
-  Icon={BuildIcon}
-/>
+enum QStatus { unanswered, attempted, marked, skipped }
 
-<BoxLink
-  title="Environment variables"
-  description="Learn about different ways to use environment variables in an Expo project."
-  href="/guides/environment-variables/"
-  Icon={BookOpen02Icon}
-/>
+class Question {
+  final String id;
+  final String subject;
+  final String text;
+  final List<String> options;
+  final int correctIndex;
+  final String explanation;
+  QStatus status;
+  int? selected;
 
-<BoxLink
-  title="Android build process"
-  description="Learn how an Android project is built on EAS Build."
-  href="/build-reference/android-builds/"
-  Icon={BuildIcon}
-/>
+  Question({
+    required this.id,
+    required this.subject,
+    required this.text,
+    required this.options,
+    required this.correctIndex,
+    required this.explanation,
+    this.status = QStatus.unanswered,
+    this.selected,
+  });
+}
 
-<BoxLink
-  title="iOS build process"
-  description="Learn how an iOS project is built on EAS Build."
-  href="/build-reference/ios-builds/"
-  Icon={BuildIcon}
-/>
+class TestPaper {
+  final String id;
+  final String title;
+  final List<Question> questions;
+  final int durationSeconds;
+  TestPaper({required this.id, required this.title, required this.questions, required this.durationSeconds});
+}
 
-<BoxLink
-  title="Set up EAS Build with a monorepo "
-  description="Learn how to set up EAS Build with a monorepo."
-  href="/build-reference/build-with-monorepos/"
-  Icon={BuildIcon}
-/>
+// Sample question pool (small; extendable)
+List<Question> samplePhysics = [
+  Question(
+    id: 'p1',
+    subject: 'Physics',
+    text: 'A block slides down a frictionless incline of angle 30°. What is the acceleration of the block?',
+    options: ['g', 'g/2', 'g/4', 'g/√3'],
+    correctIndex: 1,
+    explanation: 'a = g sin30° = g/2',
+  ),
+  Question(
+    id: 'p2',
+    subject: 'Physics',
+    text: 'Electron has charge magnitude of?',
+    options: ['1.6e-19 C', '9.1e-31 C', '1.6e-20 C', '9.1e-28 C'],
+    correctIndex: 0,
+    explanation: 'Elementary charge is 1.602×10^-19 C.',
+  ),
+];
+
+List<Question> sampleChemistry = [
+  Question(
+    id: 'c1',
+    subject: 'Chemistry',
+    text: 'Which is most electronegative among F, O, N, C?',
+    options: ['Oxygen', 'Nitrogen', 'Carbon', 'Fluorine'],
+    correctIndex: 3,
+    explanation: 'Fluorine is the most electronegative element.',
+  ),
+  Question(
+    id: 'c2',
+    subject: 'Chemistry',
+    text: 'pH of neutral water at 25°C is?',
+    options: ['7', '0', '14', '1'],
+    correctIndex: 0,
+    explanation: 'At 25°C, neutral pH = 7.',
+  ),
+];
+
+List<Question> sampleMath = [
+  Question(
+    id: 'm1',
+    subject: 'Mathematics',
+    text: 'Determinant of [[1,2],[3,4]] is?',
+    options: ['-2', '2', '10', '-10'],
+    correctIndex: 0,
+    explanation: '1*4 - 2*3 = 4 - 6 = -2',
+  ),
+  Question(
+    id: 'm2',
+    subject: 'Mathematics',
+    text: 'If f(x)=x^2, f\'(x)=?',
+    options: ['2x', 'x', 'x^2', '2'],
+    correctIndex: 0,
+    explanation: 'Derivative of x^2 is 2x.',
+  ),
+];
+
+// Build full papers by combining subjects
+TestPaper buildPaper(String id, String title, int durationSeconds, int perSubjectCount) {
+  List<Question> q = [];
+  // duplicate sample lists cyclically to reach counts
+  int i = 0;
+  List<List<Question>> pools = [samplePhysics, sampleChemistry, sampleMath];
+  List<String> subjects = ['Physics', 'Chemistry', 'Mathematics'];
+  for (int s = 0; s < 3; s++) {
+    for (int n = 0; n < perSubjectCount; n++) {
+      Question src = pools[s][n % pools[s].length];
+      q.add(Question(
+        id: '${id}_${subjects[s][0]}${n + 1}',
+        subject: subjects[s],
+        text: src.text,
+        options: List.from(src.options),
+        correctIndex: src.correctIndex,
+        explanation: src.explanation,
+      ));
+      i++;
+    }
+  }
+  return TestPaper(id: id, title: title, questions: q, durationSeconds: durationSeconds);
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  // Two Advanced papers, 3 hours each = 10800 seconds
+  late TestPaper paper1;
+  late TestPaper paper2;
+
+  // For creating custom tests
+  TestPaper? customPaper;
+
+  @override
+  void initState() {
+    super.initState();
+    paper1 = buildPaper('paper1', 'Paper 1 (Advanced)', 10800, 10); // per subject count=10 -> total 30 (example)
+    paper2 = buildPaper('paper2', 'Paper 2 (Advanced)', 10800, 10);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('IIT JEE Mock Test'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(12),
+        child: ListView(
+          children: [
+            Card(
+              child: ListTile(
+                title: Text('JEE Advanced - Paper 1'),
+                subtitle: Text('3 hours • Physics/Chemistry/Mathematics'),
+                trailing: ElevatedButton(
+                  child: Text('Start'),
+                  onPressed: () => _startTest(paper1),
+                ),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text('JEE Advanced - Paper 2'),
+                subtitle: Text('3 hours • Physics/Chemistry/Mathematics'),
+                trailing: ElevatedButton(
+                  child: Text('Start'),
+                  onPressed: () => _startTest(paper2),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Create Custom Test'),
+              subtitle: Text('Make your own topic test (Mains/Advanced patterns)'),
+              onTap: () => _openCreateCustomDialog(),
+              trailing: Icon(Icons.create),
+            ),
+            if (customPaper != null)
+              Card(
+                child: ListTile(
+                  title: Text('Custom Test: ${customPaper!.title}'),
+                  subtitle: Text('${customPaper!.questions.length} questions'),
+                  trailing: ElevatedButton(
+                    child: Text('Start'),
+                    onPressed: () => _startTest(customPaper!),
+                  ),
+                ),
+              ),
+            SizedBox(height: 20),
+            Text('Quick Actions', style: TextStyle(fontWeight: FontWeight.bold)),
+            Wrap(
+              spacing: 8,
+              children: [
+                ElevatedButton.icon(
+                  icon: Icon(Icons.info),
+                  label: Text('Sample Q Review'),
+                  onPressed: () => _openReviewAllQuestions(),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _startTest(TestPaper paper) async {
+    // clone questions to reset statuses & selections
+    List<Question> clone = paper.questions.map((q) {
+      return Question(
+        id: q.id,
+        subject: q.subject,
+        text: q.text,
+        options: List.from(q.options),
+        correctIndex: q.correctIndex,
+        explanation: q.explanation,
+      );
+    }).toList();
+
+    TestPaper sessionPaper = TestPaper(
+      id: paper.id,
+      title: paper.title,
+      questions: clone,
+      durationSeconds: paper.durationSeconds,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TestSessionScreen(paper: sessionPaper),
+      ),
+    );
+  }
+
+  void _openCreateCustomDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        int mainsCount = 75;
+        int advancedCount = 60;
+        String pattern = 'mains';
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Create Custom Test'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButton<String>(
+                  value: pattern,
+                  items: [
+                    DropdownMenuItem(child: Text('Mains pattern (75)'), value: 'mains'),
+                    DropdownMenuItem(child: Text('Advanced pattern (60)'), value: 'advanced'),
+                  ],
+                  onChanged: (v) {
+                    setState(() {
+                      pattern = v ?? 'mains';
+                    });
+                  },
+                ),
+                SizedBox(height: 8),
+                Text('Note: uses available question pool; extend pool for varied tests.'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () => Navigator.pop(context),
+              ),
+              ElevatedButton(
+                child: Text('Create'),
+                onPressed: () {
+                  int perSubject = pattern == 'mains' ? (75 / 3).round() : (60 / 3).round();
+                  TestPaper newPaper = buildPaper('custom_${pattern}', 'Custom ${pattern.toUpperCase()}', pattern == 'mains' ? 3 * 60 * 60 : 3 * 60 * 60, perSubject);
+                  setState(() {
+                    customPaper = newPaper;
+                  });
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  void _openReviewAllQuestions() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => QuestionBankScreen()));
+  }
+}
+
+class QuestionBankScreen extends StatelessWidget {
+  final List<Question> all = [...samplePhysics, ...sampleChemistry, ...sampleMath];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Question Bank'),
+      ),
+      body: ListView.builder(
+        itemCount: all.length,
+        itemBuilder: (context, i) {
+          var q = all[i];
+          return Card(
+            child: ListTile(
+              title: Text('[${q.subject}] ${q.text}'),
+              subtitle: Text('Options: ${q.options.join(', ')}\nAnswer: ${q.options[q.correctIndex]}'),
+              isThreeLine: true,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class TestSessionScreen extends StatefulWidget {
+  final TestPaper paper;
+  TestSessionScreen({required this.paper});
+  @override
+  _TestSessionScreenState createState() => _TestSessionScreenState();
+}
+
+class _TestSessionScreenState extends State<TestSessionScreen> {
+  late int remainingSeconds;
+  Timer? timer;
+  int currentIndex = 0;
+  bool showNavPanel = false;
+  bool showWarnings = true;
+
+  @override
+  void initState() {
+    super.initState();
+    remainingSeconds = widget.paper.durationSeconds;
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void startTimer() {
+    timer?.cancel();
+    timer = Timer.periodic(Duration(seconds: 1), (t) {
+      if (remainingSeconds <= 0) {
+        t.cancel();
+        _finishTest();
+      } else {
+        setState(() {
+          remainingSeconds--;
+        });
+      }
+    });
+  }
+
+  void _finishTest() {
+    timer?.cancel();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResultScreen(paper: widget.paper),
+      ),
+    );
+  }
+
+  String formatTime(int sec) {
+    int h = sec ~/ 3600;
+    int m = (sec % 3600) ~/ 60;
+    int s = sec % 60;
+    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+
+  void toggleMarkForReview() {
+    setState(() {
+      var q = widget.paper.questions[currentIndex];
+      q.status = q.status == QStatus.marked ? QStatus.unanswered : QStatus.marked;
+    });
+  }
+
+  void skipQuestion() {
+    setState(() {
+      var q = widget.paper.questions[currentIndex];
+      q.status = QStatus.skipped;
+      currentIndex = (currentIndex + 1) % widget.paper.questions.length;
+    });
+  }
+
+  void selectOption(int idx) {
+    setState(() {
+      var q = widget.paper.questions[currentIndex];
+      q.selected = idx;
+      q.status = QStatus.attempted;
+    });
+  }
+
+  Color statusColor(QStatus s) {
+    switch (s) {
+      case QStatus.attempted:
+        return Colors.green;
+      case QStatus.marked:
+        return Colors.orange;
+      case QStatus.skipped:
+        return Colors.grey;
+      default:
+        return Colors.red;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var q = widget.paper.questions[currentIndex];
+    int total = widget.paper.questions.length;
+    bool lowTime = remainingSeconds <= 600; // last 10 minutes warning
+    bool veryLow = remainingSeconds <= 60; // last minute
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.paper.title),
+        actions: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(formatTime(remainingSeconds), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.list),
+            onPressed: () => setState(() => showNavPanel = !showNavPanel),
+          ),
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () => _onSubmitPressed(),
+          ),
+        ],
+        backgroundColor: veryLow ? Colors.red : (lowTime ? Colors.orange : null),
+      ),
+      body: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Card(
+                  margin: EdgeInsets.all(8),
+                  child: ListTile(
+                    title: Text('[${q.subject}] Q${currentIndex + 1}: ${q.text}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 8),
+                        ...List.generate(q.options.length, (i) {
+                          bool selected = q.selected == i;
+                          return ListTile(
+                            title: Text(q.options[i]),
+                            leading: Radio<int>(
+                              value: i,
+                              groupValue: q.selected,
+                              onChanged: (v) => selectOption(i),
+                            ),
+                            tileColor: selected ? Colors.blue.withOpacity(0.1) : null,
+                          );
+                        }),
+                        Row(
+                          children: [
+                            ElevatedButton.icon(
+                                onPressed: toggleMarkForReview,
+                                icon: Icon(Icons.flag),
+                                label: Text(q.status == QStatus.marked ? 'Unmark' : 'Mark for review')),
+                            SizedBox(width: 8),
+                            ElevatedButton.icon(
+                                onPressed: skipQuestion, icon: Icon(Icons.skip_next), label: Text('Skip')),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    children: [
+                      ElevatedButton(
+                        child: Text('Prev'),
+                        onPressed: currentIndex > 0 ? () => setState(() => currentIndex--) : null,
+                      ),
+                      SizedBox(width: 8),
+                      ElevatedButton(
+                        child: Text('Next'),
+                        onPressed: currentIndex < total - 1 ? () => setState(() => currentIndex++) : null,
+                      ),
+                      Spacer(),
+                      ElevatedButton(
+                        child: Text('Submit Test'),
+                        onPressed: () => _onSubmitPressed(),
+                        style: ElevatedButton.styleFrom(primary: Colors.red),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          AnimatedContainer(
+            width: showNavPanel ? 260 : 0,
+            duration: Duration(milliseconds: 300),
+            child: showNavPanel
+                ? Container(
+                    color: Colors.grey[100],
+                    child: Column(
+                      children: [
+                        ListTile(title: Text('Navigation Panel')),
+                        Expanded(
+                          child: GridView.builder(
+                            padding: EdgeInsets.all(8),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5, childAspectRatio: 1),
+                            itemCount: widget.paper.questions.length,
+                            itemBuilder: (context, idx) {
+                              var qq = widget.paper.questions[idx];
+                              return GestureDetector(
+                                onTap: () => setState(() {
+                                  currentIndex = idx;
+                                }),
+                                child: Card(
+                                  color: qq.status == QStatus.unanswered
+                                      ? Colors.white
+                                      : qq.status == QStatus.attempted
+                                          ? Colors.green[200]
+                                          : qq.status == QStatus.marked
+                                              ? Colors.orange[200]
+                                              : Colors.grey[300],
+                                  child: Center(child: Text('${idx + 1}')),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Wrap(
+                            spacing: 8,
+                            children: [
+                              Chip(label: Text('Attempted')),
+                              Chip(label: Text('Marked')),
+                              Chip(label: Text('Skipped')),
+                              Chip(label: Text('Unanswered')),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                : SizedBox.shrink(),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _onSubmitPressed() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Submit Test'),
+        content: Text('Are you sure you want to submit the test?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _finishTest();
+              },
+              child: Text('Submit'))
+        ],
+      ),
+    );
+  }
+}
+
+class ResultScreen extends StatelessWidget {
+  final TestPaper paper;
+  ResultScreen({required this.paper});
+
+  Map<String, int> _scoreBySubject() {
+    Map<String, int> score = {};
+    for (var q in paper.questions) {
+      score[q.subject] = (score[q.subject] ?? 0) + (q.selected != null && q.selected == q.correctIndex ? 1 : 0);
+    }
+    return score;
+  }
+
+  int _totalCorrect() {
+    int c = 0;
+    for (var q in paper.questions) {
+      if (q.selected != null && q.selected == q.correctIndex) c++;
+    }
+    return c;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var subjectScores = _scoreBySubject();
+    int totalCorrect = _totalCorrect();
+    int total = paper.questions.length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Test Results'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(12),
+        child: ListView(
+          children: [
+            Card(
+              child: ListTile(
+                title: Text('Score'),
+                subtitle: Text('$totalCorrect / $total'),
+              ),
+            ),
+            Card(
+              child: ExpansionTile(
+                title: Text('Subject-wise Performance'),
+                children: subjectScores.entries
+                    .map((e) => ListTile(
+                          title: Text(e.ke
