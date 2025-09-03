@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Parse and print code frames above import stack for native bundling errors
+- Parse and print code frames above import stack for native bundling errors ([#39150](https://github.com/expo/expo/pull/39150) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
