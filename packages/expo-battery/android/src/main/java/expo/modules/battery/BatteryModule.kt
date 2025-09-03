@@ -28,7 +28,7 @@ class BatteryModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoBattery")
 
-    Constants("isSupported" to true)
+    Constant("isSupported") { true }
 
     Events(
       BATTERY_LEVEL_EVENT_NAME,

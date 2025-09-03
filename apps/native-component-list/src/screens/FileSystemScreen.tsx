@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
+import { File } from 'expo-file-system';
 import * as FileSystem from 'expo-file-system/legacy';
 // import * as Progress from 'expo-progress';
 import type {
@@ -322,9 +323,17 @@ export default class FileSystemScreen extends React.Component<object, State> {
     }
   };
 
+  _pickFile = async () => {
+    const file = await File.pickFileAsync();
+    Alert.alert('Result', JSON.stringify(file, null, 2));
+  };
+
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
+        <HeadingText>FileSystem</HeadingText>
+        <ListButton onPress={this._pickFile} title="Pick file" />
+        <HeadingText>FileSystem Legacy</HeadingText>
         <ListButton onPress={this._download} title="Download file (1.1MB)" />
         <ListButton onPress={this._startDownloading} title="Start Downloading file (8.4MB)" />
         {this.state.downloadProgress ? (

@@ -425,7 +425,7 @@ internal struct GlassEffectModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       let interactive = glass?.interactive ?? false
       let tint = glass?.tint
@@ -449,7 +449,7 @@ internal struct GlassEffectModifier: ViewModifier, Record {
   }
 
   #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
   private func parseGlassVariant(_ glassString: String) -> Glass {
     switch glassString {
     case "regular":
@@ -461,6 +461,27 @@ internal struct GlassEffectModifier: ViewModifier, Record {
     }
   }
   #endif
+}
+
+internal struct GlassEffectIdModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+        content.glassEffectID(id, in: namespace)
+      } else {
+        content
+      }
+      #else
+      content
+      #endif
+    } else {
+      content
+    }
+  }
 }
 
 internal struct AnimationModifier: ViewModifier {
@@ -768,6 +789,10 @@ extension ViewModifierRegistry {
       let animatedValue = params["animatedValue"] as? AnyHashable
 
       return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
+    }
+
+    register("glassEffectId") { params, appContext, _ in
+      return try GlassEffectIdModifier.init(from: params, appContext: appContext)
     }
   }
 }

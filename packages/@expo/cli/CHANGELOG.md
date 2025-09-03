@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.26.7 — 2025-09-02
+
+### 🐛 Bug fixes
+
+- Fix unnecessary version warning when running prebuild for prerelease versions. ([#39298](https://github.com/expo/expo/pull/39298) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Promote buildCacheProvider to stable ([#39297](https://github.com/expo/expo/pull/39297) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.26.6 — 2025-08-31
 
 _This version does not introduce any user-facing changes._

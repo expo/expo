@@ -4,6 +4,7 @@ export { disableErrorHandling } from './errors/ExpoErrorManager';
 export { default as registerRootComponent } from './launch/registerRootComponent';
 
 export { isRunningInExpoGo, getExpoGoProjectConfig } from './environment/ExpoGo';
+export { isLiquidGlassAvailable } from './environment/isLiquidGlassAvailable';
 
 export {
   // Core classes

@@ -7,7 +7,7 @@ description: Accelerate local development by caching and reusing builds from a p
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Build caching is an experimental feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
+Build caching is a feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
 When you run `npx expo run:[android|ios]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs.
 
 ## Using EAS as a build provider
@@ -16,15 +16,13 @@ To use the EAS Build provider plugin, start by installing the `eas-build-cache-p
 
 <Terminal cmd={['$ npx expo install eas-build-cache-provider']} />
 
-Then, update your **app.json** to include the `buildCacheProvider` property and its provider under `experiments`:
+Then, update your **app.json** to include the `buildCacheProvider` property and its provider:
 
 ```json app.json
 {
   "expo": {
     ...
-    "experiments": {
-      "buildCacheProvider": "eas"
-    }
+    "buildCacheProvider": "eas"
   }
 }
 ```
@@ -141,10 +139,8 @@ At the root of your project, run `npm run build provider` to start the TypeScrip
 {
   "expo": {
     ...
-    "experiments": {
-      "buildCacheProvider": {
-        "plugin": "./provider.plugin.js"
-      }
+    "buildCacheProvider": {
+      "plugin": "./provider.plugin.js"
     }
   }
 }
@@ -170,12 +166,10 @@ To inject custom options to your plugin you can use the `options` field and it w
 {
   "expo": {
     ...
-    "experiments": {
-      "buildCacheProvider": {
-        "plugin": "./provider.plugin.js",
-        "options": {
-          "myCustomKey": "XXX-XXX-XXX"
-        }
+    "buildCacheProvider": {
+      "plugin": "./provider.plugin.js",
+      "options": {
+        "myCustomKey": "XXX-XXX-XXX"
       }
     }
   }

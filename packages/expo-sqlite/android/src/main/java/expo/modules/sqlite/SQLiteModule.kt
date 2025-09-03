@@ -29,9 +29,12 @@ class SQLiteModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLite")
 
-    Constants {
-      val defaultDatabaseDirectory = context.filesDir.canonicalPath + File.separator + "SQLite"
-      val bundledExtensions: Map<String, Map<String, String?>> = buildMap {
+    Constant("defaultDatabaseDirectory") {
+      context.filesDir.canonicalPath + File.separator + "SQLite"
+    }
+
+    Constant("bundledExtensions") {
+      buildMap {
         if (BuildConfig.WITH_SQLITE_VEC) {
           put(
             "sqlite-vec",
@@ -42,10 +45,6 @@ class SQLiteModule : Module() {
           )
         }
       }
-      return@Constants mapOf(
-        "defaultDatabaseDirectory" to defaultDatabaseDirectory,
-        "bundledExtensions" to bundledExtensions
-      )
     }
 
     Events("onDatabaseChange")
