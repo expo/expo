@@ -1,3 +1,4 @@
+import { MediaType } from './MediaType';
 import { Album } from './Album';
 /**
  * Represents a single media asset on the device (image, video, or audio).
@@ -46,7 +47,7 @@ export declare class Asset {
      * Gets the media type of the asset.
      * @returns A promise resolving to a numeric media type (e.g., image, video, audio).
      */
-    getMediaType(): Promise<number>;
+    getMediaType(): Promise<MediaType>;
     /**
      * Gets the last modification time of the asset.
      * @returns A promise resolving to the UNIX timestamp in milliseconds, or `null` if unavailable.

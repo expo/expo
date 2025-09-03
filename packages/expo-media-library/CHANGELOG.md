@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [next] Add Query
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

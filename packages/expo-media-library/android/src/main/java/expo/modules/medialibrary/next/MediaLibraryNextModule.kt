@@ -16,10 +16,16 @@ import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
 import expo.modules.medialibrary.next.objects.asset.factories.AssetModernFactory
 import expo.modules.medialibrary.next.objects.asset.factories.AssetLegacyFactory
+import expo.modules.medialibrary.next.objects.query.MediaStoreQueryFormatter
+import expo.modules.medialibrary.next.objects.query.Query
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import expo.modules.medialibrary.next.permissions.enums.GranularPermission
+import expo.modules.medialibrary.next.records.AssetField
+import expo.modules.medialibrary.next.records.SortDescriptor
 
+@OptIn(EitherType::class)
 class MediaLibraryNextModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -138,6 +144,63 @@ class MediaLibraryNextModule : Module() {
         val assetIdsToDelete = self.getAssets().map { it.contentUri }
         mediaStorePermissionsDelegate.requestMediaLibraryActionPermission(assetIdsToDelete, needsDeletePermission = true)
         self.delete()
+      }
+    }
+
+    Class(Query::class) {
+      Constructor {
+        Query(context)
+      }
+
+      Function("limit") { self: Query, limit: Int ->
+        self.limit(limit)
+      }
+
+      Function("offset") { self: Query, offset: Int ->
+        self.offset(offset)
+      }
+
+      Function("album") { self: Query, album: Album ->
+        self.album(album)
+      }
+
+      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Int> ->
+        self.eq(field, MediaStoreQueryFormatter.parse(value))
+      }
+
+      Function("in_") { self: Query, field: AssetField, values: List<Either<MediaType, Int>> ->
+        val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(value) }
+        self.`in`(field, stringValues)
+      }
+
+      Function("gt") { self: Query, field: AssetField, value: Int ->
+        self.gt(field, MediaStoreQueryFormatter.parse(value))
+      }
+
+      Function("gte") { self: Query, field: AssetField, value: Int ->
+        self.gte(field, MediaStoreQueryFormatter.parse(value))
+      }
+
+      Function("lt") { self: Query, field: AssetField, value: Int ->
+        self.lt(field, MediaStoreQueryFormatter.parse(value))
+      }
+
+      Function("lte") { self: Query, field: AssetField, value: Int ->
+        self.lte(field, MediaStoreQueryFormatter.parse(value))
+      }
+
+      Function("orderBy") { self: Query, sortDescriptorRef: Either<AssetField, SortDescriptor> ->
+        if (sortDescriptorRef.`is`(AssetField::class)) {
+          val assetField = sortDescriptorRef.get(AssetField::class)
+          val descriptor = SortDescriptor(assetField)
+          return@Function self.orderBy(descriptor)
+        }
+        val descriptor = sortDescriptorRef.get(SortDescriptor::class)
+        return@Function self.orderBy(descriptor)
+      }
+
+      AsyncFunction("exe") Coroutine { self: Query ->
+        return@Coroutine self.exe()
       }
     }
 
