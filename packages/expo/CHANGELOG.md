@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] load isLiquidGlassAvailable lazily ([#39349](https://github.com/expo/expo/pull/39349) by [@Ubax](https://github.com/Ubax))
+
 ## 54.0.0-preview.13 — 2025-09-02
 
 ### 🎉 New features
