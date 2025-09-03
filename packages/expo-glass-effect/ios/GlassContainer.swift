@@ -27,15 +27,6 @@ public final class GlassContainer: ExpoView {
         containerEffectView.effect = effect
         containerEffect = effect
       }
-      updateEffect()
-    }
-  }
-
-  private func updateEffect() {
-    if #available(iOS 26.0, *) {
-      if let effect = containerEffect as? UIGlassContainerEffect {
-        containerEffectView.effect = effect
-      }
     }
   }
 
