@@ -18,11 +18,11 @@ public final class GlassEffectModule: Module {
       Prop("isInteractive") { (view, interactive: Bool) in
         view.setInteractive(interactive)
       }
-      
+
       Prop("borderRadius") { (view, border: CGFloat?) in
         view.setBorderRadius(border)
       }
-      
+
       Prop("borderCurve") { (view, curve: String?) in
         view.setBorderCurve(curve)
       }
