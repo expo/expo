@@ -519,8 +519,6 @@ const cases = [
       }
     }
   `,
-  // NOTE(krystofwoldrich): Babel throws an error exports doesn't exist
-  // Rollup does nothing
   test('misc module-exports')`
     import "foo";
 
