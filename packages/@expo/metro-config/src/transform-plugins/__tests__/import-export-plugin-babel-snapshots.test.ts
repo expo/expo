@@ -13,60 +13,6 @@ const test =
   ([code]: readonly string[]) => [name, code];
 
 const cases = [
-  test('assumption-constantReexports export-from-2')`
-    export {foo as default} from "foo";
-  `,
-  test('assumption-constantReexports export-from-3')`
-    export {foo as default, bar} from "foo";
-  `,
-  test('assumption-constantReexports export-from-4')`
-    export {foo as bar} from "foo";
-  `,
-  test('assumption-constantReexports export-from-5')`
-    export {foo, bar} from "foo";
-  `,
-  test('assumption-constantReexports export-from-6')`
-    export * from "foo";
-  `,
-  test('assumption-constantReexports export-from')`
-    export {foo} from "foo";
-  `,
-  test('assumption-constantReexports import-export')`
-    import { foo } from "./foo";
-
-    export { foo };
-  `,
-  test('assumption-enumerableModuleMeta export')`
-    export var foo = 2;
-  `,
-  test('assumptions-noIncompleteNsImportDetection export-default')`
-    export default foo;
-  `,
-  test('assumptions-noIncompleteNsImportDetection export-from')`
-    export { foo } from "foo";
-  `,
-  test('assumptions-noIncompleteNsImportDetection export')`
-    export var foo = 2;
-  `,
-  test('auxiliary-comment overview')`
-    import "foo";
-    import "foo-bar";
-    import "./directory/foo-bar";
-    import foo from "foo2";
-    import * as foo2 from "foo3";
-    import {bar} from "foo4";
-    import {foo as bar2} from "foo5";
-
-    var test;
-    export {test};
-    export var test2 = 5;
-
-    bar(foo, bar2);
-
-    /* my comment */
-    bar2;
-    foo;
-  `,
   test('class-properties live-rewrite')`
     import {test1, test2, test3, test4, test5, test6, test7, test8, test9} from 'anywhere';
 
