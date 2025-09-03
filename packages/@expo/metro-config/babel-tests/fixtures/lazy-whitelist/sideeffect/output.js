@@ -1,2 +1,0 @@
-require("white");
-require("black");

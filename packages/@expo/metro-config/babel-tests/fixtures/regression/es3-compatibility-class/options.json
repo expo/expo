@@ -1,7 +1,0 @@
-{
-  "plugins": [
-    "transform-modules-commonjs",
-    "transform-member-expression-literals",
-    "transform-property-literals"
-  ]
-}

@@ -1,5 +1,0 @@
-{
-  "plugins": [
-    ["transform-modules-commonjs", { "noInterop": true, "loose": true }]
-  ]
-}

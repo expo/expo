@@ -1,5 +1,0 @@
-{
-  "plugins": ["transform-modules-commonjs"],
-  "auxiliaryCommentBefore": "before",
-  "auxiliaryCommentAfter": "after"
-}

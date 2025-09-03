@@ -1,3 +1,0 @@
-export {};
-
-console.log(helper);
