@@ -1,5 +1,5 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { GlassStyle, GlassView, GlassContainer } from 'expo-blur';
+import { GlassStyle, GlassView, GlassContainer } from 'expo-glass-effect';
 import Checkbox from 'expo-checkbox';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';

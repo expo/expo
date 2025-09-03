@@ -70,6 +70,7 @@
     "expo-blur": "~15.0.5",
     "expo-brightness": "~14.0.5",
     "expo-calendar": "~15.0.5",
+    "expo-glass-effect": "~0.0.0",
     "expo-camera": "~17.0.5",
     "expo-cellular": "~8.0.5",
     "expo-checkbox": "~5.0.5",

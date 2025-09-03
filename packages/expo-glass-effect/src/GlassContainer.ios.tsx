@@ -6,6 +6,9 @@ import { requireNativeViewManager } from 'expo-modules-core';
 
 import { GlassContainerProps } from './GlassContainer.types';
 
-const NativeGlassContainer = requireNativeViewManager<GlassContainerProps>('ExpoBlurView', 'GlassContainer');
+const NativeGlassContainer = requireNativeViewManager<GlassContainerProps>(
+  'ExpoGlassEffect',
+  'GlassContainer'
+);
 
 export default NativeGlassContainer;
