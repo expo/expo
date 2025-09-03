@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix images not displaying in Material Top Tabs navigator.
+- [iOS] Fix images not displaying in Material Top Tabs navigator. ([#39323](https://github.com/expo/expo/pull/39323) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
