@@ -30,6 +30,16 @@ public final class GlassView: ExpoView {
       updateEffect()
     }
   }
+  
+  // Nested GlassContainer GlassView do not respect parent layer corner properties, so we copy it here
+  // Non uniform borders also do not work as GlassView does not respect mask property when nested in a GlassContainer
+  // TODO: support UIVisualEffectView with ExpoFabricView?
+  public func setBorderRadius(_: CGFloat?) {
+    glassEffectView.layer.cornerRadius = self.layer.cornerRadius
+  }
+  public func setBorderCurve(_: String?) {
+    glassEffectView.layer.cornerCurve = self.layer.cornerCurve
+  }
 
   public func setTintColor(_ color: UIColor?) {
     if color != glassTintColor {
@@ -52,6 +62,8 @@ public final class GlassView: ExpoView {
         effect.isInteractive = glassIsInteractive ?? false
         // we need to set the effect again or it has no effect!
         glassEffectView.effect = effect
+        setBorderRadius(nil)
+        setBorderCurve(nil)
       }
     }
   }
