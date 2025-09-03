@@ -2,13 +2,15 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
+import { OpaqueColorValue } from 'react-native';
 import { animation } from './animation/index';
 import { createModifier, ModifierConfig } from './createModifier';
+type Color = string | OpaqueColorValue;
 /**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
-export declare const background: (color: string) => ModifierConfig;
+export declare const background: (color: Color) => ModifierConfig;
 /**
  * Applies corner radius to a view.
  * @param radius - The corner radius value
@@ -21,7 +23,7 @@ export declare const shadow: (params: {
     radius: number;
     x?: number;
     y?: number;
-    color?: string;
+    color?: string | OpaqueColorValue;
 }) => ModifierConfig;
 /**
  * Adds a matched geometry effect to a view.
@@ -85,7 +87,7 @@ export declare const clipShape: (shape: "rectangle" | "circle" | "roundedRectang
  * Adds a border to a view.
  */
 export declare const border: (params: {
-    color: string;
+    color: Color;
     width?: number;
 }) => ModifierConfig;
 /**
@@ -110,7 +112,7 @@ export declare const offset: (params: {
  * @param color - The foreground color (hex string)
  * @deprecated Use foregroundStyle instead
  */
-export declare const foregroundColor: (color: string) => ModifierConfig;
+export declare const foregroundColor: (color: Color) => ModifierConfig;
 /**
  * Sets the foreground style of a view with comprehensive styling options.
  *
@@ -231,7 +233,7 @@ export declare const foregroundStyle: (style: string | {
  * Sets the tint color of a view.
  * @param color - The tint color (hex string)
  */
-export declare const tint: (color: string) => ModifierConfig;
+export declare const tint: (color: Color) => ModifierConfig;
 /**
  * Hides or shows a view.
  * @param hidden - Whether the view should be hidden
@@ -309,7 +311,7 @@ export declare const mask: (shape: "rectangle" | "circle" | "roundedRectangle", 
  * @param alignment - Overlay alignment
  */
 export declare const overlay: (params: {
-    color?: string;
+    color?: Color;
     alignment?: "center" | "top" | "bottom" | "leading" | "trailing";
 }) => ModifierConfig;
 /**
