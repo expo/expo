@@ -117,11 +117,9 @@ function getExportsThatAreNotUsedInModule(ast: types.File) {
 
   // Second pass: find all used identifiers
   traverse(ast, {
-    Identifier(path) {
-      if (path.isReferencedIdentifier()) {
-        // console.log('referenced:', path.node.name);
-        usedIdentifiers.add(path.node.name);
-      }
+    ReferencedIdentifier(path) {
+      if (path.parent.type === 'ImportSpecifier') return;
+      usedIdentifiers.add(path.node.name);
     },
   });
 
@@ -733,9 +731,9 @@ export async function treeShakeSerializer(
               });
               if (removeRequest.removed) {
                 dirtyImports.push(removeRequest.path);
-                // TODO: Update source maps
-                markUnused(path);
               }
+              // TODO: Update source maps
+              markUnused(path); // TODO: Check if nothing breaks by removing only the AST node.
             }
           }
         },
@@ -797,7 +795,11 @@ export async function treeShakeSerializer(
       },
       Identifier(path) {
         // Make sure this identifier isn't coming from an import specifier
-        if (!path.scope.bindingIdentifierEquals(path.node.name, path.node)) {
+        if (
+          !path.scope.bindingIdentifierEquals(path.node.name, path.node) &&
+          // `import { Foo as Bar } from 'bax'` Foo should not be marked as used.
+          path.parent.type !== 'ImportSpecifier'
+        ) {
           usedIdentifiers.add(path.node.name);
         }
       },
@@ -824,22 +826,20 @@ export async function treeShakeSerializer(
 
     // Remove the unused imports from the AST
     importDecs.forEach((path) => {
+      const importModuleId = path.node.source.value;
       const originalSize = path.node.specifiers.length;
       const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
 
-      path.node.specifiers = path.node.specifiers.filter((specifier) => {
-        if (
-          specifier.type === 'ImportDefaultSpecifier' ||
-          specifier.type === 'ImportNamespaceSpecifier'
-        ) {
-          return !unusedImports.includes(specifier.local.name);
-        } else if (types.isIdentifier(specifier.imported)) {
-          return !unusedImports.includes(specifier.imported.name);
-        }
-        return false;
-      });
-
-      const importModuleId = path.node.source.value;
+      const isUsed = (
+        specifier:
+          // import { imported as local } from './foo'
+          | types.ImportSpecifier
+          // import local from './foo'
+          | types.ImportDefaultSpecifier
+          // import * as local from './foo'
+          | types.ImportNamespaceSpecifier
+      ) => !unusedImports.includes(specifier.local.name);
+      path.node.specifiers = path.node.specifiers.filter(isUsed);
 
       if (originalSize !== path.node.specifiers.length) {
         // The hash key for the dependency instance in the module.

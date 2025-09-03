@@ -95,6 +95,7 @@ export function importExportLiveBindingsPlugin({
 
   const addImport = (path: NodePath, state: State, source: ModuleRequest): ID => {
     const moduleSpecifiers = addModuleSpecifiers(state, source);
+    moduleSpecifiers.sideEffect = true;
     let id = moduleSpecifiers[ImportDeclarationKind.REQUIRE];
     if (!id) {
       id = path.scope.generateUid(source.value);
@@ -160,11 +161,6 @@ export function importExportLiveBindingsPlugin({
     }
     return id;
   };
-  const addSideeffectImport = (path: NodePath, state: State, source: ModuleRequest): void => {
-    const moduleSpecifiers = addModuleSpecifiers(state, source);
-    moduleSpecifiers.sideEffect = true;
-    addImport(path, state, source);
-  };
 
   return {
     visitor: {
@@ -176,7 +172,7 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          addSideeffectImport(path, state, source);
+          addImport(path, state, source);
           path.remove();
           return;
         }
@@ -289,8 +285,7 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          // NOTE(@kitten): The tree-shaking plugin leaves around empty specifiers, so we should
-          // handle this properly. This doesn't indicate a side-effect!
+          addImport(path, state, source);
           path.remove();
           return;
         }

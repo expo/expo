@@ -355,7 +355,7 @@ it('import ordering (unreferenced)', () => {
     })
   ).toEqual({
     exports: {},
-    requests: ['foo', 'baz'],
+    requests: ['foo', 'bar', 'baz', 'qux'],
   });
 });
 
@@ -403,6 +403,6 @@ it('overview', () => {
       test: undefined,
       test2: 5,
     },
-    requests: ['foo', 'foo-bar', 'foo2', 'foo4', 'foo5'],
+    requests: ['foo', 'foo-bar', 'foo2', 'foo3', 'foo4', 'foo5'],
   });
 });

@@ -151,6 +151,6 @@ it('auxiliary comment', () => {
       test: undefined,
       test2: 5,
     },
-    requests: ['foo', 'foo-bar', 'foo2', 'foo4', 'foo5'],
+    requests: ['foo', 'foo-bar', 'foo2', 'foo3', 'foo4', 'foo5'],
   });
 });
