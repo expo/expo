@@ -88,11 +88,25 @@ const HomeIndex = () => {
       <Spacer />
       <Link href="/one">
         <Link.Trigger>Link.Preview 200x100: /one</Link.Trigger>
-        <Link.Preview width={200} height={100} />
+        <Link.Preview style={{ width: 200, height: 100 }} />
       </Link>
       <Link href="/one">
         <Link.Trigger>Link.Preview 16:9: /one</Link.Trigger>
-        <Link.Preview width={width} height={width * (9 / 16)} />
+        <Link.Preview style={{ width, height: width * (9 / 16) }} />
+      </Link>
+      <Link href="/one">
+        <Link.Trigger>Link.Preview 1234x4321: /one</Link.Trigger>
+        <Link.Preview style={{ width: 1234, height: 4321 }} />
+      </Link>
+      <Link href="/one">
+        <Link.Trigger>Link.Preview styled: /one</Link.Trigger>
+        <Link.Preview
+          style={{
+            width: 300,
+            height: 400,
+            borderRadius: 2,
+          }}
+        />
       </Link>
       <Spacer />
       <Link href={`/one?time=${time}`}>

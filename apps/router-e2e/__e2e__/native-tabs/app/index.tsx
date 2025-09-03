@@ -45,18 +45,17 @@ export default function Index() {
       <Text style={{ color: colors.text, fontSize: 24, fontWeight: 'bold' }}>History</Text>
       <Link href="/explore/news/new-watches-august" asChild>
         <Link.Trigger>
-          <Pressable>
+          <Pressable style={{ borderRadius: 16 }}>
             <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
               <Text style={{ color: colors.text, fontSize: 48, fontWeight: 600 }}>08</Text>
               <Link href="/explore/news/new-watches-august" asChild>
                 <Link.Trigger>
-                  <Pressable style={{ flex: 1 }}>
+                  <Pressable style={{ flex: 1, borderRadius: 16, overflow: 'hidden' }}>
                     <View
                       style={{
                         flex: 1,
                         aspectRatio: 1,
                         backgroundColor: '#9ca3af',
-                        borderRadius: 16,
                       }}
                     />
                   </Pressable>
