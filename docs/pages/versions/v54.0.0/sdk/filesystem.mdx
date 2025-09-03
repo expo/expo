@@ -130,11 +130,10 @@ import { File } from 'expo-file-system';
 
 const src = new File(testDirectory, 'file.txt');
 file.write('Hello, world!');
-const blob = src.blob();
 
 const response = await fetch('https://example.com', {
   method: 'POST',
-  body: blob,
+  body: file,
 });
 ```
 
@@ -146,9 +145,8 @@ import { File, Paths } from 'expo-file-system';
 
 const file = new File(Paths.cache, 'file.txt');
 file.write('Hello, world!');
-const blob = file.blob();
 const formData = new FormData();
-formData.append('data', blob);
+formData.append('data', file);
 const response = await fetch('https://example.com', {
   method: 'POST',
   body: formData,
