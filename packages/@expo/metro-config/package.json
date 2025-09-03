@@ -11,6 +11,7 @@
     "prepare": "expo-module clean && expo-module tsc",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
+    "test:babel": "expo-module test -c babel-tests/jest.config.babel.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
