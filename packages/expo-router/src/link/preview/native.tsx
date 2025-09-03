@@ -50,6 +50,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
         path: TabPath[];
       }
     | undefined;
+  disableForceFlatten?: boolean;
   onWillPreviewOpen?: () => void;
   onDidPreviewOpen?: () => void;
   onPreviewWillClose?: () => void;
@@ -87,6 +88,8 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
     props.style,
     {
       position: 'absolute',
+      top: 0,
+      left: 0,
     } as const,
   ]);
   return <NativeLinkPreviewContentView {...props} style={style} />;

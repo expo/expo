@@ -115,6 +115,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     /**
      * Boolean value determining whether the player should show the now playing notification.
      *
+     * > **Note**: On Android, `supportsBackgroundPlayback` property of the [config plugin](#configuration-in-app-config)
+     * > has to be `true` for the now playing notification to work.
      * @default false
      * @platform android
      * @platform ios
@@ -122,6 +124,9 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     showNowPlayingNotification: boolean;
     /**
      * Determines whether the player should continue playing after the app enters the background.
+     *
+     * > **Note**: The `supportsBackgroundPlayback` property of the [config plugin](#configuration-in-app-config)
+     * > has to be `true` for the background playback to work.
      * @default false
      * @platform ios
      * @platform android

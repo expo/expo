@@ -23,6 +23,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
@@ -31,6 +32,7 @@ import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
+import expo.modules.video.getPlaybackServiceErrorMessage
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.BufferOptions
@@ -64,7 +66,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .build()
 
   private val firstFrameEventGenerator = createFirstFrameEventGenerator()
-  val serviceConnection = PlaybackServiceConnection(WeakReference(this))
+  val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
   var playing by IgnoreSameSet(false) { new, old ->
@@ -81,6 +83,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var status: PlayerStatus = IDLE
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
+    set(value) {
+      field = value
+      if (value) {
+        startPlaybackService()
+      }
+    }
   var preservesPitch = false
     set(preservesPitch) {
       field = preservesPitch
@@ -89,7 +97,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var showNowPlayingNotification = false
     set(value) {
       field = value
-      serviceConnection.playbackServiceBinder?.service?.setShowNotification(value, this.player)
+      serviceSetShowNotification(value)
     }
   var duration = 0f
   var isLive = false
@@ -291,7 +299,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   init {
-    ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
     player.addListener(playerListener)
     player.addAnalyticsListener(analyticsListener)
     VideoManager.registerVideoPlayer(this)
@@ -303,7 +310,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   override fun close() {
-    appContext?.reactContext?.unbindService(serviceConnection)
+    if (serviceConnection.isConnected) {
+      appContext?.reactContext?.unbindService(serviceConnection)
+    }
     serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
@@ -396,6 +405,29 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private fun resetPlaybackInfo() {
     duration = 0f
     isLive = false
+  }
+
+  private fun startPlaybackService(): Boolean {
+    if (serviceConnection.playbackServiceBinder?.service != null) {
+      // PlaybackService already running.
+      return true
+    }
+    val appContext = appContext ?: throw Exceptions.AppContextLost()
+    val serviceStarted = ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
+
+    if (!serviceStarted) {
+      appContext.jsLogger?.error(
+        getPlaybackServiceErrorMessage("Expo-video has failed to bind with the playback service binder")
+      )
+    }
+    return serviceStarted
+  }
+
+  private fun serviceSetShowNotification(showNotification: Boolean) {
+    if (showNotification) {
+      startPlaybackService()
+    }
+    serviceConnection.playbackServiceBinder?.service?.setShowNotification(showNotification, this.player)
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {

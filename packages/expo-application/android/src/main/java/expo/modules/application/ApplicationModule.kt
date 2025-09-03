@@ -24,16 +24,23 @@ class ApplicationModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoApplication")
 
-    Constants {
-      return@Constants mapOf(
-        "applicationName" to applicationName,
-        "applicationId" to packageName,
-        "nativeApplicationVersion" to versionName,
-        "nativeBuildVersion" to versionCode.toString()
-      )
+    Constant("applicationName") {
+      context.applicationInfo.loadLabel(context.packageManager).toString()
     }
 
-    Property("androidId") {
+    Constant("applicationId") {
+      packageName
+    }
+
+    Constant("nativeApplicationVersion") {
+      packageManager.getPackageInfoCompat(packageName, 0).versionName
+    }
+
+    Constant("nativeBuildVersion") {
+      getLongVersionCode(packageManager.getPackageInfoCompat(packageName, 0)).toInt().toString()
+    }
+
+    Constant("androidId") {
       Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
@@ -93,16 +100,10 @@ class ApplicationModule : Module() {
     }
   }
 
-  private val applicationName
-    get() = context.applicationInfo.loadLabel(context.packageManager).toString()
   private val packageName
     get() = context.packageName
   private val packageManager
     get() = context.packageManager
-  private val versionName
-    get() = packageManager.getPackageInfoCompat(packageName, 0).versionName
-  private val versionCode
-    get() = getLongVersionCode(packageManager.getPackageInfoCompat(packageName, 0)).toInt()
 }
 
 private fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
