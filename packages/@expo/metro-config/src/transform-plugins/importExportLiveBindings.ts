@@ -342,7 +342,7 @@ export function importExportLiveBindingsPlugin({
 
       Program: {
         // (0): Initialize all state
-        enter(_path, state) {
+        enter(path, state) {
           state.importSpecifiers = new Map();
           state.inlineBodyRefs = new Map();
           state.referencedLocals = new Set();
@@ -350,6 +350,11 @@ export function importExportLiveBindingsPlugin({
           state.exportDeclarations = [];
           state.exportAll = new Map();
           state.importDeclarations = [];
+
+          // Ensure the iife "globals" don't have conflicting variables in the module.
+          ['global', 'require', 'module', 'exports'].forEach((name) => {
+            path.scope.rename(name, path.scope.generateUidIdentifier(name).name);
+          });
         },
 
         exit(path, state) {
