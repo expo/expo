@@ -18,7 +18,8 @@
         "backgroundColor": "#4184E1"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.bacon.expotemplatedefault"
     },
     "web": {
       "output": "static",
