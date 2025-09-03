@@ -167,3 +167,7 @@ import { GlassView, GlassContainer } from 'expo-glass-effect';
 ```
 
 <APISection packageName="expo-glass-effect" />
+
+### Known issues
+
+The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
