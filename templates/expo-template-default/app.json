@@ -4,7 +4,7 @@
     "slug": "expo-template-default",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.jpg",
+    "icon": "./assets/images/apple-icon.jpg",
     "scheme": "helloworld",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,9 +13,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#4184E1",
-        "backgroundImage": "..."
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "backgroundColor": "#4184E1"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
