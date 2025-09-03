@@ -15,6 +15,7 @@
 ### 🎉 New features
 
 - apply display contents to link ([#39245](https://github.com/expo/expo/pull/39245) by [@Ubax](https://github.com/Ubax))
+- [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
