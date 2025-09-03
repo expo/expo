@@ -199,6 +199,49 @@ const player1 = useVideoPlayer(assetId); // You can use the `asset` directly as 
 const player2 = useVideoPlayer(videoSource);
 ```
 
+### Playing media from the media library
+
+`expo-video` supports playing videos picked from user's media library using [`expo-media-library`](../sdk/media-library/) or any valid `PHAsset` URI with appropriate permissions.
+
+To play a video from the media library, you should obtain an [`Asset`](../sdk/asset/#asset) object with [`MediaLibrary.getAssetsAsync()`](../sdk/media-library/#medialibrarygetassetsasyncassetsoptions) and use its [`uri`](../sdk/asset/#uri) property as the [`uri`](#videosource) of the video source.
+Before playing, make sure to request the necessary permissions using [`MediaLibrary.requestPermissionsAsync()`](../sdk/media-library/#medialibraryrequestpermissionsasyncwriteonly-granularpermissions).
+
+On iOS make sure **not** to use the `localUri` property of the asset info, as it does not contain the necessary permissions to read the asset.
+
+```tsx Playing media from media library
+import * as MediaLibrary from 'expo-media-library';
+import { VideoSource, useVideoPlayer, VideoView } from 'expo-video';
+
+// ...Definition of the component, creating the player etc.
+
+const loadAssetAndReplace = async () => {
+  const { granted } = await MediaLibrary.requestPermissionsAsync(false, ['video']);
+  if (!granted) {
+    return;
+  }
+
+  const pagedAssets = await MediaLibrary.getAssetsAsync({
+    mediaType: 'video',
+  });
+
+  if (pagedAssets.assets.length > 0) {
+    const [asset] = pagedAssets.assets;
+    const videoSource: VideoSource = {
+      uri: asset.uri,
+      metadata: {
+        title: asset.filename,
+      },
+    };
+
+    await player.replaceAsync(videoSource);
+    await player.replaceAsync(asset.uri); // Alternatively you can use the asset uri directly
+    player.play();
+  }
+};
+
+// You can now use loadAssetAndReplace to load and play the first video from the media library
+```
+
 ### Preloading videos
 
 While another video is playing, a video can be loaded before showing it in the view. This allows for quicker transitions between subsequent videos and a better user experience.

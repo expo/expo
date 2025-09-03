@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for playing PHAsset uris.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
