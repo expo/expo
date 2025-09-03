@@ -23,7 +23,7 @@ export declare const shadow: (params: {
     radius: number;
     x?: number;
     y?: number;
-    color?: string | OpaqueColorValue;
+    color?: Color;
 }) => ModifierConfig;
 /**
  * Sets the frame properties of a view.
