@@ -109,3 +109,25 @@ it('supports cicular deps initialization (#38111)', () => {
     requests: ['a', 'b'],
   });
 });
+
+// See: https://github.com/expo/expo/pull/39362
+it('supports unbound function calls without implicit bound member-expression call (#39362)', () => {
+  expect(
+    exec({
+      foo: `
+        globalThis.x = 1;
+        function fn() {
+          return this.x;
+        }
+        export default fn;
+      `,
+      entry: `
+        import fn from "foo";
+        export const test = fn();
+      `,
+    })
+  ).toEqual({
+    exports: { test: 1 },
+    requests: ['foo'],
+  });
+});
