@@ -40,12 +40,8 @@ export const cornerRadius = (radius: number) => createModifier('cornerRadius', {
 /**
  * Adds a shadow to a view.
  */
-export const shadow = (params: {
-  radius: number;
-  x?: number;
-  y?: number;
-  color?: string | OpaqueColorValue;
-}) => createModifier('shadow', params);
+export const shadow = (params: { radius: number; x?: number; y?: number; color?: Color }) =>
+  createModifier('shadow', params);
 
 /**
  * Adds a matched geometry effect to a view.
