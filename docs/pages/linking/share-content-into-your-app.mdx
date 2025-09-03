@@ -109,7 +109,7 @@ An example project structure might look like this:
 
 Sometimes existing libraries won't cover all your needs. In those cases, you can use the [Expo Modules API](/modules/overview/) to implement custom native functionality for receiving shared content.
 
-On **Android**, it means declaring &lt;intent-filter&gt; entries in your manifest, handling incoming Intents, and surfacing the content to your app via an Expo Module.
+On **Android**, it means declaring `<intent-filter>` entries in your project's **AndroidManifest.xml**, handling incoming Intents, and surfacing the content to your app via an Expo Module.
 
 On **iOS**, this means creating a Share Extension target, handling the NSExtensionContext to access shared items, and then exposing that data through your Expo Module.
 
