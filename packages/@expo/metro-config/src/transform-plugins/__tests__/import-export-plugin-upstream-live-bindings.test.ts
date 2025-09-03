@@ -146,7 +146,7 @@ it('hoists declarations to the top', () => {
 
   const expected = `
     var _bar = require('bar');
-    _bar.foo();
+    (0, _bar.foo)();
   `;
 
   compare([importExportPlugin], code, expected, opts);
@@ -352,7 +352,7 @@ it('enables module exporting when something is exported', () => {
     });
 
     var _bar = require('bar');
-    _bar.foo();
+    (0, _bar.foo)();
     var _default = _bar.foo;
   `;
 
