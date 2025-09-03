@@ -8,6 +8,7 @@ hideTOC: true
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 React Native offers a flexible development strategy. Whether you're launching a new app or looking to integrate an existing native app, it provides a powerful solution. You can leverage its capabilities to introduce new features or views incrementally, allowing your team to adopt modern, cross-platform development without a complete rewrite.
 
@@ -480,11 +481,18 @@ Running the `pod` command will integrate the React Native code into your app, al
   `ENABLE_USER_SCRIPT_SANDBOXING`. If it is not already, set its value to `No`. This is needed to
   properly switch between the Debug and Release versions of the [Hermes
   engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped with React Native.
+
+  <ContentSpotlight
+    alt="Xcode Build Settings"
+    src="/static/images/brownfield/user-script-sandboxing.png"
+  />
 </Step>
 
 <Step label="2">
 
 Now switch to the **Build Phases** tab and add a new `Run Script Phase` before the `[CP] Embed Pods Frameworks` phase. This script will bundle your JavaScript code and assets into the iOS application.
+
+<ContentSpotlight alt="Xcode Build Phases" src="/static/images/brownfield/run-script-phase.png" />
 
 ```sh Build React Native code and image
 if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
