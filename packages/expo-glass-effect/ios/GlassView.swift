@@ -22,9 +22,11 @@ public final class GlassView: ExpoView {
     if glassStyle != style {
       glassStyle = style
       if #available(iOS 26.0, *) {
+        #if compiler(>=6.2) // Xcode 26
         let effect = UIGlassEffect(style: glassStyle?.toUIGlassEffectStyle() ?? .regular)
         glassEffectView.effect = effect
         glassEffect = effect
+        #endif
       }
       updateEffect()
     }

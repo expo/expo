@@ -20,12 +20,14 @@ public final class GlassContainer: ExpoView {
     if containerSpacing != spacing {
       containerSpacing = spacing
       if #available(iOS 26.0, *) {
+        #if compiler(>=6.2) // Xcode 26
         let effect = UIGlassContainerEffect()
         if let spacing = spacing {
           effect.spacing = spacing
         }
         containerEffectView.effect = effect
         containerEffect = effect
+        #endif
       }
     }
   }
