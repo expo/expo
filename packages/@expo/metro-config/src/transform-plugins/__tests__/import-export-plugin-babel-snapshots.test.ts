@@ -639,7 +639,8 @@ const cases = [
 ];
 
 const getExpected = (code: string) =>
-  generate(transformToAst([importExportLiveBindingsPlugin], code, { ...opts, liveBindings: true })).code;
+  generate(transformToAst([importExportLiveBindingsPlugin], code, { ...opts, liveBindings: true }))
+    .code;
 
 it.each(cases)('%s', (_name, code) => {
   expect(getExpected(code)).toMatchSnapshot();
