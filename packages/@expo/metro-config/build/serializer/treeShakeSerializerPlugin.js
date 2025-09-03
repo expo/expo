@@ -86,11 +86,10 @@ function getExportsThatAreNotUsedInModule(ast) {
     });
     // Second pass: find all used identifiers
     (0, core_1.traverse)(ast, {
-        Identifier(path) {
-            if (path.isReferencedIdentifier()) {
-                // console.log('referenced:', path.node.name);
-                usedIdentifiers.add(path.node.name);
-            }
+        ReferencedIdentifier(path) {
+            if (path.parent.type === 'ImportSpecifier')
+                return;
+            usedIdentifiers.add(path.node.name);
         },
     });
     // Determine which exports are unused
@@ -547,9 +546,11 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             });
                             if (removeRequest.removed) {
                                 dirtyImports.push(removeRequest.path);
-                                // TODO: Update source maps
-                                markUnused(path);
                             }
+                            // TODO: Update source maps
+                            // We still want to remove the empty `export {} from 'a'` declaration even if the graph node was kept
+                            // due to the duplicate default export
+                            markUnused(path);
                         }
                     }
                 },
@@ -600,7 +601,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             },
             Identifier(path) {
                 // Make sure this identifier isn't coming from an import specifier
-                if (!path.scope.bindingIdentifierEquals(path.node.name, path.node)) {
+                if (!path.scope.bindingIdentifierEquals(path.node.name, path.node) &&
+                    // `import { Foo as Bar } from 'bax'` Foo should not be marked as used.
+                    path.parent.type !== 'ImportSpecifier') {
                     usedIdentifiers.add(path.node.name);
                 }
             },
@@ -621,19 +624,11 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         const unusedImports = [...importedIdentifiers].filter((identifier) => !usedIdentifiers.has(identifier));
         // Remove the unused imports from the AST
         importDecs.forEach((path) => {
+            const importModuleId = path.node.source.value;
             const originalSize = path.node.specifiers.length;
             const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
-            path.node.specifiers = path.node.specifiers.filter((specifier) => {
-                if (specifier.type === 'ImportDefaultSpecifier' ||
-                    specifier.type === 'ImportNamespaceSpecifier') {
-                    return !unusedImports.includes(specifier.local.name);
-                }
-                else if (core_1.types.isIdentifier(specifier.imported)) {
-                    return !unusedImports.includes(specifier.imported.name);
-                }
-                return false;
-            });
-            const importModuleId = path.node.source.value;
+            const isUsed = (specifier) => !unusedImports.includes(specifier.local.name);
+            path.node.specifiers = path.node.specifiers.filter(isUsed);
             if (originalSize !== path.node.specifiers.length) {
                 // The hash key for the dependency instance in the module.
                 const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
