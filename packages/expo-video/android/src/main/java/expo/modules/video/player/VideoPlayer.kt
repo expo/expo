@@ -27,12 +27,12 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
-import expo.modules.video.PlaybackServiceBinderException
 import expo.modules.video.VideoManager
 import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
+import expo.modules.video.getPlaybackServiceErrorMessage
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.BufferOptions
@@ -416,8 +416,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     val serviceStarted = ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
 
     if (!serviceStarted) {
-      appContext.errorManager?.reportExceptionToLogBox(
-        PlaybackServiceBinderException("Expo-video has failed to bind with the playback service binder")
+      appContext.jsLogger?.error(
+        getPlaybackServiceErrorMessage("Expo-video has failed to bind with the playback service binder")
       )
     }
     return serviceStarted

@@ -22,8 +22,8 @@ import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.video.NowPlayingException
 import expo.modules.video.R
+import expo.modules.video.getPlaybackServiceErrorMessage
 import expo.modules.video.player.VideoPlayer
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
@@ -193,7 +193,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
         startForeground(notificationId, notificationCompat)
         isForeground = true
       } catch (e: Exception) {
-        appContext.errorManager?.reportExceptionToLogBox(NowPlayingException("Failed to start the expo-video foreground service", e))
+        appContext.jsLogger?.error(getPlaybackServiceErrorMessage("Failed to start the expo-video foreground service"), e)
       }
     } else {
       notificationManager.notify(notificationId, notificationCompat)

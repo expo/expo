@@ -7,7 +7,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.video.PlaybackServiceBinderException
+import expo.modules.video.getPlaybackServiceErrorMessage
 import expo.modules.video.player.VideoPlayer
 import java.lang.ref.WeakReference
 
@@ -24,8 +24,8 @@ class PlaybackServiceConnection(val player: WeakReference<VideoPlayer>, appConte
   override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
     val player = player.get() ?: return
     val serviceBinder: PlaybackServiceBinder = binder as? PlaybackServiceBinder ?: run {
-      appContext.errorManager?.reportExceptionToLogBox(
-        PlaybackServiceBinderException("Expo-video could not bind to the playback service")
+      appContext.jsLogger?.error(
+        getPlaybackServiceErrorMessage("Expo-video could not bind to the playback service")
       )
       return
     }
@@ -43,10 +43,10 @@ class PlaybackServiceConnection(val player: WeakReference<VideoPlayer>, appConte
 
   override fun onBindingDied(name: ComponentName?) {
     isConnected = false
-    appContext.errorManager?.reportExceptionToLogBox(
-      PlaybackServiceBinderException(
+    appContext.jsLogger?.error(
+      getPlaybackServiceErrorMessage(
         "Expo-video has lost connection to the playback service binder",
-        "This will cause issues with now playing notification and sustaining background playback"
+        "This will cause issues with now playing notification and sustaining background playback."
       )
     )
     super.onBindingDied(name)
@@ -54,8 +54,8 @@ class PlaybackServiceConnection(val player: WeakReference<VideoPlayer>, appConte
 
   override fun onNullBinding(componentName: ComponentName) {
     isConnected = false
-    appContext.errorManager?.reportExceptionToLogBox(
-      PlaybackServiceBinderException("Expo Video could not bind to the playback service")
+    appContext.jsLogger?.error(
+      getPlaybackServiceErrorMessage("Expo Video could not bind to the playback service")
     )
     super.onNullBinding(componentName)
   }

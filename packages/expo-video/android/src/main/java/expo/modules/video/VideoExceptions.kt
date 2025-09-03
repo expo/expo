@@ -41,5 +41,5 @@ internal class VideoCacheException(message: String?, cause: Throwable? = null) :
 internal class NowPlayingException(message: String?, cause: Throwable? = null) :
   CodedException(message ?: "Unexpected expo-video now playing exception", cause)
 
-internal class PlaybackServiceBinderException(message: String?, tip: String = defaultServiceBindingTip, cause: Throwable? = null) :
-  CodedException((message ?: "Expo-video playback service binder error") + ". $tip", cause)
+internal fun getPlaybackServiceErrorMessage(message: String?, tip: String = defaultServiceBindingTip) =
+  (message ?: "Expo-video playback service binder error") + ". $tip"
