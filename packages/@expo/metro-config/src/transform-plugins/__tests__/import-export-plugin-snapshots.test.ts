@@ -304,6 +304,12 @@ describe.each([
     test('import side effect')`
       import 'apple-icons';
     `,
+
+    // Regressions
+    test('export-named "__proto__" export by specifier')`
+      export function __proto__() {}
+      export function __nonProto__() {}
+    `,
   ])('%s', (_name, code) => {
     expect(getExpected(code)).toMatchSnapshot();
   });

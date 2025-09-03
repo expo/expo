@@ -1426,6 +1426,21 @@ const [a, b] = local.default;"
 
 exports[`with live bindings 64. import side effect 1`] = `"require('apple-icons');"`;
 
+exports[`with live bindings 65. export-named "__proto__" export by specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+Object.defineProperty(exports, "__proto__", {
+  enumerable: true,
+  get: function () {
+    return __proto__;
+  }
+});
+exports.__nonProto__ = __nonProto__;
+function __proto__() {}
+function __nonProto__() {}"
+`;
+
 exports[`without live bindings 1. export namespace by specifier 1`] = `
 "Object.defineProperty(exports, '__esModule', {
   value: true
@@ -2062,3 +2077,13 @@ exports.b = b;"
 `;
 
 exports[`without live bindings 64. import side effect 1`] = `"require('apple-icons');"`;
+
+exports[`without live bindings 65. export-named "__proto__" export by specifier 1`] = `
+"Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+function __proto__() {}
+function __nonProto__() {}
+exports.__proto__ = __proto__;
+exports.__nonProto__ = __nonProto__;"
+`;

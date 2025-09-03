@@ -70,6 +70,12 @@ const liveExportHelper = (t, exportName, expr) => {
 };
 exports.liveExportHelper = liveExportHelper;
 const assignExportHelper = (t, exportName, expr) => {
+    if (exportName === '__proto__') {
+        // NOTE(@kitten): `exports` is instantiated as `{}` instead of `Object.create(null)`, so the __proto__
+        // assignment still carries its special meaning. We switch to the live export helper implicitly here
+        // to avoid this
+        return (0, exports.liveExportHelper)(t, exportName, expr);
+    }
     const member = t.isValidIdentifier(exportName)
         ? t.identifier(exportName)
         : t.stringLiteral(exportName);
