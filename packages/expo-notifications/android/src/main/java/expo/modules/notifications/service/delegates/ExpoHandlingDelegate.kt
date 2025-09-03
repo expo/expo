@@ -47,12 +47,10 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       }
 
       sListenersReferences[listener] = WeakReference(listener)
-      if (sPendingNotificationResponses.isNotEmpty()) {
-        val responseIterator = sPendingNotificationResponses.iterator()
-        while (responseIterator.hasNext()) {
-          listener.onNotificationResponseReceived(responseIterator.next())
-          responseIterator.remove()
-        }
+      val responseIterator = sPendingNotificationResponses.iterator()
+      while (responseIterator.hasNext()) {
+        listener.onNotificationResponseReceived(responseIterator.next())
+        responseIterator.remove()
       }
     }
 
