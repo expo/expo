@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix text response not present on some Android versions ([#39350](https://github.com/expo/expo/pull/39350) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 0.32.8 — 2025-09-02

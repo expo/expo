@@ -14,6 +14,8 @@ const BACKGROUND_TEST_INFO = `[notification-tester app only]: To test background
 
 const remotePushSupported = Device.isDevice;
 
+const welcomeCategoryId = 'welcome';
+
 export default class NotificationScreen extends React.Component<
   void,
   {
@@ -37,7 +39,7 @@ export default class NotificationScreen extends React.Component<
       return;
     }
     // Using the same category as in `registerForPushNotificationsAsync`
-    Notifications.setNotificationCategoryAsync('welcome', [
+    Notifications.setNotificationCategoryAsync(welcomeCategoryId, [
       {
         buttonTitle: `Don't open app`,
         identifier: 'first-button',
@@ -107,7 +109,7 @@ export default class NotificationScreen extends React.Component<
             });
             await Notifications.scheduleNotificationAsync({
               content: {
-                categoryIdentifier: 'welcome',
+                categoryIdentifier: welcomeCategoryId,
                 title: 'Here is a notification!',
                 body: 'This one has buttons!',
                 autoDismiss: true,

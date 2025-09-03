@@ -270,7 +270,7 @@ export default class TestScreen extends React.Component {
       return (
         <RunnerError>
           No tests were selected. Please provide a correct query to select tests to run.
-          SelectionQuery: "{this.props.route.params?.tests}"
+          SelectionQuery: "{this.props.route?.params?.tests}"
         </RunnerError>
       );
     }
