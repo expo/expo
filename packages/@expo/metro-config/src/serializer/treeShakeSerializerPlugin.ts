@@ -118,7 +118,6 @@ function getExportsThatAreNotUsedInModule(ast: types.File) {
   // Second pass: find all used identifiers
   traverse(ast, {
     ReferencedIdentifier(path) {
-      if (path.parent.type === 'ImportSpecifier') return;
       usedIdentifiers.add(path.node.name);
     },
   });
