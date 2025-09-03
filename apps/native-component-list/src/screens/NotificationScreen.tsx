@@ -54,6 +54,9 @@ export default class NotificationScreen extends React.Component<
           submitButtonTitle: 'Submit button',
           placeholder: 'Placeholder text',
         },
+        options: {
+          opensAppToForeground: false,
+        },
       },
       {
         buttonTitle: 'Open app',
@@ -231,7 +234,7 @@ export default class NotificationScreen extends React.Component<
   _handleNotificationResponseReceived = (
     notificationResponse: Notifications.NotificationResponse
   ) => {
-    console.log({ notificationResponse });
+    console.log('NCL', { notificationResponse });
 
     // Calling alert(message) immediately fails to show the alert on Android
     // if after backgrounding the app and then clicking on a notification
