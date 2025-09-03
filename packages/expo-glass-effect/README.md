@@ -1,6 +1,6 @@
 # Expo GlassEffect
 
-React components that render native glass effects using iOS's `UIVisualEffectView`. They provide customizable styles and tint colors to match design needs.
+React components that render native iOS liquid glass effect using [UIVisualEffectView](https://developer.apple.com/documentation/uikit/uivisualeffectview). Supports customizable glass styles and tint color.
 
 # API documentation
 
