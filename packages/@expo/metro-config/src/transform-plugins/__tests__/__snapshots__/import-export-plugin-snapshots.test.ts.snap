@@ -664,7 +664,7 @@ test(AppleIcons.default);"
 
 exports[`with live bindings 24. import specifier 1`] = `
 "var _appleIcons = require('apple-icons');
-_appleIcons.test(_appleIcons.test);"
+(0, _appleIcons.test)(_appleIcons.test);"
 `;
 
 exports[`with live bindings 25. import specifier as local 1`] = `
@@ -691,7 +691,7 @@ exports[`with live bindings 27. import specifier, and default 1`] = `
 }
 var _appleIcons = require('apple-icons');
 var AppleIcons = _interopDefault(_appleIcons);
-_appleIcons.test(AppleIcons.default, _appleIcons.test);"
+(0, _appleIcons.test)(AppleIcons.default, _appleIcons.test);"
 `;
 
 exports[`with live bindings 28. import specifier as local, and default 1`] = `
@@ -870,7 +870,7 @@ Object.defineProperty(exports, "test", {
 });
 var _appleIcons = require('apple-icons');
 var AppleIcons = _interopDefault(_appleIcons);
-_appleIcons.test(AppleIcons.default);"
+(0, _appleIcons.test)(AppleIcons.default);"
 `;
 
 exports[`with live bindings 40. export import specifier and default (1) 1`] = `
@@ -896,7 +896,7 @@ Object.defineProperty(exports, "test", {
 });
 var _appleIcons = require('apple-icons');
 var AppleIcons = _interopDefault(_appleIcons);
-_appleIcons.test(AppleIcons.default);"
+(0, _appleIcons.test)(AppleIcons.default);"
 `;
 
 exports[`with live bindings 41. export import specifier as local, and default 1`] = `

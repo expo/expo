@@ -13,6 +13,7 @@ export declare const sideEffectRequireCall: (t: typeof types, source: types.Stri
 /** `var %id% = %fnName%(%source%);` */
 export declare const varDeclaratorCallHelper: (t: typeof types, id: string, fn: string, arg: string) => types.Statement;
 export declare const esModuleExportTemplate: ({ statement }: typeof template) => types.Statement;
+export declare const nullBoundExpression: (t: typeof types, expr: types.Expression) => types.ParenthesizedExpression;
 declare function withLocation<TNode extends types.Node>(node: TNode, loc: types.SourceLocation | null | undefined): TNode;
 declare function withLocation<TNode extends types.Node>(nodeArray: readonly TNode[], loc: types.SourceLocation | null | undefined): TNode[];
 export { withLocation };

@@ -12,6 +12,7 @@ import {
   varDeclaratorCallHelper,
   withLocation,
   sideEffectRequireCall,
+  nullBoundExpression,
 } from './helpers';
 
 export interface Options {
@@ -453,8 +454,17 @@ export function importExportLiveBindingsPlugin({
                 const rootBinding = state.programScope.getBinding(localId);
                 if (rootBinding !== localBinding) return;
                 // Replace the local ID with the inlined reference, if there is one
-                const inlineRefExpression = getInlineRefExpression(path.node, localId);
+                let inlineRefExpression = getInlineRefExpression(path.node, localId);
                 if (inlineRefExpression) {
+                  // NOTE(@kitten): Ensure that calls after this member access aren't implicitly bound
+                  // to the object they're called on
+                  if (
+                    path.parent.type === 'CallExpression' &&
+                    path.parent.callee === path.node &&
+                    inlineRefExpression.type !== 'JSXMemberExpression'
+                  ) {
+                    inlineRefExpression = nullBoundExpression(t, inlineRefExpression);
+                  }
                   path.replaceWith(inlineRefExpression);
                   path.skip();
                 }
