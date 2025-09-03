@@ -30,7 +30,7 @@ public final class GlassView: ExpoView {
     }
   }
 
-  // Nested GlassContainer GlassView do not respect parent layer corner properties, so we copy it here
+  // When GlassView is a child of a GlassContainer, it does not respect parent layer corner properties, so we copy it here
   // Non uniform borders also do not work as GlassView does not respect mask property when nested in a GlassContainer
   // TODO: support UIVisualEffectView with ExpoFabricView?
   public func setBorderRadius(_: CGFloat?) {
