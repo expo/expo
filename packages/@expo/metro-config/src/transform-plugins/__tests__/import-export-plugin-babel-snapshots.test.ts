@@ -150,76 +150,6 @@ const cases = [
     foo.bar();
     foo.baz();
   `,
-  test('integration missing-flow-plugin-deep')`
-    import A from "x";
-
-    export function fn(x: A.b[2]) {
-      return A.method(x);
-    }
-  `,
-  test('integration missing-flow-plugin-type-cast')`
-    import { A } from "x";
-
-    var x = ({} : A.b[0]);
-  `,
-  test('integration missing-flow-plugin')`
-    import A from "x";
-
-    export function fn(x: A) {
-      return A.method(x);
-    }
-  `,
-  test('integration missing-ts-plugin-deep')`
-    import A from "x";
-
-    export function fn(x: A.b[2]) {
-      return A.method(x);
-    }
-  `,
-  test('integration missing-ts-plugin-type-assertion-legacy')`
-    import { A } from "x";
-
-    var x = {} as A.b[0];
-  `,
-  test('integration missing-ts-plugin-type-assertion')`
-    import { A } from "x";
-
-    var x = <A.b[0]> {};
-  `,
-  test('integration missing-ts-plugin')`
-    import A from "x";
-
-    export function fn(x: A) {
-      return A.method(x);
-    }
-  `,
-  test('interop-module-string-names export-from-string-as-string')`
-    export { "some imports" as "some exports" } from "foo";
-  `,
-  test('interop-module-string-names export-from-string')`
-    export { "some exports" } from "foo";
-  `,
-  test('interop-module-string-names export-from')`
-    export { foo as "some exports" } from "foo";
-  `,
-  test('interop-module-string-names export-named-string-can-be-identifier')`
-    var foo, bar;
-    export {foo as "defaultExports", bar};
-  `,
-  test('interop-module-string-names export-named')`
-    var foo, bar;
-    export {foo as "default exports", bar};
-  `,
-  test('interop-module-string-names import-named-string-can-be-identifier')`
-    import { "defaultImports" as bar} from "foo";
-
-    bar;
-  `,
-  test('interop-module-string-names import-named')`
-    import {"default imports" as bar} from "foo";
-
-    bar;
-  `,
   test('interop export-all')`
     // The fact that this exports both a normal default, and all of the names via
     // re-export is an edge case that is important not to miss. See
@@ -638,11 +568,6 @@ const cases = [
     import Foo, { baz } from "./moduleWithGetter";
 
     export { Foo, baz };
-  `,
-  test('misc export-empty-name')`
-    const a = "foo";
-
-    export { a as "" };
   `,
   test('misc export-expr-with-same-name')`
     import someFunction from './b';

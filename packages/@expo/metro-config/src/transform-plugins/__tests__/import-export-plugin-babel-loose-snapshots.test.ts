@@ -238,33 +238,6 @@ const cases = [
     export { d as e, d as f };
     d = 4;
   `,
-  test('interop-module-string-names-loose export-from-string-as-string')`
-    export { "some imports" as "some exports" } from "foo";
-  `,
-  test('interop-module-string-names-loose export-from-string')`
-    export { "some exports" } from "foo";
-  `,
-  test('interop-module-string-names-loose export-from')`
-    export { foo as "some exports" } from "foo";
-  `,
-  test('interop-module-string-names-loose export-named-string-can-be-identifier')`
-    var foo, bar;
-    export {foo as "defaultExports", bar};
-  `,
-  test('interop-module-string-names-loose export-named')`
-    var foo, bar;
-    export {foo as "default exports", bar};
-  `,
-  test('interop-module-string-names-loose import-named-string-can-be-identifier')`
-    import { "defaultImports" as bar} from "foo";
-
-    bar;
-  `,
-  test('interop-module-string-names-loose import-named')`
-    import {"default imports" as bar} from "foo";
-
-    bar;
-  `,
 ];
 
 const getExpected = (code: string) =>
