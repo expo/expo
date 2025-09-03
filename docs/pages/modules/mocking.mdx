@@ -11,8 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The recommended way to write unit tests for an Expo project is to use [Jest](https://jestjs.io/) and the `jest-expo` preset.
 
-To write a unit test for an app that uses native code, you need to mock native calls.
-The term **Mocking** means to replace the actual implementation of a function with a fake version that does not perform any actions. This approach is useful for running unit tests on a local computer as it involves bypassing the need for native code which is only available on a device, and any code that calls native functions on a local machine will not work.
+To write a unit test for an app that uses native code, you need to mock native calls. The term **Mocking** means to replace the actual implementation of a function with a fake version that does not perform any actions. This approach is useful for running unit tests on a local computer as it involves bypassing the need for native code which is only available on a device, and any code that calls native functions on a local machine will not work.
 
 Expo SDK includes a set of default mocks for each of our community packages. You can also mock any JS code yourself using built-in Jest APIs such as [mock functions](https://jestjs.io/docs/mock-functions).
 
@@ -35,8 +34,7 @@ Now, in a unit test, calling `ExpoClipboard.hasStringAsync()` returns `false`.
 
 ## Automatic generation of mocks
 
-Maintaining mocks for native modules can be a lot of work if the native module has multiple methods. To make this easier, we provide a script that automatically generates mocks for all native functions in a module.
-It works for generating mocks in TypeScript and JavaScript based on the Swift implementation in your module.
+Maintaining mocks for native modules can be a lot of work if the native module has multiple methods. To make this easier, we provide a script that automatically generates mocks for all native functions in a module. It works for generating mocks in TypeScript and JavaScript based on the Swift implementation in your module.
 
 To use this script, you have to install [SourceKitten](https://github.com/jpsim/SourceKitten) framework. Then, navigate to the module directory (where your module's **expo-module.config.json** is located) and run the `generate-ts-mocks` command.
 
@@ -48,6 +46,92 @@ To use this script, you have to install [SourceKitten](https://github.com/jpsim/
 The command above generates **ExpoModuleName.ts** in the **mocks** directory of your module. It contains a mock implementation for each native method and view in your module.
 
 > **Tip:** You can also run `generate-js-mocks` to generate mocks in JavaScript.
+
+## Unit testing with mocked modules
+
+Once you have created mocks for your native modules, you can write comprehensive unit tests to verify that your JavaScript code calls the native functions correctly and handles their responses appropriately.
+
+The examples below demonstrate these patterns using real testing techniques from Expo SDK modules such as [`expo-clipboard`](https://github.com/expo/expo/blob/main/packages/expo-clipboard/src/__tests__/Clipboard-test.native.ts), [`expo-screen-capture`](https://github.com/expo/expo/blob/main/packages/expo-screen-capture/src/__tests__/ScreenCaptureHook-test.native.js), and [`expo-app-integrity`](https://github.com/expo/expo/blob/main/packages/expo-app-integrity/src/__tests__/ExpoAppIntegrity-test.native.ts).
+
+### Basic test setup
+
+Create test files in a **\_\_tests\_\_** directory next to your source files. Import your module and the mocked native module to write assertions:
+
+```js MyModule.test.js
+import * as MyModule from '../MyModule';
+import ExpoMyModule from '../ExpoMyModule';
+
+describe('MyModule', () => {
+  it('calls native module with correct parameters', async () => {
+    await MyModule.doSomething('test-param');
+    expect(ExpoMyModule.doSomething).toHaveBeenCalledWith('test-param');
+  });
+});
+```
+
+### Testing function calls and return values
+
+Use Jest's mock assertion methods to verify that your JavaScript functions delegate to native implementations correctly:
+
+```js MyModule.test.js
+describe('Module functionality', () => {
+  it('delegates to native implementation', () => {
+    MyModule.setData('test-data');
+    expect(ExpoMyModule.setDataAsync).toHaveBeenCalledWith('test-data', {});
+  });
+
+  it('handles async operations', async () => {
+    await expect(MyModule.getDataAsync()).resolves.not.toThrow();
+  });
+
+  it('verifies call count', () => {
+    MyModule.performAction();
+    MyModule.performAction();
+    expect(ExpoMyModule.performAction).toHaveBeenCalledTimes(2);
+  });
+});
+```
+
+### Testing React hooks with native modules
+
+When testing React hooks that use native modules, use React Testing Library's [`renderHook`](https://testing-library.com/docs/react-testing-library/api/#renderhook) function:
+
+```js useMyHook.test.js
+import { renderHook } from '@testing-library/react-native';
+import { useMyHook } from '../useMyHook';
+import ExpoMyModule from '../ExpoMyModule';
+
+jest.mock('../ExpoMyModule', () => ({
+  startOperation: jest.fn().mockResolvedValue(),
+  stopOperation: jest.fn().mockResolvedValue(),
+}));
+
+describe('useMyHook', () => {
+  it('calls native methods on mount and unmount', () => {
+    const hook = renderHook(useMyHook);
+    expect(ExpoMyModule.startOperation).toHaveBeenCalledTimes(1);
+
+    hook.unmount();
+    expect(ExpoMyModule.stopOperation).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles parameter changes', () => {
+    const hook = renderHook(useMyHook, { initialProps: 'param1' });
+
+    hook.rerender('param2');
+
+    expect(ExpoMyModule.startOperation).toHaveBeenCalledTimes(2);
+    expect(ExpoMyModule.stopOperation).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+### Best practices
+
+- **Clean up between tests**: Use `beforeEach` or `afterEach` to reset mocks and avoid test pollution.
+- **Test edge cases**: Verify behavior when native functions throw errors or return unexpected values.
+- **Use descriptive test names**: Write test descriptions that explain the specific behavior being verified.
+- **Group related tests**: Use `describe` blocks to organize tests by functionality or component.
 
 ## More
 
