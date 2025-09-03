@@ -2,6 +2,7 @@
 title: Integrating a React Native view into existing native apps
 sidebar_title: Integrated approach
 description: Add Expo and React Native to existing native apps using the "integrated" approach.
+hideTOC: true
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -61,7 +62,10 @@ Then run `yarn install` to install the dependencies. This will ensure **node_mod
 
 > **info** Opting for a monorepo requires you to configure a custom project root, in Gradle/CocoaPods. This will be covered in the next sections.
 
-## Configuring your Android project
+## Configuring your native project
+
+<Tabs tabs={["Configuring Android", "Configuring iOS"]}>
+<Tab>
 
 To integrate React Native on Android, you need to configure the native project by modifying the following files:
 
@@ -359,9 +363,10 @@ Add the new Activity to your **AndroidManifest.xml** file, make sure to set the 
 
 Now your activity is ready to run some JavaScript code.
 
-## Configuring your iOS project
+</Tab>
+<Tab>
 
-To integrate React Native, you need to configure the native iOS project by modifying the following files:
+To integrate React Native on iOS, you need to configure the native iOS project by modifying the following files:
 
 - **Podfile**: To add the React Native dependencies.
 - **Xcode project**: To add a build phase for bundling JavaScript code.
@@ -612,6 +617,8 @@ class ViewController: UIViewController {
 }
 ```
 
+</Tab>
+</Tabs>
 ## Test your integration
 
 You have completed all the basic steps to integrate React Native with your application. Now run the following command in the React Native directory to start the [Metro bundler](https://metrobundler.dev/)
