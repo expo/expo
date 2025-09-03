@@ -6,6 +6,7 @@ public enum GlassStyle: String, Enumerable {
   case regular
 
   @available(iOS 26.0, *)
+  #if compiler(>=6.2) // Xcode 26
   func toUIGlassEffectStyle() -> UIGlassEffect.Style {
     switch self {
     case .clear:
@@ -14,4 +15,5 @@ public enum GlassStyle: String, Enumerable {
       return .regular
     }
   }
+  #endif
 }
