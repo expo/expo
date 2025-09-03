@@ -33,17 +33,19 @@ Move your existing Android and iOS projects to the **android** or **ios** sub-di
 
 <Tab label="Android">
 
-<Terminal cmd={['$ mkdir exp/android', '$ mv !(exp) exp/android/']} />
+<Terminal cmd={['$ mkdir exp/android', '$ mv /path/to/your/android-project exp/android/']} />
 
 </Tab>
 <Tab label="iOS">
 
-<Terminal cmd={['$ mkdir exp/ios', '$ mv !(exp) exp/ios/']} />
+<Terminal cmd={['$ mkdir exp/ios', '$ mv /path/to/your/ios-project exp/ios/']} />
 
 </Tab>
 </Tabs>
 
 ### Approach 2: Set up a monorepo
+
+Monorepos, or "monolithic repositories", are single repositories containing multiple apps or packages. [Learn more](/guides/monorepos/).
 
 Setting up a monorepo will ensure that Android and iOS scripts will be able to invoke commands from Node libraries even with a custom folder structure. To set up a Yarn monorepo, create a **package.json** file at the root of your project and add the following content:
 
@@ -237,7 +239,7 @@ This is necessary for your app to communicate with your local [Metro bundler](ht
 
 Now, you need to add some native code to start the React Native runtime and tell it to render your React components.
 
-#### Updating your Application class
+#### Updating your `Application` class
 
 Start by updating your `Application` class to initialize React Native. You can use **MainApplication.kt** from the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt) as a reference:
 

@@ -525,5 +525,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 
   // After changing brownfield docs
-  '/brownfield/installing-expo-modules': '/brownfield/integration-with-existing-apps/',
+  '/brownfield/installing-expo-modules/': '/brownfield/integration-with-existing-apps/',
 };
