@@ -78,8 +78,7 @@ The `useShareIntent` hook tells you whether your app was opened from the share s
 
 If you're using Expo Router, you can intercept deep links coming from the share extension with a special file called [**+native-intent.ts**](/router/advanced/native-intent/):
 
-```
-// app/+native-intent.ts
+```ts app/+native-intent.ts
 import { getShareExtensionKey } from "expo-share-intent";
 
 export function redirectSystemPath({ path }: { path: string }) {
