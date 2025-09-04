@@ -29,8 +29,8 @@ describe('runAsync', () => {
   it('returns result with isSuccessful = true if there is a custom metro config and it includes Expo asset hashes', async () => {
     jest.mocked(configExistsAsync).mockResolvedValueOnce(true);
     jest.mocked(loadConfigAsync).mockResolvedValueOnce({
-      // @ts-ignore: we don't need to mock the entire config
       transformer: {
+        // @ts-ignore: we don't need to mock the entire config
         _expoRelativeProjectRoot: '...',
       },
     });
