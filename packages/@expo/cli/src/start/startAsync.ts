@@ -15,6 +15,7 @@ import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
+import { maybeCreateMCPServerAsync } from './server/MCP';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -114,9 +115,13 @@ export async function startAsync(
 
   // Present the Terminal UI.
   if (isInteractive()) {
+    const mcpServer = await profile(maybeCreateMCPServerAsync)(projectRoot);
+
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
     });
+
+    mcpServer?.start();
   } else {
     // Display the server location in CI...
     const url = devServerManager.getDefaultDevServer()?.getDevServerUrl();
