@@ -641,17 +641,13 @@ function getProjectConfigDescriptionWithPaths(projectRoot, projectConfig) {
 function withInternalGeneratedConfig(config) {
   const generatedPath = (0, _getenv().string)('__EXPO_GENERATED_CONFIG_PATH', '');
   if (!generatedPath) {
-    console.log('No generated config found');
     return config;
   }
-  ;
   let generated = null;
   try {
     const rawGenerated = _fs().default.readFileSync(generatedPath, 'utf8');
     generated = JSON.parse(rawGenerated);
-  } catch {
-    console.log('Failed to parse generated config');
-  }
+  } catch {}
   if (!generated) return config;
   const generatedOrigin = generated['expo.extra.router.generatedOrigin'];
   if (generatedOrigin) {
@@ -659,7 +655,6 @@ function withInternalGeneratedConfig(config) {
     config.extra.router ??= {};
     config.extra.router.generatedOrigin = generatedOrigin;
   }
-  console.log('Applied generated config from', generatedPath);
   return config;
 }
 //# sourceMappingURL=Config.js.map
