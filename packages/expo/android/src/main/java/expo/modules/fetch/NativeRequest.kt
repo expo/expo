@@ -34,14 +34,14 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
     val newClient = clientBuilder.build()
     response.redirectMode = requestInit.redirect
 
-    var reqBody = requestBody?.toRequestBody(mediaType);
+    val headers = requestInit.headers.toHeaders()
+    val mediaType = headers["Content-Type"]?.toMediaTypeOrNull()
+    var reqBody = requestBody?.toRequestBody(mediaType)
     // OkHttp requires a non-null body for POST, PATCH and PUT requests. (also for PROPPATCH and REPORT)
     // https://github.com/expo/expo/issues/35950#issuecomment-3245173248
     if (reqBody == null && requestInit.method in ALLOWED_METHODS_FOR_BODY) {
-      reqBody = byteArrayOf(0)
+      reqBody = byteArrayOf(0).toRequestBody(mediaType)
     }
-    val headers = requestInit.headers.toHeaders()
-    val mediaType = headers["Content-Type"]?.toMediaTypeOrNull()
     val request = Request.Builder()
       .headers(headers)
       .method(requestInit.method, reqBody)
