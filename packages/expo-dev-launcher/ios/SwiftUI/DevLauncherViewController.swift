@@ -1,5 +1,8 @@
+#if os(iOS) || os(tvOS)
 import UIKit
+#endif
 import SwiftUI
+import ExpoModulesCore
 
 @objc public class DevLauncherViewController: UIViewController {
   private var hostingController: UIHostingController<DevLauncherRootView>?
@@ -52,8 +55,16 @@ import SwiftUI
     navigationController?.setNavigationBarHidden(true, animated: false)
   }
 
+#if os(iOS) || os(tvOS)
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     hostingController?.view.frame = view.bounds
   }
+
+#else
+  public override func viewDidLayout() {
+    super.viewDidLayout()
+    hostingController?.view.frame = view.bounds
+  }
+#endif
 }

@@ -59,7 +59,9 @@ struct SettingsTabView: View {
     #if os(tvOS)
     .background()
     #endif
+    #if !os(macOS)
     .navigationBarHidden(true)
+    #endif
   }
 
   private var showMenuAtLaunch: some View {
@@ -140,9 +142,12 @@ struct SettingsTabView: View {
 #else
       Button(showCopiedMessage ? "Copied to clipboard!" : "Copy system info") {
         let buildInfoJSON = createBuildInfoJSON()
+#if os(macOS)
+        NSPasteboard.general.setString(buildInfoJSON, forType: .string)
+#else
         let clipboard = UIPasteboard.general
         clipboard.string = buildInfoJSON
-
+#endif
         showCopiedMessage = true
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {

@@ -1,7 +1,9 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeDelegate.h>
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#endif
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -22,6 +24,8 @@
 // for importing the header from framework, the dash will be transformed to underscore
 #import <React_RCTAppDelegate/RCTAppDelegate.h>
 #endif
+
+#import <ExpoModulesCore/Platform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

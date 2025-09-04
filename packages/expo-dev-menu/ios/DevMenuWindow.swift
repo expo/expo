@@ -1,9 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#if os(iOS) || os(tvOS)
 import UIKit
+#endif
 import React
 
-#if os(tvOS)
+#if os(tvOS) || os(macOS)
 protocol PresentationControllerDelegate: AnyObject {
 }
 #else

@@ -29,14 +29,14 @@ struct CrashReportView: View {
           .foregroundColor(.black)
           .frame(maxWidth: .infinity)
           .padding()
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
           .background(Color(.systemGray5))
 #endif
           .cornerRadius(8)
       }
       .padding()
     }
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     .background(Color(.systemBackground))
     #endif
     .navigationBarHidden(true)
@@ -44,7 +44,7 @@ struct CrashReportView: View {
 
   private func copyToClipboard() {
     let crashReport = generateJSONFromCrash()
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
     UIPasteboard.general.string = crashReport
 
     showCopiedMessage = true
@@ -131,7 +131,7 @@ struct CrashReportView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
       .frame(maxHeight: 200)
-      #if !os(tvOS)
+      #if !os(tvOS) && !os(macOS)
       .background(Color(.secondarySystemGroupedBackground))
       #endif
       .cornerRadius(8)

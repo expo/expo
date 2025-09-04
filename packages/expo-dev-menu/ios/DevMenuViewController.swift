@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#if os(iOS) || os(tvOS)
 import UIKit
+#endif
 import SwiftUI
 
 class DevMenuViewController: UIViewController {

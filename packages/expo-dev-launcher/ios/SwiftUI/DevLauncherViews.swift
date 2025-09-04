@@ -1,7 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+#if os(iOS) || os(tvOS)
 import UIKit
+#endif
 
 public struct DevLauncherRootView: View {
   @ObservedObject var viewModel: DevLauncherViewModel
