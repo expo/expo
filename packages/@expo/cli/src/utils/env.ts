@@ -275,6 +275,14 @@ class Env {
   get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
     return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
   }
+
+  /**
+   * Specify the MCP server URL.
+   * To enable the experimental MCP integration, set the Expo MCP server URL and add the `expo-mcp` package to your project.
+   */
+  get EXPO_UNSTABLE_MCP_SERVER(): string {
+    return string('EXPO_UNSTABLE_MCP_SERVER', '');
+  }
 }
 
 export const env = new Env();
