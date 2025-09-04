@@ -682,7 +682,7 @@ it('hoists declarations to the top with live bindings', () => {
 
   const expected = `
     var _bar = require('bar');
-    _bar.foo();
+    (0, _bar.foo)();
   `;
 
   compare([importExportLiveBindingsPlugin], code, expected, { ...opts });

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.12 — 2025-09-03
+
+### 💡 Others
+
 - Use new LongLivedObject.h and CallbackWrapper.h headers namespace ([#39344](https://github.com/expo/expo/pull/39344) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.0.11 — 2025-09-02

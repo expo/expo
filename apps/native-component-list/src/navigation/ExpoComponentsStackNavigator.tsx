@@ -54,6 +54,12 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/GlassView/GlassViewScreen'));
+    },
+    name: 'GlassView',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Camera/CameraScreen'));
     },
     name: 'Camera',

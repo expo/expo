@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.0-preview.14 — 2025-09-03
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.0-preview.13 — 2025-09-02
 
 ### 🎉 New features

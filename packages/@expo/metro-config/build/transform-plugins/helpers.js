@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.esModuleExportTemplate = exports.varDeclaratorCallHelper = exports.sideEffectRequireCall = exports.requireCall = exports.varDeclaratorHelper = exports.assignExportHelper = exports.liveExportHelper = exports.liveExportAllHelper = exports.namespaceWrapHelper = exports.strictNamespaceWrapHelper = exports.defaultWrapHelper = void 0;
+exports.nullBoundExpression = exports.esModuleExportTemplate = exports.varDeclaratorCallHelper = exports.sideEffectRequireCall = exports.requireCall = exports.varDeclaratorHelper = exports.assignExportHelper = exports.liveExportHelper = exports.liveExportAllHelper = exports.namespaceWrapHelper = exports.strictNamespaceWrapHelper = exports.defaultWrapHelper = void 0;
 exports.withLocation = withLocation;
 const defaultWrapHelper = ({ statement }, name) => statement(`
     function %%name%%(e) {
@@ -104,6 +104,8 @@ const esModuleExportTemplate = ({ statement }) => {
   `)();
 };
 exports.esModuleExportTemplate = esModuleExportTemplate;
+const nullBoundExpression = (t, expr) => t.parenthesizedExpression(t.sequenceExpression([t.numericLiteral(0), expr]));
+exports.nullBoundExpression = nullBoundExpression;
 function withLocation(nodeOrArray, loc) {
     if (Array.isArray(nodeOrArray)) {
         return nodeOrArray.map((n) => withLocation(n, loc));

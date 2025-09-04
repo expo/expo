@@ -146,6 +146,12 @@ export const esModuleExportTemplate = ({ statement }: typeof template): types.St
   `)();
 };
 
+export const nullBoundExpression = (
+  t: typeof types,
+  expr: types.Expression
+): types.ParenthesizedExpression =>
+  t.parenthesizedExpression(t.sequenceExpression([t.numericLiteral(0), expr]));
+
 function withLocation<TNode extends types.Node>(
   node: TNode,
   loc: types.SourceLocation | null | undefined

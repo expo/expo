@@ -80,7 +80,7 @@ exports[`importInterop-none import-default-only 1`] = `
 }
 var _foo = require("foo");
 var foo = _interopDefault(_foo);
-foo.default();"
+(0, foo.default)();"
 `;
 
 exports[`importInterop-none import-wildcard 1`] = `
@@ -1255,7 +1255,7 @@ Object.defineProperty(exports, "isOdd", {
 });
 var _evens = require("./evens");
 function nextOdd(n) {
-  return _evens.isEven(n) ? n + 1 : n + 2;
+  return (0, _evens.isEven)(n) ? n + 1 : n + 2;
 }
 var isOdd = function (isEven) {
   return function (n) {
@@ -1941,10 +1941,10 @@ console.log(aDefault.default);
 console.log(_two.aNamed);
 console.log(_three.orig);
 console.log(aNamespace);
-console.log(aDefault.default());
-console.log(_two.aNamed());
-console.log(_three.orig());
-console.log(aNamespace());"
+console.log((0, aDefault.default)());
+console.log((0, _two.aNamed)());
+console.log((0, _three.orig)());
+console.log((0, aNamespace)());"
 `;
 
 exports[`shadowed-namespace-import transformed-name 1`] = `

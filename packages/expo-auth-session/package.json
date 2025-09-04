@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "7.0.6",
+  "version": "7.0.7",
   "description": "Expo module for browser-based authentication",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,7 +37,7 @@
     "expo-application": "~7.0.6",
     "expo-constants": "~18.0.7",
     "expo-crypto": "~15.0.6",
-    "expo-linking": "~8.0.6",
+    "expo-linking": "~8.0.7",
     "expo-web-browser": "~15.0.6",
     "invariant": "^2.2.4"
   },
