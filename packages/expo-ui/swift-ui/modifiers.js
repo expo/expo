@@ -1,1 +1,1 @@
-export * from '../build/swift-ui/modifiers';
+export * from '../src/swift-ui/modifiers';

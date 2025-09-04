@@ -1,1 +1,1 @@
-export * from '../build/swift-ui';
+export * from '../src/swift-ui';
