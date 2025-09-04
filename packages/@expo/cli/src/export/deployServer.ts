@@ -41,8 +41,8 @@ export async function runServerDeployCommandAsync(
   }
 
   if (!env.EAS_BUILD && !env.__EAS_BIN) {
+    // We only need to run it when building outside of EAS and EAS_BIN isn't set.
     // This check helps avoid running EAS if the user isn't a user of EAS.
-    // We only need to run it when building outside of EAS.
     const globalBin = getCommandBin('eas');
     if (!globalBin) {
       // This should never happen from EAS Builds.
