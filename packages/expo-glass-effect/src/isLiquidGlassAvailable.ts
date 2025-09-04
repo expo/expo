@@ -6,8 +6,6 @@
  * accessibility settings that limit the Liquid Glass effect.
  * To check if the user has disabled the Liquid Glass effect via accessibility settings, use
  * [`AccessibilityInfo.isReduceTransparencyEnabled()`](https://reactnative.dev/docs/accessibilityinfo#isreducetransparencyenabled-ios).
- *
- * @platform ios
  */
 export function isLiquidGlassAvailable(): boolean {
   return false;

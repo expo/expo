@@ -15,9 +15,7 @@ let IS_LIQUID_GLASS_AVAILABLE: boolean | undefined;
  */
 export function isLiquidGlassAvailable(): boolean {
   if (IS_LIQUID_GLASS_AVAILABLE === undefined) {
-    IS_LIQUID_GLASS_AVAILABLE = requireNativeModule(
-      'ExpoLiquidGlassConstants'
-    ).isLiquidGlassAvailable;
+    IS_LIQUID_GLASS_AVAILABLE = requireNativeModule('ExpoGlassEffect').isLiquidGlassAvailable;
   }
   return !!IS_LIQUID_GLASS_AVAILABLE;
 }

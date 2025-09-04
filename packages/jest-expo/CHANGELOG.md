@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Change `ExpoLiquidGlassConstants` to `ExpoGlassEffect` in expoModules mocks ([#39349](https://github.com/expo/expo/pull/39349) by [@Ubax](https://github.com/Ubax))
+
 ## 54.0.7 — 2025-09-02
 
 ### 💡 Others
