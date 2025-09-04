@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Allowing import to ESM modules. ([#39390](https://github.com/expo/expo/pull/39390) by [@kudo](https://github.com/kudo))
+
 ## 0.26.8 — 2025-09-03
 
 ### 🎉 New features
