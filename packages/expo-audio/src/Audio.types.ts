@@ -28,8 +28,27 @@ export type AudioSource =
  */
 export type AudioPlayerOptions = {
   /**
-   * How often (in milliseconds) to emit playback status updates.
-   * @default 500
+   * How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+   *
+   * @example
+   * ```tsx
+   * import { useAudioPlayer } from 'expo-audio';
+   *
+   * export default function App() {
+   *   const player = useAudioPlayer(source);
+   *
+   *   // High-frequency updates for smooth progress bars
+   *   const player = useAudioPlayer(source, { updateInterval: 100 });
+   *
+   *   // Standard updates (default behavior)
+   *   const player = useAudioPlayer(source, { updateInterval: 500 });
+   *
+   *   // Low-frequency updates for better performance
+   *   const player = useAudioPlayer(source, { updateInterval: 1000 });
+   * }
+   * ```
+   *
+   * @default 500ms
    *
    * @platform ios
    * @platform android
