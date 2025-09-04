@@ -187,13 +187,11 @@ When an application starts, Expo checks if the current device locale should rend
 
 <Collapsible summary="Dynamically overriding RTL settings">
 
-If you want to override the default RTL detection from your application code dynamically, you cannot set the `supportsRTL` key in app config to any value – remove it from the config.
+If you want to override the default RTL detection from your application code dynamically, you cannot set the `supportsRTL` key in app config to any value &mdash; remove it from the config.
 
-You can use the code snippet below to enable RTL layouts on LTR or RTL locales – this requires an application reload to apply changes.
-This also does not work in Expo Go, as Expo Go resets RTL preferences when opening the launcher or individual projects.
+You can use the code snippet below to enable RTL layouts on LTR or RTL locales &mdash; this requires an application reload to apply changes. This also does not work in Expo Go, as Expo Go resets RTL preferences when opening the launcher or individual projects.
 
-On iOS, you will need to add the RTL language bundles. If you're using continous native generation, use the config plugin:
-If you're not using continous native generation, you can follow the general steps outlined in [this React Native doc](https://reactnative.dev/blog/2016/08/19/right-to-left-support-for-react-native-apps#making-an-app-rtl-ready).
+On iOS, you will need to add the RTL language bundles. If you're using [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), use the config plugin. If you're not using CNG, you can follow the general steps outlined in this [React Native blog post](https://reactnative.dev/blog/2016/08/19/right-to-left-support-for-react-native-apps#making-an-app-rtl-ready).
 
 <SnackInline
 label="Overriding RTL settings"
