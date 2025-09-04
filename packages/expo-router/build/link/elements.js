@@ -115,12 +115,13 @@ exports.LinkMenu = LinkMenu;
  * @platform ios
  */
 function LinkPreview(props) {
-    const { width, height, children } = props;
+    const { children, style } = props;
     const internalPreviewContext = (0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext);
     if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !internalPreviewContext) {
         return null;
     }
     const { isVisible, href } = internalPreviewContext;
+    const { width, height, ...restOfStyle } = style ?? {};
     const contentSize = {
         width: width ?? 0,
         height: height ?? 0,
@@ -132,10 +133,7 @@ function LinkPreview(props) {
     else {
         content = isVisible ? <HrefPreview_1.HrefPreview href={href}/> : null;
     }
-    return (<native_1.NativeLinkPreviewContent style={{
-            /* Setting default background here, so that the preview is not transparent */
-            backgroundColor: '#fff',
-        }} preferredContentSize={contentSize}>
+    return (<native_1.NativeLinkPreviewContent style={restOfStyle} preferredContentSize={contentSize}>
       {content}
     </native_1.NativeLinkPreviewContent>);
 }
