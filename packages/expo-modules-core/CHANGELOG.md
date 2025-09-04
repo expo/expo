@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Remove some usage of `kotlin.reflect.full.*`. ([#39385](https://github.com/expo/expo/pull/39385) by [@lukmccall](https://github.com/lukmccall))
+
 ## 3.0.12 — 2025-09-03
 
 ### 💡 Others
