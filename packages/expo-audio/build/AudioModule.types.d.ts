@@ -79,7 +79,6 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      *   // Set to full volume
      *   player.volume = 1.0;
      * }
-     *
      * ```
      */
     volume: number;
