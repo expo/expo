@@ -19,7 +19,6 @@ import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubclassOf
 
 class ClassComponentBuilder<SharedObjectType : Any>(
   private val appContext: AppContext,
@@ -33,8 +32,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 
   fun buildClass(): ClassDefinitionData {
     val hasOwnerType = ownerClass != Unit::class
-    val isSharedObject = hasOwnerType && ownerClass.isSubclassOf(SharedObject::class)
-    val isSharedRef = hasOwnerType && ownerClass.isSubclassOf(SharedRef::class)
+    val isSharedObject = hasOwnerType && SharedObject::class.java.isAssignableFrom(ownerClass.java)
+    val isSharedRef = hasOwnerType && SharedRef::class.java.isAssignableFrom(ownerClass.java)
 
     if (eventsDefinition != null && isSharedObject) {
       listOf("__expo_onStartListeningToEvent" to SharedObject::onStartListeningToEvent, "__expo_onStopListeningToEvent" to SharedObject::onStopListeningToEvent)
