@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from '../../bin/cli';
 import { assertArgs, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { logCmdError } from '../utils/errors';
 
 export const expoWhoami: Command = async (argv) => {
