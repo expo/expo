@@ -1,0 +1,64 @@
+{
+  "name": "@expo/router-server",
+  "version": "0.1.0",
+  "description": "Expo Router is a file-based router for React Native and web applications.",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "main": "build/index",
+  "types": "build/index.d.ts",
+  "sideEffects": [
+    "rsc/entry.js"
+  ],
+  "files": [
+    "build",
+    "!src",
+    "node",
+    "rsc",
+    "server.d.ts",
+    "server.js",
+    "types",
+    "testing-library.js",
+    "testing-library.d.ts",
+    "_async-server-import.js"
+  ],
+  "repository": {
+    "url": "https://github.com/expo/expo.git",
+    "type": "git",
+    "directory": "packages/@expo/router-server"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "scripts": {
+    "build": "bash -c 'if [ -z \"$1\" ]; then expo-module build -p tsconfig.json; else expo-module build \"$1\"; fi' --",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
+    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "peerDependencies": {
+    "expo": "*",
+    "expo-constants": "^18.0.7",
+    "expo-router": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-safe-area-context": ">= 5.4.0"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@expo/metro-runtime": "6.1.1",
+    "@expo/server": "^0.7.3",
+    "@radix-ui/react-slot": "1.2.0",
+    "debug": "^4.3.4",
+    "react-server-dom-webpack": "~19.0.0"
+  }
+}

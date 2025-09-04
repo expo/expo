@@ -134,7 +134,7 @@ function reactClientReferencesPlugin(api) {
                     // Handle "use server" in the client.
                     const proxyModule = [
                         `import { createServerReference } from 'react-server-dom-webpack/client';`,
-                        `import { callServerRSC } from 'expo-router/rsc/internal';`,
+                        `import { callServerRSC } from '@expo/router-server/rsc/internal';`,
                     ];
                     const getProxy = (exportName) => {
                         return `createServerReference(${JSON.stringify(`${outputKey}#${exportName}`)}, callServerRSC)`;

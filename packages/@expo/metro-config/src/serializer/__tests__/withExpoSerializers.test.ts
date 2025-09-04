@@ -727,7 +727,7 @@ describe('serializes', () => {
     const bundle = await serializeTo({
       fs: {
         'index.js': `
-          import('./foo')          
+          import('./foo')
         `,
         'foo.js': `
           export const foo = 'foo';
@@ -1581,7 +1581,7 @@ describe('serializes', () => {
           '/app/index.js',
           '/app/server-actions.js',
           '/app/react-server-dom-webpack/client',
-          '/app/expo-router/rsc/internal',
+          '/app/@expo/router-server/rsc/internal',
         ],
         paths: {},
         expoDomComponentReferences: [],

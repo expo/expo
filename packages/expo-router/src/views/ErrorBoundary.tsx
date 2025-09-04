@@ -1,5 +1,6 @@
 'use client';
 
+import { ReactServerError } from '@expo/router-server/build/rsc/router/errors';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { use } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView, TextInput } from 'react-native';
@@ -8,7 +9,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
 import { Link } from '../link/Link';
-import { ReactServerError } from '../rsc/router/errors';
 
 function StandardErrorView({ error }: { error: Error }) {
   return (

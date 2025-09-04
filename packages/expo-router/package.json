@@ -7,7 +7,6 @@
   "main": "build/index",
   "types": "build/index.d.ts",
   "sideEffects": [
-    "rsc/entry.js",
     "entry-classic.js",
     "entry.js"
   ],
@@ -39,7 +38,6 @@
     "unstable-native-tabs.d.ts",
     "node",
     "plugin",
-    "rsc",
     "server.d.ts",
     "server.js",
     "stack.d.ts",
@@ -129,6 +127,7 @@
   "dependencies": {
     "@expo/metro-runtime": "6.1.1",
     "@expo/schema-utils": "^0.1.6",
+    "@expo/router-server": "^0.1.0",
     "@expo/server": "^0.7.3",
     "@radix-ui/react-slot": "1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",

@@ -35,9 +35,9 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Try = void 0;
+const errors_1 = require("@expo/router-server/build/rsc/router/errors");
 const react_1 = __importStar(require("react"));
 const SplashScreen = __importStar(require("./Splash"));
-const errors_1 = require("../rsc/router/errors");
 // No way to access `getDerivedStateFromError` from a function component afaict.
 class Try extends react_1.Component {
     state = { error: undefined };
