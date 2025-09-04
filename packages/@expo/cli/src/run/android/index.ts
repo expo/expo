@@ -6,6 +6,7 @@ import path from 'path';
 import { Command } from '../../../bin/cli';
 import * as Log from '../../log';
 import { assertWithOptionsArgs } from '../../utils/args';
+import { asyncImportInterop } from '../../utils/asyncImportInterop';
 import { logCmdError } from '../../utils/errors';
 
 export const expoRunAndroid: Command = async (argv) => {
@@ -60,13 +61,15 @@ export const expoRunAndroid: Command = async (argv) => {
     );
   }
 
-  const { resolveStringOrBooleanArgsAsync } = await import('../../utils/resolveArgs.js');
+  const { resolveStringOrBooleanArgsAsync } = asyncImportInterop(
+    await import('../../utils/resolveArgs.js')
+  );
   const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
     '--device': Boolean,
     '-d': '--device',
   }).catch(logCmdError);
 
-  const { runAndroidAsync } = await import('./runAndroidAsync.js');
+  const { runAndroidAsync } = asyncImportInterop(await import('./runAndroidAsync.js'));
 
   return runAndroidAsync(path.resolve(parsed.projectRoot), {
     // Parsed options

@@ -10,6 +10,7 @@ import {
   getVersionedDependenciesAsync,
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
@@ -76,7 +77,7 @@ export async function checkPackagesAsync(
   if (pkg.dependencies?.['expo-router']) {
     // TODO(@kitten): This should be removed. None of the checks apply anymore
     try {
-      const { doctor: routerDoctor } = await import('expo-router/doctor.js');
+      const { doctor: routerDoctor } = asyncImportInterop(await import('expo-router/doctor.js'));
       dependencies.push(
         ...routerDoctor(pkg, resolveFrom.silent(projectRoot, '@react-navigation/native'), {
           bold: chalk.bold,

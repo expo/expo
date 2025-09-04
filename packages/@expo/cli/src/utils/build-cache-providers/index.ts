@@ -35,7 +35,7 @@ export const resolveBuildCacheProvider = async (
       });
 
       // We need to manually load dependencies installed on the fly
-      const plugin = await manuallyLoadDependency(projectRoot, 'eas-build-cache-provider');
+      const plugin = manuallyLoadDependency(projectRoot, 'eas-build-cache-provider');
 
       return {
         plugin: plugin.default ?? plugin,
@@ -243,7 +243,7 @@ export function resolvePluginFunction(
   }
 }
 
-async function manuallyLoadDependency(projectRoot: string, packageName: string) {
+function manuallyLoadDependency(projectRoot: string, packageName: string) {
   const possiblePaths = [
     path.join(projectRoot, 'node_modules'),
     ...(require.resolve.paths(packageName) ?? []),
@@ -256,6 +256,6 @@ async function manuallyLoadDependency(projectRoot: string, packageName: string) 
     throw new Error(`Package ${packageName} not found in ${possiblePaths}`);
   }
 
-  const { main } = await import(path.join(nodeModulesFolder, packageName, 'package.json'));
-  return import(path.join(nodeModulesFolder, packageName, main));
+  const { main } = require(path.join(nodeModulesFolder, packageName, 'package.json'));
+  return require(path.join(nodeModulesFolder, packageName, main));
 }

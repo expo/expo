@@ -1,13 +1,18 @@
 import { getConfig } from '@expo/config';
 
 import { Log } from '../log';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 
 export async function typescript(projectRoot: string) {
-  const { TypeScriptProjectPrerequisite } = await import(
-    '../start/doctor/typescript/TypeScriptProjectPrerequisite.js'
+  const { TypeScriptProjectPrerequisite } = asyncImportInterop(
+    await import('../start/doctor/typescript/TypeScriptProjectPrerequisite.js')
   );
-  const { MetroBundlerDevServer } = await import('../start/server/metro/MetroBundlerDevServer.js');
-  const { getPlatformBundlers } = await import('../start/server/platformBundlers.js');
+  const { MetroBundlerDevServer } = asyncImportInterop(
+    await import('../start/server/metro/MetroBundlerDevServer.js')
+  );
+  const { getPlatformBundlers } = asyncImportInterop(
+    await import('../start/server/platformBundlers.js')
+  );
 
   try {
     await new TypeScriptProjectPrerequisite(projectRoot).bootstrapAsync();

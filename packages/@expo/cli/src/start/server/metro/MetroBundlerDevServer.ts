@@ -61,6 +61,7 @@ import {
   ExportAssetMap,
 } from '../../../export/saveAssets';
 import { Log } from '../../../log';
+import { asyncImportInterop } from '../../../utils/asyncImportInterop';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
@@ -1364,8 +1365,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         callback: async () => {
           // Run once, this prevents the TypeScript project prerequisite from running on every file change.
           off();
-          const { TypeScriptProjectPrerequisite } = await import(
-            '../../doctor/typescript/TypeScriptProjectPrerequisite.js'
+          const { TypeScriptProjectPrerequisite } = asyncImportInterop(
+            await import('../../doctor/typescript/TypeScriptProjectPrerequisite.js')
           );
 
           try {

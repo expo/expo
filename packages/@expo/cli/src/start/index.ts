@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { logCmdError } from '../utils/errors';
 
 export const expoStart: Command = async (argv) => {
@@ -84,18 +85,18 @@ export const expoStart: Command = async (argv) => {
   const projectRoot = getProjectRoot(args);
 
   // NOTE(cedric): `./resolveOptions` loads the expo config when using dev clients, this needs to be initialized before that
-  const { setNodeEnv, loadEnvFiles } = await import('../utils/nodeEnv.js');
+  const { setNodeEnv, loadEnvFiles } = asyncImportInterop(await import('../utils/nodeEnv.js'));
   setNodeEnv(!args['--no-dev'] ? 'development' : 'production');
   loadEnvFiles(projectRoot);
 
-  const { resolveOptionsAsync } = await import('./resolveOptions.js');
+  const { resolveOptionsAsync } = asyncImportInterop(await import('./resolveOptions.js'));
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 
   if (options.offline) {
-    const { disableNetwork } = await import('../api/settings.js');
+    const { disableNetwork } = asyncImportInterop(await import('../api/settings.js'));
     disableNetwork();
   }
 
-  const { startAsync } = await import('./startAsync.js');
+  const { startAsync } = asyncImportInterop(await import('./startAsync.js'));
   return startAsync(projectRoot, options, { webOnly: false }).catch(logCmdError);
 };

@@ -1,9 +1,8 @@
 // Based on Next.js swc taskr file.
 // https://github.com/vercel/next.js/blob/9d1ae19af360367e53c0f5a570e261e94cc8e59b/packages/next/taskfile-swc.js
 
-const path = require('path');
 const assert = require('assert');
-
+const path = require('path');
 const transform = require('@swc/core').transform;
 
 module.exports = function (task) {
@@ -45,6 +44,7 @@ module.exports = function (task) {
         module: {
           type: 'commonjs',
           lazy: true,
+          ignoreDynamic: true,
         },
         env: {
           targets: {

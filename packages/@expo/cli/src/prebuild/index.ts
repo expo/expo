@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 
 export const expoPrebuild: Command = async (argv) => {
   const args = assertArgs(
@@ -54,11 +55,13 @@ export const expoPrebuild: Command = async (argv) => {
     { resolvePlatformOption, resolvePackageManagerOptions, resolveSkipDependencyUpdate },
     // ../utils/errors
     { logCmdError },
-  ] = await Promise.all([
-    import('./prebuildAsync.js'),
-    import('./resolveOptions.js'),
-    import('../utils/errors.js'),
-  ]);
+  ] = (
+    await Promise.all([
+      import('./prebuildAsync.js'),
+      import('./resolveOptions.js'),
+      import('../utils/errors.js'),
+    ])
+  ).flatMap(asyncImportInterop);
 
   return (() => {
     return prebuildAsync(getProjectRoot(args), {

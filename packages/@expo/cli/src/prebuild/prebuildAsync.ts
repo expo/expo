@@ -9,6 +9,7 @@ import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './
 import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
@@ -79,7 +80,7 @@ export async function prebuildAsync(
     }
   }
   if (options.clean) {
-    const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
+    const { maybeBailOnGitStatusAsync } = asyncImportInterop(await import('../utils/git.js'));
     // Clean the project folders...
     if (await maybeBailOnGitStatusAsync()) {
       return null;
@@ -167,7 +168,7 @@ export async function prebuildAsync(
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
-    const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
+    const { installCocoaPodsAsync } = asyncImportInterop(await import('../utils/cocoapods.js'));
 
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {

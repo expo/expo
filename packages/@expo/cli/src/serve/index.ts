@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 
 export const expoServe: Command = async (argv) => {
   const args = assertArgs(
@@ -35,7 +36,9 @@ export const expoServe: Command = async (argv) => {
     { serveAsync },
     // ../utils/errors
     { logCmdError },
-  ] = await Promise.all([import('./serveAsync.js'), import('../utils/errors.js')]);
+  ] = (await Promise.all([import('./serveAsync.js'), import('../utils/errors.js')])).flatMap(
+    asyncImportInterop
+  );
 
   return serveAsync(getProjectRoot(args), {
     isDefaultDirectory: !args._[0],

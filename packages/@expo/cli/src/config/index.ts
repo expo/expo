@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 
 export const expoConfig: Command = async (argv) => {
   const args = assertArgs(
@@ -39,7 +40,9 @@ export const expoConfig: Command = async (argv) => {
     { configAsync },
     // ../utils/errors
     { logCmdError },
-  ] = await Promise.all([import('./configAsync.js'), import('../utils/errors.js')]);
+  ] = (await Promise.all([import('./configAsync.js'), import('../utils/errors.js')])).flatMap(
+    asyncImportInterop
+  );
 
   return configAsync(getProjectRoot(args), {
     // Parsed options

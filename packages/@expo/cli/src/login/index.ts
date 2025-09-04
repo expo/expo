@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from '../../bin/cli';
 import { assertArgs, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { logCmdError } from '../utils/errors';
 
 export const expoLogin: Command = async (argv) => {
@@ -35,7 +36,7 @@ export const expoLogin: Command = async (argv) => {
     );
   }
 
-  const { showLoginPromptAsync } = await import('../api/user/actions.js');
+  const { showLoginPromptAsync } = asyncImportInterop(await import('../api/user/actions.js'));
   return showLoginPromptAsync({
     // Parsed options
     username: args['--username'],

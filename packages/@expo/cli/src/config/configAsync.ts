@@ -3,6 +3,7 @@ import assert from 'assert';
 import util from 'util';
 
 import * as Log from '../log';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
@@ -54,14 +55,16 @@ export async function configAsync(projectRoot: string, options: Options) {
   let config: ProjectConfig;
 
   if (options.type === 'prebuild') {
-    const { getPrebuildConfigAsync } = await import('@expo/prebuild-config');
+    const { getPrebuildConfigAsync } = asyncImportInterop(await import('@expo/prebuild-config'));
 
     config = await profile(getPrebuildConfigAsync)(projectRoot, {
       platforms: ['ios', 'android'],
     });
   } else if (options.type === 'introspect') {
-    const { getPrebuildConfigAsync } = await import('@expo/prebuild-config');
-    const { compileModsAsync } = await import('@expo/config-plugins/build/plugins/mod-compiler.js');
+    const { getPrebuildConfigAsync } = asyncImportInterop(await import('@expo/prebuild-config'));
+    const { compileModsAsync } = asyncImportInterop(
+      await import('@expo/config-plugins/build/plugins/mod-compiler.js')
+    );
 
     config = await profile(getPrebuildConfigAsync)(projectRoot, {
       platforms: ['ios', 'android'],

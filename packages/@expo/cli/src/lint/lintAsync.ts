@@ -5,6 +5,7 @@ import semver from 'semver';
 
 import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
 import type { Options } from './resolveOptions';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -35,7 +36,7 @@ export const lintAsync = async (
   // However, it'd be safer to replace this with resolve-from, or another way of requiring via the project root
   const { loadESLint } = require('eslint');
 
-  const mod = await import('eslint');
+  const mod = asyncImportInterop(await import('eslint'));
 
   let ESLint: typeof import('eslint').ESLint;
   // loadESLint is >= 8.57.0 (https://github.com/eslint/eslint/releases/tag/v8.57.0) https://github.com/eslint/eslint/pull/18098

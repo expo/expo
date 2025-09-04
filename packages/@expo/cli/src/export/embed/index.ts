@@ -5,6 +5,7 @@ import path from 'path';
 
 import { Command } from '../../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
+import { asyncImportInterop } from '../../utils/asyncImportInterop';
 
 export const expoExportEmbed: Command = async (argv) => {
   const rawArgsMap: arg.Spec = {
@@ -84,12 +85,14 @@ export const expoExportEmbed: Command = async (argv) => {
     { resolveOptions },
     { logCmdError },
     { resolveCustomBooleanArgsAsync },
-  ] = await Promise.all([
-    import('./exportEmbedAsync.js'),
-    import('./resolveOptions.js'),
-    import('../../utils/errors.js'),
-    import('../../utils/resolveArgs.js'),
-  ]);
+  ] = (
+    await Promise.all([
+      import('./exportEmbedAsync.js'),
+      import('./resolveOptions.js'),
+      import('../../utils/errors.js'),
+      import('../../utils/resolveArgs.js'),
+    ])
+  ).flatMap(asyncImportInterop);
 
   return (async () => {
     const parsed = await resolveCustomBooleanArgsAsync(argv ?? [], rawArgsMap, {

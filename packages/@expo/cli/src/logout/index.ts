@@ -2,6 +2,7 @@
 
 import { Command } from '../../bin/cli';
 import { assertArgs, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { logCmdError } from '../utils/errors';
 
 export const expoLogout: Command = async (argv) => {
@@ -24,6 +25,6 @@ export const expoLogout: Command = async (argv) => {
     );
   }
 
-  const { logoutAsync } = await import('../api/user/user.js');
+  const { logoutAsync } = asyncImportInterop(await import('../api/user/user.js'));
   return logoutAsync().catch(logCmdError);
 };

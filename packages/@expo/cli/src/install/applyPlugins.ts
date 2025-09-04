@@ -1,13 +1,16 @@
 import { getConfig } from '@expo/config';
 
 import * as Log from '../log';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 
 /**
  * A convenience feature for automatically applying Expo Config Plugins to the `app.json` after installing them.
  * This should be dropped in favor of autolinking in the future.
  */
 export async function applyPluginsAsync(projectRoot: string, packages: string[]) {
-  const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins.js');
+  const { autoAddConfigPluginsAsync } = asyncImportInterop(
+    await import('./utils/autoAddConfigPlugins.js')
+  );
 
   try {
     const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });

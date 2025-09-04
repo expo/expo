@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { asyncImportInterop } from '../utils/asyncImportInterop';
 import { logCmdError } from '../utils/errors';
 
 export const expoExport: Command = async (argv) => {
@@ -64,9 +65,9 @@ export const expoExport: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
-  const { resolveOptionsAsync } = await import('./resolveOptions.js');
+  const { resolveOptionsAsync } = asyncImportInterop(await import('./resolveOptions.js'));
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 
-  const { exportAsync } = await import('./exportAsync.js');
+  const { exportAsync } = asyncImportInterop(await import('./exportAsync.js'));
   return exportAsync(projectRoot, options).catch(logCmdError);
 };
