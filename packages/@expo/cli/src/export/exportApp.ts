@@ -16,11 +16,7 @@ import {
   transformDomEntryForMd5Filename,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import {
-  exportApiRoutesStandaloneAsync,
-  exportFromServerAsync,
-  injectScriptTags,
-} from './exportStaticAsync';
+import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -34,7 +30,11 @@ import {
 } from './saveAssets';
 import { createAssetMap } from './writeContents';
 import * as Log from '../log';
-import { getServerDeploymentScript, runServerDeployCommandAsync } from './deployServer';
+import {
+  getServerDeploymentScript,
+  runServerDeployCommandAsync,
+  saveDeploymentUrlToTmpConfigPath,
+} from './deployServer';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
@@ -338,31 +338,10 @@ export async function exportAppAsync(
             deployScript: getServerDeploymentScript(projectConfig.pkg.scripts),
           });
 
-          if (deployedServerUrl && userDefinedServerUrl == null) {
-            const generatedConfigPath = string('__EXPO_GENERATED_CONFIG_PATH', '');
-            if (generatedConfigPath) {
-              let generatedConfig: Record<string, unknown> = {};
-              try {
-                const rawGeneratedConfig = fs.readFileSync(generatedConfigPath, 'utf8');
-                generatedConfig = JSON.parse(rawGeneratedConfig);
-              } catch {}
-
-              generatedConfig['expo.extra.router.generatedOrigin'] = deployedServerUrl;
-              try {
-                fs.writeFileSync(generatedConfigPath, JSON.stringify(generatedConfig), 'utf8');
-                Log.log(`Using deployed server URL: ${deployedServerUrl}`);
-              } catch (error) {
-                Log.error('Failed to save deployed URL.');
-                debug(error);
-              }
-            } else {
-              debug('No generated config found');
-            }
-          } else if (deployedServerUrl && userDefinedServerUrl) {
-            Log.log(
-              `Using custom server URL: ${userDefinedServerUrl} (ignoring deployment URL: ${deployedServerUrl})`
-            );
-          }
+          saveDeploymentUrlToTmpConfigPath({
+            deployedServerUrl,
+            userDefinedServerUrl,
+          });
         }
       }
 
