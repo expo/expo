@@ -17,8 +17,8 @@ class ValueOrUndefinedTypeConverter(
   )
 
   override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): ValueOrUndefined<*>? {
-    return if (value is ValueOrUndefined.Undefined) {
-      ValueOrUndefined.Undefined
+    return if (value is ValueOrUndefined.Undefined<*>) {
+      ValueOrUndefined.Undefined<Any>()
     } else {
       val converterValue = innerTypeConverter.convert(value, context)
       ValueOrUndefined.Value(converterValue)

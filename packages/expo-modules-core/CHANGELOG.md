@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `ValueOrUndefined` not working inside Record's.
+
 ### 💡 Others
 
 ## 3.0.13 — 2025-09-04

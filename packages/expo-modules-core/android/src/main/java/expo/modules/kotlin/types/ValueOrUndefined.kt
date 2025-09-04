@@ -14,12 +14,12 @@ sealed interface ValueOrUndefined<T> {
     }
 
   data class Value<T>(val value: T) : ValueOrUndefined<T>
-  object Undefined : ValueOrUndefined<Nothing>
+  class Undefined<T> : ValueOrUndefined<T>
 
   companion object {
     // helper function that can be used from C++ to get the instance of Undefined
     @JvmStatic
     @DoNotStrip
-    fun getUndefined(): Any = Undefined
+    fun getUndefined(): Any = Undefined<Any>()
   }
 }
