@@ -1,7 +1,7 @@
 {
   "name": "expo-video",
   "title": "Expo Video",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "A cross-platform, performant video component for React Native and Expo with Web support",
   "main": "build/index.js",
   "types": "build/index.d.ts",

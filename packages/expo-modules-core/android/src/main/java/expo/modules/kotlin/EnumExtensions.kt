@@ -1,13 +1,12 @@
-package expo.modules.kotlin.modules
+package expo.modules.kotlin
 
 import expo.modules.kotlin.types.Enumerable
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
 
-internal fun <T> convertEnumToString(enumValue: T): String where T : Enumerable, T : Enum<T> {
-  val enumClass = enumValue::class
-  val primaryConstructor = enumClass.primaryConstructor
+fun <T> T.convertToString(): String where T : Enum<T>, T : Enumerable {
+  val enumClass = this::class
+  val primaryConstructor = enumClass.fastPrimaryConstructor
   if (primaryConstructor?.parameters?.size == 1) {
     val parameterName = primaryConstructor.parameters.first().name
     val parameterProperty = enumClass
@@ -18,8 +17,8 @@ internal fun <T> convertEnumToString(enumValue: T): String where T : Enumerable,
     require(parameterProperty.returnType.classifier == String::class) { "The enum parameter has to be a string." }
 
     @Suppress("UNCHECKED_CAST")
-    return (parameterProperty as KProperty1<T, String>).get(enumValue)
+    return (parameterProperty as KProperty1<T, String>).get(this)
   }
 
-  return enumValue.name
+  return this.name
 }

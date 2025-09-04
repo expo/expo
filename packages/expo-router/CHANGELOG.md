@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.0-preview.15 — 2025-09-04
+
+### 💡 Others
+
 - simplify link preview hierarchy and expose more customization options ([#39357](https://github.com/expo/expo/pull/39357) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.0-preview.14 — 2025-09-03

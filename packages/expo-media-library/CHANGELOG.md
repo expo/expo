@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add MediaLibrary@Next. ([#38835](https://github.com/expo/expo/pull/38835) by [@Wenszel](https://github.com/wenszel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

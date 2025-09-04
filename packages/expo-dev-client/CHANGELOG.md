@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 6.0.10 — 2025-09-04
+
+### 🐛 Bug fixes
+
+- fix LICENSE.md conflict ([#39373](https://github.com/expo/expo/pull/39373) by [@iameli](https://github.com/iameli))
+
 ## 6.0.9 — 2025-09-03
 
 _This version does not introduce any user-facing changes._

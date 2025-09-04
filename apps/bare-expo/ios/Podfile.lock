@@ -44,12 +44,12 @@ PODS:
   - EXManifests/Tests (1.0.7):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.32.9):
+  - EXNotifications (0.32.10):
     - ExpoModulesCore
-  - EXNotifications/Tests (0.32.9):
+  - EXNotifications/Tests (0.32.10):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.0-preview.14):
+  - Expo (54.0.0-preview.15):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -74,7 +74,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (6.0.9):
+  - expo-dev-client (6.0.10):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -381,7 +381,7 @@ PODS:
   - ExpoGL (16.0.6):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - ExpoGlassEffect (0.1.0):
+  - ExpoGlassEffect (0.1.1):
     - ExpoModulesCore
   - ExpoHaptics (15.0.6):
     - ExpoModulesCore
@@ -457,7 +457,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (0.4.6):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.12):
+  - ExpoModulesCore (3.0.13):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -480,7 +480,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesCore/Tests (3.0.12):
+  - ExpoModulesCore/Tests (3.0.13):
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -562,7 +562,7 @@ PODS:
     - ExpoModulesCore
   - ExpoUI (0.2.0-alpha.9):
     - ExpoModulesCore
-  - ExpoVideo (3.0.9):
+  - ExpoVideo (3.0.10):
     - ExpoModulesCore
   - ExpoVideoThumbnails (10.0.6):
     - ExpoModulesCore
@@ -3557,9 +3557,9 @@ SPEC CHECKSUMS:
   EXImageLoader: 189e3476581efe3ad4d1d3fb4735b7179eb26f05
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 8c3a1dc3d2cd353107616180b090b6cb8424e0ca
-  EXNotifications: 562ebb5a1edbed3aa7932369d97f0218ef248d44
-  Expo: e6b9414abf76eb4ccfa5c6a90bf704d0357ed474
-  expo-dev-client: 6897288e46eb06bc68c48c3956c6198ddbc1aa2b
+  EXNotifications: bfcda0c49edd979747e1e50340de7bb0e9729ef5
+  Expo: ecec93266ade40477561d8c8ce2177fc55c088f4
+  expo-dev-client: bd3c15e38191cccb11aa550ff173503012a6fbc2
   expo-dev-launcher: 596ae69fb6ecbc084ede91e7222622424098cf4f
   expo-dev-menu: 6f3c6a735989791fed743c10d5cc6dc20de6afc6
   expo-dev-menu-interface: 600df12ea01efecdd822daaf13cc0ac091775533
@@ -3585,7 +3585,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: 7a2ff41df8eac59db6a725c50363f28a316d3c9a
   ExpoFont: 74a14c605637c2d32337a2f542065408a8ca3454
   ExpoGL: 0f7da153b7eaa919552bde3f31470fb64967f827
-  ExpoGlassEffect: cb8549c18f84eca55bebede32d6bbf574693ecaf
+  ExpoGlassEffect: 9aa58a46e8abe720971f2b588bc1e10d58728ba8
   ExpoHaptics: e0912a9cf05ba958eefdc595f1990b8f89aa1f3f
   ExpoImage: 18d9836939f8e271364a5a2a3566f099ea73b2e4
   ExpoImageManipulator: a9daa4d53280c87a76863e132403f29ca575e4b1
@@ -3602,7 +3602,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 95df66f94ffadd965fc272d6fe97ac48ddb0afb3
   ExpoMediaLibrary: 8318f41f95d1855639e146d51ed5e0d9da3ad002
   ExpoMeshGradient: 3927080271353e924f92780eb28d0e6f609cd99c
-  ExpoModulesCore: 96aea4c7c44bca74dba3dd09a5c9e5fc405dba12
+  ExpoModulesCore: 1fad2469beef4f5491778ccdca92c57c180072f2
   ExpoModulesTestCore: be5073c51ffe7c2db9f14aedfce7d8cdc141f55a
   ExpoNetwork: d2f8b8f9b64af48dc9695bafa8b0a34611f7127b
   ExpoPrint: cbe3188bd6ff0c8b2ee92e7253771290a0a9c78e
@@ -3620,7 +3620,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: a3b1bb2e4d28ae65a09b64517ad93096ca88ac5e
   ExpoTrackingTransparency: 30eae1898910829ce661c85fd44b2b89f84fd0e4
   ExpoUI: 11f38320798c3ca7d74a28fe8d47be9d66cf1af0
-  ExpoVideo: bf140c343523f0d6fc4ce3cc09ba8d4f5724eaef
+  ExpoVideo: ee4bfbec2b91f982ba20ad5d8cc6311a0a7b3d7f
   ExpoVideoThumbnails: dece56760a10d4d47c1cde7850e2aac396921a74
   ExpoWebBrowser: 84d4438464d9754a4c1f1eaa97cd747f3752187e
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
