@@ -74,35 +74,6 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
 
   /**
    * The current position through the audio item in seconds.
-   *
-   * **Range:** `0` to `duration` (in seconds)
-   * - `0` = Beginning of audio
-   * - `30.5` = 30.5 seconds into the audio
-   * - `duration` = End of audio
-   *
-   * This value updates automatically during playback according to the `updateInterval` setting.
-   *
-   * @example
-   * ```tsx
-   * import { useAudioPlayer } from 'expo-audio';
-   *
-   * function MyComponent() {
-   *   const player = useAudioPlayer(require('./sound.mp3'));
-   *
-   *   // Access current playback position
-   *   console.log('Current position:', player.currentTime);  // e.g., 45.2 seconds
-   *
-   *   // Format for display
-   *   const minutes = Math.floor(player.currentTime / 60);
-   *   const seconds = Math.floor(player.currentTime % 60);
-   *   console.log('Formatted:', `${minutes}:${seconds.toString().padStart(2, '0')}`);
-   *
-   *   // Check if halfway through
-   *   if (player.currentTime >= player.duration / 2) {
-   *     console.log('Past halfway point');
-   *   }
-   * }
-   * ```
    */
   currentTime: number;
 
@@ -133,6 +104,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    *   // Set to full volume
    *   player.volume = 1.0;
    * }
+   *
    * ```
    */
   volume: number;
