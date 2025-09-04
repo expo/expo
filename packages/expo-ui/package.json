@@ -2,6 +2,26 @@
   "name": "@expo/ui",
   "version": "0.2.0-alpha.9",
   "description": "A collection of UI components",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    "./swift-ui": {
+      "types": "./build/swift-ui/index.d.ts",
+      "default": "./src/swift-ui/index.tsx"
+    },
+    "./swift-ui/modifiers": {
+      "types": "./build/swift-ui/modifiers/index.d.ts",
+      "default": "./src/swift-ui/modifiers/index.ts"
+    },
+    "./jetpack-compose": {
+      "types": "./build/jetpack-compose/index.d.ts",
+      "default": "./src/jetpack-compose/index.ts"
+    },
+    "./jetpack-compose-primitives": {
+      "types": "./build/jetpack-compose-primitives/index.d.ts",
+      "default": "./src/jetpack-compose-primitives/index.tsx"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -20,7 +40,9 @@
   "keywords": [
     "react-native",
     "expo",
-    "UI components"
+    "UI components",
+    "SwiftUI",
+    "Jetpack Compose"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
