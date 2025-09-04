@@ -25,6 +25,7 @@ it('loads expected modules by default', async () => {
     '@expo/cli/build/src/run/hints.js',
     '@expo/cli/build/src/run/index.js',
     '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/asyncImportInterop.js',
     '@expo/cli/build/src/utils/env.js',
     '@expo/cli/build/src/utils/errors.js',
     '@expo/cli/build/src/utils/interactive.js',

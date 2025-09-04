@@ -37,6 +37,7 @@ it('loads expected modules by default', async () => {
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/prebuild/index.js',
     '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/asyncImportInterop.js',
   ]);
 });
 

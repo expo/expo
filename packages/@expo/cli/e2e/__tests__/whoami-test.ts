@@ -19,6 +19,7 @@ it('loads expected modules by default', async () => {
   expect(modules).toStrictEqual([
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/asyncImportInterop.js',
     '@expo/cli/build/src/utils/errors.js',
     '@expo/cli/build/src/whoami/index.js',
   ]);
