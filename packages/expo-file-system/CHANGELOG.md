@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add minimal web stub to fix broken imports on web
+
 ### 💡 Others
 
 ## 19.0.9 — 2025-09-03
