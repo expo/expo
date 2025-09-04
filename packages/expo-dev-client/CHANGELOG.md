@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix LICENSE.md conflict ([#39373](https://github.com/expo/expo/pull/39373) by [@iameli](https://github.com/iameli))
+
 ### 💡 Others
 
 ## 6.0.9 — 2025-09-03

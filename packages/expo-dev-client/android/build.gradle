@@ -28,6 +28,12 @@ android {
     buildConfig true
     viewBinding true
   }
+
+  packaging {
+    resources {
+      merges.add("/META-INF/LICENSE*")
+    }
+  }
 }
 
 dependencies {
