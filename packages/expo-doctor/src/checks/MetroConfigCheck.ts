@@ -33,7 +33,8 @@ export class MetroConfigCheck implements DoctorCheck {
     }
 
     const userConfig = await loadConfigAsync(projectRoot);
-    if (!('_expoRelativeProjectRoot' in userConfig.transformer)) {
+
+    if (userConfig.transformer && !('_expoRelativeProjectRoot' in userConfig.transformer)) {
       // If this Expo property isn't set, which is used for cache invalidation, we don't have an Expo-based config
       return {
         isSuccessful: false,
@@ -49,8 +50,8 @@ export class MetroConfigCheck implements DoctorCheck {
 
     const isPathsSubsetOf = (
       defaultPaths: readonly string[] | undefined,
-      userPaths: readonly string[]
-    ) => isSubsetOf(defaultPaths?.map(resolvePath), userPaths.map(resolvePath));
+      userPaths: readonly string[] | undefined
+    ) => isSubsetOf(defaultPaths?.map(resolvePath), userPaths?.map(resolvePath) ?? []);
 
     const expoMetroConfig = await loadExpoMetroConfig(projectRoot);
     const defaultConfig = expoMetroConfig.getDefaultConfig(projectRoot);
@@ -59,31 +60,36 @@ export class MetroConfigCheck implements DoctorCheck {
       issues.push(`- "watchFolders" does not contain all entries from Expo's defaults`);
     }
 
-    // `nodeModulesPaths` is likely to be empty, except in monorepos. But this setting
-    // usually doesn't matter as much. We still apply checks, but don't expect this to
-    // fail often
-    if (
-      !isPathsSubsetOf(
-        defaultConfig.resolver?.nodeModulesPaths,
-        userConfig.resolver.nodeModulesPaths
-      )
-    ) {
-      issues.push(
-        `- "resolver.nodeModulesPaths" does not contain all entries from Expo's defaults`
-      );
-    }
+    if (userConfig.resolver) {
+      // `nodeModulesPaths` is likely to be empty, except in monorepos. But this setting
+      // usually doesn't matter as much. We still apply checks, but don't expect this to
+      // fail often
+      if (
+        !isPathsSubsetOf(
+          defaultConfig.resolver?.nodeModulesPaths,
+          userConfig.resolver?.nodeModulesPaths
+        )
+      ) {
+        issues.push(
+          `- "resolver.nodeModulesPaths" does not contain all entries from Expo's defaults`
+        );
+      }
 
-    // Users sometimes move source extensions to assets, and vice versa, so we can only check for completeness
-    // by checking across both simultaneously
-    const defaultExts = [
-      ...(defaultConfig.resolver?.sourceExts ?? []),
-      ...(defaultConfig.resolver?.assetExts ?? []),
-    ];
-    const userExts = [...userConfig.resolver.sourceExts, ...userConfig.resolver.assetExts];
-    if (!isSubsetOf(defaultExts, userExts)) {
-      issues.push(
-        `- "resolver.sourceExts" and "resolver.assetExts" miss values from Expo's default extensions`
-      );
+      // Users sometimes move source extensions to assets, and vice versa, so we can only check for completeness
+      // by checking across both simultaneously
+      const defaultExts = [
+        ...(defaultConfig.resolver?.sourceExts ?? []),
+        ...(defaultConfig.resolver?.assetExts ?? []),
+      ];
+      const userExts = [
+        ...(userConfig.resolver?.sourceExts ?? []),
+        ...(userConfig.resolver?.assetExts ?? []),
+      ];
+      if (!isSubsetOf(defaultExts, userExts)) {
+        issues.push(
+          `- "resolver.sourceExts" and "resolver.assetExts" miss values from Expo's default extensions`
+        );
+      }
     }
 
     const compareConfigEntries = [
@@ -93,6 +99,9 @@ export class MetroConfigCheck implements DoctorCheck {
       ['resolver', 'unstable_enableSymlinks'],
     ] as const;
     for (const configEntryPath of compareConfigEntries) {
+      if (userConfig[configEntryPath[0]] === undefined) {
+        continue;
+      }
       const defaultValue = configEntryPath.reduce((acc, key) => acc?.[key], defaultConfig as any);
       const userValue = configEntryPath.reduce((acc, key) => acc?.[key], userConfig as any);
       if (defaultValue !== userValue) {

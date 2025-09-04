@@ -1,4 +1,4 @@
-import type { ConfigT } from '@expo/metro/metro-config';
+import type { InputConfigT } from '@expo/metro/metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -49,7 +49,7 @@ export async function configExistsAsync(projectRoot: string): Promise<boolean> {
   }
 }
 
-export async function loadConfigAsync(projectDir: string): Promise<ConfigT> {
+export async function loadConfigAsync(projectDir: string): Promise<InputConfigT> {
   const MetroConfig = importMetroConfigFromProject(projectDir);
   return await MetroConfig.loadConfig({ cwd: projectDir }, {});
 }
