@@ -1,7 +1,9 @@
+import { useTheme } from '@react-navigation/native';
 import { Link, type Href } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 export function Post(props: { title: string; href: Href }) {
+  const { colors } = useTheme();
   return (
     <Link href={props.href} asChild>
       <Link.Trigger>
@@ -10,9 +12,9 @@ export function Post(props: { title: string; href: Href }) {
             flex: 1,
             width: '100%',
             gap: 8,
-            backgroundColor: '#000',
+            backgroundColor: colors.background,
           }}>
-          <Text style={{ color: '#fff', fontSize: 18 }}>{props.title}</Text>
+          <Text style={{ color: colors.text, fontSize: 18 }}>{props.title}</Text>
           <View
             style={{ width: '100%', aspectRatio: 1, backgroundColor: '#9ca3af', borderRadius: 8 }}
           />
