@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { Log } from '../../log';
+import { Log } from '../log';
 
 export function isPossiblyUnableToResolveError(
   error: any
