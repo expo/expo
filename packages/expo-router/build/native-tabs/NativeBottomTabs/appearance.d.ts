@@ -8,6 +8,7 @@ export interface AppearanceStyle extends NativeTabsLabelStyle {
     backgroundColor?: ColorValue | null;
     blurEffect?: NativeTabsBlurEffect;
     badgeBackgroundColor?: ColorValue;
+    shadowColor?: ColorValue;
     titlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;

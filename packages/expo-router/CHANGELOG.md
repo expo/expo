@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- use shadowColor to remove shadow on scroll edge ([#39396](https://github.com/expo/expo/pull/39396) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.0-preview.15 — 2025-09-04
