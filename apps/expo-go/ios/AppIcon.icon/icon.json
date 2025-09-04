@@ -25,6 +25,7 @@
               "value" : "normal"
             }
           ],
+          "hidden" : false,
           "image-name" : "4-circle-white.svg",
           "name" : "4-circle-white",
           "opacity-specializations" : [
@@ -61,8 +62,8 @@
         {
           "blend-mode" : "normal",
           "hidden" : false,
-          "image-name" : "4-circle-black.svg",
-          "name" : "4-circle-black"
+          "image-name" : "3-circle-black.svg",
+          "name" : "3-circle-black"
         }
       ],
       "lighting" : "individual",
@@ -90,10 +91,11 @@
       "blur-material" : 0.5,
       "layers" : [
         {
+          "hidden" : false,
           "image-name" : "2-logo.svg",
           "name" : "2-logo",
           "position" : {
-            "scale" : 0.98,
+            "scale" : 1,
             "translation-in-points" : [
               0,
               0
@@ -116,11 +118,12 @@
       "blur-material" : null,
       "layers" : [
         {
+          "blend-mode" : "normal",
           "fill-specializations" : [
             {
               "value" : {
                 "linear-gradient" : [
-                  "display-p3:0.00000,0.00000,0.00000,1.00000",
+                  "gray:0.00000,1.00000",
                   "display-p3:0.20587,0.24353,0.24852,1.00000"
                 ]
               }
@@ -136,6 +139,7 @@
             }
           ],
           "glass" : true,
+          "hidden" : false,
           "image-name" : "3-slab.svg",
           "name" : "3-slab",
           "opacity-specializations" : [
@@ -145,16 +149,27 @@
             }
           ],
           "position" : {
-            "scale" : 0.98,
+            "scale" : 0.99,
+            "translation-in-points" : [
+              -4,
+              -2
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "solid" : "gray:0.00000,1.00000"
+          },
+          "hidden" : false,
+          "image-name" : "1-bg.svg",
+          "name" : "1-bg",
+          "position" : {
+            "scale" : 1,
             "translation-in-points" : [
               0,
               0
             ]
           }
-        },
-        {
-          "image-name" : "1-bg.svg",
-          "name" : "1-bg"
         }
       ],
       "shadow" : {
