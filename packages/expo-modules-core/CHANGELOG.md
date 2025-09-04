@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Remove some usage of `kotlin.reflect.full.*`.
+
 ## 3.0.12 — 2025-09-03
 
 ### 💡 Others
