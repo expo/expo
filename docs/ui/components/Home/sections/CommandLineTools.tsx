@@ -10,7 +10,7 @@ export function CommandLineTools() {
   return (
     <>
       <Header
-        title="Deploy from the command line"
+        title="Deploy from CLI"
         description="Deploy your apps using command-line tools for iOS and web platforms."
       />
       <GridContainer>
