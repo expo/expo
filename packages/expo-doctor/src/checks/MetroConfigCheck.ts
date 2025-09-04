@@ -5,7 +5,7 @@ import { configExistsAsync, loadConfigAsync } from '../utils/metroConfigLoader';
 export class MetroConfigCheck implements DoctorCheck {
   description = 'Check for issues with Metro config';
 
-  sdkVersionRange = '>=46.0.0';
+  sdkVersionRange = '>=51.0.0';
 
   async runAsync({ projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
