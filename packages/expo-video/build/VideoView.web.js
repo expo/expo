@@ -24,7 +24,7 @@ export const VideoView = forwardRef((props, ref) => {
     const videoRef = useRef(null);
     const mediaNodeRef = useRef(null);
     const hasToSetupAudioContext = useRef(false);
-    const fullscreenChangeListener = useRef(null);
+    const fullscreenChangeListeners = useRef(null);
     const isWaitingForFirstFrame = useRef(false);
     /**
      * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
@@ -45,10 +45,25 @@ export const VideoView = forwardRef((props, ref) => {
     }, [props.useAudioNodePlayback]);
     useImperativeHandle(ref, () => ({
         enterFullscreen: async () => {
-            if (!props.allowsFullscreen) {
+            if (!props.allowsFullscreen || !videoRef.current) {
                 return;
             }
-            await videoRef.current?.requestFullscreen();
+            // Cast the video to any to avoid ts errors. Methods such as webkitRequestFullscreen,
+            // webkitEnterFullScreen, msRequestFullscreen are not typed even though they exist.
+            const video = videoRef.current;
+            if (video.requestFullscreen) {
+                await video.requestFullscreen();
+            }
+            else if (video.webkitRequestFullscreen) {
+                // @ts-ignore webkitRequestFullscreen can exist on Apple devices
+                await video.webkitRequestFullscreen();
+            }
+            else if (video.webkitEnterFullScreen) {
+                await video.webkitEnterFullScreen();
+            }
+            else if (video.msRequestFullscreen) {
+                await video.msRequestFullscreen();
+            }
         },
         exitFullscreen: async () => {
             await document.exitFullscreen();
@@ -149,14 +164,33 @@ export const VideoView = forwardRef((props, ref) => {
         }
     }
     function setupFullscreenListener() {
-        fullscreenChangeListener.current = fullscreenListener;
-        videoRef.current?.addEventListener('fullscreenchange', fullscreenChangeListener.current);
+        cleanupFullscreenListener();
+        const video = videoRef.current;
+        if (!video)
+            return;
+        const fullscreenListeners = {
+            default: fullscreenListener,
+            safariEnter: () => props.onFullscreenEnter?.(),
+            safariExit: () => props.onFullscreenExit?.(),
+            msListener: fullscreenListener,
+        };
+        fullscreenChangeListeners.current = fullscreenListeners;
+        // Standard Fullscreen API
+        video.addEventListener('fullscreenchange', fullscreenListeners.default);
+        // Safari (webkit)
+        video.addEventListener('webkitbeginfullscreen', fullscreenListeners.safariEnter);
+        video.addEventListener('webkitendfullscreen', fullscreenListeners.safariExit);
+        // IE11 (ms)
+        document.addEventListener('MSFullscreenChange', fullscreenListeners.msListener);
     }
     function cleanupFullscreenListener() {
-        if (fullscreenChangeListener.current) {
-            videoRef.current?.removeEventListener('fullscreenchange', fullscreenChangeListener.current);
-            fullscreenChangeListener.current = null;
-        }
+        const video = videoRef.current;
+        if (!video || !fullscreenChangeListeners.current)
+            return;
+        video.removeEventListener('fullscreenchange', fullscreenChangeListeners.current.default);
+        video.removeEventListener('webkitbeginfullscreen', fullscreenChangeListeners.current?.safariEnter);
+        video.removeEventListener('webkitendfullscreen', fullscreenChangeListeners.current.safariExit);
+        document.removeEventListener('MSFullscreenChange', fullscreenChangeListeners.current.msListener);
     }
     useEffect(() => {
         if (videoRef.current) {
