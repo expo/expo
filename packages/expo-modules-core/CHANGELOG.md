@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- improve startup performance by not relying on kotlin reflection. ([#39389](https://github.com/expo/expo/pull/39389) by [@ACHP](https://github.com/ACHP))
+
 ## 3.0.12 — 2025-09-03
 
 ### 💡 Others
