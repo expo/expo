@@ -68,7 +68,7 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[192px] bg-gradient-to-br from-palette-black to-[#1a1a1a]',
+            'min-h-[192px] bg-gradient-to-br from-palette-gray11 from-15% to-[#1a1a1a]',
             'border border-palette-gray6 selection:bg-palette-gray8 dark:border-palette-gray7'
           )}>
           <Rocket02Icon className="absolute -bottom-16 -right-10 size-72 text-palette-white opacity-5" />
