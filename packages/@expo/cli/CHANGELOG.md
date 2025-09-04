@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix UTF-8 characters in project path causing `setHeader` error in Metro middleware ([#39285](https://github.com/expo/expo/pull/39285) by [@HMYang33](https://github.com/HMYang33))
+
 ### 💡 Others
 
 ## 0.26.8 — 2025-09-03
