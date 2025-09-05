@@ -10,6 +10,7 @@
 
 - Collapse `unknown` and `<anonymous>` stack frames ([#39407](https://github.com/expo/expo/pull/39407) by [@kitten](https://github.com/kitten))
 - Prevent unclear errors from being thrown when loading config ([#39384](https://github.com/expo/expo/pull/39384) by [@kitten](https://github.com/kitten))
+- Fix expansion of `ExportAllDeclaration` during tree-shaking not ignoring `default` export specifier and duplicating existing specifiers ([#39420](https://github.com/expo/expo/pull/39420) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
