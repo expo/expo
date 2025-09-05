@@ -9,6 +9,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
 React Native offers a flexible development strategy. Whether you're launching a new app or looking to integrate an existing native app, it provides a powerful solution. You can leverage its capabilities to introduce new features or views incrementally, allowing your team to adopt modern, cross-platform development without a complete rewrite.
 
@@ -20,7 +21,10 @@ To integrate React Native into your existing application, you'll need to set up 
 
 - [Node.js (LTS)](https://nodejs.org/en/): The runtime to execute JavaScript code and Expo CLI.
 - [Yarn](https://yarnpkg.com/): A package manager for installing and managing JavaScript dependencies.
-- **[iOS only]** [CocoaPods](https://cocoapods.org/): one of the dependency management system available for iOS. CocoaPods is a Ruby [gem](https://en.wikipedia.org/wiki/RubyGems). You can install CocoaPods using the version of Ruby that ships with the latest version of macOS.
+- <PlatformTag platform="ios" /> [CocoaPods](https://cocoapods.org/): one of the dependency
+  management system available for iOS. CocoaPods is a Ruby
+  [gem](https://en.wikipedia.org/wiki/RubyGems). You can install CocoaPods using the version of Ruby
+  that ships with the latest version of macOS.
 
 Learn more from the [Set up environment guide](/get-started/set-up-your-environment/).
 
@@ -477,15 +481,15 @@ Running the `pod` command will integrate the React Native code into your app, al
 ### Configuring your Xcode project
 
 <Step label="1">
-  After the `pod install` command, CocoaPods will create an Xcode workspace **{Project}.xcworkspace**, you will need to open the **xcworkspace** project than the traditional **xcodeproj** project. Alternatively, you can use the following command to open the project:
+After the `pod install` command, CocoaPods will create an Xcode workspace **\{Project\}.xcworkspace**, you will need to open the **xcworkspace** project than the traditional **xcodeproj** project. Alternatively, you can use the following command to open the project:
 
-  <Terminal cmd={['$ xed exp/ios']} />
+<Terminal cmd={['$ xed exp/ios']} />
 
-  In the Xcode project navigator, select your project and then select
-  your app target under `TARGETS`. In **Build Settings**, using the search bar, search for
-  `ENABLE_USER_SCRIPT_SANDBOXING`. If it is not already, set its value to `No`. This is needed to
-  properly switch between the Debug and Release versions of the [Hermes
-  engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped with React Native.
+In the Xcode project navigator, select your project and then select
+your app target under `TARGETS`. In **Build Settings**, using the search bar, search for
+`ENABLE_USER_SCRIPT_SANDBOXING`. If it is not already, set its value to `No`. This is needed to
+properly switch between the Debug and Release versions of the [Hermes
+engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped with React Native.
 
   <ContentSpotlight
     alt="Xcode Build Settings"
