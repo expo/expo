@@ -234,6 +234,7 @@ function appendTabBarOptions(
     badgeTextColor,
     indicatorColor,
     labelStyle,
+    shadowColor,
   } = props;
 
   if (backgroundColor) {
@@ -244,6 +245,9 @@ function appendTabBarOptions(
   if (process.env.EXPO_OS !== 'android') {
     if (blurEffect) {
       options.blurEffect = blurEffect;
+    }
+    if (shadowColor) {
+      options.shadowColor = shadowColor;
     }
     if (iconColor) {
       options.iconColor = iconColor;
