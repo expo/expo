@@ -141,7 +141,7 @@ export async function runServerDeployCommandAsync(
         // EAS not installed.
         logMetroErrorInXcode(
           projectRoot,
-          `Server deployment failed because eas-cli cannot be accessed from the build script's environment (ENOENT). Install EAS CLI with 'npm install -g eas-cli'.`
+          `Server deployment failed because eas-cli cannot be accessed from the build script's environment (ENOENT). Install EAS CLI with 'npm install -g eas-cli@latest'.`
         );
         return false;
       }
