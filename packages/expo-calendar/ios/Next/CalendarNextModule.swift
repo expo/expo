@@ -445,22 +445,22 @@ public final class CalendarNextModule: Module {
         controller.event = calendarEvent
         controller.allowsEditing = options?.allowsEditing == true
         controller.allowsCalendarPreview = options?.allowsCalendarPreview == true
-        
+
         self.calendarDialogDelegate = CalendarDialogDelegate(
           promise: promise,
           onComplete: { [weak self] in
             self?.calendarDialogDelegate = nil
           })
-        
+
         controller.delegate = self.calendarDialogDelegate
-        
+
         let navController = ViewEventViewController(
           rootViewController: controller,
           promise: promise,
           onDismiss: { [weak self] in
             self?.calendarDialogDelegate = nil
           })
-        
+
         currentVc.present(navController, animated: true)
       }.runOnQueue(.main)
 
@@ -618,16 +618,16 @@ public final class CalendarNextModule: Module {
       onDismiss: { [weak self] in
         self?.calendarDialogDelegate = nil
       })
-    
+
     controller.event = event
     controller.eventStore = self.eventStore
-    
+
     self.calendarDialogDelegate = CalendarDialogDelegate(
       promise: promise,
       onComplete: { [weak self] in
         self?.calendarDialogDelegate = nil
       })
-    
+
     controller.editViewDelegate = self.calendarDialogDelegate
     currentVc.present(controller, animated: true)
   }
