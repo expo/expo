@@ -2,104 +2,99 @@ package expo.modules.calendar.next
 
 import android.content.ContentUris
 import android.content.ContentValues
-import android.database.Cursor
 import android.provider.CalendarContract
-import expo.modules.calendar.EventNotSavedException
 import expo.modules.calendar.attendeeRelationshipConstantMatchingString
 import expo.modules.calendar.attendeeStatusConstantMatchingString
 import expo.modules.calendar.attendeeTypeConstantMatchingString
 import expo.modules.calendar.findAttendeesByEventIdQueryParameters
+import expo.modules.calendar.next.exceptions.AttendeeCouldNotBeCreatedException
+import expo.modules.calendar.next.exceptions.AttendeeCouldNotBeDeletedException
+import expo.modules.calendar.next.exceptions.AttendeeNotFoundException
+import expo.modules.calendar.next.extensions.toAttendeeRecord
 import expo.modules.calendar.next.records.AttendeeRecord
-import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
-import java.text.ParseException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class ExpoCalendarAttendee : SharedObject {
-  var attendeeRecord: AttendeeRecord?
-  var localAppContext: AppContext
-  private val contentResolver
-    get() = (localAppContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
-
-  constructor(appContext: AppContext) {
-    this.localAppContext = appContext
-    this.attendeeRecord = null;
+class ExpoCalendarAttendee(val context: AppContext, var attendeeRecord: AttendeeRecord? = AttendeeRecord()) : SharedObject(context) {
+  suspend fun saveAttendee(attendeeRecord: AttendeeRecord, eventId: Int? = null, nullableFields: List<String>? = null): String {
+    return withContext(Dispatchers.IO) {
+      val attendeeValues = buildAttendeeContentValues(attendeeRecord, eventId)
+      val contentResolver = (context.reactContext
+        ?: throw Exceptions.ReactContextLost()).contentResolver
+      cleanNullableFields(attendeeValues, nullableFields)
+      if (this@ExpoCalendarAttendee.attendeeRecord?.id == null) {
+        if (eventId == null) {
+          throw AttendeeCouldNotBeCreatedException( "Event ID must be provided when creating a new attendee")
+        }
+        val attendeeUri = contentResolver.insert(CalendarContract.Attendees.CONTENT_URI, attendeeValues)
+          ?: throw AttendeeCouldNotBeCreatedException( "Failed to insert attendee into the database")
+        val attendeeId = attendeeUri.lastPathSegment
+          ?: throw AttendeeCouldNotBeCreatedException("Failed to retrieve attendee ID after insertion")
+        attendeeId
+      } else {
+        val attendeeID = this@ExpoCalendarAttendee.attendeeRecord?.id
+        if (attendeeID == null) {
+          throw AttendeeCouldNotBeCreatedException("Attendee ID is missing for an existing attendee record during update.")
+        }
+        val updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
+        contentResolver.update(updateUri, attendeeValues, null, null)
+        attendeeID
+      }
+    }
   }
 
-  constructor(appContext: AppContext, cursor: Cursor) {
-    this.localAppContext = appContext
-    this.attendeeRecord = AttendeeRecord.fromCursor(cursor, contentResolver)
+  suspend fun deleteAttendee() {
+    return withContext(Dispatchers.IO) {
+      val rows: Int
+      val attendeeID = attendeeRecord?.id?.toIntOrNull()
+        ?: throw AttendeeCouldNotBeDeletedException("Attendee ID not found")
+
+      val contentResolver = (context.reactContext
+        ?: throw Exceptions.ReactContextLost()).contentResolver
+
+      val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
+      rows = contentResolver.delete(uri, null, null)
+      attendeeRecord = null
+      check(rows > 0) { throw AttendeeCouldNotBeDeletedException("An error occurred while deleting attendee") }
+    }
   }
 
-  @Throws(EventNotSavedException::class, ParseException::class, SecurityException::class, InvalidArgumentException::class)
-  fun saveAttendee(attendeeRecord: AttendeeRecord, eventId: Int? = null, nullableFields: List<String>? = null): String {
-    val attendeeValues = buildAttendeeContentValues(attendeeRecord, eventId)
-    cleanNullableFields(attendeeValues, nullableFields)
-    if (this.attendeeRecord?.id == null) {
-      if (eventId == null) {
-        throw Exceptions.IllegalStateException("E_ATTENDEE_NOT_CREATED")
+  suspend fun reloadAttendee(attendeeID: String? = null) {
+    withContext(Dispatchers.IO) {
+      val attendeeID = (attendeeID ?: attendeeRecord?.id)?.toIntOrNull()
+        ?: throw AttendeeNotFoundException("Attendee ID not found")
+
+      val contentResolver = (context.reactContext
+        ?: throw Exceptions.ReactContextLost()).contentResolver
+      val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
+      val cursor = contentResolver.query(uri, findAttendeesByEventIdQueryParameters, null, null, null)
+      requireNotNull(cursor) { "Cursor shouldn't be null" }
+      cursor.use {
+        if (it.count > 0) {
+          it.moveToFirst()
+          attendeeRecord = it.toAttendeeRecord()
+        }
       }
-      val attendeeUri = contentResolver.insert(CalendarContract.Attendees.CONTENT_URI, attendeeValues)
-        ?: throw Exceptions.IllegalStateException("E_ATTENDEE_NOT_CREATED")
-      val attendeeId = attendeeUri.lastPathSegment
-        ?: throw Exceptions.IllegalStateException("E_ATTENDEE_NOT_CREATED")
-      return attendeeId
-    } else {
-      val attendeeID = this.attendeeRecord?.id
-      if (attendeeID == null) {
-        throw Exceptions.IllegalStateException("E_ATTENDEE_NOT_CREATED")
-      }
-      val updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
-      contentResolver.update(updateUri, attendeeValues, null, null)
-      return attendeeID;
     }
   }
 
   private fun cleanNullableFields(attendeeBuilder: ContentValues, nullableFields: List<String>?) {
     val nullableSet = nullableFields?.toSet() ?: emptySet()
-    if ("email" in nullableSet) {
-      attendeeBuilder.putNull(CalendarContract.Attendees.ATTENDEE_EMAIL)
-    }
-    if ("name" in nullableSet) {
-      attendeeBuilder.putNull(CalendarContract.Attendees.ATTENDEE_NAME)
-    }
-    if ("role" in nullableSet) {
-      attendeeBuilder.putNull(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)
-    }
-    if ("type" in nullableSet) {
-      attendeeBuilder.putNull(CalendarContract.Attendees.ATTENDEE_TYPE)
-    }
-    if ("status" in nullableSet) {
-      attendeeBuilder.putNull(CalendarContract.Attendees.ATTENDEE_STATUS)
-    }
-  }
-
-  @Throws(SecurityException::class)
-  fun deleteAttendee(): Boolean {
-    val rows: Int
-    val attendeeID = attendeeRecord?.id?.toIntOrNull()
-    if (attendeeID == null) {
-      throw Exceptions.IllegalStateException("E_ATTENDEE_NOT_DELETED")
-    }
-    val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
-    rows = contentResolver.delete(uri, null, null)
-    attendeeRecord = null
-    return rows > 0
-  }
-
-  fun reloadAttendee(attendeeID: String? = null) {
-    val attendeeID = (attendeeID ?: attendeeRecord?.id)?.toIntOrNull()
-    if (attendeeID == null) {
-      throw Exceptions.IllegalStateException("E_ATTENDEE_NOT_RELOADED")
-    }
-    val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
-    val cursor = contentResolver.query(uri, findAttendeesByEventIdQueryParameters, null, null, null)
-    requireNotNull(cursor) { "Cursor shouldn't be null" }
-    cursor.use {
-      if (it.count > 0) {
-        it.moveToFirst()
-        attendeeRecord = AttendeeRecord.fromCursor(it, contentResolver)
+    
+    val fieldMappings = mapOf(
+      "email" to CalendarContract.Attendees.ATTENDEE_EMAIL,
+      "name" to CalendarContract.Attendees.ATTENDEE_NAME,
+      "role" to CalendarContract.Attendees.ATTENDEE_RELATIONSHIP,
+      "type" to CalendarContract.Attendees.ATTENDEE_TYPE,
+      "status" to CalendarContract.Attendees.ATTENDEE_STATUS
+    )
+    
+    fieldMappings.forEach { (fieldName, columnName) ->
+      if (fieldName in nullableSet) {
+        attendeeBuilder.putNull(columnName)
       }
     }
   }

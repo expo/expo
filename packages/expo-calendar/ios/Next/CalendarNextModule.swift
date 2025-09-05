@@ -5,12 +5,11 @@ import Foundation
 
 // swiftlint:disable closure_parameter_position
 public final class CalendarNextModule: Module {
-  private var permittedEntities: EKEntityMask = .event
   private var eventStore: EKEventStore {
     return CalendarModule.sharedEventStore
   }
-
   private var calendarDialogDelegate: CalendarDialogDelegate?
+  private var calendarPermissions: ExpoCalendarPermissions?
 
   // swiftlint:disable:next function_body_length cyclomatic_complexity
   public func definition() -> ModuleDefinition {
@@ -21,50 +20,51 @@ public final class CalendarNextModule: Module {
         CalendarPermissionsRequester(eventStore: eventStore),
         RemindersPermissionRequester(eventStore: eventStore)
       ])
-      initializePermittedEntities()
+      self.calendarPermissions = ExpoCalendarPermissions(eventStore: eventStore, appContext: appContext)
+      self.calendarPermissions?.initializePermittedEntities()
     }
 
     Function("getDefaultCalendar") { () -> ExpoCalendar in
-      try checkCalendarPermissions()
+      try calendarPermissions?.checkCalendarPermissions()
       guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
         throw DefaultCalendarNotFoundException()
       }
       return ExpoCalendar(calendar: defaultCalendar)
     }
 
-    AsyncFunction("getCalendars") { (type: CalendarEntity?) -> [ExpoCalendar] in
+    AsyncFunction("getCalendars") { (type: CalendarEntity?) async throws -> [ExpoCalendar] in
       let calendars: [EKCalendar]
       switch type {
       case nil:
-        try checkCalendarPermissions()
-        try checkRemindersPermissions()
+        try calendarPermissions?.checkCalendarPermissions()
+        try calendarPermissions?.checkRemindersPermissions()
         calendars = eventStore.calendars(for: .event) + eventStore.calendars(for: .reminder)
       case .event:
-        try checkCalendarPermissions()
+        try calendarPermissions?.checkCalendarPermissions()
         calendars = eventStore.calendars(for: .event)
       case .reminder:
-        try checkRemindersPermissions()
+        try calendarPermissions?.checkRemindersPermissions()
         calendars = eventStore.calendars(for: .reminder)
       }
       return calendars.map { ExpoCalendar(calendar: $0) }
     }
 
-    Function("getCalendarById") { (calendarId: String) -> ExpoCalendar in
-      try checkCalendarPermissions()
+    AsyncFunction("getCalendarById") { (calendarId: String) -> ExpoCalendar in
+      try calendarPermissions?.checkCalendarPermissions()
       guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
         throw CalendarIdNotFoundException(calendarId)
       }
       return ExpoCalendar(calendar: calendar)
     }
 
-    Function("createCalendar") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
+    AsyncFunction("createCalendar") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
       let calendar: EKCalendar
       switch calendarRecord.entityType {
       case .event:
-        try checkCalendarPermissions()
+        try calendarPermissions?.checkCalendarPermissions()
         calendar = EKCalendar(for: .event, eventStore: eventStore)
       case .reminder:
-        try checkRemindersPermissions()
+        try calendarPermissions?.checkRemindersPermissions()
         calendar = EKCalendar(for: .reminder, eventStore: eventStore)
       case .none:
         throw EntityNotSupportedException(calendarRecord.entityType?.rawValue)
@@ -91,11 +91,11 @@ public final class CalendarNextModule: Module {
     }
 
     AsyncFunction("listEvents") {
-      ( calendarIds: [String],
-        startDateStr: Either<String, Double>,
-        endDateStr: Either<String, Double>,
-        promise: Promise) throws in
-      try checkCalendarPermissions()
+      (calendarIds: [String],
+      startDateStr: Either<String, Double>,
+      endDateStr: Either<String, Double>,
+      promise: Promise) throws in
+      try calendarPermissions?.checkCalendarPermissions()
 
       guard let startDate = parse(date: startDateStr),
         let endDate = parse(date: endDateStr) else {
@@ -120,7 +120,7 @@ public final class CalendarNextModule: Module {
       promise.resolve(calendarEvents.map { ExpoCalendarEvent(event: $0) })
     }
 
-    Function("getEventById") {
+    AsyncFunction("getEventById") {
       (eventId: String) -> ExpoCalendarEvent in
       guard let event = eventStore.event(withIdentifier: eventId) else {
         throw EventNotFoundException(eventId)
@@ -128,7 +128,7 @@ public final class CalendarNextModule: Module {
       return ExpoCalendarEvent(event: event)
     }
 
-    Function("getReminderById") {
+    AsyncFunction("getReminderById") {
       (reminderId: String) -> ExpoCalendarReminder in
       guard let reminder = eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
         throw ReminderNotFoundException(reminderId)
@@ -233,8 +233,7 @@ public final class CalendarNextModule: Module {
         guard let calendar = expoCalendar.calendar else {
           return []
         }
-        return calendarSupportedAvailabilities(
-          fromMask: calendar.supportedEventAvailabilities)
+        return calendarSupportedAvailabilities(fromMask: calendar.supportedEventAvailabilities)
       }
 
       AsyncFunction("listEvents") {
@@ -242,7 +241,7 @@ public final class CalendarNextModule: Module {
         startDateStr: Either<String, Double>,
         endDateStr: Either<String, Double>,
         promise: Promise) throws in
-        try checkCalendarPermissions()
+        try calendarPermissions?.checkCalendarPermissions()
 
         guard let startDate = parse(date: startDateStr),
           let endDate = parse(date: endDateStr)
@@ -254,12 +253,12 @@ public final class CalendarNextModule: Module {
       }
 
       AsyncFunction("listReminders") {
-        ( calendar: ExpoCalendar,
-          startDateStr: String?,
-          endDateStr: String?,
-          status: String?,
-          promise: Promise) throws in
-        try checkRemindersPermissions()
+        (calendar: ExpoCalendar,
+        startDateStr: String?,
+        endDateStr: String?,
+        status: String?,
+        promise: Promise) throws in
+        try calendarPermissions?.checkRemindersPermissions()
 
         var startDate: Date?
         var endDate: Date?
@@ -282,15 +281,11 @@ public final class CalendarNextModule: Module {
       }
 
       // swiftlint:enable closure_parameter_position
-      Function("createEvent") { (expoCalendar: ExpoCalendar, eventRecord: EventNext, options: RecurringEventOptions?) -> ExpoCalendarEvent in
-        try checkCalendarPermissions()
+      AsyncFunction("createEvent") { (expoCalendar: ExpoCalendar, eventRecord: EventNext, options: RecurringEventOptions?) -> ExpoCalendarEvent in
+        try calendarPermissions?.checkCalendarPermissions()
 
         guard let calendar = expoCalendar.calendar else {
           throw CalendarNoLongerExistsException()
-        }
-
-        if eventRecord.title == nil {
-          throw MissingParameterException("title")
         }
 
         let expoCalendarEvent = try ExpoCalendarEvent(calendar: calendar, eventRecord: eventRecord)
@@ -301,15 +296,15 @@ public final class CalendarNextModule: Module {
 
         guard let ekEvent = expoCalendarEvent.event else {
           throw EventNotFoundException("Expo event could not be created")
-        }
+      }
 
         try eventStore.save(ekEvent, span: span, commit: true)
 
         return expoCalendarEvent
       }
 
-      Function("createReminder") { (expoCalendar: ExpoCalendar, reminderRecord: Reminder, _: RecurringEventOptions?) -> ExpoCalendarReminder in
-        try checkRemindersPermissions()
+      AsyncFunction("createReminder") { (expoCalendar: ExpoCalendar, reminderRecord: Reminder, _: RecurringEventOptions?) -> ExpoCalendarReminder in
+        try calendarPermissions?.checkRemindersPermissions()
 
         guard let calendarInstance = expoCalendar.calendar else {
           throw CalendarNoLongerExistsException()
@@ -323,20 +318,20 @@ public final class CalendarNextModule: Module {
         try expoReminder.initialize(reminderRecord: reminderRecord)
 
         guard let reminder = expoReminder.reminder else {
-          throw Exception()
+          throw ReminderNotCreatedException("Expo reminder could not be created")
         }
 
         try eventStore.save(reminder, commit: true)
         return expoReminder
       }
 
-      Function("update") { (expoCalendar: ExpoCalendar, calendarRecord: CalendarRecordNext) throws in
-        try checkCalendarPermissions()
+      AsyncFunction("update") { (expoCalendar: ExpoCalendar, calendarRecord: CalendarRecordNext) throws in
+        try calendarPermissions?.checkCalendarPermissions()
         try expoCalendar.update(calendarRecord: calendarRecord)
       }
 
-      Function("delete") { (expoCalendar: ExpoCalendar) in
-        try checkCalendarPermissions()
+      AsyncFunction("delete") { (expoCalendar: ExpoCalendar) in
+        try calendarPermissions?.checkCalendarPermissions()
         try expoCalendar.delete()
       }
     }
@@ -434,8 +429,8 @@ public final class CalendarNextModule: Module {
         return serialize(attendee: organizer)
       }
 
-      AsyncFunction("openInCalendarAsync") {(expoEvent: ExpoCalendarEvent, options: OpenInCalendarOptions?, promise: Promise) in
-        try checkCalendarPermissions()
+      AsyncFunction("openInCalendarAsync") { (expoEvent: ExpoCalendarEvent, options: OpenInCalendarOptions?, promise: Promise) in
+        try calendarPermissions?.checkCalendarPermissions()
 
         let startDate = parse(date: options?.instanceStartDate)
         guard let calendarEvent = expoEvent.getOccurrence(startDate: startDate) else {
@@ -445,23 +440,32 @@ public final class CalendarNextModule: Module {
         guard let currentVc = appContext?.utilities?.currentViewController() else {
           throw Exception()
         }
-        warnIfDialogInProgress()
 
         let controller = EKEventViewController()
         controller.event = calendarEvent
         controller.allowsEditing = options?.allowsEditing == true
         controller.allowsCalendarPreview = options?.allowsCalendarPreview == true
-        self.calendarDialogDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
+        
+        self.calendarDialogDelegate = CalendarDialogDelegate(
+          promise: promise,
+          onComplete: { [weak self] in
+            self?.calendarDialogDelegate = nil
+          })
+        
         controller.delegate = self.calendarDialogDelegate
-        let navController = ViewEventViewController(rootViewController: controller, promise: promise, onDismiss: self.unsetDelegate)
+        
+        let navController = ViewEventViewController(
+          rootViewController: controller,
+          promise: promise,
+          onDismiss: { [weak self] in
+            self?.calendarDialogDelegate = nil
+          })
+        
         currentVc.present(navController, animated: true)
       }.runOnQueue(.main)
 
       AsyncFunction("editInCalendarAsync") { (expoEvent: ExpoCalendarEvent, _: OpenInCalendarOptions?, promise: Promise) in
-        try checkCalendarPermissions()
-
-        print("editInCalendarAsync")
-        warnIfDialogInProgress()
+        try calendarPermissions?.checkCalendarPermissions()
 
         guard let event = expoEvent.event else {
           throw ItemNoLongerExistsException()
@@ -471,7 +475,7 @@ public final class CalendarNextModule: Module {
       }.runOnQueue(.main)
 
       Function("getOccurrence") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
-        try checkCalendarPermissions()
+        try calendarPermissions?.checkCalendarPermissions()
         guard let ekEvent = try expoEvent.getOccurrence(options: options) else {
           throw EventNotFoundException(options?.instanceStartDate ?? "")
         }
@@ -480,17 +484,17 @@ public final class CalendarNextModule: Module {
       }
 
       AsyncFunction("getAttendeesAsync") { (expoEvent: ExpoCalendarEvent) throws in
-        try checkCalendarPermissions()
+        try calendarPermissions?.checkCalendarPermissions()
         return try expoEvent.getAttendees()
       }
 
-      Function("update") { (expoEvent: ExpoCalendarEvent, eventRecord: EventNext, nullableFields: [String]?) throws in
-        try checkCalendarPermissions()
+      AsyncFunction("update") { (expoEvent: ExpoCalendarEvent, eventRecord: EventNext, nullableFields: [String]?) throws in
+        try calendarPermissions?.checkCalendarPermissions()
         try expoEvent.update(eventRecord: eventRecord, nullableFields: nullableFields)
       }
 
-      Function("delete") { (expoEvent: ExpoCalendarEvent) in
-        try checkCalendarPermissions()
+      AsyncFunction("delete") { (expoEvent: ExpoCalendarEvent) in
+        try calendarPermissions?.checkCalendarPermissions()
         try expoEvent.delete()
       }
     }
@@ -590,165 +594,41 @@ public final class CalendarNextModule: Module {
         return dateFormatter.string(from: completionDate)
       }
 
-      Function("update") { (expoReminder: ExpoCalendarReminder, reminderRecord: Reminder, nullableFields: [String]?) in
-        try checkRemindersPermissions()
+      AsyncFunction("update") { (expoReminder: ExpoCalendarReminder, reminderRecord: Reminder, nullableFields: [String]?) in
+        try calendarPermissions?.checkRemindersPermissions()
         try expoReminder.update(reminderRecord: reminderRecord, nullableFields: nullableFields)
       }
 
-      Function("delete") { (expoReminder: ExpoCalendarReminder) in
-        try checkRemindersPermissions()
+      AsyncFunction("delete") { (expoReminder: ExpoCalendarReminder) in
+        try calendarPermissions?.checkRemindersPermissions()
         try expoReminder.delete()
       }
     }
 
-    Class(ExpoCalendarAttendee.self) {
-      Property("name") { (expoAttendee: ExpoCalendarAttendee) in
-        expoAttendee.attendee.name
-      }
-
-      Property("isCurrentUser") { (expoAttendee: ExpoCalendarAttendee) in
-        expoAttendee.attendee.isCurrentUser
-      }
-
-      Property("role") { (expoAttendee: ExpoCalendarAttendee) in
-        participantToString(role: expoAttendee.attendee.participantRole)
-      }
-
-      Property("status") { (expoAttendee: ExpoCalendarAttendee) in
-        participantStatusToString(status: expoAttendee.attendee.participantStatus)
-      }
-
-      Property("type") { (expoAttendee: ExpoCalendarAttendee) in
-        participantTypeToString(type: expoAttendee.attendee.participantType)
-      }
-
-      Property("url") { (expoAttendee: ExpoCalendarAttendee) in
-        expoAttendee.attendee.url.absoluteString.removingPercentEncoding
-      }
-    }
+    Class(ExpoCalendarAttendee.self) {}
   }
 
-  // TODO: Clean up, this is copied from CalendarModule
-  private func initializePermittedEntities() {
-    guard let permissionsManager = appContext?.permissions else {
-      return
-    }
-    var permittedEntities: EKEntityMask = []
-    if permissionsManager.hasGrantedPermission(
-      usingRequesterClass: CalendarPermissionsRequester.self) {
-      permittedEntities.insert(.event)
-    }
-
-    if permissionsManager.hasGrantedPermission(
-      usingRequesterClass: RemindersPermissionRequester.self) {
-      permittedEntities.insert(.reminder)
-    }
-
-    self.permittedEntities = permittedEntities
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
-  private func checkCalendarPermissions() throws {
-    try self.checkPermissions(entity: .event)
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
-  private func checkRemindersPermissions() throws {
-    try self.checkPermissions(entity: .reminder)
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
-  private func checkPermissions(entity: EKEntityType) throws {
-    guard let permissionsManager = appContext?.permissions else {
-      throw PermissionsManagerNotFoundException()
-    }
-
-    var requester: EXPermissionsRequester.Type?
-    switch entity {
-    case .event:
-    requester = CalendarPermissionsRequester.self
-    case .reminder:
-    requester = RemindersPermissionRequester.self
-    @unknown default:
-    requester = nil
-    }
-    if let requester, !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
-      let message = requester.permissionType().uppercased()
-      throw MissionPermissionsException(message)
-    }
-
-    resetEventStoreIfPermissionWasChanged(entity: entity)
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
-  func resetEventStoreIfPermissionWasChanged(entity: EKEntityType) {
-    // looks redundant but these are different types.
-    if entity == .event {
-      if permittedEntities.contains(.event) {
-        return
-      }
-    } else if entity == .reminder {
-      if permittedEntities.contains(.reminder) {
-        return
-      }
-    }
-
-    eventStore.reset()
-    permittedEntities.insert(entity == .event ? .event : .reminder)
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
-  private func createPredicate(
-    for calendars: [EKCalendar], start startDate: Date?, end endDate: Date?, status: String?
-  ) throws -> NSPredicate {
-    guard let status else {
-      return eventStore.predicateForReminders(in: calendars)
-    }
-    switch status {
-    case "incomplete":
-      return eventStore.predicateForIncompleteReminders(
-        withDueDateStarting: startDate,
-        ending: endDate,
-        calendars: calendars
-      )
-    case "completed":
-      return eventStore.predicateForCompletedReminders(
-        withCompletionDateStarting: startDate,
-        ending: endDate,
-        calendars: calendars
-      )
-    default:
-      throw InvalidStatusExceptions(status)
-    }
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
   private func presentEventEditViewController(event: EKEvent, promise: Promise) throws {
     guard let currentVc = appContext?.utilities?.currentViewController() else {
       throw Exception()
     }
 
-    let controller = EditEventViewController(promise: promise, onDismiss: self.unsetDelegate)
+    let controller = EditEventViewController(
+      promise: promise,
+      onDismiss: { [weak self] in
+        self?.calendarDialogDelegate = nil
+      })
+    
     controller.event = event
     controller.eventStore = self.eventStore
+    
     self.calendarDialogDelegate = CalendarDialogDelegate(
-      promise: promise, onComplete: self.unsetDelegate)
+      promise: promise,
+      onComplete: { [weak self] in
+        self?.calendarDialogDelegate = nil
+      })
+    
     controller.editViewDelegate = self.calendarDialogDelegate
-
     currentVc.present(controller, animated: true)
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
-  private func warnIfDialogInProgress() {
-    if calendarDialogDelegate != nil {
-      log.warn(
-        "Calendar: Different calendar dialog is already being presented. Await its result before presenting another."
-      )
-    }
-  }
-
-  // TODO: Clean up, this is copied from CalendarModule
-  private func unsetDelegate() {
-    self.calendarDialogDelegate = nil
   }
 }

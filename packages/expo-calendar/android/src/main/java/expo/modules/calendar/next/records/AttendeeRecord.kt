@@ -1,15 +1,12 @@
 package expo.modules.calendar.next.records
 
-import android.content.ContentResolver
-import android.database.Cursor
-import android.provider.CalendarContract
-import expo.modules.calendar.CalendarUtils
 import expo.modules.calendar.attendeeRelationshipConstantMatchingString
 import expo.modules.calendar.attendeeRelationshipStringMatchingConstant
 import expo.modules.calendar.attendeeStatusConstantMatchingString
 import expo.modules.calendar.attendeeStatusStringMatchingConstant
 import expo.modules.calendar.attendeeTypeConstantMatchingString
 import expo.modules.calendar.attendeeTypeStringMatchingConstant
+
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -27,21 +24,7 @@ data class AttendeeRecord(
   val type: AttendeeType? = null,
   @Field
   val email: String? = null,
-) : Record {
-  companion object {
-    @JvmStatic
-    fun fromCursor(cursor: Cursor, contentResolver: ContentResolver): AttendeeRecord {
-      return AttendeeRecord(
-        id = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Attendees._ID),
-        name = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_NAME),
-        role = AttendeeRole.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)),
-        status = AttendeeStatus.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)),
-        type = AttendeeType.fromAndroidValue(CalendarUtils.optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_TYPE)),
-        email = CalendarUtils.optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_EMAIL),
-      )
-    }
-  }
-}
+) : Record
 
 enum class AttendeeRole(val value: String) : Enumerable {
   ATTENDEE("attendee"),

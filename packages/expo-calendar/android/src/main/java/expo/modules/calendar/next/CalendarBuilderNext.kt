@@ -2,7 +2,7 @@ package expo.modules.calendar.next
 
 import android.content.ContentValues
 
-class CalendarEventBuilderNext() {
+class CalendarBuilderNext() {
   private val eventValues = ContentValues()
 
   fun getAsLong(key: String): Long = eventValues.getAsLong(key)

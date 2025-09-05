@@ -57,6 +57,12 @@ final internal class ReminderNotFoundException: GenericException<String> {
   }
 }
 
+final internal class ReminderNotCreatedException: GenericException<String> {
+  override var reason: String {
+    "Reminder \(param) could not be created"
+  }
+}
+
 final internal class InvalidCalendarEntityException: GenericException<String?> {
   override var reason: String {
     "Calendar entityType \(String(describing: param)) is not supported"

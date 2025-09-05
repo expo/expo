@@ -13,8 +13,6 @@ data class CalendarRecord(
   @Field
   val source: Source? = null,
   @Field
-  // Note: For this moment we are using ProcessedColorValue on the TypeScript side which forces here
-  // the use of mapping to Int, we will change this to String after removing ProcessedColorValue
   val color: Int? = null,
   @Field
   val isVisible: Boolean = true,
@@ -36,32 +34,7 @@ data class CalendarRecord(
   var ownerAccount: String? = null,
   @Field
   val accessLevel: CalendarAccessLevel? = null,
-) : Record {
-
-  fun getUpdatedRecord(other: CalendarRecord, nullableFields: List<String>? = null): CalendarRecord {
-    val nullableSet = nullableFields?.toSet() ?: emptySet()
-
-    return CalendarRecord(
-      id = if ("id" in nullableSet) null else other.id ?: this.id,
-      title = if ("title" in nullableSet) null else other.title ?: this.title,
-      name = if ("name" in nullableSet) null else other.name ?: this.name,
-      source = if ("source" in nullableSet) null else other.source ?: this.source,
-      color = if ("color" in nullableSet) null else other.color ?: this.color,
-      isVisible = if ("isVisible" in nullableSet) this.isVisible else other.isVisible,
-      isSynced = if ("isSynced" in nullableSet) this.isSynced else other.isSynced,
-      timeZone = if ("timeZone" in nullableSet) null else other.timeZone ?: this.timeZone,
-      isPrimary = if ("isPrimary" in nullableSet) this.isPrimary else other.isPrimary,
-      allowsModifications = if ("allowsModifications" in nullableSet) this.allowsModifications else other.allowsModifications,
-      allowedAvailabilities = if ("allowedAvailabilities" in nullableSet) this.allowedAvailabilities else other.allowedAvailabilities,
-      allowedReminders = if ("allowedReminders" in nullableSet) this.allowedReminders else other.allowedReminders,
-      allowedAttendeeTypes = if ("allowedAttendeeTypes" in nullableSet) this.allowedAttendeeTypes else other.allowedAttendeeTypes,
-      ownerAccount = if ("ownerAccount" in nullableSet) null else other.ownerAccount
-        ?: this.ownerAccount,
-      accessLevel = if ("accessLevel" in nullableSet) null else other.accessLevel
-        ?: this.accessLevel,
-    )
-  }
-}
+) : Record
 
 enum class CalendarAccessLevel(val value: String) {
   CONTRIBUTOR("contributor"),

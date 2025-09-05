@@ -8,7 +8,6 @@ import android.database.Cursor
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import expo.modules.calendar.CalendarUtils.removeRemindersForEvent
 import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
 import expo.modules.calendar.EventRecurrenceUtils.extractRecurrence
 import expo.modules.calendar.dialogs.CreateEventContract
@@ -42,7 +41,9 @@ class CalendarModule : Module() {
   private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
   private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
 
-  private val sdf = CalendarUtils.sdf;
+  private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
+    timeZone = TimeZone.getTimeZone("GMT")
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoCalendar")
@@ -111,8 +112,8 @@ class CalendarModule : Module() {
       withPermissions(promise) {
         launchAsyncWithModuleScope(promise) {
           try {
-            val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, calendars)
-            promise.resolve(cursor.use(::serializeEvents))
+            val results = findEvents(startDate, endDate, calendars)
+            promise.resolve(results)
           } catch (e: Exception) {
             promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
           }
@@ -263,6 +264,50 @@ class CalendarModule : Module() {
     val cursor = contentResolver.query(uri, findCalendarsQueryParameters, null, null, null)
     requireNotNull(cursor) { "Cursor shouldn't be null" }
     return cursor.use(::serializeEventCalendars)
+  }
+
+  private fun findEvents(startDate: Any, endDate: Any, calendars: List<String>): List<Bundle> {
+    val eStartDate = Calendar.getInstance()
+    val eEndDate = Calendar.getInstance()
+    try {
+      setDateInCalendar(eStartDate, startDate)
+      setDateInCalendar(eEndDate, endDate)
+    } catch (e: ParseException) {
+      Log.e(TAG, "error parsing", e)
+    } catch (e: Exception) {
+      Log.e(TAG, "misc error parsing", e)
+    }
+    val uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+    ContentUris.appendId(uriBuilder, eStartDate.timeInMillis)
+    ContentUris.appendId(uriBuilder, eEndDate.timeInMillis)
+    val uri = uriBuilder.build()
+    var selection =
+      "((${CalendarContract.Instances.BEGIN} >= ${eStartDate.timeInMillis}) " +
+        "AND (${CalendarContract.Instances.END} <= ${eEndDate.timeInMillis}) " +
+        "AND (${CalendarContract.Instances.VISIBLE} = 1) "
+    if (calendars.isNotEmpty()) {
+      var calendarQuery = "AND ("
+      for (i in calendars.indices) {
+        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = '" + calendars[i] + "'"
+        if (i != calendars.size - 1) {
+          calendarQuery += " OR "
+        }
+      }
+      calendarQuery += ")"
+      selection += calendarQuery
+    }
+    selection += ")"
+    val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
+    val cursor = contentResolver.query(
+      uri,
+      findEventsQueryParameters,
+      selection,
+      null,
+      sortOrder
+    )
+
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
+    return cursor.use(::serializeEvents)
   }
 
   private fun findEventById(eventID: String): Bundle? {
@@ -471,7 +516,7 @@ class CalendarModule : Module() {
       val eventID = details.getString("id").toInt()
       val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
       contentResolver.update(updateUri, calendarEventBuilder.build(), null, null)
-      removeRemindersForEvent(contentResolver, eventID)
+      removeRemindersForEvent(eventID)
       if (details.containsKey("alarms")) {
         createRemindersForEvent(eventID, details.getList("alarms"))
       }
@@ -583,6 +628,21 @@ class CalendarModule : Module() {
         reminderValues.put(CalendarContract.Reminders.METHOD, method)
         contentResolver.insert(CalendarContract.Reminders.CONTENT_URI, reminderValues)
       }
+    }
+  }
+
+  @Throws(SecurityException::class)
+  private fun removeRemindersForEvent(eventID: Int) {
+    val cursor = CalendarContract.Reminders.query(
+      contentResolver,
+      eventID.toLong(),
+      arrayOf(
+        CalendarContract.Reminders._ID
+      )
+    )
+    while (cursor.moveToNext()) {
+      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
+      contentResolver.delete(reminderUri, null, null)
     }
   }
 
@@ -755,11 +815,32 @@ class CalendarModule : Module() {
     putString("status", attendeeStatusStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)))
   }
 
-  private fun optStringFromCursor(cursor: Cursor, columnName: String) = CalendarUtils.optStringFromCursor(cursor, columnName)
+  private fun optStringFromCursor(cursor: Cursor, columnName: String): String? {
+    val index = cursor.getColumnIndex(columnName)
+    return if (index == -1) {
+      null
+    } else {
+      cursor.getString(index)
+    }
+  }
 
-  private fun stringFromCursor(cursor: Cursor, columnName: String) = CalendarUtils.stringFromCursor(cursor, columnName)
+  private fun stringFromCursor(cursor: Cursor, columnName: String): String {
+    val index = cursor.getColumnIndex(columnName)
+    if (index == -1) {
+      throw Exception("String not found")
+    } else {
+      return cursor.getString(index)
+    }
+  }
 
-  private fun optIntFromCursor(cursor: Cursor, columnName: String) = CalendarUtils.optIntFromCursor(cursor, columnName)
+  private fun optIntFromCursor(cursor: Cursor, columnName: String): Int {
+    val index = cursor.getColumnIndex(columnName)
+    return if (index == -1) {
+      0
+    } else {
+      cursor.getInt(index)
+    }
+  }
 
   private fun checkPermissions(promise: Promise): Boolean {
     if (appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) != true) {
@@ -767,6 +848,27 @@ class CalendarModule : Module() {
       return false
     }
     return true
+  }
+
+  private fun setDateInCalendar(calendar: Calendar, date: Any) {
+    when (date) {
+      is String -> {
+        val parsedDate = sdf.parse(date)
+        if (parsedDate != null) {
+          calendar.time = parsedDate
+        } else {
+          Log.e(TAG, "Parsed date is null")
+        }
+      }
+
+      is Number -> {
+        calendar.timeInMillis = date.toLong()
+      }
+
+      else -> {
+        Log.e(TAG, "date has unsupported type")
+      }
+    }
   }
 
   companion object {

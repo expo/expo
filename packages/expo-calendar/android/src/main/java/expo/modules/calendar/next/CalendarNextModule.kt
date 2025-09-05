@@ -1,39 +1,36 @@
 package expo.modules.calendar.next
 
 import android.Manifest
-import android.content.ContentUris
-import android.database.Cursor
-import android.provider.CalendarContract
-import expo.modules.calendar.CalendarUtils
 import expo.modules.calendar.dialogs.CreateEventContract
 import expo.modules.calendar.dialogs.CreateEventIntentResult
 import expo.modules.calendar.dialogs.CreatedEventOptions
 import expo.modules.calendar.dialogs.ViewEventContract
 import expo.modules.calendar.dialogs.ViewEventIntentResult
 import expo.modules.calendar.dialogs.ViewedEventOptions
-import expo.modules.calendar.findCalendarByIdQueryFields
-import expo.modules.calendar.findCalendarsQueryParameters
+import expo.modules.calendar.next.ExpoCalendar.Companion.findExpoCalendarById
+import expo.modules.calendar.next.ExpoCalendar.Companion.findExpoCalendars
+import expo.modules.calendar.next.ExpoCalendar.Companion.listEvents
+import expo.modules.calendar.next.exceptions.CalendarCouldNotBeDeletedException
+import expo.modules.calendar.next.exceptions.EventNotFoundException
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.CalendarRecord
 import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.RecurringEventOptions
+import expo.modules.calendar.next.exceptions.CalendarNotFoundException
+import expo.modules.calendar.next.permissions.CalendarPermissionsDelegate
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.apifeatures.EitherType
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 class CalendarNextModule : Module() {
-  public val contentResolver
-    get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
-
   private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
   private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
-
-  @OptIn(EitherType::class)
+  private val permissionsDelegate by lazy {
+    CalendarPermissionsDelegate(appContext)
+  }
   override fun definition() = ModuleDefinition {
     Name("CalendarNext")
 
@@ -46,73 +43,36 @@ class CalendarNextModule : Module() {
       )
     }
 
-    AsyncFunction("getCalendars") { type: String?, promise: Promise ->
-      withPermissions(promise) {
-        if (type != null && type == "reminder") {
-          promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android", null)
-          return@withPermissions
-        }
-        try {
-          val expoCalendars = findExpoCalendars()
-          promise.resolve(expoCalendars)
-        } catch (e: Exception) {
-          promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
-        }
-      }
+    AsyncFunction("getCalendars") Coroutine { type: String? ->
+      permissionsDelegate.requireSystemPermissions(false)
+      findExpoCalendars(appContext, type)
     }
 
-    Function("getCalendarById") { calendarId: String ->
-      withPermissions {
-        val calendar = findExpoCalendarById(calendarId)
-        if (calendar == null) {
-          throw Exception("Calendar with id $calendarId not found")
-        }
-        return@Function calendar
-      }
+    AsyncFunction("getCalendarById") Coroutine { calendarId: String ->
+      permissionsDelegate.requireSystemPermissions(false)
+      findExpoCalendarById(appContext, calendarId)
     }
 
     AsyncFunction("requestCalendarPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
     }
 
-    AsyncFunction("listEvents") { calendarIds: List<String>, startDate: String, endDate: String, promise: Promise ->
-      withPermissions(promise) {
-        try {
-          val allEvents = mutableListOf<ExpoCalendarEvent>()
-          val cursor = CalendarUtils.findEvents(contentResolver, startDate, endDate, calendarIds)
-          cursor.use {
-            while (it.moveToNext()) {
-              val event = ExpoCalendarEvent(appContext, it)
-              allEvents.add(event)
-            }
-          }
-          promise.resolve(allEvents)
-        } catch (e: Exception) {
-          promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
-        }
-      }
+    AsyncFunction("listEvents") Coroutine { calendarIds: List<String>, startDate: String, endDate: String ->
+      permissionsDelegate.requireSystemPermissions(false)
+      listEvents(appContext, calendarIds, startDate, endDate)
     }
 
-    Function("createCalendar") { calendarRecord: CalendarRecord ->
-      withPermissions {
-        try {
-          val calendarId = ExpoCalendar.saveCalendar(calendarRecord, appContext)
-          val newCalendarRecord = calendarRecord.copy(id = calendarId.toString())
-          ExpoCalendar(appContext, newCalendarRecord)
-        } catch (e: Exception) {
-          throw Exception("Failed to create calendar", e)
-        }
-      }
+
+    AsyncFunction("createCalendar") Coroutine { calendarRecord: CalendarRecord ->
+      permissionsDelegate.requireSystemPermissions(true)
+      val calendarId = ExpoCalendar.updateCalendar(appContext, calendarRecord, isNew = true)
+      val newCalendarRecord = calendarRecord.copy(id = calendarId.toString())
+      ExpoCalendar(appContext, newCalendarRecord)
     }
 
-    Function("getEventById") { eventId: String ->
-      withPermissions {
-        val event = ExpoCalendarEvent.findEventById(eventId, appContext)
-        if (event == null) {
-          throw Exception("Event with id $eventId not found")
-        }
-        return@Function event
-      }
+    AsyncFunction("getEventById") Coroutine { eventId: String ->
+      permissionsDelegate.requireSystemPermissions(false)
+      ExpoCalendarEvent.findEventById(eventId, appContext)
     }
 
     Class(ExpoCalendar::class) {
@@ -182,71 +142,32 @@ class CalendarNextModule : Module() {
         expoCalendar.calendarRecord?.accessLevel
       }
 
-      AsyncFunction("listEvents") { expoCalendar: ExpoCalendar, startDate: String, endDate: String, promise: Promise ->
-        withPermissions(promise) {
-          if (expoCalendar.calendarRecord?.id == null) {
-            promise.reject("E_EVENTS_NOT_FOUND", "Calendar doesn't exist", Exception())
-          }
-          try {
-            val expoCalendarEvents = expoCalendar.getEvents(startDate, endDate)
-            promise.resolve(expoCalendarEvents)
-          } catch (e: Exception) {
-            promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
-          }
-        }
+      AsyncFunction("listEvents") Coroutine { expoCalendar: ExpoCalendar, startDate: String, endDate: String ->
+        permissionsDelegate.requireSystemPermissions(false)
+        expoCalendar.getEvents(startDate, endDate)
       }
 
-      Function("createEvent") { expoCalendar: ExpoCalendar, record: EventRecord ->
-        withPermissions {
-          try {
-            expoCalendar.createEvent(record) ?: throw Exception("Event could not be created")
-          } catch (e: Exception) {
-            throw Exception("Event could not be created", e)
-          }
-        }
+      AsyncFunction("createEvent") Coroutine { expoCalendar: ExpoCalendar, record: EventRecord ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendar.createEvent(record)
       }
 
-      Function("update") { expoCalendar: ExpoCalendar, details: CalendarRecord ->
-        withPermissions {
-          try {
-            val updatedRecord = expoCalendar.calendarRecord?.getUpdatedRecord(details)
-              ?: throw Exception("Calendar record is null")
-            ExpoCalendar.updateCalendar(updatedRecord, appContext, isNew = false)
-            expoCalendar.calendarRecord = updatedRecord
-          } catch (e: Exception) {
-            throw Exception("Failed to update calendar", e)
-          }
-        }
+      AsyncFunction("update") Coroutine { expoCalendar: ExpoCalendar, details: CalendarRecord ->
+        permissionsDelegate.requireSystemPermissions(true)
+        val updatedRecord = expoCalendar.getUpdatedRecord(details)
+        ExpoCalendar.updateCalendar(appContext, updatedRecord, isNew = false)
+        expoCalendar.calendarRecord = updatedRecord
       }
 
-      Function("delete") { expoCalendar: ExpoCalendar ->
-        withPermissions {
-          try {
-            val successful = expoCalendar.deleteCalendar()
-            if (!successful) {
-              throw Exception("Calendar could not be deleted")
-            }
-          } catch (e: Exception) {
-            throw Exception("An error occurred while deleting calendar", e)
-          }
-        }
+      AsyncFunction("delete") Coroutine { expoCalendar: ExpoCalendar ->
+        permissionsDelegate.requireSystemPermissions(true)
+        check(expoCalendar.deleteCalendar()) { throw CalendarCouldNotBeDeletedException("An error occurred while deleting calendar") }
       }
     }
 
     Class(ExpoCalendarEvent::class) {
       Constructor { id: String ->
         ExpoCalendarEvent(appContext)
-      }
-
-      Function("createAttendee") { expoCalendarEvent: ExpoCalendarEvent, record: AttendeeRecord ->
-        withPermissions {
-          try {
-            expoCalendarEvent.createAttendee(record)
-              ?: throw Exception("Attendee could not be created")
-          } catch (e: Exception) {
-            throw Exception("Attendee could not be created", e)
-          }
-        }
       }
 
       Property("id") { expoCalendarEvent: ExpoCalendarEvent ->
@@ -333,18 +254,27 @@ class CalendarNextModule : Module() {
         expoCalendarEvent.eventRecord?.instanceId
       }
 
+      AsyncFunction("createAttendee") Coroutine { expoCalendarEvent: ExpoCalendarEvent, record: AttendeeRecord ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendarEvent.createAttendee(record)
+      }
+
       AsyncFunction("openInCalendarAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions ->
-        val eventId = expoCalendarEvent.eventRecord?.id ?: throw Exception("Event id is null");
+        val eventId = expoCalendarEvent.eventRecord?.id
+          ?: throw EventNotFoundException("Event id is null")
+
         val params = ViewedEventOptions(
           id = eventId,
           startNewActivityTask = rawParams.startNewActivityTask
         )
         val result = viewEventLauncher.launch(params)
+
         return@Coroutine result
       }
 
       AsyncFunction("editInCalendarAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions? ->
-        val eventId = expoCalendarEvent.eventRecord?.id ?: throw Exception("Event id is null");
+        val eventId = expoCalendarEvent.eventRecord?.id
+          ?: throw EventNotFoundException("Event id is null")
         val params = ViewedEventOptions(
           id = eventId,
           startNewActivityTask = rawParams?.startNewActivityTask ?: true
@@ -354,46 +284,25 @@ class CalendarNextModule : Module() {
         return@Coroutine editResult
       }
 
-      AsyncFunction("getAttendeesAsync") { expoCalendarEvent: ExpoCalendarEvent, promise: Promise ->
-        withPermissions(promise) {
-          try {
-            val attendees = expoCalendarEvent.getAttendees()
-            promise.resolve(attendees)
-          } catch (e: Exception) {
-            promise.reject("E_ATTENDEES_NOT_FOUND", "Attendees could not be found", e)
-          }
-        }
+      AsyncFunction("getAttendeesAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent ->
+        permissionsDelegate.requireSystemPermissions(false)
+        expoCalendarEvent.getAttendees()
       }
 
       Function("getOccurrence") { expoCalendarEvent: ExpoCalendarEvent, options: RecurringEventOptions? ->
-        withPermissions {
-          try {
-            expoCalendarEvent.getOccurrence(options)
-          } catch (e: Exception) {
-            throw Exception("Failed to get occurrence", e)
-          }
-        }
+        permissionsDelegate.requireSystemPermissions(false)
+        expoCalendarEvent.getOccurrence(options)
       }
 
-      Function("update") { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, nullableFields: List<String> ->
-        withPermissions {
-          try {
-            expoCalendarEvent.saveEvent(eventRecord, nullableFields = nullableFields)
-            expoCalendarEvent.reloadEvent()
-          } catch (e: Exception) {
-            throw Exception("Failed to update event", e)
-          }
-        }
+      AsyncFunction("update") Coroutine { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, nullableFields: List<String> ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendarEvent.saveEvent(eventRecord, nullableFields = nullableFields)
+        expoCalendarEvent.reloadEvent()
       }
 
-      Function("delete") { expoCalendarEvent: ExpoCalendarEvent ->
-        withPermissions {
-          try {
-            expoCalendarEvent.deleteEvent()
-          } catch (e: Exception) {
-            throw Exception("Event could not be deleted", e)
-          }
-        }
+      AsyncFunction("delete") Coroutine { expoCalendarEvent: ExpoCalendarEvent ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendarEvent.deleteEvent()
       }
     }
 
@@ -426,30 +335,15 @@ class CalendarNextModule : Module() {
         expoCalendarAttendee.attendeeRecord?.email
       }
 
-
-
-      Function("update") { expoCalendarAttendee: ExpoCalendarAttendee, attendeeRecord: AttendeeRecord, nullableFields: List<String> ->
-        withPermissions {
-          try {
-            expoCalendarAttendee.saveAttendee(attendeeRecord, nullableFields = nullableFields)
-            expoCalendarAttendee.reloadAttendee()
-          } catch (e: Exception) {
-            throw Exception("Attendee could not be updated", e)
-          }
-        }
+      AsyncFunction("update") Coroutine { expoCalendarAttendee: ExpoCalendarAttendee, attendeeRecord: AttendeeRecord, nullableFields: List<String> ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendarAttendee.saveAttendee(attendeeRecord, nullableFields = nullableFields)
+        expoCalendarAttendee.reloadAttendee()
       }
 
-      Function("delete") { expoCalendarAttendee: ExpoCalendarAttendee ->
-        withPermissions {
-          try {
-            val successful = expoCalendarAttendee.deleteAttendee()
-            if (!successful) {
-              throw Exception("Attendee could not be deleted")
-            }
-          } catch (e: Exception) {
-            throw Exception("An error occurred while deleting attendee", e)
-          }
-        }
+      AsyncFunction("delete") Coroutine { expoCalendarAttendee: ExpoCalendarAttendee ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendarAttendee.deleteAttendee()
       }
     }
 
@@ -458,67 +352,5 @@ class CalendarNextModule : Module() {
         ExpoCalendarReminder(id)
       }
     }
-  }
-
-  @Throws(SecurityException::class)
-  private fun findExpoCalendars(): List<ExpoCalendar> {
-    val uri = CalendarContract.Calendars.CONTENT_URI
-    val cursor = contentResolver.query(uri, findCalendarsQueryParameters, null, null, null)
-    requireNotNull(cursor) { "Cursor shouldn't be null" }
-    return cursor.use(::serializeExpoCalendars)
-  }
-
-  private fun serializeExpoCalendars(cursor: Cursor): List<ExpoCalendar> {
-    val results: MutableList<ExpoCalendar> = ArrayList()
-    while (cursor.moveToNext()) {
-      results.add(ExpoCalendar(appContext, cursor))
-    }
-    return results
-  }
-
-  private fun findExpoCalendarById(calendarID: String): ExpoCalendar? {
-    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toInt().toLong())
-    val cursor = contentResolver.query(
-      uri,
-      findCalendarByIdQueryFields,
-      null,
-      null,
-      null
-    )
-    requireNotNull(cursor) { "Cursor shouldn't be null" }
-    return cursor.use {
-      if (it.count > 0) {
-        it.moveToFirst()
-        ExpoCalendar(appContext, cursor)
-      } else {
-        null
-      }
-    }
-  }
-
-  private fun checkPermissions(promise: Promise): Boolean {
-    if (appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) != true) {
-      promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.", null)
-      return false
-    }
-    return true
-  }
-
-  private fun checkPermissions(): Boolean {
-    return appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) == true
-  }
-
-  private inline fun withPermissions(promise: Promise, block: () -> Unit) {
-    if (!checkPermissions(promise)) {
-      return
-    }
-    block()
-  }
-
-  private inline fun <T> withPermissions(block: () -> T): T {
-    if (!checkPermissions()) {
-      throw Exception("CALENDAR permission is required to do this operation.")
-    }
-    return block()
   }
 }

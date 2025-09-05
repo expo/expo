@@ -176,7 +176,9 @@ export declare class ExpoCalendar {
    * @param eventData A map of details for the event to be created.
    * @return An instance of the created event.
    */
-  createEvent(eventData: Omit<Partial<ExpoCalendarEvent>, 'id' | 'organizer'>): ExpoCalendarEvent;
+  createEvent(
+    eventData: Omit<Partial<ExpoCalendarEvent>, 'id' | 'organizer'>
+  ): Promise<ExpoCalendarEvent>;
 
   /**
    * Creates a new reminder in the calendar.
@@ -185,26 +187,26 @@ export declare class ExpoCalendar {
    */
   createReminder(
     reminderData: Omit<Partial<ExpoCalendarReminder>, 'id' | 'calendarId'>
-  ): ExpoCalendarReminder;
+  ): Promise<ExpoCalendarReminder>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,
    * explicitly set it to `null` in `details`.
    * @param details A map of properties to be updated.
    */
-  update(details: Partial<ModifiableCalendarProperties>): void;
+  update(details: Partial<ModifiableCalendarProperties>): Promise<void>;
 
   /**
    * Deletes the calendar.
    */
-  delete(): void;
+  delete(): Promise<void>;
 
   /**
    * Gets a calendar by its ID. Throws an error if the calendar with the given ID does not exist.
    * @param calendarId The ID of the calendar to get.
    * @returns An [`ExpoCalendar`](#expocalendar) object representing the calendar.
    */
-  static get(calendarId: string): ExpoCalendar;
+  static get(calendarId: string): Promise<ExpoCalendar>;
 }
 
 export declare class ExpoCalendarEvent {
@@ -379,26 +381,26 @@ export declare class ExpoCalendarEvent {
   update(
     details: Partial<ModifiableEventProperties>,
     nullableFields?: (keyof ModifiableEventProperties)[]
-  ): void;
+  ): Promise<void>;
 
   /**
    * Deletes the event.
    */
-  delete(): void;
+  delete(): Promise<void>;
 
   /**
    * Creates a new attendee and adds it to this event.
    */
   createAttendee(
     attendee: Pick<NonNullable<Attendee>, 'email'> & Partial<Attendee>
-  ): ExpoCalendarAttendee;
+  ): Promise<ExpoCalendarAttendee>;
 
   /**
    * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
    * @param eventId The ID of the event to get.
    * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
    */
-  static get(eventId: string): ExpoCalendarEvent;
+  static get(eventId: string): Promise<ExpoCalendarEvent>;
 }
 
 export declare class ExpoCalendarReminder {
@@ -471,19 +473,19 @@ export declare class ExpoCalendarReminder {
   update(
     details: Partial<ModifiableReminderProperties>,
     nullableFields?: (keyof ModifiableReminderProperties)[]
-  ): void;
+  ): Promise<void>;
 
   /**
    * Deletes the reminder.
    */
-  delete(): void;
+  delete(): Promise<void>;
 
   /**
    * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
    * @param reminderId The ID of the reminder to get.
    * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
    */
-  static get(reminderId: string): ExpoCalendarReminder;
+  static get(reminderId: string): Promise<ExpoCalendarReminder>;
 }
 
 /**
@@ -535,11 +537,11 @@ export declare class ExpoCalendarAttendee {
   update(
     details: Partial<ModifiableAttendeeProperties>,
     nullableFields?: (keyof ModifiableAttendeeProperties)[]
-  ): void;
+  ): Promise<void>;
 
   /**
    * Deletes the attendee.
    * @platform android
    */
-  delete(): void;
+  delete(): Promise<void>;
 }
