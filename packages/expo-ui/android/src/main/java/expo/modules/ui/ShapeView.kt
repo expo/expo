@@ -26,6 +26,7 @@ import androidx.graphics.shapes.pillStar
 import androidx.graphics.shapes.rectangle
 import androidx.graphics.shapes.star
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.views.ComposableScope
 import android.graphics.Color as GraphicsColor
 
 enum class ShapeType(val value: String) : Enumerable {
@@ -121,7 +122,7 @@ class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<Shap
   override val props = ShapeProps()
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     val (smoothing) = props.smoothing
     val (cornerRounding) = props.cornerRounding
     val (innerRadius) = props.innerRadius

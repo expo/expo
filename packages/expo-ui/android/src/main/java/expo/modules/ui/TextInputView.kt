@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.Direction
+import expo.modules.kotlin.views.ComposableScope
 import java.util.EnumSet
 
 data class TextInputProps(
@@ -76,7 +77,7 @@ class TextInputView(context: Context, appContext: AppContext) :
     }
 
   @Composable
-  override fun Content(modifier: Modifier) {
+  override fun Content(composableScope: ComposableScope) {
     AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
       TextField(
         value = requireNotNull(textState.value),
