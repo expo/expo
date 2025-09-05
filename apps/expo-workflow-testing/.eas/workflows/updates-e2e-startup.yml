@@ -41,23 +41,26 @@ jobs:
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
+          # Created with a space character on purpose!
+          # See: https://github.com/expo/expo/pull/38695
+          TEST_PROJECT_ROOT: "updates e2e/updates-e2e"
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-startup-eas-project.ts
-          ls -la ../updates-e2e
+          ls -la "../updates e2e/updates-e2e"
       - name: Prepare E2E project
         id: prepare
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         run: |
           yarn generate-test-update-bundles ios test-update-1
           yarn ios:pod-install
       - name: Build E2E test app (debug)
         id: builddebug
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         run: |
           yarn maestro:ios:debug:build
       - name: Build E2E test app (release)
         id: buildrelease
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         run: |
           yarn maestro:ios:release:build
       - uses: eas/start_ios_simulator
@@ -65,12 +68,12 @@ jobs:
           device_identifier: iPhone 16
       - name: Run Maestro tests (debug)
         id: testdebug
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-startup.yml ios debug
       - name: Run Maestro tests (release)
         id: testrelease
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-startup.yml ios release
   android:
@@ -94,12 +97,15 @@ jobs:
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
+          # Created with a space character on purpose!
+          # See: https://github.com/expo/expo/pull/38695
+          TEST_PROJECT_ROOT: "updates e2e/updates-e2e"
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-startup-eas-project.ts
-          ls -la ../updates-e2e
+          ls -la "../updates e2e/updates-e2e"
       - name: Prepare E2E project
         id: prepare
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
@@ -109,14 +115,14 @@ jobs:
           device_name: pixel_4
       - name: Build E2E test app (debug)
         id: builddebug
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           yarn maestro:android:debug:build
       - name: Build E2E test app (release)
         id: buildrelease
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
@@ -125,13 +131,13 @@ jobs:
         id: testdebug
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-startup.yml android debug
       - name: Run Maestro tests (release)
         id: testrelease
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-        working_directory: ../../../updates-e2e
+        working_directory: "../../../updates e2e/updates-e2e"
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-startup.yml android release
