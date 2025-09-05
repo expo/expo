@@ -59,9 +59,9 @@ class ChipView(context: Context, appContext: AppContext) :
       AssistChip(
         onClick = { onPress.invoke(ChipPressedEvent()) },
         label = { ChipText(label = label, textStyle = textStyle) },
-        leadingIcon = leadingIcon?.let { iconName ->
-          {
-            ChipIcon(iconName = iconName, iconSize = iconSize)
+        leadingIcon = {
+          leadingIcon?.let {
+            ChipIcon(iconName = it, iconSize = iconSize)
           }
         },
         enabled = enabled,
@@ -97,9 +97,9 @@ class ChipView(context: Context, appContext: AppContext) :
         label = { ChipText(label = label, textStyle = textStyle) },
         enabled = enabled,
         selected = selected,
-        avatar = leadingIcon?.let { iconName ->
-          {
-            ChipIcon(iconName = iconName, iconSize = iconSize)
+        avatar = {
+          leadingIcon?.let {
+            ChipIcon(iconName = it, iconSize = iconSize)
           }
         },
         trailingIcon = {
