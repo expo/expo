@@ -22,6 +22,7 @@ public:
   void registerClass(
     jni::alias_ref<jstring> name,
     jni::alias_ref<jni::HybridClass<JSDecoratorsBridgingObject>::javaobject> prototypeDecorator,
+    jni::alias_ref<jni::HybridClass<JSDecoratorsBridgingObject>::javaobject> constructorDecorator,
     jboolean takesOwner,
     jni::alias_ref<jclass> ownerClass,
     jboolean isSharedRef,
@@ -37,6 +38,7 @@ public:
 private:
   struct ClassEntry {
     std::vector<std::unique_ptr<JSDecorator>> prototypeDecorators;
+    std::vector<std::unique_ptr<JSDecorator>> constructorDecorators;
     std::shared_ptr<MethodMetadata> constructor;
     jni::global_ref<jclass> ownerClass;
     bool isSharedRef;

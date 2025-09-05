@@ -1,6 +1,7 @@
 package expo.modules.kotlin
 
 import com.facebook.react.bridge.Arguments
+import expo.modules.kotlin.classcomponent.ClassDefinitionData
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
@@ -68,8 +69,10 @@ class ModuleHolder<T : Module>(val module: T) {
       trace("Attaching classes") {
         definition.classData.forEach { clazz ->
           val prototypeDecorator = JSDecoratorsBridgingObject(jniDeallocator)
+          val constructorDecorator = JSDecoratorsBridgingObject(jniDeallocator)
 
           attachPrimitives(appContext, clazz.objectDefinition, prototypeDecorator, clazz.name)
+          attachPrimitivesToClass(appContext, clazz, constructorDecorator, clazz.name)
 
           val constructor = clazz.constructor
           val ownerClass = (constructor.ownerType?.classifier as? KClass<*>)?.java
@@ -77,6 +80,7 @@ class ModuleHolder<T : Module>(val module: T) {
           moduleDecorator.registerClass(
             clazz.name,
             prototypeDecorator,
+            constructorDecorator,
             constructor.takesOwner,
             ownerClass,
             clazz.isSharedRef,
@@ -119,6 +123,18 @@ class ModuleHolder<T : Module>(val module: T) {
         .forEach { (_, prop) ->
           prop.attachToJSObject(appContext, moduleDecorator)
         }
+    }
+  }
+
+  private fun attachPrimitivesToClass(appContext: AppContext, definition: ClassDefinitionData, constructorDecorator: JSDecoratorsBridgingObject, name: String) {
+    trace("Attaching primitives to constructor") {
+      trace("Attaching functions") {
+        definition
+          .staticFunctions
+          .forEach { function ->
+            function.attachToJSObject(appContext, constructorDecorator, name)
+          }
+      }
     }
   }
 
