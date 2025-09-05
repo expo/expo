@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Collapse `unknown` and `<anonymous>` stack frames ([#39407](https://github.com/expo/expo/pull/39407) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.21.10 — 2025-09-04
