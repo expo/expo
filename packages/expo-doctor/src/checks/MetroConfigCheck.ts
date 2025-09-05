@@ -116,7 +116,8 @@ export class MetroConfigCheck implements DoctorCheck {
       issues,
       advice: issues.length
         ? [
-            `Remove invalid overrides from your "metro.config.js" to adopt the recommended values from "expo/metro-config" where needed.`,
+            'Modifying the "metro.config.js" is dangerous and may lead to unintended consequences.\n' +
+              'Unless you know what these overrides do, remove them and adopt the recommended values from "expo/metro-config".',
           ]
         : [],
     };
