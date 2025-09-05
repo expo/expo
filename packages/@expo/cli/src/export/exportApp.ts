@@ -33,7 +33,7 @@ import * as Log from '../log';
 import {
   getServerDeploymentScript,
   runServerDeployCommandAsync,
-  saveDeploymentUrlToTmpConfigPath,
+  saveDeploymentUrl,
 } from './deployServer';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
@@ -312,7 +312,11 @@ export async function exportAppAsync(
       // API Routes Deployment
       const apiRoutesEnabled =
         devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-      if (apiRoutesEnabled && (platforms.includes('ios') || platforms.includes('android'))) {
+      if (
+        apiRoutesEnabled &&
+        // Only deploy API routes for iOS or Android
+        (platforms.includes('ios') || platforms.includes('android'))
+      ) {
         await exportApiRoutesStandaloneAsync(devServer, {
           files,
           platform: 'web',
@@ -338,7 +342,7 @@ export async function exportAppAsync(
             deployScript: getServerDeploymentScript(projectConfig.pkg.scripts),
           });
 
-          saveDeploymentUrlToTmpConfigPath({
+          saveDeploymentUrl({
             deployedServerUrl,
             userDefinedServerUrl,
             projectRoot,

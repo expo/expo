@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.appendShallowGeneratedConfig = appendShallowGeneratedConfig;
 exports.getGeneratedConfigPath = getGeneratedConfigPath;
+exports.getStaticGeneratedConfigPath = getStaticGeneratedConfigPath;
 exports.withInternalGeneratedConfig = withInternalGeneratedConfig;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
@@ -55,9 +56,12 @@ function withInternalGeneratedConfig(projectRoot, config) {
   }
   return config;
 }
+function getStaticGeneratedConfigPath(projectRoot) {
+  return _path().default.join(projectRoot, '.expo', 'generated', `app.config.json`);
+}
 function getGeneratedConfigPath(projectRoot) {
   if ((0, _getenv().boolish)('CI', false)) {
-    return _path().default.join(projectRoot, '.expo', 'generated', `app.config.json`);
+    return getStaticGeneratedConfigPath(projectRoot);
   }
   return (0, _getenv().string)('__EXPO_GENERATED_CONFIG_PATH', '') || null;
 }

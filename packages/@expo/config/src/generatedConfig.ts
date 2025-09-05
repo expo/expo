@@ -41,9 +41,13 @@ export function withInternalGeneratedConfig(projectRoot: string, config: ExpoCon
   return config;
 }
 
+export function getStaticGeneratedConfigPath(projectRoot: string): string {
+  return path.join(projectRoot, '.expo', 'generated', `app.config.json`);
+}
+
 export function getGeneratedConfigPath(projectRoot: string): string | null {
   if (boolish('CI', false)) {
-    return path.join(projectRoot, '.expo', 'generated', `app.config.json`);
+    return getStaticGeneratedConfigPath(projectRoot);
   }
 
   return string('__EXPO_GENERATED_CONFIG_PATH', '') || null;

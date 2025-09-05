@@ -13,7 +13,7 @@ import { env } from '../../utils/env';
 import {
   getServerDeploymentScript,
   runServerDeployCommandAsync,
-  saveDeploymentUrlToTmpConfigPath,
+  saveDeploymentUrl,
 } from '../deployServer';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
 import { copyPublicFolderAsync } from '../publicFolder';
@@ -102,7 +102,7 @@ export async function exportStandaloneServerAsync(
         deployScript: getServerDeploymentScript(pkg.scripts),
       });
 
-  saveDeploymentUrlToTmpConfigPath({
+  saveDeploymentUrl({
     projectRoot,
     userDefinedServerUrl,
     deployedServerUrl,

@@ -241,7 +241,7 @@ function assertDeploymentJsonOutput(json: any): asserts json is {
   }
 }
 
-export function saveDeploymentUrlToTmpConfigPath({
+export function saveDeploymentUrl({
   deployedServerUrl,
   userDefinedServerUrl,
   projectRoot,
