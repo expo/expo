@@ -51,7 +51,7 @@
 }
 #else
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
-{ 
+{
   return [_expoAppDelegate applicationDidFinishLaunching:notification];
 }
 
@@ -60,16 +60,6 @@
   return [_expoAppDelegate applicationDidBecomeActive:notification];
 }
 #endif
-
-- (UIViewController *)createRootViewController
-{
-  return [_expoAppDelegate.factory.delegate createRootViewController];
-}
-
-- (void)customizeRootView:(UIView *)rootView
-{
-  [_expoAppDelegate.factory.delegate customizeRootView:rootView];
-}
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
@@ -91,16 +81,6 @@
                    isFatal:(BOOL)isFatal
 {
 }
-
-- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
-{
-  return [_expoAppDelegate.factory.delegate getModuleInstanceFromClass:moduleClass];
-}
-
-- (Class)getModuleClassFromName:(const char *)name {
-  return [_expoAppDelegate.factory.delegate getModuleClassFromName:name];
-}
-
 
 #pragma mark - Helpers
 
