@@ -312,20 +312,19 @@ export async function treeShakeSerializer(
               // export { a, b, c } from 'a';
               // ```
               // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
-              path.replaceWithMultiple([
-                // @ts-expect-error: missing type
-                types.ExportNamedDeclaration(
+              // The `default` specifier isn't re-exported by export-all, as per the spec
+              const exportSpecifiers = exportResults.exportNames
+                .filter((exportName) => exportName !== 'default')
+                .map((exportName) =>
+                  types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))
+                );
+              path.replaceWith(
+                types.exportNamedDeclaration(
                   null,
-                  exportResults.exportNames.map((exportName) =>
-                    types.exportSpecifier(
-                      types.identifier(exportName),
-                      types.identifier(exportName)
-                    )
-                  ),
+                  exportSpecifiers,
                   types.stringLiteral(path.node.source.value)
-                ),
-              ]);
-
+                )
+              );
               // TODO: Update deps
               populateModuleWithImportUsage(value);
             } else {
