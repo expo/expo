@@ -16,7 +16,7 @@ struct HeaderView: View {
         let image = loadAppIcon(from: iconPath) {
         Image(uiImage: image)
           .resizable()
-          .aspectRatio(contentMode: .fit)
+          .scaledToFit()
           .frame(width: 38, height: 38)
           .clipShape(RoundedRectangle(cornerRadius: 16))
       }
