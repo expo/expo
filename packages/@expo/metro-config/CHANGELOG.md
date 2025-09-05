@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent unclear errors from being thrown when loading config ([#39384](https://github.com/expo/expo/pull/39384) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.21.10 — 2025-09-04
