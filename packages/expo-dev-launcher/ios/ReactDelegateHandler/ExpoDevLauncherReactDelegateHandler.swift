@@ -50,24 +50,28 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    self.reactNativeFactory = self.reactDelegate?.reactNativeFactory as! RCTReactNativeFactory?
+    guard let reactDelegate = self.reactDelegate else {
+      fatalError("`reactDelegate` should not be nil")
+    }
+
+    self.reactNativeFactory = reactDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    if self.reactNativeFactory?.delegate?.newArchEnabled() ?? false {
+    if RCTIsNewArchEnabled() {
       self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
       self.reactNativeFactory?.bridge = nil
       self.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
-    let rootView = self.reactDelegate?.reactNativeFactory.recreateRootView(
+    let rootView = reactDelegate.reactNativeFactory.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,
       launchOptions: developmentClientController.getLaunchOptions()
     )
     developmentClientController.appBridge = RCTBridge.current()
-    rootView?.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
+    rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
 
     // NOTE: this order of assignment seems to actually have an effect on behaviour

@@ -5,7 +5,7 @@ import React
 public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
   private lazy var reactDelegate: ExpoReactDelegate = {
-     ExpoReactDelegate(
+    ExpoReactDelegate(
       handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers,
       reactNativeFactory: self
     )
@@ -101,7 +101,7 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
       fatalError("recreateRootView: Missing RCTReactNativeFactoryDelegate")
     }
 
-    if delegate.newArchEnabled() {
+    if RCTIsNewArchEnabled() {
       // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
       assert(self.rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
     } else {
