@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add experimental formatters API.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
