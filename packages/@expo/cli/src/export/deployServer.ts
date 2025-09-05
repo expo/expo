@@ -83,7 +83,7 @@ export async function runServerDeployCommandAsync(
       if (env.__EAS_BIN) {
         results = await spawnAsync(env.__EAS_BIN, args, spawnOptions);
       } else {
-        results = await spawnAsync('eas', args, spawnOptions);
+        results = await spawnAsync('npx', ['eas', ...args], spawnOptions);
       }
 
       debug('Server deployment stdout:', results.stdout);
