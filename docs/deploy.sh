@@ -231,7 +231,6 @@ redirects[workflow/hermes]=guides/using-hermes
 # Redirects based on Algolia 404 report
 redirects[workflow/build/building-on-ci]=build/building-on-ci
 redirects[versions/v52.0.0/sdk/taskmanager]=versions/v52.0.0/sdk/task-manager
-redirects[versions/v51.0.0/sdk/taskmanager]=versions/v51.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
 redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[guides/how-expo-works]=faq
