@@ -12,7 +12,9 @@ public class VideoThumbnailsModule: Module {
 
   internal func getVideoThumbnail(sourceFilename: URL, options: VideoThumbnailsOptions) throws -> [String: Any] {
     if sourceFilename.isFileURL {
-      guard FileSystemUtilities.permissions(appContext, for: sourceFilename).contains(.read) else {
+      guard
+        FileSystemUtilities.permissions(appContext, for: sourceFilename).contains(.read)
+        && FileManager.default.isReadableFile(atPath: sourceFilename.path) else {
         throw FileSystemReadPermissionException(sourceFilename.absoluteString)
       }
     }

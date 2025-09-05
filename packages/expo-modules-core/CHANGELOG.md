@@ -23,6 +23,7 @@
 ### 💡 Others
 
 - Use new LongLivedObject.h and CallbackWrapper.h headers namespace ([#39344](https://github.com/expo/expo/pull/39344) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
 
 ## 3.0.11 — 2025-09-02
 

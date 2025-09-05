@@ -122,9 +122,11 @@ export declare class Directory {
 
   /**
    * A static method that opens a file picker to select a directory.
+   *
+   * On iOS, the selected directory grants temporary read and write access for the current app session only. After the app restarts, you must prompt the user again to regain access.
+   *
    * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
-   * @returns a `Directory` instance. The underlying uri will be a content URI on Android.
-   * @platform android
+   * @returns a `Directory` instance. On Android, the underlying uri will be a content URI.
    */
   static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }

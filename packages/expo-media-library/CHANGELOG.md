@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
 ## 18.0.6 — 2025-09-02
 
 ### 💡 Others

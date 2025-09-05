@@ -91,6 +91,12 @@ internal final class FilePickingCancelledException: Exception {
   }
 }
 
+internal final class NotImplementedException: Exception {
+  override var reason: String {
+    "Not implemented"
+  }
+}
+
 internal final class FeatureNotAvailableOnPlatformException: Exception {
   override var reason: String {
     "This feature is not available on this platform"
