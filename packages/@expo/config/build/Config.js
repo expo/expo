@@ -79,6 +79,13 @@ function _slugify() {
   };
   return data;
 }
+function _generatedConfig() {
+  const data = require("./generatedConfig");
+  _generatedConfig = function () {
+    return data;
+  };
+  return data;
+}
 function _getConfig() {
   const data = require("./getConfig");
   _getConfig = function () {
@@ -227,6 +234,7 @@ function getConfig(projectRoot, options = {}) {
       staticConfigPath: paths.staticConfigPath,
       hasUnusedStaticConfig: !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig
     };
+    configWithDefaultValues.exp = (0, _generatedConfig().withInternalGeneratedConfig)(projectRoot, configWithDefaultValues.exp);
     if (options.isModdedConfig) {
       // @ts-ignore: Add the mods back to the object.
       configWithDefaultValues.exp.mods = config.mods ?? null;

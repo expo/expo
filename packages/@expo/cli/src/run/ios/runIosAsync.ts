@@ -23,10 +23,23 @@ import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
+import { createTempFilePath } from '../../utils/createTempPath';
 
 const debug = require('debug')('expo:run:ios');
 
 export async function runIosAsync(projectRoot: string, options: Options) {
+  const generatedConfigPath = createTempFilePath(); // Doesn't actually create a file
+  try {
+    process.env.__EXPO_GENERATED_CONFIG_PATH = generatedConfigPath;
+    await runIosAsyncWithoutTmpConfig(projectRoot, options);
+  } finally {
+    try {
+      await fs.promises.rm(generatedConfigPath, { force: true });
+    } catch {} // Ignore errors
+  }
+}
+
+export async function runIosAsyncWithoutTmpConfig(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
 
@@ -41,7 +54,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
 
-  const projectConfig = getConfig(projectRoot);
+  const generatedConfigPath = createTempFilePath();
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
     const localPath = await resolveBuildCache({
       projectRoot,
@@ -100,6 +113,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
         platform: 'ios',
         assetsDest: path.join(options.binary, 'assets'),
         bundleOutput: possibleBundleOutput,
+        generatedConfigPath,
       });
     } else {
       Log.warn('Bundle output not found at expected location:', possibleBundleOutput);
