@@ -293,55 +293,6 @@ export async function treeShakeSerializer(
         isStatic = false;
       }
 
-      traverse(ast, {
-        // export * from 'a'
-        // NOTE: This only runs on normal `* from` syntax as `* as X from` is converted to an import.
-        ExportAllDeclaration(path) {
-          if (path.node.source) {
-            // Get module for import ID:
-            const nextModule = getDepForImportId(path.node.source.value);
-            const exportResults = getExportsForModule(nextModule, checkedModules);
-            // console.log('exportResults', exportResults);
-
-            if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
-              // Collect all exports from the module.
-              // exportNames.push(...exportResults.exportNames);
-              // Convert the export all to named exports.
-              // ```
-              // export * from 'a';
-              // ```
-              // becomes
-              // ```
-              // export { a, b, c } from 'a';
-              // ```
-              // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
-              // The `default` specifier isn't re-exported by export-all, as per the spec
-              const exportSpecifiers = [...exportResults.exportNames]
-                .filter((exportName) => exportName !== 'default')
-                .map((exportName) =>
-                  types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))
-                );
-              path.replaceWith(
-                types.exportNamedDeclaration(
-                  null,
-                  exportSpecifiers,
-                  types.stringLiteral(path.node.source.value)
-                )
-              );
-              // TODO: Update deps
-              populateModuleWithImportUsage(value);
-            } else {
-              debug('Cannot resolve star export:', nextModule.path);
-              hasUnresolvableStarExport = true;
-            }
-
-            // Collect all exports from the module.
-
-            // If list of exports does not contain any CJS, then re-write the export all as named exports.
-          }
-        },
-      });
-
       // Collect export names
       traverse(ast, {
         ExportNamedDeclaration(path) {
@@ -373,6 +324,62 @@ export async function treeShakeSerializer(
 
           // If it's an expression, then it's a static export.
           isStatic = true;
+        },
+      });
+
+      traverse(ast, {
+        // export * from 'a'
+        // NOTE: This only runs on normal `* from` syntax as `* as X from` is converted to an import.
+        ExportAllDeclaration(path) {
+          if (path.node.source) {
+            // Get module for import ID:
+            const nextModule = getDepForImportId(path.node.source.value);
+            const exportResults = getExportsForModule(nextModule, checkedModules);
+            // console.log('exportResults', exportResults);
+
+            if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
+              // Collect all exports from the module.
+              // exportNames.push(...exportResults.exportNames);
+              // Convert the export all to named exports.
+              // ```
+              // export * from 'a';
+              // ```
+              // becomes
+              // ```
+              // export { a, b, c } from 'a';
+              // ```
+              // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
+              // The `default` specifier isn't re-exported by export-all, as per the spec
+              const exportSpecifiers: types.ExportSpecifier[] = [];
+              for (const exportName of exportResults.exportNames) {
+                if (exportName !== 'default' && !exportNames.has(exportName)) {
+                  exportNames.add(exportName);
+                  exportSpecifiers.push(
+                    types.exportSpecifier(
+                      types.identifier(exportName),
+                      types.identifier(exportName)
+                    )
+                  );
+                }
+              }
+              path.replaceWith(
+                types.exportNamedDeclaration(
+                  null,
+                  exportSpecifiers,
+                  types.stringLiteral(path.node.source.value)
+                )
+              );
+              // TODO: Update deps
+              populateModuleWithImportUsage(value);
+            } else {
+              debug('Cannot resolve star export:', nextModule.path);
+              hasUnresolvableStarExport = true;
+            }
+
+            // Collect all exports from the module.
+
+            // If list of exports does not contain any CJS, then re-write the export all as named exports.
+          }
         },
       });
     }
