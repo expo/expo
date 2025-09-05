@@ -88,7 +88,7 @@ export function QuickStart() {
                 the technical stuff, directly from GitHub.
               </P>
               <HomeButton
-                className="!relative !bottom-auto border-2 border-palette-white bg-palette-white font-semibold text-palette-black shadow-md hocus:border-palette-gray1 hocus:bg-palette-gray1 hocus:text-palette-black"
+                className="!relative !bottom-auto border-2 border-palette-white bg-palette-white font-semibold text-palette-black shadow-md hocus:border-palette-gray1 hocus:bg-palette-gray1 hocus:text-palette-black dark:hocus:border-palette-gray11 dark:hocus:bg-palette-gray11 dark:hocus:text-palette-black"
                 href="https://launch.expo.dev/"
                 target="_blank"
                 rightSlot={<ArrowUpRightIcon className="icon-md text-palette-black" />}>
