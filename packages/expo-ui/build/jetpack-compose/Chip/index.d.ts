@@ -15,9 +15,13 @@ export interface ChipProps extends ViewProps {
      */
     label: string;
     /**
-     * Optional leading icon name (using Material Icons). Used for assist, filter and input (avatar icon) chips.
+     * Optional leading icon name (using Material Icons). Used for assist, filter, input (avatar icon), and suggestion chips.
      */
     leadingIcon?: string;
+    /**
+     * Optional trailing icon name (using Material Icons). Used for assist, filter, and input chips. For input chips, defaults to 'filled.Close' if not specified.
+     */
+    trailingIcon?: string;
     /**
      * Size of the icon in density-independent pixels (dp). Defaults to 18.
      */

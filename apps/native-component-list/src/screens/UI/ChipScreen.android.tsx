@@ -70,10 +70,11 @@ export default function ChipScreen() {
             variant="assist"
             label="Calendar"
             leadingIcon="filled.DateRange"
+            trailingIcon="filled.ArrowForward"
             iconSize={iconSize}
             textStyle={textStyle}
             onPress={() => Alert.alert('Assist', 'Adding to calendar...')}
-            style={styles.mediumChipWithIcon}
+            style={styles.largeChipWithIcon}
           />
           <Chip
             variant="assist"
@@ -124,6 +125,7 @@ export default function ChipScreen() {
             variant="filter"
             label="Images"
             leadingIcon="filled.Star"
+            trailingIcon="filled.Photo"
             iconSize={iconSize}
             textStyle={textStyle}
             selected={selectedFilters.includes('Images')}
@@ -142,6 +144,7 @@ export default function ChipScreen() {
             variant="filter"
             label="Videos"
             leadingIcon="filled.Star"
+            trailingIcon="filled.PlayArrow"
             iconSize={iconSize}
             textStyle={textStyle}
             selected={selectedFilters.includes('Videos')}
@@ -214,6 +217,7 @@ export default function ChipScreen() {
             leadingIcon="filled.Star"
             iconSize={iconSize}
             textStyle={textStyle}
+            style={styles.largeChipWithIcon}
             onPress={() => Alert.alert('Suggestion', 'Showing weather...')}
           />
         </View>
@@ -344,6 +348,10 @@ const styles = StyleSheet.create({
   },
   mediumChipWithIcon: {
     width: 110,
+    height: 32,
+  },
+  largeChipWithIcon: {
+    width: 130,
     height: 32,
   },
   sliderContainer: {

@@ -25,6 +25,7 @@ data class ChipProps(
   val variant: MutableState<String> = mutableStateOf("assist"),
   val label: MutableState<String> = mutableStateOf(""),
   val leadingIcon: MutableState<String?> = mutableStateOf(null),
+  val trailingIcon: MutableState<String?> = mutableStateOf(null),
   val iconSize: MutableState<Int> = mutableIntStateOf(18),
   val textStyle: MutableState<String> = mutableStateOf("labelSmall"),
   val enabled: MutableState<Boolean> = mutableStateOf(true),
@@ -45,6 +46,7 @@ class ChipView(context: Context, appContext: AppContext) :
     val variant by props.variant
     val label by props.label
     val leadingIcon by props.leadingIcon
+    val trailingIcon by props.trailingIcon
     val iconSize by props.iconSize
     val textStyle by props.textStyle
     val enabled by props.enabled
@@ -61,6 +63,11 @@ class ChipView(context: Context, appContext: AppContext) :
         label = { ChipText(label = label, textStyle = textStyle) },
         leadingIcon = {
           leadingIcon?.let {
+            ChipIcon(iconName = it, iconSize = iconSize)
+          }
+        },
+        trailingIcon = {
+          trailingIcon?.let {
             ChipIcon(iconName = it, iconSize = iconSize)
           }
         },
@@ -82,6 +89,11 @@ class ChipView(context: Context, appContext: AppContext) :
             ChipIcon(iconName = "filled.Done", iconSize = iconSize)
           }
         } else null,
+        trailingIcon = {
+          trailingIcon?.let {
+            ChipIcon(iconName = it, iconSize = iconSize)
+          }
+        },
         enabled = enabled,
         colors = FilterChipDefaults.filterChipColors(),
         border = FilterChipDefaults.filterChipBorder(enabled = enabled, selected = selected),
@@ -103,7 +115,10 @@ class ChipView(context: Context, appContext: AppContext) :
           }
         },
         trailingIcon = {
-          ChipIcon("filled.Close", iconSize = iconSize)
+          ChipIcon(
+            iconName = trailingIcon ?: "filled.Close",
+            iconSize = iconSize
+          )
         },
         modifier = chipModifier
       )
@@ -114,6 +129,11 @@ class ChipView(context: Context, appContext: AppContext) :
       SuggestionChip(
         onClick = { onPress.invoke(ChipPressedEvent()) },
         label = { ChipText(label = label, textStyle = textStyle) },
+        icon = {
+          leadingIcon?.let {
+            ChipIcon(iconName = it, iconSize = iconSize)
+          }
+        },
         modifier = chipModifier
       )
     }
