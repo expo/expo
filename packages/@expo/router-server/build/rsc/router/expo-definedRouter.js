@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ctx_1 = require("expo-router/_ctx");
-const getRoutesSSR_1 = require("expo-router/build/getRoutesSSR");
-const loadStaticParamsAsync_1 = require("expo-router/build/loadStaticParamsAsync");
 const matchers_1 = require("expo-router/build/matchers");
 const sortRoutes_1 = require("expo-router/build/sortRoutes");
 const create_expo_pages_1 = require("./create-expo-pages");
+const getRoutesSSR_1 = require("../../getRoutesSSR");
+const loadStaticParamsAsync_1 = require("../../loadStaticParamsAsync");
 const UNIMPLEMENTED_PARAMS = new Proxy({}, {
     // Assert that params is unimplemented when accessed.
     get() {

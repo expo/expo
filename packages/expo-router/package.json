@@ -36,7 +36,6 @@
     "ios",
     "unstable-native-tabs.js",
     "unstable-native-tabs.d.ts",
-    "node",
     "plugin",
     "server.d.ts",
     "server.js",

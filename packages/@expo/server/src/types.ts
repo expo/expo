@@ -3,7 +3,7 @@ import type {
   ExpoRoutesManifestV1,
   MiddlewareInfo,
   RouteInfo,
-} from 'expo-router/build/routes-manifest';
+} from '@expo/router-server/build/routes-manifest';
 
 import type { _ImmutableRequest } from './ImmutableRequest';
 
