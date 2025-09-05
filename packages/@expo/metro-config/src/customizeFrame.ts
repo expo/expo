@@ -106,6 +106,13 @@ export function getDefaultCustomizeFrame(): CustomizeFrameFunc {
         frame.file?.match(/^https?:\/\//g)
       ) {
         collapse = true;
+      } else if (
+        (frame.file === 'unknown' || frame.file === '<anonymous>') &&
+        (frame.column == null || frame.column === -1)
+      ) {
+        // If we definitively don't have a file, as indicated by the invalid column value,
+        // this frame won't be able to desymbolicate properly
+        collapse = true;
       } else if (frame.file === '<native>') {
         collapse = true;
       } else if (
