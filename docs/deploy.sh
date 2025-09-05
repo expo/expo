@@ -364,6 +364,9 @@ redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 # After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
 redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-privacy-protection
 
+# After changing brownfield docs
+redirects[brownfield/installing-expo-modules]=/brownfield/integration-with-existing-apps
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
