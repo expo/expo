@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix expansion of `ExportAllDeclaration` during tree-shaking not ignoring `default` export specifier and duplicating existing specifiers ([#39420](https://github.com/expo/expo/pull/39420) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.21.10 — 2025-09-04
