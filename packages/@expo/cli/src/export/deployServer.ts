@@ -1,7 +1,8 @@
+import { appendShallowGeneratedConfig, getGeneratedConfigPath } from '@expo/config/private';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
-import { string } from 'getenv';
+import { string, boolish } from 'getenv';
 import { execSync } from 'node:child_process';
 import path from 'path';
 
@@ -243,33 +244,40 @@ function assertDeploymentJsonOutput(json: any): asserts json is {
 export function saveDeploymentUrlToTmpConfigPath({
   deployedServerUrl,
   userDefinedServerUrl,
+  projectRoot,
 }: {
   deployedServerUrl: string | false;
   userDefinedServerUrl: string | null;
+  projectRoot: string;
 }) {
   if (deployedServerUrl && userDefinedServerUrl == null) {
-    const generatedConfigPath = string('__EXPO_GENERATED_CONFIG_PATH', '');
-    if (generatedConfigPath) {
-      let generatedConfig: Record<string, unknown> = {};
-      try {
-        const rawGeneratedConfig = fs.readFileSync(generatedConfigPath, 'utf8');
-        generatedConfig = JSON.parse(rawGeneratedConfig);
-      } catch {}
+    const generatedConfigPath = getGeneratedConfigPath(projectRoot);
+    const success = appendShallowGeneratedConfig(
+      {
+        'expo.extra.router.generatedOrigin': deployedServerUrl,
+      },
+      { projectRoot }
+    );
 
-      generatedConfig['expo.extra.router.generatedOrigin'] = deployedServerUrl;
-      try {
-        fs.writeFileSync(generatedConfigPath, JSON.stringify(generatedConfig), 'utf8');
-        Log.log(`Using deployed server URL: ${deployedServerUrl}`);
-      } catch (error) {
-        Log.error('Failed to save deployed URL.');
-        debug(error);
-      }
+    if (success) {
+      Log.log(`Saved deployed URL ${deployedServerUrl} to ${generatedConfigPath}`);
     } else {
-      debug('No generated config found');
+      Log.error(`Failed to save deployed URL: ${deployedServerUrl} to ${generatedConfigPath}s`);
     }
-  } else if (deployedServerUrl && userDefinedServerUrl) {
+
+    return;
+  }
+
+  if (deployedServerUrl && userDefinedServerUrl) {
     Log.log(
       `Using custom server URL: ${userDefinedServerUrl} (ignoring deployment URL: ${deployedServerUrl})`
     );
+    return;
   }
+
+  if (userDefinedServerUrl) {
+    Log.log(`Using custom server URL: ${userDefinedServerUrl}`);
+  }
+
+  // No server URL set
 }

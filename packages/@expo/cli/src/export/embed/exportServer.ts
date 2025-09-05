@@ -7,12 +7,14 @@
 import { ExpoConfig, modifyConfigAsync, PackageJSONConfig } from '@expo/config';
 import path from 'path';
 
-import { Log } from '../../log';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
-import { CommandError } from '../../utils/errors';
-import { getServerDeploymentScript, runServerDeployCommandAsync } from '../deployServer';
+import {
+  getServerDeploymentScript,
+  runServerDeployCommandAsync,
+  saveDeploymentUrlToTmpConfigPath,
+} from '../deployServer';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
 import { copyPublicFolderAsync } from '../publicFolder';
 import { ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
@@ -67,7 +69,6 @@ export async function exportStandaloneServerAsync(
 
   // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
   const userDefinedServerUrl = exp.extra?.router?.origin;
-  let serverUrl = userDefinedServerUrl;
 
   const shouldSkipServerDeployment = (() => {
     if (!options.eager) {
@@ -101,49 +102,11 @@ export async function exportStandaloneServerAsync(
         deployScript: getServerDeploymentScript(pkg.scripts),
       });
 
-  if (!deployedServerUrl) {
-    return;
-  }
-
-  if (serverUrl) {
-    logInXcode(
-      `Using custom server URL: ${serverUrl} (ignoring deployment URL: ${deployedServerUrl})`
-    );
-  }
-
-  // If the user-defined server URL is not defined, use the deployed server URL.
-  // This allows for overwriting the server URL in the project's native files.
-  serverUrl ||= deployedServerUrl;
-
-  // If the user hasn't manually defined the server URL, write the deployed server URL to the app.json.
-  if (userDefinedServerUrl) {
-    Log.log('Skip automatically linking server origin to native container');
-    return;
-  }
-  Log.log('Writing generated server URL to app.json');
-
-  // NOTE: Is is it possible to assert that the config needs to be modifiable before building the app?
-  const modification = await modifyConfigAsync(
+  saveDeploymentUrlToTmpConfigPath({
     projectRoot,
-    {
-      extra: {
-        ...(exp.extra ?? {}),
-        router: {
-          ...(exp.extra?.router ?? {}),
-          generatedOrigin: serverUrl,
-        },
-      },
-    },
-    {
-      skipSDKVersionRequirement: true,
-    }
-  );
-
-  if (modification.type !== 'success') {
-    throw new CommandError(
-      `Failed to write generated server origin to app.json because the file is dynamic and does not extend the static config. The client will not be able to make server requests to API routes or static files. You can disable server linking with EXPO_NO_DEPLOY=1 or by disabling server output in the app.json.`
-    );
-  }
+    userDefinedServerUrl,
+    deployedServerUrl,
+  });
 }
 
 /** We can try to remove the generated origin from the manifest when running outside of eager mode. Bundling is the last operation to run so the config will already be embedded with the origin. */

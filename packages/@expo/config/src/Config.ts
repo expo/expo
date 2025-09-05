@@ -2,7 +2,6 @@ import { ModConfig } from '@expo/config-plugins';
 import JsonFile, { JSONObject } from '@expo/json-file';
 import deepMerge from 'deepmerge';
 import fs from 'fs';
-import { string } from 'getenv';
 import { sync as globSync } from 'glob';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -20,6 +19,7 @@ import {
   ProjectTarget,
   WriteConfigOptions,
 } from './Config.types';
+import { withInternalGeneratedConfig } from './generatedConfig';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
 import { getExpoSDKVersion } from './getExpoSDKVersion';
 import { withConfigPlugins } from './plugins/withConfigPlugins';
@@ -144,7 +144,10 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
         !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig,
     };
 
-    configWithDefaultValues.exp = withInternalGeneratedConfig(configWithDefaultValues.exp);
+    configWithDefaultValues.exp = withInternalGeneratedConfig(
+      projectRoot,
+      configWithDefaultValues.exp
+    );
 
     if (options.isModdedConfig) {
       // @ts-ignore: Add the mods back to the object.
@@ -601,29 +604,6 @@ export function getProjectConfigDescriptionWithPaths(
   }
   // If a config doesn't exist, our tooling will generate a static app.json
   return 'app.json';
-}
-
-function withInternalGeneratedConfig(config: ExpoConfig): ExpoConfig {
-  const generatedPath = string('__EXPO_GENERATED_CONFIG_PATH', '');
-  if (!generatedPath) {
-    return config;
-  }
-
-  let generated: Record<string, unknown> | null = null;
-  try {
-    const rawGenerated = fs.readFileSync(generatedPath, 'utf8');
-    generated = JSON.parse(rawGenerated);
-  } catch {}
-  if (!generated) return config;
-
-  const generatedOrigin = generated['expo.extra.router.generatedOrigin'];
-  if (generatedOrigin) {
-    config.extra ??= {};
-    config.extra.router ??= {};
-    config.extra.router.generatedOrigin = generatedOrigin;
-  }
-
-  return config;
 }
 
 export * from './Config.types';
