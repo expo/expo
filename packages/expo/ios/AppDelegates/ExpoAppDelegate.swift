@@ -11,59 +11,11 @@ import ReactAppDependencyProvider
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
  */
 @objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: NSObject, @preconcurrency ReactNativeFactoryProvider, UIApplicationDelegate {
+open class ExpoAppDelegate: NSObject, UIApplicationDelegate {
   @objc public var factory: RCTReactNativeFactory?
-  private let defaultModuleName = "main"
-  private let defaultInitialProps = [AnyHashable: Any]()
 
   public func bindReactNativeFactory(_ factory: RCTReactNativeFactory) {
     self.factory = factory
-  }
-
-  public func recreateRootView(
-    withBundleURL: URL?,
-    moduleName: String?,
-    initialProps: [AnyHashable: Any]?,
-    launchOptions: [AnyHashable: Any]?
-  ) -> UIView {
-    guard let delegate = self.factory?.delegate,
-    let rootViewFactory = self.factory?.rootViewFactory else {
-      fatalError("recreateRootView: Missing factory in ExpoAppDelegate")
-    }
-
-    if delegate.newArchEnabled() {
-      // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
-      assert(rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-    } else {
-      assert(rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-    }
-
-    let configuration = rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
-
-    if let bundleURL = withBundleURL {
-      configuration?.bundleURLBlock = {
-        return bundleURL
-      }
-    }
-
-    let rootView: UIView
-    if let factory = rootViewFactory as? ExpoReactRootViewFactory {
-      // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
-      // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
-      rootView = factory.superView(
-        withModuleName: moduleName ?? defaultModuleName,
-        initialProperties: initialProps,
-        launchOptions: launchOptions ?? [:]
-      )
-    } else {
-      rootView = rootViewFactory.view(
-        withModuleName: moduleName ?? defaultModuleName,
-        initialProperties: initialProps,
-        launchOptions: launchOptions
-      )
-    }
-
-    return rootView
   }
 
   // MARK: - Initializing the App
