@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - Remove overlapping properties that were defined upstream from `react-native-web.d.ts` ([#39710](https://github.com/expo/expo/pull/39710) by [@kitten](https://github.com/kitten))
