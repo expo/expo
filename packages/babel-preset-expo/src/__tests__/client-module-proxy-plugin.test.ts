@@ -105,7 +105,7 @@ describe('use server', () => {
     expect(res.metadata.proxyExports).toEqual(['greet', 'default']);
     expect(res.code).toMatchInlineSnapshot(`
       "import { createServerReference } from 'react-server-dom-webpack/client';
-      import { callServerRSC } from 'expo-router/rsc/internal';
+      import { callServerRSC } from '@expo/router-server/rsc/internal';
       export var greet = createServerReference("./unknown#greet", callServerRSC);
       export default createServerReference("./unknown#default", callServerRSC);"
     `);

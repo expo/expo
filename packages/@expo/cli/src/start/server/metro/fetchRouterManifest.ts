@@ -35,8 +35,8 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
 };
 
 function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, 'expo-router/build/routes-manifest'))
-    .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
+  return require(resolveFrom(projectRoot, '@expo/router-server/build/routes-manifest'))
+    .createRoutesManifest as typeof import('@expo/router-server/build/routes-manifest').createRoutesManifest;
 }
 
 // TODO: Simplify this now that we use Node.js directly, no need for the Metro bundler caching layer.
@@ -45,7 +45,7 @@ export async function fetchManifest<TRegex = string>(
   options: {
     asJson?: boolean;
     appDir: string;
-  } & import('expo-router/build/routes-manifest').Options
+  } & import('@expo/router-server/build/routes-manifest').Options
 ): Promise<ExpoRouterServerManifestV1<TRegex> | null> {
   const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
   const paths = getRoutePaths(options.appDir);
