@@ -36,6 +36,8 @@ _This version does not introduce any user-facing changes._
 
 ## 3.0.6 — 2025-08-27
 
+- [ios] Fix tracks not loading due to checking status instead of newStatus. ([#37546](https://github.com/expo/expo/pull/37546) by [@HADeveloper](https://github.com/HADeveloper))
+
 ### 💡 Others
 
 - [Android] Bump media3 version to 1.8.0. ([#39184](https://github.com/expo/expo/pull/39184) by [@behenate](https://github.com/behenate))
