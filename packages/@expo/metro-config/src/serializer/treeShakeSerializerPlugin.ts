@@ -169,6 +169,12 @@ function markUnused(path: NodePath) {
   path.remove();
 }
 
+interface ModuleStarExports {
+  exportNames: Set<string>;
+  isStatic: boolean;
+  hasUnresolvableStarExport: boolean;
+}
+
 export async function treeShakeSerializer(
   entryPoint: string,
   preModules: readonly Module<MixedOutput>[],
@@ -184,10 +190,7 @@ export async function treeShakeSerializer(
     return [entryPoint, preModules, graph, options];
   }
 
-  const starExportsForModules = new Map<
-    string,
-    { exportNames: string[]; isStatic: boolean; hasUnresolvableStarExport: boolean }
-  >();
+  const starExportsForModules = new Map<string, ModuleStarExports>();
 
   for (const value of graph.dependencies.values()) {
     // TODO: Move this to the transformer and combine with collect dependencies.
@@ -235,7 +238,7 @@ export async function treeShakeSerializer(
   function getExportsForModule(
     value: Module<AdvancedMixedOutput>,
     checkedModules: Set<string> = new Set()
-  ): { exportNames: string[]; isStatic: boolean; hasUnresolvableStarExport: boolean } {
+  ): ModuleStarExports {
     if (starExportsForModules.has(value.path)) {
       return starExportsForModules.get(value.path)!;
     }
@@ -271,7 +274,7 @@ export async function treeShakeSerializer(
       return graphEntryForTargetImport;
     }
 
-    const exportNames: string[] = [];
+    const exportNames = new Set<string>();
     // Indicates that the module does not have any dynamic exports, e.g. `module.exports`, `Object.assign(exports)`, etc.
     let isStatic = true;
     let hasUnresolvableStarExport = false;
@@ -313,7 +316,7 @@ export async function treeShakeSerializer(
               // ```
               // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
               // The `default` specifier isn't re-exported by export-all, as per the spec
-              const exportSpecifiers = exportResults.exportNames
+              const exportSpecifiers = [...exportResults.exportNames]
                 .filter((exportName) => exportName !== 'default')
                 .map((exportName) =>
                   types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))
@@ -347,16 +350,16 @@ export async function treeShakeSerializer(
             if ('declarations' in declaration && declaration.declarations) {
               declaration.declarations.forEach((decl) => {
                 if (types.isIdentifier(decl.id)) {
-                  exportNames.push(decl.id.name);
+                  exportNames.add(decl.id.name);
                 }
               });
             } else if ('id' in declaration && types.isIdentifier(declaration.id)) {
-              exportNames.push(declaration.id.name);
+              exportNames.add(declaration.id.name);
             }
           }
           specifiers.forEach((spec) => {
             if (types.isIdentifier(spec.exported)) {
-              exportNames.push(spec.exported.name);
+              exportNames.add(spec.exported.name);
             }
           });
         },
@@ -365,7 +368,7 @@ export async function treeShakeSerializer(
           // Default exports need to be handled separately
           // Assuming the default export is a function or class declaration
           if ('id' in path.node.declaration && types.isIdentifier(path.node.declaration.id)) {
-            exportNames.push(path.node.declaration.id.name);
+            exportNames.add(path.node.declaration.id.name);
           }
 
           // If it's an expression, then it's a static export.
@@ -374,7 +377,7 @@ export async function treeShakeSerializer(
       });
     }
 
-    const starExport = {
+    const starExport: ModuleStarExports = {
       exportNames,
       isStatic,
       hasUnresolvableStarExport,
@@ -414,7 +417,7 @@ export async function treeShakeSerializer(
     // Unlink the module in the graph
 
     // The hash key for the dependency instance in the module.
-    const depId = [...graphModule.dependencies.entries()].find(([key, dep]) => {
+    const depId = [...graphModule.dependencies.entries()].find(([_key, dep]) => {
       return dep.data.name === importModuleId;
     })?.[0];
 
