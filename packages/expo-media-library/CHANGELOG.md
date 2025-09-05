@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `endCursor` description in the documentation.
+
 ### 💡 Others
 
 ## 18.0.6 — 2025-09-02
