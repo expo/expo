@@ -59,6 +59,7 @@
     "expo-dev-client": "~6.0.10",
     "expo-image": "~3.0.7",
     "expo-insights": "~0.10.6",
+    "expo-mcp": "~0.1.5",
     "expo-network-addons": "~0.10.6",
     "expo-notifications": "~0.32.10",
     "expo-splash-screen": "~31.0.8",
