@@ -6,6 +6,12 @@ import ImageIO
 import Photos
 import UniformTypeIdentifiers
 
+extension UTType {
+  static var avif: UTType {
+    UTType(importedAs: "public.avif")
+  }
+}
+
 internal struct ImageUtils {
   static func readImageFrom(mediaInfo: MediaInfo, shouldReadCroppedImage: Bool) -> UIImage? {
     // ---------------------------------------------------------------------------
@@ -138,6 +144,10 @@ internal struct ImageUtils {
       return (gifData, ".gif")
     case UTType.heic.identifier:
       return (rawData, ".heic")
+    case UTType.tiff.identifier:
+      return (rawData, ".tiff")
+    case UTType.avif.identifier:
+      return (rawData, ".avif")
     default:
       if options.quality >= 1.0 {
         return (rawData, ".jpg")
