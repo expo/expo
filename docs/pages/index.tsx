@@ -4,6 +4,7 @@ import { EASHostingShoutoutBanner } from '~/ui/components/EASHostingShoutoutBann
 import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
   QuickStart,
+  CommandLineTools,
   DiscoverMore,
   ExploreAPIs,
   Talks,
@@ -23,6 +24,7 @@ function Home() {
       <AppJSBanner />
       <EASHostingShoutoutBanner />
       <QuickStart />
+      <CommandLineTools />
       <DiscoverMore />
       <ExploreAPIs />
       <ExploreExamples />
