@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -11,7 +11,7 @@ import ThemeToggler from '../common/ThemeToggler';
 // @tsapeta: This navigator is also being used by `bare-expo` app,
 // so make sure it still works there once you change something here.
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const spec = {
   animation: 'timing',
@@ -56,9 +56,8 @@ export default function AppNavigator(props) {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginRight: 16,
-                marginBottom: 4,
-                gap: 12,
+                justifyContent: 'center',
+                marginHorizontal: 10,
               }}>
               <ThemeToggler />
             </View>
