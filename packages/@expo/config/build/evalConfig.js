@@ -5,6 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.evalConfig = evalConfig;
 exports.resolveConfigExport = resolveConfigExport;
+function _esbuild() {
+  const data = require("esbuild");
+  _esbuild = function () {
+    return data;
+  };
+  return data;
+}
 function _fs() {
   const data = require("fs");
   _fs = function () {
@@ -15,13 +22,6 @@ function _fs() {
 function _requireFromString() {
   const data = _interopRequireDefault(require("require-from-string"));
   _requireFromString = function () {
-    return data;
-  };
-  return data;
-}
-function _sucrase() {
-  const data = require("sucrase");
-  _sucrase = function () {
     return data;
   };
   return data;
@@ -61,69 +61,22 @@ function evalConfig(configFile, request) {
   try {
     const {
       code
-    } = (0, _sucrase().transform)(contents, {
-      filePath: configFile,
-      transforms: ['typescript', 'imports']
+    } = (0, _esbuild().transformSync)(contents, {
+      loader: configFile.endsWith('.ts') ? 'ts' : 'js',
+      format: 'cjs',
+      target: 'node14',
+      sourcefile: configFile
     });
     result = (0, _requireFromString().default)(code, configFile);
   } catch (error) {
-    const location = extractLocationFromSyntaxError(error);
-
-    // Apply a code frame preview to the error if possible, sucrase doesn't do this by default.
-    if (location) {
-      const {
-        codeFrameColumns
-      } = require('@babel/code-frame');
-      const codeFrame = codeFrameColumns(contents, {
-        start: error.loc
-      }, {
-        highlightCode: true
-      });
-      error.codeFrame = codeFrame;
-      error.message += `\n${codeFrame}`;
-    } else {
-      const importantStack = extractImportantStackFromNodeError(error);
-      if (importantStack) {
-        error.message += `\n${importantStack}`;
-      }
+    if (error.errors) {
+      throw new Error((0, _esbuild().formatMessagesSync)(error.errors, {
+        kind: 'error'
+      }).join('\n'));
     }
     throw error;
   }
   return resolveConfigExport(result, configFile, request);
-}
-function extractLocationFromSyntaxError(error) {
-  // sucrase provides the `loc` object
-  if (error.loc) {
-    return error.loc;
-  }
-
-  // `SyntaxError`s provide the `lineNumber` and `columnNumber` properties
-  if ('lineNumber' in error && 'columnNumber' in error) {
-    return {
-      line: error.lineNumber,
-      column: error.columnNumber
-    };
-  }
-  return null;
-}
-
-// These kinda errors often come from syntax errors in files that were imported by the main file.
-// An example is a module that includes an import statement.
-function extractImportantStackFromNodeError(error) {
-  if (isSyntaxError(error)) {
-    const traces = error.stack?.split('\n').filter(line => !line.startsWith('    at '));
-    if (!traces) return null;
-
-    // Remove redundant line
-    if (traces[traces.length - 1].startsWith('SyntaxError:')) {
-      traces.pop();
-    }
-    return traces.join('\n');
-  }
-  return null;
-}
-function isSyntaxError(error) {
-  return error instanceof SyntaxError || error.constructor.name === 'SyntaxError';
 }
 
 /**
