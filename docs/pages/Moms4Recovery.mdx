@@ -1,0 +1,362 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moms4Recovery — Completed Code Bundle</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; margin: 20px; background:#f7f7f8; color:#111 }
+    header { margin-bottom: 20px }
+    h1 { font-size: 20px }
+    h2 { font-size: 16px; margin-top: 24px }
+    pre { background: #0f1720; color: #e6eef3; padding: 12px; border-radius: 6px; overflow:auto; max-height:480px }
+    code { font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:13px }
+    nav { background:#fff; padding:12px; border-radius:8px; margin-bottom:18px }
+    a.anchor { text-decoration:none; color:#2563eb }
+    .filename { color:#0b1220; font-weight:600; margin-bottom:6px }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Moms4Recovery — Completed code (copy-paste ready)</h1>
+    <p>This single HTML file contains all corrected project files. Each file is shown in a code block — copy the contents into your project files exactly as shown.</p>
+  </header>  <nav>
+    <strong>Files included:</strong>
+    <ul>
+      <li><a class="anchor" href="#settings_gradle">settings.gradle</a></li>
+      <li><a class="anchor" href="#app_build_gradle">app/build.gradle</a></li>
+      <li><a class="anchor" href="#android_manifest">app/src/main/AndroidManifest.xml</a></li>
+      <li><a class="anchor" href="#strings_xml">res/values/strings.xml</a></li>
+      <li><a class="anchor" href="#colors_xml">res/values/colors.xml</a></li>
+      <li><a class="anchor" href="#styles_xml">res/values/styles.xml</a></li>
+      <li><a class="anchor" href="#bottom_nav_menu">res/menu/bottom_nav_menu.xml</a></li>
+      <li><a class="anchor" href="#activity_main">res/layout/activity_main.xml</a></li>
+      <li><a class="anchor" href="#fragment_home">res/layout/fragment_home.xml</a></li>
+      <li><a class="anchor" href="#fragment_clinics">res/layout/fragment_clinics.xml</a></li>
+      <li><a class="anchor" href="#fragment_tips">res/layout/fragment_tips.xml</a></li>
+      <li><a class="anchor" href="#fragment_encouragement">res/layout/fragment_encouragement.xml</a></li>
+      <li><a class="anchor" href="#ic_heart_hands">res/drawable/ic_heart_hands.xml</a></li>
+      <li><a class="anchor" href="#mainactivity_java">src/main/java/com/moms4recovery/MainActivity.java</a></li>
+      <li><a class="anchor" href="#homefragment_java">src/main/java/com/moms4recovery/HomeFragment.java</a></li>
+      <li><a class="anchor" href="#clinicsfragment_java">src/main/java/com/moms4recovery/ClinicsFragment.java</a></li>
+      <li><a class="anchor" href="#tipsfragment_java">src/main/java/com/moms4recovery/TipsFragment.java</a></li>
+      <li><a class="anchor" href="#encouragementfragment_java">src/main/java/com/moms4recovery/EncouragementFragment.java</a></li>
+    </ul>
+  </nav>  <section id="settings_gradle">
+    <div class="filename">settings.gradle</div>
+    <pre><code>include ':app'</code></pre>
+  </section>  <section id="app_build_gradle">
+    <div class="filename">app/build.gradle</div>
+    <pre><code>plugins {
+    id 'com.android.application'
+}android { compileSdk 31
+
+defaultConfig {
+    applicationId "com.moms4recovery"
+    minSdk 21
+    targetSdk 31
+    versionCode 1
+    versionName "1.0"
+}
+
+buildTypes {
+    release {
+        minifyEnabled false
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+}
+
+}
+
+dependencies { implementation 'androidx.appcompat:appcompat:1.3.1' implementation 'com.google.android.material:material:1.4.0' implementation 'androidx.fragment:fragment:1.3.6' }</code></pre>
+
+  </section>  <section id="android_manifest">
+    <div class="filename">app/src/main/AndroidManifest.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.moms4recovery"&gt;&lt;application
+    android:allowBackup="true"
+    android:label="@string/app_name"
+    android:icon="@drawable/ic_heart_hands"
+    android:roundIcon="@drawable/ic_heart_hands"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.M4R"&gt;
+
+    &lt;activity
+        android:name=".MainActivity"
+        android:exported="true"&gt;
+        &lt;intent-filter&gt;
+            &lt;action android:name="android.intent.action.MAIN" /&gt;
+            &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+        &lt;/intent-filter&gt;
+    &lt;/activity&gt;
+
+&lt;/application&gt;
+
+</manifest></code></pre>
+
+  </section>  <section id="strings_xml">
+    <div class="filename">res/values/strings.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;string name="app_name"&gt;Moms4Recovery&lt;/string&gt;
+    &lt;string name="home"&gt;Home&lt;/string&gt;
+    &lt;string name="clinics"&gt;Clinics&lt;/string&gt;
+    &lt;string name="tips"&gt;Tips&lt;/string&gt;
+    &lt;string name="encouragement"&gt;Encouragement&lt;/string&gt;
+    &lt;string name="call_helpline"&gt;Call Helpline&lt;/string&gt;
+    &lt;string name="whatsapp_support"&gt;WhatsApp Support&lt;/string&gt;
+    &lt;string name="find_clinics"&gt;Find Nearby Clinics&lt;/string&gt;
+&lt;/resources&gt;</code></pre>
+  </section>  <section id="colors_xml">
+    <div class="filename">res/values/colors.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;color name="m4r_primary"&gt;#C62828&lt;/color&gt;
+    &lt;color name="m4r_primary_dark"&gt;#8E0000&lt;/color&gt;
+    &lt;color name="m4r_accent"&gt;#FF8A65&lt;/color&gt;
+    &lt;color name="m4r_bg"&gt;#FFFFFF&lt;/color&gt;
+&lt;/resources&gt;</code></pre>
+  </section>  <section id="styles_xml">
+    <div class="filename">res/values/styles.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;style name="Theme.M4R" parent="Theme.AppCompat.Light.NoActionBar"&gt;
+        &lt;item name="colorPrimary"&gt;@color/m4r_primary&lt;/item&gt;
+        &lt;item name="colorPrimaryDark"&gt;@color/m4r_primary_dark&lt;/item&gt;
+        &lt;item name="colorAccent"&gt;@color/m4r_accent&lt;/item&gt;
+        &lt;item name="android:windowBackground"&gt;@color/m4r_bg&lt;/item&gt;
+    &lt;/style&gt;
+&lt;/resources&gt;</code></pre>
+  </section>  <section id="bottom_nav_menu">
+    <div class="filename">res/menu/bottom_nav_menu.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;menu xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;item
+        android:id="@+id/nav_home"
+        android:title="@string/home"
+        android:icon="@android:drawable/ic_menu_view" /&gt;
+    &lt;item
+        android:id="@+id/nav_clinics"
+        android:title="@string/clinics"
+        android:icon="@android:drawable/ic_menu_mapmode" /&gt;
+    &lt;item
+        android:id="@+id/nav_tips"
+        android:title="@string/tips"
+        android:icon="@android:drawable/ic_menu_info_details" /&gt;
+    &lt;item
+        android:id="@+id/nav_encouragement"
+        android:title="@string/encouragement"
+        android:icon="@android:drawable/ic_menu_myplaces" /&gt;
+&lt;/menu&gt;</code></pre>
+  </section>  <section id="activity_main">
+    <div class="filename">res/layout/activity_main.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;&lt;FrameLayout
+    android:id="@+id/fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_above="@id/bottom_navigation" /&gt;
+
+&lt;com.google.android.material.bottomnavigation.BottomNavigationView
+    android:id="@+id/bottom_navigation"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    app:menu="@menu/bottom_nav_menu" /&gt;
+
+</RelativeLayout></code></pre>
+
+  </section>  <section id="fragment_home">
+    <div class="filename">res/layout/fragment_home.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;&lt;Button
+    android:id="@+id/btn_helpline"
+    android:text="@string/call_helpline"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" /&gt;
+
+&lt;Button
+    android:id="@+id/btn_whatsapp"
+    android:text="@string/whatsapp_support"
+    android:layout_marginTop="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" /&gt;
+
+</LinearLayout></code></pre>
+
+  </section>  <section id="fragment_clinics">
+    <div class="filename">res/layout/fragment_clinics.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;&lt;Button
+    android:id="@+id/btn_map"
+    android:text="@string/find_clinics"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" /&gt;
+
+</LinearLayout></code></pre>
+
+  </section>  <section id="fragment_tips">
+    <div class="filename">res/layout/fragment_tips.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;&lt;TextView
+    android:id="@+id/txt_tips"
+    android:padding="16dp"
+    android:text="Parenting tips:\n• Communicate openly\n• Listen without judgment\n\nOverdose basics:\n• Stay calm\n• Call emergency services\n• If trained, use naloxone"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" /&gt;
+
+</ScrollView></code></pre>
+
+  </section>  <section id="fragment_encouragement">
+    <div class="filename">res/layout/fragment_encouragement.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;&lt;TextView
+    android:id="@+id/txt_quote"
+    android:textSize="22sp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" /&gt;
+
+</LinearLayout></code></pre>
+
+  </section>  <section id="ic_heart_hands">
+    <div class="filename">res/drawable/ic_heart_hands.xml</div>
+    <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108"&gt;
+    &lt;!-- Hands (simple arcs) --&gt;
+    &lt;path
+        android:fillColor="#FFB69E"
+        android:pathData="M20,70 C32,58 40,58 52,70 L52,80 L20,80 Z" /&gt;
+    &lt;path
+        android:fillColor="#FFB69E"
+        android:pathData="M56,70 C68,58 76,58 88,70 L88,80 L56,80 Z" /&gt;
+    &lt;!-- Heart (flat, minimal) --&gt;
+    &lt;path
+        android:fillColor="#E53935"
+        android:pathData="M54,68 C40,58 34,44 44,36 C50,32 56,36 54,42 C52,36 58,32 64,36 C74,44 68,58 54,68 Z" /&gt;
+&lt;/vector&gt;</code></pre>
+  </section>  <section id="mainactivity_java">
+    <div class="filename">app/src/main/java/com/moms4recovery/MainActivity.java</div>
+    <pre><code>package com.moms4recovery;import android.os.Bundle; import androidx.appcompat.app.AppCompatActivity; import com.google.android.material.bottomnavigation.BottomNavigationView; import androidx.fragment.app.Fragment;
+
+public class MainActivity extends AppCompatActivity { @Override protected void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); setContentView(R.layout.activity_main);
+
+BottomNavigationView nav = findViewById(R.id.bottom_navigation);
+    nav.setOnItemSelectedListener(item -> {
+        Fragment f = null;
+        int id = item.getItemId();
+        if (id == R.id.nav_home) f = new HomeFragment();
+        else if (id == R.id.nav_clinics) f = new ClinicsFragment();
+        else if (id == R.id.nav_tips) f = new TipsFragment();
+        else if (id == R.id.nav_encouragement) f = new EncouragementFragment();
+
+        if (f != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, f)
+                    .commit();
+        }
+        return true;
+    });
+
+    // Default tab
+    getSupportFragmentManager().beginTransaction()
+            .replace(R.id.fragment_container, new HomeFragment())
+            .commit();
+}
+
+}</code></pre>
+
+  </section>  <section id="homefragment_java">
+    <div class="filename">app/src/main/java/com/moms4recovery/HomeFragment.java</div>
+    <pre><code>package com.moms4recovery;import android.content.Intent; import android.net.Uri; import android.os.Bundle; import android.view.LayoutInflater; import android.view.View; import android.view.ViewGroup; import android.widget.Button;
+
+import androidx.fragment.app.Fragment;
+
+public class HomeFragment extends Fragment { @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) { View v = inflater.inflate(R.layout.fragment_home, container, false);
+
+Button helpline = v.findViewById(R.id.btn_helpline);
+    helpline.setOnClickListener(x -> {
+        Intent i = new Intent(Intent.ACTION_DIAL);
+        i.setData(Uri.parse("tel:0800121314"));
+        startActivity(i);
+    });
+
+    Button wa = v.findViewById(R.id.btn_whatsapp);
+    wa.setOnClickListener(x -> {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse("https://wa.me/27790910554"));
+        startActivity(i);
+    });
+
+    return v;
+}
+
+}</code></pre>
+
+  </section>  <section id="clinicsfragment_java">
+    <div class="filename">app/src/main/java/com/moms4recovery/ClinicsFragment.java</div>
+    <pre><code>package com.moms4recovery;import android.content.Intent; import android.net.Uri; import android.os.Bundle; import android.view.LayoutInflater; import android.view.View; import android.view.ViewGroup; import android.widget.Button;
+
+import androidx.fragment.app.Fragment;
+
+public class ClinicsFragment extends Fragment { @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) { View v = inflater.inflate(R.layout.fragment_clinics, container, false);
+
+Button map = v.findViewById(R.id.btn_map);
+    map.setOnClickListener(x -> {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse("geo:0,0?q=clinics+near+me"));
+        startActivity(i);
+    });
+
+    return v;
+}
+
+}</code></pre>
+
+  </section>  <section id="tipsfragment_java">
+    <div class="filename">app/src/main/java/com/moms4recovery/TipsFragment.java</div>
+    <pre><code>package com.moms4recovery;import android.os.Bundle; import android.view.LayoutInflater; import android.view.View; import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+
+public class TipsFragment extends Fragment { @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) { View v = inflater.inflate(R.layout.fragment_tips, container, false); return v; } }</code></pre>
+
+  </section>  <section id="encouragementfragment_java">
+    <div class="filename">app/src/main/java/com/moms4recovery/EncouragementFragment.java</div>
+    <pre><code>package com.moms4recovery;import android.os.Bundle; import android.view.LayoutInflater; import android.view.View; import android.view.ViewGroup; import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+
+import java.util.Random;
+
+public class EncouragementFragment extends Fragment { private final String[] quotes = { "Stay strong.", "You are not alone.", "One step at a time.", "Progress, not perfection.", "You're doing your best." };
+
+@Override
+public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    View v = inflater.inflate(R.layout.fragment_encouragement, container, false);
+    TextView q = v.findViewById(R.id.txt_quote);
+    q.setText(quotes[new Random().nextInt(quotes.length)]);
+    return v;
+}
