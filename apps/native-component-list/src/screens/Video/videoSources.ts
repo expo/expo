@@ -1,5 +1,5 @@
+import { requestPermissionsAsync, getAssetsAsync, getAssetInfoAsync } from 'expo-media-library';
 import { VideoSource } from 'expo-video';
-
 const localVideoId: VideoSource = require('../../../assets/videos/ace.mp4') as number;
 
 const localVideoSource: VideoSource = {
@@ -45,6 +45,36 @@ export const nullSource: VideoSource = {
     artist: '-',
   },
 };
+
+export async function getMediaLibraryVideoSourceAsync() {
+  try {
+    const granted = await requestPermissionsAsync(false, ['video']);
+    if (!granted) {
+      console.error('MediaLibrary permission not granted');
+      return null;
+    }
+    const queryResult = await getAssetsAsync({
+      first: 1,
+      mediaType: 'video',
+    });
+
+    if (queryResult.assets.length === 0) {
+      console.warn('No video assets found');
+      return null;
+    }
+
+    const assetLocalUri = await getAssetInfoAsync(queryResult.assets[0]);
+    return {
+      uri: assetLocalUri.uri,
+      metadata: {
+        title: assetLocalUri.filename,
+      },
+    };
+  } catch (error) {
+    console.error('Error getting media library video source:', error);
+  }
+  return null;
+}
 
 const audioTrackSource: VideoSource = {
   metadata: {
