@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support in `expo start` for custom app ids. ([#39236](https://github.com/expo/expo/pull/39236) by [@sebryu](https://github.com/sebryu))
+
 ### 🐛 Bug fixes
 
 - Fix Expo Go docs link in ExpoGoInstaller ([#39394](https://github.com/expo/expo/pull/39394) by [@amandeepmittal](https://github.com/amandeepmittal))
