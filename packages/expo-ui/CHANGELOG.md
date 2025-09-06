@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `leadingIcon` and `trailingIcon` properties to `TextInput`. ([#38147](https://github.com/expo/expo/pull/38147) by [@mateoguzmana](https://github.com/mateoguzmana))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

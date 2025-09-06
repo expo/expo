@@ -32,6 +32,8 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+  val leadingIcon: MutableState<String?> = mutableStateOf(null),
+  val trailingIcon: MutableState<String?> = mutableStateOf(null),
   val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
@@ -92,6 +94,8 @@ class TextInputView(context: Context, appContext: AppContext) :
           autoCorrectEnabled = props.autocorrection.value,
           capitalization = props.autoCapitalize.value.autoCapitalize()
         ),
+        leadingIcon = props.leadingIcon.value?.let { { MaterialIcon(it) } },
+        trailingIcon = props.trailingIcon.value?.let { { MaterialIcon(it) } },
         modifier = Modifier.fromExpoModifiers(props.modifiers.value)
       )
     }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
@@ -29,6 +28,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.ui.DynamicTheme
 import expo.modules.ui.ExpoModifier
 import expo.modules.ui.compose
+import expo.modules.ui.MaterialIcon
 import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.getImageVector
 
@@ -162,13 +162,7 @@ class Button(context: Context, appContext: AppContext) :
       ) {
         if (systemImage != null) {
           Row(verticalAlignment = Alignment.CenterVertically) {
-            getImageVector(systemImage)?.let {
-              Icon(
-                it,
-                contentDescription = systemImage,
-                modifier = Modifier.padding(end = 8.dp)
-              )
-            }
+            MaterialIcon(systemImage, modifier = Modifier.padding(end = 8.dp))
             Text(text)
           }
         } else {
