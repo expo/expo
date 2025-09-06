@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+- Allow accessing env vars with bracket notation. ([#38826](https://github.com/expo/expo/pull/38826) by [@kadikraman](https://github.com/kadikraman))
 
 ## 1.0.0 — 2025-08-13
 

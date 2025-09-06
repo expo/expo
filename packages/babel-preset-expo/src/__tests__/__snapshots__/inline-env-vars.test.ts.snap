@@ -1,5 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`handles bracket notation for EXPO_PUBLIC environment variables 1`] = `
+{
+  "code": "var _env2 = require("expo/virtual/env");
+var foo = _env2.env.EXPO_PUBLIC_URL;
+var bar = _env2.env.EXPO_PUBLIC_NODE_ENV;
+var baz = _env2.env.EXPO_PUBLIC_FOO;
+
+function App() {
+  console.log(_env2.env.EXPO_PUBLIC_URL);
+  console.log(_env2.env.EXPO_PUBLIC_NODE_ENV);
+  console.log(_env2.env.EXPO_PUBLIC_FOO);
+}",
+  "hasCjsExports": undefined,
+  "metadata": {
+    "publicEnvVars": [
+      "EXPO_PUBLIC_URL",
+      "EXPO_PUBLIC_NODE_ENV",
+      "EXPO_PUBLIC_FOO",
+    ],
+  },
+}
+`;
+
 exports[`inlines environment variables 1`] = `
 "
 var foo = process.env.JEST_WORKER_ID;
