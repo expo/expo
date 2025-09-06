@@ -145,7 +145,7 @@ describe(getDynamicConfig, () => {
   it(`throws a useful error for dynamic configs with a syntax error`, () => {
     const paths = getConfigFilePaths('syntax-error');
     expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrow(
-      /Error .* \(5:7\)/
+      'syntax-error/app.config.ts:4:2'
     );
   });
   // This tests error are thrown properly and ensures that a more specific
