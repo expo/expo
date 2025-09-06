@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [android] allow sending a POST, PATCH or PUT request without a body ([#39363](https://github.com/expo/expo/pull/39363))
+- [Android] allow `expo/fetch` sending a `POST`, `PATCH` or `PUT` request without a body. ([#39363](https://github.com/expo/expo/pull/39363) by [@julian-dueck](https://github.com/julian-dueck))
 
 ### 💡 Others
 
