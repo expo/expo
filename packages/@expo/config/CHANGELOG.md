@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace sucrase with esbuild for TypeScript transpilation in @expo/config. ([#39429](https://github.com/expo/expo/pull/32XXX) by [@christophehurpeau](https://github.com/christophehurpeau))
+
 ## 12.0.7 — 2025-09-02
 
 _This version does not introduce any user-facing changes._
