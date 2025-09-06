@@ -40,7 +40,7 @@ console.log('Hello on iOS');
 
 This optimization is production only and runs on a per-file basis. If you re-export `Platform.OS` from a different module, it will not be removed from the production bundle.
 
-Starting in SDK 51, `process.env.EXPO_OS` can be used to detect the platform that the JavaScript was bundled for (cannot change at runtime). This value does not support platform shaking imports due to how Metro minifies code after dependency resolution.
+The `process.env.EXPO_OS` can be used to detect the platform that the JavaScript was bundled for (cannot change at runtime). This value does not support platform shaking imports due to how Metro minifies code after dependency resolution.
 
 ## Remove development-only code
 
@@ -134,8 +134,6 @@ The above code snippet is then minified, which removes the unused conditional:
 - Library authors should not use `EXPO_PUBLIC_` environment variables as they only run in application code for security reasons.
 
 ## Removing server code
-
-> SDK 51 and greater
 
 It's common to use `typeof window === 'undefined'` to conditionally enable or disable code for server and client environments.
 
