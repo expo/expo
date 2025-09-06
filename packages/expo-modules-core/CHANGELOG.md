@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add StaticFunction and StaticAsyncFunction to Class in modules API ([#38754](https://github.com/expo/expo/pull/38754) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
