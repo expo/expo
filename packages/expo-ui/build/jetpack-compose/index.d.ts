@@ -9,4 +9,5 @@ export * from './Switch';
 export * from './TextInput';
 export * from './Shape';
 export * from './modifiers';
+export * from './TooltipBox';
 //# sourceMappingURL=index.d.ts.map

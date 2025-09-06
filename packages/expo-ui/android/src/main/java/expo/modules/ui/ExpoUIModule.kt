@@ -85,6 +85,8 @@ class ExpoUIModule : Module() {
       }
     }
 
+    View(TooltipBox::class)
+
     View(RowView::class)
     View(ColumnView::class)
     View(ContainerView::class)
