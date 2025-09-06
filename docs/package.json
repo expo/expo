@@ -10,7 +10,7 @@
     "export": "yarn generate-static-resources production && yarn versions-schema-sync && yarn append-last-modified-dates && yarn run build",
     "export-preview": "yarn generate-static-resources preview && yarn versions-schema-sync && yarn append-last-modified-dates && yarn run build",
     "export-server": "http-server out -p 8000",
-    "lint": "tsc --noEmit && node scripts/lint.js",
+    "lint": "tsc --noEmit && node scripts/lint.js --max-warnings 0",
     "lint-links": "remark -u validate-links ./pages",
     "lint-prose": "yarn vale .",
     "watch": "tsc --noEmit -w",
