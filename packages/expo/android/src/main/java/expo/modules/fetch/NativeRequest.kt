@@ -14,7 +14,7 @@ import java.net.URL
 
 private data class RequestHolder(var request: Request?)
 
-internal val ALLOWED_METHODS_FOR_BODY = arrayOf("POST", "PUT", "PATCH")
+internal val METHODS_REQUIRING_BODY = arrayOf("POST", "PUT", "PATCH")
 
 internal class NativeRequest(appContext: AppContext, internal val response: NativeResponse) :
   SharedObject(appContext) {
