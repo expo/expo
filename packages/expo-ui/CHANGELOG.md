@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `foregroundStyle` modifier, deprecated `foregroundColor` ([#39183](https://github.com/expo/expo/pull/39183) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

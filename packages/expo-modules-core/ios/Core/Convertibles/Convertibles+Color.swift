@@ -2,6 +2,10 @@
 
 extension UIColor: Convertible {
   public static func convert(from value: Any?, appContext: AppContext) throws -> Self {
+    return try convert(from: value)
+  }
+
+  public static func convert(from value: Any?) throws -> Self {
     // swiftlint:disable force_cast
     if let value = value as? String {
       if let namedColorComponents = namedColors[value] {
@@ -30,10 +34,10 @@ extension UIColor: Convertible {
         }
       }
       if let appearances = opaqueValue["dynamic"] as? [String: Any],
-        let lightColor = try appearances["light"].map({ try UIColor.convert(from: $0, appContext: appContext) }),
-        let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0, appContext: appContext) }) {
-        let highContrastLightColor = try appearances["highContrastLight"].map({ try UIColor.convert(from: $0, appContext: appContext) })
-        let highContrastDarkColor = try appearances["highContrastDark"].map({ try UIColor.convert(from: $0, appContext: appContext) })
+        let lightColor = try appearances["light"].map({ try UIColor.convert(from: $0) }),
+        let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0) }) {
+        let highContrastLightColor = try appearances["highContrastLight"].map({ try UIColor.convert(from: $0) })
+        let highContrastDarkColor = try appearances["highContrastDark"].map({ try UIColor.convert(from: $0) })
 
         #if os(iOS) || os(tvOS)
         let color = UIColor { (traitCollection: UITraitCollection) -> UIColor in
