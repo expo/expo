@@ -15,7 +15,6 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
-    
     Events(onContactsChangeEventName)
 
     OnCreate {
@@ -27,7 +26,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     OnDestroy {
       stopObservingContactChanges()
     }
-      
+
     OnStartObserving {
       startObservingContactChanges()
     }
@@ -658,7 +657,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
   private func startObservingContactChanges() {
     guard contactChangeObserver == nil else { return }
-    
+
     contactChangeObserver = NotificationCenter.default.addObserver(
       forName: .CNContactStoreDidChange,
       object: nil,
