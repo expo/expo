@@ -5,6 +5,7 @@ description: A guide for adding Expo and React Native to existing native apps an
 hideTOC: true
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -40,12 +41,7 @@ This command creates a new directory named **my-project** that contains your new
 
 ## Set up your project structure
 
-A standard React Native project places native code in **android** and **ios** directories. This structure may not be ideal or even feasible when integrating with a large, existing native app.
-There are two possible ways to accommodate this constraint: either move your native project files into the standard **android** and **ios** directories, or set up a monorepo.
-
-### Approach 1: Move your existing native project files
-
-Move your existing Android and iOS projects to the **android** or **ios** sub-directories, depending on the platform you are integrating with. For example:
+A standard React Native project places native code in **android** and **ios** directories. The specifics of how to do this depend on your project, but it could be as simple as creating the directories and moving your projects there. For example:
 
 <Tabs>
 
@@ -63,7 +59,9 @@ Move your existing Android and iOS projects to the **android** or **ios** sub-di
 </Tab>
 </Tabs>
 
-### Approach 2: Set up a monorepo
+<Collapsible summary="Can't move your native projects to android and ios directories?">
+
+### Set up a monorepo
 
 Monorepos, or "monolithic repositories", are single repositories containing multiple apps or packages. [Learn more](/guides/monorepos/).
 
@@ -80,6 +78,8 @@ Setting up a monorepo will ensure that Android and iOS scripts will be able to i
 Then run `yarn install` to install the dependencies. This will ensure **node_modules** are installed at the root of your project, and that native scripts can interact with React Native code. Make sure to change `["my-project"]` to the name of the Expo project you created in the previous step.
 
 > **info** Opting for a monorepo requires you to configure a custom project root, in Gradle/CocoaPods. This will be covered in the next sections.
+
+</Collapsible>
 
 ## Configuring your native project
 
