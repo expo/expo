@@ -49,7 +49,7 @@ export async function runServerDeployCommandAsync(
       // Possible to happen when building locally with `npx expo run`
       logMetroErrorInXcode(
         projectRoot,
-        `eas-cli is not installed globally, skipping server deployment. Install EAS CLI with 'npm install -g eas-cli'.`
+        `eas-cli is not installed globally, skipping server deployment. Install EAS CLI with 'npm install -g eas-cli@latest'.`
       );
       return false;
     }
