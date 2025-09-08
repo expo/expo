@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
+import { string } from 'getenv';
 import { execSync } from 'node:child_process';
 import path from 'path';
 
@@ -235,6 +236,40 @@ function assertDeploymentJsonOutput(json: any): asserts json is {
   if (!json || typeof json !== 'object' || typeof json.url !== 'string') {
     throw new Error(
       'JSON output of server deployment command are not in the expected format: { url: "https://..." }'
+    );
+  }
+}
+
+export function saveDeploymentUrlToTmpConfigPath({
+  deployedServerUrl,
+  userDefinedServerUrl,
+}: {
+  deployedServerUrl: string | false;
+  userDefinedServerUrl: string | null;
+}) {
+  if (deployedServerUrl && userDefinedServerUrl == null) {
+    const generatedConfigPath = string('__EXPO_GENERATED_CONFIG_PATH', '');
+    if (generatedConfigPath) {
+      let generatedConfig: Record<string, unknown> = {};
+      try {
+        const rawGeneratedConfig = fs.readFileSync(generatedConfigPath, 'utf8');
+        generatedConfig = JSON.parse(rawGeneratedConfig);
+      } catch {}
+
+      generatedConfig['expo.extra.router.generatedOrigin'] = deployedServerUrl;
+      try {
+        fs.writeFileSync(generatedConfigPath, JSON.stringify(generatedConfig), 'utf8');
+        Log.log(`Using deployed server URL: ${deployedServerUrl}`);
+      } catch (error) {
+        Log.error('Failed to save deployed URL.');
+        debug(error);
+      }
+    } else {
+      debug('No generated config found');
+    }
+  } else if (deployedServerUrl && userDefinedServerUrl) {
+    Log.log(
+      `Using custom server URL: ${userDefinedServerUrl} (ignoring deployment URL: ${deployedServerUrl})`
     );
   }
 }
