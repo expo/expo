@@ -2,6 +2,7 @@ package expo.modules.calendar.next
 
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import android.provider.CalendarContract
 import expo.modules.calendar.findAttendeesByEventIdQueryParameters
@@ -30,40 +31,32 @@ import java.util.Calendar
 import java.util.TimeZone
 
 class ExpoCalendarEvent(
-  val context: AppContext,
+  context: AppContext,
   var eventRecord: EventRecord? = EventRecord(),
-  var options: RecurringEventOptions? = RecurringEventOptions()) :
-  SharedObject(context) {
+  var options: RecurringEventOptions? = RecurringEventOptions()
+) : SharedObject(context) {
+
+  val reactContext: Context
+    get() = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
 
   suspend fun saveEvent(eventRecord: EventRecord, calendarId: String? = null, nullableFields: List<String>? = null): Int? {
     return withContext(Dispatchers.IO) {
       val eventBuilder = CalendarBuilderNext()
 
-      eventBuilder.put(CalendarContract.Events.TITLE, eventRecord.title)
-      eventBuilder.put(CalendarContract.Events.ALL_DAY, eventRecord.allDay)
-      eventBuilder.put(CalendarContract.Events.DESCRIPTION, eventRecord.notes)
-      eventBuilder.put(CalendarContract.Events.EVENT_LOCATION, eventRecord.location)
-      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_MODIFY, eventRecord.guestsCanModify)
-      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, eventRecord.guestsCanInviteOthers)
-      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, eventRecord.guestsCanSeeGuests)
-
-      eventBuilder.put(CalendarContract.Events.DTSTART,
-        dateToMilliseconds(eventRecord.startDate))
-
-      eventBuilder.put(CalendarContract.Events.DTEND,
-        dateToMilliseconds(eventRecord.endDate))
-
-      eventBuilder.put(CalendarContract.Events.AVAILABILITY,
-        eventRecord.availability?.toAndroidValue(eventRecord.availability))
-
-      eventBuilder.put(CalendarContract.Events.STATUS,
-        eventRecord.status?.toAndroidValue(eventRecord.status))
-
-      eventBuilder.put(CalendarContract.Events.ORGANIZER, eventRecord.organizerEmail)
-
-      eventBuilder.put(CalendarContract.Events.ACCESS_LEVEL,
-        eventRecord.accessLevel?.toAndroidValue(eventRecord.accessLevel))
-
+      eventBuilder
+        .put(CalendarContract.Events.TITLE, eventRecord.title)
+        .put(CalendarContract.Events.ALL_DAY, eventRecord.allDay)
+        .put(CalendarContract.Events.DESCRIPTION, eventRecord.notes)
+        .put(CalendarContract.Events.EVENT_LOCATION, eventRecord.location)
+        .put(CalendarContract.Events.GUESTS_CAN_MODIFY, eventRecord.guestsCanModify)
+        .put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, eventRecord.guestsCanInviteOthers)
+        .put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, eventRecord.guestsCanSeeGuests)
+        .put(CalendarContract.Events.DTSTART, dateToMilliseconds(eventRecord.startDate))
+        .put(CalendarContract.Events.DTEND, dateToMilliseconds(eventRecord.endDate))
+        .put(CalendarContract.Events.AVAILABILITY, eventRecord.availability?.toAndroidValue(eventRecord.availability))
+        .put(CalendarContract.Events.STATUS, eventRecord.status?.toAndroidValue(eventRecord.status))
+        .put(CalendarContract.Events.ORGANIZER, eventRecord.organizerEmail)
+        .put(CalendarContract.Events.ACCESS_LEVEL, eventRecord.accessLevel?.toAndroidValue(eventRecord.accessLevel))
 
       if (eventRecord.recurrenceRule != null) {
         val recurrenceRule = eventRecord.recurrenceRule.toRrFormat()
@@ -81,15 +74,12 @@ class ExpoCalendarEvent(
           eventBuilder.put(CalendarContract.Events.RRULE, rule)
         }
       } else {
-        eventBuilder.putNull(CalendarContract.Events.RRULE)
-        eventBuilder.putNull(CalendarContract.Events.DURATION)
+        eventBuilder
+          .putNull(CalendarContract.Events.RRULE)
+          .putNull(CalendarContract.Events.DURATION)
       }
 
-      if (eventRecord.timeZone != null) {
-        eventBuilder.put(CalendarContract.Events.EVENT_TIMEZONE, eventRecord.timeZone)
-      } else {
-        eventBuilder.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
-      }
+      eventBuilder.put(CalendarContract.Events.EVENT_TIMEZONE, eventRecord.timeZone ?: TimeZone.getDefault().id)
 
       if (eventRecord.endTimeZone != null) {
         eventBuilder.put(CalendarContract.Events.EVENT_END_TIMEZONE, eventRecord.endTimeZone)
@@ -107,8 +97,7 @@ class ExpoCalendarEvent(
           throw EventNotFoundException("Event ID is required")
         }
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
-        val contentResolver = (appContext?.reactContext
-          ?: throw Exceptions.ReactContextLost()).contentResolver
+        val contentResolver = reactContext.contentResolver
         contentResolver.update(updateUri, eventBuilder.build(), null, null)
         removeRemindersForEvent(contentResolver, eventID)
         if (eventRecord.alarms != null) {
@@ -122,8 +111,7 @@ class ExpoCalendarEvent(
         }
         eventBuilder.put(CalendarContract.Events.CALENDAR_ID, calendarId.toInt())
         val eventsUri = CalendarContract.Events.CONTENT_URI
-        val contentResolver = (appContext?.reactContext
-          ?: throw Exceptions.ReactContextLost()).contentResolver
+        val contentResolver = reactContext.contentResolver
         val eventUri = contentResolver.insert(eventsUri, eventBuilder.build())
           ?: throw EventsCouldNotBeCreatedException("Failed to insert event into the database")
         val eventID = eventUri.lastPathSegment!!.toInt()
@@ -136,7 +124,7 @@ class ExpoCalendarEvent(
   }
 
   suspend fun createAttendee(attendeeRecord: AttendeeRecord): ExpoCalendarAttendee? {
-    val attendee = ExpoCalendarAttendee(context)
+    val attendee = ExpoCalendarAttendee(appContext ?: throw Exceptions.AppContextLost())
     val eventId = eventRecord?.id?.toIntOrNull()
       ?: throw EventNotFoundException("Event ID is required")
 
@@ -148,8 +136,7 @@ class ExpoCalendarEvent(
   suspend fun deleteEvent() {
     withContext(Dispatchers.IO) {
       val eventID = eventRecord?.id?.toInt()
-      val contentResolver = (appContext?.reactContext
-        ?: throw Exceptions.ReactContextLost()).contentResolver
+      val contentResolver = reactContext.contentResolver
       if (eventID == null) {
         throw EventCouldNotBeDeletedException("Event ID is required")
       }
@@ -191,8 +178,7 @@ class ExpoCalendarEvent(
       if (eventID == null) {
         throw EventNotFoundException("Event ID is required")
       }
-      val contentResolver = (appContext?.reactContext
-        ?: throw Exceptions.ReactContextLost()).contentResolver
+      val contentResolver = reactContext.contentResolver
       val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
       val cursor = contentResolver.query(uri, findEventByIdQueryParameters, null, null, null)
       requireNotNull(cursor) { "Cursor shouldn't be null" }
@@ -212,8 +198,7 @@ class ExpoCalendarEvent(
         if (eventID == null) {
           throw EventNotFoundException("Event ID is required")
         }
-        val contentResolver = (appContext?.reactContext
-          ?: throw Exceptions.ReactContextLost()).contentResolver
+        val contentResolver = reactContext.contentResolver
         val cursor = CalendarContract.Attendees.query(
           contentResolver,
           eventID,
@@ -230,7 +215,11 @@ class ExpoCalendarEvent(
     if (options?.instanceStartDate == null) {
       return this
     }
-    return ExpoCalendarEvent(context, eventRecord ?: EventRecord(), options)
+    return ExpoCalendarEvent(
+      appContext ?: throw Exceptions.AppContextLost(),
+      eventRecord ?: EventRecord(),
+      options
+    )
   }
 
   private fun cleanNullableFields(eventBuilder: CalendarBuilderNext, nullableFields: List<String>?) {
@@ -262,8 +251,7 @@ class ExpoCalendarEvent(
   }
 
   private fun createRemindersForEvent(eventID: Int, reminders: List<AlarmRecord>) {
-    val contentResolver = (appContext?.reactContext
-      ?: throw Exceptions.ReactContextLost()).contentResolver
+    val contentResolver = reactContext.contentResolver
     reminders
       .filter { it.relativeOffset != null }
       .map { reminder ->
@@ -284,7 +272,10 @@ class ExpoCalendarEvent(
     val results = mutableListOf<ExpoCalendarAttendee>()
 
     while (cursor.moveToNext()) {
-      results.add(ExpoCalendarAttendee(context, attendeeRecord = cursor.toAttendeeRecord()))
+      results.add(ExpoCalendarAttendee(
+        appContext ?: throw Exceptions.AppContextLost(),
+        attendeeRecord = cursor.toAttendeeRecord())
+      )
     }
     return results
   }

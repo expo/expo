@@ -3,11 +3,13 @@ package expo.modules.calendar.next.records
 import android.provider.CalendarContract
 import expo.modules.calendar.accessConstantMatchingString
 import expo.modules.calendar.availabilityConstantMatchingString
+import expo.modules.calendar.next.utils.dateFormat
 import expo.modules.calendar.next.utils.rrFormat
 import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import java.util.Locale
 
 data class EventRecord(
   @Field
@@ -79,6 +81,32 @@ data class RecurrenceRuleRecord(
     return endDate?.let {
       sdf.parse(it)?.let { date -> copy(endDate = rrFormat.format(date)) } ?: this
     } ?: this
+  }
+  companion object {
+    fun fromRrFormat(rrule: String?): RecurrenceRuleRecord? {
+      if (rrule.isNullOrBlank()) {
+        return null
+      }
+      val ruleMap = rrule
+        .split(";")
+        .mapNotNull { part ->
+          val keyValue = part.split("=")
+          if (keyValue.size != 2) {
+            return@mapNotNull null
+          }
+          keyValue[0].uppercase(Locale.getDefault()) to keyValue[1]
+        }
+        .toMap()
+
+      return RecurrenceRuleRecord(
+        endDate = ruleMap["UNTIL"]?.takeIf { it.isNotBlank() }
+          ?.let { rrFormat.parse(it) }
+          ?.let { dateFormat.format(it) },
+        frequency = ruleMap["FREQ"]?.lowercase(Locale.getDefault()),
+        interval = ruleMap["INTERVAL"]?.toIntOrNull(),
+        occurrence = ruleMap["COUNT"]?.toIntOrNull()
+      )
+    }
   }
 }
 
@@ -181,6 +209,19 @@ enum class AlarmMethod(val value: String) : Enumerable {
       CalendarContract.Reminders.METHOD_SMS -> SMS
       CalendarContract.Reminders.METHOD_DEFAULT -> DEFAULT
       else -> DEFAULT
+    }
+
+    fun fromReminderString(remindersString: String?): List<AlarmMethod> {
+      return remindersString
+        ?.split(",")
+        ?.filter { it.isNotBlank() }
+        ?.map { reminderString ->
+          try {
+            entries.find { it.value == reminderString } ?: DEFAULT
+          } catch (_: Exception) {
+            DEFAULT
+          }
+        } ?: emptyList()
     }
   }
 }

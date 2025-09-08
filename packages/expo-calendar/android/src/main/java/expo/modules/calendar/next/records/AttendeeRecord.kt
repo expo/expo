@@ -96,5 +96,18 @@ enum class AttendeeType(val value: String) : Enumerable {
     fun fromAndroidValue(value: Int): AttendeeType? = entries.find {
       it.value == attendeeTypeStringMatchingConstant(value)
     }
+
+    fun fromAttendeeTypesString(attendeeTypesString: String?): List<AttendeeType> {
+      return attendeeTypesString
+        ?.split(",")
+        ?.filter { it.isNotBlank() }
+        ?.map { attendeeTypeString ->
+          try {
+            AttendeeType.entries.find { it.value == attendeeTypeString } ?: NONE
+          } catch (_: Exception) {
+            NONE
+          }
+        } ?: emptyList()
+    }
   }
 }

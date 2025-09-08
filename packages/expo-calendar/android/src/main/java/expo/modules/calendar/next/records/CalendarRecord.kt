@@ -45,7 +45,13 @@ enum class CalendarAccessLevel(val value: String) {
   READ("read"),
   RESPOND("respond"),
   ROOT("root"),
-  NONE("none")
+  NONE("none");
+
+  companion object {
+    fun fromAccessLevelString(accessLevelString: String?): CalendarAccessLevel? {
+      return entries.find { it.value == accessLevelString } ?: NONE
+    }
+  }
 }
 
 data class Source(

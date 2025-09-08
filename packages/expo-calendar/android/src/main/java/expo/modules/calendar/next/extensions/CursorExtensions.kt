@@ -20,9 +20,6 @@ import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.CalendarAccessLevel
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.records.Source
-import expo.modules.calendar.next.utils.dateFormat
-import expo.modules.calendar.next.utils.rrFormat
-import java.util.Locale
 
 fun Cursor.toCalendarRecord() : CalendarRecord {
   val accessLevel = optInt( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
@@ -38,9 +35,9 @@ fun Cursor.toCalendarRecord() : CalendarRecord {
     isVisible = optInt( CalendarContract.Calendars.VISIBLE) != 0,
     isSynced = optInt( CalendarContract.Calendars.SYNC_EVENTS) != 0,
     allowsModifications = isModificationAllowed(accessLevel),
-    accessLevel = parseAccessLevel(optString( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)) ?: CalendarAccessLevel.NONE,
-    allowedReminders = parseAllowedReminders(optString( CalendarContract.Calendars.ALLOWED_REMINDERS)) ?: emptyList(),
-    allowedAttendeeTypes = parseAllowedAttendeeTypes(optString( CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)) ?: emptyList(),
+    accessLevel = CalendarAccessLevel.fromAccessLevelString(optString( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)),
+    allowedReminders = AlarmMethod.fromReminderString(optString( CalendarContract.Calendars.ALLOWED_REMINDERS)),
+    allowedAttendeeTypes = AttendeeType.fromAttendeeTypesString(optString( CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)),
     source = createSource(this)
   )
 }
@@ -66,7 +63,7 @@ fun Cursor.toEventRecord(contentResolver: ContentResolver): EventRecord {
     title = optString( CalendarContract.Events.TITLE),
     notes = optString( CalendarContract.Events.DESCRIPTION),
     alarms = eventId?.let { serializeAlarms(contentResolver, it)?.toList() },
-    recurrenceRule = extractRecurrenceRuleFromString(optString( CalendarContract.Events.RRULE)),
+    recurrenceRule = RecurrenceRuleRecord.fromRrFormat(optString( CalendarContract.Events.RRULE)),
     startDate = dateToString(startDate?.toLongOrNull()),
     endDate = dateToString(endDate?.toLongOrNull()),
     allDay = optInt( CalendarContract.Events.ALL_DAY) != 0,
@@ -128,36 +125,6 @@ private fun isModificationAllowed(accessLevel: Int?): Boolean {
   return allowedLevels.contains(accessLevel)
 }
 
-private fun parseAccessLevel(accessLevelString: String?): CalendarAccessLevel? {
-  return CalendarAccessLevel.entries.find { it.value == accessLevelString }
-}
-
-private fun parseAllowedReminders(remindersString: String?): List<AlarmMethod>? {
-  return remindersString
-    ?.split(",")
-    ?.filter { it.isNotBlank() }
-    ?.map { reminderString ->
-      try {
-      AlarmMethod.entries.find { it.value == reminderString } ?: AlarmMethod.DEFAULT
-      } catch (_: Exception) {
-        AlarmMethod.DEFAULT
-      }
-    }
-}
-
-private fun parseAllowedAttendeeTypes(attendeeTypesString: String?): List<AttendeeType>? {
-  return attendeeTypesString
-    ?.split(",")
-    ?.filter { it.isNotBlank() }
-    ?.map { attendeeTypeString ->
-      try {
-      AttendeeType.entries.find { it.value == attendeeTypeString } ?: AttendeeType.NONE
-      } catch (_: Exception) {
-        AttendeeType.NONE
-      }
-    }
-}
-
 private fun createSource(cursor: Cursor): Source {
   val accountName = cursor.optString(CalendarContract.Calendars.ACCOUNT_NAME)
   val accountType = cursor.optString(CalendarContract.Calendars.ACCOUNT_TYPE)
@@ -168,52 +135,6 @@ private fun createSource(cursor: Cursor): Source {
     name = accountName,
     isLocalAccount = accountType == CalendarContract.ACCOUNT_TYPE_LOCAL
   )
-}
-
-private fun extractRecurrenceRuleFromString(rrule: String?): RecurrenceRuleRecord? {
-  if (rrule.isNullOrBlank()) {
-    return null
-  }
-
-  val ruleMap = createRuleMap(rrule)
-
-  return RecurrenceRuleRecord(
-    endDate = parseEndDate(ruleMap["UNTIL"]),
-    frequency = parseFrequency(ruleMap["FREQ"]),
-    interval = parseInterval(ruleMap["INTERVAL"]),
-    occurrence = parseOccurrence(ruleMap["COUNT"])
-  )
-}
-
-private fun parseEndDate(untilValue: String?): String? {
-  return untilValue?.takeIf { it.isNotBlank() }
-    ?.let { rrFormat.parse(it) }
-    ?.let { dateFormat.format(it) }
-}
-
-private fun parseFrequency(freqValue: String?): String? {
-  return freqValue?.takeIf { it.isNotBlank() }?.lowercase(Locale.getDefault())
-}
-
-private fun parseInterval(intervalValue: String?): Int? {
-  return intervalValue?.takeIf { it.isNotBlank() }?.toIntOrNull()
-}
-
-private fun parseOccurrence(countValue: String?): Int? {
-  return countValue?.takeIf { it.isNotBlank() }?.toIntOrNull()
-}
-
-private fun createRuleMap(rrule: String): Map<String, String> {
-  return rrule
-    .split(";")
-    .mapNotNull { part ->
-      val keyValue = part.split("=")
-      if (keyValue.size != 2) {
-        return@mapNotNull null
-      }
-      keyValue[0].uppercase(Locale.getDefault()) to keyValue[1]
-    }
-    .toMap()
 }
 
 private fun serializeAlarms(contentResolver: ContentResolver, eventId: String): MutableList<AlarmRecord>? {

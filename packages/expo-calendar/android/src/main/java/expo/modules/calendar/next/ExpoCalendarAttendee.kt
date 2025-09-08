@@ -2,6 +2,7 @@ package expo.modules.calendar.next
 
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.provider.CalendarContract
 import expo.modules.calendar.attendeeRelationshipConstantMatchingString
 import expo.modules.calendar.attendeeStatusConstantMatchingString
@@ -19,15 +20,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ExpoCalendarAttendee(
-  val context: AppContext,
-  var attendeeRecord: AttendeeRecord? = AttendeeRecord()) :
-  SharedObject(context) {
+  context: AppContext,
+  var attendeeRecord: AttendeeRecord? = AttendeeRecord()
+) : SharedObject(context) {
+
+  val reactContext: Context
+    get() = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
 
   suspend fun saveAttendee(attendeeRecord: AttendeeRecord, eventId: Int? = null, nullableFields: List<String>? = null): String {
     return withContext(Dispatchers.IO) {
       val attendeeValues = buildAttendeeContentValues(attendeeRecord, eventId)
-      val contentResolver = (context.reactContext
-        ?: throw Exceptions.ReactContextLost()).contentResolver
+      val contentResolver = reactContext.contentResolver
       cleanNullableFields(attendeeValues, nullableFields)
       if (this@ExpoCalendarAttendee.attendeeRecord?.id == null) {
         if (eventId == null) {
@@ -52,15 +55,13 @@ class ExpoCalendarAttendee(
 
   suspend fun deleteAttendee() {
     return withContext(Dispatchers.IO) {
-      val rows: Int
       val attendeeID = attendeeRecord?.id?.toIntOrNull()
         ?: throw AttendeeCouldNotBeDeletedException("Attendee ID not found")
 
-      val contentResolver = (context.reactContext
-        ?: throw Exceptions.ReactContextLost()).contentResolver
+      val contentResolver = reactContext.contentResolver
 
       val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
-      rows = contentResolver.delete(uri, null, null)
+      val rows = contentResolver.delete(uri, null, null)
       attendeeRecord = null
       check(rows > 0) { throw AttendeeCouldNotBeDeletedException("An error occurred while deleting attendee") }
     }
@@ -71,8 +72,7 @@ class ExpoCalendarAttendee(
       val attendeeID = (attendeeID ?: attendeeRecord?.id)?.toIntOrNull()
         ?: throw AttendeeNotFoundException("Attendee ID not found")
 
-      val contentResolver = (context.reactContext
-        ?: throw Exceptions.ReactContextLost()).contentResolver
+      val contentResolver = reactContext.contentResolver
       val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
       val cursor = contentResolver.query(uri, findAttendeesByEventIdQueryParameters, null, null, null)
       requireNotNull(cursor) { "Cursor shouldn't be null" }
