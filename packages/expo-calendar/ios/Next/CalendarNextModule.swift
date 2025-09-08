@@ -24,7 +24,7 @@ public final class CalendarNextModule: Module {
       self.calendarPermissions?.initializePermittedEntities()
     }
 
-    Function("getDefaultCalendar") { () -> ExpoCalendar in
+    Function("getDefaultCalendarSync") { () -> ExpoCalendar in
       try calendarPermissions?.checkCalendarPermissions()
       guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
         throw DefaultCalendarNotFoundException()
@@ -167,7 +167,7 @@ public final class CalendarNextModule: Module {
         reject: promise.legacyRejecter)
     }
 
-    Function("getSources") {
+    Function("getSourcesSync") {
       return eventStore.sources.map { source in
         serialize(ekSource: source)
       }

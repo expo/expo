@@ -52,7 +52,7 @@ class CalendarNextModule : Module() {
       findExpoCalendarById(appContext, calendarId)
     }
 
-    AsyncFunction("requestCalendarPermissionsAsync") { promise: Promise ->
+    AsyncFunction("requestCalendarPermissions") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
     }
 
@@ -258,7 +258,7 @@ class CalendarNextModule : Module() {
         expoCalendarEvent.createAttendee(record)
       }
 
-      AsyncFunction("openInCalendarAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions ->
+      AsyncFunction("openInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions ->
         val eventId = expoCalendarEvent.eventRecord?.id
           ?: throw EventNotFoundException("Event id is null")
 
@@ -271,7 +271,7 @@ class CalendarNextModule : Module() {
         return@Coroutine result
       }
 
-      AsyncFunction("editInCalendarAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions? ->
+      AsyncFunction("editInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions? ->
         val eventId = expoCalendarEvent.eventRecord?.id
           ?: throw EventNotFoundException("Event id is null")
         val params = ViewedEventOptions(
@@ -283,12 +283,12 @@ class CalendarNextModule : Module() {
         return@Coroutine editResult
       }
 
-      AsyncFunction("getAttendeesAsync") Coroutine { expoCalendarEvent: ExpoCalendarEvent ->
+      AsyncFunction("getAttendees") Coroutine { expoCalendarEvent: ExpoCalendarEvent ->
         permissionsDelegate.requireSystemPermissions(false)
         expoCalendarEvent.getAttendees()
       }
 
-      Function("getOccurrence") { expoCalendarEvent: ExpoCalendarEvent, options: RecurringEventOptions? ->
+      Function("getOccurrenceSync") { expoCalendarEvent: ExpoCalendarEvent, options: RecurringEventOptions? ->
         permissionsDelegate.requireSystemPermissions(false)
         expoCalendarEvent.getOccurrence(options)
       }

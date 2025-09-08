@@ -3,10 +3,6 @@ import {
   ExpoCalendar,
   ExpoCalendarEvent,
   getCalendars,
-  getDefaultCalendar,
-  requestCalendarPermissionsAsync,
-  requestRemindersPermissionsAsync,
-  getSources,
   listEvents,
   ExpoCalendarReminder,
   ExpoCalendarAttendee,
@@ -45,7 +41,7 @@ function pickCalendarSourceId() {
   if (Platform.OS !== 'ios') {
     return;
   }
-  const sources = Calendar.getSources();
+  const sources = Calendar.getSourcesSync();
   const mainSource = sources.find((source) => source.name === 'iCloud') || sources[0];
   return mainSource?.id;
 }
@@ -223,9 +219,9 @@ export async function test(t) {
 
   describeWithPermissions('Calendar@next', () => {
     t.describe('Global functions', () => {
-      t.describe('requestCalendarPermissionsAsync()', () => {
+      t.describe('requestCalendarPermissions()', () => {
         t.it('requests for Calendar permissions', async () => {
-          const results = await requestCalendarPermissionsAsync();
+          const results = await Calendar.requestCalendarPermissions();
 
           t.expect(results.granted).toBe(true);
           t.expect(results.status).toBe('granted');
@@ -233,9 +229,9 @@ export async function test(t) {
       });
 
       if (Platform.OS === 'ios') {
-        t.describe('requestReminderPermissionsAsync()', () => {
+        t.describe('requestReminderPermissions()', () => {
           t.it('requests for Reminder permissions', async () => {
-            const results = await requestRemindersPermissionsAsync();
+            const results = await Calendar.requestRemindersPermissions();
 
             t.expect(results.granted).toBe(true);
             t.expect(results.status).toBe('granted');
@@ -374,7 +370,7 @@ export async function test(t) {
       if (Platform.OS === 'ios') {
         t.describe('getDefaultCalendar()', () => {
           t.it('get default calendar', async () => {
-            const calendar = getDefaultCalendar();
+            const calendar = Calendar.getDefaultCalendarSync();
 
             testCalendarShape(calendar);
           });
@@ -382,7 +378,7 @@ export async function test(t) {
 
         t.describe('getSourcesAsync()', () => {
           t.it('returns an array of sources', async () => {
-            const sources = getSources();
+            const sources = Calendar.getSourcesSync();
 
             t.expect(Array.isArray(sources)).toBe(true);
           });
@@ -428,7 +424,7 @@ export async function test(t) {
         await alertAndWaitForResponse(
           'Please verify event details are shown and close the dialog.'
         );
-        const result = await event.openInCalendarAsync({
+        const result = await event.openInCalendar({
           ...dontStartNewTask,
           allowsEditing: true,
           allowsCalendarPreview: true,
@@ -439,7 +435,7 @@ export async function test(t) {
       t.it('can edit an event', async () => {
         const event = await createTestEvent(calendar);
         await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
-        const result = await event.editInCalendarAsync(dontStartNewTask);
+        const result = await event.editInCalendar(dontStartNewTask);
         t.expect(typeof result.action).toBe('string'); // done or canceled
         t.expect(result.id).toBe(null);
       });
@@ -1112,7 +1108,7 @@ export async function test(t) {
               },
             });
 
-            const occurrence = event.getOccurrence({
+            const occurrence = event.getOccurrenceSync({
               instanceStartDate: new Date(2020, 3, 5, 9),
             });
 
@@ -1144,7 +1140,7 @@ export async function test(t) {
             );
             t.expect(initialEvents.length).toBe(4);
 
-            const occurrence = event.getOccurrence({
+            const occurrence = event.getOccurrenceSync({
               futureEvents: true,
               instanceStartDate: new Date(2020, 3, 6, 9),
             });
@@ -1334,7 +1330,7 @@ export async function test(t) {
       });
 
       if (Platform.OS === 'ios') {
-        t.describe('Event.getOccurrence()', () => {
+        t.describe('Event.getOccurrenceSync()', () => {
           let calendar: ExpoCalendar;
 
           t.beforeEach(async () => {
@@ -1350,7 +1346,7 @@ export async function test(t) {
 
             const instanceStartDate = new Date(2020, 5, 6, 9);
 
-            const occurrence = recurringEvent.getOccurrence({
+            const occurrence = recurringEvent.getOccurrenceSync({
               instanceStartDate,
             });
 
@@ -1414,7 +1410,7 @@ export async function test(t) {
           t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
           t.expect(eventsBeforeDelete.length).toBe(4);
 
-          const occurrence = recurringEvent.getOccurrence({ futureEvents: true });
+          const occurrence = recurringEvent.getOccurrenceSync({ futureEvents: true });
           await occurrence.delete();
 
           const eventsAfterDelete = await calendar.listEvents(
@@ -1441,7 +1437,7 @@ export async function test(t) {
             t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
             t.expect(eventsBeforeDelete.length).toBe(4);
 
-            const occurrence = recurringEvent.getOccurrence({
+            const occurrence = recurringEvent.getOccurrenceSync({
               instanceStartDate: new Date(2019, 3, 5, 9),
             });
             occurrence.delete();
@@ -1477,7 +1473,7 @@ export async function test(t) {
               t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
               t.expect(eventsBeforeDelete.length).toBe(4);
 
-              const occurrence = recurringEvent.getOccurrence({
+              const occurrence = recurringEvent.getOccurrenceSync({
                 instanceStartDate: new Date(2019, 3, 5, 9),
               });
               occurrence.delete();
@@ -1514,7 +1510,7 @@ export async function test(t) {
               t.expect(Array.isArray(eventsBeforeDelete)).toBe(true);
               t.expect(eventsBeforeDelete.length).toBe(4);
 
-              const occurrence = recurringEvent.getOccurrence({
+              const occurrence = recurringEvent.getOccurrenceSync({
                 instanceStartDate: new Date(2019, 3, 5, 9),
                 futureEvents: true,
               });
@@ -1561,7 +1557,7 @@ export async function test(t) {
         });
 
         t.it('lists attendees', async () => {
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);
         });
@@ -1572,7 +1568,7 @@ export async function test(t) {
               frequency: Calendar.Frequency.DAILY,
             },
           });
-          const attendees = await recurringEvent.getAttendeesAsync();
+          const attendees = await recurringEvent.getAttendees();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);
         });
@@ -1905,7 +1901,7 @@ export async function test(t) {
 
       if (Platform.OS === 'android') {
         t.it('lists attendees for an event with attendees', async () => {
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(0);
         });
@@ -1923,7 +1919,7 @@ export async function test(t) {
 
         t.it('lists attendees for an event', async () => {
           await createTestAttendee(event);
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(Array.isArray(attendees)).toBe(true);
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].email).toBe(defaultAttendeeData.email);
@@ -1940,7 +1936,7 @@ export async function test(t) {
             name,
           });
           t.expect(attendee.name).toBe(name);
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].name).toBe(name);
         });
@@ -1952,7 +1948,7 @@ export async function test(t) {
             email,
           });
           t.expect(attendee.email).toBe(email);
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].email).toBe(email);
         });
@@ -1969,7 +1965,7 @@ export async function test(t) {
             type: nextType,
           });
 
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].role).toBe(nextRole);
           t.expect(attendees[0].status).toBe(nextStatus);
@@ -1981,7 +1977,7 @@ export async function test(t) {
           const originalId = attendee.id;
 
           await attendee.update({ name: 'Changed Name', email: 'changed@test.com' });
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
 
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].id).toBe(originalId);
@@ -1995,7 +1991,7 @@ export async function test(t) {
             name,
             email,
           });
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].name).toBe(name);
           t.expect(attendees[0].email).toBe(email);
@@ -2010,7 +2006,7 @@ export async function test(t) {
             email: null,
           });
           t.expect(attendee.email).toBeNull();
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(attendees.length).toBe(1);
           t.expect(attendees[0].email).toBeNull();
         });
@@ -2059,11 +2055,11 @@ export async function test(t) {
 
         t.it('deletes an attendee', async () => {
           const attendee = await createTestAttendee(event);
-          const attendees = await event.getAttendeesAsync();
+          const attendees = await event.getAttendees();
           t.expect(attendees.length).toBe(1);
 
           await attendee.delete();
-          const attendeesAfterDelete = await event.getAttendeesAsync();
+          const attendeesAfterDelete = await event.getAttendees();
           t.expect(attendeesAfterDelete.length).toBe(0);
         });
 

@@ -29,12 +29,12 @@ declare class ExpoCalendarNextModule extends NativeModule {
   getEventById(eventId: string): Promise<ExpoCalendarEvent>;
   getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
 
-  requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
-  getCalendarPermissionsAsync(): Promise<PermissionResponse>;
-  requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
-  getRemindersPermissionsAsync(): Promise<PermissionResponse>;
+  requestCalendarPermissions(): Promise<PermissionResponse>;
+  getCalendarPermissions(): Promise<PermissionResponse>;
+  requestRemindersPermissions(): Promise<PermissionResponse>;
+  getRemindersPermissions(): Promise<PermissionResponse>;
 
-  getSources(): Source[];
+  getSourcesSync(): Source[];
 }
 
 export default isRunningInExpoGo()

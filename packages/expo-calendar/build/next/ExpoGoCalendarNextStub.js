@@ -19,7 +19,7 @@ class ExpoGoCalendarNextStub {
             throw new Error('`ExpoCalendarAttendee` is not yet available in the Expo Go managed workflow.');
         }
     };
-    getDefaultCalendar() {
+    getDefaultCalendarSync() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
     createCalendar() {
@@ -31,19 +31,19 @@ class ExpoGoCalendarNextStub {
     async listEvents() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    async requestCalendarPermissionsAsync() {
+    async requestCalendarPermissions() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    async getCalendarPermissionsAsync() {
+    async getCalendarPermissions() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    async requestRemindersPermissionsAsync() {
+    async requestRemindersPermissions() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    async getRemindersPermissionsAsync() {
+    async getRemindersPermissions() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
-    getSources() {
+    getSourcesSync() {
         throw new Error('Calendar@next functionality is not available in Expo Go');
     }
 }

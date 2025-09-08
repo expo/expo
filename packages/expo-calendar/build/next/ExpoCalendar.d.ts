@@ -12,11 +12,11 @@ declare class ExpoCalendarNextModule extends NativeModule {
     getCalendarById(calendarId: string): Promise<ExpoCalendar>;
     getEventById(eventId: string): Promise<ExpoCalendarEvent>;
     getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
-    requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
-    getCalendarPermissionsAsync(): Promise<PermissionResponse>;
-    requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
-    getRemindersPermissionsAsync(): Promise<PermissionResponse>;
-    getSources(): Source[];
+    requestCalendarPermissions(): Promise<PermissionResponse>;
+    getCalendarPermissions(): Promise<PermissionResponse>;
+    requestRemindersPermissions(): Promise<PermissionResponse>;
+    getRemindersPermissions(): Promise<PermissionResponse>;
+    getSourcesSync(): Source[];
 }
 declare const _default: ExpoCalendarNextModule;
 export default _default;

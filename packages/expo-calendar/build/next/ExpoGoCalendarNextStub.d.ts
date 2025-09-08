@@ -12,15 +12,15 @@ declare class ExpoGoCalendarNextStub {
     static readonly ExpoCalendarAttendee: {
         new (): {};
     };
-    getDefaultCalendar(): void;
+    getDefaultCalendarSync(): void;
     createCalendar(): void;
     getCalendars(): Promise<void>;
     listEvents(): Promise<void>;
-    requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
-    getCalendarPermissionsAsync(): Promise<PermissionResponse>;
-    requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
-    getRemindersPermissionsAsync(): Promise<PermissionResponse>;
-    getSources(): void;
+    requestCalendarPermissions(): Promise<PermissionResponse>;
+    getCalendarPermissions(): Promise<PermissionResponse>;
+    requestRemindersPermissions(): Promise<PermissionResponse>;
+    getRemindersPermissions(): Promise<PermissionResponse>;
+    getSourcesSync(): void;
 }
 export default ExpoGoCalendarNextStub;
 //# sourceMappingURL=ExpoGoCalendarNextStub.d.ts.map

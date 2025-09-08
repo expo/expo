@@ -24,21 +24,21 @@ export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAtten
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
-    async openInCalendarAsync(params) {
+    async openInCalendar(params) {
         // We have to pass null here because the core doesn't support skipping the first param
-        return super.openInCalendarAsync(params ?? null);
+        return super.openInCalendar(params ?? null);
     }
-    async editInCalendarAsync(params) {
+    async editInCalendar(params) {
         // We have to pass null here because the core doesn't support skipping the first param
-        return await super.editInCalendarAsync(params ?? null);
+        return await super.editInCalendar(params ?? null);
     }
-    getOccurrence(recurringEventOptions = {}) {
-        const result = super.getOccurrence(stringifyDateValues(recurringEventOptions));
+    getOccurrenceSync(recurringEventOptions = {}) {
+        const result = super.getOccurrenceSync(stringifyDateValues(recurringEventOptions));
         Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);
         return result;
     }
-    async getAttendeesAsync() {
-        const attendees = await super.getAttendeesAsync();
+    async getAttendees() {
+        const attendees = await super.getAttendees();
         return attendees.map((attendee) => {
             Object.setPrototypeOf(attendee, ExpoCalendarAttendee.prototype);
             return attendee;
@@ -131,11 +131,11 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
-export function getDefaultCalendar() {
-    if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendar) {
+export function getDefaultCalendarSync() {
+    if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendarSync) {
         throw new UnavailabilityError('Calendar', 'getDefaultCalendar');
     }
-    const defaultCalendar = InternalExpoCalendar.getDefaultCalendar();
+    const defaultCalendar = InternalExpoCalendar.getDefaultCalendarSync();
     Object.setPrototypeOf(defaultCalendar, ExpoCalendar.prototype);
     return defaultCalendar;
 }
@@ -190,7 +190,7 @@ export async function listEvents(calendars, startDate, endDate) {
  * Asks the user to grant permissions for accessing user's calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export const requestCalendarPermissionsAsync = InternalExpoCalendar.requestCalendarPermissionsAsync;
+export const requestCalendarPermissions = InternalExpoCalendar.requestCalendarPermissions;
 /**
  * Check or request permissions to access the calendar.
  * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
@@ -201,22 +201,22 @@ export const requestCalendarPermissionsAsync = InternalExpoCalendar.requestCalen
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export const getCalendarPermissionsAsync = InternalExpoCalendar.getCalendarPermissionsAsync;
+export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermissions;
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export const requestRemindersPermissionsAsync = InternalExpoCalendar.requestRemindersPermissionsAsync;
+export const requestRemindersPermissions = InternalExpoCalendar.requestRemindersPermissions;
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export const getRemindersPermissionsAsync = InternalExpoCalendar.getRemindersPermissionsAsync;
+export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissions;
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
  */
-export const getSources = InternalExpoCalendar.getSources;
+export const getSourcesSync = InternalExpoCalendar.getSourcesSync;
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';
 export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
 //# sourceMappingURL=Calendar.js.map

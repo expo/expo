@@ -12,10 +12,10 @@ export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalen
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
-    openInCalendarAsync(params?: CalendarDialogOpenParamsNext): Promise<OpenEventDialogResult>;
-    editInCalendarAsync(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
-    getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
-    getAttendeesAsync(): Promise<ExpoCalendarAttendee[]>;
+    openInCalendar(params?: CalendarDialogOpenParamsNext): Promise<OpenEventDialogResult>;
+    editInCalendar(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
+    getOccurrenceSync(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
+    getAttendees(): Promise<ExpoCalendarAttendee[]>;
     createAttendee(attendee: Attendee): Promise<ExpoCalendarAttendee>;
     update(details: Partial<ModifiableEventProperties>): Promise<void>;
     delete(): Promise<void>;
@@ -46,7 +46,7 @@ export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
  * Gets an instance of the default calendar object.
  * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
  */
-export declare function getDefaultCalendar(): ExpoCalendar;
+export declare function getDefaultCalendarSync(): ExpoCalendar;
 /**
  * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the different calendars stored on the device.
  * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
@@ -75,7 +75,7 @@ export declare function listEvents(calendars: (string | ExpoCalendar)[], startDa
  * Asks the user to grant permissions for accessing user's calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const requestCalendarPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const requestCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
 /**
  * Check or request permissions to access the calendar.
  * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
@@ -86,22 +86,22 @@ export declare const requestCalendarPermissionsAsync: () => Promise<import("expo
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export declare const getCalendarPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const requestRemindersPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const requestRemindersPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const getRemindersPermissionsAsync: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getRemindersPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
  */
-export declare const getSources: () => import("./Calendar").Source[];
+export declare const getSourcesSync: () => import("./Calendar").Source[];
 export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, } from './ExpoCalendar.types';
 export type { PermissionResponse, Alarm, AlarmLocation, CalendarDialogParams, DaysOfTheWeek, DialogEventResult, OpenEventDialogResult, OpenEventPresentationOptions, PermissionExpiration, PermissionHookOptions, PresentationOptions, RecurrenceRule, RecurringEventOptions, Source, } from '../Calendar';
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';

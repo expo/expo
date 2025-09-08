@@ -28,7 +28,7 @@ class ExpoGoCalendarNextStub {
     }
   };
 
-  getDefaultCalendar(): void {
+  getDefaultCalendarSync(): void {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
@@ -44,23 +44,23 @@ class ExpoGoCalendarNextStub {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  async requestCalendarPermissionsAsync(): Promise<PermissionResponse> {
+  async requestCalendarPermissions(): Promise<PermissionResponse> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  async getCalendarPermissionsAsync(): Promise<PermissionResponse> {
+  async getCalendarPermissions(): Promise<PermissionResponse> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  async requestRemindersPermissionsAsync(): Promise<PermissionResponse> {
+  async requestRemindersPermissions(): Promise<PermissionResponse> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  async getRemindersPermissionsAsync(): Promise<PermissionResponse> {
+  async getRemindersPermissions(): Promise<PermissionResponse> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  getSources(): void {
+  getSourcesSync(): void {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 }
