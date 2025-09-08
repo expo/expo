@@ -115,6 +115,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'TooltipBox',
+    route: 'ui/tooltipbox',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TooltipBoxScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},
