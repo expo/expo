@@ -855,6 +855,35 @@ jobs:
       payload: object # required if message is not provided
 ```
 
+#### `github-comment`
+
+Automatically posts comprehensive reports of your workflow's completed builds and updates to GitHub pull requests. Can generate auto-reports, display specific builds/updates with custom messages, or use payload for fully customized content. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: github-comment
+    # @end #
+    params:
+      payload: string # optional - raw markdown content (Takes precedence over all other parameters.)
+      message: string # optional - custom message
+      build_ids: string[] # optional - array of build IDs
+      update_group_ids: string[] # optional - array of update group IDs
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "github_comment_posted": "true" | "false",
+  "pr_number": string | null,
+  "comment_url": string | null,
+  "comment_content": string | null,
+  "note": string | null
+}
+```
+
 #### `require-approval`
 
 Requires approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job. See [Require Approval job documentation](/eas/workflows/pre-packaged-jobs#require-approval) for detailed information and examples.
