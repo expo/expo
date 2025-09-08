@@ -150,7 +150,7 @@ class ContactsModule : Module() {
       startObservingContactChanges()
     }
 
-    OnStartObserving(onContactsChangeEventName) {
+    OnStopObserving(onContactsChangeEventName) {
       stopObservingContactChanges()
     }
 
