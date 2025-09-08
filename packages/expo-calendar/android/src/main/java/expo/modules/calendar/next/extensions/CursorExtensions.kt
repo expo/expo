@@ -3,6 +3,7 @@ package expo.modules.calendar.next.extensions
 import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.CalendarContract
+import expo.modules.calendar.BEGIN_DATE_INDEX
 import expo.modules.calendar.next.exceptions.CalendarParsingException
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.AttendeeRole
@@ -15,6 +16,7 @@ import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.EventStatus
 import expo.modules.calendar.next.utils.dateToString
 import expo.modules.calendar.next.records.AlarmMethod
+import expo.modules.calendar.END_DATE_INDEX
 import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.CalendarAccessLevel
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
@@ -38,9 +40,9 @@ fun Cursor.toCalendarRecord() : CalendarRecord {
     isVisible = optInt( CalendarContract.Calendars.VISIBLE) != 0,
     isSynced = optInt( CalendarContract.Calendars.SYNC_EVENTS) != 0,
     allowsModifications = isModificationAllowed(accessLevel),
-    accessLevel = parseAccessLevel(optString( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)),
-    allowedReminders = parseAllowedReminders(optString( CalendarContract.Calendars.ALLOWED_REMINDERS)),
-    allowedAttendeeTypes = parseAllowedAttendeeTypes(optString( CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)),
+    accessLevel = parseAccessLevel(optString( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)) ?: CalendarAccessLevel.NONE,
+    allowedReminders = parseAllowedReminders(optString( CalendarContract.Calendars.ALLOWED_REMINDERS)) ?: emptyList(),
+    allowedAttendeeTypes = parseAllowedAttendeeTypes(optString( CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)) ?: emptyList(),
     source = createSource(this)
   )
 }
@@ -49,9 +51,9 @@ fun Cursor.toAttendeeRecord(): AttendeeRecord {
   return AttendeeRecord(
     id = optString( CalendarContract.Attendees._ID),
     name = optString( CalendarContract.Attendees.ATTENDEE_NAME),
-    role = AttendeeRole.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)),
-    status = AttendeeStatus.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_STATUS)),
-    type = AttendeeType.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_TYPE)),
+    role = AttendeeRole.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_RELATIONSHIP) ?: 0),
+    status = AttendeeStatus.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_STATUS) ?: 0),
+    type = AttendeeType.fromAndroidValue(optInt( CalendarContract.Attendees.ATTENDEE_TYPE) ?: 0),
     email = optString( CalendarContract.Attendees.ATTENDEE_EMAIL)
   )
 }
@@ -74,9 +76,9 @@ fun Cursor.toEventRecord(contentResolver: ContentResolver): EventRecord {
     availability = EventAvailability.fromAndroidValue(optInt( CalendarContract.Events.AVAILABILITY)),
     timeZone = optString( CalendarContract.Events.EVENT_TIMEZONE),
     endTimeZone = optString( CalendarContract.Events.EVENT_END_TIMEZONE),
-    status = EventStatus.fromAndroidValue(optInt( CalendarContract.Events.STATUS)),
+    status = EventStatus.fromAndroidValue(optInt( CalendarContract.Events.STATUS) ?: 0),
     organizerEmail = optString( CalendarContract.Events.ORGANIZER),
-    accessLevel = EventAccessLevel.fromAndroidValue(optInt( CalendarContract.Events.ACCESS_LEVEL)),
+    accessLevel = EventAccessLevel.fromAndroidValue(optInt( CalendarContract.Events.ACCESS_LEVEL) ?: 0),
     guestsCanModify = optInt( CalendarContract.Events.GUESTS_CAN_MODIFY) != 0,
     guestsCanInviteOthers = optInt( CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0,
     guestsCanSeeGuests = optInt(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0,
@@ -94,10 +96,10 @@ private fun Cursor.optString(columnName: String): String? {
   }
 }
 
-private fun Cursor.optInt(columnName: String): Int {
+private fun Cursor.optInt(columnName: String): Int? {
   val index = this.getColumnIndex(columnName)
   return if (index == -1) {
-    0
+    null
   } else {
     this.getInt(index)
   }
@@ -109,16 +111,16 @@ private fun Cursor.getEventId(): String? {
 }
 
 private fun Cursor.getEventDates(): Pair<String?, String?> {
-  val startDate = if (columnCount > 3) getString(3) else null
-  val endDate = if (columnCount > 4) getString(4) else null
+  val startDate = getString(BEGIN_DATE_INDEX)
+  val endDate = getString(END_DATE_INDEX)
   return Pair(startDate, endDate)
 }
 
-private fun Cursor.getInstanceId(): String {
-  return if (columnCount > 18) optString( CalendarContract.Instances._ID) ?: "" else ""
+private fun Cursor.getInstanceId(): String? {
+  return optString( CalendarContract.Instances._ID)
 }
 
-private fun isModificationAllowed(accessLevel: Int): Boolean {
+private fun isModificationAllowed(accessLevel: Int?): Boolean {
   val allowedLevels = setOf(
     CalendarContract.Calendars.CAL_ACCESS_ROOT,
     CalendarContract.Calendars.CAL_ACCESS_OWNER,
@@ -128,46 +130,30 @@ private fun isModificationAllowed(accessLevel: Int): Boolean {
   return allowedLevels.contains(accessLevel)
 }
 
-private fun parseAccessLevel(accessLevelString: String?): CalendarAccessLevel {
-  if (accessLevelString.isNullOrBlank()) {
-    return CalendarAccessLevel.NONE
-  }
-
-  return try {
-    CalendarAccessLevel.entries.find { it.value == accessLevelString } ?: CalendarAccessLevel.NONE
-  } catch (_: Exception) {
-    CalendarAccessLevel.NONE
-  }
+private fun parseAccessLevel(accessLevelString: String?): CalendarAccessLevel? {
+  return CalendarAccessLevel.entries.find { it.value == accessLevelString }
 }
 
-private fun parseAllowedReminders(remindersString: String?): List<AlarmMethod> {
-  if (remindersString.isNullOrBlank()) {
-    return emptyList()
-  }
-
+private fun parseAllowedReminders(remindersString: String?): List<AlarmMethod>? {
   return remindersString
-    .split(",")
-    .filter { it.isNotBlank() }
-    .map { reminderString ->
+    ?.split(",")
+    ?.filter { it.isNotBlank() }
+    ?.map { reminderString ->
       try {
-        AlarmMethod.entries.find { it.value == reminderString } ?: AlarmMethod.DEFAULT
+      AlarmMethod.entries.find { it.value == reminderString } ?: AlarmMethod.DEFAULT
       } catch (_: Exception) {
         AlarmMethod.DEFAULT
       }
     }
 }
 
-private fun parseAllowedAttendeeTypes(attendeeTypesString: String?): List<AttendeeType> {
-  if (attendeeTypesString.isNullOrBlank()) {
-    return emptyList()
-  }
-
+private fun parseAllowedAttendeeTypes(attendeeTypesString: String?): List<AttendeeType>? {
   return attendeeTypesString
-    .split(",")
-    .filter { it.isNotBlank() }
-    .map { attendeeTypeString ->
+    ?.split(",")
+    ?.filter { it.isNotBlank() }
+    ?.map { attendeeTypeString ->
       try {
-        AttendeeType.entries.find { it.value == attendeeTypeString } ?: AttendeeType.NONE
+      AttendeeType.entries.find { it.value == attendeeTypeString } ?: AttendeeType.NONE
       } catch (_: Exception) {
         AttendeeType.NONE
       }
@@ -202,19 +188,9 @@ private fun extractRecurrenceRuleFromString(rrule: String?): RecurrenceRuleRecor
 }
 
 private fun parseEndDate(untilValue: String?): String? {
-  if (untilValue.isNullOrBlank()) {
-    return null
-  }
-
-  return try {
-    val date = rrFormat.parse(untilValue)
-    if (date == null) {
-      return null
-    }
-    dateFormat.format(date)
-  } catch (e: ParseException) {
-    throw CalendarParsingException("Couldn't parse the `endDate` property: $untilValue", e)
-  }
+  return untilValue?.takeIf { it.isNotBlank() }
+    ?.let { rrFormat.parse(it) }
+    ?.let { dateFormat.format(it) }
 }
 
 private fun parseFrequency(freqValue: String?): String? {

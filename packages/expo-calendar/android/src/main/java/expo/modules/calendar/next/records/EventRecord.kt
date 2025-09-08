@@ -115,7 +115,7 @@ enum class EventAvailability(val value: String) : Enumerable {
   }
 
   companion object {
-    fun fromAndroidValue(value: Int): EventAvailability? = when (value) {
+    fun fromAndroidValue(value: Int?): EventAvailability? = when (value) {
       CalendarContract.Events.AVAILABILITY_BUSY -> BUSY
       CalendarContract.Events.AVAILABILITY_FREE -> FREE
       CalendarContract.Events.AVAILABILITY_TENTATIVE -> TENTATIVE

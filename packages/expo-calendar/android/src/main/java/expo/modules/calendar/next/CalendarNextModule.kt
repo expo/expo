@@ -16,7 +16,6 @@ import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.CalendarRecord
 import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.RecurringEventOptions
-import expo.modules.calendar.next.exceptions.CalendarNotFoundException
 import expo.modules.calendar.next.permissions.CalendarPermissionsDelegate
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise

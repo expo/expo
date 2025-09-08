@@ -6,6 +6,7 @@ class CalendarNotFoundException(message: String, cause: Throwable? = null)
 
 class CalendarNotSupportedException(message: String, cause: Throwable? = null)
   : CodedException(message, cause)
+
 class CalendarCouldNotBeDeletedException(message: String, cause: Throwable? = null)
   : CodedException(message, cause)
 
