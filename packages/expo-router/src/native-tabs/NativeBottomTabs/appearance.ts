@@ -23,6 +23,7 @@ export function createStandardAppearanceFromOptions(
       blurEffect: options.blurEffect,
       badgeBackgroundColor: options.badgeBackgroundColor,
       titlePositionAdjustment: options.titlePositionAdjustment,
+      shadowColor: options.shadowColor,
     },
     baseStandardAppearance,
     ['normal', 'focused', 'selected']
@@ -48,6 +49,7 @@ export function createScrollEdgeAppearanceFromOptions(
       iconColor: options.iconColor,
       blurEffect: options.disableTransparentOnScrollEdge ? options.blurEffect : 'none',
       backgroundColor: options.disableTransparentOnScrollEdge ? options.backgroundColor : null,
+      shadowColor: options.disableTransparentOnScrollEdge ? options.shadowColor : 'transparent',
       badgeBackgroundColor: options.badgeBackgroundColor,
       titlePositionAdjustment: options.titlePositionAdjustment,
     },
@@ -70,6 +72,7 @@ export interface AppearanceStyle extends NativeTabsLabelStyle {
   backgroundColor?: ColorValue | null;
   blurEffect?: NativeTabsBlurEffect;
   badgeBackgroundColor?: ColorValue;
+  shadowColor?: ColorValue;
   titlePositionAdjustment?: {
     horizontal?: number;
     vertical?: number;
@@ -122,6 +125,7 @@ export function appendStyleToAppearance(
         ? undefined
         : (style.backgroundColor ?? appearance.tabBarBackgroundColor),
     tabBarBlurEffect: styleAppearance.tabBarBlurEffect ?? appearance.tabBarBlurEffect,
+    tabBarShadowColor: styleAppearance.tabBarShadowColor ?? appearance.tabBarShadowColor,
   };
 }
 
@@ -144,6 +148,7 @@ export function convertStyleToAppearance(
     compactInline: itemAppearance,
     tabBarBackgroundColor: style?.backgroundColor ?? undefined,
     tabBarBlurEffect: style?.blurEffect,
+    tabBarShadowColor: style?.shadowColor,
   };
 }
 

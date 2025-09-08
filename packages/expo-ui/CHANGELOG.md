@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.0-alpha.9 — 2025-09-03
+
+_This version does not introduce any user-facing changes._
+
 ## 0.2.0-alpha.8 — 2025-09-02
 
 ### 💡 Others
@@ -30,7 +34,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Add `animation` modifier. ([#38954](https://github.com/expo/expo/pull/38954) by [@nishan](https://github.com/intergalacticspacehighway))
-
 - [iOS] Add `GlassEffectContainer`, `glassEffectId` and `Namespaces` support. ([#39070](https://github.com/expo/expo/pull/39070) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes

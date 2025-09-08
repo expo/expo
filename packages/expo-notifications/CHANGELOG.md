@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.32.10 — 2025-09-04
+
+### 🐛 Bug fixes
+
+- [android] do not send faulty duplicate `TextInputNotificationResponse` events ([#39356](https://github.com/expo/expo/pull/39356) by [@vonovak](https://github.com/vonovak))
+- fix text response not present on some Android versions ([#39350](https://github.com/expo/expo/pull/39350) by [@vonovak](https://github.com/vonovak))
+- [ios] fix race condition in `setNotificationCategoryAsync` ([#39306](https://github.com/expo/expo/pull/39306) by [@vonovak](https://github.com/vonovak))
+
+## 0.32.9 — 2025-09-03
+
+_This version does not introduce any user-facing changes._
+
 ## 0.32.8 — 2025-09-02
 
 _This version does not introduce any user-facing changes._

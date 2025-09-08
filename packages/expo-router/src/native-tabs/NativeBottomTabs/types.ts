@@ -93,6 +93,14 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
+   * The color of the shadow when the tab is selected.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
+   *
+   * @platform iOS
+   */
+  shadowColor?: ColorValue;
+  /**
    * The color of the icon when the tab is selected.
    *
    * On iOS 26+ you can change the icon color in the scroll edge state.
@@ -294,6 +302,14 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
+  /**
+   * The color of the shadow.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
+   *
+   * @platform iOS
+   */
+  shadowColor?: ColorValue;
   /**
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
    *
@@ -497,6 +513,14 @@ export interface NativeTabsTriggerTabBarProps {
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
+  /**
+   * The color of the shadow when the tab is selected.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
+   *
+   * @platform iOS
+   */
+  shadowColor?: ColorValue;
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
    *

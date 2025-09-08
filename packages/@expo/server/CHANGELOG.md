@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.7.3 — 2025-09-03
+
+### 🎉 New features
+
+- [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
+
 ## 0.7.2 — 2025-08-16
 
 _This version does not introduce any user-facing changes._

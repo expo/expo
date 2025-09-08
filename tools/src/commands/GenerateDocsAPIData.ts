@@ -113,6 +113,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-web-browser': ['WebBrowser.ts'],
   '@expo/fingerprint': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
+  'expo-glass-effect': ['index.ts'],
 };
 
 const executeCommand = async (

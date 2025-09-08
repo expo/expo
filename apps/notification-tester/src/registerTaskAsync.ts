@@ -80,6 +80,11 @@ export const registerTask = () => {
           source: 'BACKGROUND_TASK_RESPONSE_RECEIVED',
           data: taskPayload,
         });
+        Notifications.dismissNotificationAsync(taskPayload.notification.request.identifier).catch(
+          (err) => {
+            console.error('Error dismissing notification:', err);
+          }
+        );
       } else {
         const categoryIdentifier = taskPayload.data.categoryId;
         const expoData = taskPayload.data.dataString && JSON.parse(taskPayload.data.dataString);

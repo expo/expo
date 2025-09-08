@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 54.0.0-preview.16 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- [Android] allow `expo/fetch` sending a `POST`, `PATCH` or `PUT` request without a body. ([#39363](https://github.com/expo/expo/pull/39363) by [@julian-dueck](https://github.com/julian-dueck))
+
+## 54.0.0-preview.15 — 2025-09-04
+
+### 💡 Others
+
+- Move `isLiquidGlassAvailable` function to `ExpoGlassEffect` ([#39349](https://github.com/expo/expo/pull/39349) by [@Ubax](https://github.com/Ubax))
+
+## 54.0.0-preview.14 — 2025-09-03
+
+### 💡 Others
+
+- load isLiquidGlassAvailable lazily ([#39361](https://github.com/expo/expo/pull/39361) by [@Ubax](https://github.com/Ubax))
+
 ## 54.0.0-preview.13 — 2025-09-02
 
 ### 🎉 New features

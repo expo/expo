@@ -12,7 +12,6 @@ struct DevMenuActions: View {
         icon: "arrow.clockwise",
         action: onReload
       )
-      .background(Color.expoSecondarySystemBackground)
       .cornerRadius(18)
 
       if isDevLauncherInstalled {
@@ -21,7 +20,6 @@ struct DevMenuActions: View {
           icon: "house.fill",
           action: onGoHome
         )
-        .background(Color.expoSecondarySystemBackground)
         .cornerRadius(18)
       }
     }

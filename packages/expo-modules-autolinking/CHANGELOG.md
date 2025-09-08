@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.0.8 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix `platformOptions` not being correctly assigned. ([#39445](https://github.com/expo/expo/pull/39445) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 3.0.7 — 2025-09-04
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.6 — 2025-09-02
 
 _This version does not introduce any user-facing changes._
