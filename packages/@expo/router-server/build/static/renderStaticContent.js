@@ -48,8 +48,8 @@ require("@expo/metro-runtime");
 const native_1 = require("@react-navigation/native");
 const Font = __importStar(require("expo-font/build/server"));
 const _ctx_1 = require("expo-router/_ctx");
-const ExpoRoot_1 = require("expo-router/build/ExpoRoot");
-const head_1 = require("expo-router/build/head");
+const ExpoRoot_1 = require("expo-router/src/ExpoRoot");
+const head_1 = require("expo-router/src/head");
 const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
 // @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)

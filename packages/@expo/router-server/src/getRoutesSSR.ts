@@ -1,9 +1,10 @@
 import type { RouteNode } from 'expo-router/build/Route';
+import type { RequireContext } from 'expo-router/build/types';
+
 import {
   getRoutes as getRoutesCore,
   type Options as OptionsCore,
-} from 'expo-router/build/getRoutesCore';
-import type { RequireContext } from 'expo-router/build/types';
+} from './getRoutesCore';
 
 export type Options = Omit<OptionsCore, 'getSystemRoute'>;
 /**
@@ -29,7 +30,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
             default: () => null,
           }),
           // Generate a fake file name for the directory
-          contextKey: 'expo-router/build/views/Navigator.js',
+          contextKey: 'expo-router/src/views/Navigator.js',
           route: '',
           generated: true,
           dynamic: null,
@@ -42,7 +43,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           }),
           route: '_sitemap',
           type: 'route',
-          contextKey: 'expo-router/build/views/Sitemap.js',
+          contextKey: 'expo-router/src/views/Sitemap.js',
           generated: true,
           internal: true,
           dynamic: null,
@@ -55,7 +56,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           }),
           type: 'route',
           route: '+not-found',
-          contextKey: 'expo-router/build/views/Unmatched.js',
+          contextKey: 'expo-router/src/views/Unmatched.js',
           generated: true,
           internal: true,
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
@@ -65,7 +66,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
         return {
           ...defaults,
           loadRoute() {
-            return require('expo-router/build/getRoutesRedirects').getRedirectModule(
+            return require('expo-router/src/getRoutesRedirects').getRedirectModule(
               redirectConfig
             );
           },
@@ -98,4 +99,4 @@ export function getExactRoutes(
   });
 }
 
-export { generateDynamic, extrapolateGroups } from 'expo-router/build/getRoutesCore';
+export { generateDynamic, extrapolateGroups } from './getRoutesCore';

@@ -8,10 +8,10 @@
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
 import type { LinkProps as ClassicLinkProps, LinkComponent } from 'expo-router';
-import type { Router as ClassicExpoRouterType } from 'expo-router/build/imperative-api';
-import type { Href } from 'expo-router/build/types.js';
+import type { Router as ClassicExpoRouterType } from 'expo-router/src/imperative-api';
 import type { ReactNode, AnchorHTMLAttributes } from 'react';
 import type { RouteProps } from './common.js';
+type Href = any;
 export declare function useRouter_UNSTABLE(): ClassicExpoRouterType & RouteProps & {
     forward: () => void;
     prefetch: (href: Href) => void;

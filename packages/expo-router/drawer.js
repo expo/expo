@@ -1,1 +1,1 @@
-module.exports = require('./build/layouts/Drawer');
+module.exports = require('./src/layouts/Drawer');

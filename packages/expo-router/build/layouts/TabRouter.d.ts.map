@@ -1,1 +1,0 @@
-{"version":3,"file":"TabRouter.d.ts","sourceRoot":"","sources":["../../src/layouts/TabRouter.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,OAAO,CAAC;AAE5C,OAAO,KAAK,EAAE,kBAAkB,EAAE,MAAM,cAAc,CAAC;AAEvD,eAAO,MAAM,iBAAiB,EAAE,WAAW,CACzC,cAAc,CAAC,kBAAkB,CAAC,CAAC,iBAAiB,CAAC,CA8CtD,CAAC"}

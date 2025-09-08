@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.router = exports.ErrorBoundary = exports.Unmatched = exports.useRouter = exports.Link = void 0;
+exports.router = exports.ErrorBoundary = exports.ErrorBoundaryProps = exports.Unmatched = exports.useRouter = exports.Link = void 0;
 exports.usePathname = usePathname;
 exports.useLocalSearchParams = useLocalSearchParams;
 exports.useGlobalSearchParams = useGlobalSearchParams;
@@ -104,7 +104,9 @@ function useUnstableGlobalHref() {
 var expo_router_1 = require("expo-router");
 Object.defineProperty(exports, "Unmatched", { enumerable: true, get: function () { return expo_router_1.Unmatched; } });
 var expo_router_2 = require("expo-router");
-Object.defineProperty(exports, "ErrorBoundary", { enumerable: true, get: function () { return expo_router_2.ErrorBoundary; } });
+Object.defineProperty(exports, "ErrorBoundaryProps", { enumerable: true, get: function () { return expo_router_2.ErrorBoundaryProps; } });
+var expo_router_3 = require("expo-router");
+Object.defineProperty(exports, "ErrorBoundary", { enumerable: true, get: function () { return expo_router_3.ErrorBoundary; } });
 exports.router = new Proxy({}, {
     get(target, prop, receiver) {
         throw new Error(`The router object is not available in React Server Components. Use the useRouter hook instead.`);

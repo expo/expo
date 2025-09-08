@@ -1,1 +1,0 @@
-{"version":3,"file":"useNextScreenId.d.ts","sourceRoot":"","sources":["../../../src/link/preview/useNextScreenId.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,OAAO,EAAE,MAAM,UAAU,CAAC;AAInC,OAAO,EAAE,IAAI,EAAE,MAAM,aAAa,CAAC;AAEnC,wBAAgB,eAAe,IAAI;IACjC;QAAE,YAAY,EAAE,MAAM,GAAG,SAAS,CAAC;QAAC,OAAO,EAAE,OAAO,EAAE,CAAA;KAAE;IACxD,CAAC,IAAI,EAAE,IAAI,KAAK,IAAI;CACrB,CAyCA"}

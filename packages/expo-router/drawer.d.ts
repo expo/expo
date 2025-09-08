@@ -1,2 +1,2 @@
-export * from './build/layouts/Drawer';
-export { default } from './build/layouts/Drawer';
+export * from './src/layouts/Drawer';
+export { default } from './src/layouts/Drawer';

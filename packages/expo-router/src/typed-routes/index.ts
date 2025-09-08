@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { getTypedRoutesDeclarationFile } from './generate';
-import { isTypedRoute } from '../matchers';
+import { isTypedRoute } from '@expo/router-server/src/matchers';
 import requireContext, {
   RequireContextPonyFill,
 } from '../testing-library/require-context-ponyfill';

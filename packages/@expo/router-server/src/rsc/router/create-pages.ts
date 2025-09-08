@@ -16,7 +16,7 @@ import type { RouteProps } from './common.js';
 import { unstable_defineRouter } from './defineRouter';
 import { joinPath, parsePathWithSlug, getPathMapping, path2regexp } from '../path';
 import type { PathSpec } from '../path';
-import type { BuildConfig } from '../server.js';
+import type { BuildConfig } from '../server';
 
 const hasPathSpecPrefix = (prefix: PathSpec, path: PathSpec) => {
   for (let i = 0; i < prefix.length; i++) {

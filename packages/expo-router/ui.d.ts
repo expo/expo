@@ -1,1 +1,1 @@
-export * from './build/ui';
+export * from './src/ui';

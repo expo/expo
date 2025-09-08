@@ -6,8 +6,8 @@
  */
 
 import { ctx } from 'expo-router/_ctx';
-import { getReactNavigationConfig } from 'expo-router/build/getReactNavigationConfig';
-import { getRoutes, Options } from 'expo-router/build/getRoutes';
+import { getReactNavigationConfig } from 'expo-router/src/getReactNavigationConfig';
+import { getRoutes, Options } from 'expo-router/src/getRoutes';
 
 import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';

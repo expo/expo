@@ -9,8 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
 exports.getManifest = getManifest;
 const _ctx_1 = require("expo-router/_ctx");
-const getReactNavigationConfig_1 = require("expo-router/build/getReactNavigationConfig");
-const getRoutes_1 = require("expo-router/build/getRoutes");
+const getReactNavigationConfig_1 = require("expo-router/src/getReactNavigationConfig");
+const getRoutes_1 = require("expo-router/src/getRoutes");
 const getServerManifest_1 = require("../getServerManifest");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 /**

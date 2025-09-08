@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { RouteNode, sortRoutes } from '../Route';
 import { store } from '../global-state/router-store';
-import { matchDynamicName } from '../matchers';
+import { matchDynamicName } from '@expo/router-server/src/matchers';
 import { Href } from '../types';
 
 const routeSegments = (route: RouteNode, parents: string[]) => [

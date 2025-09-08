@@ -1,1 +1,1 @@
-module.exports = require('./build/native-tabs');
+module.exports = require('./src/native-tabs');

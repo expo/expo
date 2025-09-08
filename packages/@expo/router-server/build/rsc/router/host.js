@@ -25,8 +25,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
 const expo_constants_1 = __importDefault(require("expo-constants"));
-const getDevServer_1 = require("expo-router/build/getDevServer");
-const url_1 = require("expo-router/build/head/url");
+const getDevServer_1 = require("expo-router/src/getDevServer");
+const url_1 = require("expo-router/src/head/url");
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
 const errors_1 = require("./errors");

@@ -18,7 +18,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = App;
 const expo_router_1 = require("expo-router");
-const Try_1 = require("expo-router/build/views/Try");
+const Try_1 = require("expo-router/src/views/Try");
 const react_1 = __importDefault(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const client_1 = require("./router/client");

@@ -1,1 +1,1 @@
-module.exports = require('./build/layouts/Tabs');
+module.exports = require('./src/layouts/Tabs');

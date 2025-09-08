@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.extrapolateGroups = exports.generateDynamic = void 0;
 exports.getRoutes = getRoutes;
 exports.getExactRoutes = getExactRoutes;
-const getRoutesCore_1 = require("expo-router/build/getRoutesCore");
+const getRoutesCore_1 = require("./getRoutesCore");
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -27,7 +27,7 @@ function getRoutes(contextModule, options = {}) {
                         default: () => null,
                     }),
                     // Generate a fake file name for the directory
-                    contextKey: 'expo-router/build/views/Navigator.js',
+                    contextKey: 'expo-router/src/views/Navigator.js',
                     route: '',
                     generated: true,
                     dynamic: null,
@@ -41,7 +41,7 @@ function getRoutes(contextModule, options = {}) {
                     }),
                     route: '_sitemap',
                     type: 'route',
-                    contextKey: 'expo-router/build/views/Sitemap.js',
+                    contextKey: 'expo-router/src/views/Sitemap.js',
                     generated: true,
                     internal: true,
                     dynamic: null,
@@ -55,7 +55,7 @@ function getRoutes(contextModule, options = {}) {
                     }),
                     type: 'route',
                     route: '+not-found',
-                    contextKey: 'expo-router/build/views/Unmatched.js',
+                    contextKey: 'expo-router/src/views/Unmatched.js',
                     generated: true,
                     internal: true,
                     dynamic: [{ name: '+not-found', deep: true, notFound: true }],
@@ -66,7 +66,7 @@ function getRoutes(contextModule, options = {}) {
                 return {
                     ...defaults,
                     loadRoute() {
-                        return require('expo-router/build/getRoutesRedirects').getRedirectModule(redirectConfig);
+                        return require('expo-router/src/getRoutesRedirects').getRedirectModule(redirectConfig);
                     },
                 };
             }
@@ -91,7 +91,7 @@ function getExactRoutes(contextModule, options = {}) {
         skipGenerated: true,
     });
 }
-var getRoutesCore_2 = require("expo-router/build/getRoutesCore");
+var getRoutesCore_2 = require("./getRoutesCore");
 Object.defineProperty(exports, "generateDynamic", { enumerable: true, get: function () { return getRoutesCore_2.generateDynamic; } });
 Object.defineProperty(exports, "extrapolateGroups", { enumerable: true, get: function () { return getRoutesCore_2.extrapolateGroups; } });
 //# sourceMappingURL=getRoutesSSR.js.map

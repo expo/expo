@@ -2,7 +2,7 @@
 
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
-import { getContextKey } from './matchers';
+import { getContextKey } from '@expo/router-server/src/matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import { type ErrorBoundaryProps } from './views/Try';
 

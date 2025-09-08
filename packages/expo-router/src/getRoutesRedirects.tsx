@@ -2,9 +2,9 @@ import * as Linking from 'expo-linking';
 import { createElement, useEffect } from 'react';
 
 import { cleanPath } from './fork/getStateFromPath-forks';
-import { RedirectConfig } from './getRoutesCore';
+import { RedirectConfig } from '@expo/router-server/src/getRoutesCore';
 import type { StoreRedirects } from './global-state/router-store';
-import { matchDynamicName } from './matchers';
+import { matchDynamicName } from '@expo/router-server/src/matchers';
 import { shouldLinkExternally } from './utils/url';
 
 export function applyRedirects(

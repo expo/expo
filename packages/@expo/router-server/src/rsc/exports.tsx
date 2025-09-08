@@ -1,4 +1,4 @@
-import type { Href } from 'expo-router';
+type Href = any; // TODO
 
 import { useRouter_UNSTABLE } from './router/client';
 import { Children } from './router/host';

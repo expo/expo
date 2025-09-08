@@ -9,7 +9,7 @@
  */
 import type { FunctionComponent, ReactNode } from 'react';
 import type { RouteProps } from './common.js';
-import type { BuildConfig } from '../server.js';
+import type { BuildConfig } from '../server';
 /**
  * Type version of `String.prototype.split()`. Splits the first string argument by the second string argument
  * @example
@@ -72,9 +72,9 @@ export declare function createPages(fn: (fns: {
 }, opts: {
     unstable_buildConfig: BuildConfig | undefined;
 }) => Promise<void>): {
-    renderEntries: import("../server.js").RenderEntries;
-    getBuildConfig: import("../server.js").GetBuildConfig | undefined;
-    getSsrConfig: import("../server.js").GetSsrConfig | undefined;
+    renderEntries: import("../server").RenderEntries;
+    getBuildConfig: import("../server").GetBuildConfig | undefined;
+    getSsrConfig: import("../server").GetSsrConfig | undefined;
 };
 export {};
 //# sourceMappingURL=create-pages.d.ts.map

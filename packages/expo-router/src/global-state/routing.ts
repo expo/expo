@@ -22,7 +22,7 @@ import {
 import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { matchDynamicName } from '../matchers';
+import { matchDynamicName } from '@expo/router-server/src/matchers';
 import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';

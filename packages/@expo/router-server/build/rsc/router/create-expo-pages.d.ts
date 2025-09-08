@@ -1,6 +1,6 @@
-import { Options as GetRoutesOptions } from 'expo-router/build/getRoutes';
 import { createPages } from './create-pages';
 import { EntriesDev } from '../server';
+type GetRoutesOptions = any;
 type CreatePagesFn = Parameters<typeof createPages>[0];
 type CreatePagesFns = Parameters<CreatePagesFn>[0];
 type CreatePagesOptions = Parameters<CreatePagesFn>[1] & {

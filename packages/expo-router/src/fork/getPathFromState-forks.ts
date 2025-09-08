@@ -2,7 +2,7 @@ import { validatePathConfig as RNValidatePathConfig, type Route } from '@react-n
 import * as queryString from 'query-string';
 
 import type { Options, State, StringifyConfig } from './getPathFromState';
-import { matchDynamicName, matchGroupName } from '../matchers';
+import { matchDynamicName, matchGroupName } from '@expo/router-server/src/matchers';
 
 export type ExpoOptions = {
   preserveDynamicRoutes?: boolean;

@@ -8,9 +8,69 @@
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
 import type { RouteNode } from 'expo-router/build/Route';
-import { getContextKey, matchGroupName } from 'expo-router/build/matchers';
-import { sortRoutes } from 'expo-router/build/sortRoutes';
-import { shouldLinkExternally } from 'expo-router/build/utils/url';
+
+import { shouldLinkExternally } from './getRoutesCore';
+import { getContextKey, matchGroupName } from './matchers';
+
+function sortDynamicConvention(a: any, b: any) {
+  if (a.deep && !b.deep) {
+    return 1;
+  }
+  if (!a.deep && b.deep) {
+    return -1;
+  }
+  return 0;
+}
+
+function sortRoutes(a: RouteNode, b: RouteNode): number {
+  if (a.dynamic && !b.dynamic) {
+    return 1;
+  }
+  if (!a.dynamic && b.dynamic) {
+    return -1;
+  }
+  if (a.dynamic && b.dynamic) {
+    if (a.dynamic.length !== b.dynamic.length) {
+      return b.dynamic.length - a.dynamic.length;
+    }
+
+    for (let i = 0; i < a.dynamic.length; i++) {
+      const aDynamic = a.dynamic[i];
+      const bDynamic = b.dynamic[i];
+
+      if (aDynamic.notFound && bDynamic.notFound) {
+        const s = sortDynamicConvention(aDynamic, bDynamic);
+        if (s) {
+          return s;
+        }
+      }
+      if (aDynamic.notFound && !bDynamic.notFound) {
+        return 1;
+      }
+      if (!aDynamic.notFound && bDynamic.notFound) {
+        return -1;
+      }
+
+      const s = sortDynamicConvention(aDynamic, bDynamic);
+      if (s) {
+        return s;
+      }
+    }
+    return 0;
+  }
+
+  const aIndex = a.route === 'index' || matchGroupName(a.route) != null;
+  const bIndex = b.route === 'index' || matchGroupName(b.route) != null;
+
+  if (aIndex && !bIndex) {
+    return -1;
+  }
+  if (!aIndex && bIndex) {
+    return 1;
+  }
+
+  return a.route.length - b.route.length;
+}
 
 // TODO: Share these types across cli, server, router, etc.
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {

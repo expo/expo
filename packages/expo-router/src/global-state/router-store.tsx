@@ -17,7 +17,7 @@ import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
-import { RedirectConfig } from '../getRoutesCore';
+import type { RedirectConfig } from '@expo/router-server/src/getRoutesCore';
 import { defaultRouteInfo, getRouteInfoFromState, UrlObject } from './routeInfo';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { RequireContext, type Href } from '../types';

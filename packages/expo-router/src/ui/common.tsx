@@ -154,6 +154,7 @@ export function triggersToScreens(
 
   const sortFn = sortRoutesWithInitial(initialRouteName);
 
+  // TODO: Isn't this presorted?
   const sortedConfigs = configs.sort((a, b) => {
     // External routes should be last. They will eventually be dropped
     if (a.type === 'external' && b.type === 'external') {

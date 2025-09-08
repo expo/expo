@@ -1,0 +1,42 @@
+'use client';
+import { createNavigatorFactory, useNavigationBuilder, } from '@react-navigation/native';
+import React, { use } from 'react';
+import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
+import { NativeTabsView } from './NativeTabsView';
+import { withLayoutContext } from '../..';
+import { shouldTabBeVisible } from './utils';
+import { getPathFromState } from '../../link/linking';
+// In Jetpack Compose, the default back behavior is to go back to the initial route.
+const defaultBackBehavior = 'initialRoute';
+export const NativeTabsContext = React.createContext(false);
+export function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...rest }) {
+    if (use(NativeTabsContext)) {
+        throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
+    }
+    const builder = useNavigationBuilder(NativeBottomTabsRouter, {
+        children,
+        backBehavior,
+        screenOptions: {
+            disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
+        },
+    });
+    const { state, descriptors } = builder;
+    const { routes } = state;
+    let focusedIndex = state.index;
+    const isAnyRouteFocused = routes[focusedIndex].key &&
+        descriptors[routes[focusedIndex].key] &&
+        shouldTabBeVisible(descriptors[routes[focusedIndex].key].options);
+    if (!isAnyRouteFocused) {
+        if (process.env.NODE_ENV !== 'production') {
+            throw new Error(`The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${getPathFromState(state)}"`);
+        }
+        // Set focusedIndex to the first visible tab
+        focusedIndex = routes.findIndex((route) => shouldTabBeVisible(descriptors[route.key].options));
+    }
+    return (<NativeTabsContext value>
+      <NativeTabsView builder={builder} {...rest} focusedIndex={focusedIndex}/>
+    </NativeTabsContext>);
+}
+const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
+export const NativeTabsNavigatorWithContext = withLayoutContext(createNativeTabNavigator().Navigator, undefined, true);
+//# sourceMappingURL=NativeBottomTabsNavigator.js.map

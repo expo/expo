@@ -12,11 +12,10 @@
 
 import { Slot as ReactSlot } from '@radix-ui/react-slot';
 import type { LinkProps as ClassicLinkProps, LinkComponent } from 'expo-router';
-import type { NavigationOptions } from 'expo-router/build/global-state/routing.js';
-import type { Router as ClassicExpoRouterType } from 'expo-router/build/imperative-api';
-import { resolveHref } from 'expo-router/build/link/href';
-import { useInteropClassName, useHrefAttrs } from 'expo-router/build/link/useLinkHooks';
-import type { Href } from 'expo-router/build/types.js';
+import type { NavigationOptions } from 'expo-router/src/global-state/routing';
+import type { Router as ClassicExpoRouterType } from 'expo-router/src/imperative-api';
+import { resolveHref } from 'expo-router/src/link/href';
+import { useInteropClassName, useHrefAttrs } from 'expo-router/src/link/useLinkHooks';
 import {
   startTransition,
   useCallback,
@@ -45,6 +44,8 @@ import { Text } from 'react-native';
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
 import type { RouteProps } from './common.js';
 import { prefetchRSC, Root, Slot, useRefetch } from './host.js';
+
+type Href = any;
 
 const normalizeRoutePath = (path: string) => {
   for (const suffix of ['/', '/index.html']) {

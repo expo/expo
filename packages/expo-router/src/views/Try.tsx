@@ -1,6 +1,6 @@
 'use client';
 
-import { MetroServerError } from '@expo/router-server/build/rsc/router/errors';
+import type { MetroServerError } from '@expo/router-server/build/rsc/router/errors';
 import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
 
 import * as SplashScreen from './Splash';

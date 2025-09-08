@@ -1,0 +1,94 @@
+import { getRoutes as getRoutesCore } from '@expo/router-server/src/getRoutesCore';
+/**
+ * Given a Metro context module, return an array of nested routes.
+ *
+ * This is a two step process:
+ *  1. Convert the RequireContext keys (file paths) into a directory tree.
+ *      - This should extrapolate array syntax into multiple routes
+ *      - Routes are given a specificity score
+ *  2. Flatten the directory tree into routes
+ *      - Routes in directories without _layout files are hoisted to the nearest _layout
+ *      - The name of the route is relative to the nearest _layout
+ *      - If multiple routes have the same name, the most specific route is used
+ */
+export function getRoutes(contextModule, options = {}) {
+    return getRoutesCore(contextModule, {
+        getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
+            if (route === '' && type === 'layout') {
+                // Root layout when no layout is defined.
+                return {
+                    type: 'layout',
+                    loadRoute: () => ({
+                        default: require('./views/Navigator')
+                            .DefaultNavigator,
+                    }),
+                    // Generate a fake file name for the directory
+                    contextKey: 'expo-router/build/views/Navigator.js',
+                    route: '',
+                    generated: true,
+                    dynamic: null,
+                    children: [],
+                };
+            }
+            else if (route === '_sitemap' && type === 'route') {
+                return {
+                    loadRoute() {
+                        const { Sitemap, getNavOptions } = require('./views/Sitemap');
+                        return { default: Sitemap, getNavOptions };
+                    },
+                    route: '_sitemap',
+                    type: 'route',
+                    contextKey: 'expo-router/build/views/Sitemap.js',
+                    generated: true,
+                    internal: true,
+                    dynamic: null,
+                    children: [],
+                };
+            }
+            else if (route === '+not-found' && type === 'route') {
+                return {
+                    loadRoute() {
+                        return { default: require('./views/Unmatched').Unmatched };
+                    },
+                    type: 'route',
+                    route: '+not-found',
+                    contextKey: 'expo-router/build/views/Unmatched.js',
+                    generated: true,
+                    internal: true,
+                    dynamic: [{ name: '+not-found', deep: true, notFound: true }],
+                    children: [],
+                };
+            }
+            else if (type === 'redirect' && redirectConfig && defaults) {
+                return {
+                    ...defaults,
+                    loadRoute() {
+                        return require('./getRoutesRedirects').getRedirectModule(redirectConfig);
+                    },
+                };
+            }
+            else if (type === 'rewrite' && rewriteConfig && defaults) {
+                // Rewrite routes only work in a server context and have no equivalent on native or
+                // static exports
+                return {
+                    ...defaults,
+                    loadRoute() {
+                        return {
+                            default: contextModule(rewriteConfig.destinationContextKey).default,
+                        };
+                    },
+                };
+            }
+            throw new Error(`Unknown system route: ${route} and type: ${type} and redirectConfig: ${redirectConfig} and rewriteConfig: ${rewriteConfig}`);
+        },
+        ...options,
+    });
+}
+export function getExactRoutes(contextModule, options = {}) {
+    return getRoutes(contextModule, {
+        ...options,
+        skipGenerated: true,
+    });
+}
+export { generateDynamic, extrapolateGroups } from '@expo/router-server/src/getRoutesCore';
+//# sourceMappingURL=getRoutes.js.map

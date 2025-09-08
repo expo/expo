@@ -1,1 +1,1 @@
-module.exports = require('./build/layouts/Stack');
+module.exports = require('./src/layouts/Stack');

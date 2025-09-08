@@ -1,6 +1,6 @@
 // This file runs in Node.js environments.
 // no relative imports
-import { type RequireContext } from 'expo-router/build/types';
+import type { RequireContext } from 'expo-router/build/types';
 
 import { type Options, getRoutes } from './getRoutesSSR';
 import { getServerManifest } from './getServerManifest';

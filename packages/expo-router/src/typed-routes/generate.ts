@@ -1,6 +1,6 @@
 import { RouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
-import { removeSupportedExtensions } from '../matchers';
+import { removeSupportedExtensions } from '@expo/router-server/src/matchers';
 import { RequireContext } from '../types';
 
 // /[...param1]/ - Match [...param1]

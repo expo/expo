@@ -12,8 +12,8 @@
 'use client';
 
 import Constants from 'expo-constants';
-import { getDevServer } from 'expo-router/build/getDevServer';
-import { getOriginFromConstants } from 'expo-router/build/head/url';
+import { getDevServer } from 'expo-router/src/getDevServer';
+import { getOriginFromConstants } from 'expo-router/src/head/url';
 import {
   createContext,
   createElement,

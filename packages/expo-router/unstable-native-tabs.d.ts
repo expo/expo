@@ -1,1 +1,1 @@
-export * from './build/native-tabs';
+export * from './src/native-tabs';

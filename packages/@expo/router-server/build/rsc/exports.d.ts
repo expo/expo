@@ -1,4 +1,4 @@
-import type { Href } from 'expo-router';
+type Href = any;
 import { useRouter_UNSTABLE } from './router/client';
 export { Link } from './router/client';
 export * from './router/errors';

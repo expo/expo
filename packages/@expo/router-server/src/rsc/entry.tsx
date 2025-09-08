@@ -8,7 +8,7 @@
 'use client';
 
 import { ErrorBoundary, ErrorBoundaryProps } from 'expo-router';
-import { Try } from 'expo-router/build/views/Try';
+import { Try } from 'expo-router/src/views/Try';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
