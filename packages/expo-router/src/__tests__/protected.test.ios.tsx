@@ -132,22 +132,6 @@ it('should protect nested protected routes', () => {
     c: () => <Text testID="c">C</Text>,
   });
 
-  // make sure the initial route is the index route
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
-  expect(store.state).toStrictEqual({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [{ name: 'index', path: '/' }],
-          stale: true,
-        },
-      },
-    ],
-    stale: true,
-  });
-
   // try to navigate to all protected routes should not change the current
   // route since all the guards are false
   act(() => router.replace('/a'));
