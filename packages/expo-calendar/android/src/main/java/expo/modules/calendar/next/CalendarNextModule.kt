@@ -346,6 +346,7 @@ class CalendarNextModule : Module() {
       }
     }
 
+    // Available only on iOS
     Class(ExpoCalendarReminder::class) {
       Constructor { id: String ->
         ExpoCalendarReminder(id)

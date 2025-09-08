@@ -136,7 +136,7 @@ public final class CalendarNextModule: Module {
       return ExpoCalendarReminder(reminder: reminder)
     }
 
-    AsyncFunction("getCalendarPermissionsAsync") { (promise: Promise) in
+    AsyncFunction("getCalendarPermissions") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         CalendarPermissionsRequester.self,
         resolve: promise.resolver,
@@ -144,7 +144,7 @@ public final class CalendarNextModule: Module {
       )
     }
 
-    AsyncFunction("requestCalendarPermissionsAsync") { (promise: Promise) in
+    AsyncFunction("requestCalendarPermissions") { (promise: Promise) in
       appContext?.permissions?.askForPermission(
         usingRequesterClass: CalendarPermissionsRequester.self,
         resolve: promise.resolver,
@@ -152,7 +152,7 @@ public final class CalendarNextModule: Module {
       )
     }
 
-    AsyncFunction("getRemindersPermissionsAsync") { (promise: Promise) in
+    AsyncFunction("getRemindersPermissions") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         RemindersPermissionRequester.self,
         resolve: promise.resolver,
@@ -160,7 +160,7 @@ public final class CalendarNextModule: Module {
       )
     }
 
-    AsyncFunction("requestRemindersPermissionsAsync") { (promise: Promise) in
+    AsyncFunction("requestRemindersPermissions") { (promise: Promise) in
       appContext?.permissions?.askForPermission(
         usingRequesterClass: RemindersPermissionRequester.self,
         resolve: promise.resolver,
@@ -429,7 +429,7 @@ public final class CalendarNextModule: Module {
         return serialize(attendee: organizer)
       }
 
-      AsyncFunction("openInCalendarAsync") { (expoEvent: ExpoCalendarEvent, options: OpenInCalendarOptions?, promise: Promise) in
+      AsyncFunction("openInCalendar") { (expoEvent: ExpoCalendarEvent, options: OpenInCalendarOptions?, promise: Promise) in
         try calendarPermissions?.checkCalendarPermissions()
 
         let startDate = parse(date: options?.instanceStartDate)
@@ -464,7 +464,7 @@ public final class CalendarNextModule: Module {
         currentVc.present(navController, animated: true)
       }.runOnQueue(.main)
 
-      AsyncFunction("editInCalendarAsync") { (expoEvent: ExpoCalendarEvent, _: OpenInCalendarOptions?, promise: Promise) in
+      AsyncFunction("editInCalendar") { (expoEvent: ExpoCalendarEvent, _: OpenInCalendarOptions?, promise: Promise) in
         try calendarPermissions?.checkCalendarPermissions()
 
         guard let event = expoEvent.event else {
@@ -474,7 +474,7 @@ public final class CalendarNextModule: Module {
         try presentEventEditViewController(event: event, promise: promise)
       }.runOnQueue(.main)
 
-      Function("getOccurrence") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
+      Function("getOccurrenceSync") { (expoEvent: ExpoCalendarEvent, options: RecurringEventOptions?) throws in
         try calendarPermissions?.checkCalendarPermissions()
         guard let ekEvent = try expoEvent.getOccurrence(options: options) else {
           throw EventNotFoundException(options?.instanceStartDate ?? "")
@@ -483,7 +483,7 @@ public final class CalendarNextModule: Module {
         return ExpoCalendarEvent(event: ekEvent, span: span)
       }
 
-      AsyncFunction("getAttendeesAsync") { (expoEvent: ExpoCalendarEvent) throws in
+      AsyncFunction("getAttendees") { (expoEvent: ExpoCalendarEvent) throws in
         try calendarPermissions?.checkCalendarPermissions()
         return try expoEvent.getAttendees()
       }
@@ -605,6 +605,7 @@ public final class CalendarNextModule: Module {
       }
     }
 
+    // Available only on Android
     Class(ExpoCalendarAttendee.self) {}
   }
 

@@ -345,7 +345,7 @@ export declare class ExpoCalendarEvent {
    * @return A promise which resolves with information about the dialog result.
    * @header systemProvidedUI
    */
-  openInCalendarAsync(
+  openInCalendar(
     params?: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<OpenEventDialogResult>;
 
@@ -354,7 +354,7 @@ export declare class ExpoCalendarEvent {
    * @return A promise which resolves with information about the dialog result.
    * @header systemProvidedUI
    */
-  editInCalendarAsync(
+  editInCalendar(
     params?: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
@@ -364,13 +364,13 @@ export declare class ExpoCalendarEvent {
    * @return An event instance.
    * @platform ios
    */
-  getOccurrence(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
+  getOccurrenceSync(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
 
   /**
    * Gets all attendees for a given event (or instance of a recurring event).
    * @return An array of [`Attendee`](#attendee) associated with the specified event.
    */
-  getAttendeesAsync(): Promise<ExpoCalendarAttendee[]>;
+  getAttendees(): Promise<ExpoCalendarAttendee[]>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,

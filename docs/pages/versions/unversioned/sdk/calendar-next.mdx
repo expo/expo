@@ -92,9 +92,9 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 const BasicUsage = () => {
   useEffect(() => {
     (async () => {
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      const { status } = await Calendar.requestCalendarPermissions();
       if (status === 'granted') {
-        const calendars = Calendar.getCalendarsNext(Calendar.EntityTypes.EVENT);
+        const calendars = Calendar.getCalendars(Calendar.EntityTypes.EVENT);
         console.log('Here are all your calendars:');
         console.log(JSON.stringify(calendars));
       }
@@ -110,7 +110,7 @@ const BasicUsage = () => {
 };
 
 async function createCalendar() {
-  const newCalendar = await Calendar.createCalendarNext({
+  const newCalendar = await Calendar.createCalendar({
     title: 'Expo Calendar',
     color: 'blue',
     entityType: Calendar.EntityTypes.EVENT,
