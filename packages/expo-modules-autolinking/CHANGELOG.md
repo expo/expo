@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `platformOptions` not being correctly assigned.
+
 ### 💡 Others
 
 ## 3.0.7 — 2025-09-04
