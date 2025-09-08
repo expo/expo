@@ -27,11 +27,11 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       stopObservingContactChanges()
     }
 
-    OnStartObserving {
+    OnStartObserving(onContactsChangeEventName) {
       startObservingContactChanges()
     }
 
-    OnStopObserving {
+    OnStopObserving(onContactsChangeEventName) {
       stopObservingContactChanges()
     }
 
