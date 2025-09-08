@@ -1,7 +1,7 @@
 ---
-title: Integrating a React Native view into existing native apps
-sidebar_title: Integrated approach
-description: Add Expo and React Native to existing native apps using the "integrated" approach.
+title: Get started
+sidebar_title: Get started
+description: A guide for adding Expo and React Native to existing native apps and adding a first view component.
 hideTOC: true
 ---
 
@@ -11,13 +11,15 @@ import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
-React Native offers a flexible development strategy. Whether you're launching a new app or looking to integrate an existing native app, it provides a powerful solution. You can leverage its capabilities to introduce new features or views incrementally, allowing your team to adopt modern, cross-platform development without a complete rewrite.
+React Native and Expo are flexible and can be adopted incrementally, one screen (or even one view) at a time. You might even find that using Expo in this way is the best fit for your particular application, or you may end up slowly adopting it across more surfaces in your app. Either way, this flexibility allows enables developers to adopt modern, cross-platform tools in their native apps immediately instead of risking a complete rewrite.
 
-This guide will walk you through the steps to add a React Native view into an existing native app using the "integrated" approach.
+This guide will walk you through the steps to add a React Native view into an existing native app. The approach covered here is what we call the "integrated" approach, because React Native and Expo are integrated in the same way that you would any other library.
+
+Another popular technique is what we call the "isolated" approach, where your Expo app is packaged as a library and treated as a black box by the main existing application. A guide for the isolated approach will be available shortly. Now, back to using the "integrated" approach in your existing native app.
 
 ## Prerequisites
 
-To integrate React Native into your existing application, you'll need to set up a JavaScript development environment. This includes installing Node.js to run the Expo CLI and Yarn to manage the project's JavaScript dependencies.
+To integrate React Native into your existing application, you'll need to set up a JavaScript development environment. This includes installing Node.js to run Expo CLI and Yarn to manage the project's JavaScript dependencies.
 
 - [Node.js (LTS)](https://nodejs.org/en/): The runtime to execute JavaScript code and Expo CLI.
 - [Yarn](https://yarnpkg.com/): A package manager for installing and managing JavaScript dependencies.
@@ -38,8 +40,8 @@ This command creates a new directory named **exp** that contains your new Expo p
 
 ## Set up your project structure
 
-A standard React Native project places native code in **android** and **ios** directories. This structure may not be feasible when integrating with a large, existing native app.
-This guide covers two approaches: moving your native project files into the standard directories or setting up a monorepo.
+A standard React Native project places native code in **android** and **ios** directories. This structure may not be ideal or even feasible when integrating with a large, existing native app.
+There are two possible ways to accommodate this constraint: either move your native project files into the standard **android** and **ios** directories, or set up a monorepo.
 
 ### Approach 1: Move your existing native project files
 
