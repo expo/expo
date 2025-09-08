@@ -15,6 +15,7 @@ import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
+import { createTempFilePath } from '../../utils/createTempPath';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
@@ -23,7 +24,6 @@ import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-import { createTempFilePath } from '../../utils/createTempPath';
 
 const debug = require('debug')('expo:run:ios');
 

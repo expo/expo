@@ -342,6 +342,8 @@ export async function exportAppAsync(
             deployScript: getServerDeploymentScript(projectConfig.pkg.scripts),
           });
 
+          console.log(`Deployed server to ${deployedServerUrl}`);
+
           saveDeploymentUrl({
             deployedServerUrl,
             userDefinedServerUrl,

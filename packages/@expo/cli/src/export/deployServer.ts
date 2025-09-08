@@ -11,6 +11,7 @@ import { disableNetwork } from '../api/settings';
 import { Log } from '../log';
 import { isSpawnResultError } from '../start/platforms/ios/xcrun';
 import { env } from '../utils/env';
+import { EOL } from 'node:os';
 
 const debug = require('debug')('expo:export:server');
 
@@ -74,9 +75,16 @@ export async function runServerDeployCommandAsync(
 
       results = await spawnAsync(
         'npm',
-        ['run', deployScript.scriptName, `--export-dir=${exportDir}`],
+        ['run', deployScript.scriptName, '--', `--export-dir=${exportDir}`],
         spawnOptions
       );
+
+      // Trim the stdout to remove npm run command name output '> native:deploy'
+      const lines = results.stdout.split(EOL);
+      const startIndex = lines.findIndex((line) => line.trim().startsWith('> native:deploy'));
+      if (startIndex !== -1 && startIndex + 2 < lines.length) {
+        results.stdout = lines.slice(startIndex + 2).join(EOL);
+      }
     } else {
       logInXcode('Deploying server to link with client');
 
@@ -88,16 +96,16 @@ export async function runServerDeployCommandAsync(
       }
 
       debug('Server deployment stdout:', results.stdout);
+    }
 
-      // stdout is parsed as JSON
-      if (results.stderr) {
-        // send stderr to stdout if the command succeeded
-        // this avoids unexpected err output in eas update
-        if (results.status === 0) {
-          process.stdout.write(results.stderr);
-        } else {
-          process.stderr.write(results.stderr);
-        }
+    // stdout is parsed as JSON
+    if (results.stderr) {
+      // send stderr to stdout if the command succeeded
+      // this avoids unexpected err output in eas update
+      if (results.status === 0) {
+        process.stdout.write(results.stderr);
+      } else {
+        process.stderr.write(results.stderr);
       }
     }
 
@@ -110,7 +118,8 @@ export async function runServerDeployCommandAsync(
       //   "url": "https://sep30--8a1pwbv6c5.staging.expo.app"
       // }
       json = JSON.parse(results.stdout.trim());
-    } catch {
+    } catch (error) {
+      console.error(error);
       logMetroErrorInXcode(
         projectRoot,
         `Failed to parse server deployment JSON output. Check the logs for more information: ${logPath}`
