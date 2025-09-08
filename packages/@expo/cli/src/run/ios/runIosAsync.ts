@@ -1,4 +1,3 @@
-import { getConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -54,7 +53,6 @@ export async function runIosAsyncWithoutTmpConfig(projectRoot: string, options: 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
 
-  const generatedConfigPath = createTempFilePath();
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
     const localPath = await resolveBuildCache({
       projectRoot,
@@ -113,7 +111,6 @@ export async function runIosAsyncWithoutTmpConfig(projectRoot: string, options: 
         platform: 'ios',
         assetsDest: path.join(options.binary, 'assets'),
         bundleOutput: possibleBundleOutput,
-        generatedConfigPath,
       });
     } else {
       Log.warn('Bundle output not found at expected location:', possibleBundleOutput);

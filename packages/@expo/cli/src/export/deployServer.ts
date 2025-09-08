@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import { string, boolish } from 'getenv';
 import { execSync } from 'node:child_process';
+import { EOL } from 'node:os';
 import path from 'path';
 
 import { logInXcode, logMetroErrorInXcode, warnInXcode } from './xcodeCompilerLogger';
@@ -11,7 +12,6 @@ import { disableNetwork } from '../api/settings';
 import { Log } from '../log';
 import { isSpawnResultError } from '../start/platforms/ios/xcrun';
 import { env } from '../utils/env';
-import { EOL } from 'node:os';
 
 const debug = require('debug')('expo:export:server');
 
