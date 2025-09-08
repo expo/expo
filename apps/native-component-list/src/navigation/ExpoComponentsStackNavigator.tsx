@@ -178,6 +178,12 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoCssViewScreen'));
+    },
+    name: 'Expo Css View',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Reanimated/ReanimatedScreen'));
     },
     name: 'Reanimated',

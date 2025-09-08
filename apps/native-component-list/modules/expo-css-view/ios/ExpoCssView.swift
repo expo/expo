@@ -37,7 +37,7 @@ class ExpoCssView: ExpoView {
     backdrop.frame = self.bounds
     backdrop.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-    self.insertSubview(backdrop, at: 0)
+    self.addSubview(backdrop)
     self.backdropView = backdrop
     
     if let backdropSubview = findBackdropSubview(in: backdrop) {
