@@ -139,19 +139,24 @@ private fun createSource(cursor: Cursor): Source {
 
 private fun serializeAlarms(contentResolver: ContentResolver, eventId: String): MutableList<AlarmRecord>? {
   val alarms = mutableListOf<AlarmRecord>()
+  val projection = arrayOf(
+    CalendarContract.Reminders.MINUTES,
+    CalendarContract.Reminders.METHOD
+  )
   val cursor = CalendarContract.Reminders.query(
     contentResolver,
     eventId.toLong(),
-    arrayOf(
-      CalendarContract.Reminders.MINUTES,
-      CalendarContract.Reminders.METHOD
-    )
+    projection
   )
+  
+  val minutesIndex = cursor.getColumnIndex(CalendarContract.Reminders.MINUTES)
+  val methodIndex = cursor.getColumnIndex(CalendarContract.Reminders.METHOD)
+  
   while (cursor.moveToNext()) {
-    val method = cursor.getInt(1)
+    val method = cursor.getInt(methodIndex)
     val thisAlarm = AlarmRecord(
       // Android stores positive minutes, our API expects negative (before event)
-      relativeOffset = -cursor.getInt(0),
+      relativeOffset = -cursor.getInt(minutesIndex),
       method = AlarmMethod.fromAndroidValue(method)
     )
     alarms.add(thisAlarm)

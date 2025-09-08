@@ -11,7 +11,6 @@ import expo.modules.calendar.next.exceptions.EventDateTimeInvalidException
 import java.text.SimpleDateFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 
 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
   timeZone = TimeZone.getTimeZone("GMT")
@@ -98,15 +97,19 @@ private fun setDateInCalendar(calendar: Calendar, date: Any) {
 }
 
 internal fun removeRemindersForEvent(contentResolver: ContentResolver, eventID: Int) {
+  val projection = arrayOf(
+    CalendarContract.Reminders._ID
+  )
   val cursor = CalendarContract.Reminders.query(
     contentResolver,
     eventID.toLong(),
-    arrayOf(
-      CalendarContract.Reminders._ID
-    )
+    projection
   )
+  
+  val idIndex = cursor.getColumnIndex(CalendarContract.Reminders._ID)
+  
   while (cursor.moveToNext()) {
-    val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
+    val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(idIndex))
     contentResolver.delete(reminderUri, null, null)
   }
 }

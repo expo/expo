@@ -633,15 +633,19 @@ class CalendarModule : Module() {
 
   @Throws(SecurityException::class)
   private fun removeRemindersForEvent(eventID: Int) {
+    val projection = arrayOf(
+      CalendarContract.Reminders._ID
+    )
     val cursor = CalendarContract.Reminders.query(
       contentResolver,
       eventID.toLong(),
-      arrayOf(
-        CalendarContract.Reminders._ID
-      )
+      projection
     )
+    
+    val idIndex = cursor.getColumnIndex(CalendarContract.Reminders._ID)
+    
     while (cursor.moveToNext()) {
-      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
+      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(idIndex))
       contentResolver.delete(reminderUri, null, null)
     }
   }
