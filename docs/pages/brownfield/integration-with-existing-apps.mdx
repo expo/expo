@@ -34,9 +34,9 @@ Learn more from the [Set up environment guide](/get-started/set-up-your-environm
 
 First, create an Expo project inside your existing native project's root directory.
 
-<Terminal cmd={['$ npx create-expo-app exp']} />
+<Terminal cmd={['$ npx create-expo-app my-project']} />
 
-This command creates a new directory named **exp** that contains your new Expo project. While you can name the project anything, this guide uses **exp** for consistency. The new project includes an example TypeScript application to help you get started.
+This command creates a new directory named **my-project** that contains your new Expo project. While you can name the project anything, this guide uses **my-project** for consistency. The new project includes an example TypeScript application to help you get started.
 
 ## Set up your project structure
 
@@ -51,12 +51,14 @@ Move your existing Android and iOS projects to the **android** or **ios** sub-di
 
 <Tab label="Android">
 
-<Terminal cmd={['$ mkdir exp/android', '$ mv /path/to/your/android-project exp/android/']} />
+<Terminal
+  cmd={['$ mkdir my-project/android', '$ mv /path/to/your/android-project my-project/android/']}
+/>
 
 </Tab>
 <Tab label="iOS">
 
-<Terminal cmd={['$ mkdir exp/ios', '$ mv /path/to/your/ios-project exp/ios/']} />
+<Terminal cmd={['$ mkdir my-project/ios', '$ mv /path/to/your/ios-project my-project/ios/']} />
 
 </Tab>
 </Tabs>
@@ -71,11 +73,11 @@ Setting up a monorepo will ensure that Android and iOS scripts will be able to i
 {
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["exp"]
+  "workspaces": ["my-project"]
 }
 ```
 
-Then run `yarn install` to install the dependencies. This will ensure **node_modules** are installed at the root of your project, and that native scripts can interact with React Native code. Make sure to change `["exp"]` to the name of the Expo project you created in the previous step.
+Then run `yarn install` to install the dependencies. This will ensure **node_modules** are installed at the root of your project, and that native scripts can interact with React Native code. Make sure to change `["my-project"]` to the name of the Expo project you created in the previous step.
 
 > **info** Opting for a monorepo requires you to configure a custom project root, in Gradle/CocoaPods. This will be covered in the next sections.
 
@@ -87,7 +89,7 @@ Then run `yarn install` to install the dependencies. This will ensure **node_mod
 To integrate React Native on Android, you need to configure the native project by modifying the following files:
 
 - **Gradle files**: **settings.gradle**, top-level **build.gradle**, **app/build.gradle**, and **gradle.properties** to add the React Native Gradle Plugin (RNGP) and other properties.
-- **AndroidManifest.xml**: To add necessary permissions.
+- **AndroidManifest.xml**: To add necessary permissions. ([Learn more](#configuring-your-manifest))
 - **MainActivity**: To load your React Native application.
 
 ### Configuring Gradle
@@ -139,7 +141,7 @@ If you're using a custom folder structure, you need to explicitly set your proje
 
 ```diff settings.gradle
 +expoAutolinking {
-+  projectRoot = new File(rootDir, "exp")
++  projectRoot = new File(rootDir, "my-project")
 +}
 
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
@@ -443,7 +445,7 @@ If your project already has a **Podfile**, you'll need to manually merge the Rea
 If you're using a custom folder structure, you need to explicitly set your project root in **Podfile** for autolinking to work. Modify the following lines in your **Podfile**:
 
 ```diff Podfile
-+project_root = File.join(__dir__, 'exp')
++project_root = File.join(__dir__, 'my-project')
 +ENV['PROJECT_ROOT'] = project_root
 
 target 'HelloWorld' do
@@ -485,7 +487,7 @@ Running the `pod` command will integrate the React Native code into your app, al
 <Step label="1">
 After the `pod install` command, CocoaPods will create an Xcode workspace **\{Project\}.xcworkspace**, you will need to open the **xcworkspace** project than the traditional **xcodeproj** project. Alternatively, you can use the following command to open the project:
 
-<Terminal cmd={['$ xed exp/ios']} />
+<Terminal cmd={['$ xed my-project/ios']} />
 
 In the Xcode project navigator, select your project and then select
 your app target under `TARGETS`. In **Build Settings**, using the search bar, search for
