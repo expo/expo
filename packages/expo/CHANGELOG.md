@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove bindReactNativeFactory function ([#39418](https://github.com/expo/expo/pull/39418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 54.0.0-preview.15 — 2025-09-04
 
 ### 💡 Others
