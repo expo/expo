@@ -53,7 +53,12 @@ export function HomeScreen(props: NavigationProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ backgroundColor: theme.background.default, height: insets.top }} />
+      <View
+        style={{
+          backgroundColor: theme.background.default,
+          height: insets.top,
+        }}
+      />
       <HomeScreenView
         theme={themeType}
         {...props}

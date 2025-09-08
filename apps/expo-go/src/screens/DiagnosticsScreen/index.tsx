@@ -1,10 +1,10 @@
 import { spacing } from '@expo/styleguide-native';
 import { useTheme } from '@react-navigation/native';
 import {
-  createStackNavigator,
-  StackNavigationProp,
-  StackScreenProps,
-} from '@react-navigation/stack';
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 import { Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
 
@@ -24,7 +24,7 @@ function useThemeName() {
   return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
 }
 
-const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
+const DiagnosticsStack = createNativeStackNavigator<DiagnosticsStackRoutes>();
 
 export function DiagnosticsStackScreen() {
   const theme = useThemeName();
@@ -39,7 +39,6 @@ export function DiagnosticsStackScreen() {
         options={{
           title: 'Diagnostics',
           headerBackButtonDisplayMode: 'minimal',
-          headerBackImage: () => <></>,
         }}
       />
       <DiagnosticsStack.Screen
@@ -63,7 +62,7 @@ export function DiagnosticsStackScreen() {
 
 function DiagnosticsScreen({
   navigation,
-}: StackScreenProps<DiagnosticsStackRoutes, 'Diagnostics'>) {
+}: NativeStackScreenProps<DiagnosticsStackRoutes, 'Diagnostics'>) {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: spacing[4] }}>
       <CappedWidthContainerView>
@@ -85,7 +84,7 @@ function DiagnosticsScreen({
 function AudioDiagnostic({
   navigation,
 }: {
-  navigation: StackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
+  navigation: NativeStackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
 }) {
   return (
     <DiagnosticButton
@@ -101,7 +100,7 @@ function AudioDiagnostic({
 function BackgroundLocationDiagnostic({
   navigation,
 }: {
-  navigation: StackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
+  navigation: NativeStackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
 }) {
   return (
     <DiagnosticButton
@@ -115,7 +114,7 @@ function BackgroundLocationDiagnostic({
 function ForegroundLocationDiagnostic({
   navigation,
 }: {
-  navigation: StackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
+  navigation: NativeStackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
 }) {
   return (
     <DiagnosticButton
@@ -129,7 +128,7 @@ function ForegroundLocationDiagnostic({
 function GeofencingDiagnostic({
   navigation,
 }: {
-  navigation: StackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
+  navigation: NativeStackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
 }) {
   return (
     <DiagnosticButton

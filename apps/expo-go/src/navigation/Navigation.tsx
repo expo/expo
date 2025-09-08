@@ -1,6 +1,6 @@
 import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import { NavigationContainer, useTheme, useNavigationContainerRef } from '@react-navigation/native';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
 
@@ -26,9 +26,8 @@ import {
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 
-// TODO(Bacon): Do we need to create a new one each time?
-const HomeStack = createStackNavigator<HomeStackRoutes>();
-const SettingsStack = createStackNavigator<SettingsStackRoutes>();
+const HomeStack = createNativeStackNavigator<HomeStackRoutes>();
+const SettingsStack = createNativeStackNavigator<SettingsStackRoutes>();
 
 // We have to disable this option on Android to not use `react-native-screen`,
 // which aren't correcly installed in the Home app.
@@ -45,7 +44,6 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator
       initialRouteName="Home"
-      detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
       <HomeStack.Screen
         name="Home"
@@ -106,20 +104,13 @@ function SettingsStackScreen() {
   return (
     <SettingsStack.Navigator
       initialRouteName="Settings"
-      detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
-      <SettingsStack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          headerBackImage: () => <></>,
-        }}
-      />
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} options={{}} />
     </SettingsStack.Navigator>
   );
 }
 
-const RootStack = createStackNavigator();
+const RootStack = createNativeStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
   return (
@@ -174,7 +165,7 @@ function TabNavigator(props: { theme: string }) {
   );
 }
 
-const ModalStack = createStackNavigator<ModalStackRoutes>();
+const ModalStack = createNativeStackNavigator<ModalStackRoutes>();
 
 export default (props: { theme: ColorTheme }) => {
   const navigationRef = useNavigationContainerRef<ModalStackRoutes>();
@@ -223,23 +214,17 @@ export default (props: { theme: ColorTheme }) => {
       }}>
       <ModalStack.Navigator
         initialRouteName="RootStack"
-        detachInactiveScreens={shouldDetachInactiveScreens}
+        // detachInactiveScreens={shouldDetachInactiveScreens}
         screenOptions={({ route: _route, navigation: _navigation }) => ({
           headerShown: false,
           gestureEnabled: true,
           cardOverlayEnabled: true,
           cardStyle: { backgroundColor: 'transparent' },
           presentation: 'modal',
-          // NOTE(brentvatne): it is unclear what this was intended for, it doesn't appear to be needed?
-          // headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
-          ...TransitionPresets.ModalPresentationIOS,
         })}>
         <ModalStack.Screen name="RootStack">
           {() => (
-            <RootStack.Navigator
-              initialRouteName="Tabs"
-              detachInactiveScreens={shouldDetachInactiveScreens}
-              screenOptions={{ presentation: 'modal' }}>
+            <RootStack.Navigator initialRouteName="Tabs" screenOptions={{ presentation: 'modal' }}>
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>
@@ -251,14 +236,6 @@ export default (props: { theme: ColorTheme }) => {
                   ...(Platform.OS === 'ios' && {
                     gestureEnabled: true,
                     cardOverlayEnabled: true,
-                    // NOTE(brentvatne): it is unclear what this was intended for, it doesn't appear to be needed?
-                    // headerStatusBarHeight:
-                    //   navigation
-                    //     .getState()
-                    //     .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
-                    //     ? 0
-                    //     : undefined,
-                    ...TransitionPresets.ModalPresentationIOS,
                   }),
                 })}
               />
