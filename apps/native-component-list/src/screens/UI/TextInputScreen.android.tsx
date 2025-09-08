@@ -47,31 +47,39 @@ export default function TextInputScreen() {
       </Section>
 
       <Section title="Capitalization">
-        <TextInput
-          multiline
-          numberOfLines={5}
-          autocorrection={false}
-          defaultValue="CHARACTERS"
-          onChangeText={setValue}
-          autoCapitalize="characters"
-        />
+        <TextInput defaultValue="CHARACTERS" onChangeText={setValue} autoCapitalize="characters" />
 
         <TextInput
-          multiline
-          numberOfLines={5}
-          autocorrection={false}
           defaultValue="Capitalizing Words"
           onChangeText={setValue}
           autoCapitalize="words"
         />
 
         <TextInput
-          multiline
-          numberOfLines={5}
-          autocorrection={false}
           defaultValue="Capitalizing sentences. This is a test."
           onChangeText={setValue}
           autoCapitalize="sentences"
+        />
+      </Section>
+
+      <Section title="Icons">
+        <TextInput
+          onChangeText={setValue}
+          defaultValue="Leading Icon"
+          leadingIcon="twotone.Search"
+        />
+
+        <TextInput
+          onChangeText={setValue}
+          defaultValue="Trailing Icon"
+          trailingIcon="twotone.Check"
+        />
+
+        <TextInput
+          onChangeText={setValue}
+          defaultValue="Both Icons"
+          leadingIcon="twotone.Star"
+          trailingIcon="twotone.Favorite"
         />
       </Section>
     </ScrollPage>
