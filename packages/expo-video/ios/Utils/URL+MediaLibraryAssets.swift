@@ -2,7 +2,7 @@ import Photos
 
 extension URL {
   /*
-   * When the URL if of PHAsset type (ph://) this method returns an URL that has access permissions to show the Asset.
+   * When the URL is of PHAsset type (ph://) this method returns a URL that has access permissions to show the Asset.
    * This is a bit of a hack, we have to use `requestAVAsset` to avoid permission exceptions, but `requestAVAsset` can not return a `VideoAsset`
    * which we have to use, and we can't easily turn the `AVURLAsset` returned into a `VideoAsset` as well.
    * Once we request an AVAsset for a PHAsset url, the URI of the asset returned by `requestAVAsset` has a valid sandbox key and can be used
