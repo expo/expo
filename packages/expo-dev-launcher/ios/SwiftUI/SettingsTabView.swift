@@ -149,7 +149,7 @@ struct SettingsTabView: View {
       Spacer()
       Image(systemName: "clipboard")
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .scaledToFit()
         .frame(width: 16, height: 16)
         .foregroundColor(.blue)
 #endif
