@@ -9,7 +9,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
+import android.os.HandlerThread
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.models.BaseModel
@@ -129,6 +129,8 @@ class ContactsModule : Module() {
   private var contactPickingPromise: Promise? = null
   private var contactManipulationPromise: Promise? = null
   private var contactChangeObserver: ContentObserver? = null
+  private var contactsHandlerThread: HandlerThread? = null
+  private var contactsHandler: Handler? = null
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
@@ -708,8 +710,11 @@ class ContactsModule : Module() {
       return
     }
     
-    val handler = Handler(Looper.getMainLooper())
-    val observer = object : ContentObserver(handler) {
+    contactsHandlerThread = HandlerThread("ContactsObserverThread")
+    contactsHandlerThread?.start()
+    contactsHandler = Handler(contactsHandlerThread!!.looper)
+    
+    val observer = object : ContentObserver(contactsHandler) {
       override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
         handleContactChange()
@@ -733,6 +738,10 @@ class ContactsModule : Module() {
       resolver.unregisterContentObserver(observer)
       contactChangeObserver = null
     }
+    
+    contactsHandler = null
+    contactsHandlerThread?.quitSafely()
+    contactsHandlerThread = null
   }
 
   private fun handleContactChange() {
