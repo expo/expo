@@ -266,20 +266,17 @@ public class MyLibReactActivityLifecycleListener implements ReactActivityLifecyc
 
 ## Lifecycle listeners to JavaScript event flow
 
-Lifecycle listeners are singleton classes that exist independently of your Expo module instances. To communicate between a lifecycle listener and your module (for example, to send events to your app's JavaScript code), you need to observe events from your module and notify the lifecycle listener when events occur.
+Lifecycle listeners are singleton classes that exist independently of your Expo module instances. To communicate between a lifecycle listener and your module (for example, to send events to your app's JavaScript code), you need to observe events from your module and notify the lifecycle listener when events occur. A typical flow may consist of the following steps:
 
-The following example demonstrates how to use lifecycle listeners to bridge Android system events to your React Native app. It is based on [`expo-linking`](https://github.com/expo/expo/tree/main/packages/expo-linking), which uses lifecycle listeners to create a deep link handler that captures URLs when an app is opened or receives new intents.
-
-The example demonstrates the full lifecycle listener to JavaScript event flow:
-
-- **System Integration**: Lifecycle listeners capture Android intents with URL data
-- **Observer Pattern**: Singleton lifecycle listeners communicate with module instances
-- **Event Bridging**: Module sends structured events to JavaScript
-- **Memory Management**: Weak references prevent memory leaks
-- **React Integration**: Custom hook provides easy access to deep link events
-- **Type Safety**: Full TypeScript support with proper event types
+- **System integration**: Lifecycle listeners capture Android intents with URL data
+- **Observer pattern**: Singleton lifecycle listeners communicate with module instances
+- **Event bridging**: Module sends structured events to JavaScript
+- **Memory management**: Weak references prevent memory leaks
+- **Type safety and React integration**: TypeScript support with proper event types and a custom hook provides easy access to deep link events
 
 Your custom module implementation might not need all of the above from the event flow. However, you can adapt this pattern for other system events like app state changes, configuration changes, or custom business logic that needs to bridge Android lifecycle events to your React Native app.
+
+The following example demonstrates how to use lifecycle listeners to bridge Android system events to your React Native app. It is based on [`expo-linking`](https://github.com/expo/expo/tree/main/packages/expo-linking), which uses lifecycle listeners to create a deep link handler that captures URLs when an app is opened or receives new intents.
 
 <Step label="1">
 
@@ -650,7 +647,7 @@ const styles = StyleSheet.create({
 
 ### Module configuration
 
-Finally, configure your module in `expo-module.config.json`:
+Finally, configure your module in **expo-module.config.json** to connect the module to the lifecycle listener:
 
 ```json expo-module.config.json
 {
