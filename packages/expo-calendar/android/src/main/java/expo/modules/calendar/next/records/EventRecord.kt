@@ -4,7 +4,6 @@ import android.provider.CalendarContract
 import expo.modules.calendar.accessConstantMatchingString
 import expo.modules.calendar.availabilityConstantMatchingString
 import expo.modules.calendar.next.utils.rrFormat
-
 import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -77,20 +76,9 @@ data class RecurrenceRuleRecord(
    * Returns the endDate in RRULE format, or null if endDate is null or invalid.
    */
   fun toRrFormat(): RecurrenceRuleRecord? {
-    if (endDate == null) return this
-    return try {
-      val date = sdf.parse(endDate)
-      if (date != null) {
-        return RecurrenceRuleRecord(
-          endDate = rrFormat.format(date),
-          frequency = frequency,
-          interval = interval,
-          occurrence = occurrence,
-        )
-      } else this
-    } catch (_: Exception) {
-      this
-    }
+    return endDate?.let {
+      sdf.parse(it)?.let { date -> copy(endDate = rrFormat.format(date)) } ?: this
+    } ?: this
   }
 }
 
@@ -115,7 +103,7 @@ enum class EventAvailability(val value: String) : Enumerable {
   }
 
   companion object {
-    fun fromAndroidValue(value: Int?): EventAvailability? = when (value) {
+    fun fromAndroidValue(value: Int?): EventAvailability = when (value) {
       CalendarContract.Events.AVAILABILITY_BUSY -> BUSY
       CalendarContract.Events.AVAILABILITY_FREE -> FREE
       CalendarContract.Events.AVAILABILITY_TENTATIVE -> TENTATIVE
@@ -132,7 +120,7 @@ enum class EventStatus(val value: String) : Enumerable {
   // iOS only, not supported on Android:
   NONE("none");
 
-  fun toAndroidValue(status: EventStatus?): Int? = when (status) {
+  fun toAndroidValue(status: EventStatus?): Int = when (status) {
     CONFIRMED -> CalendarContract.Events.STATUS_CONFIRMED
     TENTATIVE -> CalendarContract.Events.STATUS_TENTATIVE
     CANCELED -> CalendarContract.Events.STATUS_CANCELED
@@ -140,7 +128,7 @@ enum class EventStatus(val value: String) : Enumerable {
   }
 
   companion object {
-    fun fromAndroidValue(value: Int): EventStatus? = when (value) {
+    fun fromAndroidValue(value: Int): EventStatus = when (value) {
       CalendarContract.Events.STATUS_CONFIRMED -> CONFIRMED
       CalendarContract.Events.STATUS_TENTATIVE -> TENTATIVE
       CalendarContract.Events.STATUS_CANCELED -> CANCELED
@@ -160,7 +148,7 @@ enum class EventAccessLevel(val value: String) : Enumerable {
   }
 
   companion object {
-    fun fromAndroidValue(value: Int): EventAccessLevel? = when (value) {
+    fun fromAndroidValue(value: Int): EventAccessLevel = when (value) {
       CalendarContract.Events.ACCESS_CONFIDENTIAL -> CONFIDENTIAL
       CalendarContract.Events.ACCESS_PRIVATE -> PRIVATE
       CalendarContract.Events.ACCESS_PUBLIC -> PUBLIC
@@ -177,7 +165,7 @@ enum class AlarmMethod(val value: String) : Enumerable {
   SMS("sms"),
   DEFAULT("default");
 
-  fun toAndroidValue(): Int? = when (this) {
+  fun toAndroidValue(): Int = when (this) {
     ALERT -> CalendarContract.Reminders.METHOD_ALERT
     ALARM -> CalendarContract.Reminders.METHOD_ALARM
     EMAIL -> CalendarContract.Reminders.METHOD_EMAIL
@@ -186,7 +174,7 @@ enum class AlarmMethod(val value: String) : Enumerable {
   }
 
   companion object {
-    fun fromAndroidValue(value: Int): AlarmMethod? = when (value) {
+    fun fromAndroidValue(value: Int): AlarmMethod = when (value) {
       CalendarContract.Reminders.METHOD_ALARM -> ALARM
       CalendarContract.Reminders.METHOD_ALERT -> ALERT
       CalendarContract.Reminders.METHOD_EMAIL -> EMAIL

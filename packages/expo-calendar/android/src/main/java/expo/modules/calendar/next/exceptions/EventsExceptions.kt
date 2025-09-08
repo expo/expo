@@ -7,8 +7,8 @@ class EventNotFoundException(message: String, cause: Throwable? = null)
 class EventsCouldNotBeCreatedException(message: String, cause: Throwable? = null)
   : CodedException(message, cause)
 
-class EventCouldNotBeUpdatedException(message: String, cause: Throwable? = null)
+class EventCouldNotBeDeletedException(message: String, cause: Throwable? = null)
   : CodedException(message, cause)
 
-class EventCouldNotBeDeletedException(message: String, cause: Throwable? = null)
+class EventDateTimeInvalidException(message: String, cause: Throwable? = null)
   : CodedException(message, cause)

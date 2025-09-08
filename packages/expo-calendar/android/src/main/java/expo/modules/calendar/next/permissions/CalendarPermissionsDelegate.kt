@@ -4,6 +4,7 @@ import android.Manifest
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 class CalendarPermissionsDelegate(private val appContext: AppContext) {
+
   private fun hasReadPermissions(): Boolean {
     return appContext.permissions
       ?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR) == true

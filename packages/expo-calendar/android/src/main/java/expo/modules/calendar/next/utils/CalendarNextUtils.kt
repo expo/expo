@@ -7,9 +7,11 @@ import java.util.TimeZone
 import android.content.ContentUris
 import android.provider.CalendarContract
 import expo.modules.calendar.findEventsQueryParameters
+import expo.modules.calendar.next.exceptions.EventDateTimeInvalidException
 import java.text.SimpleDateFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
   timeZone = TimeZone.getTimeZone("GMT")
@@ -81,7 +83,7 @@ private fun setDateInCalendar(calendar: Calendar, date: Any) {
       if (parsedDate != null) {
         calendar.time = parsedDate
       } else {
-        throw Exception("Error parsing date")
+        throw EventDateTimeInvalidException("Error parsing date")
       }
     }
 
@@ -90,7 +92,7 @@ private fun setDateInCalendar(calendar: Calendar, date: Any) {
     }
 
     else -> {
-      throw Exception("Date has unsupported type")
+      throw EventDateTimeInvalidException("Date has unsupported type")
     }
   }
 }

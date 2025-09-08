@@ -7,20 +7,20 @@ class CalendarBuilderNext() {
 
   fun getAsLong(key: String): Long = eventValues.getAsLong(key)
 
-  fun put(key: String, value: String) = apply {
-    eventValues.put(key, value)
+  fun put(key: String, value: String?) = apply {
+    value?.let { eventValues.put(key, it) }
   }
 
-  fun put(key: String, value: Int) = apply {
-    eventValues.put(key, value)
+  fun put(key: String, value: Int?) = apply {
+    value?.let { eventValues.put(key, it)}
   }
 
-  fun put(key: String, value: Long) = apply {
-    eventValues.put(key, value)
+  fun put(key: String, value: Long?) = apply {
+    value?.let { eventValues.put(key, it) }
   }
 
-  fun put(key: String, value: Boolean) = apply {
-    eventValues.put(key, value)
+  fun put(key: String, value: Boolean?) = apply {
+    value?.let { eventValues.put(key, it) }
   }
 
   fun putNull(key: String) = apply {

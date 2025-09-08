@@ -26,7 +26,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.TimeZone
 
-class ExpoCalendar(val context: AppContext, var calendarRecord: CalendarRecord? = CalendarRecord()) : SharedObject(context) {
+class ExpoCalendar(
+  val context: AppContext,
+  var calendarRecord: CalendarRecord? = CalendarRecord()) :
+  SharedObject(context) {
+
   suspend fun getEvents(startDate: Any, endDate: Any): List<ExpoCalendarEvent> {
     try {
       if (calendarRecord?.id == null) {
@@ -44,13 +48,12 @@ class ExpoCalendar(val context: AppContext, var calendarRecord: CalendarRecord? 
 
   suspend fun deleteCalendar(): Boolean {
     return withContext(Dispatchers.IO) {
-      val rows: Int
       val calendarID = calendarRecord?.id?.toIntOrNull()
         ?: throw EventNotFoundException("Calendar id is null")
       val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
       val contentResolver = (context.reactContext
         ?: throw Exceptions.ReactContextLost()).contentResolver
-      rows = contentResolver.delete(uri, null, null)
+      val rows = contentResolver.delete(uri, null, null)
       calendarRecord = null
       rows > 0
     }

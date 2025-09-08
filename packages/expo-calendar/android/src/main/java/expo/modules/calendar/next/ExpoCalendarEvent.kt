@@ -29,33 +29,41 @@ import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.TimeZone
 
-class ExpoCalendarEvent(val context: AppContext, var eventRecord: EventRecord? = EventRecord(), var options: RecurringEventOptions? = RecurringEventOptions()) : SharedObject(context) {
+class ExpoCalendarEvent(
+  val context: AppContext,
+  var eventRecord: EventRecord? = EventRecord(),
+  var options: RecurringEventOptions? = RecurringEventOptions()) :
+  SharedObject(context) {
 
   suspend fun saveEvent(eventRecord: EventRecord, calendarId: String? = null, nullableFields: List<String>? = null): Int? {
     return withContext(Dispatchers.IO) {
       val eventBuilder = CalendarBuilderNext()
 
-      if (eventRecord.startDate != null) {
-        val timeInMillis = dateToMilliseconds(eventRecord.startDate)
-        if (timeInMillis != null) {
-          eventBuilder.put(CalendarContract.Events.DTSTART, timeInMillis)
-        }
-      }
+      eventBuilder.put(CalendarContract.Events.TITLE, eventRecord.title)
+      eventBuilder.put(CalendarContract.Events.ALL_DAY, eventRecord.allDay)
+      eventBuilder.put(CalendarContract.Events.DESCRIPTION, eventRecord.notes)
+      eventBuilder.put(CalendarContract.Events.EVENT_LOCATION, eventRecord.location)
+      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_MODIFY, eventRecord.guestsCanModify)
+      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, eventRecord.guestsCanInviteOthers)
+      eventBuilder.put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, eventRecord.guestsCanSeeGuests)
 
-      if (eventRecord.endDate != null) {
-        val timeInMillis = dateToMilliseconds(eventRecord.endDate)
-        if (timeInMillis != null) {
-          eventBuilder.put(CalendarContract.Events.DTEND, timeInMillis)
-        }
-      }
+      eventBuilder.put(CalendarContract.Events.DTSTART,
+        dateToMilliseconds(eventRecord.startDate))
 
-      if (eventRecord.title != null) {
-        eventBuilder.put(CalendarContract.Events.TITLE, eventRecord.title)
-      }
+      eventBuilder.put(CalendarContract.Events.DTEND,
+        dateToMilliseconds(eventRecord.endDate))
 
-      if (eventRecord.allDay != null) {
-        eventBuilder.put(CalendarContract.Events.ALL_DAY, if (eventRecord.allDay) 1 else 0)
-      }
+      eventBuilder.put(CalendarContract.Events.AVAILABILITY,
+        eventRecord.availability?.toAndroidValue(eventRecord.availability))
+
+      eventBuilder.put(CalendarContract.Events.STATUS,
+        eventRecord.status?.toAndroidValue(eventRecord.status))
+
+      eventBuilder.put(CalendarContract.Events.ORGANIZER, eventRecord.organizerEmail)
+
+      eventBuilder.put(CalendarContract.Events.ACCESS_LEVEL,
+        eventRecord.accessLevel?.toAndroidValue(eventRecord.accessLevel))
+
 
       if (eventRecord.recurrenceRule != null) {
         val recurrenceRule = eventRecord.recurrenceRule.toRrFormat()
@@ -77,16 +85,6 @@ class ExpoCalendarEvent(val context: AppContext, var eventRecord: EventRecord? =
         eventBuilder.putNull(CalendarContract.Events.DURATION)
       }
 
-      if (eventRecord.title != null) {
-        eventBuilder.put(CalendarContract.Events.TITLE, eventRecord.title)
-      }
-      if (eventRecord.notes != null) {
-        eventBuilder.put(CalendarContract.Events.DESCRIPTION, eventRecord.notes)
-      }
-      if (eventRecord.location != null) {
-        eventBuilder.put(CalendarContract.Events.EVENT_LOCATION, eventRecord.location)
-      }
-
       if (eventRecord.timeZone != null) {
         eventBuilder.put(CalendarContract.Events.EVENT_TIMEZONE, eventRecord.timeZone)
       } else {
@@ -97,47 +95,6 @@ class ExpoCalendarEvent(val context: AppContext, var eventRecord: EventRecord? =
         eventBuilder.put(CalendarContract.Events.EVENT_END_TIMEZONE, eventRecord.endTimeZone)
       } else {
         eventBuilder.put(CalendarContract.Events.EVENT_END_TIMEZONE, TimeZone.getDefault().id)
-      }
-
-      if (eventRecord.allDay != null) {
-        eventBuilder.put(CalendarContract.Events.ALL_DAY, if (eventRecord.allDay) 1 else 0)
-      }
-
-      if (eventRecord.availability != null) {
-        val availabilityValue = eventRecord.availability.toAndroidValue(eventRecord.availability)
-        if (availabilityValue != null) {
-          eventBuilder.put(CalendarContract.Events.AVAILABILITY, availabilityValue)
-        }
-      }
-
-      if (eventRecord.status != null) {
-        val statusValue = eventRecord.status.toAndroidValue(eventRecord.status)
-        if (statusValue != null) {
-          eventBuilder.put(CalendarContract.Events.STATUS, statusValue)
-        }
-      }
-
-      if (eventRecord.organizerEmail != null) {
-        eventBuilder.put(CalendarContract.Events.ORGANIZER, eventRecord.organizerEmail)
-      }
-
-      if (eventRecord.accessLevel != null) {
-        val accessLevelValue = eventRecord.accessLevel.toAndroidValue(eventRecord.accessLevel)
-        if (accessLevelValue != null) {
-          eventBuilder.put(CalendarContract.Events.ACCESS_LEVEL, accessLevelValue)
-        }
-      }
-
-      if (eventRecord.guestsCanModify != null) {
-        eventBuilder.put(CalendarContract.Events.GUESTS_CAN_MODIFY, if (eventRecord.guestsCanModify) 1 else 0)
-      }
-
-      if (eventRecord.guestsCanInviteOthers != null) {
-        eventBuilder.put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, if (eventRecord.guestsCanInviteOthers) 1 else 0)
-      }
-
-      if (eventRecord.guestsCanSeeGuests != null) {
-        eventBuilder.put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, if (eventRecord.guestsCanSeeGuests) 1 else 0)
       }
 
       // Remove all nullable fields from the event builder that are possible to remove
@@ -190,7 +147,6 @@ class ExpoCalendarEvent(val context: AppContext, var eventRecord: EventRecord? =
 
   suspend fun deleteEvent() {
     withContext(Dispatchers.IO) {
-      val rows: Int
       val eventID = eventRecord?.id?.toInt()
       val contentResolver = (appContext?.reactContext
         ?: throw Exceptions.ReactContextLost()).contentResolver
@@ -199,7 +155,7 @@ class ExpoCalendarEvent(val context: AppContext, var eventRecord: EventRecord? =
       }
       if (options?.futureEvents == null || options?.futureEvents == false) {
         val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
-        rows = contentResolver.delete(uri, null, null)
+        val rows = contentResolver.delete(uri, null, null)
         if (rows > 0) {
           eventRecord = null
         } else {

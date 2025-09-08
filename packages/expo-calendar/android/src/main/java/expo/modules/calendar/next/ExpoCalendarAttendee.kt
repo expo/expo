@@ -18,7 +18,11 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ExpoCalendarAttendee(val context: AppContext, var attendeeRecord: AttendeeRecord? = AttendeeRecord()) : SharedObject(context) {
+class ExpoCalendarAttendee(
+  val context: AppContext,
+  var attendeeRecord: AttendeeRecord? = AttendeeRecord()) :
+  SharedObject(context) {
+
   suspend fun saveAttendee(attendeeRecord: AttendeeRecord, eventId: Int? = null, nullableFields: List<String>? = null): String {
     return withContext(Dispatchers.IO) {
       val attendeeValues = buildAttendeeContentValues(attendeeRecord, eventId)

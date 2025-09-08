@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.CalendarContract
 import expo.modules.calendar.BEGIN_DATE_INDEX
-import expo.modules.calendar.next.exceptions.CalendarParsingException
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.AttendeeRole
 import expo.modules.calendar.next.records.AttendeeStatus
@@ -23,7 +22,6 @@ import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.records.Source
 import expo.modules.calendar.next.utils.dateFormat
 import expo.modules.calendar.next.utils.rrFormat
-import java.text.ParseException
 import java.util.Locale
 
 fun Cursor.toCalendarRecord() : CalendarRecord {
