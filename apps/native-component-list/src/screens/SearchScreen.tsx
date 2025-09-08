@@ -1,5 +1,5 @@
 import { HeaderBackButton } from '@react-navigation/elements';
-import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import Fuse from 'fuse.js';
 import React from 'react';
@@ -57,7 +57,7 @@ function Header({
   );
 }
 
-function SearchScreen({ route }: StackScreenProps<SearchStack, 'search'>) {
+function SearchScreen({ route }: NativeStackScreenProps<SearchStack, 'search'>) {
   const query = route?.params?.q ?? '';
 
   const apis = React.useMemo(() => fuse.search(query).map(({ item }) => item), [query]);
@@ -76,7 +76,7 @@ type SearchStack = {
   search: { q?: string };
 };
 
-const Stack = createStackNavigator<SearchStack>();
+const Stack = createNativeStackNavigator<SearchStack>();
 
 export default function SearchScreenStack() {
   const { theme } = useTheme();

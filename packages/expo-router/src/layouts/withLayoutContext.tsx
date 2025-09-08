@@ -69,13 +69,10 @@ export function useFilterScreenChildren(
       }
 
       if (isProtectedReactElement(child)) {
-        if (child.props.guard) {
-          Children.forEach(child.props.children, (protectedChild) => flattenChild(protectedChild));
-        } else {
-          Children.forEach(child.props.children, (protectedChild) => {
-            flattenChild(protectedChild, true);
-          });
-        }
+        const excludeChildren = exclude || !child.props.guard;
+        Children.forEach(child.props.children, (protectedChild) => {
+          flattenChild(protectedChild, excludeChildren);
+        });
         return;
       }
 
