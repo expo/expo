@@ -3,6 +3,7 @@ title: Android lifecycle listeners
 description: Learn about the mechanism that allows your library to hook into Android Activity and Application functions using Expo modules API.
 ---
 
+import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To respond to certain Android system events relevant to an app, such as inbound links and configuration changes, it is necessary to override the corresponding lifecycle callbacks in **MainActivity.java** and/or **MainApplication.java**.
@@ -124,177 +125,13 @@ public class MyLibReactActivityLifecycleListener implements ReactActivityLifecyc
 
 </Tabs>
 
-You can also override other lifecycle methods. You can use `onResume` to handle when the activity comes into the foreground. For example, when the user returns to the app from the background:
+You can also override other lifecycle methods. The example below shows how to override multiple lifecycle methods in a single listener class. It is based on `expo-linking` module, which uses different lifecycle methods to handle deep links. You can implement only the methods you need for your use case:
 
 <Tabs tabs={["Kotlin", "Java"]}>
 
 <Tab>
 
 ```kotlin
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.kt
-package expo.modules.mylib
-
-import android.app.Activity
-import android.os.Bundle
-import expo.modules.core.interfaces.ReactActivityLifecycleListener
-
-class MyLibReactActivityLifecycleListener : ReactActivityLifecycleListener {
-   override fun onCreate(activity: Activity?, savedInstanceState: Bundle?) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity)
-  }
-  override fun onResume(activity: Activity) {
-    // Your setup code in `Activity.onResume`.
-    doSomeSetupInActivityOnResume(activity)
-  }
-}
-```
-
-</Tab>
-
-<Tab>
-
-```java
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.java
-package expo.modules.mylib;
-
-import android.app.Activity;
-import android.os.Bundle;
-import expo.modules.core.interfaces.ReactActivityLifecycleListener;
-
-public class MyLibReactActivityLifecycleListener implements ReactActivityLifecycleListener {
-  @Override
-  public void onCreate(Activity activity, Bundle savedInstanceState) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity);
-  }
-  @Override
-  public void onResume(Activity activity) {
-    // Your setup code in `Activity.onResume`.
-    doSomeSetupInActivityOnResume(activity);
-  }
-}
-```
-
-</Tab>
-
-</Tabs>
-
-You can also override `onPause` to handle when the activity goes to the background. For example, when the user minimizes the app:
-
-<Tabs tabs={["Kotlin", "Java"]}>
-
-<Tab>
-
-```kotlin
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.kt
-package expo.modules.mylib
-
-import android.app.Activity
-import expo.modules.core.interfaces.ReactActivityLifecycleListener
-
-class MyLibReactActivityLifecycleListener : ReactActivityLifecycleListener {
-  override fun onCreate(activity: Activity) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity)
-  }
-  override fun onPause(activity: Activity) {
-    // Your setup code in `Activity.onPause`.
-    doSomeSetupInActivityOnPause(activity)
-  }
-}
-```
-
-</Tab>
-
-<Tab>
-
-```java
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.java
-package expo.modules.mylib;
-
-import android.app.Activity;
-import expo.modules.core.interfaces.ReactActivityLifecycleListener;
-
-public class MyLibReactActivityLifecycleListener implements ReactActivityLifecycleListener {
-  @Override
-  public void onCreate(Activity activity) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity);
-  }
-  @Override
-  public void onPause(Activity activity) {
-    // Your setup code in `Activity.onPause`.
-    doSomeSetupInActivityOnPause(activity);
-  }
-}
-```
-
-</Tab>
-
-</Tabs>
-
-You can also override `onDestroy` to handle when the activity is being destroyed. For example, when the user closes the app:
-
-<Tabs tabs={["Kotlin", "Java"]}>
-
-<Tab>
-
-```kotlin
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.kt
-package expo.modules.mylib
-
-import android.app.Activity
-import expo.modules.core.interfaces.ReactActivityLifecycleListener
-
-class MyLibReactActivityLifecycleListener : ReactActivityLifecycleListener {
-  override fun onCreate(activity: Activity) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity)
-  }
-  override fun onDestroy(activity: Activity) {
-    // Your setup code in `Activity.onDestroy`.
-    doSomeSetupInActivityOnDestroy(activity)
-  }
-}
-```
-
-</Tab>
-
-<Tab>
-
-```java
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.java
-package expo.modules.mylib;
-
-import android.app.Activity;
-import expo.modules.core.interfaces.ReactActivityLifecycleListener;
-
-public class MyLibReactActivityLifecycleListener implements ReactActivityLifecycleListener {
-  @Override
-  public void onCreate(Activity activity) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity);
-  }
-  @Override
-  public void onDestroy(Activity activity) {
-    // Your setup code in `Activity.onDestroy`.
-    doSomeSetupInActivityOnDestroy(activity);
-  }
-}
-```
-
-</Tab>
-
-</Tabs>
-
-You can use `onNewIntent` to handle when your app receives a new intent while already running. For example, when the user clicks a link in an email or a notification:
-
-<Tabs tabs={["Kotlin", "Java"]}>
-
-<Tab>
-
-```kotlin collapseHeight={480}
 // android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.kt
 package expo.modules.mylib
 
@@ -305,69 +142,51 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
 class MyLibReactActivityLifecycleListener : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity?, savedInstanceState: Bundle?) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity?.intent?.data)
+    // Called when the activity is first created
+    // Initialize your setup here, for example handling deep links
+    val deepLinkUrl = activity?.intent?.data
+    if (deepLinkUrl != null) {
+      handleDeepLink(deepLinkUrl.toString())
+    }
   }
-  override fun onNewIntent(intent: Intent): Boolean {
-    // Your setup code in `Activity.onNewIntent`.
-    return handleNewIntentInMyLib(intent?.data)
+
+  override fun onResume(activity: Activity) {
+    // Called when the activity comes to the foreground
+    // For example, track when user returns to the app
+    trackAppStateChange("active")
   }
-}
-```
 
-</Tab>
-
-<Tab>
-
-```java collapseHeight={480}
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.java
-package expo.modules.mylib;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import expo.modules.core.interfaces.ReactActivityLifecycleListener;
-
-public class MyLibReactActivityLifecycleListener implements ReactActivityLifecycleListener {
-  @Override
-  public void onCreate(Activity activity, Bundle savedInstanceState) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity?.intent?.data);
+  override fun onPause(activity: Activity) {
+    // Called when the activity goes to the background
+    // For example, pause ongoing operations such as track analytics
+    trackAppStateChange("inactive")
   }
-  @Override
-  public boolean onNewIntent(Intent intent) {
-    // Your setup code in `Activity.onNewIntent`.
-    return handleNewIntentInMyLib(intent?.data);
+
+  override fun onDestroy(activity: Activity) {
+    // Called when the activity is being destroyed
+    // Clean up resources here
+    cleanup()
   }
-}
-```
 
-</Tab>
-
-</Tabs>
-
-You can also override `onBackPressed` to handle when the user presses the back button:
-
-<Tabs tabs={["Kotlin", "Java"]}>
-
-<Tab>
-
-```kotlin
-// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.kt
-package expo.modules.mylib
-
-import android.app.Activity
-import expo.modules.core.interfaces.ReactActivityLifecycleListener
-
-class MyLibReactActivityLifecycleListener : ReactActivityLifecycleListener {
-  override fun onCreate(activity: Activity) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity)
+  override fun onNewIntent(intent: Intent?): Boolean {
+    // Called when app receives a new intent while already running
+    // For example, handle new deep links while app is open
+    val newUrl = intent?.data
+    if (newUrl != null) {
+      handleDeepLink(newUrl.toString())
+      return true
+    }
+    return false
   }
+
   override fun onBackPressed(): Boolean {
-    // Your setup code in `Activity.onBackPressed`.
-    return handleBackPressedInMyLib()
+    // Called when user presses the back button
+    // Return true to prevent default back behavior
+    return handleCustomBackNavigation()
   }
+
+  // Now, you can add private functions to handle
+  // your logic for deep links, app state tracking, clean up, and so on.
 }
 ```
 
@@ -380,18 +199,131 @@ class MyLibReactActivityLifecycleListener : ReactActivityLifecycleListener {
 package expo.modules.mylib;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import expo.modules.core.interfaces.ReactActivityLifecycleListener;
 
 public class MyLibReactActivityLifecycleListener implements ReactActivityLifecycleListener {
   @Override
-  public void onCreate(Activity activity) {
-    // Your setup code in `Activity.onCreate`.
-    doSomeSetupInActivityOnCreate(activity);
+  public void onCreate(Activity activity, Bundle savedInstanceState) {
+    // Called when the activity is first created
+    // Initialize your setup here, for example handling deep links
+    Uri deepLinkUrl = activity.getIntent().getData();
+    if (deepLinkUrl != null) {
+      handleDeepLink(deepLinkUrl.toString());
+    }
   }
+
+  @Override
+  public void onResume(Activity activity) {
+    // Called when the activity comes to the foreground
+    // For example, track when user returns to the app
+    trackAppStateChange("active");
+  }
+
+  @Override
+  public void onPause(Activity activity) {
+    // Called when the activity goes to the background
+    // For example, pause ongoing operations such as track analytics
+    trackAppStateChange("inactive");
+  }
+
+  @Override
+  public void onDestroy(Activity activity) {
+    // Called when the activity is being destroyed
+    // Clean up resources here
+    cleanup();
+  }
+
+  @Override
+  public boolean onNewIntent(Intent intent) {
+    // Called when app receives a new intent while already running
+    // For example, handle new deep links while app is open
+    Uri newUrl = intent.getData();
+    if (newUrl != null) {
+      handleDeepLink(newUrl.toString());
+      return true;
+    }
+    return false;
+  }
+
   @Override
   public boolean onBackPressed() {
-    // Your setup code in `Activity.onBackPressed`.
-    return handleBackPressedInMyLib();
+    // Called when user presses the back button
+    // Return true to prevent default back behavior
+    return handleCustomBackNavigation();
+  }
+
+  // Now, you can add private functions to handle
+  // your logic for deep links, app state tracking, clean up, and so on.
+}
+```
+
+</Tab>
+
+</Tabs>
+
+## Lifecycle listeners to JavaScript event flow
+
+Lifecycle listeners are singleton classes that exist independently of your Expo module instances. To communicate between a lifecycle listener and your module (for example, to send events to your app's JavaScript code), you need to observe events from your module and notify the lifecycle listener when events occur.
+
+The following example demonstrates how to use lifecycle listeners to bridge Android system events to your React Native app. It is based on [`expo-linking`](https://github.com/expo/expo/tree/main/packages/expo-linking), which uses lifecycle listeners to create a deep link handler that captures URLs when an app is opened or receives new intents.
+
+The example demonstrates the full lifecycle listener to JavaScript event flow:
+
+- **System Integration**: Lifecycle listeners capture Android intents with URL data
+- **Observer Pattern**: Singleton lifecycle listeners communicate with module instances
+- **Event Bridging**: Module sends structured events to JavaScript
+- **Memory Management**: Weak references prevent memory leaks
+- **React Integration**: Custom hook provides easy access to deep link events
+- **Type Safety**: Full TypeScript support with proper event types
+
+Your custom module implementation might not need all of the above from the event flow. However, you can adapt this pattern for other system events like app state changes, configuration changes, or custom business logic that needs to bridge Android lifecycle events to your React Native app.
+
+<Step label="1">
+
+### Module registration
+
+Start by creating a module class that registers your lifecycle listener:
+
+<Tabs tabs={["Kotlin", "Java"]}>
+
+<Tab>
+
+```kotlin
+// android/src/main/java/expo/modules/deeplinkhandler/DeepLinkHandlerPackage.kt
+package expo.modules.deeplinkhandler
+
+import android.content.Context
+import expo.modules.core.interfaces.Package
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class DeepLinkHandlerPackage : Package {
+  override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
+    return listOf(DeepLinkHandlerActivityLifecycleListener())
+  }
+}
+```
+
+</Tab>
+
+<Tab>
+
+```java
+// android/src/main/java/expo/modules/deeplinkhandler/DeepLinkHandlerPackage.java
+package expo.modules.deeplinkhandler;
+
+import android.content.Context;
+import expo.modules.core.interfaces.Package;
+import expo.modules.core.interfaces.ReactActivityLifecycleListener;
+import java.util.Collections;
+import java.util.List;
+
+public class DeepLinkHandlerPackage implements Package {
+  @Override
+  public List<? extends ReactActivityLifecycleListener> createReactActivityLifecycleListeners(Context activityContext) {
+    return Collections.singletonList(new DeepLinkHandlerActivityLifecycleListener());
   }
 }
 ```
@@ -399,6 +331,337 @@ public class MyLibReactActivityLifecycleListener implements ReactActivityLifecyc
 </Tab>
 
 </Tabs>
+
+</Step>
+
+<Step label="2">
+
+### Activity lifecycle listener with observer notifications
+
+Create a lifecycle listener that captures deep links and notifies the module observers:
+
+<Tabs tabs={["Kotlin", "Java"]}>
+
+<Tab>
+
+```kotlin
+// android/src/main/java/expo/modules/deeplinkhandler/DeepLinkHandlerActivityLifecycleListener.kt
+package expo.modules.deeplinkhandler
+
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class DeepLinkHandlerActivityLifecycleListener : ReactActivityLifecycleListener {
+  override fun onCreate(activity: Activity?, savedInstanceState: Bundle?) {
+    handleIntent(activity?.intent)
+  }
+
+  override fun onNewIntent(intent: Intent?): Boolean {
+    handleIntent(intent)
+    return true
+  }
+
+  private fun handleIntent(intent: Intent?) {
+    val url = intent?.data
+    if (url != null) {
+      // Store the initial URL for later retrieval
+      DeepLinkHandlerModule.initialUrl = url
+
+      // Notify all observers about the new deep link
+      DeepLinkHandlerModule.urlReceivedObservers.forEach { observer ->
+        observer(url)
+      }
+    }
+  }
+}
+```
+
+</Tab>
+
+<Tab>
+
+```java
+// android/src/main/java/expo/modules/deeplinkhandler/DeepLinkHandlerActivityLifecycleListener.java
+package expo.modules.deeplinkhandler;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import expo.modules.core.interfaces.ReactActivityLifecycleListener;
+
+public class DeepLinkHandlerActivityLifecycleListener implements ReactActivityLifecycleListener {
+  @Override
+  public void onCreate(Activity activity, Bundle savedInstanceState) {
+    handleIntent(activity.getIntent());
+  }
+
+  @Override
+  public boolean onNewIntent(Intent intent) {
+    handleIntent(intent);
+    return true;
+  }
+
+  private void handleIntent(Intent intent) {
+    if (intent == null) return;
+
+    Uri url = intent.getData();
+    if (url != null) {
+      // Store the initial URL for later retrieval
+      DeepLinkHandlerModule.initialUrl = url;
+
+      // Notify all observers about the new deep link
+      for (java.util.function.Consumer<Uri> observer : DeepLinkHandlerModule.urlReceivedObservers) {
+        observer.accept(url);
+      }
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+### Expo module with event sending
+
+Create a module that maintains observers and sends events to JavaScript:
+
+<Tabs tabs={["Kotlin", "Java"]}>
+
+<Tab>
+
+```kotlin
+// android/src/main/java/expo/modules/deeplinkhandler/DeepLinkHandlerModule.kt
+package expo.modules.deeplinkhandler
+
+import android.net.Uri
+import androidx.core.os.bundleOf
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import java.lang.ref.WeakReference
+
+class DeepLinkHandlerModule : Module() {
+  companion object {
+    var initialUrl: Uri? = null
+    var urlReceivedObservers: MutableSet<((Uri) -> Unit)> = mutableSetOf()
+  }
+
+  private var urlReceivedObserver: ((Uri) -> Unit)? = null
+
+  override fun definition() = ModuleDefinition {
+    Name("DeepLinkHandler")
+
+    Events("onUrlReceived")
+
+    Function("getInitialUrl") {
+      initialUrl?.toString()
+    }
+
+    OnStartObserving("onUrlReceived") {
+      val weakModule = WeakReference(this@DeepLinkHandlerModule)
+      val observer: (Uri) -> Unit = { uri ->
+        weakModule.get()?.sendEvent(
+          "onUrlReceived",
+          bundleOf(
+            "url" to uri.toString(),
+            "scheme" to uri.scheme,
+            "host" to uri.host,
+            "path" to uri.path
+          )
+        )
+      }
+      urlReceivedObservers.add(observer)
+      urlReceivedObserver = observer
+    }
+
+    OnStopObserving("onUrlReceived") {
+      urlReceivedObservers.remove(urlReceivedObserver)
+    }
+  }
+}
+```
+
+</Tab>
+
+<Tab>
+
+```java
+// android/src/main/java/expo/modules/deeplinkhandler/DeepLinkHandlerModule.java
+package expo.modules.deeplinkhandler;
+
+import android.net.Uri;
+import androidx.core.os.Bundle;
+import expo.modules.kotlin.modules.Module;
+import expo.modules.kotlin.modules.ModuleDefinition;
+import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
+
+public class DeepLinkHandlerModule extends Module {
+  public static Uri initialUrl = null;
+  public static Set<Consumer<Uri>> urlReceivedObservers = new HashSet<>();
+
+  private Consumer<Uri> urlReceivedObserver;
+
+  @Override
+  public ModuleDefinition definition() {
+    return ModuleDefinition.create()
+      .name("DeepLinkHandler")
+      .events("onUrlReceived")
+      .function("getInitialUrl", () -> {
+        return initialUrl != null ? initialUrl.toString() : null;
+      })
+      .onStartObserving("onUrlReceived", () -> {
+        WeakReference<DeepLinkHandlerModule> weakModule = new WeakReference<>(this);
+        Consumer<Uri> observer = uri -> {
+          DeepLinkHandlerModule module = weakModule.get();
+          if (module != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString("url", uri.toString());
+            bundle.putString("scheme", uri.getScheme());
+            bundle.putString("host", uri.getHost());
+            bundle.putString("path", uri.getPath());
+            module.sendEvent("onUrlReceived", bundle);
+          }
+        };
+        urlReceivedObservers.add(observer);
+        urlReceivedObserver = observer;
+      })
+      .onStopObserving("onUrlReceived", () -> {
+        urlReceivedObservers.remove(urlReceivedObserver);
+      });
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="4">
+
+### TypeScript interface and React usage
+
+Define a TypeScript interface for your module to bridge the Android lifecycle events to JavaScript:
+
+```ts DeepLinkHandler.ts
+import { requireNativeModule, NativeModule } from 'expo-modules-core';
+
+export type DeepLinkEvent = {
+  url: string;
+  scheme?: string;
+  host?: string;
+  path?: string;
+};
+
+type DeepLinkHandlerModuleEvents = {
+  onUrlReceived(event: DeepLinkEvent): void;
+};
+
+declare class DeepLinkHandlerNativeModule extends NativeModule<DeepLinkHandlerModuleEvents> {
+  getInitialUrl(): string | null;
+}
+
+const DeepLinkHandler = requireNativeModule<DeepLinkHandlerNativeModule>('DeepLinkHandler');
+export default DeepLinkHandler;
+```
+
+Create a React hook for an easy access to the deep link events:
+
+```tsx useDeepLinkHandler.ts
+import { useEffect, useState } from 'react';
+import DeepLinkHandler, { DeepLinkEvent } from './DeepLinkHandler';
+
+export function useDeepLinkHandler(): {
+  initialUrl: string | null;
+  url: string | null;
+  event: DeepLinkEvent | null;
+} {
+  const [initialUrl] = useState<string | null>(DeepLinkHandler.getInitialUrl());
+  const [event, setEvent] = useState<DeepLinkEvent | null>(null);
+
+  useEffect(() => {
+    const subscription = DeepLinkHandler.addListener('onUrlReceived', event => {
+      setEvent(event);
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  return {
+    initialUrl,
+    url: event?.url ?? initialUrl,
+    event,
+  };
+}
+```
+
+Use it in your React component:
+
+```tsx App.tsx
+import { Text, View, StyleSheet } from 'react-native';
+import { useDeepLinkHandler } from './useDeepLinkHandler';
+
+export function App() {
+  const { initialUrl, url, event } = useDeepLinkHandler();
+
+  return (
+    <View style={styles.container}>
+      <Text>Initial URL: {initialUrl || 'None'}</Text>
+      <Text>Current URL: {url || 'None'}</Text>
+      {event && (
+        <View style={styles.textContainer}>
+          <Text>Latest Deep Link:</Text>
+          <Text>Scheme: {event.scheme}</Text>
+          <Text>Host: {event.host}</Text>
+          <Text>Path: {event.path}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textContainer: {
+    marginTop: 20,
+  },
+});
+```
+
+</Step>
+
+<Step label="5">
+
+### Module configuration
+
+Finally, configure your module in `expo-module.config.json`:
+
+```json expo-module.config.json
+{
+  "platforms": ["android"],
+  "android": {
+    "modules": ["expo.modules.deeplinkhandler.DeepLinkHandlerModule"]
+  }
+}
+```
+
+</Step>
 
 ## `Application` lifecycle listeners
 
