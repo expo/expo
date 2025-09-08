@@ -24,6 +24,10 @@ export declare const shadow: (params: {
     color?: string;
 }) => ModifierConfig;
 /**
+ * Adds a matched geometry effect to a view.
+ */
+export declare const matchedGeometryEffect: (id: string, namespaceId: string) => ModifierConfig;
+/**
  * Sets the frame properties of a view.
  */
 export declare const frame: (params: {

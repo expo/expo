@@ -27,6 +27,10 @@ export const cornerRadius = (radius) => createModifier('cornerRadius', { radius 
  */
 export const shadow = (params) => createModifier('shadow', params);
 /**
+ * Adds a matched geometry effect to a view.
+ */
+export const matchedGeometryEffect = (id, namespaceId) => createModifier('matchedGeometryEffect', { id, namespaceId });
+/**
  * Sets the frame properties of a view.
  */
 export const frame = (params) => createModifier('frame', params);
