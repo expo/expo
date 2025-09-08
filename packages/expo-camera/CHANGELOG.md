@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix errors on devices that do not have Google Play Services installed.
+
 ### 💡 Others
 
 ## 17.0.6 — 2025-09-02

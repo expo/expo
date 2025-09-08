@@ -20,6 +20,7 @@ import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.tasks.writeStreamToFile
+import expo.modules.camera.utils.CameraUtils
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.core.utilities.VRUtilities
@@ -65,11 +66,10 @@ class CameraViewModule : Module() {
 
     Events("onModernBarcodeScanned")
 
-    // Aligned with iOS which has the same property. Will always be true on Android since
-    // the Google code scanner's min sdk is 21 - and our min sdk is currently 24.
-    // False on Horizon OS, as there is no google services.
+    // Aligned with iOS which has the same property. True when ML Kit is available.
+    // False on Horizon OS (Quest devices) and devices without Google Play Services.
     Property("isModernBarcodeScannerAvailable") {
-      !VRUtilities.isQuest()
+      !VRUtilities.isQuest() && CameraUtils.isMLKitAvailable(appContext.reactContext)
     }
 
     // Again, aligned with iOS.
@@ -110,6 +110,11 @@ class CameraViewModule : Module() {
     }
 
     AsyncFunction("scanFromURLAsync") { url: String, barcodeTypes: List<BarcodeType>, promise: Promise ->
+      if (!CameraUtils.isMLKitAvailable(appContext.reactContext)) {
+        promise.reject(CameraExceptions.MLKitUnavailableException())
+        return@AsyncFunction
+      }
+
       appContext.imageLoader?.loadImageForManipulationFromURL(
         url,
         object : ImageLoaderInterface.ResultListener {
@@ -134,6 +139,11 @@ class CameraViewModule : Module() {
     }
 
     AsyncFunction("launchScanner") { settings: BarcodeSettings, promise: Promise ->
+      if (!CameraUtils.hasGooglePlayServices(appContext.reactContext)) {
+        promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
+        return@AsyncFunction
+      }
+
       val reactContext = appContext.reactContext
 
       if (reactContext == null) {
