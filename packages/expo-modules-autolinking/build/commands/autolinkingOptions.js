@@ -44,9 +44,10 @@ const parsePackageJsonOptions = (packageJson, appRoot, platform) => {
     const autolinkingOptions = expo && isJSONObject(expo.autolinking) ? expo.autolinking : null;
     let platformOptions = null;
     if (platform) {
-        autolinkingOptions && isJSONObject(autolinkingOptions[platform])
-            ? autolinkingOptions[platform]
-            : null;
+        platformOptions =
+            autolinkingOptions && isJSONObject(autolinkingOptions[platform])
+                ? autolinkingOptions[platform]
+                : null;
         if (!platformOptions && platform === 'apple') {
             // NOTE: `platform: 'apple'` has a fallback on `ios`. This doesn't make much sense, since apple should
             // be the base option for other apple platforms, but changing this now is a breaking change

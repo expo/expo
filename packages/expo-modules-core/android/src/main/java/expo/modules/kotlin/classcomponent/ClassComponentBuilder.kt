@@ -10,7 +10,8 @@ import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.sharedobjects.isSharedObjectClass
+import expo.modules.kotlin.sharedobjects.isSharedRefClass
 import expo.modules.kotlin.traits.Trait
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.TypeConverterProvider
@@ -32,8 +33,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 
   fun buildClass(): ClassDefinitionData {
     val hasOwnerType = ownerClass != Unit::class
-    val isSharedObject = hasOwnerType && SharedObject::class.java.isAssignableFrom(ownerClass.java)
-    val isSharedRef = hasOwnerType && SharedRef::class.java.isAssignableFrom(ownerClass.java)
+    val isSharedObject = hasOwnerType && ownerClass.isSharedObjectClass()
+    val isSharedRef = hasOwnerType && ownerClass.isSharedRefClass()
 
     if (eventsDefinition != null && isSharedObject) {
       listOf("__expo_onStartListeningToEvent" to SharedObject::onStartListeningToEvent, "__expo_onStopListeningToEvent" to SharedObject::onStopListeningToEvent)

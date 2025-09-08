@@ -8,6 +8,7 @@ import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
 import expo.modules.kotlin.weak
+import kotlin.reflect.KClass
 
 @DoNotStrip
 open class SharedObject(runtimeContext: RuntimeContext? = null) {
@@ -83,3 +84,6 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
     return 0
   }
 }
+
+fun KClass<*>.isSharedObjectClass() =
+  SharedObject::class.java.isAssignableFrom(this.java)
