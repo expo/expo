@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 0.21.11 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- Collapse `unknown` and `<anonymous>` stack frames ([#39407](https://github.com/expo/expo/pull/39407) by [@kitten](https://github.com/kitten))
+- Prevent unclear errors from being thrown when loading config ([#39384](https://github.com/expo/expo/pull/39384) by [@kitten](https://github.com/kitten))
+- Fix expansion of `ExportAllDeclaration` during tree-shaking not ignoring `default` export specifier and duplicating existing specifiers ([#39420](https://github.com/expo/expo/pull/39420) by [@kitten](https://github.com/kitten))
+
 ## 0.21.10 — 2025-09-04
 
 ### 🐛 Bug fixes

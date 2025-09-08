@@ -1816,6 +1816,136 @@ xit(`recursively expands renamed export all statements`, async () => {
   expect(artifact.source).toMatch('FFFFFz2');
 });
 
+// NOTE(@kitten): See https://github.com/expo/expo/pull/39420
+// This previously had an issue where the expansion would clobber non-export-all specifiers which take precedence
+// It also previously failed to ignore default exports, as per the spec
+it(`recursively expands export all statements while omitting existing and default specifiers`, async () => {
+  const [, [artifact]] = await serializeShakingAsync(
+    {
+      'index.js': `
+          import * as _all from './x0';
+          console.log(_all);
+        `,
+      'x0.js': `
+         export const z1 = 0;
+         export * from './x1';
+         export * from './x2';
+        `,
+      'x1.js': `
+      export const z1 = 0;
+      export * from './x2';
+      export default 0;
+      
+      `,
+      'x2.js': `
+      export const z2 = 0;
+      export const z3 = 0;
+      export default 0;
+        `,
+    }
+    // { minify: true }
+  );
+  expect(artifact.source).toMatch('z1');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      function _interopNamespace(e) {
+        if (e && e.__esModule) return e;
+        var n = {};
+        if (e) Object.keys(e).forEach(function (k) {
+          n[k] = e[k];
+        });
+        n.default = e;
+        return n;
+      }
+      var _all = _interopNamespace(_$$_REQUIRE(_dependencyMap[0]));
+      console.log(_all);
+    },"/app/index.js",["/app/x0.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      Object.defineProperty(exports, "z2", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z2;
+        }
+      });
+      Object.defineProperty(exports, "z3", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z3;
+        }
+      });
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return z1;
+        }
+      });
+      const z1 = 0;
+    },"/app/x0.js",["/app/x1.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      Object.defineProperty(exports, "z2", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z2;
+        }
+      });
+      Object.defineProperty(exports, "z3", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z3;
+        }
+      });
+      Object.defineProperty(exports, "default", {
+        enumerable: true,
+        get: function () {
+          return _default;
+        }
+      });
+      var _default = 0;
+    },"/app/x1.js",["/app/x2.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      Object.defineProperty(exports, "default", {
+        enumerable: true,
+        get: function () {
+          return _default;
+        }
+      });
+      Object.defineProperty(exports, "z2", {
+        enumerable: true,
+        get: function () {
+          return z2;
+        }
+      });
+      Object.defineProperty(exports, "z3", {
+        enumerable: true,
+        get: function () {
+          return z3;
+        }
+      });
+      const z2 = 0;
+      const z3 = 0;
+      var _default = 0;
+    },"/app/x2.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+});
+
 // From React Navigation
 it(`barrel star empty file`, async () => {
   const [[, , graph]] = await serializeShakingAsync({

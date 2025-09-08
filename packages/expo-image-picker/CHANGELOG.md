@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 17.0.7 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- [ios] Avoid transcoding for .avif and .tiff like it works for .heic. This keeps the asset in its original container/codec (e.g. TIFF instead of JPEG) and is required for the new fast-path. Apps that relied on .automatic re-encoded output can pass preferredAssetRepresentationMode: '.automatic' to restore the old behaviour.([#39398](https://github.com/expo/expo/pull/39398) by [@chocky335](https://github.com/chocky335))
+
 ## 17.0.6 — 2025-09-02
 
 _This version does not introduce any user-facing changes._

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
 import { StatusBar } from 'expo-status-bar';
@@ -59,7 +59,7 @@ if (NativeComponentList) {
 }
 
 const Tab = createBottomTabNavigator();
-const Switch = createStackNavigator();
+const Switch = createNativeStackNavigator();
 
 const linking: LinkingOptions<object> = {
   prefixes: [
