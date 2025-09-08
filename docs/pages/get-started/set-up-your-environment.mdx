@@ -1,32 +1,83 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
-searchRank: 3
----
+npm install -g expo-cli
+expo init aibou-app
+cd aibou-app
+import React from 'react';
+import ChatScreen from './ChatScreen';
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+export default function App() {
+  return <ChatScreen />;
+}
+expo start
+expo install expo-auth-session expo-google-auth-session expo-apple-authentication
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import * as Google from "expo-google-auth-session";
+import * as AppleAuthentication from "expo-apple-authentication";
 
-Let's set up a local development environment for running your project on Android and iOS.
+export default function LoginScreen() {
+  // Googleログイン
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await Google.useAuthRequest({
+        expoClientId: "YOUR_EXPO_CLIENT_ID",
+        iosClientId: "YOUR_IOS_CLIENT_ID",
+        androidClientId: "YOUR_ANDROID_CLIENT_ID",
+      })[0].promptAsync();
 
-## Where would you like to develop?
+      if (result.type === "success") {
+        Alert.alert("ログイン成功！", JSON.stringify(result.authentication));
+      }
+    } catch (error) {
+      Alert.alert("エラー", error.message);
+    }
+  };
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+  // Appleログイン
+  const handleAppleLogin = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      Alert.alert("Appleログイン成功！", JSON.stringify(credential));
+    } catch (error) {
+      if (error.code !== "ERR_CANCELED") {
+        Alert.alert("エラー", error.message);
+      }
+    }
+  };
 
-<PlatformAndDeviceForm />
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>相棒AI 🍌</Text>
 
-## How would you like to develop?
+      <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
+        <Text style={styles.buttonText}>Googleでログイン</Text>
+      </TouchableOpacity>
 
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
+      <AppleAuthentication.AppleAuthenticationButton
+        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+        cornerRadius={10}
+        style={{ width: 250, height: 50, marginTop: 20 }}
+        onPress={handleAppleLogin}
+      />
+    </View>
+  );
+}
 
-<DevelopmentModeForm />
-
----
-
-<DevelopmentEnvironmentInstructions />
-
-## Next step
-
-You have a project and a development environment. Now it's time to start developing.
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb" },
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 40 },
+  googleButton: {
+    width: 250,
+    height: 50,
+    backgroundColor: "#4285F4",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+});
