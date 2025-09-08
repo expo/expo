@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.isResponse = isResponse;
 exports.parseParams = parseParams;
 exports.getRedirectRewriteLocation = getRedirectRewriteLocation;
+exports.matchDynamicName = matchDynamicName;
+exports.matchDeepDynamicRouteName = matchDeepDynamicRouteName;
 function isResponse(input) {
     return !!input && typeof input === 'object' && input instanceof Response;
 }

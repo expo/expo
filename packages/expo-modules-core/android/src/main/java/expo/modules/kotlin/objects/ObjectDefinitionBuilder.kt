@@ -7,7 +7,9 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
+import expo.modules.kotlin.convertToString
 import expo.modules.kotlin.events.EventsDefinition
+import expo.modules.kotlin.fastPrimaryConstructor
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
@@ -18,14 +20,12 @@ import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
-import expo.modules.kotlin.modules.convertEnumToString
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.TypeConverterProvider
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
 
 /**
  * Base class for other definitions representing an object, such as `ModuleDefinition`.
@@ -449,7 +449,7 @@ open class ObjectDefinitionBuilder(
   }
 
   inline fun <reified T> Events() where T : Enumerable, T : Enum<T> {
-    val primaryConstructor = T::class.primaryConstructor
+    val primaryConstructor = T::class.fastPrimaryConstructor
     val events = if (primaryConstructor?.parameters?.size == 1) {
       val parameterName = primaryConstructor.parameters.first().name
 
@@ -487,7 +487,7 @@ open class ObjectDefinitionBuilder(
    * Creates module's lifecycle listener that is called right after the first event listener is added for given event.
    */
   fun <T> OnStartObserving(enum: T, body: () -> Unit) where T : Enumerable, T : Enum<T> {
-    OnStartObserving(convertEnumToString(enum), body)
+    OnStartObserving(enum.convertToString(), body)
   }
 
   /**
@@ -520,7 +520,7 @@ open class ObjectDefinitionBuilder(
    * Creates module's lifecycle listener that is called right after all event listeners are removed for given event.
    */
   fun <T> OnStopObserving(enum: T, body: () -> Unit) where T : Enumerable, T : Enum<T> {
-    OnStopObserving(convertEnumToString(enum), body)
+    OnStopObserving(enum.convertToString(), body)
   }
 
   /**

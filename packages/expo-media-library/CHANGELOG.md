@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Add MediaLibrary@Next. ([#38835](https://github.com/expo/expo/pull/38835) by [@Wenszel](https://github.com/wenszel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 18.0.6 — 2025-09-02
+
+### 💡 Others
+
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 18.0.5 — 2025-08-31
 

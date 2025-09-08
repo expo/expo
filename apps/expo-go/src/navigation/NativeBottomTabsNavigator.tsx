@@ -62,7 +62,9 @@ function NativeBottomTabsNavigator({
               tabKey={route.key}
               title={descriptor.options.tabBarLabel ?? route.name}
               isFocused={isFocused}
-              icon={descriptor.options.tabBarIcon()}>
+              icon={descriptor.options.tabBarIcon()}
+              standardAppearance={{ tabBarBackgroundColor: rest.tabBarStyle?.backgroundColor }}
+              scrollEdgeAppearance={{ tabBarBackgroundColor: rest.tabBarStyle?.backgroundColor }}>
               {descriptor.render()}
             </BottomTabsScreen>
           );

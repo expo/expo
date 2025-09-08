@@ -2,10 +2,18 @@ import chalk from 'chalk';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import {
+  AutolinkingResolutionsCache,
+  scanNativeModuleResolutions,
+} from '../utils/autolinkingResolutions';
+import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
 } from '../utils/doctorConfig';
 import { checkLibraries } from '../utils/reactNativeDirectoryApi';
+import {
+  getVersionedNativeModuleNamesAsync,
+  VersionedNativeModuleNamesCache,
+} from '../utils/versionedNativeModules';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
 export const DEFAULT_PACKAGES_TO_IGNORE = [
@@ -31,22 +39,50 @@ export function filterPackages(packages: string[], ignoredPackages: (RegExp | st
   });
 }
 
-export class ReactNativeDirectoryCheck implements DoctorCheck {
+type DoctorCache = AutolinkingResolutionsCache & VersionedNativeModuleNamesCache;
+
+export class ReactNativeDirectoryCheck implements DoctorCheck<DoctorCache> {
   description = 'Validate packages against React Native Directory package metadata';
 
   sdkVersionRange = '>=51.0.0';
 
-  async runAsync({ pkg }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync(
+    { projectRoot, pkg, exp }: DoctorCheckParams,
+    cache: DoctorCache
+  ): Promise<DoctorCheckResult> {
     const issues: string[] = [];
     const newArchUnsupportedPackages: string[] = [];
     const newArchUntestedPackages: string[] = [];
     const unmaintainedPackages: string[] = [];
     const unknownPackages: string[] = [];
-    const dependencies = pkg.dependencies ?? {};
     const userDefinedIgnoredPackages = getReactNativeDirectoryCheckExcludes(pkg);
     const listUnknownPackagesEnabled = getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg);
 
-    const packageNames = filterPackages(Object.keys(dependencies), [
+    const basePackageNames: string[] = [];
+    try {
+      // We try to do an autolinking to filter RNDirectory checks to only apply to native modules
+      const resolutions = await scanNativeModuleResolutions(cache, {
+        projectRoot,
+        sdkVersion: exp.sdkVersion!,
+      });
+      const bundledNativeModuleNames = await getVersionedNativeModuleNamesAsync(cache, {
+        projectRoot,
+        sdkVersion: exp.sdkVersion!,
+      });
+      const ignoreModuleNames = new Set(bundledNativeModuleNames);
+      for (const dependencyName of resolutions.keys()) {
+        // We'll forcefully ignore bundled native modules
+        if (!ignoreModuleNames.has(dependencyName)) {
+          basePackageNames.push(dependencyName);
+        }
+      }
+    } catch {
+      // However, if this fails, we fall back to the old logic, which just
+      // looks at all direct dependencies
+      basePackageNames.push(...Object.keys(pkg.dependencies || {}));
+    }
+
+    const packageNames = filterPackages(basePackageNames, [
       ...DEFAULT_PACKAGES_TO_IGNORE,
       ...userDefinedIgnoredPackages,
     ]);

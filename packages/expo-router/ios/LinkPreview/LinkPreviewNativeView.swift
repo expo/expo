@@ -2,7 +2,6 @@ import ExpoModulesCore
 
 class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   LinkPreviewModalDismissible, LinkPreviewMenuUpdatable {
-  var triggerBorderRadius: Double = 0
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   private var directChild: UIView?
@@ -131,8 +130,6 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
 
         let parameters = UIPreviewParameters()
         parameters.backgroundColor = .clear
-        parameters.shadowPath = UIBezierPath(
-          roundedRect: directChild.bounds, cornerRadius: self.triggerBorderRadius)
 
         return UITargetedPreview(view: directChild, parameters: parameters, target: target)
       }
@@ -185,7 +182,6 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     }
 
     let vc = PreviewViewController(linkPreviewNativePreview: preview)
-    vc.view.addSubview(preview)
     let preferredSize = preview.preferredContentSize
     vc.preferredContentSize.width = preferredSize.width
     vc.preferredContentSize.height = preferredSize.height
@@ -216,6 +212,10 @@ class PreviewViewController: UIViewController {
   init(linkPreviewNativePreview: NativeLinkPreviewContentView) {
     self.linkPreviewNativePreview = linkPreviewNativePreview
     super.init(nibName: nil, bundle: nil)
+  }
+
+  override func loadView() {
+    self.view = linkPreviewNativePreview
   }
 
   @available(*, unavailable)

@@ -59,10 +59,55 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     duration: number;
     /**
      * The current volume of the audio.
+     *
+     * **Range:** `0.0` to `1.0`. For example, `0.0` is completely silent (0%), `0.5` is half volume (50%), and `1.0` is full volume (100%).
+     *
+     *
+     * @example
+     * ```tsx
+     * import { useAudioPlayer } from 'expo-audio';
+     *
+     * export default function App() {
+     *   const player = useAudioPlayer(source);
+     *
+     *   // Mute the audio
+     *   player.volume = 0.0;
+     *
+     *   // Set volume to 50%
+     *   player.volume = 0.5;
+     *
+     *   // Set to full volume
+     *   player.volume = 1.0;
+     * }
+     * ```
      */
     volume: number;
     /**
-     * The current playback rate of the audio.
+     * The current playback rate of the audio. It accepts different values depending on the platform:
+     * - **Android**: `0.1` to `2.0`
+     * - **iOS**: `0.0` to `2.0`
+     * - **Web**: Follows browser implementation
+     *
+     * @example
+     * ```tsx
+     * import { useAudioPlayer } from 'expo-audio';
+     *
+     * export default function App() {
+     *   const player = useAudioPlayer(source);
+     *
+     *   // Normal playback speed
+     *   player.playbackRate = 1.0;
+     *
+     *   // Slow motion (half speed)
+     *   player.playbackRate = 0.5;
+     *
+     *   // Fast playback (1.5x speed)
+     *   player.playbackRate = 1.5;
+     *
+     *   // Maximum speed on mobile
+     *   player.playbackRate = 2.0;
+     * }
+     * ```
      */
     playbackRate: number;
     /**
@@ -95,7 +140,8 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     seekTo(seconds: number, toleranceMillisBefore?: number, toleranceMillisAfter?: number): Promise<void>;
     /**
      * Sets the current playback rate of the audio.
-     * @param rate The playback rate of the audio.
+     *
+     * @param rate The playback rate of the audio. See [`playbackRate`](#playbackrate) property for detailed range information.
      * @param pitchCorrectionQuality The quality of the pitch correction.
      */
     setPlaybackRate(rate: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;

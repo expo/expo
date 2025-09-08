@@ -192,6 +192,13 @@ export const clipped = (clipped = true) => createModifier('clipped', { clipped }
  * Applies a glass effect to a view.
  */
 export const glassEffect = (params) => createModifier('glassEffect', params);
+/**
+ * Associates an identity value to Liquid Glass effects defined within a `GlassEffectContainer`.
+ */
+export const glassEffectId = (id, namespaceId) => createModifier('glassEffectId', {
+    id,
+    namespaceId,
+});
 // =============================================================================
 // Utility Functions
 // =============================================================================

@@ -29,6 +29,7 @@ const filePath_1 = require("./utils/filePath");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
 let hasWarnedAboutExotic = false;
+let hasWarnedAboutReactNative = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
@@ -132,7 +133,11 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         hasWarnedAboutExotic = true;
         console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
     }
-    const reactNativePath = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
+    const reactNativePath = path_1.default.dirname(resolve_from_1.default.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json');
+    if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
+        hasWarnedAboutReactNative = true;
+        console.log(chalk_1.default.yellow(`\u203A Could not resolve react-native! Is it installed and a project dependency?`));
+    }
     const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
     const sourceExts = (0, paths_1.getBareExtensions)([], sourceExtsConfig);
     // Add support for cjs (without platform extensions).
@@ -146,7 +151,18 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         // when sass isn't installed.
         sourceExts.push('scss', 'sass', 'css');
     }
-    const pkg = (0, config_1.getPackageJson)(projectRoot);
+    let pkg;
+    try {
+        pkg = (0, config_1.getPackageJson)(projectRoot);
+    }
+    catch (error) {
+        if (error && error.name === 'ConfigError') {
+            console.log(chalk_1.default.yellow(`\u203A Could not find a package.json at the project root! ("${projectRoot}")`));
+        }
+        else {
+            throw error;
+        }
+    }
     const watchFolders = (0, getWatchFolders_1.getWatchFolders)(projectRoot);
     const nodeModulesPaths = (0, getModulesPaths_1.getModulesPaths)(projectRoot);
     if (env_1.env.EXPO_DEBUG) {
@@ -267,8 +283,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             // @ts-expect-error: not on type.
             _expoRouterPath: routerPackageRoot ? path_1.default.relative(serverRoot, routerPackageRoot) : undefined,
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
-            browserslistHash: pkg.browserslist
-                ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg.browserslist)).toString('hex')
+            browserslistHash: pkg?.browserslist
+                ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg?.browserslist)).toString('hex')
                 : null,
             sassVersion,
             // Ensure invalidation when the version changes due to the Babel plugin.
