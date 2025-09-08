@@ -493,12 +493,16 @@ class ExpoCameraView(
       .build()
       .also { analyzer ->
         if (shouldScanBarcodes && CameraUtils.isMLKitAvailable(context)) {
-          analyzer.setAnalyzer(
-            ContextCompat.getMainExecutor(context),
-            BarcodeAnalyzer(lensFacing, barcodeFormats) {
-              onBarcodeScanned(it)
-            }
-          )
+          try {
+            analyzer.setAnalyzer(
+              ContextCompat.getMainExecutor(context),
+              BarcodeAnalyzer(lensFacing, barcodeFormats) {
+                onBarcodeScanned(it)
+              }
+            )
+          } catch (e: Exception) {
+            Log.e(CameraViewModule.TAG, "Failed to initialize BarcodeAnalyzer: ${e.message}")
+          }
         }
       }
 
