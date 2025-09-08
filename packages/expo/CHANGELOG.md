@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Remove bindReactNativeFactory function ([#39418](https://github.com/expo/expo/pull/39418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
