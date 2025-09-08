@@ -3,6 +3,7 @@ package expo.modules.kotlin.sharedobjects
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.IncorrectRefTypeException
+import expo.modules.kotlin.fastIsSupperClassOf
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.toStrongReference
@@ -73,7 +74,8 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
     val ref = sharedRef.ref ?: return sharedRef
     val sharedRefClass = sharedRefType?.classifier as? KClass<*>
       ?: return sharedRef
-    if (ref::class.java.isAssignableFrom(sharedRefClass.javaObjectType) || ref::class.java.isAssignableFrom(sharedRefClass.java)) {
+
+    if (sharedRefClass.fastIsSupperClassOf(ref.javaClass)) {
       return sharedRef
     }
 
