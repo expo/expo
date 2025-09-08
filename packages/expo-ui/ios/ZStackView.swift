@@ -20,11 +20,10 @@ internal struct ZStackView: ExpoSwiftUI.View {
   @ObservedObject var props: ZStackViewProps
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: props.alignment?.toAlignment() ?? .center) {
       Children()
     }
     .modifier(CommonViewModifiers(props: props))
     .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
-  
   }
 }
