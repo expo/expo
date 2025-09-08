@@ -13,8 +13,8 @@ import path from 'path';
 import url from 'url';
 
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
-import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 import type { ExportAssetMap } from '../../../export/saveAssets';
+import { isPossiblyUnableToResolveError } from '../../../export/xcodeCompilerLogger';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';

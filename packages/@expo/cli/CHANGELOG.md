@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support native server deployments in `export` (EAS Update)
+
 ### 🐛 Bug fixes
 
 - Fix Expo Go docs link in ExpoGoInstaller ([#39394](https://github.com/expo/expo/pull/39394) by [@amandeepmittal](https://github.com/amandeepmittal))

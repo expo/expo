@@ -275,6 +275,11 @@ class Env {
   get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
     return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
   }
+
+  /** Internal key used to pass EAS binary to EXPO CLI. */
+  get __EAS_BIN() {
+    return string('__EAS_BIN', '');
+  }
 }
 
 export const env = new Env();

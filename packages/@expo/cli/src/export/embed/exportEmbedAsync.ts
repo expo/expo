@@ -15,8 +15,6 @@ import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
-import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
-import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
@@ -33,8 +31,10 @@ import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
 import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
+import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 import { resolveRealEntryFilePath } from '../../utils/filePath';
+import { isExecutingFromXcodebuild, logMetroErrorInXcode } from '../xcodeCompilerLogger';
 
 const debug = require('debug')('expo:export:embed');
 
