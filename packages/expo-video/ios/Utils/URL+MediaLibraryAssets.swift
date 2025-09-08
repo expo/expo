@@ -14,7 +14,7 @@ extension URL {
       return self
     }
 
-    let unlockedAsset = try await requestAVAsset(url: self)
+    let unlockedAsset = try await PHImageManager.default().requestAVAsset(forURL: self)
 
     guard let accessibleUrl = (unlockedAsset as? AVURLAsset)?.url else {
       throw PlayerItemLoadException("Failed to request a usable AVAsset for \(self.absoluteString)")
@@ -24,45 +24,43 @@ extension URL {
   }
 }
 
-private func requestAVAsset(url: URL) async throws -> AVAsset? {
-  let localIdentifier = url.absoluteString.replacingOccurrences(of: "ph://", with: "")
-  let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
-  let options = PHVideoRequestOptions()
-  options.isNetworkAccessAllowed = true // Allow downloading from iCloud if needed
-
-  guard let phAsset = fetchResult.firstObject else {
-    throw PlayerItemLoadException("The provided URL: \(url), is not a valid PHAsset URL")
-  }
-
-  let requestResult = await PHImageManager.default().requestAvAsset(forVideo: phAsset, options: options)
-  if let cancelled = requestResult.info?[PHImageCancelledKey] as? Bool, cancelled {
-    throw PlayerItemLoadException("Loading request cancelled for \(url.absoluteString)")
-  }
-
-  if let error = requestResult.info?[PHImageErrorKey] as? Error {
-    throw PlayerItemLoadException("Failed to request an AVAsset for \(url.absoluteString): \(error.localizedDescription)")
-  }
-
-  return requestResult.asset
-}
-
 internal extension URL {
   var isPHAssetUrl: Bool {
     return self.absoluteString.hasPrefix("ph://")
   }
 }
 
-private struct AVAssetRequestResult {
-  var asset: AVAsset?
-  var audioMix: AVAudioMix?
-  var info: [AnyHashable: Any]?
-}
-
 private extension PHImageManager {
-  func requestAvAsset(forVideo asset: PHAsset, options: PHVideoRequestOptions?) async -> AVAssetRequestResult {
-    return await withCheckedContinuation { continuation in
-      self.requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
-        continuation.resume(returning: AVAssetRequestResult(asset: asset, audioMix: audioMix, info: info))
+  func requestAVAsset(forURL url: URL) async throws -> AVAsset? {
+    let localIdentifier = url.absoluteString.replacingOccurrences(of: "ph://", with: "")
+    let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
+    let options = PHVideoRequestOptions()
+    options.isNetworkAccessAllowed = true // Allow downloading from iCloud if needed
+
+    guard let phAsset = fetchResult.firstObject else {
+      throw PlayerItemLoadException("The provided URL: \(url), is not a valid PHAsset URL")
+    }
+
+    return try await self.requestAVAsset(forVideoAsset: phAsset, options: options)
+  }
+
+  func requestAVAsset(forVideoAsset asset: PHAsset, options: PHVideoRequestOptions?) async throws -> AVAsset? {
+    let assetId = asset.localIdentifier
+
+    return try await withCheckedThrowingContinuation { continuation in
+      self.requestAVAsset(forVideo: asset, options: options) { asset, _, info in
+        let urlString = "ph://\(assetId)"
+
+        if let cancelled = info?[PHImageCancelledKey] as? Bool, cancelled {
+          continuation.resume(throwing: PlayerItemLoadException("Loading request cancelled for \(urlString)"))
+          return
+        }
+
+        if let error = info?[PHImageErrorKey] as? Error {
+          continuation.resume(throwing: PlayerItemLoadException("Failed to request an AVAsset for \(urlString): \(error.localizedDescription)"))
+        }
+
+        continuation.resume(returning: asset)
       }
     }
   }
