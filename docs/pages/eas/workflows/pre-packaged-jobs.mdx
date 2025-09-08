@@ -1134,14 +1134,15 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter        | Type       | Description                                                                                                              |
-| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| payload          | string     | Optional. Raw markdown content to post as the comment. Takes precedence over all other parameters.                      |
-| message          | string     | Optional. Custom message to include at the top of the comment. If not provided, a default message will be used.         |
-| build_ids        | string[]   | Optional. Array of build IDs to include in the comment. Build information will be displayed in a formatted table.       |
-| update_group_ids | string[]   | Optional. Array of update group IDs to include. Updates will be displayed with QR codes for easy device testing.        |
+| Parameter        | Type     | Description                                                                                                       |
+| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| payload          | string   | Optional. Raw markdown content to post as the comment. Takes precedence over all other parameters.                |
+| message          | string   | Optional. Custom message to include at the top of the comment. If not provided, a default message will be used.   |
+| build_ids        | string[] | Optional. Array of build IDs to include in the comment. Build information will be displayed in a formatted table. |
+| update_group_ids | string[] | Optional. Array of update group IDs to include. Updates will be displayed with QR codes for easy device testing.  |
 
 > **Note**: The job operates in three modes:
+>
 > - **Payload Mode**: When `payload` is provided, posts the exact content as the comment (highest priority)
 > - **Explicit Mode**: When `build_ids` or `update_group_ids` are specified, displays only the specified builds and updates. Custom message can be set via the `message` parameter
 > - **Auto Mode**: When no `build_ids` or `update_group_ids` are specified, automatically discovers and displays all completed/failed/canceled builds and successful updates from the current workflow. Custom message can be set via the `message` parameter
@@ -1150,13 +1151,13 @@ You can pass the following parameters into the `params` list:
 
 You can reference the following outputs in subsequent jobs:
 
-| Output                 | Type   | Description                                                                                      |
-| ---------------------- | ------ | ------------------------------------------------------------------------------------------------ |
-| github_comment_posted  | string | Whether a comment was posted ('true' or 'false')                                                |
-| pr_number              | string | The PR number if the workflow was triggered by a pull request                                   |
-| comment_url            | string | URL of the posted GitHub comment (only available when comment is successfully posted)           |
-| comment_content        | string | Full content of the comment (useful for non-PR workflows to display in UI)                     |
-| note                   | string | Additional information about the job result (e.g., why a comment wasn't posted)                 |
+| Output                | Type   | Description                                                                           |
+| --------------------- | ------ | ------------------------------------------------------------------------------------- |
+| github_comment_posted | string | Whether a comment was posted ('true' or 'false')                                      |
+| pr_number             | string | The PR number if the workflow was triggered by a pull request                         |
+| comment_url           | string | URL of the posted GitHub comment (only available when comment is successfully posted) |
+| comment_content       | string | Full content of the comment (useful for non-PR workflows to display in UI)            |
+| note                  | string | Additional information about the job result (e.g., why a comment wasn't posted)       |
 
 ### Examples
 
@@ -1237,17 +1238,17 @@ jobs:
     params:
       payload: |
         ## 🚀 Build Status Update
-        
+
         ### iOS Build Completed
         - **Build ID**: `${{ needs.build_ios.outputs.build_id }}`
         - **Version**: ${{ needs.build_ios.outputs.app_version }}
         - **Build Number**: ${{ needs.build_ios.outputs.app_build_version }}
-        
+
         ### Next Steps
         1. Download the build from [EAS Dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds/${{ needs.build_ios.outputs.build_id }})
         2. Test on physical device
         3. Approve for TestFlight distribution
-        
+
         ---
         *This comment was automatically generated by EAS Workflows*
 ```
@@ -1279,7 +1280,7 @@ jobs:
     if: ${{ needs.build_android.status == 'success' }}
     type: github-comment
     params:
-      message: "✅ Android build succeeded! Ready for testing."
+      message: '✅ Android build succeeded! Ready for testing.'
       build_ids:
         - ${{ needs.build_android.outputs.build_id }}
 
@@ -1291,7 +1292,7 @@ jobs:
     params:
       payload: |
         ❌ **Android build failed**
-        
+
         Please check the [workflow logs](https://expo.dev/accounts/[account]/projects/[project]/workflows) for details.
 ```
 
