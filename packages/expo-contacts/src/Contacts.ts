@@ -1062,9 +1062,9 @@ export async function presentAccessPickerAsync(): Promise<string[]> {
 /**
  * Adds a listener for contact changes. The listener will be called whenever contacts are added, updated, or deleted.
  *
- * **Platform Differences:**
- * - **iOS**: Immediate response - uses `CNContactStoreDidChangeNotification`
+ * **Platform differences:**
  * - **Android**: 5-7 second delay - uses `ContentObserver` with inherent system delays
+ * - **iOS**: Immediate response - uses `CNContactStoreDidChangeNotification`
  *
  * The Android delay is a system limitation that affects all apps using `ContentObserver` for contacts.
  * This delay is by design to batch notifications for better performance and battery life.
@@ -1077,7 +1077,7 @@ export async function presentAccessPickerAsync(): Promise<string[]> {
  *
  * @returns A subscription object with a `remove` method to stop listening.
  * @example
- * ```js
+ * ```jsx
  * const subscription = Contacts.addContactChangeListener(() => {
  *   console.log('Contacts changed - refreshing contact list');
  *   // Refresh your contact list when changes are detected

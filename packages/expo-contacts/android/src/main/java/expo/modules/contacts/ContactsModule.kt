@@ -119,7 +119,6 @@ class ContactQuery : Record {
   val id: List<String>? = null
 }
 
-
 class QueryArguments(
   val projection: Array<String>,
   val selection: String,
@@ -146,12 +145,12 @@ class ContactsModule : Module() {
       stopObservingContactChanges()
     }
 
-    OnStartObserving {
+    OnStartObserving(onContactsChangeEventName) {
       ensureReadPermission()
       startObservingContactChanges()
     }
 
-    OnStopObserving {
+    OnStartObserving(onContactsChangeEventName) {
       stopObservingContactChanges()
     }
 
@@ -705,7 +704,9 @@ class ContactsModule : Module() {
   }
 
   private fun startObservingContactChanges() {
-    if (contactChangeObserver != null) return
+    if (contactChangeObserver != null) {
+      return
+    }
     
     val handler = Handler(Looper.getMainLooper())
     val observer = object : ContentObserver(handler) {
