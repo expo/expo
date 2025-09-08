@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `platformOptions` not being correctly assigned.
+- [Android] Fix `platformOptions` not being correctly assigned. ([#39445](https://github.com/expo/expo/pull/39445) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
