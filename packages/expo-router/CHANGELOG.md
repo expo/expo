@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix nested protected routes not taking into account the parents guard prop ([#39437](https://github.com/expo/expo/pull/39437) by [@saviocmc](https://github.com/saviocmc))
+
 ### 💡 Others
 
 ## 6.0.0-preview.16 — 2025-09-08
