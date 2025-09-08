@@ -44,6 +44,13 @@ function _fs() {
   };
   return data;
 }
+function _getenv() {
+  const data = require("getenv");
+  _getenv = function () {
+    return data;
+  };
+  return data;
+}
 function _glob() {
   const data = require("glob");
   _glob = function () {
@@ -227,6 +234,7 @@ function getConfig(projectRoot, options = {}) {
       staticConfigPath: paths.staticConfigPath,
       hasUnusedStaticConfig: !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig
     };
+    configWithDefaultValues.exp = withInternalGeneratedConfig(configWithDefaultValues.exp);
     if (options.isModdedConfig) {
       // @ts-ignore: Add the mods back to the object.
       configWithDefaultValues.exp.mods = config.mods ?? null;
@@ -629,5 +637,29 @@ function getProjectConfigDescriptionWithPaths(projectRoot, projectConfig) {
   }
   // If a config doesn't exist, our tooling will generate a static app.json
   return 'app.json';
+}
+function withInternalGeneratedConfig(config) {
+  const generatedPath = (0, _getenv().string)('__EXPO_GENERATED_CONFIG_PATH', '');
+  if (!generatedPath) {
+    console.log('No generated config found');
+    return config;
+  }
+  ;
+  let generated = null;
+  try {
+    const rawGenerated = _fs().default.readFileSync(generatedPath, 'utf8');
+    generated = JSON.parse(rawGenerated);
+  } catch {
+    console.log('Failed to parse generated config');
+  }
+  if (!generated) return config;
+  const generatedOrigin = generated['expo.extra.router.generatedOrigin'];
+  if (generatedOrigin) {
+    config.extra ??= {};
+    config.extra.router ??= {};
+    config.extra.router.generatedOrigin = generatedOrigin;
+  }
+  console.log('Applied generated config from', generatedPath);
+  return config;
 }
 //# sourceMappingURL=Config.js.map
