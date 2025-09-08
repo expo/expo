@@ -312,7 +312,7 @@ export async function exportAppAsync(
       // API Routes Deployment
       const apiRoutesEnabled =
         devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-      if (apiRoutesEnabled && !platforms.includes('web')) {
+      if (apiRoutesEnabled && (platforms.includes('ios') || platforms.includes('android'))) {
         await exportApiRoutesStandaloneAsync(devServer, {
           files,
           platform: 'web',
@@ -341,6 +341,7 @@ export async function exportAppAsync(
           saveDeploymentUrlToTmpConfigPath({
             deployedServerUrl,
             userDefinedServerUrl,
+            projectRoot,
           });
         }
       }

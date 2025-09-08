@@ -44,13 +44,6 @@ function _fs() {
   };
   return data;
 }
-function _getenv() {
-  const data = require("getenv");
-  _getenv = function () {
-    return data;
-  };
-  return data;
-}
 function _glob() {
   const data = require("glob");
   _glob = function () {
@@ -82,6 +75,13 @@ function _semver() {
 function _slugify() {
   const data = _interopRequireDefault(require("slugify"));
   _slugify = function () {
+    return data;
+  };
+  return data;
+}
+function _generatedConfig() {
+  const data = require("./generatedConfig");
+  _generatedConfig = function () {
     return data;
   };
   return data;
@@ -234,7 +234,7 @@ function getConfig(projectRoot, options = {}) {
       staticConfigPath: paths.staticConfigPath,
       hasUnusedStaticConfig: !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig
     };
-    configWithDefaultValues.exp = withInternalGeneratedConfig(configWithDefaultValues.exp);
+    configWithDefaultValues.exp = (0, _generatedConfig().withInternalGeneratedConfig)(projectRoot, configWithDefaultValues.exp);
     if (options.isModdedConfig) {
       // @ts-ignore: Add the mods back to the object.
       configWithDefaultValues.exp.mods = config.mods ?? null;
@@ -637,24 +637,5 @@ function getProjectConfigDescriptionWithPaths(projectRoot, projectConfig) {
   }
   // If a config doesn't exist, our tooling will generate a static app.json
   return 'app.json';
-}
-function withInternalGeneratedConfig(config) {
-  const generatedPath = (0, _getenv().string)('__EXPO_GENERATED_CONFIG_PATH', '');
-  if (!generatedPath) {
-    return config;
-  }
-  let generated = null;
-  try {
-    const rawGenerated = _fs().default.readFileSync(generatedPath, 'utf8');
-    generated = JSON.parse(rawGenerated);
-  } catch {}
-  if (!generated) return config;
-  const generatedOrigin = generated['expo.extra.router.generatedOrigin'];
-  if (generatedOrigin) {
-    config.extra ??= {};
-    config.extra.router ??= {};
-    config.extra.router.generatedOrigin = generatedOrigin;
-  }
-  return config;
 }
 //# sourceMappingURL=Config.js.map
