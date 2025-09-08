@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-types",
-  "version": "54.0.4",
+  "version": "54.0.7",
   "description": "Types for the Expo config object app.config.ts",
   "types": "build/ExpoConfig.d.ts",
   "main": "build/ExpoConfig.js",
@@ -37,7 +37,7 @@
     "build"
   ],
   "devDependencies": {
-    "expo-module-scripts": "^5.0.4",
+    "expo-module-scripts": "^5.0.6",
     "json-schema-to-typescript": "^14.0.5"
   },
   "publishConfig": {

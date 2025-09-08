@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '3.0.5'
+version = '3.0.10'
 
 android {
   namespace "expo.modules.video"
   defaultConfig {
     versionCode 1
-    versionName '3.0.5'
+    versionName '3.0.10'
   }
 }
 
@@ -18,7 +18,7 @@ dependencies {
   implementation 'com.facebook.react:react-android'
 
   // Remember to keep this in sync with the version in `expo-audio`
-  def androidxMedia3Version = "1.4.0"
+  def androidxMedia3Version = "1.8.0"
   implementation "androidx.media3:media3-session:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"

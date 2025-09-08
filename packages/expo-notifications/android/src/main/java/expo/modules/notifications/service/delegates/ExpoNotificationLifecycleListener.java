@@ -1,7 +1,9 @@
 package expo.modules.notifications.service.delegates;
 
+import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_RESPONSE_KEY;
+import static expo.modules.notifications.service.NotificationsService.TEXT_INPUT_NOTIFICATION_RESPONSE_KEY;
+
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,11 +12,12 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.debug.DebugLogging;
 
+// TODO vonovak consider removing this class entirely for SDK 55, its purpose is unclear
 public class ExpoNotificationLifecycleListener implements ReactActivityLifecycleListener {
 
     private NotificationManager mNotificationManager;
 
-    public ExpoNotificationLifecycleListener(Context context, NotificationManager notificationManager) {
+    public ExpoNotificationLifecycleListener(NotificationManager notificationManager) {
       mNotificationManager = notificationManager;
     }
 
@@ -33,8 +36,9 @@ public class ExpoNotificationLifecycleListener implements ReactActivityLifecycle
         if (intent != null) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                if (extras.containsKey("notificationResponse")) {
-                    Log.d("ReactNativeJS", "[native] ExpoNotificationLifecycleListener contains an unmarshaled notification response. Skipping.");
+                // only actions that have opensAppToForeground: true are handled here
+                if (extras.containsKey(NOTIFICATION_RESPONSE_KEY) || extras.containsKey(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)) {
+                    Log.d("ReactNativeJS", "[native] ExpoNotificationLifecycleListener contains an unmarshalled notification response. Skipping.");
                     return;
                 }
                 DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onCreate:", extras);
@@ -56,9 +60,11 @@ public class ExpoNotificationLifecycleListener implements ReactActivityLifecycle
     public boolean onNewIntent(Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            if (extras.containsKey("notificationResponse")) {
-                Log.d("ReactNativeJS", "[native] ExpoNotificationLifecycleListener contains an unmarshaled notification response. Skipping.");
-                intent.removeExtra("notificationResponse");
+            if (extras.containsKey(NOTIFICATION_RESPONSE_KEY) || extras.containsKey(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)) {
+                intent.removeExtra(NOTIFICATION_RESPONSE_KEY);
+                intent.removeExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY);
+                // response events are already handled by
+                // NotificationForwarderActivity -> NotificationsService.onReceiveNotificationResponse -> NotificationEmitter.onNotificationResponseReceived
                 return ReactActivityLifecycleListener.super.onNewIntent(intent);
             }
             DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onNewIntent:", extras);

@@ -28,11 +28,17 @@ class FileSystemModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
 
-    Constants(
-      "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
-      "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
-      "bundleDirectory" to "asset://"
-    )
+    Constant("documentDirectory") {
+      Uri.fromFile(context.filesDir).toString() + "/"
+    }
+
+    Constant("cacheDirectory") {
+      Uri.fromFile(context.cacheDir).toString() + "/"
+    }
+
+    Constant("bundleDirectory") {
+      "asset://"
+    }
 
     Property("totalDiskSpace") {
       File(context.filesDir.path).totalSpace
@@ -193,6 +199,10 @@ class FileSystemModule : Module() {
         file.move(destination)
       }
 
+      Function("rename") { file: FileSystemFile, newName: String ->
+        file.rename(newName)
+      }
+
       Property("uri") { file ->
         file.asString()
       }
@@ -284,6 +294,10 @@ class FileSystemModule : Module() {
 
       Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
         directory.move(destination)
+      }
+
+      Function("rename") { directory: FileSystemDirectory, newName: String ->
+        directory.rename(newName)
       }
 
       Property("uri") { directory ->

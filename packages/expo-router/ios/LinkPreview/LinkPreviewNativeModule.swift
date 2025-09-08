@@ -13,10 +13,8 @@ public class LinkPreviewNativeModule: Module {
         view.tabPath = tabPath
       }
 
-      Prop("borderRadius") { (view, borderRadius: Double?) in
-        if let borderRadius = borderRadius {
-          view.triggerBorderRadius = borderRadius
-        }
+      Prop("disableForceFlatten") { (_: NativeLinkPreviewView, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
 
       Events(

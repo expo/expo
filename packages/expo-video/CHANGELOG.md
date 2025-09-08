@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 3.0.10 — 2025-09-04
+
+### 🐛 Bug fixes
+
+- [Web] Fix fullscreen enter/exit methods and listeners not working in Safari on iOS. ([#39320](https://github.com/expo/expo/pull/39320) by [@behenate](https://github.com/behenate))
+
+## 3.0.9 — 2025-09-03
+
+### 🛠 Breaking changes
+
+- [Android] In order to show the now playing notification, the `supportsBackgroundPlayground` property of the config plugin has to be `true`. ([#38980](https://github.com/expo/expo/pull/38980) by [@kerwanp](https://github.com/kerwanp))
+
+### 🐛 Bug fixes
+
+- [Android] Fix video player stopping playback a few minutes after locking the device. ([#38980](https://github.com/expo/expo/pull/38980) by [@kerwanp](https://github.com/kerwanp))
+
+## 3.0.8 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.7 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 — 2025-08-27
+
+### 💡 Others
+
+- [Android] Bump media3 version to 1.8.0. ([#39184](https://github.com/expo/expo/pull/39184) by [@behenate](https://github.com/behenate))
+
 ## 3.0.5 — 2025-08-25
 
 ### 🛠 Breaking changes

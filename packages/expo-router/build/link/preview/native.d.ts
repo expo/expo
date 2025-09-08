@@ -21,6 +21,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
     tabPath: {
         path: TabPath[];
     } | undefined;
+    disableForceFlatten?: boolean;
     onWillPreviewOpen?: () => void;
     onDidPreviewOpen?: () => void;
     onPreviewWillClose?: () => void;

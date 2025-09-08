@@ -79,7 +79,9 @@ export const Notifier = () => {
 
     const responseListener = addNotificationResponseReceivedListener((response) => {
       setResponse(response);
-      console.log(`${Platform.OS} saw response for ${JSON.stringify(response, null, 2)}`);
+      console.log(
+        `Notifier useEffect: ${Platform.OS} saw response for ${JSON.stringify(response, null, 2)}`
+      );
     });
 
     console.log(`${Platform.OS} added listeners`);
@@ -103,7 +105,7 @@ export const Notifier = () => {
       <Text>Your expo push token:</Text>
       <Text selectable>{expoPushToken}</Text>
 
-      <Text>Your device push token</Text>
+      <Text>Your device push token:</Text>
       <Text selectable>{devicePushToken}</Text>
       <Text>{`Channels: ${JSON.stringify(
         channels.map((c: { id: string }) => c.id),

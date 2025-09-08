@@ -65,6 +65,7 @@ describe(extractExpoPathFromURL, () => {
         'invalid',
         'scheme_with|unusual%characters:///',
         'scheme_with|unusual%characters://expo.host/?hello-bar',
+        '/?url=https://expo.dev',
       ])(`parses %p`, (url) => {
         expo.modules.ExpoGo = exenv;
 

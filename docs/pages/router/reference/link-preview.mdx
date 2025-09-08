@@ -36,12 +36,12 @@ By default, the link preview is rendered as a full-sized page snapshot. There ar
 
 ### Custom size
 
-You can use the `width` and `height` props to suggest a preferred preview size. The system will consider these preferences but may override them based on available space or platform behavior.
+You can use `width` and `height` to suggest a preferred preview size. The system will consider these preferences but may override them based on available space or platform behavior.
 
 ```tsx
 <Link href="...">
   <Link.Trigger>Content</Link.Trigger>
-  <Link.Preview height={300} />
+  <Link.Preview style={{ width: 300, height: 200 }} />
 </Link>
 ```
 
@@ -67,7 +67,7 @@ export default function Page() {
     <Link href="/about">
       <Link.Trigger>About</Link.Trigger>
       <Link.Trigger>Content</Link.Trigger>
-      <Link.Preview width={screenWidth} height={previewHeight}>
+      <Link.Preview style={{ width, height: previewHeight }}>
         <Image
           onLoad={e => setImageSize(e.nativeEvent.source)}
           source={source}

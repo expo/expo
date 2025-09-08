@@ -25,6 +25,7 @@ export default function Dynamic() {
         gap: 16,
       }}>
       <NativeTabs.Trigger>
+        <NativeTabs.Trigger.TabBar backgroundColor="#fff" disableTransparentOnScrollEdge />
         <Label>{labelValue}</Label>
         <Badge>{badgeValue}</Badge>
         <Icon sf={iconName as SFSymbol} drawable={iconName} />

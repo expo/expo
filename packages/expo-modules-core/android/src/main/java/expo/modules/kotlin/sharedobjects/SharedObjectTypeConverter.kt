@@ -10,7 +10,6 @@ import expo.modules.kotlin.types.NonNullableTypeConverter
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
-import kotlin.reflect.full.isSuperclassOf
 
 class SharedObjectTypeConverter<T : SharedObject>(
   val type: KType
@@ -74,7 +73,7 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
     val ref = sharedRef.ref ?: return sharedRef
     val sharedRefClass = sharedRefType?.classifier as? KClass<*>
       ?: return sharedRef
-    if (sharedRefClass.isSuperclassOf(ref.javaClass.kotlin)) {
+    if (ref::class.java.isAssignableFrom(sharedRefClass.javaObjectType) || ref::class.java.isAssignableFrom(sharedRefClass.java)) {
       return sharedRef
     }
 

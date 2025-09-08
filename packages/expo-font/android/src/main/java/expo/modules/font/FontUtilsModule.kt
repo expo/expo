@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.Typeface
 import android.net.Uri
 import com.facebook.react.common.assets.ReactFontManager
@@ -19,7 +18,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.UUID
-import kotlin.math.abs
+import kotlin.math.ceil
 
 private class SaveImageException(uri: String, cause: Throwable? = null) :
   CodedException("Could not save image to '$uri'", cause)
@@ -36,33 +35,42 @@ open class FontUtilsModule : Module() {
 
       val paint = Paint().apply {
         this.typeface = typeface
-        this.color = options.color
-        this.textSize = options.size
-        this.isAntiAlias = true
+        color = options.color
+        textSize = options.size
+        isAntiAlias = true
       }
 
-      val bounds = Rect().also {
-        paint.getTextBounds(glyphs, 0, glyphs.length, it)
-      }
+      val fontMetrics = paint.fontMetrics
 
-      val bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888)
+      val width = ceil(paint.measureText(glyphs)).toInt()
+
+      // Calculate height based on font metrics to ensure enough space
+      // This gives the maximum height the font might occupy. Could be more than strictly needed but aligns with iOS.
+      val height = ceil(fontMetrics.descent - fontMetrics.ascent).toInt()
+
+      val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
       val canvas = Canvas(bitmap)
 
-      val x = abs(bounds.left).toFloat()
-      val y = bounds.height().toFloat() / 2 - ((paint.fontMetrics.ascent + paint.fontMetrics.descent) / 2)
-
-      canvas.drawText(glyphs, x, y, paint)
+      // The `drawText` method's y-parameter is the baseline of the text.
+      // To draw the text starting from the very top of the bitmap,
+      // the baseline should be at -fontMetrics.ascent.
+      // For most characters, text may appear vertically centered, but try with characters like Å or Ç
+      val yBaseline = -fontMetrics.ascent
+      canvas.drawText(glyphs, 0f, yBaseline, paint)
 
       val output = File(context.cacheDir, "${UUID.randomUUID()}.png")
-      if (!output.exists()) {
-        output.createNewFile()
-      }
 
       try {
         FileOutputStream(output).use { out ->
           bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-          promise.resolve(Uri.fromFile(output))
         }
+        promise.resolve(
+          mapOf(
+            "uri" to Uri.fromFile(output).toString(),
+            "width" to bitmap.width,
+            "height" to bitmap.height
+          )
+        )
       } catch (e: IOException) {
         promise.reject(SaveImageException(output.absolutePath, e))
       }

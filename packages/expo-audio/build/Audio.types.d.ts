@@ -21,8 +21,27 @@ export type AudioSource = string | number | null | {
  */
 export type AudioPlayerOptions = {
     /**
-     * How often (in milliseconds) to emit playback status updates.
-     * @default 500
+     * How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+     *
+     * @example
+     * ```tsx
+     * import { useAudioPlayer } from 'expo-audio';
+     *
+     * export default function App() {
+     *   const player = useAudioPlayer(source);
+     *
+     *   // High-frequency updates for smooth progress bars
+     *   const player = useAudioPlayer(source, { updateInterval: 100 });
+     *
+     *   // Standard updates (default behavior)
+     *   const player = useAudioPlayer(source, { updateInterval: 500 });
+     *
+     *   // Low-frequency updates for better performance
+     *   const player = useAudioPlayer(source, { updateInterval: 1000 });
+     * }
+     * ```
+     *
+     * @default 500ms
      *
      * @platform ios
      * @platform android
@@ -65,6 +84,19 @@ export type AudioPlayerOptions = {
      * @default undefined
      */
     crossOrigin?: 'anonymous' | 'use-credentials';
+    /**
+     * If set to `true`, the audio session will not be deactivated when this player pauses or finishes playback.
+     * This prevents interrupting other audio sources (like videos) when the audio ends.
+     *
+     * Useful for sound effects that should not interfere with ongoing video playback or other audio.
+     * The audio session for this player will not be deactivated automatically when the player finishes playback.
+     *
+     * > **Note:** If needed, you can manually deactivate the audio session using `setIsAudioActiveAsync(false)`.
+     *
+     * @platform ios
+     * @default false
+     */
+    keepAudioSessionActive?: boolean;
 };
 /**
  * @deprecated Use `AudioPlayerOptions` instead.

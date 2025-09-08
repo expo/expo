@@ -145,6 +145,6 @@ export function presentUnknownContactFormAsync({
 export function presentContactInfoFormAsync({
   contact,
   options,
-}: { contact?: Contacts.Contact; options?: Contacts.FormOptions } = {}) {
+}: { contact?: Contacts.ExistingContact; options?: Contacts.FormOptions } = {}) {
   return Contacts.presentFormAsync(contact!.id, null, { ...options, isNew: false });
 }

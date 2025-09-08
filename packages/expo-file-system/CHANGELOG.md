@@ -10,6 +10,29 @@
 
 ### 💡 Others
 
+## 19.0.9 — 2025-09-03
+
+### 🎉 New features
+
+- Add stubs for legacy methods imported from "expo-file-system". ([#39244](https://github.com/expo/expo/pull/39244) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compile error. ([#39345](https://github.com/expo/expo/pull/39345) by [@douglowder](https://github.com/douglowder))
+
+## 19.0.8 — 2025-09-02
+
+### 🎉 New features
+
+- [iOS] Add `pickFileAsync` support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
+
+## 19.0.7 — 2025-08-31
+
+### 🎉 New features
+
+- Add `rename` method for files and directories ([#39138](https://github.com/expo/expo/pull/39138) by [@kosmydel](https://github.com/kosmydel))
+- Add `idempotent` option for creating directories ([#39121](https://github.com/expo/expo/pull/39121) by [@kosmydel](https://github.com/kosmydel))
+
 ## 19.0.6 — 2025-08-26
 
 _This version does not introduce any user-facing changes._
@@ -37,6 +60,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 19.0.0 — 2025-08-13
 

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -20,28 +19,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
-import com.composeunstyled.Icon
-import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.DefaultScreenContainer
 import expo.modules.devlauncher.compose.Update
 import expo.modules.devlauncher.compose.models.BranchAction
 import expo.modules.devlauncher.compose.primitives.CircularProgressBar
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
+import expo.modules.devlauncher.compose.ui.LauncherIcons
 import expo.modules.devlauncher.compose.utils.DateFormat
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun BranchScreen(
@@ -64,13 +59,9 @@ fun BranchScreen(
         Button(
           onClick = goBack
         ) {
-          Icon(
-            painter = painterResource(R.drawable.chevron_right_icon),
-            contentDescription = "Back icon",
-            tint = NewAppTheme.colors.icon.default,
-            modifier = Modifier
-              .rotate(180f)
-              .size(20.dp)
+          LauncherIcons.Chevron(
+            size = 20.dp,
+            tint = NewAppTheme.colors.icon.default
           )
         }
       }
@@ -136,11 +127,9 @@ fun BranchScreen(
                   .fillMaxWidth()
                   .padding(NewAppTheme.spacing.`3`)
               ) {
-                Icon(
-                  painter = painterResource(R.drawable.update_icon),
-                  contentDescription = "Update Icon",
-                  tint = NewAppTheme.colors.icon.tertiary,
-                  modifier = Modifier.size(20.dp)
+                LauncherIcons.Updates(
+                  size = 20.dp,
+                  tint = NewAppTheme.colors.icon.tertiary
                 )
 
                 Column(
@@ -173,11 +162,9 @@ fun BranchScreen(
                   }
                 }
 
-                Icon(
-                  painter = painterResource(R.drawable.chevron_right),
-                  contentDescription = "Chevron Icon",
-                  tint = NewAppTheme.colors.icon.tertiary,
-                  modifier = Modifier.size(16.dp)
+                LauncherIcons.Chevron(
+                  size = 16.dp,
+                  tint = NewAppTheme.colors.icon.tertiary
                 )
               }
             }
@@ -200,7 +187,7 @@ fun BranchScreen(
                 verticalAlignment = Alignment.CenterVertically
               ) {
                 CircularProgressBar(
-                  size = Theme.sizing.icon.large
+                  size = 44.dp
                 )
               }
             }
