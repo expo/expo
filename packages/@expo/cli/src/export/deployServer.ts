@@ -23,7 +23,7 @@ export async function runServerDeployCommandAsync(
   const logOfflineError = () => {
     const manualScript = deployScript
       ? `npm run ${deployScript.scriptName}`
-      : `npx eas deploy --export-dir ${distDirectory}`;
+      : `npx eas-cli@latest deploy --export-dir ${distDirectory}`;
 
     logMetroErrorInXcode(
       projectRoot,

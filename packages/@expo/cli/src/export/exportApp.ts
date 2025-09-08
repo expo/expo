@@ -312,7 +312,7 @@ export async function exportAppAsync(
       // API Routes Deployment
       const apiRoutesEnabled =
         devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-      if (apiRoutesEnabled && (platforms.includes('ios') || platforms.includes('android'))) {
+      if (apiRoutesEnabled && !platforms.includes('web')) {
         await exportApiRoutesStandaloneAsync(devServer, {
           files,
           platform: 'web',
