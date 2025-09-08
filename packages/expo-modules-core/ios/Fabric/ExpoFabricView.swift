@@ -21,11 +21,6 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    */
   lazy var viewManagerPropDict: [String: AnyViewProp]? = viewDefinition?.propsDict()
 
-  /**
-   A dictionary to store previous prop values for change detection.
-   */
-  private var previousProps: [String: Any] = [:]
-
   // MARK: - Initializers
 
   // swiftlint:disable unavailable_function
@@ -84,36 +79,14 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     }
     for (key, prop) in propsDict {
       let newValue = props[key] as Any
-      let convertedNewValue = Conversions.fromNSObject(newValue)
-      let previousValue = previousProps[key]
 
-      // only set the prop if the value has changed
-      if !areValuesEqual(previousValue, convertedNewValue) {
-        // TODO: @tsapeta: Figure out better way to rethrow errors from here.
-        // Adding `throws` keyword to the function results in different
-        // method signature in Objective-C. Maybe just call `RCTLogError`?
-        try? prop.set(value: convertedNewValue, onView: self, appContext: context)
-
-        previousProps[key] = convertedNewValue
-      }
+      // TODO: @tsapeta: Figure out better way to rethrow errors from here.
+      // Adding `throws` keyword to the function results in different
+      // method signature in Objective-C. Maybe just call `RCTLogError`?
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: self, appContext: context)
     }
   }
 
-  /**
-   Helper function to compare two values for equality using string representation.
-   */
-  private func areValuesEqual(_ lhs: Any?, _ rhs: Any?) -> Bool {
-    switch (lhs, rhs) {
-    case (nil, nil):
-      return true
-    case let (lhsValue as AnyHashable, rhsValue as AnyHashable):
-      return lhsValue == rhsValue
-    case let (lhsValue as NSObjectProtocol, rhsValue as NSObjectProtocol):
-      return lhsValue.isEqual(rhsValue)
-    default:
-      return false
-    }
-  }
   /**
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */
