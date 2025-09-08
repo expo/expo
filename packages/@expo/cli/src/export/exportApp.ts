@@ -4,6 +4,7 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
+import { string } from 'getenv';
 import path from 'path';
 
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
@@ -45,6 +46,8 @@ import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTempla
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
+
+const debug = require('debug')('expo:export');
 
 export async function exportAppAsync(
   projectRoot: string,
@@ -162,47 +165,6 @@ export async function exportAppAsync(
       // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
       // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
       await copyPublicFolderAsync(publicPath, outputPath);
-    }
-
-    const apiRoutesEnabled =
-      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-    // Only export server for native updates if API routes are enabled.
-    if (apiRoutesEnabled && (platforms.includes('ios') || platforms.includes('android'))) {
-      await exportApiRoutesStandaloneAsync(devServer, {
-        files,
-        platform: 'web',
-        apiRoutesOnly: true,
-      });
-
-      // Copy over public folder items
-      await copyPublicFolderAsync(publicPath, outputPath);
-
-      // Copy over the server output on top of the public folder.
-      await persistMetroFilesAsync(files, outputPath);
-
-      // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
-      const userDefinedServerUrl = exp.extra?.router?.origin;
-
-      // Add an opaque flag to disable server deployment.
-      if (env.EXPO_NO_DEPLOY) {
-        Log.log('Skipping server deployment because environment variable EXPO_NO_DEPLOY is set.');
-        Log.log();
-      } else {
-        const deployedServerUrl = await runServerDeployCommandAsync(projectRoot, {
-          distDirectory: outputDir,
-          deployScript: getServerDeploymentScript(projectConfig.pkg.scripts),
-        });
-
-        if (deployedServerUrl && userDefinedServerUrl == null) {
-          files.set('server-deployment.json', {
-            contents: JSON.stringify({ serverUrl: deployedServerUrl }),
-          });
-        } else if (deployedServerUrl && userDefinedServerUrl) {
-          Log.log(
-            `Using custom server URL: ${userDefinedServerUrl} (ignoring deployment URL: ${deployedServerUrl})`
-          );
-        }
-      }
     }
 
     let templateHtml: string | undefined;
@@ -346,6 +308,63 @@ export async function exportAppAsync(
           }
         })
       );
+
+      // API Routes Deployment
+      const apiRoutesEnabled =
+        devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
+      if (apiRoutesEnabled && (platforms.includes('ios') || platforms.includes('android'))) {
+        await exportApiRoutesStandaloneAsync(devServer, {
+          files,
+          platform: 'web',
+          apiRoutesOnly: true,
+        });
+
+        // Copy over public folder items
+        await copyPublicFolderAsync(publicPath, outputPath); // TODO: Should be /client or /server?
+
+        // Copy over the server output on top of the public folder.
+        await persistMetroFilesAsync(files, outputPath);
+
+        // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
+        const userDefinedServerUrl = exp.extra?.router?.origin;
+
+        // Add an opaque flag to disable server deployment.
+        if (env.EXPO_NO_DEPLOY) {
+          Log.log('Skipping server deployment because environment variable EXPO_NO_DEPLOY is set.');
+          Log.log();
+        } else {
+          const deployedServerUrl = await runServerDeployCommandAsync(projectRoot, {
+            distDirectory: outputDir,
+            deployScript: getServerDeploymentScript(projectConfig.pkg.scripts),
+          });
+
+          if (deployedServerUrl && userDefinedServerUrl == null) {
+            const generatedConfigPath = string('__EXPO_GENERATED_CONFIG_PATH', '');
+            if (generatedConfigPath) {
+              let generatedConfig: Record<string, unknown> = {};
+              try {
+                const rawGeneratedConfig = fs.readFileSync(generatedConfigPath, 'utf8');
+                generatedConfig = JSON.parse(rawGeneratedConfig);
+              } catch {}
+
+              generatedConfig['expo.extra.router.generatedOrigin'] = deployedServerUrl;
+              try {
+                fs.writeFileSync(generatedConfigPath, JSON.stringify(generatedConfig), 'utf8');
+                Log.log(`Using deployed server URL: ${deployedServerUrl}`);
+              } catch (error) {
+                Log.error('Failed to save deployed URL.');
+                debug(error);
+              }
+            } else {
+              debug('No generated config found');
+            }
+          } else if (deployedServerUrl && userDefinedServerUrl) {
+            Log.log(
+              `Using custom server URL: ${userDefinedServerUrl} (ignoring deployment URL: ${deployedServerUrl})`
+            );
+          }
+        }
+      }
 
       if (devServer.isReactServerComponentsEnabled) {
         const isWeb = platforms.includes('web');
