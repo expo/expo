@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoFileSystem.web.d.ts","sourceRoot":"","sources":["../src/ExpoFileSystem.web.ts"],"names":[],"mappings":"AAAA,cAAM,cAAc;CAAG;AAEvB,cAAM,mBAAmB;CAAG;;;;;;;;;;;;;AAE5B,wBAWE"}
+{"version":3,"file":"ExpoFileSystem.web.d.ts","sourceRoot":"","sources":["../src/ExpoFileSystem.web.ts"],"names":[],"mappings":"AAAA,cAAM,cAAc;;CAInB;AAED,cAAM,mBAAmB;;CAIxB;;;;;;;6BAQuB,MAAM;iCAGF,MAAM;gCAGP,MAAM;6BAGT,MAAM;8BAGL,MAAM;;AAlB/B,wBAqBE"}
