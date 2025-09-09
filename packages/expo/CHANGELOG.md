@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile
+- [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
 
 ## 54.0.0-preview.16 — 2025-09-08
 
