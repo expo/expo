@@ -1,8 +1,8 @@
 package expo.modules.calendar.next.permissions
 
 import android.Manifest
+import expo.modules.calendar.next.exceptions.CalendarPermissionException
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.CodedException
 class CalendarPermissionsDelegate(private val appContext: AppContext) {
 
   private fun hasReadPermissions(): Boolean {
@@ -17,13 +17,13 @@ class CalendarPermissionsDelegate(private val appContext: AppContext) {
   
   fun requireReadPermissions() {
     if (!hasReadPermissions()) {
-      throw CodedException("Read permission not found")
+      throw CalendarPermissionException("Read permission not found")
     }
   }
   
   fun requireWritePermissions() {
     if (!hasWritePermissions()) {
-      throw CodedException("Write permission not found")
+      throw CalendarPermissionException("Write permission not found")
     }
   }
   

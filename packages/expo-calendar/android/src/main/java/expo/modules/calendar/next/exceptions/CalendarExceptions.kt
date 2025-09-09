@@ -15,3 +15,6 @@ class CalendarCouldNotBeUpdatedException(message: String, cause: Throwable? = nu
 
 class CalendarParsingException(message: String, cause: Throwable? = null)
   : CodedException(message, cause)
+
+class CalendarPermissionException(message: String, cause: Throwable? = null)
+  : CodedException(message, cause)

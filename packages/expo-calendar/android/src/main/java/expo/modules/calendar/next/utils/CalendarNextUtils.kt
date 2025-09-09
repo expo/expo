@@ -15,28 +15,7 @@ import kotlinx.coroutines.withContext
 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
   timeZone = TimeZone.getTimeZone("GMT")
 }
-
-fun dateToMilliseconds(stringValue: String?): Long? {
-  if (stringValue == null) {
-    return null
-  }
-  val parsedDate = sdf.parse(stringValue)
-    ?: return null
-  val cal = Calendar.getInstance().apply {
-    time = parsedDate
-  }
-  return cal.timeInMillis
-}
-
-fun dateToString(longValue: Long?): String? {
-  if (longValue == null) {
-    return null
-  }
-  val cal = Calendar.getInstance().apply {
-    timeInMillis = longValue
-  }
-  return sdf.format(cal.time)
-}
+val rrFormat = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
 
 suspend fun findEvents(contentResolver: ContentResolver, startDate: Any, endDate: Any, calendars: List<String>): Cursor {
   return withContext(Dispatchers.IO) {
@@ -93,23 +72,5 @@ private fun setDateInCalendar(calendar: Calendar, date: Any) {
     else -> {
       throw EventDateTimeInvalidException("Date has unsupported type")
     }
-  }
-}
-
-internal fun removeRemindersForEvent(contentResolver: ContentResolver, eventID: Int) {
-  val projection = arrayOf(
-    CalendarContract.Reminders._ID
-  )
-  val cursor = CalendarContract.Reminders.query(
-    contentResolver,
-    eventID.toLong(),
-    projection
-  )
-  
-  val idIndex = cursor.getColumnIndex(CalendarContract.Reminders._ID)
-  
-  while (cursor.moveToNext()) {
-    val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(idIndex))
-    contentResolver.delete(reminderUri, null, null)
   }
 }

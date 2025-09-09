@@ -1,5 +1,6 @@
 package expo.modules.calendar.next.records
 
+import android.provider.CalendarContract
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -47,8 +48,22 @@ enum class CalendarAccessLevel(val value: String) {
   ROOT("root"),
   NONE("none");
 
+  fun toAndroidValue(): Int {
+    return when (this) {
+      OWNER -> CalendarContract.Calendars.CAL_ACCESS_OWNER
+      EDITOR -> CalendarContract.Calendars.CAL_ACCESS_EDITOR
+      CONTRIBUTOR -> CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
+      READ -> CalendarContract.Calendars.CAL_ACCESS_READ
+      RESPOND -> CalendarContract.Calendars.CAL_ACCESS_RESPOND
+      FREEBUSY -> CalendarContract.Calendars.CAL_ACCESS_FREEBUSY
+      OVERRIDE -> CalendarContract.Calendars.CAL_ACCESS_OVERRIDE
+      ROOT -> CalendarContract.Calendars.CAL_ACCESS_ROOT
+      NONE -> CalendarContract.Calendars.CAL_ACCESS_NONE
+    }
+  }
+
   companion object {
-    fun fromAccessLevelString(accessLevelString: String?): CalendarAccessLevel? {
+    fun fromAccessLevelString(accessLevelString: String?): CalendarAccessLevel {
       return entries.find { it.value == accessLevelString } ?: NONE
     }
   }

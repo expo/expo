@@ -105,14 +105,14 @@ class ExpoCalendarAttendee(
 
   private fun buildAttendeeContentValues(attendeeRecord: AttendeeRecord, eventId: Int?): ContentValues {
     val values = ContentValues()
-    if (eventId != null) {
-      values.put(CalendarContract.Attendees.EVENT_ID, eventId)
-    }
+
+    eventId?.let { values.put(CalendarContract.Attendees.EVENT_ID, it) }
     attendeeRecord.email?.let { values.put(CalendarContract.Attendees.ATTENDEE_EMAIL, it) }
     attendeeRecord.role?.let { values.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, attendeeRelationshipConstantMatchingString(it.value)) }
     attendeeRecord.type?.let { values.put(CalendarContract.Attendees.ATTENDEE_TYPE, attendeeTypeConstantMatchingString(it.value)) }
     attendeeRecord.status?.let { values.put(CalendarContract.Attendees.ATTENDEE_STATUS, attendeeStatusConstantMatchingString(it.value)) }
     attendeeRecord.name?.let { values.put(CalendarContract.Attendees.ATTENDEE_NAME, it) }
+
     return values
   }
 }

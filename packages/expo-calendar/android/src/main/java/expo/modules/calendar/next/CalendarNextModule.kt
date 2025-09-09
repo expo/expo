@@ -27,6 +27,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class CalendarNextModule : Module() {
   private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
   private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
+
   private val permissionsDelegate by lazy {
     CalendarPermissionsDelegate(appContext)
   }
@@ -53,7 +54,11 @@ class CalendarNextModule : Module() {
     }
 
     AsyncFunction("requestCalendarPermissions") { promise: Promise ->
-      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+      Permissions.askForPermissionsWithPermissionsManager(
+        appContext.permissions, promise,
+        Manifest.permission.READ_CALENDAR,
+        Manifest.permission.WRITE_CALENDAR
+      )
     }
 
     AsyncFunction("listEvents") Coroutine { calendarIds: List<String>, startDate: String, endDate: String ->
@@ -160,7 +165,9 @@ class CalendarNextModule : Module() {
 
       AsyncFunction("delete") Coroutine { expoCalendar: ExpoCalendar ->
         permissionsDelegate.requireSystemPermissions(true)
-        check(expoCalendar.deleteCalendar()) { throw CalendarCouldNotBeDeletedException("An error occurred while deleting calendar") }
+        if (!expoCalendar.deleteCalendar()) {
+          throw CalendarCouldNotBeDeletedException("An error occurred while deleting calendar")
+        }
       }
     }
 
@@ -279,7 +286,7 @@ class CalendarNextModule : Module() {
           startNewActivityTask = rawParams?.startNewActivityTask ?: true
         )
         viewEventLauncher.launch(params)
-        val editResult = CreateEventIntentResult()
+        val editResult = CreateEventIntentResult(id = eventId)
         return@Coroutine editResult
       }
 

@@ -13,13 +13,14 @@ import expo.modules.calendar.next.records.EventAccessLevel
 import expo.modules.calendar.next.records.EventAvailability
 import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.EventStatus
-import expo.modules.calendar.next.utils.dateToString
 import expo.modules.calendar.next.records.AlarmMethod
 import expo.modules.calendar.END_DATE_INDEX
 import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.CalendarAccessLevel
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.records.Source
+import expo.modules.calendar.next.utils.sdf
+import java.util.Calendar
 
 fun Cursor.toCalendarRecord() : CalendarRecord {
   val accessLevel = optInt( CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
@@ -162,4 +163,14 @@ private fun serializeAlarms(contentResolver: ContentResolver, eventId: String): 
     alarms.add(thisAlarm)
   }
   return alarms
+}
+
+private fun dateToString(longValue: Long?): String? {
+  if (longValue == null) {
+    return null
+  }
+  val cal = Calendar.getInstance().apply {
+    timeInMillis = longValue
+  }
+  return sdf.format(cal.time)
 }

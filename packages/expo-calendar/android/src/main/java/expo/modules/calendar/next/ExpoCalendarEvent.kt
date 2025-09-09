@@ -93,16 +93,18 @@ class ExpoCalendarEvent(
       if (this@ExpoCalendarEvent.eventRecord?.id != null) {
         // Update current event
         val eventID = this@ExpoCalendarEvent.eventRecord?.id?.toIntOrNull()
-        if (eventID == null) {
-          throw EventNotFoundException("Event ID is required")
-        }
+          ?: throw EventNotFoundException("Event ID is required")
+
         val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
         val contentResolver = reactContext.contentResolver
+
         contentResolver.update(updateUri, eventBuilder.build(), null, null)
         removeRemindersForEvent(contentResolver, eventID)
+
         if (eventRecord.alarms != null) {
           createRemindersForEvent(eventID, eventRecord.alarms)
         }
+
         eventID
       } else {
         // Create a new event
@@ -136,36 +138,38 @@ class ExpoCalendarEvent(
   suspend fun deleteEvent() {
     withContext(Dispatchers.IO) {
       val eventID = eventRecord?.id?.toInt()
+        ?: throw EventCouldNotBeDeletedException("Event ID is required")
+
       val contentResolver = reactContext.contentResolver
-      if (eventID == null) {
-        throw EventCouldNotBeDeletedException("Event ID is required")
-      }
+
       if (options?.futureEvents == null || options?.futureEvents == false) {
-        val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
-        val rows = contentResolver.delete(uri, null, null)
-        if (rows > 0) {
-          eventRecord = null
-        } else {
-          throw EventCouldNotBeDeletedException("Event could not be deleted")
-        }
+        val url = ContentUris.withAppendedId(
+          CalendarContract.Events.CONTENT_URI,
+          eventID.toLong()
+        )
+        contentResolver
+          .delete(url, null, null)
+          .takeIf { it > 0 }
+          ?.let {
+            eventRecord = null
+          } ?: throw EventCouldNotBeDeletedException("Event could not be deleted")
+
       } else {
         // Get the exact occurrence and create an exception for it
         val exceptionValues = ContentValues()
         val startCal = Calendar.getInstance()
         val instanceStartDate = options?.instanceStartDate
-        val dateString = instanceStartDate ?: eventRecord?.startDate
 
-        if (dateString == null) {
-          throw EventCouldNotBeDeletedException("Event start date is required")
-        }
+        val dateString = instanceStartDate ?: eventRecord?.startDate
+          ?: throw EventCouldNotBeDeletedException("Event start date is required")
+
         val parsedDate = sdf.parse(dateString)
-        if (parsedDate != null) {
-          startCal.time = parsedDate
-          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.timeInMillis)
-        } else {
-          throw EventCouldNotBeDeletedException("Event start date could not be parsed")
-        }
+          ?: throw EventCouldNotBeDeletedException("Event start date could not be parsed")
+
+        startCal.time = parsedDate
+        exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.timeInMillis)
         exceptionValues.put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED)
+
         val exceptionUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_EXCEPTION_URI, eventID.toLong())
         contentResolver.insert(exceptionUri, exceptionValues)
       }
@@ -175,12 +179,12 @@ class ExpoCalendarEvent(
   suspend fun reloadEvent(eventId: String? = null) {
     withContext(Dispatchers.IO) {
       val eventID = (eventId ?: eventRecord?.id)?.toIntOrNull()
-      if (eventID == null) {
-        throw EventNotFoundException("Event ID is required")
-      }
+        ?: throw EventNotFoundException("Event ID is required")
+
       val contentResolver = reactContext.contentResolver
       val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
       val cursor = contentResolver.query(uri, findEventByIdQueryParameters, null, null, null)
+
       requireNotNull(cursor) { "Cursor shouldn't be null" }
       cursor.use {
         if (it.count > 0) {
@@ -195,15 +199,15 @@ class ExpoCalendarEvent(
     return withContext(Dispatchers.IO) {
       try {
         val eventID = eventRecord?.id?.toLong()
-        if (eventID == null) {
-          throw EventNotFoundException("Event ID is required")
-        }
+          ?: throw EventNotFoundException("Event ID is required")
+
         val contentResolver = reactContext.contentResolver
         val cursor = CalendarContract.Attendees.query(
           contentResolver,
           eventID,
           findAttendeesByEventIdQueryParameters
         )
+
         cursor.use { serializeExpoCalendarAttendees(it) }
       } catch (e: Exception) {
         throw AttendeeNotFoundException("Attendees could not be found", e)

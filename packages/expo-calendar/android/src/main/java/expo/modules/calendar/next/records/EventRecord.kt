@@ -3,7 +3,6 @@ package expo.modules.calendar.next.records
 import android.provider.CalendarContract
 import expo.modules.calendar.accessConstantMatchingString
 import expo.modules.calendar.availabilityConstantMatchingString
-import expo.modules.calendar.next.utils.dateFormat
 import expo.modules.calendar.next.utils.rrFormat
 import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.records.Field
@@ -78,9 +77,9 @@ data class RecurrenceRuleRecord(
    * Returns the endDate in RRULE format, or null if endDate is null or invalid.
    */
   fun toRrFormat(): RecurrenceRuleRecord? {
-    return endDate?.let {
-      sdf.parse(it)?.let { date -> copy(endDate = rrFormat.format(date)) } ?: this
-    } ?: this
+    val endDate = endDate ?: return this
+    val parseDate = sdf.parse(endDate) ?: return this
+    return copy(endDate = rrFormat.format(parseDate))
   }
   companion object {
     fun fromRrFormat(rrule: String?): RecurrenceRuleRecord? {
@@ -99,9 +98,10 @@ data class RecurrenceRuleRecord(
         .toMap()
 
       return RecurrenceRuleRecord(
-        endDate = ruleMap["UNTIL"]?.takeIf { it.isNotBlank() }
+        endDate = ruleMap["UNTIL"]
+          ?.takeIf { it.isNotBlank() }
           ?.let { rrFormat.parse(it) }
-          ?.let { dateFormat.format(it) },
+          ?.let { sdf.format(it) },
         frequency = ruleMap["FREQ"]?.lowercase(Locale.getDefault()),
         interval = ruleMap["INTERVAL"]?.toIntOrNull(),
         occurrence = ruleMap["COUNT"]?.toIntOrNull()
@@ -120,11 +120,7 @@ data class RecurringEventOptions(
 enum class EventAvailability(val value: String) : Enumerable {
   BUSY("busy"),
   FREE("free"),
-  TENTATIVE("tentative"),
-
-  // iOS only, not supported on Android:
-  NOT_SUPPORTED("notSupported"),
-  UNAVAILABLE("unavailable");
+  TENTATIVE("tentative");
 
   fun toAndroidValue(availability: EventAvailability?): Int? {
     return availability?.value?.let { availabilityConstantMatchingString(it) }
@@ -143,10 +139,7 @@ enum class EventAvailability(val value: String) : Enumerable {
 enum class EventStatus(val value: String) : Enumerable {
   CONFIRMED("confirmed"),
   TENTATIVE("tentative"),
-  CANCELED("canceled"),
-
-  // iOS only, not supported on Android:
-  NONE("none");
+  CANCELED("canceled");
 
   fun toAndroidValue(status: EventStatus?): Int = when (status) {
     CONFIRMED -> CalendarContract.Events.STATUS_CONFIRMED
@@ -216,11 +209,7 @@ enum class AlarmMethod(val value: String) : Enumerable {
         ?.split(",")
         ?.filter { it.isNotBlank() }
         ?.map { reminderString ->
-          try {
-            entries.find { it.value == reminderString } ?: DEFAULT
-          } catch (_: Exception) {
-            DEFAULT
-          }
+          entries.find { it.value == reminderString } ?: DEFAULT
         } ?: emptyList()
     }
   }
