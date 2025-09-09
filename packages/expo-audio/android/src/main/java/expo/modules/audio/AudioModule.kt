@@ -110,7 +110,8 @@ class AudioModule : Module() {
   }
 
   private fun shouldReleaseFocus(): Boolean {
-    return players.values.none { it.ref.isPlaying }
+    // Release focus if no players are playing OR if interruption mode is MIX_WITH_OTHERS
+    return players.values.none { it.ref.isPlaying } || interruptionMode == InterruptionMode.MIX_WITH_OTHERS
   }
 
   private fun requestAudioFocus() {
@@ -179,9 +180,32 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
+      val previousMode = interruptionMode
       staysActiveInBackground = mode.shouldPlayInBackground
       interruptionMode = mode.interruptionMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
+
+      // Apply focus changes based on interruption mode change
+      mode.interruptionMode?.let { newMode ->
+        when {
+          // If switching to MIX_WITH_OTHERS, release focus if we have it
+          newMode == InterruptionMode.MIX_WITH_OTHERS && focusAcquired -> {
+            releaseAudioFocus()
+          }
+          // If switching from MIX_WITH_OTHERS to another mode and we have playing audio, request focus
+          previousMode == InterruptionMode.MIX_WITH_OTHERS && newMode != InterruptionMode.MIX_WITH_OTHERS && players.values.any { it.ref.isPlaying } -> {
+            requestAudioFocus()
+          }
+          // If we have focus but should release it based on new mode, release it
+          focusAcquired && shouldReleaseFocus() -> {
+            releaseAudioFocus()
+          }
+          // If we don't have focus but should have it based on new mode and have playing audio, request it
+          !focusAcquired && !shouldReleaseFocus() && players.values.any { it.ref.isPlaying } -> {
+            requestAudioFocus()
+          }
+        }
+      }
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
@@ -194,6 +218,31 @@ class AudioModule : Module() {
               it.ref.pause()
             }
           }
+        }
+      }
+    }
+
+    AsyncFunction("applyInterruptionModeAsync") { mode: InterruptionMode ->
+      val previousMode = interruptionMode
+      interruptionMode = mode
+
+      // Handle focus changes based on mode transition
+      when {
+        // If switching to MIX_WITH_OTHERS, release focus if we have it
+        mode == InterruptionMode.MIX_WITH_OTHERS && focusAcquired -> {
+          releaseAudioFocus()
+        }
+        // If switching from MIX_WITH_OTHERS to another mode and we have playing audio, request focus
+        previousMode == InterruptionMode.MIX_WITH_OTHERS && mode != InterruptionMode.MIX_WITH_OTHERS && players.values.any { it.ref.isPlaying } -> {
+          requestAudioFocus()
+        }
+        // If we have focus but should release it based on new mode, release it
+        focusAcquired && shouldReleaseFocus() -> {
+          releaseAudioFocus()
+        }
+        // If we don't have focus but should have it based on new mode and have playing audio, request it
+        !focusAcquired && !shouldReleaseFocus() && players.values.any { it.ref.isPlaying } -> {
+          requestAudioFocus()
         }
       }
     }
