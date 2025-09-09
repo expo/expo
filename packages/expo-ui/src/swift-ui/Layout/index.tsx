@@ -93,7 +93,7 @@ export function Group(props: GroupProps) {
 
 //#region ZStack Component
 export interface ZStackProps extends StackBaseProps {
-  alignment?: 
+  alignment?:
     | 'center'
     | 'leading'
     | 'trailing'
