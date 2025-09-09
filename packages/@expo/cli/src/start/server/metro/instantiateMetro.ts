@@ -30,6 +30,7 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
+import { createSymbolicate } from './symbolicate';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -292,6 +293,15 @@ export async function instantiateMetroAsync(
       fileBuffer
     );
   };
+
+  // Overwrite _symbolicate
+  metro._symbolicate = createSymbolicate({
+    projectRoot,
+    metroConfig,
+    rewriteRequestUrl: metroConfig.server.rewriteRequestUrl,
+    explodedSourceMapForBundleOptions: metro._explodedSourceMapForBundleOptions.bind(metro),
+    parseOptions: metro._parseOptions.bind(metro),
+  });
 
   setEventReporter(eventsSocket.reportMetroEvent);
 

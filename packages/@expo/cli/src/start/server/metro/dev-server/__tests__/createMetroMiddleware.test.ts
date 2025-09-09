@@ -50,33 +50,6 @@ describe(createMetroMiddleware, () => {
     expect(openInEditorAsync).toHaveBeenCalledWith('test-file.ts', 1337);
   });
 
-  it('prepares /symbolicate requests with raw body', async () => {
-    // Create a fake middleware to capture the request and respond with OK
-    const middleware = jest.fn((_req, res) => res.end('OK'));
-    // Create a fake symbolicate request body
-    const body = JSON.stringify({
-      stack: [
-        {
-          file: 'test-file.ts',
-          methodName: 'testMethod',
-          arguments: [],
-          lineNumber: 1337,
-          column: 0,
-        },
-      ],
-    });
-
-    // Register the middleware to capture the request
-    metro.middleware.use('/symbolicate', middleware);
-
-    const response = await server.fetch('/symbolicate', { method: 'POST', body });
-
-    // Ensure the request is successful
-    expect(response.status).toBe(200);
-    // Ensure the request body was loaded as `rawBody` string
-    expect(middleware.mock.calls[0][0]).toHaveProperty('rawBody', body);
-  });
-
   describe('websockets', () => {
     it('creates the /message websocket', () => {
       expect(metro.messagesSocket).toBeDefined();

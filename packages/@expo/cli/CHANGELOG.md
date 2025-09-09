@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fork MetroServer `_symbolicate` to remove disruptive error logging
+
 ## 0.26.9 — 2025-09-08
 
 ### 🐛 Bug fixes
