@@ -51,9 +51,10 @@ const HeaderRightComponent = ({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        marginRight: 16,
+        marginHorizontal: 10,
         marginBottom: 4,
-        gap: 14,
+        marginTop: 4,
+        gap: 20,
       }}>
       <TouchableOpacity
         onPress={() => {
