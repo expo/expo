@@ -1,6 +1,10 @@
 # Overrides CocoaPods `Installer`/'Podfile' classes to patch podspecs on the fly
 # See: https://github.com/CocoaPods/CocoaPods/blob/master/lib/cocoapods/installer.rb
 # See: https://github.com/CocoaPods/Core/blob/master/lib/cocoapods-core/podfile.rb#L160
+#
+# This is necessary to disable `USE_FRAMEWORKS` for specific pods that include
+# React Native Core headers in their public headers, which causes issues when
+# building them as dynamic frameworks with modular headers enabled.
 
 module Pod
   class Podfile
