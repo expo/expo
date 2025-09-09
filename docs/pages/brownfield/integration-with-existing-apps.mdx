@@ -11,6 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
+import { DiffBlock } from '~/ui/components/Snippet';
 
 React Native and Expo are flexible and can be adopted incrementally, one screen (or even one view) at a time. You might even find that using Expo in this way is the best fit for your particular application, or you may end up slowly adopting it across more surfaces in your app. Either way, this flexibility allows enables developers to adopt modern, cross-platform tools in their native apps immediately instead of risking a complete rewrite.
 
@@ -444,37 +445,7 @@ If your project already has a **Podfile**, you'll need to manually merge the Rea
 
 If you're using a custom folder structure, you need to explicitly set your project root in **Podfile** for autolinking to work. Modify the following lines in your **Podfile**:
 
-```diff Podfile
-+project_root = File.join(__dir__, 'my-project')
-+ENV['PROJECT_ROOT'] = project_root
-
-target 'HelloWorld' do
--  use_expo_modules!
-+  use_expo_modules!({ projectRoot: project_root })
-
-config_command = [
-    'npx',
-    'expo-modules-autolinking',
-    'react-native-config',
-    '--json',
-    '--platform',
--    'ios'
-+    'ios',
-+    '--project-root',
-+    project_root,
-+    '--source-dir',
-+    "#{__dir__}"
-  ]
-
-  use_react_native!(
-    :path => config[:reactNativePath],
-    :hermes_enabled => true,
-    # An absolute path to your application root.
--    :app_path => "#{Pod::Config.instance.installation_root}/..",
-+    :app_path => "#{project_root}",
-    :privacy_file_aggregation_enabled => true,
-  )
-```
+<DiffBlock source="/static/diffs/brownfiled/podfile-custom-root.diff" />
 
 Now, run the following command:
 
@@ -556,10 +527,7 @@ Next time, when you build your app for Release, the React Native code will be bu
 <Step label="3">
 Edit your **Info.plist** file and make sure to add the `UIViewControllerBasedStatusBarAppearance` key with a value of `NO`, this is needed to ensure that the status bar is properly managed by React Native.
 
-```diff
-+<key>UIViewControllerBasedStatusBarAppearance</key>
-+<string>NO</string>
-```
+<DiffBlock source="/static/diffs/brownfiled/info-plist.diff" />
 
 </Step>
 
@@ -571,78 +539,78 @@ Now, you need to add some native code to start the React Native runtime and tell
 
 Create a new file called **ReactViewController.swift**, this will be the `ViewController` that loads a React Native view as its `view`.
 
-```diff title="ReactViewController.swift"
+```swift ReactViewController.swift
 import UIKit
-+import React
-+import React_RCTAppDelegate
-+import ReactAppDependencyProvider
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
 
 class ReactNativeViewController: UIViewController {
-+  var reactNativeFactory: RCTReactNativeFactory?
-+  var reactNativeFactoryDelegate: RCTReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+  var reactNativeFactoryDelegate: RCTReactNativeFactoryDelegate?
 
   override func viewDidLoad() {
     super.viewDidLoad()
-+    reactNativeFactoryDelegate = ReactNativeDelegate()
-+    reactNativeFactoryDelegate!.dependencyProvider = RCTAppDependencyProvider()
-+    reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeFactoryDelegate!)
-+    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "HelloWorld")
+    reactNativeFactoryDelegate = ReactNativeDelegate()
+    reactNativeFactoryDelegate!.dependencyProvider = RCTAppDependencyProvider()
+    reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeFactoryDelegate!)
+    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "HelloWorld")
 
   }
 }
 
-+class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
-+    override func sourceURL(for bridge: RCTBridge) -> URL? {
-+      self.bundleURL()
-+    }
-+
-+    override func bundleURL() -> URL? {
-+      #if DEBUG
-+      RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
-+      #else
-+      Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-+      #endif
-+    }
-+
-+}
+class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
+    override func sourceURL(for bridge: RCTBridge) -> URL? {
+      self.bundleURL()
+    }
+
+    override func bundleURL() -> URL? {
+      #if DEBUG
+      RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+      #else
+      Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+      #endif
+    }
+
+}
 ```
 
 #### Presenting a React Native view in a rootViewController
 
 Finally, you can present your React Native view. To do so, you need a new View Controller that can host a view in which we can load the JS content. You already have the initial `ViewController`, and you can make it present the `ReactViewController`. There are several ways to do so, depending on your app. For this example, let's assume that you have a button that presents React Native modally.
 
-```diff title="ViewController.swift"
+```swift ViewController.swift
 import UIKit
 
 class ViewController: UIViewController {
 
-+  var reactViewController: ReactViewController?
+  var reactViewController: ReactViewController?
 
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
     self.view.backgroundColor = .systemBackground
 
-+    let button = UIButton()
-+    button.setTitle("Open React Native", for: .normal)
-+    button.setTitleColor(.systemBlue, for: .normal)
-+    button.setTitleColor(.blue, for: .highlighted)
-+    button.addAction(UIAction { [weak self] _ in
-+      guard let self else { return }
-+      if reactViewController == nil {
-+       reactViewController = ReactViewController()
-+      }
-+      present(reactViewController!, animated: true)
-+    }, for: .touchUpInside)
-+    self.view.addSubview(button)
-+
-+    button.translatesAutoresizingMaskIntoConstraints = false
-+    NSLayoutConstraint.activate([
-+      button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-+      button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-+      button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-+      button.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
-+    ])
+    let button = UIButton()
+    button.setTitle("Open React Native", for: .normal)
+    button.setTitleColor(.systemBlue, for: .normal)
+    button.setTitleColor(.blue, for: .highlighted)
+    button.addAction(UIAction { [weak self] _ in
+      guard let self else { return }
+      if reactViewController == nil {
+       reactViewController = ReactViewController()
+      }
+      present(reactViewController!, animated: true)
+    }, for: .touchUpInside)
+    self.view.addSubview(button)
+
+    button.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+      button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+      button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+      button.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+    ])
   }
 }
 ```
