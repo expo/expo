@@ -27,6 +27,7 @@ export default function MatchedGeometryEffectDemo() {
               <VStack spacing={20} modifiers={[padding({ all: 20 })]}>
                 <HStack spacing={20}>
                   {boxes.slice(0, 3).map((boxId, index) => (
+                    // TODO: Add Rectangle component
                     //  @ts-expect-error
                     <HStack
                       key={boxId}
@@ -43,6 +44,7 @@ export default function MatchedGeometryEffectDemo() {
 
                 <HStack spacing={20}>
                   {boxes.slice(3, 6).map((boxId, index) => (
+                    // TODO: Add Rectangle component
                     //  @ts-expect-error
                     <HStack
                       key={boxId}
@@ -65,6 +67,7 @@ export default function MatchedGeometryEffectDemo() {
                     padding({ all: 40 }),
                   ]}>
                   <VStack>
+                    {/* TODO: Add Rectangle component */}
                     {/* @ts-expect-error */}
                     <HStack
                       modifiers={[
