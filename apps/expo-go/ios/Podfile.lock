@@ -2478,7 +2478,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
-  - react-native-skia (2.2.3):
+  - react-native-skia (2.2.12):
     - boost
     - DoubleConversion
     - fast_float
@@ -4377,7 +4377,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: a0516effb17ca5120ac2113bfd21b91130ad5748
   react-native-safe-area-context: a72764e0eb5d6b79b7450e5d0ae919eb1a4567b4
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
-  react-native-skia: 7db0cf4fc9d6203747af5bae5df0db3ad4e84cda
+  react-native-skia: 665cd52db7ad3d41e2a59c84e9c097343745c088
   react-native-slider: 663776e5683e257de8df8091abc2d93ff6ec67db
   react-native-view-shot: 6c008e58f4720de58370848201c5d4a082c6d4ca
   react-native-webview: 4cbb7f05f2c50671a7dcff4012d3e85faad271e4
