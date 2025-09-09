@@ -150,7 +150,7 @@ When you run `eas build --profile production` the `APP_VARIANT` variable environ
 
 ### In existing (bare) React Native project
 
-> **info** If you want to use your [app config file](/workflow/configuration/) as the source of truth for your app configuration (including bundle identifiers and package names for variants), add **android** and **ios** directories to your **.gitignore** file. This ensures that the native project configuration doesn't take precedence over your app config, especially when using bundle ID lookup behavior. Without this, you may experience issues where the wrong app variant runs or development builds aren't detected properly unless you are explicitly opting for the Android flavors and iOS schemes as described below.
+> **info** If you want to use your [app config file](/workflow/configuration/) as the source of truth for your app configuration (including bundle identifiers and package names for variants), add **android** and **ios** directories to your **.gitignore** file. This ensures that the native project configuration doesn't take precedence over your app config, especially when using bundle ID lookup behavior. Without this, you may experience issues where the wrong app variant runs or development builds aren't detected properly. Alternatively, you can explicitly opt for the Android flavors and iOS schemes as described below.
 
 #### Android
 
