@@ -768,16 +768,8 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   @Field var namespaceId: String?
 
   func body(content: Content) -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
-      if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
-        content.matchedGeometryEffect(id: id, in: namespace)
-      } else {
-        content
-      }
-      #else
-      content
-      #endif
+    if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+      content.matchedGeometryEffect(id: id, in: namespace)
     } else {
       content
     }
