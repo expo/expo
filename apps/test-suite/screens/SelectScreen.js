@@ -2,7 +2,7 @@ import { Checkbox } from 'expo-checkbox';
 import Constants from 'expo-constants';
 import React from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules } from '../TestModules';
@@ -186,7 +186,7 @@ export default class SelectScreen extends React.PureComponent {
 }
 
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
-  const { bottom, left, right } = useSafeArea();
+  const { bottom, left, right } = useSafeAreaInsets();
   const { theme } = useTheme();
 
   const isRunningInBareExpo = Constants.expoConfig.slug === 'bare-expo';
