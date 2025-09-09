@@ -1,7 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import SelectScreen from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';
@@ -13,37 +13,21 @@ import ThemeToggler from '../common/ThemeToggler';
 
 const Stack = createNativeStackNavigator();
 
-const spec = {
-  animation: 'timing',
-  config: {
-    duration: 0,
-  },
-};
-
-// TODO: Disable transition animations in E2E tests
-const shouldDisableTransition = false;
-
-const transitionSpec = shouldDisableTransition ? { open: spec, close: spec } : undefined;
-
-export default function AppNavigator(props) {
+export function TestStackNavigator() {
   const { theme } = useTheme();
 
   return (
     <Stack.Navigator
-      {...props}
+      id={undefined}
       screenOptions={{
         title: 'Tests',
-        transitionSpec,
         headerBackTitle: 'Select',
         headerTitleStyle: {
           color: theme.text.default,
         },
         headerTintColor: theme.icon.info,
         headerStyle: {
-          borderBottomWidth: StyleSheet.hairlineWidth,
-          borderBottomColor: theme.border.secondary,
           backgroundColor: theme.background.default,
-          boxShadow: '',
         },
       }}>
       <Stack.Screen
@@ -69,7 +53,7 @@ export default function AppNavigator(props) {
   );
 }
 
-AppNavigator.navigationOptions = {
+TestStackNavigator.navigationOptions = {
   title: 'Tests',
   tabBarLabel: 'Tests',
   tabBarIcon: TabBarIcon,

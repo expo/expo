@@ -1,0 +1,16 @@
+appId: dev.expo.Payments
+---
+- openLink: bareexpo://components/video/events-e2e
+# approve the deeplinking prompt on iOS
+- tapOn:
+    text: 'Open'
+    optional: true
+- assertVisible: 'duration: 888'
+- assertVisible: "Source: Sintel \nCurrent Video track: {\n  \"mimeType\": \"video/avc\",\n  \"isSupported\": true,\n  \"frameRate\": null\n}"
+- assertVisible: "Is playing: false \nisAtStart: true \nVolume: 1 \nIs Muted: false \nStatus: readyToPlay \nPlayback rate: 1 \nIs external playback active: false \nError: false \n"
+- assertVisible: Play
+- tapOn: Play
+- assertVisible: "Is playing: true \nisAtStart: false \nVolume: 1 \nIs Muted: false \nStatus: readyToPlay \nPlayback rate: 1 \nIs external playback active: false \nError: false \n"
+- tapOn: Trigger an Error
+- assertVisible: 'Source: No title.*'
+- assertVisible: "Is playing: false \nisAtStart: true \nVolume: 1 \nIs Muted: false \nStatus: error \nPlayback rate: 1 \nIs external playback active: false \nError: true \n"

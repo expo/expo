@@ -5,7 +5,7 @@ inputs:
   avd-api:
     description: 'API version used in AVD'
     required: false
-    default: '34'
+    default: '36'
   avd-name:
     description: 'Created AVD name'
     required: true
@@ -44,6 +44,8 @@ runs:
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
         target: google_apis
+        profile: pixel_7_pro # want a bigger screen to avoid UI element not found issue
+        # gpu hw acceleration is not available on GitHub-hosted runners
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready
@@ -58,6 +60,10 @@ runs:
           ${{ inputs.script }}
         working-directory: ${{ inputs.working-directory }}
 
+    #    - name: List available adb devices
+    #      shell: bash
+    #      run: avdmanager list device
+
     - name: '💿 Setup Android Emulator #2'
       id: retries-2
       continue-on-error: true
@@ -68,6 +74,7 @@ runs:
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
         target: google_apis
+        profile: pixel_7_pro # want a bigger screen to avoid UI element not found issue
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready
@@ -92,6 +99,7 @@ runs:
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
         target: google_apis
+        profile: pixel_7_pro # want a bigger screen to avoid UI element not found issue
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready

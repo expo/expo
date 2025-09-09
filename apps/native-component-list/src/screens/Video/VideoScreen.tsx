@@ -94,6 +94,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Video Events e2e',
+    route: 'video/events-e2e',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoEventsScreenE2e'));
+    },
+  },
+  {
     name: 'FlatList of videos',
     route: 'video/flat-list',
     options: {},
