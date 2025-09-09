@@ -745,9 +745,12 @@ class ContactsModule : Module() {
   }
 
   private fun handleContactChange() {
-    sendEvent(onContactsChangeEventName, mapOf(
-      "body" to null
-    ))
+    sendEvent(
+      onContactsChangeEventName,
+      mapOf(
+        "body" to null
+      )
+    )
   }
 }
 
