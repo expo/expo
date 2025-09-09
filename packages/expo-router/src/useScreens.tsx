@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  useIsFocused,
   useStateForPath,
   type EventMapBase,
   type NavigationState,
@@ -255,7 +254,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     ...props
   }: any) {
     const stateForPath = useStateForPath();
-    const isFocused = useIsFocused();
+    const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
 
     if (isFocused) {
