@@ -763,6 +763,19 @@ internal class ViewModifierRegistry {
   }
 }
 
+internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
+
+  func body(content: Content) -> some View {
+    if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+      content.matchedGeometryEffect(id: id, in: namespace)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -914,6 +927,10 @@ extension ViewModifierRegistry {
 
     register("glassEffectId") { params, appContext, _ in
       return try GlassEffectIdModifier.init(from: params, appContext: appContext)
+    }
+
+    register("matchedGeometryEffect") { params, appContext, _ in
+      return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
     }
   }
 }
