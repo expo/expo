@@ -13890,10 +13890,10 @@ react-native-webview@13.15.0:
     escape-string-regexp "^4.0.0"
     invariant "2.2.4"
 
-react-native-worklets@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-worklets/-/react-native-worklets-0.5.0.tgz#ed25b55f3d14b8f66db7a9a5148c609e51eca801"
-  integrity sha512-+/tbUCBEVchxe5xxFvvdC18PRZFCoxq1emcjIezXodElFguk1MaBYpbqABvZHBGrrEOo9k99h4Jbt0i9ArCbxg==
+react-native-worklets@0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-worklets/-/react-native-worklets-0.5.1.tgz#d153242655e3757b6c62a474768831157316ad33"
+  integrity sha512-lJG6Uk9YuojjEX/tQrCbcbmpdLCSFxDK1rJlkDhgqkVi1KZzG7cdcBFQRqyNOOzR9Y0CXNuldmtWTGOyM0k0+w==
   dependencies:
     "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
     "@babel/plugin-transform-class-properties" "^7.0.0-0"
