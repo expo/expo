@@ -138,6 +138,8 @@ includeBuild(expoAutolinking.reactNativeGradlePlugin)
 // include(":app")
 ```
 
+<Collapsible summary="Using a custom folder structure?">
+
 If you're using a custom folder structure, you need to explicitly set your project root in **settings.gradle** for autolinking to work. Modify the following lines:
 
 ```diff settings.gradle
@@ -150,6 +152,8 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
 +  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand, file(rootDir), files("yarn.lock"))
 }
 ```
+
+</Collapsible>
 
 </Step>
 
@@ -443,9 +447,13 @@ end
 
 If your project already has a **Podfile**, you'll need to manually merge the React Native dependencies into your existing **Podfile**.
 
+<Collapsible summary="Using a custom folder structure?">
+
 If you're using a custom folder structure, you need to explicitly set your project root in **Podfile** for autolinking to work. Modify the following lines in your **Podfile**:
 
 <DiffBlock source="/static/diffs/brownfiled/podfile-custom-root.diff" />
+
+</Collapsible>
 
 Now, run the following command:
 
