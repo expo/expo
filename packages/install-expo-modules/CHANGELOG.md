@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
+
 ## 0.13.7 — 2025-09-02
 
 _This version does not introduce any user-facing changes._

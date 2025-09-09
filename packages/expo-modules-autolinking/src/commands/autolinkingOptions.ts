@@ -1,5 +1,4 @@
 import commander from 'commander';
-import findUp from 'find-up';
 import fs from 'fs';
 import path from 'path';
 
@@ -184,12 +183,14 @@ const parseExtraArgumentsOptions = (
 };
 
 const findPackageJsonPathAsync = async (commandRoot: string | null): Promise<string> => {
-  const cwd = process.cwd();
-  const result = await findUp('package.json', { cwd: commandRoot || cwd });
-  if (!result) {
-    throw new Error(`Couldn't find "package.json" up from path "${commandRoot || cwd}"`);
+  const root = commandRoot || process.cwd();
+  for (let dir = root; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    const file = path.resolve(dir, 'package.json');
+    if (fs.existsSync(file)) {
+      return file;
+    }
   }
-  return result;
+  throw new Error(`Couldn't find "package.json" up from path "${root}"`);
 };
 
 const loadPackageJSONAsync = async (packageJsonPath: string): Promise<Record<string, unknown>> => {
