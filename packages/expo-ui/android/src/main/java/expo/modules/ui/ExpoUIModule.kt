@@ -97,6 +97,10 @@ class ExpoUIModule : Module() {
       )
     }
 
+    View(CarouselView::class) {
+      Events("onItemPress")
+    }
+
     Function("padding") { all: Int ->
       return@Function ExpoModifier(Modifier.padding(Dp(all.toFloat())))
     }
