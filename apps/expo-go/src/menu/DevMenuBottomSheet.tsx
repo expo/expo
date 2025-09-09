@@ -44,7 +44,7 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
         setTimeout(() => {
           resolve();
           DevMenu.closeAsync();
-        }, 400);
+        }, 300);
       }),
     []
   );
@@ -55,7 +55,7 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
         bottomSheetRef.current?.expand();
         setTimeout(() => {
           resolve();
-        }, 400);
+        }, 300);
       }),
     []
   );
