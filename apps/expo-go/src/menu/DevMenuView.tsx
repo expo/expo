@@ -14,6 +14,7 @@ import * as DevMenu from './DevMenuModule';
 import { DevMenuOnboarding } from './DevMenuOnboarding';
 import { DevMenuServerInfo } from './DevMenuServerInfo';
 import { DevMenuTaskInfo } from './DevMenuTaskInfo';
+import { CappedWidthContainerView } from '../components/Views';
 type Props = {
   task: { manifestUrl: string; manifestString: string };
   uuid: string;
@@ -163,7 +164,10 @@ export function DevMenuView({ uuid, task }: Props) {
 
   return (
     <View bg="secondary" flex="1" roundedTop="large" overflow="hidden" style={{ direction: 'ltr' }}>
-      <DevMenuTaskInfo task={task} />
+      <CappedWidthContainerView wrapperStyle={{ backgroundColor: theme.background.default }}>
+        <DevMenuTaskInfo task={task} />
+        <DevMenuCloseButton onPress={collapseAndCloseDevMenuAsync} />
+      </CappedWidthContainerView>
       <Divider />
       <View>
         {!isOnboardingFinished ? (
@@ -172,54 +176,54 @@ export function DevMenuView({ uuid, task }: Props) {
           <View style={{ paddingBottom: insets.bottom }}>
             <DevMenuServerInfo task={task} />
             <Divider />
-            <View padding="medium" style={{ paddingBottom: 0 }}>
-              <UpgradeWarning collapsible />
-            </View>
-            <Divider />
-            <View padding="medium" style={{ paddingTop: 0 }}>
-              <View bg="default" rounded="large">
-                <DevMenuItem
-                  buttonKey="reload"
-                  label="Reload"
-                  onPress={onAppReload}
-                  icon={<RefreshIcon size={iconSize.small} color={theme.icon.default} />}
-                />
-                <Divider />
-                <DevMenuItem
-                  buttonKey="home"
-                  label="Go Home"
-                  onPress={onGoToHome}
-                  icon={<HomeFilledIcon size={iconSize.small} color={theme.icon.default} />}
-                />
+            <CappedWidthContainerView>
+              <View padding="medium" style={{ paddingBottom: 0 }}>
+                <UpgradeWarning collapsible />
               </View>
-            </View>
-            {enableDevMenuTools && devMenuItems && (
               <View padding="medium" style={{ paddingTop: 0 }}>
                 <View bg="default" rounded="large">
-                  {sortedDevMenuItems.map((key, i) => {
-                    const item = devMenuItems[key];
-
-                    const { label, isEnabled } = item;
-                    return (
-                      <Fragment key={key}>
-                        <DevMenuItem
-                          buttonKey={key}
-                          label={label}
-                          onPress={onPressDevMenuButton}
-                          icon={MENU_ITEMS_ICON_MAPPINGS[key]}
-                          isEnabled={isEnabled}
-                        />
-                        {i < sortedDevMenuItems.length - 1 && <Divider />}
-                      </Fragment>
-                    );
-                  })}
+                  <DevMenuItem
+                    buttonKey="reload"
+                    label="Reload"
+                    onPress={onAppReload}
+                    icon={<RefreshIcon size={iconSize.small} color={theme.icon.default} />}
+                  />
+                  <Divider />
+                  <DevMenuItem
+                    buttonKey="home"
+                    label="Go Home"
+                    onPress={onGoToHome}
+                    icon={<HomeFilledIcon size={iconSize.small} color={theme.icon.default} />}
+                  />
                 </View>
               </View>
-            )}
+              {enableDevMenuTools && devMenuItems && (
+                <View padding="medium" style={{ paddingTop: 0 }}>
+                  <View bg="default" rounded="large">
+                    {sortedDevMenuItems.map((key, i) => {
+                      const item = devMenuItems[key];
+
+                      const { label, isEnabled } = item;
+                      return (
+                        <Fragment key={key}>
+                          <DevMenuItem
+                            buttonKey={key}
+                            label={label}
+                            onPress={onPressDevMenuButton}
+                            icon={MENU_ITEMS_ICON_MAPPINGS[key]}
+                            isEnabled={isEnabled}
+                          />
+                          {i < sortedDevMenuItems.length - 1 && <Divider />}
+                        </Fragment>
+                      );
+                    })}
+                  </View>
+                </View>
+              )}
+            </CappedWidthContainerView>
           </View>
         )}
       </View>
-      <DevMenuCloseButton onPress={collapseAndCloseDevMenuAsync} />
     </View>
   );
 }
