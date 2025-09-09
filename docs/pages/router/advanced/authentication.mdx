@@ -263,7 +263,7 @@ function RootNavigator() {
 
   return (
     <Stack>
-      <Stack.Protected guard={session}>
+      <Stack.Protected guard={!!session}>
         <Stack.Screen name="(app)" />
       </Stack.Protected>
 
