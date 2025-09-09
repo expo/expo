@@ -84,6 +84,7 @@ export const VideoView = forwardRef((props, ref) => {
                 }
             }
         },
+        nativeRef: videoRef,
     }));
     useEffect(() => {
         const onEnter = () => {

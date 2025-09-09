@@ -15,6 +15,9 @@ export function isPictureInPictureSupported() {
     return NativeVideoModule.isPictureInPictureSupported();
 }
 export class VideoView extends PureComponent {
+    /**
+     * A reference to the underlying native view. On web it is a reference to the HTMLVideoElement.
+     */
     nativeRef = createRef();
     /**
      * Enters fullscreen mode.

@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Web] Allow access to the underlying HTMLVideoElement via the `nativeRef` property. ([#39448](https://github.com/expo/expo/pull/39448) by [@behenate](https://github.com/behenate))
+
 ## 3.0.10 — 2025-09-04
 
 ### 🐛 Bug fixes
