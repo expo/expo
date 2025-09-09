@@ -1317,7 +1317,7 @@ Example usage for sharing a variable with another job:
 jobs:
   job_1:
     outputs:
-      variable_1: ${{ steps.get_date.outputs.variable_1 }}
+      variable_1: ${{ steps.step_1.outputs.variable_1 }}
     steps:
       - id: step_1
         # @info #
