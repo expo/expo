@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Use typescript files as source and add `packages:exports`. ([#39377](https://github.com/expo/expo/pull/39377) by [@kudo](https://github.com/kudo))
+
 ## 0.2.0-alpha.9 — 2025-09-03
 
 _This version does not introduce any user-facing changes._
