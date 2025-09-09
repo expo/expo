@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Add minimal web stub to fix broken import on web. ([#39475](https://github.com/expo/expo/pull/39475) by [@reichhartd](https://github.com/reichhartd))
+
 ### 💡 Others
 
 ## 6.0.6 — 2025-09-02
