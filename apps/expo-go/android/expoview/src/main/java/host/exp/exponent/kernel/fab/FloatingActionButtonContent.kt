@@ -82,16 +82,16 @@ fun FloatingActionButtonContent(
             interactionSource = interactionSource,
             indication = null,
             onClick = {
-              onRefreshPress()
               scope.launch {
                 animatedRotation.animateTo(
                   targetValue = 360f,
                   animationSpec = spring(
                     dampingRatio = Spring.DampingRatioLowBouncy,
                     stiffness = Spring.StiffnessVeryLow,
-                    visibilityThreshold = 2f
+                    visibilityThreshold = 10f
                   )
                 )
+                onRefreshPress()
                 animatedRotation.snapTo(0f)
               }
             }
