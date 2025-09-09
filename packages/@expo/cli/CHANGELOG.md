@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Apply upstream changes to optional require runtime fork ([#39473](https://github.com/expo/expo/pull/39473) by [@kitten](https://github.com/kitten))
+
 ## 0.26.9 — 2025-09-08
 
 ### 🐛 Bug fixes
