@@ -1,4 +1,5 @@
-import findUp from 'find-up';
+import fs from 'fs';
+import path from 'path';
 
 import { findModulesAsync } from './autolinking/findModules';
 import { resolveModulesAsync } from './autolinking/resolveModules';
@@ -61,11 +62,13 @@ export async function queryAutolinkingModulesFromProjectAsync(
 
 /** @deprecated */
 export function findProjectRootSync(cwd: string = process.cwd()): string {
-  const result = findUp.sync('package.json', { cwd });
-  if (!result) {
-    throw new Error(`Couldn't find "package.json" up from path "${cwd}"`);
+  for (let dir = cwd; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    const file = path.resolve(dir, 'package.json');
+    if (fs.existsSync(file)) {
+      return file;
+    }
   }
-  return result;
+  throw new Error(`Couldn't find "package.json" up from path "${cwd}"`);
 }
 
 /** @deprecated */

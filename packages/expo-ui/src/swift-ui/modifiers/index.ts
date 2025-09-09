@@ -40,6 +40,12 @@ export const shadow = (params: { radius: number; x?: number; y?: number; color?:
   createModifier('shadow', params);
 
 /**
+ * Adds a matched geometry effect to a view.
+ */
+export const matchedGeometryEffect = (id: string, namespaceId: string) =>
+  createModifier('matchedGeometryEffect', { id, namespaceId });
+
+/**
  * Sets the frame properties of a view.
  */
 export const frame = (params: {

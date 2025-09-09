@@ -2,12 +2,18 @@ import { Picker } from '@react-native-picker/picker';
 import { Platform } from 'expo-modules-core';
 import { useVideoPlayer, VideoView, VideoSource } from 'expo-video';
 import React, { useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, Button } from 'react-native';
 
-import { videoLabels, videoSources } from './videoSources';
+import {
+  getMediaLibraryVideoSourceAsync,
+  videoLabels as labelsList,
+  videoSources as sourcesList,
+} from './videoSources';
 import { styles } from './videoStyles';
 import TitledSwitch from '../../components/TitledSwitch';
 
+const videoSources = [...sourcesList];
+const videoLabels = [...labelsList];
 export default function VideoSourcesScreen() {
   const ref = useRef<VideoView>(null);
   const [useReplaceFunction, setUseReplaceFunction] = useState(true);
@@ -16,6 +22,7 @@ export default function VideoSourcesScreen() {
 
   const player = useVideoPlayer(statefulSource, (player) => {
     player.play();
+    player.loop = true;
   });
 
   return (
@@ -48,7 +55,6 @@ export default function VideoSourcesScreen() {
             <Picker.Item key={index} label={videoLabels[index]} value={index} />
           ))}
         </Picker>
-
         <View style={styles.row}>
           <TitledSwitch
             value={useReplaceFunction}
@@ -63,6 +69,28 @@ export default function VideoSourcesScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
+        {/* Keep this as a separate button so that the permissions popup is not shown right away after opening the screen */}
+        {Platform.OS !== 'web' && (
+          <Button
+            title="Add first video from library"
+            onPress={async () => {
+              const mediaSource = await getMediaLibraryVideoSourceAsync();
+              if (mediaSource === null) {
+                console.warn('Failed to find a media source');
+                return;
+              }
+              const title = mediaSource.metadata?.title ?? 'MediaLibrary Source';
+              if (videoLabels.includes(title)) {
+                console.warn('Media source already exists');
+                return;
+              }
+              videoLabels.push(title);
+              videoSources.push(mediaSource);
+              setCurrentSourceIndex(videoSources.length - 1);
+              player.replaceAsync(mediaSource);
+            }}
+          />
+        )}
         <Text style={styles.centerText}>
           Generally video sources should be changed using the `VideoPlayer.replace` function, if the
           parameter passed to the `useVideoPlayer` hook is a state, on each change a new player will

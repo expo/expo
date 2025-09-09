@@ -30,5 +30,9 @@ function transformGroupProps(props) {
 export function Group(props) {
     return <GroupNativeView {...transformGroupProps(props)}/>;
 }
+const ZStackNativeView = requireNativeView('ExpoUI', 'ZStackView');
+export function ZStack(props) {
+    return <ZStackNativeView {...transformNativeProps(props)}/>;
+}
 //#endregion
 //# sourceMappingURL=index.js.map

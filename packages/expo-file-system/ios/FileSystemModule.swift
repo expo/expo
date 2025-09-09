@@ -106,6 +106,20 @@ public final class FileSystemModule: Module {
       downloadTask.resume()
     }
 
+    AsyncFunction("pickDirectoryAsync") { (initialUri: URL?, promise: Promise) in
+      #if os(iOS)
+      filePickingHandler.presentDocumentPicker(
+        picker: createDirectoryPicker(initialUri: initialUri),
+        isDirectory: true,
+        initialUri: initialUri,
+        mimeType: nil,
+        promise: promise
+      )
+      #else
+      promise.reject(FeatureNotAvailableOnPlatformException())
+      #endif
+    }.runOnQueue(.main)
+
     AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
       #if os(iOS)
       filePickingHandler.presentDocumentPicker(

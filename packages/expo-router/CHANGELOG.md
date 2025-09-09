@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - fix nested protected routes not taking into account the parents guard prop ([#39437](https://github.com/expo/expo/pull/39437) by [@saviocmc](https://github.com/saviocmc))
+- Fix `ExpoRoot`'s wrapper forcing a remount due to a `SafeAreaProvider` update ([#39476](https://github.com/expo/expo/pull/39476) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

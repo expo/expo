@@ -26,6 +26,11 @@ export const DEFAULT_PACKAGES_TO_IGNORE = [
   /^@expo\/.*$/,
   /^@expo-google-fonts\/.*$/,
   /^@types\/.*$/,
+  'expo-dev-launcher',
+  'expo-dev-menu',
+  'expo-dev-menu-interface',
+  'expo-updates-interface',
+  'expo-eas-client',
 ];
 
 export function filterPackages(packages: string[], ignoredPackages: (RegExp | string)[]) {
