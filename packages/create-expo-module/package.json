@@ -43,7 +43,6 @@
     "debug": "^4.3.4",
     "download-tarball": "^2.0.0",
     "ejs": "^3.1.10",
-    "find-up": "^5.0.0",
     "getenv": "^2.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
@@ -52,7 +51,6 @@
   "devDependencies": {
     "@octokit/types": "^13.5.0",
     "@types/ejs": "^3.1.5",
-    "@types/find-up": "^4.0.0",
     "@types/prompts": "^2.4.9",
     "expo-module-scripts": "^5.0.6"
   }
