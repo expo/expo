@@ -45,6 +45,7 @@ function babelPresetExpo(api, options = {}) {
     // Use the simpler babel preset for web and server environments (both web and native SSR).
     const isModernEngine = platform === 'web' || isServerEnv;
     const platformOptions = getOptions(options, platform);
+    const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
     // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
     // adds extra dependencies (requires/imports) we need to disable it
     if (metroSourceType === 'script') {
@@ -130,9 +131,22 @@ function babelPresetExpo(api, options = {}) {
         inlines['process.env.NODE_ENV'] = 'production';
         inlines['__DEV__'] = false;
         inlines['Platform.OS'] = platform;
+        if (polyfillImportMeta) {
+            // Vite-like inlines
+            inlines['import.meta.env.PROD'] = true;
+            inlines['import.meta.env.DEV'] = false;
+            inlines['import.meta.env.SSR'] = !!isServerEnv;
+            inlines['import.meta.env.MODE'] = 'production';
+            // Copies of Expo-specific vars
+            inlines['import.meta.env.EXPO_SERVER'] = !!isServerEnv;
+            inlines['import.meta.env.EXPO_OS'] = platform;
+        }
     }
     if (process.env.NODE_ENV !== 'test') {
         inlines['process.env.EXPO_BASE_URL'] = baseUrl;
+        if (polyfillImportMeta) {
+            inlines['import.meta.env.EXPO_BASE_URL'] = baseUrl;
+        }
     }
     extraPlugins.push([require('./define-plugin'), inlines]);
     if (isProduction) {
@@ -154,7 +168,7 @@ function babelPresetExpo(api, options = {}) {
     // Servers read from the environment.
     // Users who disable the feature may be using a different babel plugin.
     if (inlineEnvironmentVariables) {
-        extraPlugins.push(inline_env_vars_1.expoInlineEnvVars);
+        extraPlugins.push([inline_env_vars_1.expoInlineEnvVars, { polyfillImportMeta }]);
     }
     if (platform === 'web') {
         extraPlugins.push(require('babel-plugin-react-native-web'));
@@ -191,7 +205,6 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
-    const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
     extraPlugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(polyfillImportMeta === true));
     return {
         presets: [
