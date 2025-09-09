@@ -5,6 +5,8 @@ require 'colored2' # dependency of CocoaPods
 require File.join(File.dirname(`node --print "require.resolve('expo-modules-autolinking/package.json', { paths: ['#{__dir__}'] })"`), "scripts/ios/autolinking_manager")
 require File.join(File.dirname(`node --print "require.resolve('expo-modules-autolinking/package.json', { paths: ['#{__dir__}'] })"`), "scripts/ios/xcode_env_generator")
 
+require_relative "react-core-prebuilt"
+
 def use_expo_modules!(options = {})
   # When run from the Podfile, `self` points to Pod::Podfile object
 
@@ -21,6 +23,10 @@ end
 
 def use_expo_modules_tests!(options = {})
   use_expo_modules!({ testsOnly: true }.merge(options))
+end
+
+def expo_pre_install!(installer)
+  Expo::ReactCorePrebuiltUtils.pre_install(podfile: self, installer: installer)
 end
 
 def expo_patch_react_imports!(installer, options = {})

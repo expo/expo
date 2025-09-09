@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile
+
 ## 54.0.0-preview.16 — 2025-09-08
 
 ### 🐛 Bug fixes

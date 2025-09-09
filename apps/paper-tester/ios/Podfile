@@ -16,6 +16,10 @@ prepare_react_native_project!
 target 'papertester' do
   use_expo_modules!
 
+  pre_install do |installer|
+    expo_pre_install!(installer)
+  end
+
   config_command = [
     'npx',
     'expo-modules-autolinking',

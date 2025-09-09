@@ -21,6 +21,10 @@ target 'NativeTests' do
 
   pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
 
+  pre_install do |installer|
+    expo_pre_install!(installer)
+  end
+
   config_command = [
     'npx',
     'expo-modules-autolinking',
