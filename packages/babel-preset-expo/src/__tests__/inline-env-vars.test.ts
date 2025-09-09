@@ -213,3 +213,38 @@ function App() {
 
   expect(contents).toMatchSnapshot();
 });
+
+it(`inlines import.env variables`, () => {
+  process.env.EXPO_PUBLIC_NODE_ENV = 'development';
+
+  const options = {
+    ...DEF_OPTIONS,
+    presets: [[preset, { unstable_transformImportMeta: true }]],
+  };
+
+  const sourceCode = `
+const test = {
+  MODE: import.meta.env.MODE,
+  PROD: import.meta.env.PROD,
+  DEV: import.meta.env.DEV,
+  SSR: import.meta.env.SSR,
+  PUBLIC_NODE_ENV: import.meta.env.EXPO_PUBLIC_NODE_ENV,
+  PUBLIC_NODE_ENV: import.meta.env.EXPO_PUBLIC_NODE_ENV,
+  EXPO_SERVER: import.meta.env.EXPO_SERVER,
+  EXPO_OS: import.meta.env.EXPO_OS,
+};
+
+import.meta.env['other'];
+import.meta.env.other;
+`;
+
+  const contents = babel.transform(sourceCode, options)!.code;
+
+  expect(contents).toMatch('development');
+  expect(contents).toMatch('production');
+  expect(contents).toMatch('globalThis.__ExpoImportMetaRegistry.env');
+  expect(contents).not.toMatch('import.meta.env.MODE');
+  expect(contents).not.toMatch('EXPO_PUBLIC_NODE_ENV');
+  expect(contents).not.toMatch('EXPO_PUBLIC_FOO');
+  expect(contents).toMatchSnapshot();
+});
