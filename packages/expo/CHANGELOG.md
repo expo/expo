@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace public constructor argument syntax in `async-require/errors` ([#39496](https://github.com/expo/expo/pull/39496) by [@kitten](https://github.com/kitten))
+
 ## 54.0.0-preview.16 — 2025-09-08
 
 ### 🐛 Bug fixes
