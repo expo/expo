@@ -709,27 +709,27 @@ class ContactsModule : Module() {
     if (contactChangeObserver != null) {
       return
     }
-    
+
     contactsHandlerThread = HandlerThread("ContactsObserverThread")
     contactsHandlerThread?.start()
     contactsHandler = Handler(contactsHandlerThread!!.looper)
-    
+
     val observer = object : ContentObserver(contactsHandler) {
       override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
         handleContactChange()
       }
     }
-    
+
     val urisToObserve = listOf(
       ContactsContract.Contacts.CONTENT_URI,
-      ContactsContract.RawContacts.CONTENT_URI,
+      ContactsContract.RawContacts.CONTENT_URI
     )
-    
+
     urisToObserve.forEach { uri ->
       resolver.registerContentObserver(uri, true, observer)
     }
-    
+
     contactChangeObserver = observer
   }
 
@@ -738,7 +738,7 @@ class ContactsModule : Module() {
       resolver.unregisterContentObserver(observer)
       contactChangeObserver = null
     }
-    
+
     contactsHandler = null
     contactsHandlerThread?.quitSafely()
     contactsHandlerThread = null
