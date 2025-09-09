@@ -26,7 +26,7 @@ internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition {
 /**
  Represents a function that can only be called synchronously.
  */
-public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunctionDefinition {
+public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunctionDefinition {
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**
