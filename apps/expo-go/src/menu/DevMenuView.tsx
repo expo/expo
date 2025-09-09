@@ -1,6 +1,6 @@
 import { HomeFilledIcon, iconSize, RefreshIcon } from '@expo/styleguide-native';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import { Divider, rounded, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
 import { Image } from 'react-native';
