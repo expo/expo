@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 
 import { router } from '../exports';
 import { store } from '../global-state/router-store';
-import { useSegments } from '../hooks';
+import { useLocalSearchParams, useSegments } from '../hooks';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -335,4 +335,49 @@ it('can use replace navigation with history backBehavior', () => {
   act(() => router.back());
 
   expect(screen.getByTestId('one')).toBeVisible();
+});
+
+it('propagates params inside tabs', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '[id]/_layout': () => <Tabs />,
+      '[id]/index': function Index() {
+        const params = useLocalSearchParams();
+        return <Text testID="index">{JSON.stringify(params)}</Text>;
+      },
+      '[id]/two': function Two() {
+        const params = useLocalSearchParams();
+        return <Text testID="two">{JSON.stringify(params)}</Text>;
+      },
+      '[id]/three': function Three() {
+        const params = useLocalSearchParams();
+        return <Text testID="three">{JSON.stringify(params)}</Text>;
+      },
+    },
+    {
+      initialUrl: '/test/',
+    }
+  );
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('index').children).toEqual(['{"id":"test"}']);
+
+  expect(screen.getByLabelText('index, tab, 1 of 3')).toBeVisible();
+  expect(screen.getByLabelText('two, tab, 2 of 3')).toBeVisible();
+  expect(screen.getByLabelText('three, tab, 3 of 3')).toBeVisible();
+
+  act(() => fireEvent.press(screen.getByLabelText('two, tab, 2 of 3')));
+
+  expect(screen.getByTestId('two')).toBeVisible();
+  expect(screen.getByTestId('two').children).toEqual(['{"id":"test"}']);
+
+  act(() => fireEvent.press(screen.getByLabelText('three, tab, 3 of 3')));
+
+  expect(screen.getByTestId('three')).toBeVisible();
+  expect(screen.getByTestId('three').children).toEqual(['{"id":"test"}']);
+
+  act(() => fireEvent.press(screen.getByLabelText('index, tab, 1 of 3')));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('index').children).toEqual(['{"id":"test"}']);
 });
