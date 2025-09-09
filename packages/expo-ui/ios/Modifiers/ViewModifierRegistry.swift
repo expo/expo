@@ -134,6 +134,98 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
+internal enum ForegroundStyleType: String, Enumerable {
+  case color
+  case hierarchical
+  case linearGradient
+  case radialGradient
+  case angularGradient
+}
+
+internal enum ForegroundHierarchicalStyleType: String, Enumerable {
+  case primary
+  case secondary
+  case tertiary
+  case quaternary
+  case quinary
+}
+
+internal struct ForegroundStyleModifier: ViewModifier, Record {
+  @Field var styleType: ForegroundStyleType = .color
+  @Field var hierarchicalStyle: ForegroundHierarchicalStyleType = .primary
+  @Field var color: Color?
+  @Field var colors: [Color]?
+  @Field var startPoint: UnitPoint?
+  @Field var endPoint: UnitPoint?
+  @Field var center: UnitPoint?
+  @Field var startRadius: CGFloat?
+  @Field var endRadius: CGFloat?
+
+  func body(content: Content) -> some View {
+    switch styleType {
+    case .color:
+      if let color {
+        content.foregroundStyle(color)
+      } else {
+        content
+      }
+    case .hierarchical:
+      switch hierarchicalStyle {
+      case .primary:
+        content.foregroundStyle(.primary)
+      case .secondary:
+        content.foregroundStyle(.secondary)
+      case .tertiary:
+        content.foregroundStyle(.tertiary)
+      case .quaternary:
+        content.foregroundStyle(.quaternary)
+      case .quinary:
+        if #available(iOS 16.0, *) {
+          content.foregroundStyle(.quinary)
+        } else {
+          content.foregroundStyle(.quaternary)
+        }
+      }
+    case .linearGradient:
+      if let colors, let startPoint, let endPoint {
+        content.foregroundStyle(
+          LinearGradient(
+            colors: colors,
+            startPoint: startPoint,
+            endPoint: endPoint
+          )
+        )
+      } else {
+        content
+      }
+    case .radialGradient:
+      if let colors, let center, let startRadius, let endRadius {
+        content.foregroundStyle(
+          RadialGradient(
+            colors: colors,
+            center: center,
+            startRadius: startRadius,
+            endRadius: endRadius
+          )
+        )
+      } else {
+        content
+      }
+    case .angularGradient:
+      if let colors, let center {
+        content.foregroundStyle(
+          AngularGradient(
+            colors: colors,
+            center: center
+          )
+        )
+      } else {
+        content
+      }
+    }
+  }
+}
+
 internal struct TintModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -671,6 +763,19 @@ internal class ViewModifierRegistry {
   }
 }
 
+internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
+
+  func body(content: Content) -> some View {
+    if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+      content.matchedGeometryEffect(id: id, in: namespace)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -714,6 +819,10 @@ extension ViewModifierRegistry {
 
     register("foregroundColor") { params, appContext, _ in
       return try ForegroundColorModifier(from: params, appContext: appContext)
+    }
+
+    register("foregroundStyle") { params, appContext, _ in
+      return try ForegroundStyleModifier(from: params, appContext: appContext)
     }
 
     register("tint") { params, appContext, _ in
@@ -818,6 +927,10 @@ extension ViewModifierRegistry {
 
     register("glassEffectId") { params, appContext, _ in
       return try GlassEffectIdModifier.init(from: params, appContext: appContext)
+    }
+
+    register("matchedGeometryEffect") { params, appContext, _ in
+      return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
     }
   }
 }

@@ -4,6 +4,8 @@ import { Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React from 'react';
 import { Image, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 
+import { CappedWidthContainerView } from '../components/Views';
+
 type Props = {
   task: { manifestUrl: string; manifestString: string };
 };
@@ -56,7 +58,10 @@ export function DevMenuTaskInfo({ task }: Props) {
   const manifestInfo = manifest ? getInfoFromManifest(manifest) : null;
 
   return (
-    <View>
+    <CappedWidthContainerView
+      wrapperStyle={{
+        backgroundColor: theme.background.default,
+      }}>
       <Row bg="default" padding="medium">
         {manifestInfo?.iconUrl ? (
           <Image source={{ uri: manifestInfo.iconUrl }} style={styles.taskIcon} />
@@ -118,7 +123,7 @@ export function DevMenuTaskInfo({ task }: Props) {
           )}
         </View>
       </Row>
-    </View>
+    </CappedWidthContainerView>
   );
 }
 

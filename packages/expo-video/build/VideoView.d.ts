@@ -12,6 +12,9 @@ import type { VideoViewProps } from './VideoView.types';
  */
 export declare function isPictureInPictureSupported(): boolean;
 export declare class VideoView extends PureComponent<VideoViewProps> {
+    /**
+     * A reference to the underlying native view. On web it is a reference to the HTMLVideoElement.
+     */
     nativeRef: import("react").RefObject<any>;
     /**
      * Enters fullscreen mode.

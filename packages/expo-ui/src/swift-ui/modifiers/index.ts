@@ -40,6 +40,12 @@ export const shadow = (params: { radius: number; x?: number; y?: number; color?:
   createModifier('shadow', params);
 
 /**
+ * Adds a matched geometry effect to a view.
+ */
+export const matchedGeometryEffect = (id: string, namespaceId: string) =>
+  createModifier('matchedGeometryEffect', { id, namespaceId });
+
+/**
  * Sets the frame properties of a view.
  */
 export const frame = (params: {
@@ -145,8 +151,124 @@ export const offset = (params: { x?: number; y?: number }) => createModifier('of
 /**
  * Sets the foreground color/tint of a view.
  * @param color - The foreground color (hex string)
+ * @deprecated Use foregroundStyle instead
  */
 export const foregroundColor = (color: string) => createModifier('foregroundColor', { color });
+
+/**
+ * Sets the foreground style of a view with comprehensive styling options.
+ *
+ * Replaces the deprecated `foregroundColor` modifier with enhanced capabilities including
+ * colors, gradients, and semantic hierarchical styles that adapt to system appearance.
+ *
+ * @param style - The foreground style configuration. Can be:
+ *
+ * **Simple Color (string):**
+ * - Hex colors: `'#FF0000'`, `'#RGB'`, `'#RRGGBB'`, `'#AARRGGBB'`
+ * - Named colors: `'red'`, `'blue'`, `'green'`, etc.
+ *
+ * **Explicit Color Object:**
+ * ```typescript
+ * { type: 'color', color: '#FF0000' }
+ * ```
+ *
+ * **Hierarchical Styles (Semantic):**
+ * Auto-adapting semantic styles that respond to light/dark mode and accessibility settings:
+ * ```typescript
+ * { type: 'hierarchical', style: 'primary' }    // Most prominent (main content, headlines)
+ * { type: 'hierarchical', style: 'secondary' }  // Supporting text, subheadlines
+ * { type: 'hierarchical', style: 'tertiary' }   // Less important text, captions
+ * { type: 'hierarchical', style: 'quaternary' } // Subtle text, disabled states
+ * { type: 'hierarchical', style: 'quinary' }    // Most subtle (iOS 16+, fallback to quaternary)
+ * ```
+ *
+ * **Linear Gradient:**
+ * ```typescript
+ * {
+ *   type: 'linearGradient',
+ *   colors: ['#FF0000', '#0000FF', '#00FF00'],
+ *   startPoint: { x: 0, y: 0 },    // Top-left
+ *   endPoint: { x: 1, y: 1 }       // Bottom-right
+ * }
+ * ```
+ *
+ * **Radial Gradient:**
+ * ```typescript
+ * {
+ *   type: 'radialGradient',
+ *   colors: ['#FF0000', '#0000FF'],
+ *   center: { x: 0.5, y: 0.5 },    // Center of view
+ *   startRadius: 0,                // Inner radius
+ *   endRadius: 100                 // Outer radius
+ * }
+ * ```
+ *
+ * **Angular Gradient (Conic):**
+ * ```typescript
+ * {
+ *   type: 'angularGradient',
+ *   colors: ['#FF0000', '#00FF00', '#0000FF'],
+ *   center: { x: 0.5, y: 0.5 }     // Rotation center
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Simple usage
+ * <Text modifiers={[foregroundStyle('#FF0000')]}>Red Text</Text>
+ *
+ * // Adaptive hierarchical styling
+ * <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+ *   Supporting Text
+ * </Text>
+ *
+ * // Linear gradient
+ * <Text modifiers={[foregroundStyle({
+ *   type: 'linearGradient',
+ *   colors: ['#FF6B35', '#F7931E', '#FFD23F'],
+ *   startPoint: { x: 0, y: 0 },
+ *   endPoint: { x: 1, y: 0 }
+ * })]}>
+ *   Gradient Text
+ * </Text>
+ * ```
+ *
+ * @returns A view modifier that applies the specified foreground style
+ * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
+ * @see https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)
+ */
+export const foregroundStyle = (
+  style:
+    | string // Simple color (hex string, color name, or Apple system color name)
+    | { type: 'color'; color: string }
+    | {
+        type: 'hierarchical';
+        style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
+      }
+    | {
+        type: 'linearGradient';
+        colors: string[];
+        startPoint: { x: number; y: number };
+        endPoint: { x: number; y: number };
+      }
+    | {
+        type: 'radialGradient';
+        colors: string[];
+        center: { x: number; y: number };
+        startRadius: number;
+        endRadius: number;
+      }
+    | {
+        type: 'angularGradient';
+        colors: string[];
+        center: { x: number; y: number };
+      }
+) => {
+  if (typeof style === 'string') {
+    return createModifier('foregroundStyle', { styleType: 'color', color: style });
+  }
+  return createModifier('foregroundStyle', { styleType: style.type, ...style });
+};
 
 /**
  * Sets the tint color of a view.
@@ -322,6 +444,7 @@ export type BuiltInModifier =
   | ReturnType<typeof rotationEffect>
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
+  | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof zIndex>

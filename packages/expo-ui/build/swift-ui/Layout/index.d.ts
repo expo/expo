@@ -29,5 +29,9 @@ export interface GroupProps extends CommonViewModifierProps {
     onPress?: () => void;
 }
 export declare function Group(props: GroupProps): import("react").JSX.Element;
+export interface ZStackProps extends StackBaseProps {
+    alignment?: 'center' | 'leading' | 'trailing' | 'top' | 'bottom' | 'topLeading' | 'topTrailing' | 'bottomLeading' | 'bottomTrailing' | 'centerFirstTextBaseline' | 'centerLastTextBaseline' | 'leadingFirstTextBaseline' | 'leadingLastTextBaseline' | 'trailingFirstTextBaseline' | 'trailingLastTextBaseline';
+}
+export declare function ZStack(props: ZStackProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map
