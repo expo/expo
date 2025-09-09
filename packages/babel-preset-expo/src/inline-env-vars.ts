@@ -1,10 +1,18 @@
-import type { ConfigAPI, NodePath, PluginObj, types as t } from '@babel/core';
+import type { ConfigAPI, NodePath, PluginObj, PluginPass, types as t } from '@babel/core';
 
 import { createAddNamedImportOnce, getIsProd } from './common';
 
 const debug = require('debug')('expo:babel:env-vars');
 
-export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
+interface ExpoInlineEnvVarsOpts extends PluginPass {
+  opts: {
+    polyfillImportMeta?: boolean;
+  };
+}
+
+export function expoInlineEnvVars(
+  api: ConfigAPI & typeof import('@babel/core')
+): PluginObj<ExpoInlineEnvVarsOpts> {
   const { types: t } = api;
   const isProduction = api.caller(getIsProd);
 
@@ -27,8 +35,12 @@ export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core'))
     },
     visitor: {
       MemberExpression(path, state) {
+        const { polyfillImportMeta } = state.opts;
         const filename = state.filename;
-        if (path.get('object').matchesPattern('process.env')) {
+        if (
+          path.get('object').matchesPattern('process.env') ||
+          (polyfillImportMeta && path.get('object').matchesPattern('import.meta.env'))
+        ) {
           const key = path.toComputedKey();
           if (
             t.isStringLiteral(key) &&
