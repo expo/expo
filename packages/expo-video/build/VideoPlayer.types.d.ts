@@ -280,6 +280,8 @@ export type VideoSource = string | number | null | {
     /**
      * The URI of the video.
      *
+     * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
+     *
      * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
      */
     uri?: string;
