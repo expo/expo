@@ -1,31 +1,41 @@
 import type { ColorValue, ProcessedColorValue, ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
+import type { AndroidSymbol, AndroidSymbolWeight } from './android/index.js';
 export type SymbolViewProps = {
     /**
-     * The name of the symbol. Symbols can be viewed in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/).
+     * The name of the symbol. iOS Symbols can be viewed in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/).
      */
-    name: SFSymbol;
+    name: SFSymbol | {
+        ios: SFSymbol;
+        android: AndroidSymbol;
+    };
     /**
-     * Fallback to render on Android and Web where `SF Symbols` are not available.
+     * Fallback to render on Web where `SF Symbols` or android symbols are not available.
      */
     fallback?: React.ReactNode;
     /**
      * Determines the symbol variant to use.
      * @default 'monochrome'
+     * @platform ios
      */
     type?: SymbolType;
     /**
      * The scale of the symbol to render.
      * @default 'unspecified'
+     * @platform ios
      */
     scale?: SymbolScale;
     /**
      * The weight of the symbol to render.
      * @default 'unspecified'
      */
-    weight?: SymbolWeight;
+    weight?: SymbolWeight | {
+        ios: SymbolWeight;
+        android: AndroidSymbolWeight;
+    };
     /**
      * An array of colors to use when the {@link SymbolType} is `palette`.
+     * @platform ios
      */
     colors?: ColorValue | ColorValue[];
     /**
@@ -40,10 +50,12 @@ export type SymbolViewProps = {
     /**
      * Determines how the image should be resized to fit its container.
      * @default 'scaleAspectFit'
+     * @platform ios
      */
     resizeMode?: ContentMode;
     /**
      * The animation configuration to apply to the symbol.
+     * @platform ios
      */
     animationSpec?: AnimationSpec;
 } & ViewProps;

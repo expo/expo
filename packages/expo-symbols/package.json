@@ -13,6 +13,10 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
+  "exports": {
+    ".": "./build/index.js",
+    "./androidWeights/*": "./build/android/weights/*/index.js"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -40,6 +44,8 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "@expo-google-fonts/material-symbols": "*",
+    "expo-font": "*"
   }
 }
