@@ -31,7 +31,34 @@ const COLORS: Record<string, string> = {
   'ansi-bright-white': 'rgb(247, 247, 247)',
 };
 
-export function Ansi({ text, style }: { text: string; style: StyleProp<TextStyle> }) {
+export class Ansi extends React.Component<{ text: string; style: StyleProp<TextStyle> }, { hasError: boolean }> {
+  constructor(props: { text: string; style: StyleProp<TextStyle> }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('AnsiSafe caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <Text style={this.props.style}>Error rendering ANSI text.</Text>;
+    }
+    return <AnsiUnsafe text={this.props.text} style={this.props.style} />;
+  }
+}
+
+export function AnsiUnsafe({ text, style }: { text: string; style: StyleProp<TextStyle> }) {
+  // TMP
+  if (text == null) {
+    return <Text style={style}>Text not provided to Ansi component.</Text>;
+  }
+
   let commonWhitespaceLength = Infinity;
   const parsedLines = text.split(/\n/).map((line) =>
     Anser.ansiToJson(line, {
