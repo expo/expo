@@ -25,7 +25,7 @@ This guide covers the basics of using Expo UI to integrate SwiftUI into your Exp
 
 - **SwiftUI primitives**: Expo UI is not another UI library. It brings SwiftUI primitives to Expo.
 - **1-to-1 mapping**: The components in Expo UI have a 1-to-1 mapping to SwiftUI views. You can easily explore available views in the SwiftUI ecosystem, such as [Explore SwiftUI](https://exploreswiftui.com/) or the [Libraried app](https://apps.apple.com/us/app/libraried-ui-components/id1642862540), and find the corresponding Expo UI component.
-- **Full-app support**: Expo UI is designed to be used throughout the entire app. You can write your app entirely in Expo UI, while maintaining flexibility at the same time. The integration works at the component level. You can also mix [React Native components](https://reactnative.dev/docs/components-and-apis), [Expo UI components](/versions/unversioned/sdk/ui/), [DOM components](/guides/dom-components/), or custom 2D components using [`react-native-skia`](https://shopify.github.io/react-native-skia/).
+- **Full-app support**: Expo UI is designed to be used throughout the entire app. You can write your app entirely in Expo UI, while maintaining flexibility at the same time. The integration works at the component level. You can also mix [React Native components](https://reactnative.dev/docs/components-and-apis), [Expo UI components](/versions/latest/sdk/ui/), [DOM components](/guides/dom-components/), or custom 2D components using [`react-native-skia`](https://shopify.github.io/react-native-skia/).
 
 ## Installation
 
@@ -35,7 +35,7 @@ You'll need to install the `@expo/ui` package in your Expo project. Run the foll
 
 ## Usage
 
-Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`<Host>`](/versions/unversioned/sdk/ui/#host) component. The [`<Host>`](/versions/unversioned/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
+Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`<Host>`](/versions/latest/sdk/ui/#host) component. The [`<Host>`](/versions/latest/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
 
 ### Basic usage with `Host`
 
@@ -302,7 +302,7 @@ Because React's promise of _"learn once, write anywhere"_, it now extends to Swi
   title="Expo UI reference"
   Icon={DocsLogo}
   description="For information on API components, methods, and more, see the Expo UI reference."
-  href="/versions/unversioned/sdk/ui/"
+  href="/versions/latest/sdk/ui/"
 />
 
 <BoxLink

@@ -381,6 +381,7 @@ const RENAMED_PAGES: Record<string, string> = {
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
+  '/versions/v50.0.0/sdk/dev-client': '/versions/latest/sdk/dev-client/',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',

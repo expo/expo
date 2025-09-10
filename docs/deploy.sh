@@ -364,7 +364,7 @@ redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-privacy-protection
 
 # After changing brownfield docs
-redirects[brownfield/installing-expo-modules]=/brownfield/integration-with-existing-apps
+redirects[brownfield/installing-expo-modules]=brownfield/get-started
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
