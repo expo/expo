@@ -6,6 +6,7 @@ require_relative 'packages_config'
 require_relative 'cocoapods/sandbox'
 require_relative 'cocoapods/target_definition'
 require_relative 'cocoapods/user_project_integrator'
+require_relative 'cocoapods/installer'
 
 module Expo
   class AutolinkingManager
@@ -34,6 +35,10 @@ module Expo
       global_flags = @options.fetch(:flags, {})
       tests_only = @options.fetch(:testsOnly, false)
       include_tests = @options.fetch(:includeTests, false)
+
+      # Add any additional framework modules to patch using the patched Podfile class in installer.rb
+      additional_framework_modules_to_path = @options.fetch(:additionalFrameworkModulesToPatch, [])
+      @podfile.expo_add_modules_to_patch(additional_framework_modules_to_path) if !additional_framework_modules_to_path.empty?
 
       project_directory = Pod::Config.instance.project_root
 
