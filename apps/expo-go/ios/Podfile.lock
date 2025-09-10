@@ -14,7 +14,7 @@ PODS:
   - EXAV (16.0.6):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXConstants (18.0.7):
+  - EXConstants (18.0.8):
     - ExpoModulesCore
   - EXImageLoader (6.0.0):
     - ExpoModulesCore
@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.32.10):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.0):
+  - Expo (54.0.1):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -64,7 +64,7 @@ PODS:
     - Yoga
   - ExpoAppleAuthentication (8.0.6):
     - ExpoModulesCore
-  - ExpoAsset (12.0.7):
+  - ExpoAsset (12.0.8):
     - ExpoModulesCore
   - ExpoAudio (1.0.10):
     - ExpoModulesCore
@@ -4242,14 +4242,14 @@ SPEC CHECKSUMS:
   EASClient: cfb28a340d86eeb03c2c67a2c34cd664c97dbc51
   EXApplication: 724353e341d7ece0bade87d437926fa8b3132c5d
   EXAV: c384f66c1f1a33a7bcb060a1cb39ea8807a8c268
-  EXConstants: 4d89ce3567191d8c940b0aab5ba7ddd310c59ad2
+  EXConstants: 0246c66e19d755cd9c88504d5c69896bba41d8a6
   EXImageLoader: e501c001bc40b8326605e82e6e80363c80fe06b5
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 9b19413c322564f3c2dce83006f1d71a4df79ba9
   EXNotifications: 41233e5c2c4a795139d08a9ff8bb3de2536b86f5
-  Expo: 428500d6f646b20c2ab81557ee1697da91077589
+  Expo: d304a756e14df4126a5d308f9581dec2049e508b
   ExpoAppleAuthentication: a42dfc311de6767c0529fb6d7f301915f651c7eb
-  ExpoAsset: 6ba39c035bda80b5561acdc7d6e869c0adc571a0
+  ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
   ExpoAudio: 9f25a54a380f761c5bf233197582f7b870a08e8d
   ExpoBackgroundFetch: e51c22117fb1f43fdd58c8f4def0e9a8fffb539a
   ExpoBackgroundTask: 0db04d59d07e8d8821dd3c207ed5d297b783054d

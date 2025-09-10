@@ -10,7 +10,7 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
-    "expo": "~54.0.0",
+    "expo": "~54.0.1",
     "expo-linking": "~8.0.7",
     "expo-router": "^6.0.0",
     "expo-splash-screen": "~31.0.8",
