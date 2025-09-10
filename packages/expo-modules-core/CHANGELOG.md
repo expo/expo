@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixes `JNI detected error in application: obj == null` in `ExpoModulesHostObject::get`. ([#39523](https://github.com/expo/expo/pull/39523) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 3.0.14 — 2025-09-08
