@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Updated `lightningcss` to `^1.30.1`
+
 ### 🐛 Bug fixes
 
 - Collapse `InternalBytecode.js` stack frames ([#39490](https://github.com/expo/expo/pull/39490) by [@kitten](https://github.com/kitten))
