@@ -380,7 +380,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
   '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
-  '/versions/v51.0.0/sdk/taskmanager': '/versions/v51.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
 
   // Deprecated Webpack support
