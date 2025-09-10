@@ -3,7 +3,7 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
-import { OpaqueColorValue } from 'react-native';
+import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
 import { createModifier, ModifierConfig } from './createModifier';
@@ -19,7 +19,27 @@ function createModifierWithEventListener(
   return { $type: type, ...params, eventListener };
 }
 
-type Color = string | OpaqueColorValue;
+type NamedColor =
+  | 'primary'
+  | 'secondary'
+  | 'red'
+  | 'orange'
+  | 'yellow'
+  | 'green'
+  | 'blue'
+  | 'purple'
+  | 'pink'
+  | 'white'
+  | 'gray'
+  | 'black'
+  | 'clear'
+  | 'mint'
+  | 'teal'
+  | 'cyan'
+  | 'indigo'
+  | 'brown';
+
+type Color = string | ColorValue | NamedColor;
 
 // =============================================================================
 // Built-in Modifier Functions
@@ -385,7 +405,7 @@ export const overlay = (params: {
  * @param alignment - Background alignment
  */
 export const backgroundOverlay = (params: {
-  color?: string;
+  color?: Color;
   alignment?: 'center' | 'top' | 'bottom' | 'leading' | 'trailing';
 }) => createModifier('backgroundOverlay', params);
 
@@ -410,7 +430,7 @@ export const glassEffect = (params?: {
   glass?: {
     variant: 'regular' | 'clear' | 'identity';
     interactive?: boolean;
-    tint?: string;
+    tint?: Color;
   };
   shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
 }) => createModifier('glassEffect', params);
