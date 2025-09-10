@@ -523,4 +523,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
   '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
+
+  // After changing brownfield docs
+  '/brownfield/installing-expo-modules/': '/brownfield/get-started/',
 };
