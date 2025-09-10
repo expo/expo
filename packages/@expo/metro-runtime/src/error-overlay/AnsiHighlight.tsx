@@ -59,7 +59,7 @@ export class Ansi extends React.Component<{
 
 export function AnsiUnsafe({ text, style }: { text: string; style: StyleProp<TextStyle> }) {
   // TMP
-  if (text == null) {
+  if (!text) {
     return <Text style={style}>Text not provided to Ansi component.</Text>;
   }
 
