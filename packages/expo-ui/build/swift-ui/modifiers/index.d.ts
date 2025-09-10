@@ -2,10 +2,11 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
-import { OpaqueColorValue } from 'react-native';
+import { ColorValue } from 'react-native';
 import { animation } from './animation/index';
 import { createModifier, ModifierConfig } from './createModifier';
-type Color = string | OpaqueColorValue;
+type NamedColor = 'primary' | 'secondary' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'white' | 'gray' | 'black' | 'clear' | 'mint' | 'teal' | 'cyan' | 'indigo' | 'brown';
+type Color = string | ColorValue | NamedColor;
 /**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
@@ -320,7 +321,7 @@ export declare const overlay: (params: {
  * @param alignment - Background alignment
  */
 export declare const backgroundOverlay: (params: {
-    color?: string;
+    color?: Color;
     alignment?: "center" | "top" | "bottom" | "leading" | "trailing";
 }) => ModifierConfig;
 /**
@@ -344,7 +345,7 @@ export declare const glassEffect: (params?: {
     glass?: {
         variant: "regular" | "clear" | "identity";
         interactive?: boolean;
-        tint?: string;
+        tint?: Color;
     };
     shape?: "circle" | "capsule" | "rectangle" | "ellipse";
 }) => ModifierConfig;
