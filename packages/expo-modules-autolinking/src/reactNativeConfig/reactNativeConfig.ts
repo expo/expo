@@ -130,6 +130,28 @@ export async function createReactNativeConfigAsync({
     resolveReactNativeModule(resolution, projectConfig, autolinkingOptions.platform, excludeNames)
   );
 
+  // See: https://github.com/facebook/react-native/pull/53690
+  // In 0.81.2 we fixed the artifacts codegen to work as expected with the autolinking output,
+  // however, when no React Native modules are in the build, the codegen bails and the build fails.
+  // 0.81.2 can still be used, but it needs at least one library
+  const reactNativeResolution = resolutions['react-native']!;
+  if (reactNativeResolution?.version === '0.81.2' && autolinkingOptions.platform === 'ios') {
+    dependencies['react-native'] = {
+      root: reactNativeResolution.path,
+      name: 'react-native',
+      platforms: {
+        ios: {
+          // This will trigger a warning in list_native_modules but will trigger the artifacts
+          // codegen codepath as expected
+          podspecPath: '',
+          version: reactNativeResolution.version,
+          configurations: [],
+          scriptPhases: [],
+        },
+      },
+    };
+  }
+
   return {
     root: appRoot,
     reactNativePath: resolutions['react-native']?.path!,
