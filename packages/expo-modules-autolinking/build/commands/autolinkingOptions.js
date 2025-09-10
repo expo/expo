@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.filterMapSearchPaths = void 0;
 exports.registerAutolinkingArguments = registerAutolinkingArguments;
 exports.createAutolinkingOptionsLoader = createAutolinkingOptionsLoader;
-const find_up_1 = __importDefault(require("find-up"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const isJSONObject = (x) => x != null && typeof x === 'object';
@@ -110,12 +109,14 @@ const parseExtraArgumentsOptions = (args) => {
     };
 };
 const findPackageJsonPathAsync = async (commandRoot) => {
-    const cwd = process.cwd();
-    const result = await (0, find_up_1.default)('package.json', { cwd: commandRoot || cwd });
-    if (!result) {
-        throw new Error(`Couldn't find "package.json" up from path "${commandRoot || cwd}"`);
+    const root = commandRoot || process.cwd();
+    for (let dir = root; path_1.default.dirname(dir) !== dir; dir = path_1.default.dirname(dir)) {
+        const file = path_1.default.resolve(dir, 'package.json');
+        if (fs_1.default.existsSync(file)) {
+            return file;
+        }
     }
-    return result;
+    throw new Error(`Couldn't find "package.json" up from path "${root}"`);
 };
 const loadPackageJSONAsync = async (packageJsonPath) => {
     const packageJsonText = await fs_1.default.promises.readFile(packageJsonPath, 'utf8');

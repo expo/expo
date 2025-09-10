@@ -16,7 +16,6 @@ module Pod
 
     def expo_add_modules_to_patch(modules)
       framework_modules_to_patch.concat(modules)
-      Pod::UI.puts "[Expo] ".blue + "Added extra framework modules to patch: #{modules.join(', ')}"
     end
   end
 
