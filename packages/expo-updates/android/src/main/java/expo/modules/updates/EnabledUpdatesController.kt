@@ -32,6 +32,7 @@ import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -60,8 +61,8 @@ class EnabledUpdatesController(
 
   private val selectionPolicy: SelectionPolicy
     get() = SelectionPolicyFactory.createFilterAwarePolicy(updatesConfiguration.getRuntimeVersion(), updatesConfiguration)
-  private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
-  private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet(), controllerScope)
   private val fileDownloader: FileDownloader
     get() = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
@@ -111,7 +112,8 @@ class EnabledUpdatesController(
       override fun onRequestRelaunch(shouldRunReaper: Boolean, callback: LauncherCallback) {
         relaunchReactApplication(shouldRunReaper, callback)
       }
-    }
+    },
+    controllerScope
   )
 
   private val launchedUpdate
@@ -183,7 +185,8 @@ class EnabledUpdatesController(
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,
       reloadScreenManager = reloadScreenManager,
-      callback
+      callback,
+      controllerScope
     )
     stateMachine.queueExecution(procedure)
   }

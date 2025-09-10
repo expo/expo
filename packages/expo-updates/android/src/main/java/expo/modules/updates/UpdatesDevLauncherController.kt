@@ -33,6 +33,7 @@ import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
@@ -67,7 +68,7 @@ class UpdatesDevLauncherController(
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
-  private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicy(
