@@ -1,9 +1,3 @@
-import React from 'react';
-export default function LogBoxRNPolyfill(props: {
-    onDismiss: (index: number) => void;
-    onMinimize: () => void;
-    onChangeSelectedIndex: (index: number) => void;
-    logs: any[];
-    selectedIndex: number;
-}): React.JSX.Element;
+declare const _default: any;
+export default _default;
 //# sourceMappingURL=logbox-rn-polyfill.d.ts.map
