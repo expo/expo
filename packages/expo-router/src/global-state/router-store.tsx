@@ -266,22 +266,21 @@ function getCachedRouteInfo(state: ReactNavigationState) {
     routeInfo = getRouteInfoFromState(state);
 
     const previousRouteInfo = storeRef.current.routeInfo;
-    if (previousRouteInfo) {
-      const areEqual =
-        routeInfo.segments.length === previousRouteInfo.segments.length &&
-        routeInfo.segments.every(
-          (segment, index) => previousRouteInfo.segments[index] === segment
-        ) &&
-        routeInfo.pathnameWithParams === previousRouteInfo.pathnameWithParams;
-
-      if (areEqual) {
-        // If they are equal, keep the previous route info for object reference equality
-        routeInfo = previousRouteInfo;
-      }
+    if (previousRouteInfo && areRouteInfosEqual(routeInfo, previousRouteInfo)) {
+      // If they are equal, keep the previous route info for object reference equality
+      routeInfo = previousRouteInfo;
     }
 
     routeInfoCache.set(state, routeInfo);
   }
 
   return routeInfo;
+}
+
+function areRouteInfosEqual(routeInfo1: UrlObject, routeInfo2: UrlObject): boolean {
+  return (
+    routeInfo1.segments.length === routeInfo2.segments.length &&
+    routeInfo1.segments.every((segment, index) => segment === routeInfo2.segments[index]) &&
+    routeInfo1.pathnameWithParams === routeInfo2.pathnameWithParams
+  );
 }

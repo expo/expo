@@ -99,7 +99,14 @@ function PreviewForRootHrefState({ hrefState, href }: { hrefState: ResultState; 
 function PreviewForInternalRoutes() {
   const pathname = usePathname();
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: 'white',
+      }}>
       <Text style={{ fontWeight: '600', fontSize: 24 }}>Invalid preview</Text>
       <Text style={{ fontWeight: '200', fontSize: 14 }}>{pathname}</Text>
     </View>

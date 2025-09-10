@@ -8,7 +8,38 @@
 
 ### 🐛 Bug fixes
 
+- fix nested protected routes not taking into account the parents guard prop ([#39437](https://github.com/expo/expo/pull/39437) by [@saviocmc](https://github.com/saviocmc))
+- Fix `ExpoRoot`'s wrapper forcing a remount due to a `SafeAreaProvider` update ([#39476](https://github.com/expo/expo/pull/39476) by [@kitten](https://github.com/kitten))
+- fix unecessary render on screen blur ([#39454](https://github.com/expo/expo/pull/39454) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
+
+## 6.0.0-preview.16 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- use shadowColor to remove shadow on scroll edge ([#39396](https://github.com/expo/expo/pull/39396) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.0-preview.15 — 2025-09-04
+
+### 💡 Others
+
+- simplify link preview hierarchy and expose more customization options ([#39357](https://github.com/expo/expo/pull/39357) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.0-preview.14 — 2025-09-03
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0-preview.13 — 2025-09-02
+
+### 🎉 New features
+
+- apply display contents to link ([#39245](https://github.com/expo/expo/pull/39245) by [@Ubax](https://github.com/Ubax))
+- [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- fix link preview navigation to same href ([#39329](https://github.com/expo/expo/pull/39329) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.0-preview.12 — 2025-08-31
 
@@ -195,6 +226,7 @@ _This version does not introduce any user-facing changes._
 - Refactor link preview to show components in docs ([#38696](https://github.com/expo/expo/pull/38696) by [@Ubax](https://github.com/Ubax))
 - refactor tabs for docs export ([#38684](https://github.com/expo/expo/pull/38684) by [@Ubax](https://github.com/Ubax))
 - Use `@expo/server/private` for RSC Middleware imports ([#38717](https://github.com/expo/expo/pull/38717) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 5.1.4 - 2025-07-18
 

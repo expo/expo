@@ -9,3 +9,5 @@ export {
   type PathInfo,
   type DirectoryInfo,
 } from './ExpoFileSystem.types';
+
+export * from './legacyWarnings';

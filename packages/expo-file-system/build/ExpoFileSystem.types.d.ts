@@ -108,9 +108,11 @@ export declare class Directory {
     size: number | null;
     /**
      * A static method that opens a file picker to select a directory.
+     *
+     * On iOS, the selected directory grants temporary read and write access for the current app session only. After the app restarts, you must prompt the user again to regain access.
+     *
      * @param initialUri An optional uri pointing to an initial folder on which the directory picker is opened.
-     * @returns a `Directory` instance. The underlying uri will be a content URI on Android.
-     * @platform android
+     * @returns a `Directory` instance. On Android, the underlying uri will be a content URI.
      */
     static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
@@ -231,16 +233,15 @@ export declare class File {
      */
     static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
     /**
-     * A static method that opens a file picker to select a single file of specified type.
+     * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
      *
-     * @platform android
+     * Selecting multiple files is not supported yet.
      *
      * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
-     * @returns a `File` instance.
-     * @platform android
+     * @returns a `File` instance or an array of `File` instances.
      */
-    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
+    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */

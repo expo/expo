@@ -1,11 +1,10 @@
 import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetBackdropProps,
-  BottomSheetView,
+  BottomSheetScrollView,
   useBottomSheetSpringConfigs,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
 import * as DevMenu from './DevMenuModule';
@@ -15,6 +14,28 @@ type Props = {
   children?: React.ReactNode;
 };
 
+function Backdrop({ onPress }: { onPress: () => void }) {
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      opacity.value = withTiming(0.5, { duration: 350 });
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <TouchableWithoutFeedback onPress={onPress}>
+      <Animated.View style={[styles.backdrop, animatedStyle]} />
+    </TouchableWithoutFeedback>
+  );
+}
+
 function DevMenuBottomSheet({ children, uuid }: Props) {
   const bottomSheetRef = useRef<BottomSheet | null>(null);
 
@@ -23,7 +44,6 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
       new Promise<void>((resolve) => {
         bottomSheetRef.current?.close();
 
-        // still no way to wait for animation to end before the callback, so we wait for 300ms
         setTimeout(() => {
           resolve();
           DevMenu.closeAsync();
@@ -61,12 +81,9 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
     };
   }, []);
 
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop {...props} opacity={0.5} appearsOnIndex={0} disappearsOnIndex={-1} />
-    ),
-    []
-  );
+  const onBackdropPress = useCallback(() => {
+    bottomSheetRef.current?.close();
+  }, []);
 
   const animationConfigs = useBottomSheetSpringConfigs({
     duration: 350,
@@ -76,27 +93,33 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
   });
 
   return (
-    <BottomSheet
-      key={uuid}
-      snapPoints={['70%']}
-      index={0}
-      ref={bottomSheetRef}
-      backdropComponent={renderBackdrop}
-      handleComponent={null}
-      animationConfigs={animationConfigs}
-      backgroundStyle={styles.bottomSheetBackground}
-      enablePanDownToClose
-      onChange={onChange}>
-      <DevMenuBottomSheetContext.Provider value={{ collapse: onCollapse, expand: onExpand }}>
-        <BottomSheetView style={styles.contentContainerStyle}>{children}</BottomSheetView>
-      </DevMenuBottomSheetContext.Provider>
-      {/* Adds bottom offset so that no empty space is shown on overdrag */}
-      <View style={{ height: 100 }} />
-    </BottomSheet>
+    <View style={styles.bottomSheetContainer}>
+      <Backdrop onPress={onBackdropPress} />
+      <BottomSheet
+        key={uuid}
+        snapPoints={['70%']}
+        index={0}
+        ref={bottomSheetRef}
+        handleComponent={null}
+        animationConfigs={animationConfigs}
+        backgroundStyle={styles.bottomSheetBackground}
+        enablePanDownToClose
+        onChange={onChange}>
+        <DevMenuBottomSheetContext.Provider value={{ collapse: onCollapse, expand: onExpand }}>
+          <BottomSheetScrollView style={styles.contentContainerStyle}>
+            {children}
+          </BottomSheetScrollView>
+        </DevMenuBottomSheetContext.Provider>
+      </BottomSheet>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'black',
+  },
   bottomSheetContainer: {
     flex: 1,
   },

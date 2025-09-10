@@ -157,7 +157,7 @@ function getQualifiedRouteComponent(value) {
     // Pass all other props to the component
     ...props }) {
         const stateForPath = (0, native_1.useStateForPath)();
-        const isFocused = (0, native_1.useIsFocused)();
+        const isFocused = navigation.isFocused();
         const store = (0, storeContext_1.useExpoRouterStore)();
         if (isFocused) {
             const state = navigation.getState();

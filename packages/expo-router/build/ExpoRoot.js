@@ -72,19 +72,19 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
      * is a HTML document, we need to ensure its inside the <body>
      */
-    const wrapper = ({ children }) => {
+    const wrapper = (0, react_1.useMemo)(() => ({ children }) => {
         return (<ParentWrapper>
-        <LinkPreviewContext_1.LinkPreviewContextProvider>
-          <react_native_safe_area_context_1.SafeAreaProvider 
+            <LinkPreviewContext_1.LinkPreviewContextProvider>
+              <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
-            {children}
-          </react_native_safe_area_context_1.SafeAreaProvider>
-        </LinkPreviewContext_1.LinkPreviewContextProvider>
-      </ParentWrapper>);
-    };
+                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+                {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+                {children}
+              </react_native_safe_area_context_1.SafeAreaProvider>
+            </LinkPreviewContext_1.LinkPreviewContextProvider>
+          </ParentWrapper>);
+    }, [ParentWrapper]);
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
 function AutoStatusBar() {

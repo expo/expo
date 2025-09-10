@@ -21,7 +21,6 @@ import {
 } from '../Expo';
 
 jest.mock('@expo/spawn-async');
-jest.mock('find-up');
 jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('/app/package.json', () => {}, { virtual: true });

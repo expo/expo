@@ -922,7 +922,7 @@ jobs:
 
 ### `jobs.<job_id>.outputs`
 
-A list of outputs defined by the job. These outputs are accessible to all downstream jobs that depend on this job. To set outputs, use the `set-output` function within a job step.
+A list of outputs defined by the job. These outputs are accessible to all downstream jobs that depend on this job. To set outputs, use the [`set-output`](#set-output) function within a job step.
 
 Downstream jobs can access these outputs using the following expressions within [interpolation contexts](#interpolation):
 
@@ -1284,3 +1284,47 @@ jobs:
   Icon={GithubIcon}
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
 />
+
+## Built-in shell functions
+
+EAS Workflows provides the following shell function that you can use in your workflow steps to set variable outputs.
+
+### `set-output`
+
+Sets an output variable that can be accessed by other steps or other jobs in the workflow.
+
+```bash
+set-output <name> <value>
+```
+
+Example usage for sharing a variable with another step:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - id: step_1
+        # @info #
+        run: set-output variable_1 "Variable 1"
+        # @end #
+      - id: step_2
+        run: echo ${{ steps.step_1.outputs.variable_1 }} # prints: Variable 1
+```
+
+Example usage for sharing a variable with another job:
+
+```yaml
+jobs:
+  job_1:
+    outputs:
+      variable_1: ${{ steps.step_1.outputs.variable_1 }}
+    steps:
+      - id: step_1
+        # @info #
+        run: set-output variable_1 "Variable 1"
+        # @end #
+  job_2:
+    needs: [job_1]
+    steps:
+      - run: echo ${{ needs.job_1.outputs.variable_1 }} # prints: Variable 1
+```

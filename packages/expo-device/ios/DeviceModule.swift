@@ -6,22 +6,61 @@ public class DeviceModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoDevice")
 
-    Constants([
-      "isDevice": isDevice(),
-      "brand": "Apple",
-      "manufacturer": "Apple",
-      "modelId": UIDevice.modelIdentifier,
-      "modelName": UIDevice.DeviceMap.modelName,
-      "deviceYearClass": UIDevice.DeviceMap.deviceYearClass,
-      "totalMemory": ProcessInfo.processInfo.physicalMemory,
-      "osName": UIDevice.current.systemName,
-      "osVersion": UIDevice.current.systemVersion,
-      "osBuildId": osBuildId(),
-      "osInternalBuildId": osBuildId(),
-      "deviceName": UIDevice.current.name,
-      "deviceType": getDeviceType(),
-      "supportedCpuArchitectures": cpuArchitectures()
-    ])
+    Constant("isDevice") {
+      isDevice()
+    }
+
+    Constant("brand") {
+      "Apple"
+    }
+
+    Constant("manufacturer") {
+      "Apple"
+    }
+
+    Constant("modelId") {
+      UIDevice.modelIdentifier
+    }
+
+    Constant("modelName") {
+      UIDevice.DeviceMap.modelName
+    }
+
+    Constant("deviceYearClass") {
+      UIDevice.DeviceMap.deviceYearClass
+    }
+
+    Constant("totalMemory") {
+      ProcessInfo.processInfo.physicalMemory
+    }
+
+    Constant("osName") {
+      UIDevice.current.systemName
+    }
+
+    Constant("osVersion") {
+      UIDevice.current.systemVersion
+    }
+
+    Constant("osBuildId") {
+      osBuildId()
+    }
+
+    Constant("osInternalBuildId") {
+      osBuildId()
+    }
+
+    Constant("deviceName") {
+      UIDevice.current.name
+    }
+
+    Constant("deviceType") {
+      getDeviceType()
+    }
+
+    Constant("supportedCpuArchitectures") {
+      cpuArchitectures()
+    }
 
     AsyncFunction("getDeviceTypeAsync") { () -> Int in
       return getDeviceType()

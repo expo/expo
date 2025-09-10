@@ -138,7 +138,7 @@ public class NotificationManager implements SingletonModule {
     // OR a background state (ExpoNotificationLifecycleListener::onNewIntent)
 
     // If we've just come from a background state, we'll have listeners set up
-    // pass on the notification to them
+    // - pass on the notification to them
     if (!mListenerReferenceMap.isEmpty()) {
       for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
         NotificationListener listener = listenerReference.get();

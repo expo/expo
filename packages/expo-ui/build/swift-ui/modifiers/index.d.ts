@@ -24,6 +24,10 @@ export declare const shadow: (params: {
     color?: string;
 }) => ModifierConfig;
 /**
+ * Adds a matched geometry effect to a view.
+ */
+export declare const matchedGeometryEffect: (id: string, namespaceId: string) => ModifierConfig;
+/**
  * Sets the frame properties of a view.
  */
 export declare const frame: (params: {
@@ -104,8 +108,125 @@ export declare const offset: (params: {
 /**
  * Sets the foreground color/tint of a view.
  * @param color - The foreground color (hex string)
+ * @deprecated Use foregroundStyle instead
  */
 export declare const foregroundColor: (color: string) => ModifierConfig;
+/**
+ * Sets the foreground style of a view with comprehensive styling options.
+ *
+ * Replaces the deprecated `foregroundColor` modifier with enhanced capabilities including
+ * colors, gradients, and semantic hierarchical styles that adapt to system appearance.
+ *
+ * @param style - The foreground style configuration. Can be:
+ *
+ * **Simple Color (string):**
+ * - Hex colors: `'#FF0000'`, `'#RGB'`, `'#RRGGBB'`, `'#AARRGGBB'`
+ * - Named colors: `'red'`, `'blue'`, `'green'`, etc.
+ *
+ * **Explicit Color Object:**
+ * ```typescript
+ * { type: 'color', color: '#FF0000' }
+ * ```
+ *
+ * **Hierarchical Styles (Semantic):**
+ * Auto-adapting semantic styles that respond to light/dark mode and accessibility settings:
+ * ```typescript
+ * { type: 'hierarchical', style: 'primary' }    // Most prominent (main content, headlines)
+ * { type: 'hierarchical', style: 'secondary' }  // Supporting text, subheadlines
+ * { type: 'hierarchical', style: 'tertiary' }   // Less important text, captions
+ * { type: 'hierarchical', style: 'quaternary' } // Subtle text, disabled states
+ * { type: 'hierarchical', style: 'quinary' }    // Most subtle (iOS 16+, fallback to quaternary)
+ * ```
+ *
+ * **Linear Gradient:**
+ * ```typescript
+ * {
+ *   type: 'linearGradient',
+ *   colors: ['#FF0000', '#0000FF', '#00FF00'],
+ *   startPoint: { x: 0, y: 0 },    // Top-left
+ *   endPoint: { x: 1, y: 1 }       // Bottom-right
+ * }
+ * ```
+ *
+ * **Radial Gradient:**
+ * ```typescript
+ * {
+ *   type: 'radialGradient',
+ *   colors: ['#FF0000', '#0000FF'],
+ *   center: { x: 0.5, y: 0.5 },    // Center of view
+ *   startRadius: 0,                // Inner radius
+ *   endRadius: 100                 // Outer radius
+ * }
+ * ```
+ *
+ * **Angular Gradient (Conic):**
+ * ```typescript
+ * {
+ *   type: 'angularGradient',
+ *   colors: ['#FF0000', '#00FF00', '#0000FF'],
+ *   center: { x: 0.5, y: 0.5 }     // Rotation center
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Simple usage
+ * <Text modifiers={[foregroundStyle('#FF0000')]}>Red Text</Text>
+ *
+ * // Adaptive hierarchical styling
+ * <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+ *   Supporting Text
+ * </Text>
+ *
+ * // Linear gradient
+ * <Text modifiers={[foregroundStyle({
+ *   type: 'linearGradient',
+ *   colors: ['#FF6B35', '#F7931E', '#FFD23F'],
+ *   startPoint: { x: 0, y: 0 },
+ *   endPoint: { x: 1, y: 0 }
+ * })]}>
+ *   Gradient Text
+ * </Text>
+ * ```
+ *
+ * @returns A view modifier that applies the specified foreground style
+ * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
+ * @see https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)
+ */
+export declare const foregroundStyle: (style: string | {
+    type: "color";
+    color: string;
+} | {
+    type: "hierarchical";
+    style: "primary" | "secondary" | "tertiary" | "quaternary" | "quinary";
+} | {
+    type: "linearGradient";
+    colors: string[];
+    startPoint: {
+        x: number;
+        y: number;
+    };
+    endPoint: {
+        x: number;
+        y: number;
+    };
+} | {
+    type: "radialGradient";
+    colors: string[];
+    center: {
+        x: number;
+        y: number;
+    };
+    startRadius: number;
+    endRadius: number;
+} | {
+    type: "angularGradient";
+    colors: string[];
+    center: {
+        x: number;
+        y: number;
+    };
+}) => ModifierConfig;
 /**
  * Sets the tint color of a view.
  * @param color - The tint color (hex string)
@@ -226,10 +347,14 @@ export declare const glassEffect: (params?: {
     shape?: "circle" | "capsule" | "rectangle" | "ellipse";
 }) => ModifierConfig;
 /**
+ * Associates an identity value to Liquid Glass effects defined within a `GlassEffectContainer`.
+ */
+export declare const glassEffectId: (id: string, namespaceId: string) => ModifierConfig;
+/**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  */
-export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof animation>;
+export type BuiltInModifier = ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.

@@ -81,7 +81,6 @@ function getServerManifest(route) {
     if (route.middleware) {
         manifest.middleware = {
             file: route.middleware.contextKey,
-            matcher: route.middleware.loadRoute().unstable_settings?.matcher ?? undefined,
         };
     }
     return manifest;

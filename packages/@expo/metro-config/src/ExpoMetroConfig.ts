@@ -65,6 +65,7 @@ export interface DefaultConfigOptions {
 }
 
 let hasWarnedAboutExotic = false;
+let hasWarnedAboutReactNative = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -207,7 +208,18 @@ export function getDefaultConfig(
     );
   }
 
-  const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+  const reactNativePath = path.dirname(
+    resolveFrom.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
+  );
+  if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
+    hasWarnedAboutReactNative = true;
+    console.log(
+      chalk.yellow(
+        `\u203A Could not resolve react-native! Is it installed and a project dependency?`
+      )
+    );
+  }
+
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
@@ -225,7 +237,19 @@ export function getDefaultConfig(
     sourceExts.push('scss', 'sass', 'css');
   }
 
-  const pkg = getPackageJson(projectRoot);
+  let pkg: ReturnType<typeof getPackageJson> | undefined;
+  try {
+    pkg = getPackageJson(projectRoot);
+  } catch (error: any) {
+    if (error && error.name === 'ConfigError') {
+      console.log(
+        chalk.yellow(`\u203A Could not find a package.json at the project root! ("${projectRoot}")`)
+      );
+    } else {
+      throw error;
+    }
+  }
+
   const watchFolders = getWatchFolders(projectRoot);
   const nodeModulesPaths = getModulesPaths(projectRoot);
   if (env.EXPO_DEBUG) {
@@ -356,8 +380,8 @@ export function getDefaultConfig(
       // @ts-expect-error: not on type.
       _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
-      browserslistHash: pkg.browserslist
-        ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
+      browserslistHash: pkg?.browserslist
+        ? stableHash(JSON.stringify(pkg?.browserslist)).toString('hex')
         : null,
       sassVersion,
       // Ensure invalidation when the version changes due to the Babel plugin.
