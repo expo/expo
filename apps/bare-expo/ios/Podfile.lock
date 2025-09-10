@@ -2851,7 +2851,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.5.0):
+  - RNWorklets (0.5.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2873,9 +2873,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets (= 0.5.0)
+    - RNWorklets/worklets (= 0.5.1)
     - Yoga
-  - RNWorklets/worklets (0.5.0):
+  - RNWorklets/worklets (0.5.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2897,9 +2897,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets/apple (= 0.5.0)
+    - RNWorklets/worklets/apple (= 0.5.1)
     - Yoga
-  - RNWorklets/worklets/apple (0.5.0):
+  - RNWorklets/worklets/apple (0.5.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3644,7 +3644,7 @@ SPEC CHECKSUMS:
   React: 2073376f47c71b7e9a0af7535986a77522ce1049
   React-callinvoker: 00fa0972a70df7408a4f088144b67207b157e386
   React-Core: 7edc3b0763d7a47cf5610b32e0e790ac10dd5410
-  React-Core-prebuilt: dde79b89f8863efebb1d532a3335f472927da669
+  React-Core-prebuilt: ab6d77841d4bb8d247c4358663c6c71836e4f461
   React-CoreModules: a02474243c3efbdc767b44dc029b452b0476cee1
   React-cxxreact: b3b6c8c0823ff10237f1c6c1ad067c2577bc2f84
   React-debug: c01d176522cf57cdc4a4a66d1974968fcf497f32
@@ -3719,7 +3719,7 @@ SPEC CHECKSUMS:
   RNReanimated: ec8886a7ff1bc514c5757c0a18d9c4a65ea00364
   RNScreens: dd61bc3a3e6f6901ad833efa411917d44827cf51
   RNSVG: 2825ee146e0f6a16221e852299943e4cceef4528
-  RNWorklets: 19c7213a8e3e11796493e77814ad7e15ce1f0e47
+  RNWorklets: 56b7e8755716f5995a4a775bebf3a6ea4e2f7f64
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
