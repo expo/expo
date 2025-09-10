@@ -34,15 +34,19 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   @Composable
-  protected fun Children() {
-    if (withHostingView) {
-      return Content()
-    }
-
+  protected fun ComposeChildren() {
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
       child.Content()
     }
+  }
+
+  @Composable
+  protected fun Children() {
+    if (withHostingView) {
+      return Content()
+    }
+    return ComposeChildren()
   }
 
   init {
