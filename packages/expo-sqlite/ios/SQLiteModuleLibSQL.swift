@@ -58,7 +58,7 @@ public final class SQLiteModule: Module {
     AsyncFunction("importAssetDatabaseAsync") { (databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) in
       let path = try ensureDatabasePathExists(path: databasePath)
       let fileManager = FileManager.default
-      if fileManager.fileExists(atPath: path.standardizedFileURL.path) && !forceOverwrite {
+      if fileManager.fileExists(atPath: path.toFilePath()) && !forceOverwrite {
         return
       }
       guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
@@ -66,7 +66,7 @@ public final class SQLiteModule: Module {
         throw DatabaseNotFoundException(assetDatabasePath)
       }
       try? fileManager.removeItem(atPath: path.absoluteString)
-      try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
+      try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
     }.runOnQueue(moduleQueue)
 
     AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
@@ -114,7 +114,7 @@ public final class SQLiteModule: Module {
           } else {
             let path = try ensureDatabasePathExists(path: databasePath)
             var result: Int32 = 0
-            path.standardizedFileURL.path.withCString { dbPath in
+            path.toFilePath().withCString { dbPath in
               libSQLUrl.absoluteString.withCString { libSQLUrl in
                 libSQLAuthToken.withCString { libSQLAuthToken in
                   let libSQLConfig = libsql.libsql_config(
@@ -338,7 +338,7 @@ public final class SQLiteModule: Module {
     guard let pathUrl = URL(string: path) else {
       throw DatabaseInvalidPathException(path)
     }
-    fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().standardizedFileURL.path)
+    fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().toFilePath())
 
     return pathUrl
   }
@@ -539,7 +539,7 @@ public final class SQLiteModule: Module {
     if databasePath == MEMORY_DB_NAME {
       return
     }
-    let path = try ensureDatabasePathExists(path: databasePath).standardizedFileURL.path
+    let path = try ensureDatabasePathExists(path: databasePath).toFilePath()
 
     if !FileManager.default.fileExists(atPath: path) {
       throw DatabaseNotFoundException(path)
