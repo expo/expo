@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import spawnAsync from '@expo/spawn-async';
 import assert from 'node:assert';
@@ -12,7 +12,7 @@ import {
   getStartMode,
   retryAsync,
   getMaestroFlowFilePath,
-} from './lib/e2e-common.ts';
+} from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
 const OUTPUT_APP_PATH = 'android/app/build/outputs/apk/release/app-release.apk';

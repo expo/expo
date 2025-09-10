@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import * as XcodeBuild from '@expo/cli/build/src/run/ios/XcodeBuild.js';
 import spawnAsync from '@expo/spawn-async';
@@ -13,7 +13,7 @@ import {
   getStartMode,
   retryAsync,
   getMaestroFlowFilePath,
-} from './lib/e2e-common.ts';
+} from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 16 Pro';
 const TARGET_DEVICE_IOS_VERSION = 18;
