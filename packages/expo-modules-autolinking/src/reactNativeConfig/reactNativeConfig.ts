@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 import type { SupportedPlatform } from '../types';
@@ -27,6 +28,16 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
+
+const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
+  const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
+  try {
+    const stat = await fs.promises.lstat(generatedDir);
+    return !stat.isDirectory();
+  } catch {
+    return true;
+  }
+};
 
 export async function resolveReactNativeModule(
   resolution: DependencyResolution,
@@ -131,11 +142,14 @@ export async function createReactNativeConfigAsync({
   );
 
   // See: https://github.com/facebook/react-native/pull/53690
-  // In 0.81.2 we fixed the artifacts codegen to work as expected with the autolinking output,
-  // however, when no React Native modules are in the build, the codegen bails and the build fails.
-  // 0.81.2 can still be used, but it needs at least one library
-  const reactNativeResolution = resolutions['react-native']!;
-  if (reactNativeResolution?.version === '0.81.2' && autolinkingOptions.platform === 'ios') {
+  // When we're building react-native from source without these generated files, we need to force them to be generated
+  // Every published react-native version (or out-of-tree version) should have these files, but building from the raw repo won't (e.g. Expo Go)
+  const reactNativeResolution = resolutions['react-native'];
+  if (
+    reactNativeResolution &&
+    autolinkingOptions.platform === 'ios' &&
+    (await isMissingFBReactNativeSpecCodegenOutput(reactNativeResolution.path))
+  ) {
     dependencies['react-native'] = {
       root: reactNativeResolution.path,
       name: 'react-native',
