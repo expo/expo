@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Updated `lightningcss` to `^1.30.1`
+- Updated `lightningcss` to `^1.30.1` ([#39506](https://github.com/expo/expo/pull/39506) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
