@@ -16,6 +16,7 @@
 
 - [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
 - Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
+- [iOS] Force codegen for `FBReactNativeSpec` when generated files are missing in React Native source ([#39512](https://github.com/expo/expo/pull/39512) by [@kitten](https://github.com/kitten))
 
 ## 3.0.8 — 2025-09-08
 
