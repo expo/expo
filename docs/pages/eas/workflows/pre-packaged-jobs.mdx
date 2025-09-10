@@ -1111,11 +1111,11 @@ jobs:
 
 ## GitHub Comment
 
-Automatically post comprehensive reports of your workflow's completed builds and updates to GitHub pull requests. This job can generate an auto-report of all builds and updates from your workflow, display specific builds and updates with customized messages, or use a payload to fully customize the entire comment content to display anything you need. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, and automating deployment notifications.
+Automatically post comprehensive reports of your workflow's completed builds and updates to GitHub pull requests. This job operates in two mutually exclusive modes: **auto-with-overrides mode** for automated reports with optional customization, or **payload mode** for fully custom content. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, and automating deployment notifications.
 
 ### Prerequisites
 
-To use the GitHub Comment job, your project must have a GitHub repository connected. Learn how to [connect your GitHub repository](/eas/build/github) to get started.
+To use the GitHub Comment job, your project must have a GitHub repository connected. Learn how to [connect your GitHub repository](/build/building-from-github) to get started.
 
 ### Syntax
 
@@ -1124,51 +1124,81 @@ jobs:
   github_comment:
     type: github-comment
     params:
-      payload: string # optional - raw markdown content (Takes precedence over all other parameters.)
-      message: string # optional - custom message (used when payload is not provided)
-      build_ids: string[] # optional - array of build IDs to include
-      update_group_ids: string[] # optional - array of update group IDs to include
+      # Mode 1: Auto-with-overrides mode
+      message: string # optional - custom message to include in the report
+      build_ids: string[] # optional - specific build IDs to include
+      update_group_ids: string[] # optional - specific update group IDs to include
+      # Mode 2: Payload mode (mutually exclusive with other parameters)
+      payload: string # optional - raw markdown/HTML content for fully custom comment
 ```
 
 #### Parameters
 
-You can pass the following parameters into the `params` list:
+The job operates in two mutually exclusive modes:
 
-| Parameter        | Type     | Description                                                                                                       |
-| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
-| payload          | string   | Optional. Raw markdown content to post as the comment. Takes precedence over all other parameters.                |
-| message          | string   | Optional. Custom message to include at the top of the comment. If not provided, a default message will be used.   |
-| build_ids        | string[] | Optional. Array of build IDs to include in the comment. Build information will be displayed in a formatted table. |
-| update_group_ids | string[] | Optional. Array of update group IDs to include. Updates will be displayed with QR codes for easy device testing.  |
+##### Mode 1: Auto-with-Overrides Mode
 
-> **Note**: The job operates in three modes:
->
-> - **Payload Mode**: When `payload` is provided, posts the exact content as the comment (highest priority)
-> - **Explicit Mode**: When `build_ids` or `update_group_ids` are specified, displays only the specified builds and updates. Custom message can be set via the `message` parameter
-> - **Auto Mode**: When no `build_ids` or `update_group_ids` are specified, automatically discovers and displays all completed/failed/canceled builds and successful updates from the current workflow. Custom message can be set via the `message` parameter
+When not using payload, you can optionally specify any combination of these parameters:
+
+| Parameter        | Type     | Description                                                                                                                                                      |
+| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message          | string   | Optional. Custom message to include at the top of the comment. Defaults to "Your builds and updates are ready for testing!"                                      |
+| build_ids        | string[] | Optional. Array of specific build IDs to include. If not specified, auto-discovers all completed/failed/canceled builds. Use empty array `[]` to exclude builds. |
+| update_group_ids | string[] | Optional. Array of specific update group IDs to include. If not specified, auto-discovers all successful updates. Use empty array `[]` to exclude updates.       |
+
+> **Auto-discovery behavior**: When `build_ids` or `update_group_ids` are not specified (undefined), the job automatically discovers all relevant builds and updates from the current workflow. To explicitly exclude builds or updates, pass an empty array `[]`.
+
+##### Mode 2: Payload Mode
+
+When using payload mode, you cannot specify any other parameters.
+
+| Parameter | Type   | Description                                                                                    |
+| --------- | ------ | ---------------------------------------------------------------------------------------------- |
+| payload   | string | Raw markdown or HTML content to post as the comment. Supports workflow variable interpolation. |
 
 #### Outputs
 
 You can reference the following outputs in subsequent jobs:
 
-| Output                | Type   | Description                                                                           |
-| --------------------- | ------ | ------------------------------------------------------------------------------------- |
-| github_comment_posted | string | Whether a comment was posted ('true' or 'false')                                      |
-| pr_number             | string | The PR number if the workflow was triggered by a pull request                         |
-| comment_url           | string | URL of the posted GitHub comment (only available when comment is successfully posted) |
-| comment_content       | string | Full content of the comment (useful for non-PR workflows to display in UI)            |
-| note                  | string | Additional information about the job result (e.g., why a comment wasn't posted)       |
+| Output      | Type   | Description                                                                           |
+| ----------- | ------ | ------------------------------------------------------------------------------------- |
+| comment_url | string | URL of the posted GitHub comment (only available when comment is successfully posted) |
 
 ### Examples
 
-Here are some practical examples of using the GitHub Comment job:
+Here are practical examples demonstrating both modes of the GitHub Comment job:
 
-<Collapsible summary="Post build results to PR">
+#### Auto-with-Overrides Mode Examples
 
-This workflow automatically posts build results to the pull request after the build and update jobs have completed.
+<Collapsible summary="Auto-discover all builds and updates">
 
-```yaml .eas/workflows/pr-build-comment.yml
-name: PR Build Comment
+This is the simplest usage - automatically discovers and posts all builds and updates from the workflow.
+
+```yaml .eas/workflows/pr-auto-comment.yml
+name: PR Auto Comment
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  ...
+
+  comment_on_pr:
+    name: Post Results to PR
+    after: [build_ios, build_android, publish_update]
+    type: github-comment
+    # No params needed - auto-discovers all builds and updates
+```
+
+</Collapsible>
+
+<Collapsible summary="Custom message with auto-discovery">
+
+Adds a custom message while still auto-discovering all builds and updates.
+
+```yaml .eas/workflows/pr-custom-message.yml
+name: PR Custom Message
 
 on:
   pull_request:
@@ -1181,19 +1211,19 @@ jobs:
     name: Post Build to PR
     after: [build_ios, build_android, publish_update]
     type: github-comment
-    #params:
-      #message: "You can override the message in the report template here (optiional)"
-
+    params:
+      message: "🎉 Preview builds are ready! Please test these changes before approving the PR."
+      # build_ids and update_group_ids are undefined, so auto-discovery is enabled
 ```
 
 </Collapsible>
 
-<Collapsible summary="Post update with specified build and update">
+<Collapsible summary="Specify exact builds and updates">
 
-This workflow publishes an update and posts it to the PR with a QR code for easy device testing.
+Explicitly specify which builds and updates to include in the comment.
 
-```yaml .eas/workflows/pr-update-comment.yml
-name: PR Update Comment
+```yaml .eas/workflows/pr-specific-builds.yml
+name: PR Specific Builds
 
 on:
   pull_request:
@@ -1207,7 +1237,7 @@ jobs:
     after: [build_ios, build_android, publish_update]
     type: github-comment
     params:
-      #message: "You can override the message in the report template here (optiional)"
+      message: "Testing builds ready for QA review"
       build_ids:
         - ${{ after.build_ios.outputs.build_id }}
         - ${{ after.build_android.outputs.build_id }}
@@ -1217,9 +1247,37 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="Custom comment with payload">
+<Collapsible summary="Exclude builds or updates">
 
-This workflow uses a custom payload to create a rich comment with build status and custom formatting.
+Use empty arrays to exclude specific content types.
+
+```yaml .eas/workflows/pr-updates-only.yml
+name: PR Updates Only
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  ...
+
+  comment_updates_only:
+    name: Post Updates Only
+    after: [publish_update]
+    type: github-comment
+    params:
+      message: "New update available for testing!"
+      build_ids: [] # Empty array excludes all builds
+      # update_group_ids undefined = auto-discover updates
+```
+
+</Collapsible>
+
+#### Payload Mode Examples
+
+<Collapsible summary="Fully custom comment with payload">
+
+Payload mode gives you complete control over the comment content. Note that when using payload, you cannot specify any other parameters.
 
 ```yaml .eas/workflows/custom-pr-comment.yml
 name: Custom PR Comment
@@ -1236,6 +1294,8 @@ jobs:
     needs: [build_ios]
     type: github-comment
     params:
+      # Payload mode: complete control over content
+      # Cannot use message, build_ids, or update_group_ids with payload
       payload: |
         ## 🚀 Build Status Update
 
@@ -1297,6 +1357,16 @@ jobs:
 ```
 
 </Collapsible>
+
+### Important Notes
+
+- **Mode Mutual Exclusivity**: The `payload` parameter cannot be used together with `message`, `build_ids`, or `update_group_ids`. If you specify `payload`, the job will use payload mode and ignore all other parameters.
+- **Auto-discovery vs Exclusion**: There's an important difference between not specifying a parameter (undefined) and providing an empty array:
+  - `build_ids` undefined → auto-discovers all builds
+  - `build_ids: []` → excludes all builds from the comment
+  - Same applies to `update_group_ids`
+- **GitHub Repository Required**: This job only works when the workflow is triggered from a GitHub repository with proper permissions configured.
+- **Pull Request Context**: The job automatically detects if it's running in a pull request context. If not, it will still generate the comment content but won't post to GitHub.
 
 ## Require Approval
 

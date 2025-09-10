@@ -857,7 +857,7 @@ jobs:
 
 #### `github-comment`
 
-Automatically posts comprehensive reports of your workflow's completed builds and updates to GitHub pull requests. Can generate auto-reports, display specific builds/updates with custom messages, or use payload for fully customized content. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
+Automatically posts comprehensive reports of your workflow's completed builds and updates to GitHub pull requests. The job operates in two mutually exclusive modes: payload mode for fully custom content, or auto-with-overrides mode for automated reports with optional customization. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -866,21 +866,19 @@ jobs:
     type: github-comment
     # @end #
     params:
-      payload: string # optional - raw markdown content (Takes precedence over all other parameters.)
-      message: string # optional - custom message
-      build_ids: string[] # optional - array of build IDs
-      update_group_ids: string[] # optional - array of update group IDs
+      # Mode 1: Auto-with-overrides mode
+      message: string # optional - custom message to include in the report
+      build_ids: string[] # optional - specific build IDs to include (auto-discovers if not specified, use [] to exclude)
+      update_group_ids: string[] # optional - specific update group IDs to include (auto-discovers if not specified, use [] to exclude)
+      # Mode 2: Payload mode (mutually exclusive with other parameters)
+      payload: string # optional - raw markdown/HTML content for fully custom comment
 ```
 
 This job outputs the following properties:
 
 ```json
 {
-  "github_comment_posted": "true" | "false",
-  "pr_number": string | null,
-  "comment_url": string | null,
-  "comment_content": string | null,
-  "note": string | null
+  "comment_url": string | null  // URL of the posted GitHub comment
 }
 ```
 
