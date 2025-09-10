@@ -6,6 +6,8 @@ export declare const StoreContext: import("react").Context<{
     getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./router-store").StoreRedirects[];
     readonly rootComponent: import("react").ComponentType<any>;
+    readonly sidebarComponent: import("react").ComponentType<any> | undefined;
+    readonly supplementaryComponent: import("react").ComponentType<any> | undefined;
     getStateForHref(href: import("..").Href, options?: import("./routing").LinkToOptions): (Partial<Omit<Readonly<{
         key: string;
         index: number;
@@ -45,6 +47,8 @@ export declare const useExpoRouterStore: () => {
     getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./router-store").StoreRedirects[];
     readonly rootComponent: import("react").ComponentType<any>;
+    readonly sidebarComponent: import("react").ComponentType<any> | undefined;
+    readonly supplementaryComponent: import("react").ComponentType<any> | undefined;
     getStateForHref(href: import("..").Href, options?: import("./routing").LinkToOptions): (Partial<Omit<Readonly<{
         key: string;
         index: number;

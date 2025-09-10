@@ -6,9 +6,17 @@ import {
   StackRouter,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import React, {
+  type PropsWithChildren,
+  Fragment,
+  type ComponentType,
+  useMemo,
+  use,
+  useEffect,
+} from 'react';
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SplitViewHost, SplitViewScreen } from 'react-native-screens/experimental';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
@@ -20,6 +28,8 @@ import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { Screen } from './primitives';
+import { SplitViewOptions } from './split-view';
+import { SplitViewContext } from './split-view/split-view';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import { Sitemap } from './views/Sitemap';
@@ -140,6 +150,8 @@ function ContextNavigator({
 
   useDomComponentNavigation();
 
+  const [options, setOptions] = React.useState<SplitViewOptions>({});
+
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
@@ -167,7 +179,9 @@ function ContextNavigator({
         onReady={store.onReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <Content />
+            <SplitViewContext value={{ options, setOptions }}>
+              <Content />
+            </SplitViewContext>
           </WrapperComponent>
         </ServerContext.Provider>
       </UpstreamNavigationContainer>
@@ -185,11 +199,44 @@ function Content() {
   }
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children,
+    screenOptions: { headerShown: false },
     id: INTERNAL_SLOT_NAME,
   });
 
+  const { options } = use(SplitViewContext);
+
+  useEffect(() => {
+    console.log('Remounting Content');
+  }, []);
+
+  if (store.supplementaryComponent && !store.sidebarComponent) {
+    console.warn(
+      'Supplementary component is set but sidebar component is missing. The supplementary component will not be rendered.'
+    );
+  }
+
+  if (!store.sidebarComponent || process.env.EXPO_OS !== 'ios') {
+    return (
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    );
+  }
+
   return (
-    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    <SplitViewHost {...options}>
+      <SplitViewScreen.Column>
+        {store.sidebarComponent ? (
+          <store.sidebarComponent navigation={{ isFocused: () => false }} />
+        ) : null}
+      </SplitViewScreen.Column>
+      {store.supplementaryComponent && (
+        <SplitViewScreen.Column>
+          <store.supplementaryComponent navigation={{ isFocused: () => false }} />
+        </SplitViewScreen.Column>
+      )}
+      <SplitViewScreen.Column>
+        <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      </SplitViewScreen.Column>
+    </SplitViewHost>
   );
 }
 

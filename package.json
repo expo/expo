@@ -35,6 +35,7 @@
     "@react-navigation/native-stack": "7.3.16",
     "@react-navigation/routers": "7.5.1",
     "@react-navigation/stack": "7.4.7",
+    "react-native-screens": "^4.17.0-nightly-20251012-12704e59c",
     "**/util": "~0.12.4"
   },
   "dependencies": {

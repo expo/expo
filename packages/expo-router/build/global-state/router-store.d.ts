@@ -18,6 +18,8 @@ export declare const store: {
     getRouteInfo(): UrlObject;
     readonly redirects: StoreRedirects[];
     readonly rootComponent: ComponentType<any>;
+    readonly sidebarComponent: ComponentType<any> | undefined;
+    readonly supplementaryComponent: ComponentType<any> | undefined;
     getStateForHref(href: Href, options?: LinkToOptions): (Partial<Omit<Readonly<{
         key: string;
         index: number;
@@ -57,6 +59,8 @@ export declare function useStore(context: RequireContext, linkingConfigOptions: 
     getRouteInfo(): UrlObject;
     readonly redirects: StoreRedirects[];
     readonly rootComponent: ComponentType<any>;
+    readonly sidebarComponent: ComponentType<any> | undefined;
+    readonly supplementaryComponent: ComponentType<any> | undefined;
     getStateForHref(href: Href, options?: LinkToOptions): (Partial<Omit<Readonly<{
         key: string;
         index: number;

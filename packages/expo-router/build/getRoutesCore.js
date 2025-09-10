@@ -493,6 +493,7 @@ pathToRemove = '') {
     }
     return layout;
 }
+const ALLOWED_PLUS_FILES = new Set(['+not-found', '+sidebar', '+supplementary']);
 function getFileMeta(originalKey, options, redirects, rewrites) {
     // Remove the leading `./`
     const key = (0, matchers_1.removeSupportedExtensions)((0, matchers_1.removeFileSystemDots)(originalKey));
@@ -506,7 +507,7 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
         throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
     }
     // Nested routes cannot start with the '+' character, except for the '+not-found' route
-    if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
+    if (!isApi && filename.startsWith('+') && !ALLOWED_PLUS_FILES.has(filenameWithoutExtensions)) {
         const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
         throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Rename it to ${renamedRoute}"`);
     }
