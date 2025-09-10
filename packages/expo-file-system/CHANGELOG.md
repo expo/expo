@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add minimal web stub to fix broken imports on web ([#39400](https://github.com/expo/expo/pull/39400) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+
 ### 💡 Others
 
 ## 19.0.10 — 2025-09-08
