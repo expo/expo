@@ -1,34 +1,48 @@
 class FileSystemFile {
   constructor() {
-    throw new Error('FileSystem is not supported on web');
+    console.warn('expo-file-system is not supported on web');
   }
 }
 
 class FileSystemDirectory {
   constructor() {
-    throw new Error('FileSystem is not supported on web');
+    console.warn('expo-file-system is not supported on web');
   }
 }
 
 export default {
   FileSystemDirectory,
   FileSystemFile,
-  downloadFileAsync: () => Promise.reject(new Error('FileSystem is not supported on web')),
-  pickDirectoryAsync: () => Promise.reject(new Error('FileSystem is not supported on web')),
-  pickFileAsync: () => Promise.reject(new Error('FileSystem is not supported on web')),
+  downloadFileAsync: () => {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve();
+  },
+  pickDirectoryAsync: () => {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve();
+  },
+  pickFileAsync: () => {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve();
+  },
   get totalDiskSpace(): number {
-    throw new Error('FileSystem is not supported on web');
+    console.warn('expo-file-system is not supported on web');
+    return 0;
   },
   get availableDiskSpace(): number {
-    throw new Error('FileSystem is not supported on web');
+    console.warn('expo-file-system is not supported on web');
+    return 0;
   },
   get documentDirectory(): string {
-    throw new Error('FileSystem is not supported on web');
+    console.warn('expo-file-system is not supported on web');
+    return '';
   },
   get cacheDirectory(): string {
-    throw new Error('FileSystem is not supported on web');
+    console.warn('expo-file-system is not supported on web');
+    return '';
   },
   get bundleDirectory(): string {
-    throw new Error('FileSystem is not supported on web');
+    console.warn('expo-file-system is not supported on web');
+    return '';
   },
 };

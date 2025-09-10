@@ -7,9 +7,9 @@ declare class FileSystemDirectory {
 declare const _default: {
     FileSystemDirectory: typeof FileSystemDirectory;
     FileSystemFile: typeof FileSystemFile;
-    downloadFileAsync: () => Promise<never>;
-    pickDirectoryAsync: () => Promise<never>;
-    pickFileAsync: () => Promise<never>;
+    downloadFileAsync: () => Promise<void>;
+    pickDirectoryAsync: () => Promise<void>;
+    pickFileAsync: () => Promise<void>;
     readonly totalDiskSpace: number;
     readonly availableDiskSpace: number;
     readonly documentDirectory: string;
