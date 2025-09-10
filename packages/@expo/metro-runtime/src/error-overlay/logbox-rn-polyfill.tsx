@@ -4,10 +4,10 @@ import { View, StyleSheet, Modal } from 'react-native';
 
 import LogBoxPolyfillDOM from '@expo/metro-runtime/src/error-overlay/logbox-polyfill-dom';
 
-import * as LogBoxData from './Data/LogBoxData';
-import { LogBoxLog } from './Data/LogBoxLog';
+// import * as LogBoxData from './Data/LogBoxData';
+// import { LogBoxLog } from './Data/LogBoxLog';
 
-function LogBoxRNPolyfill(props: {
+export default function LogBoxRNPolyfill(props: {
   onDismiss: (index: number) => void;
   onMinimize: () => void;
   onChangeSelectedIndex: (index: number) => void;
@@ -125,69 +125,69 @@ function LogBoxRNPolyfill(props: {
   );
 }
 
-// TODO: Are any of the props required?
-function _LogBoxInspectorContainer({
-  selectedLogIndex,
-  logs
-}: {
-    logs: LogBoxLog[],
-    selectedLogIndex: number,
-    isDisabled?: boolean,
-}) {
-  const _handleDismiss = (index: number) => {
-    // Here we handle the cases when the log is dismissed and it
-    // was either the last log, or when the current index
-    // is now outside the bounds of the log array.
-    console.log('LogBoxInspectorContainer._handleDismiss');
-    const logsArray = Array.from(logs);
-    // if (selectedLogIndex != null) {
-    //   if (logsArray.length - 1 <= 0) {
-    //     LogBoxData.setSelectedLog(-1);
-    //   } else if (selectedLogIndex >= logsArray.length - 1) {
-    //     LogBoxData.setSelectedLog(selectedLogIndex - 1);
-    //   }
+// TODO: This doesn't work...
+// function _LogBoxInspectorContainer({
+//   selectedLogIndex,
+//   logs
+// }: {
+//     logs: LogBoxLog[],
+//     selectedLogIndex: number,
+//     isDisabled?: boolean,
+// }) {
+//   const _handleDismiss = (index: number) => {
+//     // Here we handle the cases when the log is dismissed and it
+//     // was either the last log, or when the current index
+//     // is now outside the bounds of the log array.
+//     console.log('LogBoxInspectorContainer._handleDismiss');
+//     const logsArray = Array.from(logs);
+//     // if (selectedLogIndex != null) {
+//     //   if (logsArray.length - 1 <= 0) {
+//     //     LogBoxData.setSelectedLog(-1);
+//     //   } else if (selectedLogIndex >= logsArray.length - 1) {
+//     //     LogBoxData.setSelectedLog(selectedLogIndex - 1);
+//     //   }
 
-    //   LogBoxData.dismiss(logsArray[selectedLogIndex]);
-    // }
-    LogBoxData.dismiss(logsArray[index]);
-  };
+//     //   LogBoxData.dismiss(logsArray[selectedLogIndex]);
+//     // }
+//     LogBoxData.dismiss(logsArray[index]);
+//   };
 
-  const _handleMinimize = () => {
-    console.log('LogBoxInspectorContainer._handleMinimize');
-    LogBoxData.setSelectedLog(-1);
-  };
+//   const _handleMinimize = () => {
+//     console.log('LogBoxInspectorContainer._handleMinimize');
+//     LogBoxData.setSelectedLog(-1);
+//   };
 
-  // @ts-ignore
-  const _handleSetSelectedLog = (index) => {
-    console.log('LogBoxInspectorContainer._handleSetSelectedLog');
+//   // @ts-ignore
+//   const _handleSetSelectedLog = (index) => {
+//     console.log('LogBoxInspectorContainer._handleSetSelectedLog');
 
-    LogBoxData.setSelectedLog(index);
-  };
+//     LogBoxData.setSelectedLog(index);
+//   };
 
-  if (selectedLogIndex < 0) {
-    return null;
-  }
+//   if (selectedLogIndex < 0) {
+//     return null;
+//   }
 
-  return (
-    <LogBoxRNPolyfill
-      onDismiss={_handleDismiss}
-      onMinimize={_handleMinimize}
-      onChangeSelectedIndex={_handleSetSelectedLog}
-      logs={logs}
-      selectedIndex={selectedLogIndex}
-    />
-  );
-  //   return (
-  //     <View style={StyleSheet.absoluteFill}>
-  //       <LogBoxInspector
-  //         onDismiss={_handleDismiss}
-  //         onMinimize={_handleMinimize}
-  //         onChangeSelectedIndex={_handleSetSelectedLog}
-  //         logs={props.logs}
-  //         selectedIndex={props.selectedLogIndex}
-  //       />
-  //     </View>
-  //   );
-}
+//   return (
+//     <LogBoxRNPolyfill
+//       onDismiss={_handleDismiss}
+//       onMinimize={_handleMinimize}
+//       onChangeSelectedIndex={_handleSetSelectedLog}
+//       logs={logs}
+//       selectedIndex={selectedLogIndex}
+//     />
+//   );
+//   //   return (
+//   //     <View style={StyleSheet.absoluteFill}>
+//   //       <LogBoxInspector
+//   //         onDismiss={_handleDismiss}
+//   //         onMinimize={_handleMinimize}
+//   //         onChangeSelectedIndex={_handleSetSelectedLog}
+//   //         logs={props.logs}
+//   //         selectedIndex={props.selectedLogIndex}
+//   //       />
+//   //     </View>
+//   //   );
+// }
 
-export default LogBoxData.withSubscription(_LogBoxInspectorContainer);
+// export default LogBoxData.withSubscription(_LogBoxInspectorContainer);
