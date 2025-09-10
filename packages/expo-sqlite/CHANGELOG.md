@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `:memory:` path issue when building on Xcode 26. ([#39511](https://github.com/expo/expo/pull/39511) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 16.0.8 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- Fixed `:memory:` path issue when building on Xcode 26. ([#39511](https://github.com/expo/expo/pull/39511) by [@kudo](https://github.com/kudo))
 
 ## 16.0.7 — 2025-09-02
 

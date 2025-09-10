@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Added `addContactsChangeListener()` to detect contact changes with platform-specific behavior. . ([#39434](https://github.com/expo/expo/pull/39434) by [@hryhoriiK97](https://github.com/hryhoriiK97))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.8 — 2025-09-10
+
+### 🎉 New features
+
+- Added `addContactsChangeListener()` to detect contact changes with platform-specific behavior. . ([#39434](https://github.com/expo/expo/pull/39434) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 💡 Others
 

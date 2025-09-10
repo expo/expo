@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.0 — 2025-09-10
+
+### 💡 Others
+
 - Apply upstream changes to optional require runtime fork ([#39473](https://github.com/expo/expo/pull/39473) by [@kitten](https://github.com/kitten))
 - Fix fast refresh with live bindings by applying getter exception and always using forked module system ([#39525](https://github.com/expo/expo/pull/39525) by [@kitten](https://github.com/kitten))
 

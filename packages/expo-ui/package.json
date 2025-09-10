@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "0.2.0-alpha.9",
+  "version": "0.2.0-beta.0",
   "description": "A collection of UI components",
   "sideEffects": false,
   "exports": {
@@ -49,7 +49,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.1.10",
-    "expo-module-scripts": "^5.0.6"
+    "expo-module-scripts": "^5.0.7"
   },
   "peerDependencies": {
     "expo": "*",

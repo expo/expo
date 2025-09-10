@@ -8,12 +8,16 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 6.0.0 — 2025-09-10
+
+### 🐛 Bug fixes
+
 - fix nested protected routes not taking into account the parents guard prop ([#39437](https://github.com/expo/expo/pull/39437) by [@saviocmc](https://github.com/saviocmc))
 - Fix `ExpoRoot`'s wrapper forcing a remount due to a `SafeAreaProvider` update ([#39476](https://github.com/expo/expo/pull/39476) by [@kitten](https://github.com/kitten))
 - fix unecessary render on screen blur ([#39454](https://github.com/expo/expo/pull/39454) by [@Ubax](https://github.com/Ubax))
 - fix routeInfo not updating on back navigation ([#39513](https://github.com/expo/expo/pull/39513) by [@Ubax](https://github.com/Ubax))
-
-### 💡 Others
 
 ## 6.0.0-preview.16 — 2025-09-08
 

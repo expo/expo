@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
-    "@expo/config-plugins": "~11.0.7",
+    "@expo/config-plugins": "~54.0.0",
     "@expo/config-types": "^54.0.7",
     "@expo/json-file": "^10.0.6",
     "deepmerge": "^4.3.1",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@types/require-from-string": "^1.2.1",
-    "expo-module-scripts": "^5.0.6"
+    "expo-module-scripts": "^5.0.7"
   },
   "publishConfig": {
     "access": "public"

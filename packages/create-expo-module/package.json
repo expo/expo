@@ -1,6 +1,6 @@
 {
   "name": "create-expo-module",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "The script to create the Expo module",
   "main": "build/create-expo-module.js",
   "types": "build/create-expo-module.d.ts",
@@ -52,6 +52,6 @@
     "@octokit/types": "^13.5.0",
     "@types/ejs": "^3.1.5",
     "@types/prompts": "^2.4.9",
-    "expo-module-scripts": "^5.0.6"
+    "expo-module-scripts": "^5.0.7"
   }
 }

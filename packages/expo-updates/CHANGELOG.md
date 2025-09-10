@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Propagate controller scope to state machine. ([#39526](https://github.com/expo/expo/pull/39526) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 29.0.9 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- [Android] Propagate controller scope to state machine. ([#39526](https://github.com/expo/expo/pull/39526) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 29.0.8 — 2025-09-02
 

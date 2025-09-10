@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "29.0.8",
+  "version": "29.0.9",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -60,7 +60,7 @@
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
     "@vercel/ncc": "^0.38.3",
-    "expo-module-scripts": "^5.0.6",
+    "expo-module-scripts": "^5.0.7",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "js-yaml": "^4.1.0",
