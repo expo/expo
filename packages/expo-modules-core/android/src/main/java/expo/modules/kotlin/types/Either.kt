@@ -60,7 +60,7 @@ open class Either<FirstType : Any, SecondType : Any>(
         try {
           deferredValue[index] = ConvertedValue(value.getConvertedValue())
           true
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
           deferredValue[index] = IncompatibleValue
           false
         }
