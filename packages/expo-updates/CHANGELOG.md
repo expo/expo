@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Propagate controller scope to state machine.
+
 ### 💡 Others
 
 ## 29.0.8 — 2025-09-02
