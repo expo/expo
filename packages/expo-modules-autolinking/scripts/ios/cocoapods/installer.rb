@@ -52,23 +52,18 @@ module Pod
 
     # We should only disable USE_FRAMEWORKS for specific pods when:
     # - RCT_USE_PREBUILT_RNCORE is not '1'
-    # - build-properties ios.buildReactNativeFromSource is true
     # - USE_FRAMEWORKS is not set
     def should_disable_use_frameworks_for_core_expo_pods?()
-      props = JSON.parse(File.read(File.join(self.project_root, 'Podfile.properties.json'))) rescue {}
       return false if ENV['RCT_USE_PREBUILT_RNCORE'] != '1'
-      return false if props['ios.buildReactNativeFromSource'] == 'true'
       return true if get_linkage?() != nil
       false
     end
 
     # Returns the linkage type if USE_FRAMEWORKS is set, otherwise returns nil
     def get_linkage?()
-      props = JSON.parse(File.read(File.join(installer.project_root, 'Podfile.properties.json'))) rescue {}
-      linkage_str = (ENV["USE_FRAMEWORKS"] || props['ios.useFrameworks'] || nil)
-      return nil if linkage_str == nil
-      return :dynamic if linkage_str.downcase == 'dynamic'
-      return :static if linkage_str.downcase == 'static'
+      return nil if ENV["USE_FRAMEWORKS"] == nil
+      return :dynamic if ENV["USE_FRAMEWORKS"].downcase == 'dynamic'
+      return :static if ENV["USE_FRAMEWORKS"].downcase == 'static'
       nil
     end
   end
