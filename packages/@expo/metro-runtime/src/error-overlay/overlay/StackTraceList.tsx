@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useState, type SVGProps } from 'react';
+import React, { JSX, useState, type SVGProps } from 'react';
 import { Pressable } from 'react-native';
 
 import type { StackType } from '../Data/LogBoxLog';
@@ -79,6 +79,7 @@ function Transition({
         ref.current?.removeEventListener('transitionend', handleTransitionEnd);
       };
     }
+    return undefined;
   }, [status, onExitComplete]);
 
   return (
@@ -99,14 +100,14 @@ function List({
   isInitial,
   initialDelay,
 }: {
-  items: { id: number; content: string; isCollapsed: boolean }[];
+  items: { id: number; content: JSX.Element; isCollapsed: boolean }[];
   showCollapsed: boolean;
   isInitial: boolean;
   initialDelay: number;
 }) {
   const [displayItems, setDisplayItems] = React.useState<
     {
-      item: { id: number; content: string; isCollapsed: boolean };
+      item: { id: number; content: JSX.Element; isCollapsed: boolean };
       status: 'stable' | 'entering' | 'exiting';
     }[]
   >(items.filter((item) => !item.isCollapsed).map((item) => ({ item, status: 'stable' })));
@@ -114,6 +115,7 @@ function List({
   React.useEffect(() => {
     const visibleItems = showCollapsed ? items : items.filter((item) => !item.isCollapsed);
 
+    // @ts-ignore TODO: fix types
     setDisplayItems((prev) => {
       const prevIds = new Set(prev.map((d) => d.item.id));
       const newItems = visibleItems
@@ -174,7 +176,7 @@ export function StackTraceList({
   const [isInitial, setIsInitial] = React.useState(true);
 
   const initialDelay = 50;
-  const initialTimer = React.useRef<NodeJS.Timeout | null>(null);
+  const initialTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   React.useEffect(() => {
     if (isInitial) {
       const visibleCount = stack?.filter((frame) => !frame.collapse).length ?? 0;
@@ -348,6 +350,7 @@ export function StackTraceList({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <List
           initialDelay={initialDelay}
+          // @ts-ignore TODO: fix types
           items={stack.map((frame, index) => {
             const { file, lineNumber } = frame;
             const isLaunchable =
