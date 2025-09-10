@@ -4,7 +4,7 @@
     "slug": "expo-template-default",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.jpg",
+    "icon": "./assets/images/icon.png",
     "scheme": "helloworld",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
