@@ -229,7 +229,7 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
-      makePage('brownfield/integration-with-existing-apps.mdx'),
+      makePage('brownfield/get-started.mdx'),
     ]),
     makeGroup(
       'Reference',
