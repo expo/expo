@@ -713,10 +713,22 @@ export function withExtendedResolver(
         }
 
         if (normal.endsWith('react-native/Libraries/LogBox/LogBoxInspectorContainer.js')) {
+          console.log('Replacing LogBoxInspectorContainer with shim');
           // '@expo/metro-runtime/swap-rn-logbox.js'
           return {
             ...result,
             filePath: require.resolve('@expo/metro-runtime/swap-rn-logbox.js'),
+          };
+        }
+
+        if (normal.endsWith('react-native/Libraries/LogBox/LogBoxNotificationContainer.js')) {
+          console.log('Replacing LogBoxNotificationContainer with shim');
+          // '@expo/metro-runtime/swap-rn-logbox.js'
+          return {
+            ...result,
+            // Ensures the default notifications are not rendered.
+            // TODO: Implement ExpoLogBox notifications.
+            filePath: require.resolve('@expo/metro-runtime/empty-component.js'),
           };
         }
 
