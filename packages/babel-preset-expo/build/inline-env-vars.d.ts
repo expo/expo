@@ -1,2 +1,8 @@
-import type { ConfigAPI, PluginObj } from '@babel/core';
-export declare function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core')): PluginObj;
+import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
+interface ExpoInlineEnvVarsOpts extends PluginPass {
+    opts: {
+        polyfillImportMeta?: boolean;
+    };
+}
+export declare function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core')): PluginObj<ExpoInlineEnvVarsOpts>;
+export {};

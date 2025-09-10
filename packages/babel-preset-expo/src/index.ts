@@ -172,6 +172,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   const platformOptions = getOptions(options, platform);
 
+  const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
+
   // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
   // adds extra dependencies (requires/imports) we need to disable it
   if (metroSourceType === 'script') {
@@ -274,10 +276,23 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     inlines['process.env.NODE_ENV'] = 'production';
     inlines['__DEV__'] = false;
     inlines['Platform.OS'] = platform;
+    if (polyfillImportMeta) {
+      // Vite-like inlines
+      inlines['import.meta.env.PROD'] = true;
+      inlines['import.meta.env.DEV'] = false;
+      inlines['import.meta.env.SSR'] = !!isServerEnv;
+      inlines['import.meta.env.MODE'] = 'production';
+      // Copies of Expo-specific vars
+      inlines['import.meta.env.EXPO_SERVER'] = !!isServerEnv;
+      inlines['import.meta.env.EXPO_OS'] = platform;
+    }
   }
 
   if (process.env.NODE_ENV !== 'test') {
     inlines['process.env.EXPO_BASE_URL'] = baseUrl;
+    if (polyfillImportMeta) {
+      inlines['import.meta.env.EXPO_BASE_URL'] = baseUrl;
+    }
   }
 
   extraPlugins.push([require('./define-plugin'), inlines]);
@@ -305,7 +320,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // Servers read from the environment.
   // Users who disable the feature may be using a different babel plugin.
   if (inlineEnvironmentVariables) {
-    extraPlugins.push(expoInlineEnvVars);
+    extraPlugins.push([expoInlineEnvVars, { polyfillImportMeta }]);
   }
 
   if (platform === 'web') {
@@ -348,8 +363,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (platformOptions.disableImportExportTransform) {
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
-
-  const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
 
   extraPlugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
 

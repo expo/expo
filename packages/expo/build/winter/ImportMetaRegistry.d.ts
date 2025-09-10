@@ -5,5 +5,6 @@
  */
 export declare const ImportMetaRegistry: {
     readonly url: string | null;
+    readonly env: NodeJS.ProcessEnv;
 };
 //# sourceMappingURL=ImportMetaRegistry.d.ts.map

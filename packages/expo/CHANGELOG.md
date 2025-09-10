@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add `env` getter returning `process.env` to `ImportMetaRegistry` ([#39484](https://github.com/expo/expo/pull/39484) by [@kitten](https://github.com/kitten))
+
 ## 54.0.0-preview.16 — 2025-09-08
 
 ### 🐛 Bug fixes

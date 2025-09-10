@@ -21,8 +21,10 @@ function expoInlineEnvVars(api) {
         },
         visitor: {
             MemberExpression(path, state) {
+                const { polyfillImportMeta } = state.opts;
                 const filename = state.filename;
-                if (path.get('object').matchesPattern('process.env')) {
+                if (path.get('object').matchesPattern('process.env') ||
+                    (polyfillImportMeta && path.get('object').matchesPattern('import.meta.env'))) {
                     const key = path.toComputedKey();
                     if (t.isStringLiteral(key) &&
                         !isFirstInAssign(path) &&

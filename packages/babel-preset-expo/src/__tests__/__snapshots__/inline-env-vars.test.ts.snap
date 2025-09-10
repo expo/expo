@@ -43,3 +43,20 @@ function App() {
   },
 }
 `;
+
+exports[`inlines import.env variables 1`] = `
+"
+var test = {
+  MODE: "production",
+  PROD: true,
+  DEV: false,
+  SSR: false,
+  PUBLIC_NODE_ENV: "development",
+  PUBLIC_NODE_ENV: "development",
+  EXPO_SERVER: false,
+  EXPO_OS: "ios"
+};
+
+globalThis.__ExpoImportMetaRegistry.env['other'];
+globalThis.__ExpoImportMetaRegistry.env.other;"
+`;

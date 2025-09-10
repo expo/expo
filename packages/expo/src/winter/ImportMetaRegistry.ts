@@ -11,4 +11,7 @@ export const ImportMetaRegistry = {
   get url() {
     return getBundleUrl();
   },
+  get env() {
+    return process.env;
+  },
 };

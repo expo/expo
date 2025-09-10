@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support inlining `import.meta.env` with well-known values when `unstable_transformImportMeta` is enabled ([#39484](https://github.com/expo/expo/pull/39484) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
