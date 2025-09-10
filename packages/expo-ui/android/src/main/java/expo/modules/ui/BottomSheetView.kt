@@ -50,14 +50,6 @@ class BottomSheetView(context: Context, appContext: AppContext) :
   private val onIsOpenedChange by EventDispatcher<IsOpenedChangeEvent>()
 
   @Composable
-  fun GrandChildren() {
-    for (index in 0..<this.size) {
-      val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content()
-    }
-  }
-
-  @Composable
   override fun Content() {
     val (isOpened) = props.isOpened
     val (skipPartiallyExpanded) = props.skipPartiallyExpanded
@@ -68,7 +60,7 @@ class BottomSheetView(context: Context, appContext: AppContext) :
         isOpened,
         onIsOpenedChange = { value -> onIsOpenedChange(IsOpenedChangeEvent(value)) },
       ) {
-        GrandChildren()
+        ComposeChildren()
       }
     }
   }
