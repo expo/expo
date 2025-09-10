@@ -201,7 +201,7 @@ class AudioModule : Module() {
             releaseAudioFocus()
           }
           // If we don't have focus but should have it based on new mode and have playing audio, request it
-          !focusAcquired && !shouldReleaseFocus() && players.values.any { it.ref.isPlaying } -> {
+          !focusAcquired && !shouldReleaseFocus()
             requestAudioFocus()
           }
         }
