@@ -37,16 +37,18 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/symbols/",
   "dependencies": {
-    "sf-symbols-typescript": "^2.0.0",
-    "@expo-google-fonts/material-symbols": "^0.4.1",
-    "expo-font": "^14.0.7"
+    "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^5.0.7",
+    "@expo-google-fonts/material-symbols": "^0.4.1",
+    "expo-font": "^14.0.7"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "@expo-google-fonts/material-symbols": "^0.4.1",
+    "expo-font": "*"
   }
 }
