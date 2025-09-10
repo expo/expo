@@ -1,22 +1,26 @@
-#!/usr/bin/env node
-// @ts-check
+#!/usr/bin/env bun
 
-const spawnAsync = require('@expo/spawn-async');
-const assert = require('node:assert');
-const path = require('path');
+import spawnAsync from '@expo/spawn-async';
+import assert from 'node:assert';
+import * as path from 'path';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const {
+import {
   createMaestroFlowAsync,
   fileExistsAsync,
   getStartMode,
   retryAsync,
   getMaestroFlowFilePath,
-} = require('./lib/e2e-common.js');
+} from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
 const OUTPUT_APP_PATH = 'android/app/build/outputs/apk/release/app-release.apk';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
 const NUM_OF_RETRIES = 6; // Number of retries for the suite
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 (async () => {
   try {
@@ -58,8 +62,7 @@ const NUM_OF_RETRIES = 6; // Number of retries for the suite
   }
 })();
 
-/** @param {string} projectRoot */
-async function buildAsync(projectRoot) {
+async function buildAsync(projectRoot: string): Promise<void> {
   console.log('\n💿 Building App');
   await spawnAsync('./gradlew', ['assembleRelease'], {
     stdio: 'inherit',
@@ -67,18 +70,18 @@ async function buildAsync(projectRoot) {
   });
 }
 
-/**
- * @param {string} maestroFlowFilePath
- * @param {string} deviceId
- * @param {string} appBinaryPath
- * @param {string} adbPath
- * @returns {Promise<void>}
- */
-async function testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath) {
+async function testAsync(
+  maestroFlowFilePath: string,
+  deviceId: string,
+  appBinaryPath: string,
+  adbPath: string
+): Promise<void> {
   console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
   await spawnAsync(adbPath, ['-s', deviceId, 'install', '-r', appBinaryPath]);
 
-  console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
+  console.log(
+    `\n📷 Starting Maestro tests - deviceId[${deviceId}] maestroFlowFilePath[${maestroFlowFilePath}]`
+  );
   await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
     stdio: 'inherit',
     env: {
@@ -88,10 +91,8 @@ async function testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath) 
   });
 }
 
-/** @returns {Promise<string | null>} */
-async function findAdbAsync() {
-  /** @type {string | null} */
-  let adbPath = null;
+async function findAdbAsync(): Promise<string | null> {
+  let adbPath: string | null = null;
   try {
     const { stdout } = await spawnAsync('which', ['adb']);
     adbPath = stdout.trim();
@@ -105,11 +106,7 @@ async function findAdbAsync() {
   return adbPath;
 }
 
-/**
- * @param {string} adbPath
- * @returns {Promise<string | null>}
- */
-async function queryDeviceIdAsync(adbPath) {
+async function queryDeviceIdAsync(adbPath: string): Promise<string | null> {
   const { stdout } = await spawnAsync(adbPath, ['devices']);
   const lines = stdout.split('\n');
   for (const line of lines) {

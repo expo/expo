@@ -1,25 +1,29 @@
-#!/usr/bin/env node
-// @ts-check
+#!/usr/bin/env bun
 
-const XcodeBuild = require('@expo/cli/build/src/run/ios/XcodeBuild');
-const spawnAsync = require('@expo/spawn-async');
-const fs = require('fs/promises');
-const path = require('path');
+import * as XcodeBuild from '@expo/cli/build/src/run/ios/XcodeBuild.js';
+import spawnAsync from '@expo/spawn-async';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const {
+import {
   createMaestroFlowAsync,
   ensureDirAsync,
   getStartMode,
   retryAsync,
   getMaestroFlowFilePath,
-} = require('./lib/e2e-common.js');
+} from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 16 Pro';
 const TARGET_DEVICE_IOS_VERSION = 18;
 const APP_ID = 'dev.expo.Payments';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
-const NUM_OF_RETRIES = 6; // Number of retries for the suite
+const NUM_OF_RETRIES = 6;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 (async () => {
   try {
@@ -56,14 +60,10 @@ const NUM_OF_RETRIES = 6; // Number of retries for the suite
   }
 })();
 
-/**
- * @param {string} projectRoot
- * @param {string} deviceId
- * @returns {Promise<string>}
- */
-async function buildAsync(projectRoot, deviceId) {
+async function buildAsync(projectRoot: string, deviceId: string): Promise<string> {
   console.log('\n💿 Building App');
-  const buildOutput = await XcodeBuild.buildAsync({
+  // @ts-expect-error missing typings
+  const buildOutput = await XcodeBuild.default.buildAsync({
     projectRoot,
     isSimulator: true,
     xcodeProject: {
@@ -82,17 +82,16 @@ async function buildAsync(projectRoot, deviceId) {
     shouldStartBundler: false,
   });
 
-  const binaryPath = await XcodeBuild.getAppBinaryPath(buildOutput);
+  // @ts-expect-error missing typings
+  const binaryPath = await XcodeBuild.default.getAppBinaryPath(buildOutput);
   return binaryPath;
 }
 
-/**
- * @param {string} maestroFlowFilePath
- * @param {string} deviceId
- * @param {string} appBinaryPath
- * @returns {Promise<void>}
- */
-async function testAsync(maestroFlowFilePath, deviceId, appBinaryPath) {
+async function testAsync(
+  maestroFlowFilePath: string,
+  deviceId: string,
+  appBinaryPath: string
+): Promise<void> {
   try {
     console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
     await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
@@ -100,7 +99,7 @@ async function testAsync(maestroFlowFilePath, deviceId, appBinaryPath) {
       stdio: 'inherit',
     });
 
-    console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
+    console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
     console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
@@ -116,13 +115,7 @@ async function testAsync(maestroFlowFilePath, deviceId, appBinaryPath) {
   }
 }
 
-/**
- * Query simulator UDID
- * @param {number} iosVersion
- * @param {string} device
- * @returns {Promise<string | null>}
- */
-async function queryDeviceIdAsync(iosVersion, device) {
+async function queryDeviceIdAsync(iosVersion: number, device: string): Promise<string | null> {
   const { stdout } = await spawnAsync('xcrun', [
     'simctl',
     'list',
@@ -131,7 +124,9 @@ async function queryDeviceIdAsync(iosVersion, device) {
     'available',
     '--json',
   ]);
-  const { devices: deviceWithRuntimes } = JSON.parse(stdout);
+  const {
+    devices: deviceWithRuntimes,
+  }: { devices: Record<string, { name: string; udid: string }[]> } = JSON.parse(stdout);
 
   // Try to find the target device first
   for (const [runtime, devices] of Object.entries(deviceWithRuntimes)) {
