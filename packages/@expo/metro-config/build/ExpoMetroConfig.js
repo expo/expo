@@ -143,6 +143,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     // Add support for cjs (without platform extensions).
     sourceExts.push('cjs');
     const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
+    const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
     const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
     let sassVersion = null;
     if (isCSSEnabled) {
@@ -178,6 +179,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
         console.log(`- Sass: ${sassVersion}`);
         console.log(`- Reanimated: ${reanimatedVersion}`);
+        console.log(`- Worklets: ${workletsVersion}`);
         console.log(`- Babel Runtime: ${babelRuntimeVersion}`);
         console.log();
     }
@@ -287,8 +289,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg?.browserslist)).toString('hex')
                 : null,
             sassVersion,
-            // Ensure invalidation when the version changes due to the Babel plugin.
+            // Ensure invalidation when the version changes due to the Reanimated and Worklets Babel plugins.
             reanimatedVersion,
+            workletsVersion,
             // Ensure invalidation when using identical projects in monorepos
             _expoRelativeProjectRoot: path_1.default.relative(serverRoot, projectRoot),
             // `require.context` support

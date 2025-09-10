@@ -227,6 +227,7 @@ export function getDefaultConfig(
   sourceExts.push('cjs');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
+  const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
   const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
 
   let sassVersion: string | null = null;
@@ -264,6 +265,7 @@ export function getDefaultConfig(
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
+    console.log(`- Worklets: ${workletsVersion}`);
     console.log(`- Babel Runtime: ${babelRuntimeVersion}`);
     console.log();
   }
@@ -384,8 +386,9 @@ export function getDefaultConfig(
         ? stableHash(JSON.stringify(pkg?.browserslist)).toString('hex')
         : null,
       sassVersion,
-      // Ensure invalidation when the version changes due to the Babel plugin.
+      // Ensure invalidation when the version changes due to the Reanimated and Worklets Babel plugins.
       reanimatedVersion,
+      workletsVersion,
       // Ensure invalidation when using identical projects in monorepos
       _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
       // `require.context` support
