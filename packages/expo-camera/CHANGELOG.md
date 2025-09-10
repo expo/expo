@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix errors on devices that do not have Google Play Services installed. ([#39455](https://github.com/expo/expo/pull/39455) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 17.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
 
 ## 17.0.5 — 2025-08-31
 

@@ -298,7 +298,7 @@ export declare class File {
   ): Promise<File>;
 
   /**
-   * A static method that opens a file picker to select a single file of specified type.
+   * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
    *
    * On iOS, by default, this method returns a temporary copy of the selected file, ensuring the original remains unchanged. To open the original file in place (without copying), set `openAsCopy` to `false` in the options.
    *

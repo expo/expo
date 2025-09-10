@@ -6,13 +6,18 @@
  */
 
 import type { ProjectConfig } from '@expo/config';
+import { MiddlewareModule } from '@expo/server/build/types';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
-import { warnInvalidWebOutput, warnInvalidMiddlewareOutput } from './router';
+import {
+  warnInvalidWebOutput,
+  warnInvalidMiddlewareOutput,
+  warnInvalidMiddlewareMatcherSettings,
+} from './router';
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
@@ -188,7 +193,15 @@ export function createRouteHandlerMiddleware(
 
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
-          return await options.bundleApiRoute(resolvedFunctionPath!);
+          const middlewareModule = (await options.bundleApiRoute(
+            resolvedFunctionPath!
+          )) as unknown as MiddlewareModule;
+
+          if (middlewareModule.unstable_settings?.matcher) {
+            warnInvalidMiddlewareMatcherSettings(middlewareModule.unstable_settings?.matcher);
+          }
+
+          return middlewareModule;
         } catch (error: any) {
           return new Response(
             'Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message,

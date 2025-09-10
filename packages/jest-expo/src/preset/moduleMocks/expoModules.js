@@ -982,6 +982,9 @@ module.exports = {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
         },
+        ExpoGlassEffect: {
+          isLiquidGlassAvailable: { type: 'string' },
+        },
         ExpoLivePhoto: { addListener: { type: 'function' }, removeListeners: { type: 'function' } },
         ExpoLocalAuthentication: {
           addListener: { type: 'function' },

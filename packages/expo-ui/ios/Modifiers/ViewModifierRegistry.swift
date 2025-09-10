@@ -5,8 +5,8 @@ import SwiftUI
 
 // MARK: - Individual ViewModifier Structs
 
-internal struct BackgroundModifier: ViewModifier {
-  let color: Color?
+internal struct BackgroundModifier: ViewModifier, Record {
+  @Field var color: Color?
 
   func body(content: Content) -> some View {
     if let color = color {
@@ -17,94 +17,113 @@ internal struct BackgroundModifier: ViewModifier {
   }
 }
 
-internal struct CornerRadiusModifier: ViewModifier {
-  let radius: CGFloat
+internal struct CornerRadiusModifier: ViewModifier, Record {
+  @Field var radius: CGFloat = 0
 
   func body(content: Content) -> some View {
     content.cornerRadius(radius)
   }
 }
 
-internal struct ShadowModifier: ViewModifier {
-  let color: Color
-  let radius: CGFloat
-  let x: CGFloat
-  let y: CGFloat
+internal struct ShadowModifier: ViewModifier, Record {
+  @Field var color: Color = .white
+  @Field var radius: CGFloat = 0
+  @Field var x: CGFloat = 0
+  @Field var y: CGFloat = 0
 
   func body(content: Content) -> some View {
     content.shadow(color: color, radius: radius, x: x, y: y)
   }
 }
 
-internal struct FrameModifier: ViewModifier {
-  let width: CGFloat?
-  let height: CGFloat?
-  let minWidth: CGFloat?
-  let maxWidth: CGFloat?
-  let minHeight: CGFloat?
-  let maxHeight: CGFloat?
-  let idealWidth: CGFloat?
-  let idealHeight: CGFloat?
-  let alignment: Alignment
+internal struct FrameModifier: ViewModifier, Record {
+  @Field var width: CGFloat?
+  @Field var height: CGFloat?
+  @Field var minWidth: CGFloat?
+  @Field var maxWidth: CGFloat?
+  @Field var minHeight: CGFloat?
+  @Field var maxHeight: CGFloat?
+  @Field var idealWidth: CGFloat?
+  @Field var idealHeight: CGFloat?
+  @Field var alignment: AlignmentOptions = .center
 
   func body(content: Content) -> some View {
-    content
-      .frame(
+    if width != nil || height != nil {
+      content.frame(width: width, height: height, alignment: alignment.toAlignment())
+    } else {
+      content.frame(
         minWidth: minWidth,
         idealWidth: idealWidth,
         maxWidth: maxWidth,
         minHeight: minHeight,
         idealHeight: idealHeight,
         maxHeight: maxHeight,
-        alignment: alignment
+        alignment: alignment.toAlignment()
       )
-      .frame(width: width, height: height, alignment: alignment)
+    }
   }
 }
 
-internal struct PaddingModifier: ViewModifier {
-  let edgeInsets: EdgeInsets
+internal struct PaddingModifier: ViewModifier, Record {
+  @Field var all: CGFloat?
+  @Field var horizontal: CGFloat?
+  @Field var vertical: CGFloat?
+
+  @Field var top: CGFloat?
+  @Field var leading: CGFloat?
+  @Field var bottom: CGFloat?
+  @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    content.padding(edgeInsets)
+    if let all {
+      content.padding(all)
+    } else if let horizontal, let vertical {
+      content.padding(EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal))
+    } else if let horizontal {
+      content.padding(EdgeInsets(top: 0, leading: horizontal, bottom: 0, trailing: horizontal))
+    } else if let vertical {
+      content.padding(EdgeInsets(top: vertical, leading: 0, bottom: vertical, trailing: 0))
+    } else {
+      content.padding(EdgeInsets(top: top ?? 0, leading: leading ?? 0, bottom: bottom ?? 0, trailing: trailing ?? 0))
+    }
   }
 }
 
-internal struct OpacityModifier: ViewModifier {
-  let value: Double
+internal struct OpacityModifier: ViewModifier, Record {
+  @Field var value: Double = 1.0
 
   func body(content: Content) -> some View {
     content.opacity(value)
   }
 }
 
-internal struct ScaleEffectModifier: ViewModifier {
-  let scale: CGFloat
+internal struct ScaleEffectModifier: ViewModifier, Record {
+  @Field var scale: CGFloat = 1.0
 
   func body(content: Content) -> some View {
     content.scaleEffect(scale)
   }
 }
 
-internal struct RotationEffectModifier: ViewModifier {
-  let angle: Double
+internal struct RotationEffectModifier: ViewModifier, Record {
+  @Field var angle: Double = 0
 
   func body(content: Content) -> some View {
     content.rotationEffect(.degrees(angle))
   }
 }
 
-internal struct OffsetModifier: ViewModifier {
-  let x: CGFloat
-  let y: CGFloat
+internal struct OffsetModifier: ViewModifier, Record {
+  @Field var x: CGFloat = 0
+  @Field var y: CGFloat = 0
 
   func body(content: Content) -> some View {
     content.offset(x: x, y: y)
   }
 }
 
-internal struct ForegroundColorModifier: ViewModifier {
-  let color: Color?
+internal struct ForegroundColorModifier: ViewModifier, Record {
+  @Field var color: Color?
 
   func body(content: Content) -> some View {
     if let color = color {
@@ -115,8 +134,100 @@ internal struct ForegroundColorModifier: ViewModifier {
   }
 }
 
-internal struct TintModifier: ViewModifier {
-  let color: Color?
+internal enum ForegroundStyleType: String, Enumerable {
+  case color
+  case hierarchical
+  case linearGradient
+  case radialGradient
+  case angularGradient
+}
+
+internal enum ForegroundHierarchicalStyleType: String, Enumerable {
+  case primary
+  case secondary
+  case tertiary
+  case quaternary
+  case quinary
+}
+
+internal struct ForegroundStyleModifier: ViewModifier, Record {
+  @Field var styleType: ForegroundStyleType = .color
+  @Field var hierarchicalStyle: ForegroundHierarchicalStyleType = .primary
+  @Field var color: Color?
+  @Field var colors: [Color]?
+  @Field var startPoint: UnitPoint?
+  @Field var endPoint: UnitPoint?
+  @Field var center: UnitPoint?
+  @Field var startRadius: CGFloat?
+  @Field var endRadius: CGFloat?
+
+  func body(content: Content) -> some View {
+    switch styleType {
+    case .color:
+      if let color {
+        content.foregroundStyle(color)
+      } else {
+        content
+      }
+    case .hierarchical:
+      switch hierarchicalStyle {
+      case .primary:
+        content.foregroundStyle(.primary)
+      case .secondary:
+        content.foregroundStyle(.secondary)
+      case .tertiary:
+        content.foregroundStyle(.tertiary)
+      case .quaternary:
+        content.foregroundStyle(.quaternary)
+      case .quinary:
+        if #available(iOS 16.0, *) {
+          content.foregroundStyle(.quinary)
+        } else {
+          content.foregroundStyle(.quaternary)
+        }
+      }
+    case .linearGradient:
+      if let colors, let startPoint, let endPoint {
+        content.foregroundStyle(
+          LinearGradient(
+            colors: colors,
+            startPoint: startPoint,
+            endPoint: endPoint
+          )
+        )
+      } else {
+        content
+      }
+    case .radialGradient:
+      if let colors, let center, let startRadius, let endRadius {
+        content.foregroundStyle(
+          RadialGradient(
+            colors: colors,
+            center: center,
+            startRadius: startRadius,
+            endRadius: endRadius
+          )
+        )
+      } else {
+        content
+      }
+    case .angularGradient:
+      if let colors, let center {
+        content.foregroundStyle(
+          AngularGradient(
+            colors: colors,
+            center: center
+          )
+        )
+      } else {
+        content
+      }
+    }
+  }
+}
+
+internal struct TintModifier: ViewModifier, Record {
+  @Field var color: Color?
 
   func body(content: Content) -> some View {
     if let color = color {
@@ -127,8 +238,8 @@ internal struct TintModifier: ViewModifier {
   }
 }
 
-internal struct HiddenModifier: ViewModifier {
-  let hidden: Bool
+internal struct HiddenModifier: ViewModifier, Record {
+  @Field var hidden: Bool = true
 
   func body(content: Content) -> some View {
     if hidden {
@@ -139,48 +250,48 @@ internal struct HiddenModifier: ViewModifier {
   }
 }
 
-internal struct ZIndexModifier: ViewModifier {
-  let index: Double
+internal struct ZIndexModifier: ViewModifier, Record {
+  @Field var index: Double = 0
 
   func body(content: Content) -> some View {
     content.zIndex(index)
   }
 }
 
-internal struct BlurModifier: ViewModifier {
-  let radius: CGFloat
+internal struct BlurModifier: ViewModifier, Record {
+  @Field var radius: CGFloat = 0
 
   func body(content: Content) -> some View {
     content.blur(radius: radius)
   }
 }
 
-internal struct BrightnessModifier: ViewModifier {
-  let amount: Double
+internal struct BrightnessModifier: ViewModifier, Record {
+  @Field var amount: Double = 0
 
   func body(content: Content) -> some View {
     content.brightness(amount)
   }
 }
 
-internal struct ContrastModifier: ViewModifier {
-  let amount: Double
+internal struct ContrastModifier: ViewModifier, Record {
+  @Field var amount: Double = 1
 
   func body(content: Content) -> some View {
     content.contrast(amount)
   }
 }
 
-internal struct SaturationModifier: ViewModifier {
-  let amount: Double
+internal struct SaturationModifier: ViewModifier, Record {
+  @Field var amount: Double = 1
 
   func body(content: Content) -> some View {
     content.saturation(amount)
   }
 }
 
-internal struct ColorInvertModifier: ViewModifier {
-  let inverted: Bool
+internal struct ColorInvertModifier: ViewModifier, Record {
+  @Field var inverted: Bool = true
 
   func body(content: Content) -> some View {
     if inverted {
@@ -191,26 +302,26 @@ internal struct ColorInvertModifier: ViewModifier {
   }
 }
 
-internal struct GrayscaleModifier: ViewModifier {
-  let amount: Double
+internal struct GrayscaleModifier: ViewModifier, Record {
+  @Field var amount: Double = 0
 
   func body(content: Content) -> some View {
     content.grayscale(amount)
   }
 }
 
-internal struct BorderModifier: ViewModifier {
-  let color: Color
-  let width: CGFloat
+internal struct BorderModifier: ViewModifier, Record {
+  @Field var color: Color = .white
+  @Field var width: CGFloat = 1.0
 
   func body(content: Content) -> some View {
     content.border(color, width: width)
   }
 }
 
-internal struct ClipShapeModifier: ViewModifier {
-  let shape: String
-  let cornerRadius: CGFloat
+internal struct ClipShapeModifier: ViewModifier, Record {
+  @Field var shape: String = "rectangle"
+  @Field var cornerRadius: CGFloat = 8
 
   @ViewBuilder
   func body(content: Content) -> some View {
@@ -225,39 +336,53 @@ internal struct ClipShapeModifier: ViewModifier {
   }
 }
 
-internal struct OnTapGestureModifier: ViewModifier {
-  let eventDispatcher: EventDispatcher
+internal struct OnTapGestureModifier: ViewModifier, Record {
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
 
   func body(content: Content) -> some View {
     if #available(iOS 15.0, tvOS 16.0, *) {
       content.onTapGesture {
-        eventDispatcher(["onTapGesture": [:]])
+        eventDispatcher?(["onTapGesture": [:]])
       }
     }
   }
 }
 
-internal struct OnLongPressGestureModifier: ViewModifier {
-  let minimumDuration: Double
-  let eventDispatcher: EventDispatcher
+internal struct OnLongPressGestureModifier: ViewModifier, Record {
+  @Field var minimumDuration: Double = 0.5
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
 
   func body(content: Content) -> some View {
     content.onLongPressGesture(minimumDuration: minimumDuration) {
-      eventDispatcher(["onLongPressGesture": [:]])
+      eventDispatcher?(["onLongPressGesture": [:]])
     }
   }
 }
 
-internal struct HueRotationModifier: ViewModifier {
-  let angle: Double
+internal struct HueRotationModifier: ViewModifier, Record {
+  @Field var angle: Double = 0
 
   func body(content: Content) -> some View {
     content.hueRotation(.degrees(angle))
   }
 }
 
-internal struct AccessibilityLabelModifier: ViewModifier {
-  let label: String?
+internal struct AccessibilityLabelModifier: ViewModifier, Record {
+  @Field var label: String?
 
   func body(content: Content) -> some View {
     if let label = label {
@@ -268,8 +393,8 @@ internal struct AccessibilityLabelModifier: ViewModifier {
   }
 }
 
-internal struct AccessibilityHintModifier: ViewModifier {
-  let hint: String?
+internal struct AccessibilityHintModifier: ViewModifier, Record {
+  @Field var hint: String?
 
   func body(content: Content) -> some View {
     if let hint = hint {
@@ -280,8 +405,8 @@ internal struct AccessibilityHintModifier: ViewModifier {
   }
 }
 
-internal struct AccessibilityValueModifier: ViewModifier {
-  let value: String?
+internal struct AccessibilityValueModifier: ViewModifier, Record {
+  @Field var value: String?
 
   func body(content: Content) -> some View {
     if let value = value {
@@ -292,25 +417,25 @@ internal struct AccessibilityValueModifier: ViewModifier {
   }
 }
 
-internal struct LayoutPriorityModifier: ViewModifier {
-  let priority: Double
+internal struct LayoutPriorityModifier: ViewModifier, Record {
+  @Field var priority: Double = 0
 
   func body(content: Content) -> some View {
     content.layoutPriority(priority)
   }
 }
 
-internal struct AspectRatioModifier: ViewModifier {
-  let ratio: Double
-  let contentMode: ContentMode
+internal struct AspectRatioModifier: ViewModifier, Record {
+  @Field var ratio: Double = 1.0
+  @Field var contentMode: String = "fit"
 
   func body(content: Content) -> some View {
-    content.aspectRatio(ratio, contentMode: contentMode)
+    content.aspectRatio(ratio, contentMode: contentMode == "fill" ? .fill : .fit)
   }
 }
 
-internal struct ClippedModifier: ViewModifier {
-  let clipped: Bool
+internal struct ClippedModifier: ViewModifier, Record {
+  @Field var clipped: Bool = true
 
   func body(content: Content) -> some View {
     if clipped {
@@ -321,9 +446,9 @@ internal struct ClippedModifier: ViewModifier {
   }
 }
 
-internal struct MaskModifier: ViewModifier {
-  let shape: String
-  let cornerRadius: CGFloat
+internal struct MaskModifier: ViewModifier, Record {
+  @Field var shape: String = "rectangle"
+  @Field var cornerRadius: CGFloat = 8
 
   @ViewBuilder
   func body(content: Content) -> some View {
@@ -338,26 +463,25 @@ internal struct MaskModifier: ViewModifier {
   }
 }
 
-internal struct OverlayModifier: ViewModifier {
-  let color: Color?
-  let alignment: Alignment
-
+internal struct OverlayModifier: ViewModifier, Record {
+  @Field var color: Color?
+  @Field var alignment: AlignmentOptions = .center
   func body(content: Content) -> some View {
     if let color = color {
-      content.overlay(color, alignment: alignment)
+      content.overlay(color, alignment: alignment.toAlignment())
     } else {
       content
     }
   }
 }
 
-internal struct BackgroundOverlayModifier: ViewModifier {
-  let color: Color?
-  let alignment: Alignment
+internal struct BackgroundOverlayModifier: ViewModifier, Record {
+  @Field var color: Color?
+  @Field var alignment: AlignmentOptions = .center
 
   func body(content: Content) -> some View {
     if let color = color {
-      content.background(color, alignment: alignment)
+      content.background(color, alignment: alignment.toAlignment())
     } else {
       content
     }
@@ -381,17 +505,23 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
-internal struct GlassEffectModifier: ViewModifier {
-  let glassVariant: String
-  let interactive: Bool
-  let tint: Color?
-  let shape: String
+internal struct GlassEffectOptions: Record {
+  @Field var variant: String?
+  @Field var interactive: Bool?
+  @Field var tint: Color?
+}
+
+internal struct GlassEffectModifier: ViewModifier, Record {
+  @Field var glass: GlassEffectOptions?
+  @Field var shape: String = "capsule"
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
-      let glass = parseGlassVariant(glassVariant)
+      let interactive = glass?.interactive ?? false
+      let tint = glass?.tint
+      let glass = parseGlassVariant(glass?.variant ?? "regular")
       switch shape {
       case "capsule":
         content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
@@ -411,7 +541,7 @@ internal struct GlassEffectModifier: ViewModifier {
   }
 
   #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
   private func parseGlassVariant(_ glassString: String) -> Glass {
     switch glassString {
     case "regular":
@@ -425,59 +555,108 @@ internal struct GlassEffectModifier: ViewModifier {
   #endif
 }
 
-internal struct AnimationModifier: ViewModifier {
-  let animationConfig: [String: Any]
-  let animatedValue: AnyHashable?
+internal struct GlassEffectIdModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
 
   func body(content: Content) -> some View {
-    let animationValue = parseAnimation(animationConfig)
-    if let value = animatedValue {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+        content.glassEffectID(id, in: namespace)
+      } else {
+        content
+      }
+      #else
+      content
+      #endif
+    } else {
+      content
+    }
+  }
+}
+
+internal enum AnimationType: String, Enumerable {
+  case easeInOut
+  case easeIn
+  case easeOut
+  case linear
+  case spring
+  case interpolatingSpring
+  case `default`
+}
+
+internal struct AnimationConfig: Record {
+  @Field var type: AnimationType = .default
+  @Field var duration: Double?
+  @Field var response: Double?
+  @Field var dampingFraction: Double?
+  @Field var blendDuration: Double?
+  @Field var bounce: Double?
+  @Field var mass: Double?
+  @Field var stiffness: Double?
+  @Field var damping: Double?
+  @Field var initialVelocity: Double?
+  @Field var delay: Double?
+  @Field var repeatCount: Int?
+  @Field var autoreverses: Bool?
+}
+
+internal struct AnimationModifier: ViewModifier, Record {
+  @Field var animation: AnimationConfig
+  @Field var animatedValue: Either<Bool, Double>?
+
+  func body(content: Content) -> some View {
+    let animationValue = parseAnimation(animation)
+    if let value: Bool = animatedValue?.get() {
+      content.animation(animationValue, value: value)
+    } else if let value: Double = animatedValue?.get() {
       content.animation(animationValue, value: value)
     } else {
       content
     }
   }
 
-  private func parseAnimation(_ config: [String: Any]) -> Animation {
-    let type = config["type"] as? String ?? "default"
+  private func parseAnimation(_ config: AnimationConfig) -> Animation {
+    let type = config.type
 
     var animation: Animation
 
     switch type {
-    case "easeIn":
-      if let duration = config["duration"] as? Double {
+    case .easeIn:
+      if let duration = config.duration {
         animation = .easeIn(duration: duration)
       } else {
         animation = .easeIn
       }
 
-    case "easeOut":
-      if let duration = config["duration"] as? Double {
+    case .easeOut:
+      if let duration = config.duration {
         animation = .easeOut(duration: duration)
       } else {
         animation = .easeOut
       }
 
-    case "linear":
-      if let duration = config["duration"] as? Double {
+    case .linear:
+      if let duration = config.duration {
         animation = .linear(duration: duration)
       } else {
         animation = .linear
       }
 
-    case "easeInOut":
-      if let duration = config["duration"] as? Double {
+    case .easeInOut:
+      if let duration = config.duration {
         animation = .easeInOut(duration: duration)
       } else {
         animation = .easeInOut
       }
 
-    case "spring":
-      let duration = config["duration"] as? Double
-      let bounce = config["bounce"] as? Double
-      let response = config["response"] as? Double
-      let dampingFraction = config["dampingFraction"] as? Double
-      let blendDuration = config["blendDuration"] as? Double
+    case .spring:
+      let duration = config.duration
+      let bounce = config.bounce
+      let response = config.response
+      let dampingFraction = config.dampingFraction
+      let blendDuration = config.blendDuration
 
       if response != nil || dampingFraction != nil {
         // default values are 0.5, 0.825, 0.0
@@ -491,13 +670,13 @@ internal struct AnimationModifier: ViewModifier {
         animation = .spring
       }
 
-    case "interpolatingSpring":
-      let duration = config["duration"] as? Double
-      let bounce = config["bounce"] as? Double
-      let mass = config["mass"] as? Double
-      let stiffness = config["stiffness"] as? Double
-      let damping = config["damping"] as? Double
-      let initialVelocity = config["initialVelocity"] as? Double
+    case .interpolatingSpring:
+      let duration = config.duration
+      let bounce = config.bounce
+      let mass = config.mass
+      let stiffness = config.stiffness
+      let damping = config.stiffness
+      let initialVelocity = config.initialVelocity
 
       if duration != nil || bounce != nil {
         animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
@@ -511,12 +690,12 @@ internal struct AnimationModifier: ViewModifier {
       animation = .default
     }
 
-    if let delay = config["delay"] as? Double {
+    if let delay = config.delay {
       animation = animation.delay(delay)
     }
 
-    if let repeatCount = config["repeatCount"] as? Int {
-      let autoreverses = config["autoreverses"] as? Bool ?? false
+    if let repeatCount = config.repeatCount {
+      let autoreverses = config.autoreverses ?? false
       animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
     }
 
@@ -533,7 +712,7 @@ internal struct AnimationModifier: ViewModifier {
 internal class ViewModifierRegistry {
   static let shared = ViewModifierRegistry()
 
-  internal typealias ModiferFactory = ([String: Any], EventDispatcher) -> any ViewModifier
+  internal typealias ModiferFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModiferFactory] = [:]
 
   private init() {
@@ -556,8 +735,14 @@ internal class ViewModifierRegistry {
    * Returns the original view if the modifier type is not found.
    * This method handles the type erasure properly for extensibility.
    */
-  func applyModifier(_ type: String, to view: AnyView, globalEventDispatcher: EventDispatcher, params: [String: Any]) -> AnyView {
-    guard let viewModifier = modifierFactories[type]?(params, globalEventDispatcher) else {
+  func applyModifier(
+    _ type: String,
+    to view: AnyView,
+    appContext: AppContext,
+    globalEventDispatcher: EventDispatcher,
+    params: [String: Any]
+  ) -> AnyView {
+    guard let viewModifier = try? modifierFactories[type]?(params, appContext, globalEventDispatcher) else {
       return view
     }
     return AnyView(view.modifier(AnyViewModifier(viewModifier)))
@@ -578,310 +763,174 @@ internal class ViewModifierRegistry {
   }
 }
 
+internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
+
+  func body(content: Content) -> some View {
+    if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+      content.matchedGeometryEffect(id: id, in: namespace)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
-    register("background") { params, _ in
-      let color = (params["color"] as? String).map { Color(hex: $0) }
-      return BackgroundModifier(color: color)
+    register("background") { params, appContext, _ in
+      return try BackgroundModifier(from: params, appContext: appContext)
     }
 
-    register("cornerRadius") { params, _ in
-      let radius = params["radius"] as? Double ?? 0
-      return CornerRadiusModifier(radius: CGFloat(radius))
+    register("cornerRadius") { params, appContext, _ in
+      return try CornerRadiusModifier(from: params, appContext: appContext)
     }
 
-    register("shadow") { params, _ in
-      let radius = params["radius"] as? Double ?? 0
-      let x = params["x"] as? Double ?? 0
-      let y = params["y"] as? Double ?? 0
-      let colorString = params["color"] as? String ?? "#000000"
-      let color = Color(hex: colorString)
-
-      return ShadowModifier(
-        color: color,
-        radius: CGFloat(radius),
-        x: CGFloat(x),
-        y: CGFloat(y)
-      )
+    register("shadow") { params, appContext, _ in
+      return try ShadowModifier(from: params, appContext: appContext)
     }
 
-    register("frame") { params, _ in
-      let width = (params["width"] as? Double).map { CGFloat($0) }
-      let height = (params["height"] as? Double).map { CGFloat($0) }
-      let minWidth = (params["minWidth"] as? Double).map { CGFloat($0) }
-      let maxWidth = (params["maxWidth"] as? Double).map { CGFloat($0) }
-      let minHeight = (params["minHeight"] as? Double).map { CGFloat($0) }
-      let maxHeight = (params["maxHeight"] as? Double).map { CGFloat($0) }
-      let idealWidth = (params["idealWidth"] as? Double).map { CGFloat($0) }
-      let idealHeight = (params["idealHeight"] as? Double).map { CGFloat($0) }
-      let alignmentString = params["alignment"] as? String ?? "center"
-      let alignment = parseAlignment(alignmentString)
-
-      return FrameModifier(
-        width: width,
-        height: height,
-        minWidth: minWidth,
-        maxWidth: maxWidth,
-        minHeight: minHeight,
-        maxHeight: maxHeight,
-        idealWidth: idealWidth,
-        idealHeight: idealHeight,
-        alignment: alignment
-      )
+    register("frame") { params, appContext, _ in
+      return try FrameModifier(from: params, appContext: appContext)
     }
 
-    register("padding") { params, _ in
-      var edgeInsets = EdgeInsets()
-
-      if let all = params["all"] as? Double {
-        edgeInsets = EdgeInsets(top: CGFloat(all), leading: CGFloat(all), bottom: CGFloat(all), trailing: CGFloat(all))
-      } else if let horizontal = params["horizontal"] as? Double, let vertical = params["vertical"] as? Double {
-        edgeInsets = EdgeInsets(top: CGFloat(vertical), leading: CGFloat(horizontal), bottom: CGFloat(vertical), trailing: CGFloat(horizontal))
-      } else if let horizontal = params["horizontal"] as? Double {
-        edgeInsets = EdgeInsets(top: 0, leading: CGFloat(horizontal), bottom: 0, trailing: CGFloat(horizontal))
-      } else if let vertical = params["vertical"] as? Double {
-        edgeInsets = EdgeInsets(top: CGFloat(vertical), leading: 0, bottom: CGFloat(vertical), trailing: 0)
-      } else {
-        edgeInsets = EdgeInsets(
-          top: CGFloat(params["top"] as? Double ?? 0),
-          leading: CGFloat(params["leading"] as? Double ?? 0),
-          bottom: CGFloat(params["bottom"] as? Double ?? 0),
-          trailing: CGFloat(params["trailing"] as? Double ?? 0)
-        )
-      }
-
-      return PaddingModifier(edgeInsets: edgeInsets)
+    register("padding") { params, appContext, _ in
+      return try PaddingModifier(from: params, appContext: appContext)
     }
 
-    register("opacity") { params, _ in
-      let value = params["value"] as? Double ?? 1.0
-      return OpacityModifier(value: value)
+    register("opacity") { params, appContext, _ in
+      return try OpacityModifier(from: params, appContext: appContext)
     }
 
-    register("scaleEffect") { params, _ in
-      let scale = params["scale"] as? Double ?? 1.0
-      return ScaleEffectModifier(scale: CGFloat(scale))
+    register("scaleEffect") { params, appContext, _ in
+      return try ScaleEffectModifier(from: params, appContext: appContext)
     }
 
-    register("rotationEffect") { params, _ in
-      let angle = params["angle"] as? Double ?? 0.0
-      return RotationEffectModifier(angle: angle)
+    register("rotationEffect") { params, appContext, _ in
+      return try RotationEffectModifier(from: params, appContext: appContext)
     }
 
-    register("offset") { params, _ in
-      let x = params["x"] as? Double ?? 0
-      let y = params["y"] as? Double ?? 0
-      return OffsetModifier(x: CGFloat(x), y: CGFloat(y))
+    register("offset") { params, appContext, _ in
+      return try OffsetModifier(from: params, appContext: appContext)
     }
 
-    register("foregroundColor") { params, _ in
-      let color = (params["color"] as? String).map { Color(hex: $0) }
-      return ForegroundColorModifier(color: color)
+    register("foregroundColor") { params, appContext, _ in
+      return try ForegroundColorModifier(from: params, appContext: appContext)
     }
 
-    register("tint") { params, _ in
-      let color = (params["color"] as? String).map { Color(hex: $0) }
-      return TintModifier(color: color)
+    register("foregroundStyle") { params, appContext, _ in
+      return try ForegroundStyleModifier(from: params, appContext: appContext)
     }
 
-    register("hidden") { params, _ in
-      let hidden = params["hidden"] as? Bool ?? true
-      return HiddenModifier(hidden: hidden)
+    register("tint") { params, appContext, _ in
+      return try TintModifier(from: params, appContext: appContext)
     }
 
-    register("zIndex") { params, _ in
-      let index = params["index"] as? Double ?? 0
-      return ZIndexModifier(index: index)
+    register("hidden") { params, appContext, _ in
+      return try HiddenModifier(from: params, appContext: appContext)
     }
 
-    register("blur") { params, _ in
-      let radius = params["radius"] as? Double ?? 0
-      return BlurModifier(radius: CGFloat(radius))
+    register("zIndex") { params, appContext, _ in
+      return try ZIndexModifier(from: params, appContext: appContext)
     }
 
-    register("brightness") { params, _ in
-      let amount = params["amount"] as? Double ?? 0
-      return BrightnessModifier(amount: amount)
+    register("blur") { params, appContext, _ in
+      return try BlurModifier(from: params, appContext: appContext)
     }
 
-    register("contrast") { params, _ in
-      let amount = params["amount"] as? Double ?? 1
-      return ContrastModifier(amount: amount)
+    register("brightness") { params, appContext, _ in
+      return try BrightnessModifier(from: params, appContext: appContext)
     }
 
-    register("saturation") { params, _ in
-      let amount = params["amount"] as? Double ?? 1
-      return SaturationModifier(amount: amount)
+    register("contrast") { params, appContext, _ in
+      return try ContrastModifier(from: params, appContext: appContext)
     }
 
-    register("colorInvert") { params, _ in
-      let inverted = params["inverted"] as? Bool ?? true
-      return ColorInvertModifier(inverted: inverted)
+    register("saturation") { params, appContext, _ in
+      return try SaturationModifier(from: params, appContext: appContext)
     }
 
-    register("grayscale") { params, _ in
-      let amount = params["amount"] as? Double ?? 0
-      return GrayscaleModifier(amount: amount)
+    register("colorInvert") { params, appContext, _ in
+      return try ColorInvertModifier(from: params, appContext: appContext)
     }
 
-    register("border") { params, _ in
-      let colorString = params["color"] as? String ?? "#000000"
-      let width = params["width"] as? Double ?? 1.0
-      let color = Color(hex: colorString)
-
-      return BorderModifier(color: color, width: CGFloat(width))
+    register("grayscale") { params, appContext, _ in
+      return try GrayscaleModifier(from: params, appContext: appContext)
     }
 
-    register("clipShape") { params, _ in
-      let shape = params["shape"] as? String ?? "rectangle"
-      let cornerRadius = params["cornerRadius"] as? Double ?? 8
-
-      return ClipShapeModifier(shape: shape, cornerRadius: CGFloat(cornerRadius))
+    register("border") { params, appContext, _ in
+      return try BorderModifier(from: params, appContext: appContext)
     }
 
-    register("onTapGesture") { _, eventDispatcher in
-      return OnTapGestureModifier(eventDispatcher: eventDispatcher)
+    register("clipShape") { params, appContext, _ in
+      return try ClipShapeModifier(from: params, appContext: appContext)
     }
 
-    register("onLongPressGesture") { params, eventDispatcher in
-      let minimumDuration = params["minimumDuration"] as? Double ?? 0.5
-      return OnLongPressGestureModifier(minimumDuration: minimumDuration, eventDispatcher: eventDispatcher)
+    register("onTapGesture") { params, appContext, eventDispatcher in
+      return try OnTapGestureModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
-    register("hueRotation") { params, _ in
-      let angle = params["angle"] as? Double ?? 0
-      return HueRotationModifier(angle: angle)
+    register("onLongPressGesture") { params, appContext, eventDispatcher in
+      return try OnLongPressGestureModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
-    register("accessibilityLabel") { params, _ in
-      let label = params["label"] as? String
-      return AccessibilityLabelModifier(label: label)
+    register("hueRotation") { params, appContext, _ in
+      return try HueRotationModifier(from: params, appContext: appContext)
     }
 
-    register("accessibilityHint") { params, _ in
-      let hint = params["hint"] as? String
-      return AccessibilityHintModifier(hint: hint)
+    register("accessibilityLabel") { params, appContext, _ in
+      return try AccessibilityLabelModifier(from: params, appContext: appContext)
     }
 
-    register("accessibilityValue") { params, _ in
-      let value = params["value"] as? String
-      return AccessibilityValueModifier(value: value)
+    register("accessibilityHint") { params, appContext, _ in
+      return try AccessibilityHintModifier(from: params, appContext: appContext)
     }
 
-    register("layoutPriority") { params, _ in
-      let priority = params["priority"] as? Double ?? 0
-      return LayoutPriorityModifier(priority: priority)
+    register("accessibilityValue") { params, appContext, _ in
+      return try AccessibilityValueModifier(from: params, appContext: appContext)
     }
 
-    register("aspectRatio") { params, _ in
-      let ratio = params["ratio"] as? Double ?? 1.0
-      let contentMode = params["contentMode"] as? String ?? "fit"
-      let mode: ContentMode = contentMode == "fill" ? .fill : .fit
-      return AspectRatioModifier(ratio: ratio, contentMode: mode)
+    register("layoutPriority") { params, appContext, _ in
+      return try LayoutPriorityModifier(from: params, appContext: appContext)
     }
 
-    register("clipped") { params, _ in
-      let clipped = params["clipped"] as? Bool ?? true
-      return ClippedModifier(clipped: clipped)
+    register("aspectRatio") { params, appContext, _ in
+      return try AspectRatioModifier(from: params, appContext: appContext)
     }
 
-    register("mask") { params, _ in
-      let shape = params["shape"] as? String ?? "rectangle"
-      let cornerRadius = params["cornerRadius"] as? Double ?? 8
-      return MaskModifier(shape: shape, cornerRadius: CGFloat(cornerRadius))
+    register("clipped") { params, appContext, _ in
+      return try ClippedModifier(from: params, appContext: appContext)
     }
 
-    register("overlay") { params, _ in
-      let color = (params["color"] as? String).map { Color(hex: $0) }
-      let alignmentString = params["alignment"] as? String ?? "center"
-      let alignment = parseAlignment(alignmentString)
-      return OverlayModifier(color: color, alignment: alignment)
+    register("mask") { params, appContext, _ in
+      return try MaskModifier(from: params, appContext: appContext)
     }
 
-    register("backgroundOverlay") { params, _ in
-      let color = (params["color"] as? String).map { Color(hex: $0) }
-      let alignmentString = params["alignment"] as? String ?? "center"
-      let alignment = parseAlignment(alignmentString)
-      return BackgroundOverlayModifier(color: color, alignment: alignment)
+    register("overlay") { params, appContext, _ in
+      return try OverlayModifier(from: params, appContext: appContext)
     }
 
-    register("glassEffect") { params, _ in
-      let glassDict = params["glass"] as? [String: Any]
-      let glassVariant = glassDict?["variant"] as? String ?? "regular"
-      let interactive = glassDict?["interactive"] as? Bool ?? false
-      let tintColor = (glassDict?["tint"] as? String).map { Color(hex: $0) }
-      let shape = params["shape"] as? String ?? "capsule"
-
-      return GlassEffectModifier(
-        glassVariant: glassVariant,
-        interactive: interactive,
-        tint: tintColor,
-        shape: shape
-      )
+    register("backgroundOverlay") { params, appContext, _ in
+      return try BackgroundOverlayModifier(from: params, appContext: appContext)
     }
 
-    register("animation") { params, _ in
-      let animationConfig = params["animation"] as? [String: Any] ?? ["type": "default"]
-      let animatedValue = params["animatedValue"] as? AnyHashable
-
-      return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
-    }
-  }
-}
-
-// MARK: - Utility Functions
-
-private func parseAlignment(_ alignmentString: String) -> Alignment {
-  switch alignmentString {
-  case "leading":
-    return .leading
-  case "trailing":
-    return .trailing
-  case "top":
-    return .top
-  case "bottom":
-    return .bottom
-  case "topLeading":
-    return .topLeading
-  case "topTrailing":
-    return .topTrailing
-  case "bottomLeading":
-    return .bottomLeading
-  case "bottomTrailing":
-    return .bottomTrailing
-  default:
-    return .center
-  }
-}
-
-// MARK: - Color Extension
-
-internal extension Color {
-  init(hex: String) {
-    let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-    var int: UInt64 = 0
-    Scanner(string: hex).scanHexInt64(&int)
-    let a, r, g, b: UInt64
-    switch hex.count {
-    case 3: // RGB (12-bit)
-      (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-    case 6: // RGB (24-bit)
-      (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-    case 8: // ARGB (32-bit)
-      (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-    default:
-      (a, r, g, b) = (1, 1, 1, 0)
+    register("glassEffect") { params, appContext, _ in
+      return try GlassEffectModifier(from: params, appContext: appContext)
     }
 
-    self.init(
-      .sRGB,
-      red: Double(r) / 255,
-      green: Double(g) / 255,
-      blue: Double(b) / 255,
-      opacity: Double(a) / 255
-    )
+    register("animation") { params, appContext, _ in
+      return try AnimationModifier.init(from: params, appContext: appContext)
+    }
+
+    register("glassEffectId") { params, appContext, _ in
+      return try GlassEffectIdModifier.init(from: params, appContext: appContext)
+    }
+
+    register("matchedGeometryEffect") { params, appContext, _ in
+      return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
+    }
   }
 }

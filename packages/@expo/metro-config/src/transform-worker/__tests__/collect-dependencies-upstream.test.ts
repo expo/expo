@@ -19,7 +19,7 @@ import {
 import dedent from 'dedent';
 import assert from 'node:assert';
 
-import { importExportPlugin } from '../../transform-plugins/import-export-plugin';
+import { importExportPlugin } from '../../transform-plugins/index';
 import type {
   Dependency,
   DependencyTransformer,

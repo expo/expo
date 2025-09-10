@@ -1,12 +1,8 @@
 import { vol } from 'memfs';
 
-import { getVersionedNativeModuleNamesAsync } from '../../utils/versionedNativeModules';
 import { PeerDependencyChecks } from '../PeerDependencyChecks';
 
 jest.mock('fs');
-jest.mock('../../utils/versionedNativeModules', () => ({
-  getVersionedNativeModuleNamesAsync: jest.fn(),
-}));
 
 const projectRoot = '/tmp/project';
 
@@ -25,15 +21,19 @@ const additionalProjectProps = {
 describe('PeerDependencyChecks', () => {
   beforeEach(() => {
     vol.reset();
-    jest.mocked(getVersionedNativeModuleNamesAsync).mockResolvedValue([]);
   });
 
   it('returns successful result when no dependencies exist', async () => {
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: { name: 'test-project', version: '1.0.0' },
-      ...additionalProjectProps,
-    });
+    const result = await check.runAsync(
+      {
+        pkg: { name: 'test-project', version: '1.0.0' },
+        ...additionalProjectProps,
+      },
+      {
+        nativeModuleNames: Promise.resolve(null),
+      }
+    );
     expect(result.isSuccessful).toBeTruthy();
     expect(result.issues).toHaveLength(0);
   });
@@ -47,25 +47,26 @@ describe('PeerDependencyChecks', () => {
     });
 
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'some-package': '^1.0.0',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'some-package': '^1.0.0',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        nativeModuleNames: Promise.resolve(null),
+      }
+    );
     expect(result.isSuccessful).toBeTruthy();
     expect(result.issues).toHaveLength(0);
   });
 
   it('detects missing required peer dependencies', async () => {
-    jest
-      .mocked(getVersionedNativeModuleNamesAsync)
-      .mockResolvedValue(['react-native-safe-area-context']);
-
     vol.fromJSON({
       [`${projectRoot}/node_modules/expo-router/package.json`]: JSON.stringify({
         name: 'expo-router',
@@ -77,16 +78,22 @@ describe('PeerDependencyChecks', () => {
     });
 
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'expo-router': '^5.1.4',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'expo-router': '^5.1.4',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        nativeModuleNames: Promise.resolve(['react-native-safe-area-context']),
+      }
+    );
+
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toHaveLength(1);
     expect(result.issues[0]).toContain(
@@ -102,10 +109,6 @@ describe('PeerDependencyChecks', () => {
   });
 
   it('detects multiple missing required peer dependencies', async () => {
-    jest
-      .mocked(getVersionedNativeModuleNamesAsync)
-      .mockResolvedValue(['react-native-safe-area-context', 'react-native-screens']);
-
     vol.fromJSON({
       [`${projectRoot}/node_modules/expo-router/package.json`]: JSON.stringify({
         name: 'expo-router',
@@ -118,16 +121,25 @@ describe('PeerDependencyChecks', () => {
     });
 
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'expo-router': '^5.1.4',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'expo-router': '^5.1.4',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        nativeModuleNames: Promise.resolve([
+          'react-native-safe-area-context',
+          'react-native-screens',
+        ]),
+      }
+    );
+
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toHaveLength(2);
     expect(result.issues[0]).toContain(
@@ -146,10 +158,6 @@ describe('PeerDependencyChecks', () => {
   });
 
   it('groups missing peer dependencies', async () => {
-    jest
-      .mocked(getVersionedNativeModuleNamesAsync)
-      .mockResolvedValue(['react-native-safe-area-context']);
-
     vol.fromJSON({
       [`${projectRoot}/node_modules/expo-router/package.json`]: JSON.stringify({
         name: 'expo-router',
@@ -169,17 +177,23 @@ describe('PeerDependencyChecks', () => {
     });
 
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'expo-router': '^5.1.4',
-          '@react-navigation/bottom-tabs': '^7.0.0',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'expo-router': '^5.1.4',
+            '@react-navigation/bottom-tabs': '^7.0.0',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        nativeModuleNames: Promise.resolve(['react-native-safe-area-context']),
+      }
+    );
+
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toHaveLength(1);
     expect(result.issues[0]).toContain(
@@ -211,41 +225,49 @@ describe('PeerDependencyChecks', () => {
     });
 
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'some-ui-lib': '^1.0.0',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'some-ui-lib': '^1.0.0',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        nativeModuleNames: Promise.resolve([]),
+      }
+    );
+
     expect(result.isSuccessful).toBeTruthy();
     expect(result.issues).toHaveLength(0);
   });
 
   it('handles missing package.json gracefully', async () => {
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'non-existent-package': '^1.0.0',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'non-existent-package': '^1.0.0',
+          },
         },
+        ...additionalProjectProps,
       },
-      ...additionalProjectProps,
-    });
+      {
+        nativeModuleNames: Promise.resolve([]),
+      }
+    );
+
     expect(result.isSuccessful).toBeTruthy();
     expect(result.issues).toHaveLength(0);
   });
 
   it('only reports bundled native modules as missing peer dependencies', async () => {
-    jest
-      .mocked(getVersionedNativeModuleNamesAsync)
-      .mockResolvedValue(['react-native-safe-area-context', 'react-native-screens']);
-
     vol.fromJSON({
       [`${projectRoot}/node_modules/expo-router/package.json`]: JSON.stringify({
         name: 'expo-router',
@@ -258,24 +280,32 @@ describe('PeerDependencyChecks', () => {
     });
 
     const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'expo-router': '^5.1.4',
+    const result = await check.runAsync(
+      {
+        pkg: {
+          name: 'test-project',
+          version: '1.0.0',
+          dependencies: {
+            'expo-router': '^5.1.4',
+          },
         },
+        exp: {
+          name: 'name',
+          slug: 'slug',
+          sdkVersion: '50.0.0',
+        },
+        projectRoot,
+        hasUnusedStaticConfig: false,
+        staticConfigPath: null,
+        dynamicConfigPath: null,
       },
-      exp: {
-        name: 'name',
-        slug: 'slug',
-        sdkVersion: '50.0.0',
-      },
-      projectRoot,
-      hasUnusedStaticConfig: false,
-      staticConfigPath: null,
-      dynamicConfigPath: null,
-    });
+      {
+        nativeModuleNames: Promise.resolve([
+          'react-native-safe-area-context',
+          'react-native-screens',
+        ]),
+      }
+    );
 
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toHaveLength(1);
@@ -283,9 +313,5 @@ describe('PeerDependencyChecks', () => {
       'Missing peer dependency: react-native-safe-area-context\nRequired by: expo-router'
     );
     expect(result.issues[0]).not.toContain('non-bundled-package');
-    expect(jest.mocked(getVersionedNativeModuleNamesAsync)).toHaveBeenCalledWith(
-      projectRoot,
-      '50.0.0'
-    );
   });
 });

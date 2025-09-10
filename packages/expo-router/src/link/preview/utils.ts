@@ -79,6 +79,21 @@ export function getPreloadedRouteFromRootStateByHref(
           removeInternalExpoRouterParams(payload.params)
         )
     );
+
+    const activeRoute = stackState.routes[stackState.index];
+    // When the active route is the same as the preloaded route,
+    // then we should not navigate. It aligns with base link behavior.
+    if (
+      activeRoute.name === preloadedRoute?.name &&
+      deepEqual(
+        // using ?? {}, because from our perspective undefined === {}, as both mean no params
+        removeInternalExpoRouterParams(activeRoute.params ?? {}),
+        removeInternalExpoRouterParams(payload.params ?? {})
+      )
+    ) {
+      return undefined;
+    }
+
     return preloadedRoute;
   }
 

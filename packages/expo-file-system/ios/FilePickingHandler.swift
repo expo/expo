@@ -1,3 +1,7 @@
+// UIKit is unavailable on macOS, so platform checks are necessary.
+// For macOS support, we should consider using NSOpenPanel: https://developer.apple.com/documentation/appkit/nsopenpanel
+// UIDocumentPickerViewController is unavailable on tvOS
+#if os(iOS)
 import ExpoModulesCore
 import UIKit
 
@@ -84,3 +88,4 @@ internal class FilePickingHandler: FilePickingResultHandler {
     handler(context)
   }
 }
+#endif

@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config';
+import type { MiddlewareMatcher } from '@expo/server/build/types';
 import chalk from 'chalk';
 import { sync as globSync } from 'glob';
 import path from 'path';
@@ -149,4 +150,45 @@ export function warnInvalidMiddlewareOutput() {
   }
 
   hasWarnedAboutMiddlewareOutput = true;
+}
+
+export function warnInvalidMiddlewareMatcherSettings(matcher: MiddlewareMatcher) {
+  const validMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'];
+
+  // Ensure methods are valid HTTP methods
+  if (matcher.methods) {
+    if (!Array.isArray(matcher.methods)) {
+      Log.error(
+        chalk.red`Middleware matcher methods must be an array of valid HTTP methods. Supported methods are: ${validMethods.join(', ')}`
+      );
+    } else {
+      for (const method of matcher.methods) {
+        if (!validMethods.includes(method)) {
+          Log.error(
+            chalk.red`Invalid middleware HTTP method: ${method}. Supported methods are: ${validMethods.join(', ')}`
+          );
+        }
+      }
+    }
+  }
+
+  // Ensure patterns are either a string or RegExp
+  if (matcher.patterns) {
+    const patterns = Array.isArray(matcher.patterns) ? matcher.patterns : [matcher.patterns];
+    for (const pattern of patterns) {
+      if (typeof pattern !== 'string' && !(pattern instanceof RegExp)) {
+        Log.error(
+          chalk.red`Middleware matcher patterns must be strings or regular expressions. Received: ${String(
+            pattern
+          )}`
+        );
+      }
+
+      if (typeof pattern === 'string' && !pattern.startsWith('/')) {
+        Log.error(
+          chalk.red`String patterns in middleware matcher must start with '/'. Received: ${pattern}`
+        );
+      }
+    }
+  }
 }

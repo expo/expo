@@ -8,9 +8,49 @@
 
 ### 🐛 Bug fixes
 
-- Fix Color extension on macOS. ([#39280](https://github.com/expo/expo/pull/39280) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 💡 Others
+
+## 3.0.14 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix type check in the `SharedRef` converter. ([#39446](https://github.com/expo/expo/pull/39446) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+- improve startup performance by not relying on kotlin reflection. ([#39389](https://github.com/expo/expo/pull/39389) by [@ACHP](https://github.com/ACHP))
+
+## 3.0.13 — 2025-09-04
+
+### 💡 Others
+
+- [Android] Remove some usage of `kotlin.reflect.full.*`. ([#39385](https://github.com/expo/expo/pull/39385) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.0.12 — 2025-09-03
+
+### 💡 Others
+
+- Use new LongLivedObject.h and CallbackWrapper.h headers namespace ([#39344](https://github.com/expo/expo/pull/39344) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Added `Color` convertible support without passing `AppContext`. ([#39183](https://github.com/expo/expo/pull/39183) by [@aleqsio](https://github.com/aleqsio))
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
+## 3.0.11 — 2025-09-02
+
+### 🎉 New features
+
+- Add `disableForceFlatten` prop to control flattening of display contents views. ([#39262](https://github.com/expo/expo/pull/39262) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add logging from native to JS, compliant with the Logger interface, via `appContext.jsLogger`. ([#39159](https://github.com/expo/expo/pull/39159) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Fix Color extension on macOS. ([#39280](https://github.com/expo/expo/pull/39280) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix ErrorManager not receiving events. ([#39290](https://github.com/expo/expo/pull/39290) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Fix JavaScriptRuntimeSpec tests ([#39281](https://github.com/expo/expo/pull/39281) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added `appContext` to `ExpoSwiftUI.ViewProps`. ([#39231](https://github.com/expo/expo/pull/39231) by [@kudo](https://github.com/kudo))
+- `requireOptionalNativeModule` will now catch errors which occur while requiring a module. ([#39290](https://github.com/expo/expo/pull/39290) by [@behenate](https://github.com/behenate))
 
 ## 3.0.10 — 2025-08-31
 

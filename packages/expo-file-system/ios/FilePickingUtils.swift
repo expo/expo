@@ -1,3 +1,5 @@
+// UIDocumentPickerViewController is unavailable on tvOS
+#if os(iOS)
 import ExpoModulesCore
 import MobileCoreServices
 import UIKit
@@ -159,3 +161,4 @@ private func toUTI(mimeType: String) -> String {
   }
   return uti as String
 }
+#endif

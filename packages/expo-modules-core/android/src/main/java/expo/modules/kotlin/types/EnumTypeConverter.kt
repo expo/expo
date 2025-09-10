@@ -5,12 +5,11 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
+import expo.modules.kotlin.fastPrimaryConstructor
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.toKType
+import expo.modules.kotlin.toKClass
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
   private val enumClass: KClass<Enum<*>>
@@ -23,7 +22,9 @@ class EnumTypeConverter(
     }
   }
 
-  private val primaryConstructor = requireNotNull(enumClass.primaryConstructor) {
+  private val primaryConstructor = requireNotNull(
+    enumClass.fastPrimaryConstructor
+  ) {
     "Cannot convert js value to enum without the primary constructor"
   }
 
@@ -48,7 +49,7 @@ class EnumTypeConverter(
       )
     }
 
-    throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
+    throw IncompatibleArgTypeException(value.type.toKClass(), enumClass)
   }
 
   override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Enum<*> {
@@ -62,7 +63,7 @@ class EnumTypeConverter(
       )
     }
 
-    throw IncompatibleArgTypeException(value::class.createType(), enumClass.createType())
+    throw IncompatibleArgTypeException(value::class, enumClass)
   }
 
   /**

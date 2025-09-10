@@ -10,6 +10,35 @@
 
 ### 💡 Others
 
+- Apply upstream changes to optional require runtime fork ([#39473](https://github.com/expo/expo/pull/39473) by [@kitten](https://github.com/kitten))
+
+## 0.26.9 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- Fix Expo Go docs link in ExpoGoInstaller ([#39394](https://github.com/expo/expo/pull/39394) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Fix UTF-8 characters in project path causing `setHeader` error in Metro middleware ([#39285](https://github.com/expo/expo/pull/39285) by [@HMYang33](https://github.com/HMYang33))
+
+## 0.26.8 — 2025-09-03
+
+### 🎉 New features
+
+- [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Parse and print code frames above import stack for native bundling errors ([#39150](https://github.com/expo/expo/pull/39150) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 0.26.7 — 2025-09-02
+
+### 🐛 Bug fixes
+
+- Fix unnecessary version warning when running prebuild for prerelease versions. ([#39298](https://github.com/expo/expo/pull/39298) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Promote buildCacheProvider to stable ([#39297](https://github.com/expo/expo/pull/39297) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.26.6 — 2025-08-31
 
 _This version does not introduce any user-facing changes._

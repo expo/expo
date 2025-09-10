@@ -86,11 +86,11 @@ class JavaScriptRuntimeSpec: ExpoSpec {
       it("throws evaluation exception") {
         expect({ try runtime.eval("foo") }).to(throwError { error in
           expect(error).to(beAKindOf(JavaScriptEvalException.self))
-          #if canImport(reacthermes)
-          expect((error as! JavaScriptEvalException).reason).to(contain("Property 'foo' doesn't exist"))
-          #else
-          expect((error as! JavaScriptEvalException).reason).to(contain("Can't find variable: foo"))
-          #endif
+          if runtime.global().hasProperty("HermesInternal") {
+            expect((error as! JavaScriptEvalException).reason).to(contain("Property 'foo' doesn't exist"))
+          } else {
+            expect((error as! JavaScriptEvalException).reason).to(contain("Can't find variable: foo"))
+          }
         })
       }
     }

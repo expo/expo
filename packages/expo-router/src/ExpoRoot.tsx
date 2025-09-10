@@ -64,21 +64,25 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
    * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
    * is a HTML document, we need to ensure its inside the <body>
    */
-  const wrapper = ({ children }: PropsWithChildren) => {
-    return (
-      <ParentWrapper>
-        <LinkPreviewContextProvider>
-          <SafeAreaProvider
-            // SSR support
-            initialMetrics={INITIAL_METRICS}>
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {canOverrideStatusBarBehavior && <AutoStatusBar />}
-            {children}
-          </SafeAreaProvider>
-        </LinkPreviewContextProvider>
-      </ParentWrapper>
-    );
-  };
+  const wrapper = useMemo(
+    () =>
+      ({ children }: PropsWithChildren) => {
+        return (
+          <ParentWrapper>
+            <LinkPreviewContextProvider>
+              <SafeAreaProvider
+                // SSR support
+                initialMetrics={INITIAL_METRICS}>
+                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+                {canOverrideStatusBarBehavior && <AutoStatusBar />}
+                {children}
+              </SafeAreaProvider>
+            </LinkPreviewContextProvider>
+          </ParentWrapper>
+        );
+      },
+    [ParentWrapper]
+  );
 
   return <ContextNavigator {...props} wrapper={wrapper} />;
 }

@@ -96,3 +96,9 @@ internal final class NotImplementedException: Exception {
     "Not implemented"
   }
 }
+
+internal final class FeatureNotAvailableOnPlatformException: Exception {
+  override var reason: String {
+    "This feature is not available on this platform"
+  }
+}

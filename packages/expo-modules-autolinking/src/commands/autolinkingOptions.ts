@@ -1,5 +1,4 @@
 import commander from 'commander';
-import findUp from 'find-up';
 import fs from 'fs';
 import path from 'path';
 
@@ -78,9 +77,10 @@ const parsePackageJsonOptions = (
   const autolinkingOptions = expo && isJSONObject(expo.autolinking) ? expo.autolinking : null;
   let platformOptions: Record<string, unknown> | null = null;
   if (platform) {
-    autolinkingOptions && isJSONObject(autolinkingOptions[platform])
-      ? autolinkingOptions[platform]
-      : null;
+    platformOptions =
+      autolinkingOptions && isJSONObject(autolinkingOptions[platform])
+        ? autolinkingOptions[platform]
+        : null;
     if (!platformOptions && platform === 'apple') {
       // NOTE: `platform: 'apple'` has a fallback on `ios`. This doesn't make much sense, since apple should
       // be the base option for other apple platforms, but changing this now is a breaking change
@@ -183,12 +183,14 @@ const parseExtraArgumentsOptions = (
 };
 
 const findPackageJsonPathAsync = async (commandRoot: string | null): Promise<string> => {
-  const cwd = process.cwd();
-  const result = await findUp('package.json', { cwd: commandRoot || cwd });
-  if (!result) {
-    throw new Error(`Couldn't find "package.json" up from path "${commandRoot || cwd}"`);
+  const root = commandRoot || process.cwd();
+  for (let dir = root; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    const file = path.resolve(dir, 'package.json');
+    if (fs.existsSync(file)) {
+      return file;
+    }
   }
-  return result;
+  throw new Error(`Couldn't find "package.json" up from path "${root}"`);
 };
 
 const loadPackageJSONAsync = async (packageJsonPath: string): Promise<Record<string, unknown>> => {

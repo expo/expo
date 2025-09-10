@@ -63,7 +63,7 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
 /** Match `[page]` -> `page`
  * @privateRemarks Ported from `expo-router/src/matchers.tsx`
  */
-function matchDynamicName(name: string): string | undefined {
+export function matchDynamicName(name: string): string | undefined {
   // Don't match `...` or `[` or `]` inside the brackets
   return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1]; // eslint-disable-line no-useless-escape
 }
@@ -71,6 +71,6 @@ function matchDynamicName(name: string): string | undefined {
 /** Match `[...page]` -> `page`
  * @privateRemarks Ported from `expo-router/src/matchers.tsx`
  */
-function matchDeepDynamicRouteName(name: string): string | undefined {
+export function matchDeepDynamicRouteName(name: string): string | undefined {
   return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
 }
