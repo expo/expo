@@ -1,0 +1,71 @@
+diff --git a/node_modules/react-native/Libraries/LogBox/Data/LogBoxData.js b/node_modules/react-native/Libraries/LogBox/Data/LogBoxData.js
+index 37fb35b..9c5d978 100644
+--- a/node_modules/react-native/Libraries/LogBox/Data/LogBoxData.js
++++ b/node_modules/react-native/Libraries/LogBox/Data/LogBoxData.js
+@@ -457,11 +457,13 @@ export function withSubscription(
+     };
+ 
+     render(): React.Node {
+-      if (this.state.hasError) {
+-        // This happens when the component failed to render, in which case we delegate to the native redbox.
+-        // We can't show anyback fallback UI here, because the error may be with <View> or <Text>.
+-        return null;
+-      }
++      // if (this.state.hasError) {
++      //   // This happens when the component failed to render, in which case we delegate to the native redbox.
++      //   // We can't show anyback fallback UI here, because the error may be with <View> or <Text>.
++      //   return null;
++      // }
++
++      console.log('HEYHYE');
+ 
+       return (
+         <WrappedComponent
+diff --git a/node_modules/react-native/Libraries/LogBox/LogBoxInspectorContainer.js b/node_modules/react-native/Libraries/LogBox/LogBoxInspectorContainer.js
+index 3ccf93a..b4db986 100644
+--- a/node_modules/react-native/Libraries/LogBox/LogBoxInspectorContainer.js
++++ b/node_modules/react-native/Libraries/LogBox/LogBoxInspectorContainer.js
+@@ -8,6 +8,8 @@
+  * @format
+  */
+ 
++import LogBoxExpo from '@expo/metro-runtime/src/error-overlay/logbox-rn-polyfill';
++
+ import type LogBoxLog from './Data/LogBoxLog';
+ 
+ import View from '../Components/View/View';
+@@ -25,16 +27,25 @@ type Props = $ReadOnly<{
+ export class _LogBoxInspectorContainer extends React.Component<Props> {
+   render(): React.Node {
+     return (
+-      <View style={StyleSheet.absoluteFill}>
+-        <LogBoxInspector
+-          onDismiss={this._handleDismiss}
+-          onMinimize={this._handleMinimize}
+-          onChangeSelectedIndex={this._handleSetSelectedLog}
+-          logs={this.props.logs}
+-          selectedIndex={this.props.selectedLogIndex}
+-        />
+-      </View>
++      <LogBoxExpo
++        onDismiss={this._handleDismiss}
++        onMinimize={this._handleMinimize}
++        onChangeSelectedIndex={this._handleSetSelectedLog}
++        logs={this.props.logs}
++        selectedIndex={this.props.selectedLogIndex}
++      />
+     );
++    // return (
++    //   <View style={StyleSheet.absoluteFill}>
++    //     <LogBoxInspector
++    //       onDismiss={this._handleDismiss}
++    //       onMinimize={this._handleMinimize}
++    //       onChangeSelectedIndex={this._handleSetSelectedLog}
++    //       logs={this.props.logs}
++    //       selectedIndex={this.props.selectedLogIndex}
++    //     />
++    //   </View>
++    // );
+   }
+ 
+   _handleDismiss = (): void => {
