@@ -2,7 +2,8 @@
   position: fixed;
 
   /* Add top safe area */
-  top: calc(1vh + env(safe-area-inset-top, 2vh));
+  /* top: calc(1vh + env(safe-area-inset-top, 2vh)); */
+  top: 0; /* Needs to be 0 on native */
   right: 0;
   bottom: 0;
   left: 0;
@@ -165,5 +166,3 @@
     --expo-log-max-width: 960px;
   }
 }
-
-
