@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add worklets version to transform key ([#39541](https://github.com/expo/expo/pull/39541) by [@brentvatne](https://github.com/brentvatne))
-
 ### 💡 Others
+
+## 54.0.1 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- Add worklets version to transform key ([#39541](https://github.com/expo/expo/pull/39541) by [@brentvatne](https://github.com/brentvatne))
 
 ## 54.0.0 — 2025-09-10
 

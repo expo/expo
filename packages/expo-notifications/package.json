@@ -42,7 +42,7 @@
     ]
   },
   "dependencies": {
-    "@expo/image-utils": "^0.8.6",
+    "@expo/image-utils": "^0.8.7",
     "@ide/backoff": "^1.0.0",
     "abort-controller": "^3.0.0",
     "assert": "^2.0.0",

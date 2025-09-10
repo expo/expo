@@ -37,7 +37,7 @@
     "build"
   ],
   "dependencies": {
-    "@expo/json-file": "^10.0.6",
+    "@expo/json-file": "^10.0.7",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.0.0",
     "npm-package-arg": "^11.0.0",
