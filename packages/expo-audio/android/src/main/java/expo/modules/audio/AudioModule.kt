@@ -233,7 +233,7 @@ class AudioModule : Module() {
           releaseAudioFocus()
         }
         // If switching from MIX_WITH_OTHERS to another mode and we have playing audio, request focus
-        previousMode == InterruptionMode.MIX_WITH_OTHERS && mode != InterruptionMode.MIX_WITH_OTHERS && players.values.any { it.ref.isPlaying } -> {
+        previousMode == InterruptionMode.MIX_WITH_OTHERS && !shouldReleaseFocus()-> {
           requestAudioFocus()
         }
         // If we have focus but should release it based on new mode, release it
