@@ -7,6 +7,7 @@
     "expo-internal": "build/bin/cli"
   },
   "files": [
+    "add-module.js",
     "internal",
     "static",
     "build"
@@ -48,6 +49,7 @@
     "@expo/env": "~2.0.6",
     "@expo/image-utils": "^0.8.6",
     "@expo/json-file": "^10.0.6",
+    "@expo/mcp-tunnel": "~0.0.7",
     "@expo/metro": "~0.1.1",
     "@expo/metro-config": "~0.21.11",
     "@expo/osascript": "^2.3.6",

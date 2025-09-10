@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added MCP tunnel integration. ([#39392](https://github.com/expo/expo/pull/39392) by [@kudo](https://github.com/kudo))
+
 ## 0.26.9 — 2025-09-08
 
 ### 🐛 Bug fixes
