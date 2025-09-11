@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix tvOS compilation. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.2.0-beta.0 — 2025-09-10
