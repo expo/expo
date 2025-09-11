@@ -4,6 +4,16 @@
   "description": "Provides access to the local file system on the device.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./legacy": {
+      "types": "./build/legacy/index.d.ts",
+      "default": "./src/legacy/index.ts"
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
