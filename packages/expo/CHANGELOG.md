@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `$$EXPO_INITIAL_PROPS` to determine if running inside a dom component.
+
 ### 💡 Others
 
 ## 54.0.2 — 2025-09-11
