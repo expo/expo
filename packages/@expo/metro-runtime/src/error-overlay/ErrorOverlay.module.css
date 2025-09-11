@@ -1,9 +1,11 @@
 .overlay {
   position: fixed;
 
-  /* Add top safe area */
-  /* top: calc(1vh + env(safe-area-inset-top, 2vh)); */
-  top: 0; /* Needs to be 0 on native */
+  /* Add top safe area for web */
+  /* top: calc(10vh + env(safe-area-inset-top, 2vh)); */
+  top: 0;
+  /* On iOS it should be 0 to fill the pageSheet */
+  /* TODO: On Android safe-area-inset-top doesn't seem to be defined or is 0 */
   right: 0;
   bottom: 0;
   left: 0;
