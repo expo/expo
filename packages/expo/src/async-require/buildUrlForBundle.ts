@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+const IS_DOM = typeof window !== 'undefined' && window.isDOMComponentContext === true;
+
 /**
  * Given a path and some optional additional query parameters, create the dev server bundle URL.
  * @param bundlePath like `/foobar`
@@ -16,11 +18,7 @@ export function buildUrlForBundle(bundlePath: string): string {
     return bundlePath;
   }
 
-  if (
-    typeof window !== 'undefined' &&
-    // @ts-expect-error
-    typeof window.ReactNativeWebView !== 'undefined'
-  ) {
+  if (IS_DOM) {
     // In a webview, you cannot read from an absolute path.
     return bundlePath;
   }

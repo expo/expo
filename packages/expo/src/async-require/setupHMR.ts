@@ -1,10 +1,8 @@
 import HMRClient from './hmr';
 
-if (
-  typeof window !== 'undefined' &&
-  // @ts-expect-error: Added via react-native-webview
-  typeof window.ReactNativeWebView !== 'undefined'
-) {
+const IS_DOM = typeof window !== 'undefined' && window.isDOMComponentContext === true;
+
+if (IS_DOM) {
   // Sets up developer tools for web platforms when running in a webview. This ensures that logs are visible in the terminal.
   // We assume full control over the console and send JavaScript logs to Metro.
   const LEVELS = [

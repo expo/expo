@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add isDOMComponentContext to prevent navigation from breaking when an expo-router web app is rendered inside of a `react-native-webview`. ([#39592](https://github.com/expo/expo/pull/39592) by [@trcoffman](https://github.com/trcoffman) and [@dvicory](https://github.com/dvicory))
+
 ### 💡 Others
 
 ## 6.0.1 — 2025-09-11

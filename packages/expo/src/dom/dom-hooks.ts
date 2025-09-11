@@ -16,8 +16,8 @@ export function useDOMImperativeHandle<T extends DOMImperativeFactory>(
   init: () => T,
   deps?: DependencyList
 ) {
-  // @ts-expect-error: Added via react-native-webview
-  const isTargetWeb = typeof window.ReactNativeWebView === 'undefined';
+  const isTargetWeb =
+    typeof window !== 'undefined' && typeof window.isDOMComponentContext === 'undefined';
 
   const stubHandlerFactory = useCallback(() => ({}) as T, deps ?? []);
 

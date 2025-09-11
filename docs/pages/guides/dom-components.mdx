@@ -287,7 +287,7 @@ React is meant to have a unilateral data flow, so the concept of using callbacks
 Since DOM components are used to run websites, you might need extra qualifiers to better support certain libraries. You can detect if a component is running in a DOM component with the following code:
 
 ```ts
-const IS_DOM = typeof ReactNativeWebView !== 'undefined';
+const IS_DOM = typeof isDOMComponentContext !== 'undefined';
 ```
 
 ## Public assets

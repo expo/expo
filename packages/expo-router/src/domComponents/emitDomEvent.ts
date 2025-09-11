@@ -7,10 +7,12 @@ import {
 } from './events';
 import { LinkToOptions } from '../global-state/routing';
 
+const IS_DOM = typeof window !== 'undefined' && window.isDOMComponentContext === true;
+
 function emitDomEvent(type: string, data: any = {}) {
-  // @ts-expect-error: ReactNativeWebView is a global variable injected by the WebView
-  if (typeof ReactNativeWebView !== 'undefined') {
-    (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type, data }));
+  if (IS_DOM) {
+    // @ts-expect-error: Added via react-native-webview
+    window.ReactNativeWebView.postMessage(JSON.stringify({ type, data }));
     return true;
   }
   return false;

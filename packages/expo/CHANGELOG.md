@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add isDOMComponentContext to prevent DOM Components from breaking when an expo web app is rendered inside of a `react-native-webview`. ([#39592](https://github.com/expo/expo/pull/39592) by [@trcoffman](https://github.com/trcoffman) and [@dvicory](https://github.com/dvicory))
+
 ### 💡 Others
 
 ## 54.0.2 — 2025-09-11
