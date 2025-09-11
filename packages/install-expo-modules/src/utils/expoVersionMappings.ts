@@ -116,6 +116,10 @@ export function getDefaultSdkVersion(projectRoot: string): VersionInfo {
     throw new Error(
       `Unable to find compatible expo sdk version - reactNativeVersion[${reactNativeVersion}]`
     );
+  } else {
+    console.log(
+      `Defaulting to SDK ${versionInfo.sdkVersion} for react-native version ${reactNativeVersion}`
+    );
   }
   return versionInfo;
 }
