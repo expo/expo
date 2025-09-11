@@ -14,6 +14,13 @@ export interface VersionInfo {
 export const ExpoVersionMappings: VersionInfo[] = [
   // Please keep sdk versions in sorted order (latest sdk first)
   {
+    expoPackageVersion: '~54.0.0',
+    sdkVersion: '54.0.0',
+    iosDeploymentTarget: '15.1',
+    reactNativeVersionRange: '~0.81.0',
+    supportCliIntegration: true,
+  },
+  {
     expoPackageVersion: '~53.0.0',
     sdkVersion: '53.0.0',
     iosDeploymentTarget: '15.1',
@@ -108,6 +115,10 @@ export function getDefaultSdkVersion(projectRoot: string): VersionInfo {
   if (!versionInfo) {
     throw new Error(
       `Unable to find compatible expo sdk version - reactNativeVersion[${reactNativeVersion}]`
+    );
+  } else {
+    console.log(
+      `Defaulting to SDK ${versionInfo.sdkVersion} for react-native version ${reactNativeVersion}`
     );
   }
   return versionInfo;
