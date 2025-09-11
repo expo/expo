@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Re-expose Vercel adapter under `@expo/server/adapter/vercel`
+
 ### 💡 Others
 
 ## 0.7.3 — 2025-09-03

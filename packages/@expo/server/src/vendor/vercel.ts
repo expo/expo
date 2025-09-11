@@ -6,15 +6,15 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
-import { createReadableStreamFromReadable } from './utils';
-import { createRequestHandler as createExpoHandler } from '../../index';
+import { createRequestHandler as createExpoHandler } from '../index';
 import {
   getApiRoute,
   getHtml,
   getMiddleware,
   getRoutesManifest,
   handleRouteError,
-} from '../../runtime/node';
+} from '../runtime/node';
+import { createReadableStreamFromReadable } from '../utils/createReadableStreamFromReadable';
 
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
