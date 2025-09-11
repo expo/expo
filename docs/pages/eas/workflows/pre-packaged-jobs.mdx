@@ -1367,7 +1367,7 @@ jobs:
   - `build_ids: []` → excludes all builds from the comment
   - Same applies to `update_group_ids`
 - **GitHub Repository Required**: This job only works when the workflow is triggered from a GitHub repository with proper permissions configured.
-- **Pull Request Context**: The job automatically detects if it's running in a pull request context. If not, it will still generate the comment content but won't post to GitHub.
+- **non-pull request behavior**: The job is marked as successful if it's not running from a pull request.
 
 ## Require Approval
 
