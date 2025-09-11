@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Remove tests related files from the published package content.
+
 ## 0.32.12 - 2025-10-01
 
 ### 💡 Others

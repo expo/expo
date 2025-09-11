@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add more tests related files to the `.npmignore` template.
+
 ## 5.0.7 — 2025-09-10
 
 _This version does not introduce any user-facing changes._
