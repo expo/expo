@@ -366,9 +366,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   fun toggleFab() {
-    preferences?.showFab?.let {
-      preferences?.showFab = !it
-    }
+    val current = preferences?.showFab ?: return
+    preferences?.showFab = !current
   }
 
   override fun setDelegate(newDelegate: DevMenuDelegateInterface) {

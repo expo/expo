@@ -60,7 +60,10 @@ class DevMenuViewModel : ViewModel() {
       DevMenuAction.OpenJSDebugger -> openJSInspector()
       DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
       DevMenuAction.ToggleElementInspector -> toggleInspector()
-      is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
+      is DevMenuAction.ToggleFastRefresh -> {
+        toggleFastRefresh()
+        _state.value = _state.value.copy(devToolsSettings = DevMenuManager.getDevSettings())
+      }
       is DevMenuAction.ToggleFab -> toggleFab()
       DevMenuAction.FinishOnboarding -> {
         DevMenuManager.getSettings()?.isOnboardingFinished = true

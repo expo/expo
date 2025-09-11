@@ -72,6 +72,7 @@ fun DevMenuBottomSheet(
       appInfo = appInfo,
       devToolsSettings = state.devToolsSettings,
       shouldShowOnboarding = shouldShowOnboarding.value,
+      showFab = state.showFab,
       onAction = wrappedOnAction
     )
   }
