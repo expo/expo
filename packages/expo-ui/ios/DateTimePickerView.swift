@@ -25,6 +25,29 @@ struct DateTimePickerView: ExpoSwiftUI.View {
     self.props = props
   }
 
+  #if !os(tvOS)
+  @ViewBuilder
+  private func makeDatePicker() -> some View {
+    let title = props.title ?? ""
+    let components = props.displayedComponents.toDatePickerComponent()
+
+    if let range = props.range {
+      switch (range.lowerBound, range.upperBound) {
+      case let (lower?, upper?):
+        DatePicker(title, selection: $date, in: lower...upper, displayedComponents: components)
+      case let (lower?, nil):
+        DatePicker(title, selection: $date, in: lower..., displayedComponents: components)
+      case let (nil, upper?):
+        DatePicker(title, selection: $date, in: ...upper, displayedComponents: components)
+      case (nil, nil):
+        DatePicker(title, selection: $date, displayedComponents: components)
+      }
+    } else {
+      DatePicker(title, selection: $date, displayedComponents: components)
+    }
+  }
+  #endif
+
   var body: some View {
     #if os(tvOS)
     return Text("DateTimePicker is not supported on tvOS")
@@ -65,29 +88,6 @@ private extension View {
       self.datePickerStyle(.compact)
     case .automatic:
       self.datePickerStyle(.automatic)
-    }
-  }
-}
-
-private extension DateTimePickerView {
-  @ViewBuilder
-  private func makeDatePicker() -> some View {
-    let title = props.title ?? ""
-    let components = props.displayedComponents.toDatePickerComponent()
-
-    if let range = props.range {
-        switch (range.lowerBound, range.upperBound) {
-        case let (lower?, upper?):
-            DatePicker(title, selection: $date, in: lower...upper, displayedComponents: components)
-        case let (lower?, nil):
-            DatePicker(title, selection: $date, in: lower..., displayedComponents: components)
-        case let (nil, upper?):
-            DatePicker(title, selection: $date, in: ...upper, displayedComponents: components)
-        case (nil, nil):
-            DatePicker(title, selection: $date, displayedComponents: components)
-        }
-    } else {
-        DatePicker(title, selection: $date, displayedComponents: components)
     }
   }
 }
