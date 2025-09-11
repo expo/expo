@@ -32,10 +32,10 @@ function getServerManifest(route) {
         // copies should be rendered. However, an API route is always the same regardless of parent segments.
         let key;
         if (route.type.includes('api')) {
-            key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
+            key = getNormalizedContextKey(route.contextKey);
         }
         else {
-            key = (0, matchers_1.getContextKey)(absoluteRoute).replace(/\/index$/, '') ?? '/';
+            key = getNormalizedContextKey(absoluteRoute);
         }
         return [[key, '/' + absoluteRoute, route]];
     }
@@ -228,5 +228,8 @@ function parseParameter(param) {
         name = name.slice(3);
     }
     return { name, repeat, optional };
+}
+function getNormalizedContextKey(contextKey) {
+    return (0, matchers_1.getContextKey)(contextKey).replace(/\/index$/, '') ?? '/';
 }
 //# sourceMappingURL=getServerManifest.js.map

@@ -17,6 +17,8 @@ import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { Head } from '../head';
+import { PreloadedDataScript } from './html';
+import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 
 const debug = require('debug')('expo:router:renderStaticContent');
 
@@ -32,7 +34,16 @@ function resetReactNavigationContexts() {
   global[contexts] = new Map<string, React.Context<any>>();
 }
 
-export async function getStaticContent(location: URL): Promise<string> {
+type GetStaticContentOptions = {
+  loader?: {
+    data?: any;
+  };
+};
+
+export async function getStaticContent(
+  location: URL,
+  options?: GetStaticContentOptions
+): Promise<string> {
   const headContext: { helmet?: any } = {};
 
   const ref = React.createRef<ServerContainerRef>();
@@ -64,9 +75,13 @@ export async function getStaticContent(location: URL): Promise<string> {
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
+  const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
+
   const html = await ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
-      <ServerContainer ref={ref}>{element}</ServerContainer>
+      <ServerDataLoaderContext value={loadedData}>
+        <ServerContainer ref={ref}>{element}</ServerContainer>
+      </ServerDataLoaderContext>
     </Head.Provider>
   );
 
@@ -82,6 +97,13 @@ export async function getStaticContent(location: URL): Promise<string> {
   // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
+
+  if (loadedData) {
+    const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
+      <PreloadedDataScript data={loadedData} />
+    );
+    output = output.replace('</head>', `${loaderDataScript}</head>`);
+  }
 
   return '<!DOCTYPE html>' + output;
 }
