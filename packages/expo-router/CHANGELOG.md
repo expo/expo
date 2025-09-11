@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 - fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
