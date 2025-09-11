@@ -68,8 +68,8 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'col-span-2 min-h-[192px] overflow-hidden bg-gradient-to-br from-[#faf7ff] via-[#f6f5ff] to-[#f0f2ff]',
-            'border border-[#faf9ff] selection:bg-palette-blue8',
+            'col-span-2 min-h-[192px] overflow-hidden bg-gradient-to-br from-[#F3E5F5] via-[#E3F2FD] to-[#E3F2FD]',
+            'border border-palette-gray7 selection:bg-palette-blue8',
             'dark:border-[#2d3748] dark:from-[#0a0a0a] dark:via-[#1a1a2e] dark:to-[#16213e]',
             'max-xl-gutters:col-span-1',
             'max-lg-gutters:col-span-2',
