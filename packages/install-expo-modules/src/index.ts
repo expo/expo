@@ -191,7 +191,7 @@ async function runAsync() {
   console.log('\u203A Installing expo packages...');
   await installExpoPackageAsync(projectRoot, expoPackageVersion);
   if (cliIntegration) {
-    await installBabelPresetExpoNonInteractiveAsync();
+    await installBabelPresetExpoNonInteractiveAsync(projectRoot);
   }
 
   console.log('\u203A Installing ios pods...');
