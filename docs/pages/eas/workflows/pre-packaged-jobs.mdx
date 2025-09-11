@@ -1124,13 +1124,15 @@ jobs:
   github_comment:
     type: github-comment
     params:
-      # Mode 1: Auto-with-overrides mode
       message: string # optional - custom message to include in the report
-      build_ids: string[] # optional - specific build IDs to include
-      update_group_ids: string[] # optional - specific update group IDs to include
-      # Mode 2: Payload mode (mutually exclusive with other parameters)
+      build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
+      update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workfow
+
+  # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
+  custom_github_comment:
+    type: github-comment
+    params:
       payload: string # optional - raw markdown/HTML content for fully custom comment
-```
 
 #### Parameters
 
