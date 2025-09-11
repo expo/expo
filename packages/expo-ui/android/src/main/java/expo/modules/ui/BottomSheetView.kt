@@ -50,7 +50,7 @@ class BottomSheetView(context: Context, appContext: AppContext) :
   private val onIsOpenedChange by EventDispatcher<IsOpenedChangeEvent>()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     val (isOpened) = props.isOpened
     val (skipPartiallyExpanded) = props.skipPartiallyExpanded
 
