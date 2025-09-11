@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix desynchronization issue between UI and state.
+
 ### 💡 Others
 
 ## 7.0.10 — 2025-09-10

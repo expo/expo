@@ -23,6 +23,7 @@ fun DevMenuScreen(
   appInfo: DevMenuState.AppInfo,
   devToolsSettings: DevToolsSettings,
   shouldShowOnboarding: Boolean = false,
+  showFab: Boolean = false,
   onAction: DevMenuActionHandler = {}
 ) {
   if (shouldShowOnboarding) {
@@ -60,7 +61,7 @@ fun DevMenuScreen(
 
     Spacer(NewAppTheme.spacing.`5`)
 
-    ToolsSection(onAction, devToolsSettings)
+    ToolsSection(onAction, devToolsSettings, showFab)
 
     Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`6`)) {
       Warning("Debugging not working? Try manually reloading first")
