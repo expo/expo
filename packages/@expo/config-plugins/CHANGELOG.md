@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add hint when `expo-dev-launcher` rather than `expo-dev-client` is used as config plugin ([#39552](https://github.com/expo/expo/pull/39552) by [@kitten](https://github.com/kitten))
+
 ## 54.0.0 — 2025-09-10
 
 _This version does not introduce any user-facing changes._
