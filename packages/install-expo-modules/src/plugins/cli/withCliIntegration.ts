@@ -68,7 +68,6 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
     async (config) => {
       try {
         const babelConfigPath = await findBabelConfigPathAsync(config.modRequest.projectRoot);
-        await installBabelPresetExpoNonInteractiveAsync(config.modRequest.projectRoot);
         let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
         contents = updateBabelConfig(contents);
         await fs.promises.writeFile(babelConfigPath, contents);

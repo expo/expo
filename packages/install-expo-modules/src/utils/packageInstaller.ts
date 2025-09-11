@@ -1,4 +1,5 @@
 import * as PackageManager from '@expo/package-manager';
+import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 import semver from 'semver';
 
@@ -21,8 +22,8 @@ async function installPackageNonInteractiveAsync(projectRoot: string, pkg: strin
   return manager.addAsync([pkg]);
 }
 
-export async function installBabelPresetExpoNonInteractiveAsync(projectRoot: string) {
-  await spawnAsync('npx', ['expo', 'install', 'babel-preset-expo']);
+export async function installBabelPresetExpoNonInteractiveAsync() {
+  await spawnAsync('npx', ['expo', 'install', '--dev', 'babel-preset-expo']);
 }
 
 /**
