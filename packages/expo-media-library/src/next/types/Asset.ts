@@ -1,5 +1,5 @@
-import { MediaType } from './MediaType';
 import { Album } from './Album';
+import { MediaType } from './MediaType';
 
 /**
  * Represents a single media asset on the device (image, video, or audio).

@@ -7,7 +7,6 @@ import {
   MediaType,
   AssetField,
 } from 'expo-media-library/next';
-
 import { Platform } from 'react-native';
 
 export const name = 'MediaLibrary@Next';
@@ -225,7 +224,6 @@ export async function test(t) {
 
       const newAsset = await Asset.create(files[1].localUri);
       const oldUri = await newAsset.getUri();
-      const oldId = newAsset.id;
       assetsContainer.push(newAsset);
       await album.add(newAsset);
 
