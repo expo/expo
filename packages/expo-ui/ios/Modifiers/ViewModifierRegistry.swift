@@ -180,7 +180,7 @@ internal struct ForegroundStyleModifier: ViewModifier, Record {
       case .quaternary:
         content.foregroundStyle(.quaternary)
       case .quinary:
-        if #available(iOS 16.0, *) {
+        if #available(iOS 16.0, tvOS 17.0, *) {
           content.foregroundStyle(.quinary)
         } else {
           content.foregroundStyle(.quaternary)
