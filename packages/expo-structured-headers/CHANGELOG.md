@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Remove iOS test files from the published package content.
+- Remove iOS test files from the published package content. ([#39547](https://github.com/expo/expo/pull/39547) by [@Simek](https://github.com/Simek))
 
 ## 5.0.0 — 2025-08-13
 
