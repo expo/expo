@@ -119,6 +119,32 @@ class JavaScriptClassTest {
   }
 
   @Test
+  fun shared_object_should_call_static_functions() {
+    class MySharedObject : SharedObject()
+
+    var wasCalled = false
+    var wasAsyncCalled = false
+    withSingleModule({
+      Class(MySharedObject::class) {
+        Constructor {
+          return@Constructor MySharedObject()
+        }
+        StaticFunction<Unit>("staticSyncFunction") {
+          wasCalled = true
+        }
+        StaticAsyncFunction<Unit>("staticAsyncFunction") {
+          wasAsyncCalled = true
+        }
+      }
+    }) {
+      callClassStatic("MySharedObject", "staticSyncFunction")
+      Truth.assertThat(wasCalled).isTrue()
+      callClassStaticAsync("MySharedObject", "staticAsyncFunction")
+      Truth.assertThat(wasAsyncCalled).isTrue()
+    }
+  }
+
+  @Test
   fun shared_object_should_be_passed_as_this_in_async_function() {
     class MySharedObject : SharedObject()
 

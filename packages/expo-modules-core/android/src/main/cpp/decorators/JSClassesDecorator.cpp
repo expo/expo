@@ -15,6 +15,7 @@ namespace expo {
 void JSClassesDecorator::registerClass(
   jni::alias_ref<jstring> name,
   jni::alias_ref<jni::HybridClass<JSDecoratorsBridgingObject>::javaobject> prototypeDecorator,
+  jni::alias_ref<jni::HybridClass<JSDecoratorsBridgingObject>::javaobject> constructorDecorator,
   jboolean takesOwner,
   jni::alias_ref<jclass> ownerClass,
   jboolean isSharedRef,
@@ -37,6 +38,7 @@ void JSClassesDecorator::registerClass(
 
   ClassEntry classTuple{
     .prototypeDecorators = prototypeDecorator->cthis()->bridge(),
+    .constructorDecorators = constructorDecorator->cthis()->bridge(),
     .constructor = std::move(constructor),
     .ownerClass = jni::make_global(ownerClass),
     // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
@@ -54,7 +56,7 @@ void JSClassesDecorator::decorate(
   jsi::Object &jsObject
 ) {
   for (auto &[name, classInfo]: classes) {
-    auto &[prototypeDecorators, constructor, ownerClass, isSharedRef] = classInfo;
+    auto &[prototypeDecorators, constructorDecorators, constructor, ownerClass, isSharedRef] = classInfo;
 
     auto weakConstructor = std::weak_ptr<decltype(constructor)::element_type>(constructor);
     expo::common::ClassConstructor jsConstructor = [weakConstructor = std::move(weakConstructor)](
@@ -116,6 +118,11 @@ void JSClassesDecorator::decorate(
       isSharedRef,
       std::move(jsConstructor)
     );
+
+    for (const auto &decorator: constructorDecorators) {
+      decorator->decorate(runtime, klass);
+    }
+
     auto klassSharedPtr = std::make_shared<jsi::Function>(std::move(klass));
 
     JSIContext *jsiContext = getJSIContext(runtime);

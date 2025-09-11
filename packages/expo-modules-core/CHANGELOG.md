@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add StaticFunction and StaticAsyncFunction to Class in modules API.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
