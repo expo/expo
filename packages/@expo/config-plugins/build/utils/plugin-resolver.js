@@ -93,7 +93,11 @@ function resolvePluginForModule(projectRoot, pluginReference) {
       };
     }
   }
-  throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`, 'PLUGIN_NOT_FOUND');
+  let hint = 'Do you have node modules installed?';
+  if (pluginReference === 'expo-dev-launcher') {
+    hint = 'Did you mean "expo-dev-client"?';
+  }
+  throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". ${hint}`, 'PLUGIN_NOT_FOUND');
 }
 
 // TODO: Test windows
