@@ -54,6 +54,8 @@ JCache::JCache(JNIEnv *env) {
   jJavaScriptModuleObject = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptModuleObject");
 
 #undef REGISTER_CLASS
+
+  jUndefined = getJUndefined(env);
 }
 
 std::shared_ptr<JCache> JCacheHolder::jCache = nullptr;
@@ -106,4 +108,11 @@ void JCache::unLoad(JNIEnv *env) {
   env->DeleteGlobalRef(jJavaScriptModuleObject);
 }
 
+jobject JCache::getJUndefined(JNIEnv *env) {
+  jclass clazz = env->FindClass("expo/modules/kotlin/types/ValueOrUndefined");
+  jmethodID methodId = env->GetStaticMethodID(clazz, "getUndefined", "()Ljava/lang/Object;");
+  return env->NewGlobalRef(
+    env->CallStaticObjectMethod(clazz, methodId)
+  );
+}
 } // namespace expo

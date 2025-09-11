@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -23,12 +24,15 @@ import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
 import expo.modules.updates.procedures.StartupProcedure
+import expo.modules.updates.reloadscreen.ReloadScreenManager
+import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -47,7 +51,7 @@ import kotlin.time.toDuration
  */
 class EnabledUpdatesController(
   private val context: Context,
-  private val updatesConfiguration: UpdatesConfiguration,
+  private var updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
@@ -55,15 +59,16 @@ class EnabledUpdatesController(
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
-  private val fileDownloader = FileDownloader(context, updatesConfiguration, logger)
-  private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
-    updatesConfiguration.getRuntimeVersion()
-  )
-  private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
-  private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val selectionPolicy: SelectionPolicy
+    get() = SelectionPolicyFactory.createFilterAwarePolicy(updatesConfiguration.getRuntimeVersion(), updatesConfiguration)
+  private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet(), controllerScope)
+  private val fileDownloader: FileDownloader
+    get() = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
+  override val reloadScreenManager = ReloadScreenManager()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
@@ -107,7 +112,8 @@ class EnabledUpdatesController(
       override fun onRequestRelaunch(shouldRunReaper: Boolean, callback: LauncherCallback) {
         relaunchReactApplication(shouldRunReaper, callback)
       }
-    }
+    },
+    controllerScope
   )
 
   private val launchedUpdate
@@ -158,7 +164,9 @@ class EnabledUpdatesController(
 
     purgeUpdatesLogsOlderThanOneDay()
 
-    BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+    if (!updatesConfiguration.hasUpdatesOverride) {
+      BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+    }
 
     stateMachine.queueExecution(startupProcedure)
   }
@@ -176,7 +184,9 @@ class EnabledUpdatesController(
       getCurrentLauncher = { startupProcedure.launcher!! },
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,
-      callback
+      reloadScreenManager = reloadScreenManager,
+      callback,
+      controllerScope
     )
     stateMachine.queueExecution(procedure)
   }
@@ -273,7 +283,6 @@ class EnabledUpdatesController(
   }
 
   override fun shutdown() {
-    stateMachine.shutdown()
     controllerScope.cancel()
   }
 
@@ -282,6 +291,19 @@ class EnabledUpdatesController(
       throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
     }
     UpdatesConfigurationOverride.save(context, configOverride)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
+  }
+
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    val isValidRequestHeaders = UpdatesConfiguration.isValidRequestHeadersOverride(
+      updatesConfiguration.originalEmbeddedRequestHeaders,
+      requestHeaders
+    )
+    if (!isValidRequestHeaders) {
+      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Invalid update requestHeaders override: $requestHeaders", null)
+    }
+    val configOverride = UpdatesConfigurationOverride.saveRequestHeaders(context, requestHeaders)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 
   companion object {

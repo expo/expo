@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
+import { ExpoModifier } from '../../types';
+
 // @docsMissing
 /**
  * Only for switch.
@@ -54,6 +56,9 @@ export type SwitchProps = {
    * Picker color. On iOS, it only applies to the `menu` variant.
    */
   color?: string;
+
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 
 export type SwitchSwitchVariantProps = {
@@ -118,6 +123,8 @@ export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
     onValueChange: ({ nativeEvent: { value } }) => {
       props?.onValueChange?.(value);
     },
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   } as NativeSwitchProps;
 }
 

@@ -1,7 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = void 0;
-exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
+exports.discoverExpoModuleConfigAsync = discoverExpoModuleConfigAsync;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 function arrayize(value) {
     if (Array.isArray(value)) {
         return value;
@@ -140,12 +145,23 @@ class ExpoModuleConfig {
     }
 }
 exports.ExpoModuleConfig = ExpoModuleConfig;
-/**
- * Reads the config at given path and returns the config wrapped by `ExpoModuleConfig` class.
- */
-function requireAndResolveExpoModuleConfig(path) {
-    // TODO: Validate the raw config against a schema.
-    // TODO: Support for `*.js` files, not only static `*.json`.
-    return new ExpoModuleConfig(require(path));
+/** Names of Expo Module config files (highest to lowest priority) */
+const EXPO_MODULE_CONFIG_FILENAMES = ['expo-module.config.json', 'unimodule.json'];
+async function discoverExpoModuleConfigAsync(directoryPath) {
+    for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
+        // TODO: Validate the raw config against a schema.
+        // TODO: Support for `*.js` files, not only static `*.json`.
+        const targetPath = path_1.default.join(directoryPath, EXPO_MODULE_CONFIG_FILENAMES[idx]);
+        let text;
+        try {
+            text = await fs_1.default.promises.readFile(targetPath, 'utf8');
+        }
+        catch {
+            // try the next file
+            continue;
+        }
+        return new ExpoModuleConfig(JSON.parse(text));
+    }
+    return null;
 }
 //# sourceMappingURL=ExpoModuleConfig.js.map

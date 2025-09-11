@@ -1,12 +1,16 @@
 import { requireNativeView } from 'expo';
-import { ComponentType, Children, ReactElement, ReactNode, useMemo } from 'react';
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { ComponentType, Children, useMemo } from 'react';
+import { NativeSyntheticEvent } from 'react-native';
 
-import { Host } from '../Host';
+import { type ContextMenuProps, type EventHandlers } from './types';
 import { MenuElement, transformChildrenToElementArray } from './utils';
-import { ButtonProps } from '../Button';
-import { PickerProps } from '../Picker';
-import { SwitchProps } from '../Switch';
+
+export * from './Submenu';
+export {
+  type ActivationMethod,
+  type ContextMenuProps,
+  type ContextMenuContentProps,
+} from './types';
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
 
@@ -20,70 +24,7 @@ const MenuNativePreviewView: ComponentType<object> = requireNativeView(
   'ContextMenuPreview'
 );
 
-type SubmenuElement =
-  | ReactElement<ButtonProps>
-  | ReactElement<SwitchProps>
-  | ReactElement<PickerProps>
-  | ReactElement<SubmenuProps>;
-
-export type ContextMenuContentProps = {
-  children: SubmenuElement | SubmenuElement[];
-};
-
-/**
- * @hidden
- */
-export type EventHandlers = Record<
-  string,
-  Record<string, (event: NativeSyntheticEvent<any>) => void>
->;
-
-/**
- * @hidden
- */
-export type ContextMenuElementBase = { contextMenuElementID: string };
-
-/**
- * Activation method of the context menu.
- * - `singlePress`: The context menu is opened with a single tap. Does not isolate the content.
- * - `longPress`: The context menu is opened with a long press. On iOS additionally Highlights the content by blurring the background.
- */
-export type ActivationMethod = 'singlePress' | 'longPress';
-
-/**
- * Props of the `ContextMenu` component.
- */
-export type ContextMenuProps = {
-  /**
-   * Determines how the context menu will be activated.
-   */
-  activationMethod?: ActivationMethod;
-
-  /**
-   * The contents of the submenu are used as an anchor for the context menu.
-   * The children will be wrapped in a pressable element, which triggers opening of the context menu.
-   */
-  children: ReactNode;
-};
-
-/**
- * Props of the `Submenu` component.
- */
-export type SubmenuProps = {
-  /**
-   * The button that will be used to expand the submenu. On Android the `text` prop of the `Button` will be used as a section title.
-   */
-  button: ReactElement<ButtonProps>;
-  /**
-   * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
-   */
-  children: ReactNode;
-};
-
-/**
- * @hidden
- */
-export type NativeMenuProps = ContextMenuProps & {
+type NativeMenuProps = ContextMenuProps & {
   elements: MenuElement[];
   onContextMenuButtonPressed: (
     event: NativeSyntheticEvent<{ contextMenuElementID: string }>
@@ -102,14 +43,6 @@ export type NativeMenuProps = ContextMenuProps & {
     }>
   ) => void;
 };
-
-/**
- * The `Submenu` component is used to create a nested context menu. Submenus can be infinitely nested.
- * Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple titled sections.
- */
-export function Submenu(props: SubmenuProps) {
-  return <></>;
-}
 
 /**
  * Items visible inside the context menu. Pass input components as immidiate children of the tag.
@@ -140,7 +73,17 @@ export function Preview(props: { children: React.ReactNode }) {
  * `<ContextMenu>` component without a host view.
  * You should use this with a `Host` component in ancestor.
  */
-function ContextMenuPrimitive(props: ContextMenuProps) {
+
+/**
+ * `ContextMenu` allows you to create a context menu, which can be used to provide additional options to the user.
+ *
+ * There are some platform-specific differences in the behavior of the context menu:
+ * - On Android, the expansion of the context menu is controlled by the `expanded` prop. iOS, does not allow for manual control of the expansion state.
+ * - On iOS, the context menu can be triggered by a single press or a long press. The `activationMethod` prop allows you to choose between these two options.
+ * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
+ * - Android does not support showing a `Picker` element in the context menu.
+ */
+function ContextMenu(props: ContextMenuProps) {
   const eventHandlersMap: EventHandlers = {};
   const initialChildren = Children.map(
     props.children as any,
@@ -169,28 +112,8 @@ function ContextMenuPrimitive(props: ContextMenuProps) {
   );
 }
 
-/**
- * `ContextMenuPrimitive` allows you to create a context menu, which can be used to provide additional options to the user.
- *
- * There are some platform-specific differences in the behavior of the context menu:
- * - On Android, the expansion of the context menu is controlled by the `expanded` prop. iOS, does not allow for manual control of the expansion state.
- * - On iOS, the context menu can be triggered by a single press or a long press. The `activationMethod` prop allows you to choose between these two options.
- * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
- * - Android does not support showing a `Picker` element in the context menu.
- */
-function ContextMenu(props: ContextMenuProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <ContextMenuPrimitive {...props} />
-    </Host>
-  );
-}
-
-ContextMenuPrimitive.Trigger = Trigger;
-ContextMenuPrimitive.Preview = Preview;
-ContextMenuPrimitive.Items = Items;
 ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 
-export { ContextMenuPrimitive, ContextMenu };
+export { ContextMenu };

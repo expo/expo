@@ -68,11 +68,14 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           },
         };
       } else if (type === 'rewrite' && rewriteConfig && defaults) {
+        // Rewrite routes only work in a server context and have no equivalent on native or
+        // static exports
         return {
           ...defaults,
           loadRoute() {
-            // TODO: Replace with rewrite module
-            return require('./getRoutesRedirects').getRedirectModule(rewriteConfig);
+            return {
+              default: contextModule(rewriteConfig.destinationContextKey).default,
+            };
           },
         };
       }

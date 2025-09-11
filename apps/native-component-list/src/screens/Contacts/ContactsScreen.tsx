@@ -86,12 +86,14 @@ export default function ContactsScreen({ navigation }: Props) {
 }
 
 function ContactsView({ navigation }: Props) {
-  let rawContacts: Record<string, Contacts.Contact> = {};
+  let rawContacts: Record<string, Contacts.ExistingContact> = {};
 
-  const [contacts, setContacts] = React.useState<Contacts.Contact[]>([]);
+  const [contacts, setContacts] = React.useState<Contacts.ExistingContact[]>([]);
   const [hasNextPage, setHasNextPage] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [selectedContact, setSelectedContact] = React.useState<Contacts.Contact | null>(null);
+  const [selectedContact, setSelectedContact] = React.useState<Contacts.ExistingContact | null>(
+    null
+  );
 
   const onPressItem = React.useCallback(
     (id: string) => {
@@ -138,6 +140,16 @@ function ContactsView({ navigation }: Props) {
 
   const onFocus = React.useCallback(() => {
     loadAsync();
+  }, []);
+
+  React.useEffect(() => {
+    const subscription = Contacts.addContactsChangeListener(() => {
+      loadAsync({}, true);
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   useFocusEffect(onFocus);

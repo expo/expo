@@ -29,7 +29,7 @@ tasks.withType<KotlinCompile> {
 }
 
 group = "expo.modules"
-version "1.0"
+version = "1.0"
 
 tasks.withType<Test>().configureEach {
   testLogging {

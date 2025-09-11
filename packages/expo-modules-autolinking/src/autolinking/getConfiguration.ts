@@ -1,7 +1,18 @@
-import type { ResolveOptions } from '../types';
-import { getLinkingImplementationForPlatform } from './utils';
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { getLinkingImplementationForPlatform } from '../platforms';
+import type { SupportedPlatform } from '../types';
 
-export function getConfiguration(options: ResolveOptions) {
-  const platformLinking = getLinkingImplementationForPlatform(options.platform);
-  return platformLinking.getConfiguration?.(options);
+interface GetConfigurationParams {
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
+}
+
+export function getConfiguration({
+  autolinkingOptions,
+}: GetConfigurationParams): Record<string, any> | undefined {
+  const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
+  if ('getConfiguration' in platformLinking) {
+    return platformLinking.getConfiguration(autolinkingOptions);
+  } else {
+    return undefined;
+  }
 }

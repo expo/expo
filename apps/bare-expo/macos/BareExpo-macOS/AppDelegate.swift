@@ -2,6 +2,7 @@ import Expo
 import React
 import ReactAppDependencyProvider
 
+@main
 public class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
@@ -17,13 +18,17 @@ public class AppDelegate: ExpoAppDelegate {
     reactNativeFactory = factory
     bindReactNativeFactory(factory)
 
-#if os(iOS) || os(tvOS)
-    window = UIWindow(frame: UIScreen.main.bounds)
+    let launchOptions = notification.userInfo
+    window = UIWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 1280, height: 720),
+      styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+      backing: .buffered,
+      defer: false
+    )
     factory.startReactNative(
       withModuleName: "main",
       in: window,
       launchOptions: launchOptions)
-#endif
 
     return super.applicationDidFinishLaunching(notification)
   }

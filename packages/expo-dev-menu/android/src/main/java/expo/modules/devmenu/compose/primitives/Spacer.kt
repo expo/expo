@@ -4,11 +4,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
 @Composable
 fun Spacer(
-  height: Dp = Theme.spacing.medium,
+  height: Dp = NewAppTheme.spacing.`2`,
   modifier: Modifier? = null
 ) {
   androidx.compose.foundation.layout.Spacer(

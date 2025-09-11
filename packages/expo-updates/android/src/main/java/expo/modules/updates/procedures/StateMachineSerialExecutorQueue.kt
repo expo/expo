@@ -85,9 +85,4 @@ class StateMachineSerialExecutorQueue(
       }
     }
   }
-
-  fun cancel() {
-    executorJob.cancel()
-    procedureChannel.close()
-  }
 }

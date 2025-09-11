@@ -7,10 +7,20 @@ platforms: ['android', 'ios', 'tvos', 'web']
 isNew: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import APISection from '~/components/plugins/APISection';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 
 `expo-router` is a routing library for React Native and web apps. It enables navigation management using a file-based routing system and provides native navigation components and is built on top of [React Navigation](https://reactnavigation.org/).
+
+<BoxLink
+  title="Expo Router guides"
+  description="Learn about Router basics, navigation patterns, and core concepts."
+  href="/router/introduction/"
+  Icon={BookOpen02Icon}
+/>
 
 ## Installation
 
@@ -18,7 +28,7 @@ To use Expo Router in your project, you need to install. Follow the instructions
 
 ## Configuration in app config
 
-If you are using the [default](/more/create-expo/#--template) template to create a new project, `expo-router` [config plugin](/config-plugins/introduction/) is automatically configured in the app config automatically.
+If you are using the [default](/more/create-expo/#--template) template to create a new project, `expo-router`'s [config plugin](/config-plugins/introduction/) is already configured in your app config.
 
 <ConfigPluginExample>
 

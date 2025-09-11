@@ -6,6 +6,7 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
+import { stripVTControlCharacters } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { parse, StackFrame } from 'stacktrace-parser';
@@ -19,6 +20,8 @@ import { stripAnsi } from '../../../utils/ansi';
 import { env } from '../../../utils/env';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
+
+const isDebug = require('debug').enabled('expo:start:server:metro');
 
 function fill(width: number): string {
   return Array(width).join(' ');
@@ -62,6 +65,7 @@ export async function logMetroErrorWithStack(
 
   Log.log(
     getStackAsFormattedLog(projectRoot, { stack, codeFrame, error, showCollapsedFrames: true })
+      .stack
   );
 }
 
@@ -78,16 +82,28 @@ export function getStackAsFormattedLog(
     error?: Error;
     showCollapsedFrames?: boolean;
   }
-): string {
+): {
+  isFallback: boolean;
+  stack: string;
+} {
   const logs: string[] = [];
-  let hasCodeFramePresented = false;
-  if (codeFrame) {
+  const containsCodeFrame = likelyContainsCodeFrame(error?.message);
+
+  if (containsCodeFrame) {
+    // Some transformation errors will have a code frame embedded in the error message
+    // from Babel and we should not duplicate it as message is already printed before this call.
+  } else if (codeFrame) {
     const maxWarningLineLength = Math.max(800, process.stdout.columns);
 
     const lineText = codeFrame.content;
-    const isPreviewTooLong = codeFrame.content
-      .split('\n')
-      .some((line) => line.length > maxWarningLineLength);
+    const lines = codeFrame.content.split('\n');
+
+    // ---- index.tsx ------------------------------------------------------
+    //  32 |         This is example code which will be under the title.
+    const title = path.basename(codeFrame.fileName);
+    logs.push(chalk.bold`Code: ${title}`);
+
+    const isPreviewTooLong = lines.some((line) => line.length > maxWarningLineLength);
     const column = codeFrame.location?.column;
     // When the preview is too long, we skip reading the file and attempting to apply
     // code coloring, this is because it can get very slow.
@@ -126,20 +142,19 @@ export function getStackAsFormattedLog(
         cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
 
         logs.push(formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)'));
-        hasCodeFramePresented = true;
       }
     } else {
       logs.push(codeFrame.content);
-      hasCodeFramePresented = true;
     }
   }
 
+  let isFallback = false;
   if (stack?.length) {
     const stackProps = stack.map((frame) => {
       return {
         title: frame.methodName,
         subtitle: getStackFormattedLocation(projectRoot, frame),
-        collapse: frame.collapse,
+        collapse: frame.collapse || isInternalBytecode(frame),
       };
     });
 
@@ -169,23 +184,25 @@ export function getStackAsFormattedLog(
       }
     });
 
-    if (hasCodeFramePresented) {
-      logs.push('');
-    }
     logs.push(chalk.bold`Call Stack`);
 
     if (!backupStackLines.length) {
       logs.push(chalk.gray('  No stack trace available.'));
     } else {
+      isFallback = stackLines.length === 0;
       // If there are not stack lines then it means the error likely happened in the node modules, in this case we should fallback to showing all the
       // the stacks to give the user whatever help we can.
       const displayStack = stackLines.length ? stackLines : backupStackLines;
       logs.push(displayStack.join('\n'));
     }
-  } else if (error) {
+  } else if (error && error.stack) {
     logs.push(chalk.gray(`  ${error.stack}`));
   }
-  return logs.join('\n');
+
+  return {
+    isFallback,
+    stack: logs.join('\n'),
+  };
 }
 
 export const IS_METRO_BUNDLE_ERROR_SYMBOL = Symbol('_isMetroBundleError');
@@ -395,4 +412,65 @@ function canParse(url: string): boolean {
   } catch {
     return false;
   }
+}
+
+export function dropStackIfContainsCodeFrame(err: unknown) {
+  if (!(err instanceof Error)) return;
+
+  if (likelyContainsCodeFrame(err.message)) {
+    // If the error message contains a code frame, we should drop the stack to avoid cluttering the output.
+    delete err.stack;
+  }
+}
+
+/**
+ * Tests given string on presence of ` [num] |` at the start of any line.
+ * Returns `false` for undefined or empty strings.
+ */
+export function likelyContainsCodeFrame(message: string | undefined): boolean {
+  if (!message) return false;
+
+  const clean = stripVTControlCharacters(message);
+  if (!clean) return false;
+
+  return /^\s*\d+\s+\|/m.test(clean);
+}
+
+/**
+ * Walks thru the error cause chain and attaches the import stack to the root error message.
+ * Removes the error stack for import and syntax errors.
+ */
+export const attachImportStackToRootMessage = (err: unknown) => {
+  if (!(err instanceof Error)) return;
+
+  // Space out build failures.
+  const nearestImportStackValue = nearestImportStack(err);
+  if (nearestImportStackValue) {
+    err.message += '\n\n' + nearestImportStackValue;
+
+    if (!isDebug) {
+      // When not debugging remove the stack to avoid cluttering the output and confusing users,
+      // the import stack is the guide to fixing the error.
+      delete err.stack;
+    }
+  }
+};
+
+/**
+ * Walks thru the error cause chain and returns the nearest import stack.
+ * If the import stack is not found, it returns `undefined`.
+ */
+export const nearestImportStack = (err: unknown, root: unknown = err): string | undefined => {
+  if (!(err instanceof Error) || !(root instanceof Error)) return undefined;
+
+  if ('_expoImportStack' in err && typeof err._expoImportStack === 'string') {
+    // Space out build failures.
+    return err._expoImportStack;
+  } else {
+    return nearestImportStack(err.cause, root);
+  }
+};
+
+function isInternalBytecode(frame: StackFrame): boolean {
+  return frame.file?.includes('InternalBytecode.js') ?? false;
 }

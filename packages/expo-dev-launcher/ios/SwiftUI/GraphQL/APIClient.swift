@@ -6,11 +6,7 @@ class APIClient {
   static let shared = APIClient()
 
   private var useStaging: Bool {
-#if DEBUG
-    return true
-#else
     return false
-#endif
   }
 
   private var session: URLSession {

@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as GL from 'expo-gl';
 import { GLView } from 'expo-gl';
 import React from 'react';

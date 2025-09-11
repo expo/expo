@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 10.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add lint rules for Expo DOM Components and the "use dom" directive. ([#36263](https://github.com/expo/expo/pull/36263) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 9.2.0 — 2025-04-30
 
 ### 🎉 New features

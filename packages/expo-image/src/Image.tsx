@@ -144,6 +144,17 @@ export class Image extends React.PureComponent<ImageProps> {
   }
 
   /**
+   * Asynchronously generates a [Thumbhash](https://evanw.github.io/thumbhash/) from an image.
+   * @param source - The image source, either a URL (string) or an ImageRef
+   * @platform android
+   * @platform ios
+   * @return A promise resolving to the thumbhash string.
+   */
+  static async generateThumbhashAsync(source: string | ImageRef): Promise<string> {
+    return ImageModule.generateThumbhashAsync(source);
+  }
+
+  /**
    * Asynchronously starts playback of the view's image if it is animated.
    * @platform android
    * @platform ios

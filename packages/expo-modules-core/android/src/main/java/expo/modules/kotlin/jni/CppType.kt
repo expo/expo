@@ -3,6 +3,7 @@ package expo.modules.kotlin.jni
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.typedarray.TypedArray
+import expo.modules.kotlin.types.ValueOrUndefined
 import kotlin.reflect.KClass
 
 private var nextValue = 0
@@ -34,5 +35,6 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   SHARED_OBJECT_ID(Int::class),
   JS_FUNCTION(JavaScriptFunction::class),
   ANY(Any::class),
-  NULLABLE(Any::class)
+  NULLABLE(Any::class),
+  VALUE_OR_UNDEFINED(ValueOrUndefined::class)
 }

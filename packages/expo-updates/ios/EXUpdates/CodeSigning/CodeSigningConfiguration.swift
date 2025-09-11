@@ -67,10 +67,9 @@ public final class CodeSigningConfiguration: NSObject {
     guard let signature = signature else {
       if !self.allowUnsignedManifests {
         throw CodeSigningError.SignatureHeaderMissing
-      } else {
-        // no-op
-        return SignatureValidationResult(validationResult: ValidationResult.skipped, expoProjectInformation: nil)
       }
+    // no-op
+    return SignatureValidationResult(validationResult: ValidationResult.skipped, expoProjectInformation: nil)
     }
 
     return try validateSignatureInternal(

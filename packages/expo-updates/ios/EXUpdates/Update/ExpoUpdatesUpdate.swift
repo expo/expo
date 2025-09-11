@@ -89,7 +89,9 @@ public final class ExpoUpdatesUpdate: Update {
       keep: true,
       status: status,
       isDevelopmentMode: isDevelopmentMode,
-      assetsFromManifest: processedAssets
+      assetsFromManifest: processedAssets,
+      url: config.updateUrl,
+      requestHeaders: config.requestHeaders
     )
   }
 }

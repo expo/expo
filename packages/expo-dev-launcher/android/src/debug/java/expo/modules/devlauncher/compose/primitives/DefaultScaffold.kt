@@ -13,9 +13,11 @@ fun DefaultScaffold(
     val maxWidth = constraints.maxWidth
     val maxHeight = constraints.maxHeight
 
-    val bottomTabPlaceables = subcompose("bottomTab", bottomTab).map { it.measure(constraints) }
+    val bottomTabPlaceables = subcompose("bottomTab", bottomTab)
+      .map { it.measure(constraints) }
     val bottomTabsHeight = bottomTabPlaceables.fastMaxBy { it.height }?.height ?: 0
-    val contentPlaceables = subcompose("content", content).map { it.measure(constraints.copy(maxHeight = maxHeight - bottomTabsHeight)) }
+    val contentPlaceables = subcompose("content", content)
+      .map { it.measure(constraints.copy(maxHeight = maxHeight - bottomTabsHeight)) }
 
     layout(maxWidth, maxHeight) {
       contentPlaceables.forEach { it.place(0, 0) }

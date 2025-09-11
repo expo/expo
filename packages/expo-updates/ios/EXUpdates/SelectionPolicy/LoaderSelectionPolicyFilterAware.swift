@@ -12,6 +12,12 @@ import Foundation
 @objc(EXUpdatesLoaderSelectionPolicyFilterAware)
 @objcMembers
 public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPolicy {
+  private let config: UpdatesConfig
+
+  public required init(config: UpdatesConfig) {
+    self.config = config
+  }
+
   public func shouldLoadNewUpdate(_ newUpdate: Update?, withLaunchedUpdate launchedUpdate: Update?, filters: [String: Any]?) -> Bool {
     guard let newUpdate = newUpdate,
       SelectionPolicies.doesUpdate(newUpdate, matchFilters: filters) else {
@@ -25,6 +31,26 @@ public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPo
     // if the current update doesn't pass the manifest filters
     // we should load the new update no matter the commitTime
     if !SelectionPolicies.doesUpdate(launchedUpdate, matchFilters: filters) {
+      return true
+    }
+
+    // if new update doesn't match the configured URL, don't load it
+    if newUpdate.url != nil && newUpdate.url != config.updateUrl {
+      return false
+    }
+
+    // if new update doesn't match the configured request headers, don't load it
+    if newUpdate.requestHeaders != nil && newUpdate.requestHeaders != config.requestHeaders {
+      return false
+    }
+
+    // if the launched update no longer matches the configured URL, we should load the new update
+    if launchedUpdate.url != nil && launchedUpdate.url != config.updateUrl {
+      return true
+    }
+
+    // if the launched update no longer matches the configured request headers, we should load the new update
+    if launchedUpdate.requestHeaders != nil && launchedUpdate.requestHeaders != config.requestHeaders {
       return true
     }
 
@@ -48,7 +74,7 @@ public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPo
     }
 
     // if the current update doesn't pass the manifest filters
-        // we should roll back to the embedded update no matter the commitTime
+    // we should roll back to the embedded update no matter the commitTime
     if !SelectionPolicies.doesUpdate(launchedUpdate, matchFilters: filters) {
       return true
     }

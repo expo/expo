@@ -1,5 +1,5 @@
-import { ConfigAPI } from '@babel/core';
-import { ExpoConfig, getConfig, getNameFromConfig, ProjectConfig } from 'expo/config';
+import type { ConfigAPI, PluginObj } from '@babel/core';
+import type { ExpoConfig, ProjectConfig } from 'expo/config';
 
 import { getIsReactServer, getPlatform, getPossibleProjectRoot } from './common';
 
@@ -32,18 +32,18 @@ const RESTRICTED_MANIFEST_FIELDS: (keyof ExpoConfig)[] = [
 ];
 
 function getExpoConstantsManifest(projectRoot: string) {
-  const { exp } = getConfigMemo(projectRoot);
-  const manifest = applyWebDefaults(exp);
+  const config = getConfigMemo(projectRoot);
+  if (!config) return null;
+  const manifest = applyWebDefaults(config);
   for (const field of RESTRICTED_MANIFEST_FIELDS) {
     delete manifest[field];
   }
   return manifest;
 }
-function applyWebDefaults(appJSON: ExpoConfig) {
+function applyWebDefaults({ config, appName, webName }: ConfigMemo) {
+  const appJSON: ExpoConfig = config.exp;
   // For RN CLI support
   const { web: webManifest = {}, splash = {}, ios = {}, android = {} } = appJSON;
-  // rn-cli apps use a displayName value as well.
-  const { appName, webName } = getNameFromConfig(appJSON);
   const languageISOCode = webManifest.lang;
   const primaryColor = appJSON.primaryColor;
   const description = appJSON.description;
@@ -102,26 +102,55 @@ function getExpoAppManifest(projectRoot: string) {
   }
 
   const exp = getExpoConstantsManifest(projectRoot);
-
-  debug('public manifest', exp);
-
-  return JSON.stringify(exp);
+  if (exp) {
+    debug('public manifest', exp);
+    return JSON.stringify(exp);
+  } else {
+    debug('public manifest is null. `expo/config` is not available');
+    return null;
+  }
 }
 
-let config: undefined | ProjectConfig;
+interface ConfigMemo {
+  config: ProjectConfig;
+  appName: string | undefined;
+  webName: string | undefined;
+}
 
-function getConfigMemo(projectRoot: string) {
-  if (!config) {
-    config = getConfig(projectRoot, {
+let configMemo: undefined | null | ConfigMemo;
+
+function getConfigMemo(projectRoot: string): ConfigMemo | null {
+  if (configMemo === undefined) {
+    let expoConfig: typeof import('expo/config');
+    try {
+      // This is an optional dependency. In practice, it will resolve in all Expo projects/apps
+      // since `expo` is a direct dependency in those. If `babel-preset-expo` is used independently
+      // this will fail and we won't return a config
+      expoConfig = require('expo/config');
+    } catch (error: any) {
+      if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+        return (configMemo = null);
+      }
+      throw error;
+    }
+    const { getConfig, getNameFromConfig } = expoConfig;
+    const config = getConfig(projectRoot, {
       isPublicConfig: true,
       skipSDKVersionRequirement: true,
     });
+    // rn-cli apps use a displayName value as well.
+    const { appName, webName } = getNameFromConfig(config.exp);
+    configMemo = {
+      config,
+      appName,
+      webName,
+    };
   }
-  return config;
+  return configMemo;
 }
 
 // Convert `process.env.APP_MANIFEST` to a modified web-specific variation of the app.json public manifest.
-export function expoInlineManifestPlugin(api: ConfigAPI & { types: any }) {
+export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
   const { types: t } = api;
 
   const isReactServer = api.caller(getIsReactServer);
@@ -160,7 +189,9 @@ export function expoInlineManifestPlugin(api: ConfigAPI & { types: any }) {
           !parent.parentPath.isAssignmentExpression()
         ) {
           const manifest = getExpoAppManifest(projectRoot);
-          parent.replaceWith(t.stringLiteral(manifest));
+          if (manifest !== null) {
+            parent.replaceWith(t.stringLiteral(manifest));
+          }
         }
       },
     },

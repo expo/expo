@@ -204,6 +204,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
+    // TODO: @behenate (SDK 55) completely remove support for synchronous `replaceCurrentItem` - it's not practical in any circumstance
+    if let url = videoSource.uri, url.isPHAssetUrl {
+      throw PlayerItemLoadException("The provided uri \(url) is a local PHAsset URL. This kind of URL can only be loaded asynchrynously. Use `VideoPlayer.replaceAsync` in order to load this item")
+    }
+
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
       contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
@@ -270,23 +275,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       dangerousPropertiesStore.ownerIsReplacing = false
     }
     return
-  }
-
-  /**
-   * iOS automatically pauses videos when the app enters the background. Only way to avoid this is to detach the player from the playerLayer.
-   * Typical way of doing this for `AVPlayerViewController` is setting `playerViewController.player = nil`, but that makes the
-   * video invisible for around a second after foregrounding, disabling the tracks requires more code, but works a lot faster.
-   */
-  func setTracksEnabled(_ enabled: Bool) {
-    ref.currentItem?.tracks.forEach({ track in
-      guard let assetTrack = track.assetTrack else {
-        return
-      }
-
-      if assetTrack.hasMediaCharacteristic(AVMediaCharacteristic.visual) {
-        track.isEnabled = enabled
-      }
-    })
   }
 
   private func getBufferedPosition() -> Double {

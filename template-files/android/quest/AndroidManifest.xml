@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          android:installLocation="auto">
+
+    <meta-data android:name="com.oculus.supportedDevices" android:value="quest2|questpro|quest3|quest3s" />
+
+    <!-- ADD PERMISSIONS HERE -->
+    <!-- BEGIN OPTIONAL PERMISSIONS -->
+    <uses-feature android:name="android.hardware.vr.headtracking" android:required="true" android:version="1"/>
+    <uses-feature android:name="oculus.software.overlay_keyboard"  android:required="true"/>
+    <uses-feature android:name="com.oculus.feature.VIRTUAL_KEYBOARD" android:required="true" />
+    <uses-permission android:name="horizonos.permission.HEADSET_CAMERA"/>
+
+    <!-- Override any prohibited permissions added by the libraries -->
+    <uses-permission android:name="android.permission.ACCEPT_HANDOVER" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_CHECKIN_PROPERTIES" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCOUNT_MANAGER" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" tools:node="remove" />
+    <uses-permission android:name="com.android.voicemail.permission.ADD_VOICEMAIL" tools:node="remove" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_APPWIDGET" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_AUTOFILL_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_CALL_REDIRECTION_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_CARRIER_MESSAGING_CLIENT_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_CARRIER_MESSAGING_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_CARRIER_SERVICES" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_CHOOSER_TARGET_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_CONDITION_PROVIDER_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_CONTROLS" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_DREAM_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_INCALL_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_INPUT_METHOD" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_MIDI_DEVICE_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_NFC_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_PRINT_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_QUICK_ACCESS_WALLET_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_QUICK_SETTINGS_TILE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_REMOTEVIEWS" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_SCREENING_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_TEXT_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_TV_INPUT" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_VISUAL_VOICEMAIL_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_VOICE_INTERACTION" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_VR_LISTENER_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.BIND_WALLPAPER" tools:node="remove" />
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" tools:node="remove" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" tools:node="remove" />
+    <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REMOVED" tools:node="remove" />
+    <uses-permission android:name="android.permission.BROADCAST_SMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.BROADCAST_WAP_PUSH" tools:node="remove" />
+    <uses-permission android:name="android.permission.CALL_PHONE" tools:node="remove" />
+    <uses-permission android:name="android.permission.CALL_PRIVILEGED" tools:node="remove" />
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" tools:node="remove" />
+    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.CLEAR_APP_CACHE" tools:node="remove" />
+    <uses-permission android:name="android.permission.CONTROL_LOCATION_UPDATES" tools:node="remove" />
+    <uses-permission android:name="android.permission.DELETE_CACHE_FILES" tools:node="remove" />
+    <uses-permission android:name="android.permission.DELETE_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.DIAGNOSTIC" tools:node="remove" />
+    <uses-permission android:name="android.permission.DUMP" tools:node="remove" />
+    <uses-permission android:name="android.permission.FACTORY_TEST" tools:node="remove" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" tools:node="remove" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS_PRIVILEGED" tools:node="remove" />
+    <uses-permission android:name="android.permission.INSTALL_LOCATION_PROVIDER" tools:node="remove" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.INSTANT_APP_FOREGROUND_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.LOADER_USAGE_STATS" tools:node="remove" />
+    <uses-permission android:name="android.permission.LOCATION_HARDWARE" tools:node="remove" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" tools:node="remove" />
+    <uses-permission android:name="android.permission.MANAGE_MEDIA" tools:node="remove" />
+    <uses-permission android:name="android.permission.MANAGE_ONGOING_CALLS" tools:node="remove" />
+    <uses-permission android:name="android.permission.MASTER_CLEAR" tools:node="remove" />
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" tools:node="remove" />
+    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.MOUNT_FORMAT_FILESYSTEMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:node="remove" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" tools:node="remove" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_INPUT_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_LOGS" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_PRECISE_PHONE_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_SMS" tools:node="remove" />
+    <uses-permission android:name="com.android.voicemail.permission.READ_VOICEMAIL" tools:node="remove" />
+    <uses-permission android:name="android.permission.REBOOT" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH" tools:node="remove" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.SEND_RESPOND_VIA_MESSAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.SEND_SMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.SET_ALWAYS_FINISH" tools:node="remove" />
+    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" tools:node="remove" />
+    <uses-permission android:name="android.permission.SET_DEBUG_APP" tools:node="remove" />
+    <uses-permission android:name="android.permission.SET_PROCESS_LIMIT" tools:node="remove" />
+    <uses-permission android:name="android.permission.SET_TIME" tools:node="remove" />
+    <uses-permission android:name="android.permission.SET_TIME_ZONE" tools:node="remove" />
+    <uses-permission android:name="android.permission.SIGNAL_PERSISTENT_PROCESSES" tools:node="remove" />
+    <uses-permission android:name="android.permission.SMS_FINANCIAL_TRANSACTIONS" tools:node="remove" />
+    <uses-permission android:name="android.permission.START_FOREGROUND_SERVICES_FROM_BACKGROUND" tools:node="remove" />
+    <uses-permission android:name="android.permission.START_VIEW_PERMISSION_USAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.STATUS_BAR" tools:node="remove" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:node="remove" />
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" tools:node="remove" />
+    <uses-permission android:name="android.permission.UPDATE_DEVICE_STATS" tools:node="remove" />
+    <uses-permission android:name="android.permission.USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER" tools:node="remove" />
+    <uses-permission android:name="android.permission.USE_SIP" tools:node="remove" />
+    <uses-permission android:name="android.permission.UWB_RANGING" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_APN_SETTINGS" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_GSERVICES" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:node="remove" />
+    <uses-permission android:name="com.android.voicemail.permission.WRITE_VOICEMAIL" tools:node="remove" />
+    <uses-permission android:name="android.permission.USB_CAMERA" tools:node="remove" />
+    <application>
+        <!-- android:excludeFromRecents is required for submission to the Quest store -->
+        <activity
+                android:name=".LauncherActivity"
+                android:excludeFromRecents="true">
+            <layout android:defaultHeight="640dp" android:defaultWidth="1024dp" />
+        </activity>
+
+        <activity
+                android:name=".experience.ExperienceActivity"
+                android:excludeFromRecents="true">
+            <layout android:defaultHeight="640dp" android:defaultWidth="1024dp" />
+        </activity>
+
+        <activity
+                android:name=".experience.HomeActivity"
+                android:excludeFromRecents="true"
+                android:windowSoftInputMode="adjustResize">
+            <layout android:defaultHeight="640dp" android:defaultWidth="1024dp" />
+        </activity>
+
+        <activity
+                android:name=".experience.TvActivity"
+                android:excludeFromRecents="true"
+                android:windowSoftInputMode="adjustResize">
+        </activity>
+
+        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:excludeFromRecents="true"/>
+
+        <activity
+                android:name="net.openid.appauth.RedirectUriReceiverActivity"
+                android:excludeFromRecents="true">
+        </activity>
+
+        <activity
+                android:name=".experience.ErrorActivity"
+                android:excludeFromRecents="true">
+            <layout android:defaultHeight="640dp" android:defaultWidth="1024dp" />
+        </activity>
+    </application>
+</manifest>

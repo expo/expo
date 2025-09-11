@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-import { addNotificationResponseReceivedListener, addNotificationResponseClearedListener, getLastNotificationResponseAsync, } from './NotificationsEmitter';
+import { addNotificationResponseReceivedListener, addNotificationResponseClearedListener, getLastNotificationResponse, } from './NotificationsEmitter';
 /**
  * A React hook which returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
@@ -42,20 +42,15 @@ export default function useLastNotificationResponse() {
     const [lastNotificationResponse, setLastNotificationResponse] = useState(undefined);
     // useLayoutEffect ensures the listener is registered as soon as possible
     useLayoutEffect(() => {
-        let isMounted = true;
         // Get the last response first, in case it was set earlier (even in native code on startup)
-        getLastNotificationResponseAsync().then((response) => {
-            if (isMounted) {
-                setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response));
-            }
-        });
+        const response = getLastNotificationResponse();
+        setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response));
         // Set up listener for responses that come in, and set the last response if needed
         const subscription = addNotificationResponseReceivedListener((response) => setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response)));
         const clearResponseSubscription = addNotificationResponseClearedListener(() => {
             setLastNotificationResponse(null);
         });
         return () => {
-            isMounted = false;
             subscription.remove();
             clearResponseSubscription.remove();
         };

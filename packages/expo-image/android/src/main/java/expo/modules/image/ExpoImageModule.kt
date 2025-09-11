@@ -5,6 +5,7 @@ package expo.modules.image
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Base64
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
@@ -30,6 +31,7 @@ import expo.modules.image.records.DecodedSource
 import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
+import expo.modules.image.thumbhash.ThumbhashEncoder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
@@ -118,7 +120,10 @@ class ExpoImageModule : Module() {
       ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
     }
 
-    AsyncFunction("generateBlurhashAsync") Coroutine { source: Either<URL, Image>, numberOfComponents: Pair<Int, Int> ->
+    suspend fun generatePlaceholder(
+      source: Either<URL, Image>,
+      encoder: (Bitmap) -> String
+    ): String {
       val image = source.let {
         if (it.`is`(Image::class)) {
           it.get(Image::class)
@@ -126,10 +131,24 @@ class ExpoImageModule : Module() {
           ImageLoadTask(appContext, SourceMap(uri = it.get(URL::class).toString()), ImageLoadOptions()).load()
         }
       }
-      val blurHash = withContext(Dispatchers.Default) {
-        BlurhashEncoder.encode(image.ref.toBitmap(), numberOfComponents)
+      return withContext(Dispatchers.Default) {
+        encoder(image.ref.toBitmap())
       }
-      blurHash
+    }
+
+    AsyncFunction("generateBlurhashAsync") Coroutine { source: Either<URL, Image>, numberOfComponents: Pair<Int, Int> ->
+      generatePlaceholder(source) { bitmap ->
+        BlurhashEncoder.encode(bitmap, numberOfComponents)
+      }
+    }
+
+    AsyncFunction("generateThumbhashAsync") Coroutine { source: Either<URL, Image> ->
+      generatePlaceholder(source) { bitmap ->
+        Base64.encodeToString(
+          ThumbhashEncoder.encode(bitmap),
+          Base64.NO_WRAP
+        )
+      }
     }
 
     Class(Image::class) {

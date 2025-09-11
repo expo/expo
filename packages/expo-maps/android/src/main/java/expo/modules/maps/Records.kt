@@ -5,7 +5,9 @@ package expo.modules.maps
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.location.Location
+import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -45,6 +47,16 @@ data class Coordinates(
   }
 }
 
+data class AnchorRecord(
+  @Field
+  val x: Float = 0.5f,
+
+  @Field
+  val y: Float = 1.0f
+) : Record {
+  fun toOffset() = Offset(x = x, y = y)
+}
+
 data class MarkerRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
@@ -65,7 +77,13 @@ data class MarkerRecord(
   val icon: Either<SharedRef<Drawable>, SharedRef<Bitmap>>? = null,
 
   @Field
-  val showCallout: Boolean = true
+  val showCallout: Boolean = true,
+
+  @Field
+  val anchor: AnchorRecord = AnchorRecord(),
+
+  @Field
+  val zIndex: Float = 0.0f
 ) : Record
 
 data class PolylineRecord(
@@ -192,6 +210,11 @@ enum class MapTypeEnum : Enumerable {
   }
 }
 
+data class MapStyleOptionsRecord(
+  @Field
+  val json: String
+) : Record
+
 data class MapPropertiesRecord(
   @Field
   val isBuildingEnabled: Boolean = false,
@@ -202,8 +225,9 @@ data class MapPropertiesRecord(
   @Field
   val isTrafficEnabled: Boolean = false,
   // TODO(@lukmccall): supports these properties
-//  val latLngBoundsForCameraTarget: LatLngBounds? = null,
-//  val mapStyleOptions: MapStyleOptions? = null,
+  //  val latLngBoundsForCameraTarget: LatLngBounds? = null,
+  @Field
+  val mapStyleOptions: MapStyleOptionsRecord? = null,
   @Field
   val mapType: MapTypeEnum = MapTypeEnum.NORMAL,
   @Field
@@ -212,11 +236,13 @@ data class MapPropertiesRecord(
   val minZoomPreference: Float = 3.0f
 ) : Record {
   fun toMapProperties(): MapProperties {
+    val mapStyleOptionsParsed = mapStyleOptions?.json?.let { MapStyleOptions(it) }
     return MapProperties(
       isBuildingEnabled = isBuildingEnabled,
       isIndoorEnabled = isIndoorEnabled,
       isMyLocationEnabled = isMyLocationEnabled,
       isTrafficEnabled = isTrafficEnabled,
+      mapStyleOptions = mapStyleOptionsParsed,
       mapType = mapType.toMapType(),
       maxZoomPreference = maxZoomPreference,
       minZoomPreference = minZoomPreference
@@ -277,4 +303,23 @@ data class CameraPositionStreetViewRecord(
 
   @Field
   val bearing: Float = 0f
+) : Record
+
+data class MapContentPaddingRecord(
+  @Field
+  val start: Float = 0f,
+
+  @Field
+  val end: Float = 0f,
+
+  @Field
+  val top: Float = 0f,
+
+  @Field
+  val bottom: Float = 0f
+) : Record
+
+data class MapOptionsRecord(
+  @Field
+  val mapId: String? = null
 ) : Record

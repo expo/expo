@@ -44,7 +44,8 @@ data class ShapeProps(
   val innerRadius: MutableState<Float> = mutableFloatStateOf(0.0f),
   val radius: MutableState<Float> = mutableFloatStateOf(0.0f),
   val type: MutableState<ShapeType> = mutableStateOf(ShapeType.CIRCLE),
-  val color: MutableState<GraphicsColor?> = mutableStateOf(null)
+  val color: MutableState<GraphicsColor?> = mutableStateOf(null),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 private fun Size.centerX() = this.width / 2
@@ -120,7 +121,7 @@ class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<Shap
   override val props = ShapeProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     val (smoothing) = props.smoothing
     val (cornerRounding) = props.cornerRounding
     val (innerRadius) = props.innerRadius
@@ -129,7 +130,7 @@ class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<Shap
     val (verticesCount) = props.verticesCount
     val (color) = props.color
     Box(
-      modifier = Modifier
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value)
         .drawWithCache {
           val path = when (shapeType) {
             ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)

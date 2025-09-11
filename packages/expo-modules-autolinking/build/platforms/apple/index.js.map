@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/platforms/apple/index.ts"],"names":[],"mappings":";;;AAAA,iCAIiB;AAHf,qHAAA,4BAA4B,OAAA;AAC5B,2GAAA,kBAAkB,OAAA;AAClB,2HAAA,kCAAkC,OAAA","sourcesContent":["export {\n  generateModulesProviderAsync,\n  resolveModuleAsync,\n  resolveExtraBuildDependenciesAsync,\n} from './apple';\n"]}

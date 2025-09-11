@@ -11,6 +11,7 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
+import java.io.File
 import java.nio.file.Paths
 
 const val generatedPackageListNamespace = "expo.modules"
@@ -49,7 +50,7 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project.logger.quiet("")
 
     // Creates a task that generates a list of expo modules.
-    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.options, gradleExtension.hash)
+    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.options, gradleExtension.hash, gradleExtension.projectRoot)
 
     // Ensures that the task is executed before the build.
     project.tasks
@@ -79,12 +80,12 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     return project.layout.buildDirectory.file(packageListRelativePath)
   }
 
-  fun createGeneratePackagesListTask(project: Project, options: AutolinkingOptions, hash: String): TaskProvider<GeneratePackagesListTask> {
+  fun createGeneratePackagesListTask(project: Project, options: AutolinkingOptions, hash: String, projectRoot: File): TaskProvider<GeneratePackagesListTask> {
     return project.tasks.register("generatePackagesList", GeneratePackagesListTask::class.java) {
       it.hash.set(hash)
       it.namespace.set(generatedPackageListNamespace)
       it.outputFile.set(getPackageListFile(project))
-      it.workingDir = project.rootDir
+      it.workingDir = projectRoot
       // Serializes the autolinking options to JSON to pass them to the task.
       // The types supported as a task input are limited to primitives, strings, and files.
       it.options.set(options.toJson())

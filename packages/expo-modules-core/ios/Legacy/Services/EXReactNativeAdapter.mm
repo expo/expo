@@ -2,7 +2,9 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import <React/React-Core-umbrella.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
+
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 

@@ -45,6 +45,7 @@ class ExpoUpdatesModule extends NativeModule<UpdatesEvents> implements UpdatesMo
     isRestarting: false,
     restartCount: 0,
     sequenceNumber: 0,
+    downloadProgress: 0,
   };
 
   async reload(): Promise<void> {

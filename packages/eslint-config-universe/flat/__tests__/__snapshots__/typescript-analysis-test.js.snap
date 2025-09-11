@@ -27,14 +27,14 @@ exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
     },
     {
       "column": 3,
-      "endColumn": 33,
+      "endColumn": 53,
       "endLine": 24,
       "fix": {
         "range": [
           312,
-          342,
+          362,
         ],
-        "text": "foo?.a?.b.method",
+        "text": "foo?.a?.b.method?.()",
       },
       "line": 24,
       "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",

@@ -37,6 +37,15 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         ],
         platforms: ['android'],
       },
+      {
+        name: 'shape',
+        type: 'enum',
+        values: [
+          { name: "'rectangle'", value: 'rectangle' },
+          { name: "'oval'", value: 'oval' },
+        ],
+        platforms: ['android'],
+      },
       { name: 'quality', type: 'number', values: [1.0, 0.7, 0.2, 0] },
       { name: 'exif', type: 'boolean', initial: false },
       { name: 'base64', type: 'boolean', initial: false },
@@ -50,10 +59,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
             name: 'VideoExportPreset.Passthrough',
             value: ImagePicker.VideoExportPreset.Passthrough,
           },
-          {
-            name: 'VideoExportPreset.LowQuality',
-            value: ImagePicker.VideoExportPreset.LowQuality,
-          },
+          { name: 'VideoExportPreset.LowQuality', value: ImagePicker.VideoExportPreset.LowQuality },
           {
             name: 'VideoExportPreset.MediumQuality',
             value: ImagePicker.VideoExportPreset.MediumQuality,
@@ -123,23 +129,9 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
           },
         ],
       },
-      {
-        name: 'allowsMultipleSelection',
-        type: 'boolean',
-        initial: false,
-      },
-      {
-        name: 'selectionLimit',
-        type: 'number',
-        values: [0, 1, 3],
-        platforms: ['ios', 'android'],
-      },
-      {
-        name: 'orderedSelection',
-        type: 'boolean',
-        initial: false,
-        platforms: ['ios', 'android'],
-      },
+      { name: 'allowsMultipleSelection', type: 'boolean', initial: false },
+      { name: 'selectionLimit', type: 'number', values: [0, 1, 3], platforms: ['ios', 'android'] },
+      { name: 'orderedSelection', type: 'boolean', initial: false, platforms: ['ios', 'android'] },
       {
         name: 'defaultTab',
         type: 'enum',
@@ -234,10 +226,7 @@ const FUNCTIONS_DESCRIPTIONS: FunctionDescription[] = [
     name: 'requestCameraPermissionsAsync',
     actions: () => ImagePicker.requestCameraPermissionsAsync(),
   },
-  {
-    name: 'getCameraPermissionsAsync',
-    actions: () => ImagePicker.getCameraPermissionsAsync(),
-  },
+  { name: 'getCameraPermissionsAsync', actions: () => ImagePicker.getCameraPermissionsAsync() },
   {
     name: 'launchImageLibraryAsync',
     parameters: LAUNCH_PICKER_PARAMETERS,
@@ -266,15 +255,10 @@ function ImagePickerScreen() {
   );
 }
 
-ImagePickerScreen.navigationOptions = {
-  title: 'ImagePicker',
-};
+ImagePickerScreen.navigationOptions = { title: 'ImagePicker' };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 10,
-    justifyContent: 'center',
-  },
+  container: { paddingHorizontal: 10, justifyContent: 'center' },
 });
 
 export default ImagePickerScreen;

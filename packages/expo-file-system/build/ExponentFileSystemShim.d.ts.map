@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentFileSystemShim.d.ts","sourceRoot":"","sources":["../src/ExponentFileSystemShim.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,mBAAmB,CAAC;AAEjD,OAAO,KAAK,EAAE,wBAAwB,EAAE,gBAAgB,EAAE,MAAM,SAAS,CAAC;AAE1E,MAAM,CAAC,OAAO,OAAO,cACnB,SAAQ,YAAY,CAAC,gBAAgB,CACrC,YAAW,wBAAwB;IAEnC,iBAAiB,OAAQ;IACzB,cAAc,OAAQ;IACtB,eAAe,OAAQ;CACxB"}

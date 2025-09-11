@@ -8,7 +8,16 @@ export type RouteInfo<TRegex = string> = {
     permanent?: boolean;
     methods?: string[];
 };
+export type MiddlewareInfo = {
+    /**
+     * Path to the module that contains the middleware function as a default export.
+     *
+     * @example _expo/functions/+middleware.js
+     */
+    file: string;
+};
 export type ExpoRoutesManifestV1<TRegex = string> = {
+    middleware?: MiddlewareInfo;
     apiRoutes: RouteInfo<TRegex>[];
     htmlRoutes: RouteInfo<TRegex>[];
     notFoundRoutes: RouteInfo<TRegex>[];

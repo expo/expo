@@ -210,6 +210,21 @@ module Expo
       # Make sure the build script in Xcode is up to date, but probably it's not going to change
       # as it just runs the script generated in the target support files
       xcode_build_script.shell_script = generate_xcode_build_script(support_script_relative_path)
+
+      modules_provider_relative_path = Pathname.new(modules_provider_path).relative_path_from(project.project_dir)
+      entitlement_relative_path = entitlement_path.nil? ? nil : Pathname.new(entitlement_path).relative_path_from(project.project_dir)
+
+      # Add input and output files to the build script phase to support ENABLE_USER_SCRIPT_SANDBOXING
+      xcode_build_script.input_paths = [
+        ".xcode.env",
+        ".xcode.env.local",
+        entitlement_relative_path,
+        support_script_relative_path,
+      ].compact.map { |path| "$(SRCROOT)/#{path}" }
+
+      xcode_build_script.output_paths = [
+        "$(SRCROOT)/#{modules_provider_relative_path}",
+      ]
     end
 
     # Generates the shell script of the build script phase.

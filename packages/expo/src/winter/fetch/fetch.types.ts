@@ -7,6 +7,7 @@ export interface FetchRequestInit {
   headers?: HeadersInit;
   method?: string;
   signal?: AbortSignal;
+  redirect?: RequestRedirect;
 
   // Not supported fields
   integrity?: string;

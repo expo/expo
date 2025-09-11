@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
-import findUp from 'find-up';
 import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
@@ -52,7 +51,14 @@ const DOCS_URL = 'https://docs.expo.dev/modules';
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
 
 async function getCorrectLocalDirectory(targetOrSlug: string) {
-  const packageJsonPath = await findUp('package.json', { cwd: CWD });
+  let packageJsonPath: string | null = null;
+  for (let dir = CWD; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    const file = path.resolve(dir, 'package.json');
+    if (fs.existsSync(file)) {
+      packageJsonPath = file;
+      break;
+    }
+  }
   if (!packageJsonPath) {
     console.log(
       chalk.red.bold(

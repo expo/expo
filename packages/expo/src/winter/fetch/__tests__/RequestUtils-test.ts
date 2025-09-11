@@ -5,7 +5,7 @@
 
 import { TextDecoder, TextEncoder } from 'node:util';
 import RNFormData from 'react-native/Libraries/Network/FormData';
-import { ReadableStream } from 'web-streams-polyfill';
+import { ReadableStream as WebReadableStream } from 'web-streams-polyfill';
 
 import { type NativeHeadersType } from '../NativeRequest';
 import {
@@ -25,12 +25,12 @@ globalThis.TextEncoder ??= TextEncoder;
 
 describe(convertReadableStreamToUint8ArrayAsync, () => {
   it('should convert a readable stream to a Uint8Array', async () => {
-    const stream = new ReadableStream<Uint8Array>({
+    const stream = new WebReadableStream<Uint8Array>({
       start(controller) {
         controller.enqueue(new TextEncoder().encode('Hello, world!'));
         controller.close();
       },
-    });
+    }) as ReadableStream<Uint8Array>;
 
     const result = await convertReadableStreamToUint8ArrayAsync(stream);
     const resultString = new TextDecoder().decode(result);
@@ -38,22 +38,22 @@ describe(convertReadableStreamToUint8ArrayAsync, () => {
   });
 
   it('should handle an empty readable stream', async () => {
-    const stream = new ReadableStream({
+    const stream = new WebReadableStream({
       start(controller) {
         controller.close();
       },
-    });
+    }) as ReadableStream;
 
     const result = await convertReadableStreamToUint8ArrayAsync(stream);
     expect(result).toEqual(new Uint8Array());
   });
 
   it('should handle errors in the readable stream', async () => {
-    const stream = new ReadableStream({
+    const stream = new WebReadableStream({
       start(controller) {
         controller.error(new Error('Stream error'));
       },
-    });
+    }) as ReadableStream;
 
     await expect(convertReadableStreamToUint8ArrayAsync(stream)).rejects.toThrow('Stream error');
   });

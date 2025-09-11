@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ReactCommon/CallbackWrapper.h>
+#import <react/bridging/CallbackWrapper.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/EXJavaScriptWeakObject.h>
@@ -8,6 +8,7 @@
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
+#import <ExpoModulesCore/EXStringUtils.h>
 
 namespace expo {
 
@@ -26,7 +27,18 @@ jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *value)
 
 jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, [value UTF8String] ?: "");
+#if !TARGET_OS_OSX
+  const uint8_t *utf8 = (const uint8_t *)[value UTF8String];
+  const size_t length = [value length];
+  if (expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
+    return jsi::String::createFromAscii(runtime, (const char *)utf8, length);
+  }
+  // Using cStringUsingEncoding should be fine as long as we provide the length.
+  return jsi::String::createFromUtf16(runtime, (const char16_t *)[value cStringUsingEncoding:NSUTF16StringEncoding], length);
+#else
+  // TODO(@jakex7): Remove after update to react-native-macos@0.79.0
+  return jsi::String::createFromUtf8(runtime, [value UTF8String]);
+#endif
 }
 
 jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)

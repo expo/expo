@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import expo.modules.devmenu.compose.theme.Theme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
 @Composable
-fun Divider() {
-  val thickness = Theme.sizing.border.hairlineWidth
-  val color = Theme.colors.border.default
+fun Divider(
+  thickness: Dp = Dp.Hairline,
+  color: Color = NewAppTheme.colors.border.default
+) {
   Canvas(Modifier.fillMaxWidth().height(thickness)) {
     drawLine(
       color = color,

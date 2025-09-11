@@ -32,18 +32,17 @@ class RecordTypeConverter<T : Record>(
   private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> by lazy {
     (type.classifier as KClass<*>)
       .memberProperties
-      .map { property ->
-        val fieldAnnotation = property.findAnnotation<Field>() ?: return@map null
+      .mapNotNull { property ->
+        val fieldAnnotation = property.findAnnotation<Field>() ?: return@mapNotNull null
         val typeConverter = converterProvider.obtainTypeConverter(property.returnType)
 
-        return@map property to PropertyDescriptor(
+        return@mapNotNull property to PropertyDescriptor(
           typeConverter,
           fieldAnnotation,
           isRequired = property.findAnnotation<Required>() != null,
           validators = getValidators(property)
         )
       }
-      .filterNotNull()
       .toMap()
   }
 

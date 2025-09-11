@@ -2,6 +2,8 @@ import ExpoModulesCore
 import Contacts
 import ContactsUI
 
+let onContactsChangeEventName = "onContactsChange"
+
 public class ContactsModule: Module, OnContactPickingResultHandler {
   private let contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
@@ -9,14 +11,28 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   private var contactPickerDelegate: ContactPickerControllerDelegate?
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
+  private var contactChangeObserver: NSObjectProtocol?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
+    Events(onContactsChangeEventName)
 
     OnCreate {
       appContext?.permissions?.register([
         ContactsPermissionRequester()
       ])
+    }
+
+    OnDestroy {
+      stopObservingContactChanges()
+    }
+
+    OnStartObserving(onContactsChangeEventName) {
+      startObservingContactChanges()
+    }
+
+    OnStopObserving(onContactsChangeEventName) {
+      stopObservingContactChanges()
     }
 
     AsyncFunction("getDefaultContainerIdentifierAsync") {
@@ -84,7 +100,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
 
       if let identifier {
         if let foundContact = try? getContact(withId: identifier) {
-          controller = ContactsViewController.init(forNewContact: foundContact)
+          controller = ContactsViewController(for: foundContact)
         }
       } else {
         var contact = CNMutableContact()
@@ -131,18 +147,21 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         controller.parentGroup = try group(with: groupId)
       }
 
-      let parent = appContext?.utilities?.currentViewController()
-      let navController = UINavigationController(rootViewController: controller)
-      presentingViewController = navController
-      let animated = options.preventAnimation == true ? false : true
+      if let parent = appContext?.utilities?.currentViewController() {
+        let navController = UINavigationController(rootViewController: controller)
+        presentingViewController = navController
 
-      controller.onViewDisappeared = {
-        promise.resolve()
-        self.contactManipulationPromise = nil
+        controller.onViewDisappeared = {
+          promise.resolve()
+          self.contactManipulationPromise = nil
+        }
+
+        contactManipulationPromise = promise
+        parent.present(navController, animated: options.preventAnimation != true)
+      } else {
+        contactManipulationPromise = nil
+        promise.reject(MissingViewControllerException())
       }
-
-      contactManipulationPromise = promise
-      parent?.present(navController, animated: animated)
     }.runOnQueue(.main)
 
     AsyncFunction("presentContactPickerAsync") { (promise: Promise) in
@@ -537,7 +556,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     let path = url.path
     let standardizedPath = NSString(string: path).standardizingPath
 
-    guard FileSystemUtilities.permissions(appContext, for: url).contains(.read) else {
+    guard FileSystemUtilities.permissions(appContext, for: url).contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
       return nil
     }
 
@@ -634,5 +653,32 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }
 
     return fetchRequest
+  }
+
+  private func startObservingContactChanges() {
+    guard contactChangeObserver == nil else { return }
+
+    contactChangeObserver = NotificationCenter.default.addObserver(
+      forName: .CNContactStoreDidChange,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.handleContactStoreChange()
+    }
+  }
+
+  private func stopObservingContactChanges() {
+    if let observer = contactChangeObserver {
+      NotificationCenter.default.removeObserver(observer)
+      contactChangeObserver = nil
+    }
+  }
+
+  private func handleContactStoreChange() {
+    // Send event when contacts change - CNContactStoreDidChangeNotification
+    // only tells us that something changed, not what specifically changed
+    sendEvent(onContactsChangeEventName, [
+      "body": nil
+    ])
   }
 }

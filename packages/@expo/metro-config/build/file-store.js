@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileStore = void 0;
-const FileStore_1 = __importDefault(require("metro-cache/src/stores/FileStore"));
+const FileStore_1 = __importDefault(require("@expo/metro/metro-cache/stores/FileStore"));
 const debug = require('debug')('expo:metro:cache');
 class FileStore extends FileStore_1.default {
     async set(key, value) {

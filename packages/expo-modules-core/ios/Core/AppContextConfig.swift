@@ -4,10 +4,12 @@ public struct AppContextConfig {
   public let documentDirectory: URL?
   public let cacheDirectory: URL?
   public let appGroupSharedDirectories: [URL]
+  public let scoped: Bool
 
   public init(documentDirectory: URL?, cacheDirectory: URL?, appGroups: [String]?) {
     self.documentDirectory = documentDirectory ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     self.cacheDirectory = cacheDirectory ?? FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+    self.scoped = documentDirectory != nil ? true : false
 
     var sharedDirectories: [URL] = []
     for appGroup in appGroups ?? [] {

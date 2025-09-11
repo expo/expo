@@ -79,7 +79,4 @@ export declare class ExpoModuleConfig {
      */
     toJSON(): RawExpoModuleConfig;
 }
-/**
- * Reads the config at given path and returns the config wrapped by `ExpoModuleConfig` class.
- */
-export declare function requireAndResolveExpoModuleConfig(path: string): ExpoModuleConfig;
+export declare function discoverExpoModuleConfigAsync(directoryPath: string): Promise<ExpoModuleConfig | null>;

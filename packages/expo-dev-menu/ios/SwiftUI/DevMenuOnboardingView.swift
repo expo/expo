@@ -5,14 +5,12 @@ struct DevMenuOnboardingView: View {
   @State private var isVisible = true
 
   var body: some View {
-    if isVisible {
-      Rectangle()
-        .fill(.ultraThinMaterial)
-        .ignoresSafeArea()
-        .overlay(onboardingOverlay)
-        .opacity(isVisible ? 1.0 : 0.0)
-        .animation(.easeInOut(duration: 0.3), value: isVisible)
-    }
+    Rectangle()
+      .fill(.ultraThinMaterial)
+      .ignoresSafeArea()
+      .overlay(onboardingOverlay)
+      .offset(x: 0, y: isVisible ? 0.0 : 650.0)
+      .animation(.easeInOut(duration: 0.5), value: isVisible)
   }
 
   private var onboardingOverlay: some View {

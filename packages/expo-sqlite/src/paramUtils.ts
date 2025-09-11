@@ -94,3 +94,25 @@ export function composeRows<T>(
   }
   return results;
 }
+
+/**
+ * Normalize the index for the Storage.getKeyByIndexSync and Storage.getKeyByIndexAsync methods.
+ * @returns The normalized index or `null` if the index is out of bounds.
+ * @hidden
+ */
+export function normalizeStorageIndex(index: any): number | null {
+  const value = Math.floor(Number(index));
+
+  // Boundary checks
+  if (Object.is(value, -0)) {
+    return 0;
+  }
+  if (!Number.isSafeInteger(value)) {
+    // Chromium uses zero index when the index is out of bounds
+    return 0;
+  }
+  if (value < 0) {
+    return null;
+  }
+  return value;
+}

@@ -6,11 +6,41 @@
 
 ### 🎉 New features
 
-- Add support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.0.6 — 2025-09-02
+
+### 💡 Others
+
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+
+## 1.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.14.4 - 2025-07-03
 

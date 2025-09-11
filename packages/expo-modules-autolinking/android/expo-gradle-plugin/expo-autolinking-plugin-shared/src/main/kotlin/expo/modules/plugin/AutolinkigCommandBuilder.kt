@@ -3,7 +3,7 @@ package expo.modules.plugin
 /**
  * Builder for creating command to run using `expo-modules-autolinking`.
  */
-class AutolinkigCommandBuilder {
+class AutolinkingCommandBuilder {
   /**
    * Command for finding and running `expo-modules-autolinking`.
    */

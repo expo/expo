@@ -74,6 +74,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     var apps: [[String: Any]] = []
 
     appRegistry = registry.filter { (_: String, appEntry: [String: Any]) in
+      // swiftlint:disable:next force_cast
       if getCurrentTimestamp() - (appEntry["timestamp"] as! Int64) > TIME_TO_REMOVE {
         return false
       }

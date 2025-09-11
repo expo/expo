@@ -1639,10 +1639,10 @@ build:
             assets/*.png
 ```
 
-| Input  | Type     | Description                                                                                                                                                                                                                    |
-| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `path` | `string` | Required. Path or newline-delimited list of paths to the artifacts to upload to EAS servers. You can use `*` wildcard and other [glob patterns that `fast-glob` supports](https://github.com/mrmlnc/fast-glob#pattern-syntax). |
-| `type` | `string` | The type of artifact that is uploaded to the EAS servers. Allowed values are `application-archive` and `build-artifact`. Defaults to `application-archive`.                                                                    |
+| Input  | Type     | Description                                                                                                                                                                                       |
+| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `path` | `string` | Required. Path or newline-delimited list of paths to the artifacts to upload to EAS servers. You can use `*` wildcard and other [glob patterns](https://github.com/isaacs/node-glob#glob-primer). |
+| `type` | `string` | The type of artifact that is uploaded to the EAS servers. Allowed values are `application-archive` and `build-artifact`. Defaults to `application-archive`.                                       |
 
 <BoxLink
   title="eas/upload_artifact source code"

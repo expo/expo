@@ -38,14 +38,16 @@ Once you have set up the basic monorepo structure, create a new module using `cr
 
 <Step label="2">
 
-### Set up workspace
+### Set up a workspace dependency
 
-Configure `autolinking` so your apps can use the new module. Add the following block to the **package.json** file in each app inside the **apps** directory:
+Add your native module from **packages** to your apps' dependencies. Update the **package.json** file in each app inside the **apps** directory that will use your native module and add your native module to the existing entries of dependencies:
 
 ```json package.json
-"expo": {
-  "autolinking": {
-    "nativeModulesDir": "../../packages"
+{
+  "dependencies": {
+    /* @hide ... */ /* @end */
+    "expo-settings": "*"
+    /* @hide ... */ /* @end */
   }
 }
 ```

@@ -16,7 +16,7 @@ export const updatePackageVersions = new Task<TaskArgs>(
   {
     name: 'updatePackageVersions',
     dependsOn: [selectPackagesToPublish],
-    filesToStage: ['packages/**/package.json'],
+    filesToStage: ['packages/**/package.json', 'templates/**/package.json'],
   },
   async (parcels: Parcel[]) => {
     logger.info(`\n🆙 Updating versions in ${magenta.bold('package.json')}s...`);

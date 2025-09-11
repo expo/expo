@@ -1,5 +1,38 @@
 "use strict";
 'use client';
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -10,7 +43,7 @@ exports.screenOptionsFactory = screenOptionsFactory;
 exports.routeToScreen = routeToScreen;
 exports.getSingularId = getSingularId;
 const native_1 = require("@react-navigation/native");
-const react_1 = __importDefault(require("react"));
+const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -79,11 +112,13 @@ function getSortedChildren(children, order = [], initialRouteName) {
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-function useSortedScreens(order, protectedScreens) {
+function useSortedScreens(order, protectedScreens, useOnlyUserDefinedScreens = false) {
     const node = (0, Route_1.useRouteNode)();
-    const sorted = node?.children?.length
-        ? getSortedChildren(node.children, order, node.initialRouteName)
-        : [];
+    const nodeChildren = node?.children ?? [];
+    const children = useOnlyUserDefinedScreens
+        ? nodeChildren.filter((child) => order.some((userDefinedScreen) => userDefinedScreen.name === child.route))
+        : nodeChildren;
+    const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
     return react_1.default.useMemo(() => sorted
         .filter((item) => !protectedScreens.has(item.route.route))
         .map((value) => {
@@ -155,7 +190,7 @@ function getQualifiedRouteComponent(value) {
     // Pass all other props to the component
     ...props }) {
         const stateForPath = (0, native_1.useStateForPath)();
-        const isFocused = (0, native_1.useIsFocused)();
+        const isFocused = navigation.isFocused();
         const store = (0, storeContext_1.useExpoRouterStore)();
         if (isFocused) {
             const state = navigation.getState();
@@ -163,6 +198,16 @@ function getQualifiedRouteComponent(value) {
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }
+        (0, react_1.useEffect)(() => navigation.addListener('focus', () => {
+            const state = navigation.getState();
+            const isLeaf = !('state' in state.routes[state.index]);
+            // Because setFocusedState caches the route info, this call will only trigger rerenders
+            // if the component itself didn’t rerender and the route info changed.
+            // Otherwise, the update from the `if` above will handle it,
+            // and this won’t cause a redundant second update.
+            if (isLeaf && stateForPath)
+                store.setFocusedState(stateForPath);
+        }), [navigation]);
         return (<Route_1.Route node={value} route={route}>
         <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
           <ScreenComponent {...props} 

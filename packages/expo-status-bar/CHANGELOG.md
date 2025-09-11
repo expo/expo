@@ -10,7 +10,40 @@
 
 ### 💡 Others
 
+## 3.0.7 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.5 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.3 — 2025-08-18
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2025-08-13
+
+### 💡 Others
+
 - Migrate to package exports ([#37298](https://github.com/expo/expo/pull/37298) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `react-native-edge-to-edge` dependency ([#38768](https://github.com/expo/expo/pull/38768) by [@behenate](https://github.com/behenate))
 
 ## 2.2.3 — 2025-04-30
 

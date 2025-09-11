@@ -6,7 +6,6 @@ import { HEADLINE } from '~/ui/components/Text';
 import { Content } from './Content';
 import { Tab } from './Tab';
 import Animations from './features/animations.mdx';
-import Fonts from './features/fonts.mdx';
 import Images from './features/images.mdx';
 import Navigation from './features/navigation.mdx';
 import Platforms from './features/platforms.mdx';
@@ -48,13 +47,6 @@ export function TemplateFeatures() {
             isSelected={selected === 'images'}
           />
           <Tab
-            title="Custom fonts"
-            onClick={() => {
-              setSelected('fonts');
-            }}
-            isSelected={selected === 'fonts'}
-          />
-          <Tab
             title="Light and dark modes"
             onClick={() => {
               setSelected('themes');
@@ -94,15 +86,6 @@ export function TemplateFeatures() {
               alt="React image in a header component"
               content={<Images />}
               href="/versions/latest/sdk/image"
-            />
-          ) : null}
-          {selected === 'fonts' ? (
-            <Content
-              imgSrc="/static/images/get-started/fonts.png"
-              darkImgSrc="/static/images/get-started/fonts-dark.png"
-              alt="Various fonts on a screen"
-              content={<Fonts />}
-              href="/develop/user-interface/fonts"
             />
           ) : null}
           {selected === 'themes' ? (

@@ -2,6 +2,7 @@
 package versioned.host.exp.exponent
 
 import android.content.Context
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -16,12 +17,12 @@ import com.reactnativecommunity.webview.RNCWebViewPackage
 import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.rnmaps.maps.MapsPackage
-import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import com.th3rdwave.safeareacontext.SafeAreaContextModule
 import com.zoontek.rnedgetoedge.EdgeToEdgeModule
 import com.reactnativekeyboardcontroller.KeyboardControllerModule
 import com.reactnativekeyboardcontroller.KeyboardControllerPackage
@@ -128,6 +129,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNViewShotModule(reactContext, scopedContext.cacheDir, scopedContext.externalCacheDir))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
+        nativeModules.add(SafeAreaContextModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
         nativeModules.add(RNGestureHandlerModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
@@ -170,6 +172,7 @@ class ExponentPackage : ReactPackage {
       viewManagers,
       listOf(
         SvgPackage(),
+        LottiePackage(),
         MapsPackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),
@@ -182,7 +185,6 @@ class ExponentPackage : ReactPackage {
         SafeAreaContextPackage(),
         stripePackage,
         skiaPackage,
-        ReactNativeFlashListPackage(),
         KeyboardControllerPackage()
       )
     )

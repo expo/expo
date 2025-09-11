@@ -13,6 +13,9 @@ export function sanitizedName(name: string) {
 
 // Directories that can be added to the template with an underscore instead of a dot, e.g. `.vscode` and be added with `_vscode`.
 const SUPPORTED_DIRECTORIES = ['eas', 'vscode', 'github', 'cursor'];
+const SUPPORTED_DIRECTORIES_PATTERN = new RegExp(
+  `(^|/|\\\\)_(${SUPPORTED_DIRECTORIES.join('|')})(/|\\\\|$)`
+);
 
 function applyNameDuringPipe(entry: Pick<ReadEntry, 'path'>, name: string) {
   if (name) {
@@ -27,22 +30,30 @@ function applyNameDuringPipe(entry: Pick<ReadEntry, 'path'>, name: string) {
   return entry;
 }
 
-export function modifyFileDuringPipe(entry: Pick<ReadEntry, 'path' | 'type'>) {
-  if (entry.type && /^file$/i.test(entry.type)) {
-    if (path.basename(entry.path) === 'gitignore') {
-      // Rename `gitignore` because npm ignores files named `.gitignore` when publishing.
-      // See: https://github.com/npm/npm/issues/1862
-      entry.path = entry.path.replace(/gitignore$/, '.gitignore');
-    }
+const ENTRY_FILE_PATTERN = /^file$/i;
+const ENTRY_FILE_OR_DIRECTORY_PATTERN = /^(file|directory)$/i;
 
+export function modifyFileDuringPipe(entry: Pick<ReadEntry, 'path' | 'type'>) {
+  if (!entry.type) return entry;
+
+  if (ENTRY_FILE_PATTERN.test(entry.type) && path.basename(entry.path) === 'gitignore') {
+    // Rename `gitignore` because npm ignores files named `.gitignore` when publishing.
+    // See: https://github.com/npm/npm/issues/1862
+    entry.path = entry.path.replace(/gitignore$/, '.gitignore');
+  }
+
+  if (ENTRY_FILE_OR_DIRECTORY_PATTERN.test(entry.type)) {
     // Detect if the file contains one of the supported directories
     // and rename it to the correct format.
     // For example, if the file is `_vscode`, we want to rename it to `.vscode`.
 
     // Match one instance of the supported directory name, starting with an underscore, and containing slashes on both sides.
-    const regex = new RegExp(`(^|/|\\\\)_(${SUPPORTED_DIRECTORIES.join('|')})(/|\\\\|$)`);
-    entry.path = entry.path.replace(regex, (match, p1, p2, p3) => `${p1}.${p2}${p3}`);
+    entry.path = entry.path.replace(
+      SUPPORTED_DIRECTORIES_PATTERN,
+      (match, p1, p2, p3) => `${p1}.${p2}${p3}`
+    );
   }
+
   return entry;
 }
 

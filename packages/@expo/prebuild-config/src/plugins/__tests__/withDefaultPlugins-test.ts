@@ -370,6 +370,7 @@ describe('built-in plugins', () => {
         'android/app/proguard-rules.pro',
         'android/app/src/debug/AndroidManifest.xml',
         'android/app/src/main/AndroidManifest.xml',
+        'android/build/reports/problems/problems-report.html',
         'android/app/src/main/java/com/bacon/todo/MainActivity.kt',
         'android/app/src/main/java/com/bacon/todo/MainApplication.kt',
         'android/app/src/main/res/drawable/ic_launcher_background.xml',
@@ -509,6 +510,7 @@ describe('built-in plugins', () => {
 
     // Test the written files...
     const after = getDirFromFS(vol.toJSON(), projectRoot);
+    delete after['android/build/reports/problems/problems-report.html'];
 
     expect(Object.keys(after)).toEqual([
       'node_modules/react-native-maps/package.json',

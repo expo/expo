@@ -27,11 +27,9 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
 
-            if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-              continuation.resumeWithException(AuthenticationException("User canceled the authentication"))
-            } else {
-              continuation.resumeWithException(AuthenticationException("Could not authenticate the user"))
-            }
+            val errorType = convertErrorCode(errorCode)
+            val message = "$errorType. $errString"
+            continuation.resumeWithException(AuthenticationException(message))
           }
 
           override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
@@ -41,4 +39,22 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
         }
       ).authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
     }
+
+  private fun convertErrorCode(code: Int): String {
+    return when (code) {
+      BiometricPrompt.ERROR_USER_CANCELED -> "User canceled the authentication"
+      BiometricPrompt.ERROR_NEGATIVE_BUTTON -> "User canceled the authentication"
+      BiometricPrompt.ERROR_HW_NOT_PRESENT -> "Hardware not present"
+      BiometricPrompt.ERROR_HW_UNAVAILABLE -> "Hardware unavailable"
+      BiometricPrompt.ERROR_NO_BIOMETRICS -> "No biometrics enrolled"
+      BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> "No device credential"
+      BiometricPrompt.ERROR_LOCKOUT -> "Lockout"
+      BiometricPrompt.ERROR_LOCKOUT_PERMANENT -> "Lockout permanent"
+      BiometricPrompt.ERROR_NO_SPACE -> "No space"
+      BiometricPrompt.ERROR_TIMEOUT -> "Timeout"
+      BiometricPrompt.ERROR_UNABLE_TO_PROCESS -> "Unable to process"
+      BiometricPrompt.ERROR_VENDOR -> "Vendor error"
+      else -> "Unknown error (code: $code)"
+    }
+  }
 }

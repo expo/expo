@@ -10,13 +10,13 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
-import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.spyk
-import io.mockk.verify
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert
@@ -24,7 +24,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class DatabaseLauncherTest {
@@ -43,8 +44,8 @@ class DatabaseLauncherTest {
   }
 
   @Test
-  fun testLaunch_MarkUpdateAccessed() {
-    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
+  fun testLaunch_MarkUpdateAccessed() = runTest {
+    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"), Uri.parse("https://example.com"), null)
     testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     db.updateDao().insertUpdate(testUpdate)
 
@@ -70,19 +71,16 @@ class DatabaseLauncherTest {
         mockk(),
         mockk()
       ),
-      UpdatesLogger(context.filesDir)
+      UpdatesLogger(context.filesDir),
+      TestScope()
     )
     val spyLauncher = spyk(launcher)
-    every { spyLauncher.getLaunchableUpdate(any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)
+    coEvery { spyLauncher.getLaunchableUpdate(any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)
 
     val mockedFile = File(context.cacheDir, "test")
-    every { spyLauncher.ensureAssetExists(any(), any(), any(), any()) } returns mockedFile
+    coEvery { spyLauncher.ensureAssetExists(any(), any(), any(), any()) } returns mockedFile
 
-    val mockedCallback = mockk<LauncherCallback>(relaxed = true)
-
-    spyLauncher.launch(db, mockedCallback)
-
-    verify { mockedCallback.onSuccess() }
+    spyLauncher.launch(db)
 
     val sameUpdate = db.updateDao().loadUpdateWithId(testUpdate.id)!!
 

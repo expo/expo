@@ -1,219 +1,189 @@
 package expo.modules.devlauncher.compose.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.composables.core.Dialog
-import com.composables.core.DialogPanel
-import com.composables.core.Icon
-import com.composables.core.Scrim
-import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
-import com.composeunstyled.TextField
-import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.HomeAction
-import expo.modules.devlauncher.compose.HomeState
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
+import expo.modules.devlauncher.compose.models.HomeAction
+import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
-import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
+import expo.modules.devlauncher.compose.ui.AppLoadingErrorDialog
+import expo.modules.devlauncher.compose.ui.DevelopmentSessionActions
+import expo.modules.devlauncher.compose.ui.DevelopmentSessionSection
 import expo.modules.devlauncher.compose.ui.RunningAppCard
-import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
-import expo.modules.devlauncher.compose.ui.SectionHeader
-import expo.modules.devmenu.compose.primitives.Divider
-import expo.modules.devmenu.compose.primitives.Heading
-import expo.modules.devmenu.compose.primitives.RoundedSurface
-import expo.modules.devmenu.compose.primitives.RowLayout
+import expo.modules.devlauncher.compose.ui.rememberAppLoadingErrorDialogState
+import expo.modules.devlauncher.launcher.DevLauncherAppEntry
+import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
+import expo.modules.devlauncher.services.PackagerInfo
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Spacer
-import expo.modules.devmenu.compose.primitives.Text
-import expo.modules.devmenu.compose.theme.Theme
-import expo.modules.devmenu.compose.ui.MenuButton
+import expo.modules.devmenu.compose.ui.Section
+import expo.modules.devmenu.compose.ui.Warning
+import kotlin.time.ExperimentalTime
 
+@Composable
+private fun CrashReport(
+  crashReport: DevLauncherErrorInstance?,
+  onClick: (report: DevLauncherErrorInstance) -> Unit = {}
+) {
+  if (crashReport == null) {
+    return
+  }
+
+  Row(modifier = Modifier.padding(top = NewAppTheme.spacing.`6` - NewAppTheme.spacing.`4`)) {
+    Button(onClick = {
+      onClick(crashReport)
+    }) {
+      Warning(
+        "The last time you tried to open an app the development build crashed. Tap to get more information."
+      )
+    }
+  }
+}
+
+@OptIn(ExperimentalTime::class)
 @Composable
 fun HomeScreen(
   state: HomeState,
   onAction: (HomeAction) -> Unit,
-  onProfileClick: () -> Unit
+  onProfileClick: () -> Unit,
+  onDevServersClick: () -> Unit
 ) {
-  val hasPackager = state.runningPackagers.isNotEmpty()
-  val dialogState = rememberDialogState(initiallyVisible = false)
+  val scrollState = rememberScrollState()
+  val errorDialogState = rememberAppLoadingErrorDialogState(state, onAction)
 
-  Dialog(state = dialogState) {
-    Scrim()
+  AppLoadingErrorDialog(
+    errorDialogState,
+    currentError = state.loadingError
+  )
 
-    DialogPanel(
-      modifier = Modifier
-        .displayCutoutPadding()
-        .systemBarsPadding()
-        .clip(RoundedCornerShape(12.dp))
-        .background(Theme.colors.background.default)
-    ) {
-      Column {
-        RowLayout(
-          rightComponent = {
-            Button(onClick = {
-              dialogState.visible = false
-            }) {
-              Icon(
-                painterResource(R.drawable._expodevclientcomponents_assets_xicon),
-                contentDescription = "Close dialog"
-              )
-            }
-          },
-          modifier = Modifier.padding(Theme.spacing.medium)
-        ) {
-          Heading("Development servers")
-        }
+  Column(
+    modifier = Modifier.padding(horizontal = NewAppTheme.spacing.`4`)
+  ) {
+    AppHeader(
+      onProfileClick = onProfileClick,
+      modifier = Modifier.padding(vertical = NewAppTheme.spacing.`4`)
+    )
 
-        Divider()
-
-        Row(modifier = Modifier.padding(Theme.spacing.medium)) {
-          DevelopmentSessionHelper()
-        }
+    val crashReport = state.crashReport
+    CrashReport(
+      crashReport = crashReport,
+      onClick = {
+        onAction(HomeAction.NavigateToCrashReport(it))
       }
-    }
-  }
-
-  Column {
-    ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
-      AppHeader(
-        appName = state.appName,
-        currentAccount = state.currentAccount,
-        onProfileClick = onProfileClick
-      )
-    }
+    )
 
     Column(
       modifier = Modifier
-        .padding(horizontal = Theme.spacing.medium)
+        .padding(vertical = NewAppTheme.spacing.`6`)
+        .verticalScroll(scrollState)
     ) {
-      Spacer(Theme.spacing.large)
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+      ) {
+        Section.Header("DEVELOPMENT SERVERS")
 
-      Row {
-        Spacer(Theme.spacing.small)
-
-        SectionHeader(
-          "Development servers",
-          leftIcon = {
-            Image(
-              painter = painterResource(R.drawable._expodevclientcomponents_assets_terminalicon),
-              contentDescription = "Terminal Icon"
-            )
-          },
-          rightIcon = {
-            if (hasPackager) {
-              Button(onClick = {
-                dialogState.visible = true
-              }) {
-                Image(
-                  painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
-                  contentDescription = "Terminal Icon"
-                )
-              }
-            }
-          }
-        )
+        Section.Button("INFO", onDevServersClick)
       }
 
-      Spacer(Theme.spacing.small)
+      Spacer(NewAppTheme.spacing.`3`)
 
-      RoundedSurface {
-        Column {
-          if (hasPackager) {
-            for (packager in state.runningPackagers) {
-              RunningAppCard(
-                appIp = packager.url,
-                appName = packager.description
-              ) {
-                onAction(HomeAction.OpenApp(packager.url))
-              }
-              Divider()
-            }
-          } else {
-            Box(modifier = Modifier.padding(Theme.spacing.medium)) {
-              DevelopmentSessionHelper()
-            }
-            Divider()
-          }
+      val runningPackagers = state.runningPackagers
+      if (runningPackagers.isNotEmpty()) {
+        LocalPackagers(
+          state.isFetchingPackagers,
+          runningPackagers,
+          onAction
+        )
+      } else {
+        DevelopmentSessionSection(state.isFetchingPackagers, onAction)
+      }
 
-          MenuButton(
-            onClick = {
-              onAction(HomeAction.RefetchRunningApps)
-            },
-            enabled = !state.isFetchingPackagers,
-            label = if (state.isFetchingPackagers) {
-              "Searching for development servers..."
-            } else {
-              "Fetch development servers"
-            }
-          )
+      Spacer(NewAppTheme.spacing.`6`)
 
-          Accordion("Enter URL manually", initialState = false) {
-            val url = remember { mutableStateOf("") }
+      RecentlyOpenedApps(
+        state.recentlyOpenedApps,
+        onAction
+      )
+    }
+  }
+}
 
-            Column {
-              Spacer(Theme.spacing.tiny)
-
-              TextField(
-                url.value,
-                onValueChange = { newValue ->
-                  url.value = newValue
-                },
-                placeholder = "http://10.0.2.2:8081",
-                textStyle = Theme.typography.medium.font,
-                maxLines = 1,
-                modifier = Modifier
-                  .border(
-                    width = Theme.sizing.border.default,
-                    shape = RoundedCornerShape(Theme.sizing.borderRadius.small),
-                    color = Theme.colors.border.default
-                  )
-                  .padding(Theme.spacing.small),
-                keyboardOptions = KeyboardOptions(
-                  capitalization = KeyboardCapitalization.None,
-                  autoCorrectEnabled = false,
-                  keyboardType = KeyboardType.Uri
-                )
-              )
-
-              Spacer(Theme.spacing.tiny)
-
-              Button(
-                onClick = {
-                  onAction(HomeAction.OpenApp(url.value))
-                },
-                modifier = Modifier.fillMaxWidth()
-              ) {
-                Row(modifier = Modifier.padding(vertical = Theme.spacing.small)) {
-                  Text("Connect")
-                }
-              }
-
-              Spacer(Theme.spacing.small)
-            }
-          }
+@Composable
+private fun LocalPackagers(
+  isFetchingPackagers: Boolean,
+  runningPackagers: Set<PackagerInfo>,
+  onAction: (HomeAction) -> Unit
+) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+    ) {
+      for (packager in runningPackagers) {
+        RunningAppCard(
+          appIp = packager.url,
+          appName = packager.description
+        ) {
+          onAction(HomeAction.OpenApp(packager.url))
         }
       }
+    }
 
-      Spacer(Theme.spacing.medium)
+    Accordion(
+      "New development server",
+      initialState = false,
+      modifier = Modifier
+        .fillMaxWidth()
+    ) {
+      DevelopmentSessionActions(isFetchingPackagers, onAction)
+    }
+  }
+}
+
+@Composable
+private fun RecentlyOpenedApps(
+  recentlyOpenedApps: List<DevLauncherAppEntry>,
+  onAction: (HomeAction) -> Unit
+) {
+  if (recentlyOpenedApps.isEmpty()) {
+    return
+  }
+
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxWidth()
+    ) {
+      Section.Header("RECENTLY OPENED")
+
+      Section.Button("RESET", onClick = { onAction(HomeAction.ResetRecentlyOpenedApps) })
+    }
+
+    Column(
+      verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`1`)
+    ) {
+      for (packager in recentlyOpenedApps) {
+        RunningAppCard(
+          appIp = packager.url,
+          appName = packager.name
+        ) {
+          onAction(HomeAction.OpenApp(packager.url))
+        }
+      }
     }
   }
 }
@@ -221,5 +191,43 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-  HomeScreen(state = HomeState(), onAction = {}, onProfileClick = {})
+  DefaultScreenContainer {
+    HomeScreen(
+      state = HomeState(
+        runningPackagers = setOf(
+          PackagerInfo(
+            description = "BareExpo",
+            url = "http://localhost:8081",
+            isDevelopmentSession = true
+          ),
+          PackagerInfo(
+            description = "Another App",
+            url = "http://localhost:8081",
+            isDevelopmentSession = true
+          )
+        ),
+        recentlyOpenedApps = listOf(
+          DevLauncherAppEntry(
+            timestamp = 1752249592809L,
+            name = "BareExpo",
+            url = "http://10.0.2.2:8081",
+            isEASUpdate = false,
+            updateMessage = null,
+            branchName = null
+          ),
+          DevLauncherAppEntry(
+            timestamp = 1752249592809L,
+            name = "BareExpo",
+            url = "http://10.0.2.2:8081",
+            isEASUpdate = false,
+            updateMessage = null,
+            branchName = null
+          )
+        )
+      ),
+      onAction = {},
+      onProfileClick = {},
+      onDevServersClick = {}
+    )
+  }
 }

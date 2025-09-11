@@ -7,10 +7,26 @@ import EASClient
 private var wasAppLaunchEventDispatched = false
 
 public final class InsightsModule: Module {
+  #if os(iOS)
+  private let platform = "iOS"
+  #elseif os(tvOS)
+  private let platform = "tvOS"
+  #elseif os(macOS)
+  private let platform = "macOS"
+  #elseif os(visionOS)
+  private let platform = "visionOS"
+  #elseif os(macCatalyst)
+  private let platform = "macCatalyst"
+  #else
+  private let platform = "Unknown Apple platform"
+  #endif
+
   public func definition() -> ModuleDefinition {
     Name("ExpoInsights")
 
     OnCreate {
+      self.subscribeToReactMarkers()
+
       DispatchQueue.main.async {
         // The app launch event should be sent only during the first launch
         // which means that we need to prevent dispatching them on app reload.
@@ -23,6 +39,23 @@ public final class InsightsModule: Module {
         }
       }
     }
+
+    OnDestroy {
+      NotificationCenter.default.removeObserver(self)
+    }
+  }
+
+  private func subscribeToReactMarkers() {
+    NotificationCenter.default.addObserver(self, selector: #selector(contentAppeared), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
+  }
+
+  @objc
+  private func contentAppeared(_ notification: Notification) {
+    let date = Date()
+    Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_START", at: ReactMarker.getRunJSBundleStartTime())
+    Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_END", at: ReactMarker.getRunJSBundleEndTime())
+    Insights.shared.sendOnce(event: "APP_STARTUP_END", at: ReactMarker.getAppStartupEndTime())
+    Insights.shared.sendOnce(event: "CONTENT_APPEARED", at: date)
   }
 
   /**
@@ -102,7 +135,7 @@ public final class InsightsModule: Module {
       "eas_client_id": EASClientID.uuid().uuidString,
       "project_id": projectId,
       "app_version": info?["CFBundleShortVersionString"] as? String,
-      "platform": "iOS",
+      "platform": platform,
       "os_version": UIDevice.current.systemVersion
     ]
   }

@@ -14,14 +14,14 @@ type UniversalFormData = globalThis.FormData & RNFormData;
  */
 export class FetchResponse extends ConcreteNativeResponse implements Response {
   private streamingState: 'none' | 'started' | 'completed' = 'none';
-  private bodyStream: ReadableStream<Uint8Array> | null = null;
+  private bodyStream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
 
   constructor(private readonly abortCleanupFunction: AbortSubscriptionCleanupFunction) {
     super();
     this.addListener('readyForJSFinalization', this.finalize);
   }
 
-  get body(): ReadableStream<Uint8Array> | null {
+  get body(): ReadableStream<Uint8Array<ArrayBuffer>> | null {
     if (this.bodyStream == null) {
       const response = this;
 
@@ -35,7 +35,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
           if (response.streamingState === 'completed') {
             return;
           }
-          response.addListener('didReceiveResponseData', (data: Uint8Array) => {
+          response.addListener('didReceiveResponseData', (data: Uint8Array<ArrayBuffer>) => {
             if (!isControllerClosed) {
               controller.enqueue(data);
             }
@@ -113,7 +113,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     return JSON.parse(text);
   }
 
-  async bytes(): Promise<Uint8Array> {
+  async bytes(): Promise<Uint8Array<ArrayBuffer>> {
     return new Uint8Array(await this.arrayBuffer());
   }
 

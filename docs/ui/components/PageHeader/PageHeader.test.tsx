@@ -30,7 +30,7 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    const linkElement = screen.getAllByRole('link', { hidden: false })[0];
+    const linkElement = screen.getAllByRole('link', { hidden: false, name: 'GitHub' })[0];
     expect(linkElement.getAttribute('href')).toEqual(
       'https://github.com/expo/expo/tree/main/packages/expo-av'
     );
@@ -38,7 +38,40 @@ describe(PageHeader, () => {
     fireEvent.focus(linkElement);
     const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
     expect(tooltip).toBeInTheDocument();
-    expect(tooltip).toHaveTextContent('View source code of expo-av on GitHub');
+    expect(tooltip).toHaveTextContent('View source code on GitHub');
+  });
+
+  test('displays GitHub changelog link', async () => {
+    renderWithHeadings(
+      <PageHeader
+        title="test-title"
+        packageName="expo-audio"
+        sourceCodeUrl="https://github.com/expo/expo/tree/main/packages/expo-audio"
+        testRequire={require}
+      />
+    );
+    const linkElement = screen.getAllByRole('link', { hidden: false, name: 'Changelog' })[0];
+    expect(linkElement.getAttribute('href')).toEqual(
+      'https://github.com/expo/expo/tree/main/packages/expo-audio/CHANGELOG.md'
+    );
+
+    fireEvent.focus(linkElement);
+    const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent('View package changelog on GitHub');
+  });
+
+  test('do not display GitHub changelog link for vendored packages', async () => {
+    renderWithHeadings(
+      <PageHeader
+        title="test-title"
+        packageName="react-native-reanimated"
+        sourceCodeUrl="https://github.com/software-mansion/react-native-reanimated"
+        testRequire={require}
+      />
+    );
+    const linkElement = screen.queryAllByRole('link', { hidden: false, name: 'Changelog' })[0];
+    expect(linkElement).toBe(undefined);
   });
 
   test('displays bundled version when packageName provided', () => {

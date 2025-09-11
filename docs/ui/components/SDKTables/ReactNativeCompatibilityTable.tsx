@@ -18,6 +18,7 @@ export const ReactNativeCompatibilityTable = () => {
         <Row>
           <HeaderCell>Expo SDK version</HeaderCell>
           <HeaderCell>React Native version</HeaderCell>
+          <HeaderCell>React version</HeaderCell>
           <HeaderCell>React Native Web version</HeaderCell>
         </Row>
       </TableHead>
@@ -26,6 +27,7 @@ export const ReactNativeCompatibilityTable = () => {
           <Row key={version.sdk}>
             <Cell>{version.sdk}</Cell>
             <Cell>{version['react-native']}</Cell>
+            <Cell>{version['react']}</Cell>
             <Cell>{version['react-native-web']}</Cell>
           </Row>
         ))}

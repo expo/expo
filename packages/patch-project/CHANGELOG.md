@@ -10,6 +10,50 @@
 
 ### 💡 Others
 
+## 0.3.7 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.5 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.3 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.11 - 2025-07-15
+
+### 🐛 Bug fixes
+
+- Fixed patches applying error when there were changed spaces. ([#38060](https://github.com/expo/expo/pull/38060) by [@kudo](https://github.com/kudo))
+
+## 0.2.10 - 2025-07-15
+
+### 🐛 Bug fixes
+
+- Fixed running error on SDK 53. ([#37923](https://github.com/expo/expo/pull/37923) by [@kudo](https://github.com/kudo))
+
 ## 0.2.9 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

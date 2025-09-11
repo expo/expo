@@ -26,7 +26,7 @@ export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
 
     Log.log();
     const answer = await confirmAsync({
-      message: `Continue with uncommited changes?`,
+      message: `Continue with uncommitted changes?`,
     });
 
     if (!answer) {
@@ -52,7 +52,7 @@ export async function validateGitStatusAsync(): Promise<boolean> {
     return true;
   } else if (workingTreeStatus === 'dirty') {
     logWarning(
-      'Git branch has uncommited file changes',
+      'Git branch has uncommitted file changes',
       `It's recommended to commit all changes before proceeding in case you want to revert generated changes.`
     );
   } else {

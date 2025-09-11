@@ -3,7 +3,13 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class ListProps: ExpoSwiftUI.ViewProps {
+final class ListProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var listStyle: String = "automatic"
   @Field var moveEnabled: Bool = false
   @Field var deleteEnabled: Bool = false
@@ -34,6 +40,7 @@ struct ListView: ExpoSwiftUI.View {
       .moveDisabled(!props.moveEnabled)
     }
       .modifier(ListStyleModifer(style: props.listStyle))
+      .modifier(CommonViewModifiers(props: props))
       .onAppear {
         editModeEnabled = props.editModeEnabled ? .active : .inactive
       }
@@ -43,7 +50,6 @@ struct ListView: ExpoSwiftUI.View {
         }
       }
       .onChange(of: selection) { selection in
-        print(selection)
         handleSelectionChange(selection: selection)
       }
       .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))

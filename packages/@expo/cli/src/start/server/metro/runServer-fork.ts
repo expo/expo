@@ -3,13 +3,15 @@
 //
 // Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
 // and adds the ability to access the bundler instance.
+import { createConnectMiddleware } from '@expo/metro/metro';
+import type { RunServerOptions } from '@expo/metro/metro';
+import MetroHmrServer, { type Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
+import Server from '@expo/metro/metro/Server';
+import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
+import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import Metro, { RunServerOptions, Server } from 'metro';
-import MetroHmrServer from 'metro/src/HmrServer';
-import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
-import { ConfigT } from 'metro-config';
 import { parse } from 'url';
 import type { WebSocketServer } from 'ws';
 
@@ -39,7 +41,7 @@ export const runServer = async (
   }
 ): Promise<{
   server: http.Server | https.Server;
-  hmrServer: MetroHmrServer | null;
+  hmrServer: MetroHmrServer<MetroHmrClient> | null;
   metro: Server;
 }> => {
   // await earlyPortCheck(host, config.server.port);
@@ -54,7 +56,7 @@ export const runServer = async (
   //   );
   // }
 
-  const { middleware, end, metroServer } = await Metro.createConnectMiddleware(config, {
+  const { middleware, end, metroServer } = await createConnectMiddleware(config, {
     hasReducedPerformance,
     waitForBundler,
     watch,
@@ -123,7 +125,7 @@ export const runServer = async (
 
   return new Promise<{
     server: http.Server | https.Server;
-    hmrServer: MetroHmrServer;
+    hmrServer: MetroHmrServer<MetroHmrClient>;
     metro: Server;
   }>((resolve, reject) => {
     httpServer.on('error', (error) => {

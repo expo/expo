@@ -31,6 +31,20 @@ export async function convertReadableStreamToUint8ArrayAsync(
   return result;
 }
 
+// Also accept instances that don't extend blob but have required methods (for filesystem and custom blob module)
+function isBlob(obj: any): obj is Blob {
+  if (typeof obj !== 'object') {
+    return false;
+  }
+  if (!('arrayBuffer' in obj)) {
+    return false;
+  }
+  if (!('type' in obj)) {
+    return false;
+  }
+  return true;
+}
+
 /**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
@@ -54,7 +68,7 @@ export async function normalizeBodyInitAsync(
     return { body: new Uint8Array(body.buffer, body.byteOffset, body.byteLength) };
   }
 
-  if (body instanceof Blob) {
+  if (body instanceof Blob || isBlob(body)) {
     return {
       body: new Uint8Array(await blobToArrayBufferAsync(body)),
       overriddenHeaders: [['Content-Type', body.type]],

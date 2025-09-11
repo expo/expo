@@ -7,7 +7,7 @@ struct NotUsingUpdatesView: View {
         VStack(spacing: 16) {
           Image(systemName: "exclamationmark.triangle")
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(width: 44, height: 44)
             .foregroundColor(.orange)
 

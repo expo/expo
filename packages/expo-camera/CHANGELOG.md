@@ -8,11 +8,59 @@
 
 ### 🐛 Bug fixes
 
-[iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+### 💡 Others
+
+## 17.0.7 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- [Android] Fix errors on devices that do not have Google Play Services installed. ([#39455](https://github.com/expo/expo/pull/39455) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 17.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.3 — 2025-08-25
+
+### 🐛 Bug fixes
+
+- [Android] Fix early tear down from `onDetachedFromWindow`. ([#39119](https://github.com/expo/expo/pull/39119) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 17.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.1 — 2025-08-15
 
 ### 💡 Others
 
-### 📚 3rd party library updates
+- Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+
+## 17.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [Android] Add support for Meta Quest passthrough camera ([#37748](https://github.com/expo/expo/pull/37748) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix barcode options to correctly handle empty barcodeTypes ([#38100](https://github.com/expo/expo/pull/38100) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+- [Android] Add dismissScanner to module to prevent undefined error. ([#38129](https://github.com/expo/expo/pull/38129) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+- [Android] Correctly handle errors when using `launchScanner`. ([#38322](https://github.com/expo/expo/pull/38322) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix `videoQuality` and `pictureSize` affecting modes they don't apply too. ([#38757](https://github.com/expo/expo/pull/38757) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Use pointerEvents style instead of prop for components on web. ([#38023](https://github.com/expo/expo/pull/38023) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 16.1.10 - 2025-07-01
 

@@ -3,7 +3,7 @@ import type { ActionCrop, ActionExtent } from './ImageManipulator.types';
 import type { ImageRef } from './ImageRef';
 /**
  * A context for an image manipulation. It provides synchronous, chainable functions that schedule transformations on the original image to the background thread.
- * Use an asynchronous [`renderAsync`](#contextrenderasync) to await for all transformations to finish and access the final image.
+ * Use an asynchronous [`renderAsync`](#renderasync) to await for all transformations to finish and access the final image.
  */
 export declare class ImageManipulatorContext extends SharedObject {
     /**

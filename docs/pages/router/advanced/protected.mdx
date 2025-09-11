@@ -93,7 +93,7 @@ export function AppLayout() {
     <Stack>
       <Stack.Protected guard={isLoggedIn}>
         <Stack.Protected guard={isAdmin}>
-          <Stack.Screen name="protected" />
+          <Stack.Screen name="private" />
         </Stack.Protected>
 
         <Stack.Screen name="about" />

@@ -17,7 +17,9 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resumeWithException
 
 class PrintDocumentAdapter(private val context: WeakReference<Context>, private val continuation: Continuation<Unit>, private val uri: String?) : PrintDocumentAdapter() {
-  private val jobName = "Printing"
+  private val jobName: String = uri?.let {
+    Uri.parse(it).lastPathSegment ?: it
+  } ?: "Printing"
 
   override fun onWrite(pages: Array<PageRange>, destination: ParcelFileDescriptor, cancellationSignal: CancellationSignal, callback: WriteResultCallback) {
     if (uri == null) {

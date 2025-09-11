@@ -10,4 +10,4 @@ export declare function sharpAsync(options: SharpGlobalOptions, commands?: Sharp
  * Returns the instance of `sharp` installed by the global `sharp-cli` package.
  * This method will throw errors if the `sharp` instance cannot be found, these errors can be circumvented by ensuring `isAvailableAsync()` resolves to `true`.
  */
-export declare function findSharpInstanceAsync(): Promise<any | null>;
+export declare function findSharpInstanceAsync(): Promise<typeof import('sharp') | null>;

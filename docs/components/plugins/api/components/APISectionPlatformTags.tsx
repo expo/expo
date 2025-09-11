@@ -34,11 +34,12 @@ export const APISectionPlatformTags = ({
   const experimentalData = getAllTagData('experimental', comment);
 
   const platformNames =
-    (userProvidedPlatforms ?? platformsData.length > 0)
+    userProvidedPlatforms ??
+    (platformsData.length > 0
       ? platformsData?.map(platformData => getCommentContent(platformData.content))
       : isCompatibleVersion && !disableFallback
         ? defaultPlatforms?.map(platform => platform.replace('*', ''))
-        : [];
+        : []);
 
   if (experimentalData.length === 0 && !platformNames?.length) {
     return null;

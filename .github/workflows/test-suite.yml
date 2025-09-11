@@ -1,4 +1,4 @@
-name: Test Suite
+name: Test Suite e2e
 
 on:
   workflow_dispatch: {}
@@ -29,10 +29,16 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 16.0
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+      - name: 🔨 Switch to Xcode 16.4
         run: sudo xcode-select --switch /Applications/Xcode_16.4.app
       - name: 🍺 Install required tools
         run: |
@@ -67,9 +73,12 @@ jobs:
       - name: 🥥 Install pods in apps/bare-expo/ios
         if: steps.expo-caches.outputs.ios-pods-hit != 'true'
         run: pod install
+        env:
+          RCT_USE_PREBUILT_RNCORE: 1
+          RCT_USE_RN_DEP: 1
         working-directory: apps/bare-expo/ios
-      - name: 🏗️ Build iOS project
-        run: ./scripts/start-ios-e2e-test.js --build
+      - name: 🏗️ Build iOS project (bare-expo)
+        run: ./scripts/start-ios-e2e-test.ts --build
         working-directory: apps/bare-expo
         timeout-minutes: 55
         env:
@@ -90,16 +99,22 @@ jobs:
           channel: '#expo-ios'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
-          author_name: Test Suite (iOS)
+          author_name: Test Suite e2e (iOS)
 
-  ios-test:
+  ios-test-e2e:
     needs: ios-build
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: true
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
@@ -121,8 +136,8 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🧪 Run tests
-        run: ./scripts/start-ios-e2e-test.js --test
+      - name: 🧪 Run e2e tests (bare-expo)
+        run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
         timeout-minutes: 30
       - name: 📸 Store testing artifacts
@@ -144,7 +159,7 @@ jobs:
           channel: '#expo-ios'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
-          author_name: Test Suite (iOS)
+          author_name: Test Suite e2e (iOS)
 
   android-build:
     runs-on: ubuntu-24.04
@@ -153,15 +168,17 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: true
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
@@ -186,8 +203,8 @@ jobs:
       - name: 🏗️ Gradle prebuild for Android project (workaround to fix build error)
         run: ./gradlew preBuild
         working-directory: apps/bare-expo/android
-      - name: 🏗️ Build Android project
-        run: ./scripts/start-android-e2e-test.js --build
+      - name: 🏗️ Build Android project (bare-expo)
+        run: ./scripts/start-android-e2e-test.ts --build
         working-directory: apps/bare-expo
         timeout-minutes: 35
         env:
@@ -209,9 +226,9 @@ jobs:
           channel: '#expo-android'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
-          author_name: Test Suite (Android)
+          author_name: Test Suite e2e (Android)
 
-  android-test:
+  android-test-e2e:
     needs: android-build
     runs-on: ubuntu-24.04
     strategy:
@@ -219,7 +236,13 @@ jobs:
         api-level: [34]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
       - name: 🌠 Download builds
         uses: actions/download-artifact@v4
         with:
@@ -237,12 +260,12 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🧪 Run tests
+      - name: 🧪 Run e2e tests (bare-expo)
         uses: ./.github/actions/use-android-emulator
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: ./scripts/start-android-e2e-test.js --test
+          script: ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
@@ -264,4 +287,4 @@ jobs:
           channel: '#expo-android'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
-          author_name: Test Suite (Android)
+          author_name: Test Suite e2e (Android)

@@ -7,7 +7,7 @@ export default function CameraScreenNextBarcode() {
   const [result, setResult] = useState<ScanningResult | null>(null);
   const [options, setOptions] = useState<ScanningOptions>({
     isGuidanceEnabled: false,
-    barcodeTypes: ['qr'],
+    barcodeTypes: [],
     isHighlightingEnabled: false,
     isPinchToZoomEnabled: false,
   });
@@ -25,7 +25,11 @@ export default function CameraScreenNextBarcode() {
 
   async function launchScanner() {
     if (CameraView.isModernBarcodeScannerAvailable) {
-      await CameraView.launchScanner(options);
+      try {
+        await CameraView.launchScanner(options);
+      } catch (error) {
+        console.error('Error launching scanner:', error);
+      }
     }
   }
 
@@ -62,6 +66,20 @@ export default function CameraScreenNextBarcode() {
               setOptions((opts) => ({
                 ...opts,
                 isPinchToZoomEnabled: !options.isPinchToZoomEnabled,
+              }))
+            }
+          />
+        </View>
+        <View style={styles.optionRow}>
+          <Text style={styles.optionsText}>Only scan QR codes</Text>
+          <Checkbox
+            value={options.barcodeTypes.includes('qr')}
+            onValueChange={() =>
+              setOptions((opts) => ({
+                ...opts,
+                barcodeTypes: opts.barcodeTypes.includes('qr')
+                  ? opts.barcodeTypes.filter((type) => type !== 'qr')
+                  : [...opts.barcodeTypes, 'qr'],
               }))
             }
           />

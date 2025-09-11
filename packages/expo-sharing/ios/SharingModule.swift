@@ -8,7 +8,7 @@ public final class SharingModule: Module {
     AsyncFunction("shareAsync") { (url: URL, options: SharingOptions, promise: Promise) in
       let grantedPermissions = FileSystemUtilities.permissions(appContext, for: url)
 
-      guard grantedPermissions.contains(.read) else {
+      guard grantedPermissions.contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
         throw FilePermissionException()
       }
 

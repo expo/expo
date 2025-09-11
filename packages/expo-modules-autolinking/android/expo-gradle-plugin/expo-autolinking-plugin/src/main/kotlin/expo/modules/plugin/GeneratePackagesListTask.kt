@@ -42,7 +42,7 @@ abstract class GeneratePackagesListTask : Exec() {
   override fun exec() {
     val autolinkingOptions = AutolinkingOptions.fromJson(options.get())
     commandLine(
-      AutolinkigCommandBuilder()
+      AutolinkingCommandBuilder()
         .command("generate-package-list")
         .option("namespace", namespace.get())
         .option("target", outputFile.get().asFile.absolutePath)

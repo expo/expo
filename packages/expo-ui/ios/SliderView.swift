@@ -3,7 +3,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class SliderProps: ExpoSwiftUI.ViewProps {
+final class SliderProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var value: Float?
   @Field var steps: Int = 0
   @Field var min: Float = 0.0
@@ -32,6 +38,7 @@ struct SliderView: ExpoSwiftUI.View {
   var body: some View {
     #if !os(tvOS)
     Slider(value: $value, in: props.min...props.max, step: getStep(props.min, props.max, props.steps) )
+    .modifier(CommonViewModifiers(props: props))
     .onChange(of: value, perform: { newValue in
       if props.value == newValue {
         return

@@ -3,10 +3,10 @@ package expo.modules.notifications.notifications.emitting
 import android.os.Bundle
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.notifications.notifications.NotificationManager
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.debug.DebugLogging
 import expo.modules.notifications.notifications.interfaces.NotificationListener
-import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationResponse
 

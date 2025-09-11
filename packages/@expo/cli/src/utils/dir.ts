@@ -59,3 +59,8 @@ export const removeAsync = (path: string): Promise<void> => {
     force: true,
   });
 };
+
+export function isPathInside(child: string, parent: string): boolean {
+  const relative = path.relative(parent, child);
+  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+}

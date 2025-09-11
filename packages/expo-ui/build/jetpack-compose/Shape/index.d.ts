@@ -1,4 +1,5 @@
 import { ViewStyle } from 'react-native';
+import { ExpoModifier } from '../../types';
 export type ShapeProps = {
     /**
      * Corner rounding percentage. Multiplied by the shorter dimension of the view to produce pixel values.
@@ -29,13 +30,15 @@ export type ShapeProps = {
     style?: ViewStyle;
     /** Color of the shape */
     color?: string;
+    /** Modifiers for the component */
+    modifiers?: ExpoModifier[];
 };
 declare function Star(props: ShapeProps): import("react").JSX.Element;
 declare function PillStar(props: ShapeProps): import("react").JSX.Element;
 declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>): import("react").JSX.Element;
 declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
 declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>): import("react").JSX.Element;
-declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
+declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color' | 'modifiers'>): import("react").JSX.Element;
 export declare const Shape: {
     Star: typeof Star;
     PillStar: typeof PillStar;

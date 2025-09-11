@@ -55,6 +55,7 @@ export const updatesStateFromContext = (context) => {
         downloadedUpdate,
         checkError: context.checkError,
         downloadError: context.downloadError,
+        downloadProgress: context.downloadProgress,
         lastCheckForUpdateTimeSinceRestart: context.lastCheckForUpdateTime,
     };
 };

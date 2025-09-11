@@ -71,7 +71,12 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
-        }>>) => import("@react-navigation/native").NavigationAction)): void;
+        }>>) => Readonly<{
+            type: string;
+            payload?: object;
+            source?: string;
+            target?: string;
+        }>)): void;
         navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined, options?: {
             merge?: boolean;
             pop?: boolean;
@@ -121,25 +126,9 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             type: string;
             stale: false;
         }>;
-        setStateForNextRouteNamesChange(state: Readonly<{
-            key: string;
-            index: number;
-            routeNames: string[];
-            history?: unknown[];
-            routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
-            type: string;
-            stale: false;
-        }> | import("@react-navigation/native").PartialState<Readonly<{
-            key: string;
-            index: number;
-            routeNames: string[];
-            history?: unknown[];
-            routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
-            type: string;
-            stale: false;
-        }>>): void;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<TabNavigationEventMap> & {
-        setParams<RouteName extends string>(params: Partial<object | undefined>): void;
+        setParams(params: Partial<object | undefined>): void;
+        replaceParams(params: object | undefined): void;
     } & TabActionHelpers<ParamListBase>;
     describe: (route: import("@react-navigation/native").RouteProp<ParamListBase>, placeholder: boolean) => import("@react-navigation/native").Descriptor<import("./TabContext").ExpoTabsNavigatorScreenOptions, Omit<{
         dispatch(action: Readonly<{
@@ -178,7 +167,6 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         getId(): string | undefined;
         getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
         getState(): TabNavigationState<any>;
-        setStateForNextRouteNamesChange(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
         getParent<T = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
             key: string;
@@ -189,8 +177,10 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             type: string;
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T;
-        setParams(params: Partial<object | undefined>): void;
         setOptions(options: Partial<import("./TabContext").ExpoTabsNavigatorScreenOptions>): void;
+    } & {
+        setParams(params: Partial<object | undefined>): void;
+        replaceParams(params: object | undefined): void;
     } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>;
     descriptors: Record<string, import("@react-navigation/native").Descriptor<import("./TabContext").ExpoTabsNavigatorScreenOptions, Omit<{
         dispatch(action: Readonly<{
@@ -229,7 +219,6 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         getId(): string | undefined;
         getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
         getState(): TabNavigationState<any>;
-        setStateForNextRouteNamesChange(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
         getParent<T = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
             key: string;
@@ -240,8 +229,10 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             type: string;
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T;
-        setParams(params: Partial<object | undefined>): void;
         setOptions(options: Partial<import("./TabContext").ExpoTabsNavigatorScreenOptions>): void;
+    } & {
+        setParams(params: Partial<object | undefined>): void;
+        replaceParams(params: object | undefined): void;
     } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
     NavigationContent: ({ children }: {
         children: React.ReactNode;

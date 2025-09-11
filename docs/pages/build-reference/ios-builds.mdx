@@ -53,7 +53,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Store a cache of files and directories defined in the [build profile](/build/eas-json). **Podfile.lock** is cached by default. Subsequent builds will restore this cache.
 1. Upload the application archive to a private AWS S3 bucket.
 
-   - The artifact path can be configured in **eas.json** at `builds.ios.PROFILE_NAME.applicationArchivePath`. It defaults to **ios/build/App.ipa**. You can specify a glob-like pattern for `applicationArchivePath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
+   - The artifact path can be configured in **eas.json** at `builds.ios.PROFILE_NAME.applicationArchivePath`. It defaults to **ios/build/App.ipa**. You can specify a glob-like pattern for `applicationArchivePath`. We're using [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching.
 
 1. If the build was successful: run the `eas-build-on-success` script from **package.json** if defined.
 1. If the build failed: run the `eas-build-on-error` script from **package.json** if defined.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from 'metro';
+import type { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types.flow';
 import { SerializerParameters } from './withExpoSerializers';
 export declare function getTransformEnvironment(url: string): string | null;
 /** Strips the process.env polyfill in server environments to allow for accessing environment variables off the global. */

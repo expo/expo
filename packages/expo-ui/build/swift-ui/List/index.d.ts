@@ -1,7 +1,6 @@
-import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
+import { type CommonViewModifierProps } from '../types';
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
-export interface ListProps {
+export interface ListProps extends CommonViewModifierProps {
     /**
      * One of the predefined ListStyle types in SwiftUI.
      * @default 'automatic'
@@ -51,40 +50,10 @@ export interface ListProps {
     onSelectionChange?: (selection: number[]) => void;
 }
 /**
- * DeleteItemEvent represents an event triggered when an item is deleted from the list.
- */
-type DeleteItemEvent = ViewEvent<'onDeleteItem', {
-    index: number;
-}>;
-/**
- * MoveItemEvent represents an event triggered when an item is moved in the list.
- */
-type MoveItemEvent = ViewEvent<'onMoveItem', {
-    from: number;
-    to: number;
-}>;
-/**
- * SelectItemEvent represents an event triggered when the selection changes in a list.
- */
-type SelectItemEvent = ViewEvent<'onSelectionChange', {
-    selection: number[];
-}>;
-export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelectionChange'> & DeleteItemEvent & MoveItemEvent & SelectItemEvent & {
-    children: React.ReactNode;
-};
-/**
- * `<List>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function ListPrimitive(props: ListProps): import("react").JSX.Element | null;
-/**
  * A list component that renders its children using a native SwiftUI list.
  * @param {ListProps} props - The properties for the list component.
  * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
  * @platform ios
  */
-export declare function List(props: ListProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
-export {};
+export declare function List(props: ListProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

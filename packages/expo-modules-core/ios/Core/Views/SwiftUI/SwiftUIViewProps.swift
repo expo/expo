@@ -2,6 +2,8 @@
 
 import SwiftUI
 
+internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
+
 extension ExpoSwiftUI {
   /**
    Base implementation of the view props object for SwiftUI views.
@@ -15,6 +17,13 @@ extension ExpoSwiftUI {
      */
     @Field public var children: [any AnyChild]?
 
+    public internal(set) weak var appContext: AppContext?
+
+    /**
+     A global event dispatcher that allows views to call `view.dispatchEvent(_:payload)` directly
+     */
+    public let globalEventDispatcher = EventDispatcher(GLOBAL_EVENT_NAME)
+
     internal func updateRawProps(_ rawProps: [String: Any], appContext: AppContext) throws {
       // Update the props just like the records
       try update(withDict: rawProps, appContext: appContext)
@@ -24,6 +33,10 @@ extension ExpoSwiftUI {
     }
 
     internal func setUpEvents(_ dispatcher: @escaping (_ eventName: String, _ payload: Any) -> Void) {
+      globalEventDispatcher.handler = { payload in
+        dispatcher(GLOBAL_EVENT_NAME, payload)
+      }
+
       Mirror(reflecting: self).children.forEach { (label: String?, value: Any) in
         guard let event = value as? EventDispatcher else {
           return

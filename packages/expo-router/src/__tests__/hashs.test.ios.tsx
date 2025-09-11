@@ -1,8 +1,9 @@
+import { act, screen } from '@testing-library/react-native';
 import React, { Text } from 'react-native';
 
 import { router } from '../exports';
 import { store } from '../global-state/router-store';
-import { act, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('can push a hash url', () => {
   renderRouter({
@@ -24,7 +25,7 @@ it('can push a hash url', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -34,7 +35,7 @@ it('can push a hash url', () => {
           index: 4,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -144,7 +145,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -154,7 +155,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', '+not-found'],
+          routeNames: ['index'],
           routes: [
             {
               key: expect.any(String),

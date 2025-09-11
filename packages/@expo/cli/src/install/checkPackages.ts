@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
+import resolveFrom from 'resolve-from';
 
 import { fixPackagesAsync } from './fixPackages';
 import { Options } from './resolveOptions';
@@ -73,10 +74,11 @@ export async function checkPackagesAsync(
    *       and you cannot replace this guard with a try/catch around the import('expo-router')
    */
   if (pkg.dependencies?.['expo-router']) {
+    // TODO(@kitten): This should be removed. None of the checks apply anymore
     try {
       const { doctor: routerDoctor } = await import('expo-router/doctor.js');
       dependencies.push(
-        ...routerDoctor(pkg, require.resolve('@react-navigation/native'), {
+        ...routerDoctor(pkg, resolveFrom.silent(projectRoot, '@react-navigation/native'), {
           bold: chalk.bold,
           learnMore,
         })

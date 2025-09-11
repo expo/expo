@@ -22,11 +22,11 @@ class DevLauncherTabBarManager {
   }
 
   func restoreOriginalAppearance() {
-    if let originalStandard = originalStandardAppearance {
-      UITabBar.appearance().standardAppearance = originalStandard
+    if let originalStandardAppearance {
+      UITabBar.appearance().standardAppearance = originalStandardAppearance
     }
-    if let originalScrollEdge = originalScrollEdgeAppearance {
-      UITabBar.appearance().scrollEdgeAppearance = originalScrollEdge
+    if let originalScrollEdgeAppearance {
+      UITabBar.appearance().scrollEdgeAppearance = originalScrollEdgeAppearance
     }
   }
 }

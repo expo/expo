@@ -1,16 +1,11 @@
 import { Children, isValidElement, ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
-import { ContextMenuElementBase, EventHandlers, Submenu, SubmenuProps } from './index';
-import {
-  Button,
-  ButtonPrimitive,
-  ButtonProps,
-  NativeButtonProps,
-  transformButtonProps,
-} from '../Button';
-import { Picker, PickerPrimitive, PickerProps } from '../Picker';
-import { Switch, SwitchPrimitive, SwitchProps } from '../Switch';
+import { type ContextMenuElementBase, type EventHandlers } from './types';
+import { Button, transformButtonProps, type ButtonProps, type NativeButtonProps } from '../Button';
+import { Picker, type PickerProps } from '../Picker';
+import { Switch, type SwitchProps } from '../Switch';
+import { Submenu, type SubmenuProps } from './Submenu';
 
 // We use this slightly odd typing for the elements to make unpacking the elements easier on the native side
 type ButtonMenuElement = {
@@ -57,17 +52,17 @@ function processChildElement(
 
   const uuid = expo.uuidv4();
 
-  if (child.type === Button || child.type === ButtonPrimitive) {
+  if (child.type === Button) {
     // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createButtonElement(uuid, child.props, eventHandlersMap);
   }
 
-  if (child.type === Switch || child.type === SwitchPrimitive) {
+  if (child.type === Switch) {
     // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createSwitchElement(uuid, child.props, eventHandlersMap);
   }
 
-  if (child.type === Picker || child.type === PickerPrimitive) {
+  if (child.type === Picker) {
     // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createPickerElement(uuid, child.props, eventHandlersMap);
   }

@@ -30,5 +30,6 @@ enum CppType {
   JS_FUNCTION = 1 << 18,
   ANY = 1 << 19,
   NULLABLE = 1 << 20,
+  VALUE_OR_UNDEFINED = 1 << 21,
 };
 } // namespace expo

@@ -25,7 +25,6 @@ const shouldBeInstalledGloballyItem = {
 };
 
 export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
-  { packageName: 'expo-modules-core', ...baseCheckItem },
   { packageName: 'expo-modules-autolinking', ...baseCheckItem },
   { packageName: 'expo-dev-launcher', ...baseCheckItem },
   { packageName: 'expo-dev-menu', ...baseCheckItem },
@@ -55,6 +54,33 @@ export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
         'https://docs.expo.dev/versions/latest/sdk/splash-screen/'
       )}`,
     sdkVersionRange: '>=49.0.0',
+  },
+  {
+    packageName: '@expo/prebuild-config',
+    ...baseCheckItem,
+    // This has been true for a while, but I can't predict if removing it will cause issues in past SDK versions
+    sdkVersionRange: '>=53.0.0',
+  },
+  {
+    packageName: 'expo-modules-core',
+    getMessage: () =>
+      `The package "expo-modules-core" should not be installed directly in your project. You should instead use the exported API from the expo package.`,
+    sdkVersionRange: '*',
+  },
+  {
+    packageName: '@expo/config-plugins',
+    getMessage: () =>
+      `The package "@expo/config-plugins" should not be installed directly in your project. You should instead use "expo/config-plugins" which is a sub-export of the expo package.\n` +
+      `If you installed "@expo/config-plugins" to fulfill a peer dependency for a config plugin, the plugin's maintainer should switch to the "expo/config-plugins" import, and you can ignore this warning.`,
+    // See: https://github.com/expo/expo/pull/18855
+    sdkVersionRange: '>=48.0.0',
+  },
+  {
+    packageName: '@expo/metro-config',
+    getMessage: () =>
+      `The package "@expo/metro-config" should not be installed directly in your project. You should instead use "expo/metro-config" which is a sub-export of the expo package.`,
+    // See: https://github.com/expo/expo/pull/18855
+    sdkVersionRange: '*',
   },
 ];
 

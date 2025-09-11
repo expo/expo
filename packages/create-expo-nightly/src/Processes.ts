@@ -1,7 +1,6 @@
-import { createRequire } from 'node:module';
+import * as Module from 'node:module';
 
-const require = createRequire(import.meta.url);
-const { $, cd } = require('zx') as typeof import('zx');
+const { $, cd } = Module.createRequire(import.meta.url)('zx') as typeof import('zx');
 
 let defaultVerbose = false;
 

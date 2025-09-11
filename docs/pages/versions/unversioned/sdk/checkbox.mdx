@@ -3,7 +3,7 @@ title: Checkbox
 description: A universal React component that provides basic checkbox functionality.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-checkbox'
 packageName: 'expo-checkbox'
-platforms: ['android', 'ios', 'web']
+platforms: ['android', 'ios', 'tvos', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -21,7 +21,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Basic Checkbox usage' dependencies={['expo-checkbox']} platforms={['android', 'web']}>
 
 ```tsx
-import Checkbox from 'expo-checkbox';
+import { Checkbox } from 'expo-checkbox';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 ## API
 
 ```js
-import Checkbox from 'expo-checkbox';
+import { Checkbox } from 'expo-checkbox';
 ```
 
 <APISection packageName="expo-checkbox" apiName="Checkbox" />

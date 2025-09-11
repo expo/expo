@@ -11,7 +11,8 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '15.1',
+    :tvos => '15.1'
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -19,6 +20,9 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'EASClient'
+  s.dependency 'React-Core'
+
+  install_modules_dependencies(s)
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
@@ -26,5 +30,5 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.source_files = "**/*.{h,m,swift}"
+  s.source_files = "**/*.{h,m,mm,swift}"
 end

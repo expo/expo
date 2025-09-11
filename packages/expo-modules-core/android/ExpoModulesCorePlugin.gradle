@@ -62,11 +62,11 @@ ext.applyKspJvmToolchain = {
 // Setup build options that are common for all modules
 ext.useDefaultAndroidSdkVersions = {
   project.android {
-    compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 34)
+    compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 36)
 
     defaultConfig {
-      minSdkVersion project.ext.safeExtGet("minSdkVersion", 23)
-      targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 34)
+      minSdkVersion project.ext.safeExtGet("minSdkVersion", 24)
+      targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 36)
     }
 
     lintOptions {

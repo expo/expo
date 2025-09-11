@@ -1,15 +1,6 @@
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 import { PixelRatio, StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
-function getElement(component) {
-    try {
-        return findDOMNode(component);
-    }
-    catch {
-        return component;
-    }
-}
 function setRef(refProp, ref) {
     if (!refProp)
         return;
@@ -28,11 +19,11 @@ function getSize({ size, ref }) {
     else if (!ref.current || typeof window === 'undefined') {
         return { width: 0, height: 0 };
     }
-    const element = getElement(ref.current);
+    const element = ref.current;
     const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
     return { width, height };
 }
-const Canvas = React.forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
+const Canvas = (props) => createElement('canvas', props);
 const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
     const [size, setSize] = React.useState(null);
     const ref = React.useRef(null);
@@ -76,7 +67,7 @@ const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
         setRef(props.canvasRef, canvas);
     }, [_canvasRef]);
     return (<View {...props} style={[styles.wrapper, style]} ref={ref} onLayout={onLayout}>
-      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill}/>
+      <Canvas ref={_canvasRef} style={[StyleSheet.absoluteFill, { pointerEvents }]}/>
       {children}
     </View>);
 };

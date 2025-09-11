@@ -10,7 +10,8 @@ import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.sharedobjects.isSharedObjectClass
+import expo.modules.kotlin.sharedobjects.isSharedRefClass
 import expo.modules.kotlin.traits.Trait
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.TypeConverterProvider
@@ -19,7 +20,6 @@ import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubclassOf
 
 class ClassComponentBuilder<SharedObjectType : Any>(
   private val appContext: AppContext,
@@ -33,8 +33,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 
   fun buildClass(): ClassDefinitionData {
     val hasOwnerType = ownerClass != Unit::class
-    val isSharedObject = hasOwnerType && ownerClass.isSubclassOf(SharedObject::class)
-    val isSharedRef = hasOwnerType && ownerClass.isSubclassOf(SharedRef::class)
+    val isSharedObject = hasOwnerType && ownerClass.isSharedObjectClass()
+    val isSharedRef = hasOwnerType && ownerClass.isSharedRefClass()
 
     if (eventsDefinition != null && isSharedObject) {
       listOf("__expo_onStartListeningToEvent" to SharedObject::onStartListeningToEvent, "__expo_onStopListeningToEvent" to SharedObject::onStopListeningToEvent)

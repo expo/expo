@@ -1,20 +1,16 @@
 package expo.modules.medialibrary.albums
 
-import android.os.Bundle
 import android.provider.MediaStore.Images.Media
 import expo.modules.medialibrary.AlbumException
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import expo.modules.medialibrary.throwableContentResolver
-import expo.modules.test.core.legacy.PromiseMock
-import expo.modules.test.core.legacy.assertRejectedWithCode
-import expo.modules.test.core.legacy.promiseResolvedWithType
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,17 +19,15 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class GetAlbumsTests {
 
-  private lateinit var promise: PromiseMock
   private lateinit var mockContext: MockContext
 
   @Before
   fun setUp() {
-    promise = PromiseMock()
     mockContext = MockContext()
   }
 
   @Test
-  fun `GetAlbums should resolve with correct response`() {
+  fun `getAlbums should resolve with correct response`() = runTest {
     // arrange
     val bucketDisplayName = "Some Album Name"
 
@@ -48,21 +42,18 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    GetAlbums(context, promise).execute()
+    val result = getAlbums(context)
 
     // assert
-    promiseResolvedWithType<List<Bundle>>(promise) {
-      assertEquals(1, it.size)
-
-      val firstAlbum = it[0]
-      assertEquals(MockData.MOCK_ALBUM_ID, firstAlbum.getString("id"))
-      assertEquals(2, firstAlbum.getInt("assetCount"))
-      assertEquals(bucketDisplayName, firstAlbum.getString("title"))
-    }
+    assertEquals(1, result.size)
+    val firstAlbum = result[0]
+    assertEquals(MockData.MOCK_ALBUM_ID, firstAlbum.getString("id"))
+    assertEquals(2, firstAlbum.getInt("assetCount"))
+    assertEquals(bucketDisplayName, firstAlbum.getString("title"))
   }
 
   @Test
-  fun `GetAlbums should not list albums with null name`() {
+  fun `getAlbums should not list albums with null name`() = runTest {
     // arrange
     val bucketId = 123456
     val bucketDisplayName = null
@@ -77,47 +68,51 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    GetAlbums(context, promise).execute()
+    val result = getAlbums(context)
 
     // assert
-    promiseResolvedWithType<List<Bundle>>(promise) {
-      assertEquals(0, it.size)
-    }
+    assertEquals(0, result.size)
   }
 
   @Test
-  fun `GetAlbums should reject on null cursor`() {
+  fun `getAlbums should reject on null cursor`() = runTest {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
-    // act
-    // assert
-    assertThrows(AlbumException::class.java) {
-      GetAlbums(context, promise).execute()
+    // act && assert
+    try {
+      getAlbums(context)
+      fail()
+    } catch (e: Exception) {
+      assert(e is AlbumException)
     }
   }
 
   @Test
-  fun `GetAlbums should reject on SecurityException`() {
+  fun `getAlbums should reject on SecurityException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    // act
-    GetAlbums(context, promise).execute()
-
-    // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
+    // act && assert
+    try {
+      getAlbums(context)
+      fail()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
+    }
   }
 
   @Test
-  fun `GetAlbums should reject on IllegalArgumentException`() {
+  fun `getAlbums should reject on IllegalArgumentException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
-    // act
-    GetAlbums(context, promise).execute()
-
-    // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
+    // act && assert
+    try {
+      getAlbums(context)
+      fail()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
+    }
   }
 }

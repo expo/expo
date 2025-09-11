@@ -83,27 +83,14 @@ export function addNotificationResponseReceivedListener(listener) {
     });
 }
 /**
- * @deprecated call `remove()` on the subscription object instead.
  *
- * Removes a notification subscription returned by an `addNotificationListener` call.
- * @param subscription A subscription returned by `addNotificationListener` method.
- * @header listen
- */
-export function removeNotificationSubscription(subscription) {
-    console.warn('`removeNotificationSubscription` is deprecated. Call `subscription.remove()` instead.');
-    if (typeof subscription?.remove === 'function') {
-        subscription.remove();
-    }
-    else {
-        throw new Error(`removeNotificationSubscription: Provided value is not a subscription: ${subscription}`);
-    }
-}
-/**
- * Gets the notification response that was received most recently
+ * Gets the notification response received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
  *
  * - `null` - if no notification response has been received yet
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
+ *
+ * @deprecated Use `getLastNotificationResponse` instead.
  */
 export async function getLastNotificationResponseAsync() {
     return getLastNotificationResponse();
@@ -131,6 +118,7 @@ export function getLastNotificationResponse() {
  * If a component is using the [`useLastNotificationResponse`](#uselastnotificationresponse) hook,
  * this call will also clear the value returned by the hook.
  *
+ * @deprecated Use `clearLastNotificationResponse` instead.
  * @return A promise that resolves if the native call was successful.
  */
 export async function clearLastNotificationResponseAsync() {

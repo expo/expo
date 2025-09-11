@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
-exports.ImperativeApiEmitter = ImperativeApiEmitter;
+exports.useImperativeApiEmitter = useImperativeApiEmitter;
 const react_1 = require("react");
 const routing_1 = require("./global-state/routing");
 /**
@@ -21,11 +21,11 @@ exports.router = {
     prefetch: routing_1.prefetch,
     setParams: routing_1.setParams,
 };
-function ImperativeApiEmitter() {
+function useImperativeApiEmitter(ref) {
     const events = (0, react_1.useSyncExternalStore)(routing_1.routingQueue.subscribe, routing_1.routingQueue.snapshot, routing_1.routingQueue.snapshot);
     (0, react_1.useEffect)(() => {
-        routing_1.routingQueue.run();
-    }, [events]);
+        routing_1.routingQueue.run(ref);
+    }, [events, ref]);
     return null;
 }
 //# sourceMappingURL=imperative-api.js.map

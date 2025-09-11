@@ -7,7 +7,6 @@ import android.util.TypedValue
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import expo.modules.devlauncher.R
 
 @SuppressLint("ViewConstructor")
 class DevLauncherSplashScreen(
@@ -24,7 +23,6 @@ class DevLauncherSplashScreen(
     )
 
     val imageView = ImageView(context)
-    imageView.setImageResource(R.drawable._expodevclientcomponents_assets_logoicon)
     imageView.layoutParams = LayoutParams(
       imageWidthPixels.toInt(),
       LinearLayout.LayoutParams.WRAP_CONTENT

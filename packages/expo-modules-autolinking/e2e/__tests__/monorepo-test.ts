@@ -21,6 +21,8 @@ const apps = ['ejected', 'managed', 'with-sentry'];
 const testCases = combinations('app', apps, 'platform', ['android', 'apple']);
 
 jest.setTimeout(5 * 60 * 1000);
+jest.unmock('fs/promises');
+jest.unmock('fs');
 
 describe('monorepo', () => {
   let monorepoProject: string | undefined;

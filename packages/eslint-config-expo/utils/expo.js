@@ -6,6 +6,7 @@ module.exports = {
     'android/app/build',
   ],
   rules: {
+    'expo/use-dom-exports': ['error'],
     'expo/no-env-var-destructuring': ['error'],
     'expo/no-dynamic-env-var': ['error'],
   },

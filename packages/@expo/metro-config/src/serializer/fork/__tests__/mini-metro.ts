@@ -1,5 +1,12 @@
-import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
+import type {
+  Dependency,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  SerializerOptions,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import CountingSet from '@expo/metro/metro/lib/CountingSet';
+import metroConfigDefaults from '@expo/metro/metro-config/defaults';
 import * as path from 'path';
 
 import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
@@ -7,8 +14,7 @@ import * as expoMetroTransformWorker from '../../../transform-worker/transform-w
 
 export const projectRoot = '/app';
 
-const METRO_CONFIG_DEFAULTS =
-  require('metro-config/src/defaults/index').getDefaultValues() as import('metro-config').ConfigT;
+const METRO_CONFIG_DEFAULTS = metroConfigDefaults.getDefaultValues(null);
 
 function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   const map = new Map();
@@ -149,7 +155,8 @@ export async function microBundle({
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
       if (visited.has(absPath)) {
-        modules.get(absPath)?.inverseDependencies.add(parent?.path);
+        const mod = modules.get(absPath);
+        if (mod && parent?.path) mod.inverseDependencies.add(parent.path);
         continue;
       }
       visited.add(absPath);
@@ -326,8 +333,6 @@ export async function parseModule(
       }))
     ),
     inverseDependencies: new CountingSet(),
-
-    // @ts-expect-error
     output,
   };
 }

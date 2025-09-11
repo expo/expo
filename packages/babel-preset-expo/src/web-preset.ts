@@ -9,6 +9,8 @@
  * https://github.com/facebook/react-native/blob/2af1da42ff517232f1309efed7565fe9ddbbac77/packages/react-native-babel-preset/src/configs/main.js#L1
  */
 
+import { getBabelRuntimeVersion } from './common';
+
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
@@ -21,7 +23,7 @@ const defaultPlugins = [
   [require('@babel/plugin-transform-private-methods'), { loose }],
   [require('@babel/plugin-transform-private-property-in-object'), { loose }],
   [require('@babel/plugin-syntax-export-default-from')],
-  [require('@babel/plugin-transform-export-namespace-from')],
+  [require('./babel-plugin-transform-export-namespace-from')],
 ];
 
 module.exports = function (
@@ -52,15 +54,15 @@ module.exports = function (
   }
 
   if (!options || options.enableBabelRuntime !== false) {
-    // Allows configuring a specific runtime version to optimize output
-    const isVersion = typeof options?.enableBabelRuntime === 'string';
-
     extraPlugins.push([
       require('@babel/plugin-transform-runtime'),
       {
         helpers: true,
         regenerator: false,
-        ...(isVersion && { version: options.enableBabelRuntime }),
+        enableBabelRuntime:
+          options.enableBabelRuntime == null || options.enableBabelRuntime === true
+            ? getBabelRuntimeVersion()
+            : options.enableBabelRuntime,
       },
     ]);
   }

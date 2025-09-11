@@ -4,6 +4,14 @@ describe(modifyFileDuringPipe, () => {
   it(`renames _vscode to .vscode`, () => {
     expect(
       modifyFileDuringPipe({
+        path: 'package/_vscode/',
+        type: 'File',
+      }).path
+    ).toEqual('package/.vscode/');
+  });
+  it(`renames files within _vscode to .vscode`, () => {
+    expect(
+      modifyFileDuringPipe({
         path: 'package/_vscode/settings.json',
         type: 'File',
       }).path

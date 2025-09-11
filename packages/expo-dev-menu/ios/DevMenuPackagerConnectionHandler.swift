@@ -66,8 +66,8 @@ class DevMenuPackagerConnectionHandler {
   @objc
   func sendDevCommandNotificationHandler(_ params: [String: Any]) {
     guard let manager = manager,
-          let command = params["name"] as? String,
-          let bridge = manager.currentBridge
+      let command = params["name"] as? String,
+      let bridge = manager.currentBridge
     else {
       return
     }

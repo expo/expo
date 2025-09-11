@@ -37,7 +37,7 @@ import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.unit.Dp
 import com.composeunstyled.LocalContentColor
-import expo.modules.devmenu.compose.theme.LocalIsDarkTheme
+import expo.modules.devmenu.compose.newtheme.LocalIsDarkTheme
 
 /**
  * Creates a Ripple using the provided values and values inferred from the theme.

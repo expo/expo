@@ -1,8 +1,18 @@
-import { View, Text, Button, Spacer, scale } from 'expo-dev-client-components';
+import {
+  View,
+  Text,
+  Button,
+  Spacer,
+  scale,
+  useExpoTheme,
+  padding,
+} from 'expo-dev-client-components';
 import { isDevice } from 'expo-device';
 import React from 'react';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { CappedWidthContainerView } from '../components/Views';
 
 type Props = {
   onClose: () => void;
@@ -45,14 +55,19 @@ const simulatorMessage = Platform.select({
 
 export function DevMenuOnboarding({ onClose }: Props) {
   const { bottom } = useSafeAreaInsets();
-
+  const theme = useExpoTheme();
   return (
-    <View
-      flex="1"
-      bg="default"
-      pt="medium"
-      px="large"
-      style={{ paddingBottom: bottom + scale.medium }}>
+    <CappedWidthContainerView
+      style={{
+        flex: 1,
+        backgroundColor: theme.background.default,
+        paddingBottom: bottom + scale.medium,
+        ...padding.pt.medium,
+        ...padding.px.large,
+      }}
+      wrapperStyle={{
+        backgroundColor: theme.background.default,
+      }}>
       <View>
         <Text size="medium" maxFontSizeMultiplier={1.2}>
           This is the developer menu. It gives you access to useful tools in Expo Go.
@@ -72,6 +87,6 @@ export function DevMenuOnboarding({ onClose }: Props) {
           </Button.Text>
         </View>
       </Button.FadeOnPressContainer>
-    </View>
+    </CappedWidthContainerView>
   );
 }

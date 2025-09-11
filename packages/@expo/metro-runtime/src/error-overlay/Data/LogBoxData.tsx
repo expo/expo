@@ -11,8 +11,8 @@
 import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
-import { LogBoxLog, StackType } from './LogBoxLog';
-import type { LogLevel } from './LogBoxLog';
+import { LogBoxLog } from './LogBoxLog';
+import type { LogLevel, StackType } from './LogBoxLog';
 import { LogContext } from './LogContext';
 import { parseLogBoxException } from './parseLogBoxLog';
 import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';

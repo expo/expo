@@ -4,6 +4,7 @@ import * as queryString from 'query-string';
 
 import * as expo from './getPathFromState-forks';
 import type { ExpoConfigItem, ExpoOptions } from './getPathFromState-forks';
+import { removeInternalExpoRouterParams } from '../navigationParams';
 
 // START FORK
 export type Options<ParamList extends object> = ExpoOptions & {
@@ -300,6 +301,7 @@ export function getPathDataFromState<ParamList extends object>(
 
       // START FORK
       delete focusedParams['#'];
+      focusedParams = removeInternalExpoRouterParams(focusedParams);
       // END FORK
 
       const query = queryString.stringify(focusedParams, { sort: false });

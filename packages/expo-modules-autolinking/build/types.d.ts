@@ -3,58 +3,9 @@ type Required<T, K extends keyof T> = T & {
     [P in K]-?: T[P];
 };
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
-export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
-/**
- * Options that can be passed through `expo.autolinking` config in the package.json file.
- */
-export type AutolinkingOptions = {
-    searchPaths?: string[] | null;
-    ignorePaths?: string[] | null;
-    exclude?: string[] | null;
-    flags?: Record<string, any>;
-};
-export type AndroidAutolinkingOptions = AutolinkingOptions & {
-    buildFromSource?: string[] | null;
-};
-export type BaseAutolinkingOptions = AutolinkingOptions & {
-    [key in SupportedPlatform]?: AutolinkingOptions;
-};
-export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
-    android?: AndroidAutolinkingOptions;
-}
-export interface SearchOptions {
-    searchPaths: string[];
-    ignorePaths?: string[] | null;
-    exclude?: string[] | null;
-    platform: SupportedPlatform;
-    silent?: boolean;
-    nativeModulesDir?: string | null;
-    projectRoot: string;
-    /**
-     * Filter the search results to only include the project dependencies.
-     * In a monorepo, you may like to set this to false and link all modules from the monorepo.
-     * @default true
-     */
-    onlyProjectDeps?: boolean;
-    flags?: Record<string, any>;
-    android?: {
-        buildFromSource?: string[] | null;
-    };
-}
-export interface ResolveOptions extends SearchOptions {
-    json?: boolean;
-}
-export interface GenerateOptions extends ResolveOptions {
-    target: string;
-    namespace?: string;
-    empty?: boolean;
-}
-export interface GenerateModulesProviderOptions extends ResolveOptions {
-    target: string;
-    entitlement?: string;
-    packages: string[];
-}
+export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools' | (string & {});
 export type PackageRevision = {
+    name: string;
     path: string;
     version: string;
     config?: ExpoModuleConfig;
@@ -218,6 +169,7 @@ export type RawAndroidProjectConfig = {
      * Prebuilded AAR projects.
      */
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+    gradlePath?: string;
 };
 export type RawAndroidConfig = {
     projects?: WithRequired<RawAndroidProjectConfig, 'name' | 'path'>[];

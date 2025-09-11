@@ -99,6 +99,14 @@ final class TypedArraysSpec: ExpoSpec {
         expect(values.filter({ $0 != 0 }).count) >= 1
       }
 
+      it("returns a correct slice when created from a buffer") {
+        let array = try runtime.eval("new Uint8Array(new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).buffer, 3, 5)").asTypedArray()
+        expect(array.getProperty("byteOffset").getInt()) == 3
+        expect(array.getProperty("byteLength").getInt()) == 5
+        expect(array.getProperty("0").getInt()) == 3
+        expect(array.getProperty("4").getInt()) == 7
+      }
+
       // TODO: Test throwing NotTypedArrayException and ArrayTypeMismatchException
     }
   }

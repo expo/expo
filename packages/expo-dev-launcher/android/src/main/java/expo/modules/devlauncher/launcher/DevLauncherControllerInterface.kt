@@ -26,7 +26,6 @@ interface DevLauncherControllerInterface :
 
   val manifest: Manifest?
   val manifestURL: Uri?
-  val devClientHost: ReactHostWrapper
   val mode: DevLauncherController.Mode
   val appHost: ReactHostWrapper
   val latestLoadedApp: Uri?

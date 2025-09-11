@@ -8,17 +8,34 @@ const constants_1 = require("./constants");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
 const getRoutesRedirects_1 = require("./getRoutesRedirects");
 const linking_1 = require("./link/linking");
-function getNavigationConfig(routes, metaOnly = true) {
+function getNavigationConfig(routes, metaOnly, { sitemap, notFound }) {
+    const config = (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
+    const sitemapRoute = (() => {
+        const path = '_sitemap';
+        if (sitemap === false || isPathInRootConfig(config, path)) {
+            return {};
+        }
+        return generateLinkingPathInRoot(constants_1.SITEMAP_ROUTE_NAME, path, metaOnly);
+    })();
+    const notFoundRoute = (() => {
+        const path = '*not-found';
+        if (notFound === false || isPathInRootConfig(config, path)) {
+            return {};
+        }
+        return generateLinkingPathInRoot(constants_1.NOT_FOUND_ROUTE_NAME, path, metaOnly);
+    })();
     return {
         screens: {
             [constants_1.INTERNAL_SLOT_NAME]: {
                 path: '',
-                ...(0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly),
+                ...config,
             },
+            ...sitemapRoute,
+            ...notFoundRoute,
         },
     };
 }
-function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serverUrl, redirects } = {}) {
+function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serverUrl, redirects, skipGenerated, sitemap, notFound, }) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -28,7 +45,10 @@ function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serv
     const nativeLinking = nativeLinkingKey
         ? context(nativeLinkingKey)
         : undefined;
-    const config = getNavigationConfig(routes, metaOnly);
+    const config = getNavigationConfig(routes, metaOnly, {
+        sitemap: skipGenerated ? false : sitemap,
+        notFound: skipGenerated ? false : notFound,
+    });
     return {
         prefixes: [],
         config,
@@ -80,6 +100,17 @@ function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serv
         // Add all functions to ensure the types never need to fallback.
         // This is a convenience for usage in the package.
         getActionFromState: native_1.getActionFromState,
+    };
+}
+function isPathInRootConfig(config, path) {
+    return Object.values(config.screens).some((screenConfig) => typeof screenConfig === 'string' ? screenConfig === path : screenConfig.path === path);
+}
+function generateLinkingPathInRoot(name, path, metaOnly) {
+    if (metaOnly) {
+        return { [name]: path };
+    }
+    return {
+        [name]: { path },
     };
 }
 //# sourceMappingURL=getLinkingConfig.js.map

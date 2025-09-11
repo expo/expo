@@ -1,5 +1,5 @@
+import type { AssetData } from '@expo/metro/metro';
 import { vol } from 'memfs';
-import type { AssetData } from 'metro';
 
 import { createKeepFileAsync } from '../persistMetroAssets';
 

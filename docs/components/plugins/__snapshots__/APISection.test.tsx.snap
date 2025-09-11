@@ -240,7 +240,7 @@ button.
 not appear on the screen.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -2611,7 +2611,7 @@ sign-out operation.
     </div>
     <br />
     <div
-      class=""
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     >
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
@@ -3043,7 +3043,7 @@ After calling this function, the listener will no longer receive any events from
 which contains all of the pertinent user and credential information.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -3974,7 +3974,7 @@ may be
         A value to specify the style for formatting a name.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -4164,7 +4164,7 @@ for more details.
 You must include the ID string of the user whose credentials you'd like to refresh.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -4495,7 +4495,7 @@ OAuth 2.0 protocol
 None of these options are required.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -4846,7 +4846,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -5740,7 +5740,7 @@ OAuth 2.0 protocol
         .
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -6478,7 +6478,7 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -6722,7 +6722,7 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
         data-testid="callout-container"
       >
         <svg
@@ -7142,12 +7142,7 @@ exports[`APISection expo-pedometer 1`] = `
             &lt;
           </span>
           <span>
-            <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-              href="#permissionresponse"
-            >
-              PermissionResponse
-            </a>
+            PermissionResponse
           </span>
           <span
             class="text-quaternary"
@@ -7785,12 +7780,7 @@ available on this device.
             &lt;
           </span>
           <span>
-            <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-              href="#permissionresponse"
-            >
-              PermissionResponse
-            </a>
+            PermissionResponse
           </span>
           <span
             class="text-quaternary"

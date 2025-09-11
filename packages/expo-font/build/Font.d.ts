@@ -25,7 +25,7 @@ export declare function isLoading(fontFamily: string): boolean;
  * with the platform's native text elements. In the browser, this generates a `@font-face` block in
  * a shared style sheet for fonts. No CSS is needed to use this method.
  *
- * > **Note**: We recommend using the [config plugin](#configuration-in-appjsonappconfigjs) instead whenever possible.
+ * > **Note**: We recommend using the [config plugin](#configuration-in-app-config) instead whenever possible.
  *
  * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
  * with React Native `Text` elements.

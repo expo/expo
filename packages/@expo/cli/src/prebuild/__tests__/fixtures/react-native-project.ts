@@ -1107,7 +1107,7 @@ export default {
       apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
       
       def enableSeparateBuildPerCPUArchitecture = false
-      def enableProguardInReleaseBuilds = false
+      def enableMinifyInReleaseBuilds = false
       def jscFlavor = 'org.webkit:android-jsc:+'
       def enableHermes = project.ext.react.get("enableHermes", false);
       
@@ -1148,7 +1148,7 @@ export default {
               }
               release {
                   signingConfig signingConfigs.debug
-                  minifyEnabled enableProguardInReleaseBuilds
+                  minifyEnabled enableMinifyInReleaseBuilds
                   proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
               }
           }

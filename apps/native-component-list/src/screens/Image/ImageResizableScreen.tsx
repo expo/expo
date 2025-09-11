@@ -9,9 +9,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedGestureHandler,
   useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
@@ -24,11 +23,6 @@ import { Colors } from '../../constants';
 
 type CustomViewProps = React.PropsWithChildren<object>;
 
-type ContextType = {
-  x: number;
-  y: number;
-};
-
 const PADDING = 20;
 const HANDLE_SIZE = 25;
 const HANDLE_SLOP = 10;
@@ -40,16 +34,24 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
   const width = useSharedValue(300);
   const height = useSharedValue(300);
 
-  const panGestureEvent = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, ContextType>({
-    onStart: (_, context) => {
-      context.x = width.value;
-      context.y = height.value;
-    },
-    onActive: (event, context) => {
-      width.value = Math.max(HANDLE_SIZE, Math.min(event.translationX + context.x, MAX_WIDTH));
-      height.value = Math.max(HANDLE_SIZE, Math.min(event.translationY + context.y, MAX_HEIGHT));
-    },
-  });
+  const startingPointX = useSharedValue(0);
+  const startingPointY = useSharedValue(0);
+
+  const panGestureHandler = Gesture.Pan()
+    .onStart(() => {
+      startingPointX.value = width.value;
+      startingPointY.value = height.value;
+    })
+    .onUpdate((event) => {
+      width.value = Math.max(
+        HANDLE_SIZE,
+        Math.min(event.translationX + startingPointX.value, MAX_WIDTH)
+      );
+      height.value = Math.max(
+        HANDLE_SIZE,
+        Math.min(event.translationY + startingPointY.value, MAX_HEIGHT)
+      );
+    });
 
   const canvasStyle = useAnimatedStyle(() => {
     return {
@@ -84,11 +86,11 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
         <Animated.View style={[styles.canvas, canvasStyle]}>
           {children}
 
-          <PanGestureHandler onGestureEvent={panGestureEvent}>
+          <GestureDetector gesture={panGestureHandler}>
             <Animated.View style={styles.resizeHandle}>
               <View style={styles.resizeHandleChild} />
             </Animated.View>
-          </PanGestureHandler>
+          </GestureDetector>
         </Animated.View>
       </View>
     </View>

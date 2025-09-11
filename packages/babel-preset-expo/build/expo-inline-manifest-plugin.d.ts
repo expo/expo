@@ -1,9 +1,2 @@
-import { ConfigAPI } from '@babel/core';
-export declare function expoInlineManifestPlugin(api: ConfigAPI & {
-    types: any;
-}): {
-    name: string;
-    visitor: {
-        MemberExpression(path: any, state: any): void;
-    };
-};
+import type { ConfigAPI, PluginObj } from '@babel/core';
+export declare function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj;

@@ -27,6 +27,7 @@ struct Button: ExpoSwiftUI.View {
       })
     .disabled(props.disabled)
     .tint(props.color)
+    .modifier(CommonViewModifiers(props: props))
     // TODO: Maybe there is a way to do a switch statement similarly to the `if` extension?
     .if(props.variant == .bordered, {
       $0.buttonStyle(.bordered)
@@ -61,9 +62,14 @@ struct Button: ExpoSwiftUI.View {
 
     if #available(iOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
-      button.if(props.variant == .glass, {
-        $0.buttonStyle(.glass)
-      })
+      switch props.variant {
+      case .glass:
+        button.buttonStyle(.glass)
+      case .glassProminent:
+        button.buttonStyle(.glassProminent)
+      default:
+        button
+      }
       #else
       button
       #endif

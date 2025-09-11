@@ -11,6 +11,7 @@ const expo_linking_1 = require("expo-linking");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
+const NoSSR_1 = require("./NoSSR");
 const Link_1 = require("../link/Link");
 const useNavigation_1 = require("../useNavigation");
 const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
@@ -22,6 +23,13 @@ const Pressable_1 = require("../views/Pressable");
  * @hidden
  */
 function Unmatched() {
+    // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L51
+    // we need to ensure that the Unmatched component is not rendered on the server.
+    return (<NoSSR_1.NoSSR>
+      <UnmatchedInner />
+    </NoSSR_1.NoSSR>);
+}
+function UnmatchedInner() {
     const [render, setRender] = react_1.default.useState(false);
     const router = (0, hooks_1.useRouter)();
     const route = (0, native_1.useRoute)();
@@ -35,11 +43,13 @@ function Unmatched() {
     const isPreloaded = (0, stack_1.isRoutePreloadedInStack)(navigation.getState(), route);
     /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
     (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
-        navigation.setOptions({
-            title: 'Not Found',
-        });
+        if (!isPreloaded || (isPreloaded && isFocused)) {
+            navigation.setOptions({
+                title: 'Not Found',
+            });
+        }
     }, [isFocused, isPreloaded, navigation]);
-    return (<react_native_1.View style={styles.container}>
+    return (<react_native_1.View testID="expo-router-unmatched" style={styles.container}>
       <NotFoundAsset />
       <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
         Unmatched Route

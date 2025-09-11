@@ -8,8 +8,7 @@ install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
 platform :ios, '15.1'
-install! 'cocoapods',
-  :deterministic_uuids => false
+
 inhibit_all_warnings!
 
 # Disable expo-updates auto create updates resources in podspec script_phase
@@ -20,9 +19,6 @@ prepare_react_native_project!
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'MBProgressHUD', '~> 1.2.0'
-
-  # transitive dependency of React-Core and we use it to get the `RCTInspectorPackagerConnection` state
-  pod 'SocketRocket'
 
   # Required by react-native-maps
   # See https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md
@@ -56,7 +52,9 @@ target 'Expo Go' do
       'expo-network-addons',
       'expo-insights',
       'expo-splash-screen',
-      '@expo/ui'
+      'expo-blob',
+      '@expo/ui',
+      '@expo/app-integrity'
     ],
     includeTests: true,
     flags: {
@@ -83,9 +81,6 @@ target 'Expo Go' do
     :path => react_native_path,
     :hermes_enabled => true,
   )
-  setup_jsc!(
-    :react_native_path => react_native_path,
-  )
 
   post_install do |installer|
     # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
@@ -109,6 +104,13 @@ target 'Expo Go' do
         target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
+        end
+      end
+      if ['React-jsinspector', 'React-RCTNetwork'].include?(pod_name)
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "REACT_NATIVE_DEBUGGER_ENABLED=1"
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1"
         end
       end
 

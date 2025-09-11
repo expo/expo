@@ -49,9 +49,7 @@ Firebase JS SDK does not support all services for mobile apps. Some of these ser
 
 ### Install and initialize Firebase JS SDK
 
-The following sub-sections use `firebase@9.x.x`. Expo SDK does not enforce or recommend any specific version of Firebase to use in your app.
-
-If you are using an older version of the firebase library in your project, you may have to adapt the code examples to match the version that you are using with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
+> **warning** Expo SDK 53 and above only support `firebase@^12.0.0`. Versions prior to this version cause ES module resolution errors.
 
 <Step label="1">
 #### Install the SDK
@@ -59,6 +57,7 @@ If you are using an older version of the firebase library in your project, you m
 After you have created your [Expo project](/get-started/create-a-project/), you can install the Firebase JS SDK using the following command:
 
 <Terminal cmd={['$ npx expo install firebase']} />
+
 </Step>
 
 <Step label="2">
@@ -102,31 +101,6 @@ You do not have to install other plugins or configurations to use Firebase JS SD
 Firebase version 9 and above provide a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
 
 > **info** **Troubleshooting tip:** If you encounter issues related to authentication persistence with Firebase JS SDK, see the guide for [setting up persistence to keep users logged in between reloads](https://expo.fyi/firebase-js-auth-setup).
-
-</Step>
-
-<Step label="3">
-#### Configure Metro
-
-> **info** If you are using Firebase version `9.7.x` and above, you need to add the following configuration to a **metro.config.js** file to make sure that the Firebase JS SDK is bundled correctly.
-
-Expo CLI uses [Metro](https://metrobundler.dev/) to bundle your JavaScript code and assets, and add [support for more file extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts).
-
-Start by generating the template file **metro.config.js** in your project's root directory using the following command:
-
-<Terminal cmd={['$ npx expo customize metro.config.js']} />
-
-Then, update the file with the following configuration:
-
-```js metro.config.js
-const { getDefaultConfig } = require('@expo/metro-config');
-
-const config = getDefaultConfig(__dirname);
-config.resolver.sourceExts.push('cjs');
-config.resolver.unstable_enablePackageExports = false;
-
-module.exports = config;
-```
 
 </Step>
 

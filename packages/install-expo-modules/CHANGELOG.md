@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 0.13.8 — 2025-09-10
+
+### 💡 Others
+
+- Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
+
+## 0.13.7 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.5 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.3 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
+
 ## 0.12.8 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

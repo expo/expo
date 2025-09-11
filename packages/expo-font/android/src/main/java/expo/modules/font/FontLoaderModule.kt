@@ -44,6 +44,12 @@ open class FontLoaderModule : Module() {
         val file = Uri.parse(localUri).path?.let { File(it) }
           ?: throw FileNotFoundException(localUri)
 
+        if (file.length() == 0L) {
+          throw CodedException(
+            "Font file for $fontFamilyName is empty. Make sure the local file path is correctly populated."
+          )
+        }
+
         Typeface.createFromFile(file)
       }
 

@@ -1,0 +1,47 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# test changing the updates URL and reload using JS API
+- evalScript:
+    script:  ${output.api.restartUpdatesServer(0, true)}
+    label: Restart updates server with overridden URL
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a basic update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- tapOn:
+    label: Tap on button to change updates URL
+    id: setUpdateURLAndRequestHeadersOverride
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- tapOn:
+    label: Tap on download update button
+    id: downloadUpdate
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- tapOn: "reload"
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-1"}
+    label: Assert update string is from downloaded bundle
+- stopApp

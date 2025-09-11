@@ -9,16 +9,6 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Usually, creating a new native build from scratch takes long enough that you'll be tempted to switch tasks and lose your focus. However, with the development build installed on your device or an emulator/simulator, you won't have to wait for the native build process until you [change the underlying native code](#rebuild-a-development-build) that powers your app.
 
-## Add error handling
-
-Import `expo-dev-client` at the top of the **App.&lbrace;js|tsx&rbrace;** or [**app/\_layout.tsx**](/router/basics/layout/#root-layout) to add additional context for certain errors beyond what is provided by default in React Native. In particular, `expo-dev-client` will help detect situations related to a mismatch between your JavaScript and native code, such as when a native module is missing and you should make a new development build.
-
-```js App.js
-import 'expo-dev-client';
-```
-
-> This will only affect the application in which you make this change. If you want to load multiple projects from a single development app, you'll need to add this import statement to each project.
-
 ## Start the development server
 
 To start developing, run the following command to start the development server:

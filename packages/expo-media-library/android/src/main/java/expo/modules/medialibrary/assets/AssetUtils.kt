@@ -12,33 +12,33 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.ASSET_PROJECTION
 import expo.modules.medialibrary.AssetQueryException
-import expo.modules.medialibrary.ERROR_IO_EXCEPTION
-import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.EXIF_TAGS
 import expo.modules.medialibrary.MediaType
+import expo.modules.medialibrary.UnableToLoadException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.lang.UnsupportedOperationException
+import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 
 /**
  * Queries content resolver for a single asset.
  * Resolves [promise] with a single-element array of [Bundle]
  */
-fun queryAssetInfo(
+suspend fun queryAssetInfo(
   context: Context,
   selection: String?,
   selectionArgs: Array<String>?,
-  resolveWithFullInfo: Boolean,
-  promise: Promise
-) {
+  resolveWithFullInfo: Boolean
+): ArrayList<Bundle>? = withContext(Dispatchers.IO) {
   val contentResolver = context.contentResolver
   try {
     contentResolver.query(
@@ -48,6 +48,7 @@ fun queryAssetInfo(
       selectionArgs,
       null
     ).use { assetCursor ->
+      coroutineContext.ensureActive()
       if (assetCursor == null) {
         throw AssetQueryException()
       } else {
@@ -58,23 +59,19 @@ fun queryAssetInfo(
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
           // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
-          promise.resolve(array)
+          return@withContext array
         } else {
-          promise.resolve(null)
+          return@withContext null
         }
       }
     }
-  } catch (e: SecurityException) {
-    promise.reject(
-      ERROR_UNABLE_TO_LOAD_PERMISSION,
-      "Could not get asset: need READ_EXTERNAL_STORAGE permission.",
-      e
-    )
-  } catch (e: IOException) {
-    promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e)
-  } catch (e: UnsupportedOperationException) {
-    e.printStackTrace()
-    promise.reject(ERROR_NO_PERMISSIONS, e.message, e)
+  } catch (e: Exception) {
+    throw when (e) {
+      is SecurityException -> UnableToLoadException("Could not get asset: need READ_EXTERNAL_STORAGE permission", e)
+      is IOException -> UnableToLoadException("Could not read file ${e.message}", e)
+      is UnsupportedOperationException -> UnableToLoadException(e.message ?: "Invalid MediaType", e)
+      else -> e
+    }
   }
 }
 
@@ -110,7 +107,7 @@ fun putAssetsInfo(
     val localUri = "file://$path"
     val mediaType = cursor.getInt(mediaTypeIndex)
     var exifInterface: ExifInterface? = null
-    if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
+    if (resolveWithFullInfo && mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
       try {
         exifInterface = ExifInterface(path)
       } catch (e: IOException) {

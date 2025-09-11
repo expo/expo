@@ -8,11 +8,61 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix build failures when localized strings contain single quotes by wrapping string values in quotes in `strings.xml`. ([#37828](https://github.com/expo/expo/pull/37828) by [@huextrat](https://github.com/huextrat))
+### 💡 Others
+
+## 54.0.0 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.7 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.5 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.3 — 2025-08-19
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Support building activities with aliases. ([#38263](https://github.com/expo/expo/pull/38263) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Support `android.predictiveBackGestureEnabled` field in app config. ([#38774](https://github.com/expo/expo/pull/38774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Improve error handling in plugin resolver ([#38338](https://github.com/expo/expo/pull/38338) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
 
 - Export `CodeMod` from `android` directory for use in package config-plugins. ([#37885](https://github.com/expo/expo/pull/37885) by [@aleqsio](https://github.com/aleqsio))
+- Export `CodeGenerator` from `utils/generateCode` for use in package config-plugins. ([#38580](https://github.com/expo/expo/pull/38580) by [@kitten](https://github.com/kitten))
+
+## 10.1.2 - 2025-07-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix build failures when localized strings contain single quotes by wrapping string values in quotes in `strings.xml`. ([#37828](https://github.com/expo/expo/pull/37828) by [@huextrat](https://github.com/huextrat))
 
 ## 10.1.1 - 2025-07-03
 

@@ -6,7 +6,13 @@ struct Preview: Record {
   @Field var image: String
 }
 
-final class ShareLinkViewProps: ExpoSwiftUI.ViewProps {
+final class ShareLinkViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
+  @Field var testID: String?
+  @Field var modifiers: ModifierArray?
+
   @Field var item: URL?
   @Field var subject: String?
   @Field var message: String?
@@ -37,6 +43,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
           ) {
             Children()
           }
+          .modifier(CommonViewModifiers(props: props))
         } else {
           shareLink(
             item: item,
@@ -44,6 +51,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
             message: message,
             preview: preview
           )
+          .modifier(CommonViewModifiers(props: props))
         }
       }
     }

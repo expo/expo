@@ -1,0 +1,295 @@
+---
+title: Plugin development for libraries
+description: Learn how to develop config plugins for Expo and React Native libraries.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Expo config plugins in a React Native library represent a transformative approach to automating native project configuration. Rather than requiring library users to manually edit native files, such as **AndroidManifest.xml**, **Info.plist**, and so on, you can provide a plugin that handles these configurations automatically during the prebuild process. This changes developer experience from error-prone manual setup to reliable, automated configuration that can work consistently across different projects.
+
+This guide explains key configuration steps and strategies that you can use to implement a config plugin in your library.
+
+## Strategic value of a config plugin in a library
+
+Config plugins tend to solve interconnected problems that have historically made React Native library adoption more difficult than it should be. At times, when a user installs a React Native library, they face a complex set of native configuration steps that must be performed correctly for the library to function. These steps are platform-specific and sometimes require deep knowledge of native development concepts.
+
+By creating a config plugin within your library, you can transform this complex-looking manual process into a simple configuration declaration that a user can apply in their Expo project's app config file (usually, **app.json**). This reduces the barrier to adoption for your library and simultaneously makes the setup process reliable.
+
+Beyond immediate user experience improvements, config plugins enable compatibility with [Continuous Native Generation](/workflow/continuous-native-generation/), where native directories are generated automatically rather than checked into version control. Without a config plugin, developers who have adopted CNG face a difficult choice: either abandon the CNG workflow to manually configure native files, or invest significant effort in creating their own automation solutions. This creates a substantial barrier to library adoption in modern Expo development workflows.
+
+## Project structure
+
+A directory structure is the foundation for maintaining config plugins within your library. Below is an example directory structure:
+
+<FileTree
+  files={[
+    ['./android', 'Android native module code'],
+    ['./android/src/main/java/com/your-awesome-library'],
+    ['./android/build.gradle'],
+    ['./ios', 'iOS native module code'],
+    ['./ios/YourAwesomeLibrary'],
+    ['./ios/YourAwesomeLibrary.podspec'],
+    ['./src/index.ts', 'Main library entry point'],
+    ['./src/YourAwesomeLibrary.ts', 'Core library implementation'],
+    ['./src/types.ts', 'TypeScript type definitions'],
+    ['./plugin/src/index.ts', 'Plugin entry point'],
+    ['./plugin/src/withAndroid.ts', 'Android-specific configurations'],
+    ['./plugin/src/withIos.ts', 'iOS-specific configurations'],
+    ['./plugin/build/', 'Compiled plugin output (generated)'],
+    ['./plugin/__tests__/', 'Plugin-specific tests'],
+    ['./plugin/tsconfig.json', 'Plugin-specific TypeScript config'],
+    ['./example/app.json', 'Example app configuration'],
+    ['./example/App.tsx', 'Example app implementation'],
+    ['./example/package.json', 'Example app dependencies'],
+    ['./__tests__/', 'Main library tests'],
+    ['./app.plugin.js', 'Plugin entry point for Expo CLI'],
+    ['./package.json', 'Package configuration'],
+    ['./tsconfig.json', 'Main TypeScript configuration'],
+    ['./jest.config.js', 'Testing configuration'],
+    ['./README.md', 'Documentation'],
+  ]}
+/>
+
+The directory structure example above highlights the following organizational principles:
+
+- **Root-level separation**: Clear boundaries between library code (**src**) and plugin implementation (**plugin**)
+- **Plugin directory organization**: Platform-specific files (**withAndroid.ts**, **withIos.ts**) enable focused testing and maintenance
+- **Build output management**: Compiled JavaScript and TypeScript declarations in **plugins/build/** directory
+- **Testing**: Separate plugin tests from library tests to reflect different concerns.
+
+## Installation and configuration for development
+
+The most straightforward approach to leverage Expo's tooling is to use `expo` and [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts).
+
+- `expo` provides a config plugin API and types that your plugin will use.
+- `expo-module-scripts` provides build tooling specifically designed for Expo modules and config plugins. It also handles TypeScript compilation.
+
+<Terminal cmd={['$ npx expo install package']} />
+
+When using `expo-module-scripts`, it requires the following **package.json** configuration. For any already existing script with the same script name, replace it.
+
+```json package.json
+{
+  "scripts": {
+    "build": "expo-module build",
+    "build:plugin": "expo-module build plugin",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly"
+  },
+  "devDependencies": {
+    "expo": "^54.0.0"
+  },
+  "peerDependencies": {
+    "expo": ">=54.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  }
+}
+```
+
+The next step is to add TypeScript support within the **plugins** directory. Open **plugins/tsconfig.json** file and add the following:
+
+```json plugins/tsconfig.json
+{
+  "extends": "expo-module-scripts/tsconfig.plugin",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src"
+  },
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}
+```
+
+You also need to define the main entry point for your config plugin in the **app.plugin.js** file, which exports the compiled plugin code from the **plugin/build** directory:
+
+```js app.plugin.js
+module.exports = require('./plugin/build');
+```
+
+The above configuration is essential because when the Expo CLI looks for a plugin, it checks for this file in the project root of your library. The **plugin/build** directory contains the JavaScript files generated from your config plugin's TypeScript source code.
+
+## Key implementation patterns
+
+Essential patterns for a successful config plugin implementation include:
+
+- **Plugin structure**: Core patterns that every plugin should follow
+- **Platform-specific implementations**: Handle Android and iOS configurations effectively
+- **Test strategies:** Validating your plugin code through testing
+
+### Plugin structure and platform-specific implementation
+
+Every config plugin follows the same pattern: receives configuration and parameters, applies transformations through mods, and returns the modified configuration. Consider the following core plugin structure looks like:
+
+<Tabs>
+
+<Tab label="Index file">
+
+```ts plugin/src/index.ts|collapseHeight=480
+import { type ConfigPlugin, withAndroidManifest, withInfoPlist } from 'expo/config-plugins';
+
+export interface YourLibraryPluginProps {
+  customProperty?: string;
+  enableFeature?: boolean;
+}
+
+const withYourLibrary: ConfigPlugin<YourLibraryPluginProps> = (config, props = {}) => {
+  // Apply Android configurations
+  config = withAndroidConfiguration(config, props);
+
+  // Apply iOS configurations
+  config = withIosConfiguration(config, props);
+
+  return config;
+};
+
+export default withYourLibrary;
+```
+
+</Tab>
+
+<Tab label="Android">
+
+```ts plugin/src/withAndroid.ts
+import { type ConfigPlugin, withAndroidManifest, AndroidConfig } from 'expo/config-plugins';
+
+export const withAndroidConfiguration: ConfigPlugin<YourLibraryPluginProps> = (config, props) => {
+  return withAndroidManifest(config, config => {
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+    AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+      mainApplication,
+      'your_library_config_key',
+      props.customProperty || 'default_value'
+    );
+
+    return config;
+  });
+};
+```
+
+</Tab>
+
+<Tab label="iOS">
+
+```ts plugin/src/withIos.ts
+import { type ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
+
+export const withIosConfiguration: ConfigPlugin<YourLibraryPluginProps> = (config, props) => {
+  return withInfoPlist(config, config => {
+    config.modResults.YourLibraryCustomProperty = props.customProperty || 'default_value';
+
+    if (props.enableFeature) {
+      config.modResults.YourLibraryFeatureEnabled = true;
+    }
+
+    return config;
+  });
+};
+```
+
+</Tab>
+
+</Tabs>
+
+### Testing strategies
+
+Config plugin testing differs from regular library testing because you are testing configuration transformations rather than runtime behavior. Your plugin receives configuration objects and returns modified configuration objects.
+
+Effective testing for a config plugin can be a combination of one or more of the following:
+
+- **Unit testing:** Test configuration transformation logic with mocked Expo configuration objects
+- **Cross-platform validation**: Use an example app to verify the actual prebuild output
+- **Error condition testing**: Use error handling
+
+Since unit tests focus on a plugin's transformation logic without involving the file system, you can use Jest to create and run mock configuration objects, pass them through your plugin, and verify expected modifications are made correctly. For example:
+
+```ts plugin/__tests__/withYourLibrary.test.ts
+import { withYourLibrary } from '../src';
+
+describe('withYourLibrary', () => {
+  it('should configure Android with custom property', () => {
+    const config = {
+      name: 'test-app',
+      slug: 'test-app',
+      platforms: ['android', 'ios'],
+    };
+
+    const result = withYourLibrary(config, {
+      customProperty: 'test-value',
+    });
+
+    // Verify the plugin was applied correctly
+    expect(result.plugins).toBeDefined();
+  });
+});
+```
+
+Errors should be handled gracefully inside your config plugin to provide clear feedback when a configuration fails. Use `try-catch` blocks to intercept errors early:
+
+```ts plugin/src/index.ts
+const withYourLibrary: ConfigPlugin<YourLibraryPluginProps> = (config, props = {}) => {
+  try {
+    // Validate configuration early
+    validateProps(props);
+
+    // Apply configurations
+    config = withAndroidConfiguration(config, props);
+    config = withIosConfiguration(config, props);
+
+    return config;
+  } catch (error) {
+    // Re-throw with more context if needed
+    throw new Error(`Failed to configure YourLibrary plugin: ${error.message}`);
+  }
+};
+```
+
+## Alternative build approaches
+
+If your library doesn't use `expo-module-scripts`, you have two options:
+
+### Add a plugin to your main package
+
+For libraries using different build tools (like those created with `create-react-native-library`), add an **app.plugin.js** file and build it along with your main package:
+
+```js app.plugin.js
+module.exports = require('./lib/plugin');
+```
+
+### Create a separate plugin package
+
+Some libraries distribute their config plugin as a separate package from their main library. This approach allows you to maintain your config plugin separately from the rest of your native module. You need to include export in **app.plugin.js** and compile the **build** directory from your plugin.
+
+```js app.plugin.js
+{
+  "name": "your-library-expo-plugin",
+  "main": "app.plugin.js",
+  "files": ["app.plugin.js", "build/"],
+  "peerDependencies": {
+    "expo": "*",
+    "your-library": "*"
+  }
+}
+```
+
+## Plugin development best practices
+
+- **Instructions in your README**: If the plugin is tied to a React Native module, then you should document manual setup instructions for the package. If anything goes wrong with the plugin, developers should be able to manually add the project modifications that were automated by the plugin. This also allows you to support projects that are not using [CNG](/workflow/continuous-native-generation/).
+  - Document the available properties for the plugin, specifying if any of the properties are required.
+  - If possible, plugins should be idempotent, meaning the changes they make are the same whether they are run on a fresh native project template or run again on a project template where its changes already exist. This allows developers to run `npx expo prebuild` without the `--clean` flag to sync changes to the config, rather than recreating the native project entirely. This may be more difficult with dangerous mods.
+- **Naming conventions**: Use `withFeatureName` for the plugin function name if it applies to all platforms. If the plugin is platform-specific, use a camel case naming with the platform right after "with". For example, `withAndroidSplash`, `withIosSplash`.
+- **Leverage built-in plugins**: If there's already a configuration available in [app config](/versions/latest/config/app/) and [prebuild config](https://github.com/expo/expo/blob/main/packages/%40expo/prebuild-config/src/plugins/withDefaultPlugins.ts), you don't need to write a config plugin for it.
+- **Split up plugins by platform**: When using functions within the config plugin, split them by platform. For example, `withAndroidSplash`, `withIosSplash`. This makes using the `--platform` flag in `npx expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode, as the logging will show which platform-specific functions are being executed.
+- **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
+  use a mock system (we strongly recommend [`memfs`](https://www.npmjs.com/package/memfs)), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
+  - Notice the root [\*\*/\_\_mocks\_\_/\*\*/\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) directory and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
+- A TypeScript plugin is always preferable to a JavaScript due to added type-safety. Check out the [`expo-module-scripts` plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) tooling for more info.
+- Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.

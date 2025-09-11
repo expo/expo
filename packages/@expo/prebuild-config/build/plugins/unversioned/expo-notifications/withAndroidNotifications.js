@@ -104,6 +104,9 @@ async function setNotificationIconAsync(config, projectRoot) {
 function setNotificationConfig(config, manifest) {
   const icon = getNotificationIcon(config);
   const color = getNotificationColor(config);
+  if (config.notification) {
+    _configPlugins().WarningAggregator.addWarningAndroid('config.notification', 'The `notification` property in app config is deprecated. Use the `expo-notifications` config plugin instead.');
+  }
   const mainApplication = getMainApplicationOrThrow(manifest);
   if (icon) {
     addMetaDataItemToMainApplication(mainApplication, META_DATA_NOTIFICATION_ICON, NOTIFICATION_ICON_RESOURCE, 'resource');

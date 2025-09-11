@@ -3,7 +3,7 @@ import { glob, GlobOptions } from 'glob';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { isFileIgnoredAsync } from '../utils/files';
+import { existsAndIsNotIgnoredAsync, isFileIgnoredAsync } from '../utils/files';
 
 export class ProjectSetupCheck implements DoctorCheck {
   description = 'Check for common project setup issues';
@@ -41,25 +41,16 @@ export class ProjectSetupCheck implements DoctorCheck {
       }
     }
 
-    /* Check for multiple lockfiles. */
-
-    const lockfileCheckResults = await Promise.all(
-      ['pnpm-lock.yaml', 'yarn.lock', 'package-lock.json'].map((lockfile) => {
-        return { lockfile, exists: fs.existsSync(`${projectRoot}/${lockfile}`) };
-      })
-    );
-
-    const lockfiles = lockfileCheckResults
-      .filter((result) => result.exists)
-      .map((result) => result.lockfile);
-
-    if (lockfiles.length > 1) {
-      issues.push(
-        `Multiple lock files detected (${lockfiles.join(
-          ', '
-        )}). This may result in unexpected behavior in CI environments, such as EAS Build, which infer the package manager from the lock file.`
-      );
-      advice.push(`Remove any lock files for package managers you are not using.`);
+    // Check that the .expo directory IS gitignored
+    const expoDir = path.join(projectRoot, '.expo');
+    if (fs.existsSync(expoDir)) {
+      const isIgnored = await isFileIgnoredAsync(expoDir, false);
+      if (!isIgnored) {
+        issues.push(
+          `The .expo directory is not ignored by Git. It contains machine-specific device history and development server settings and should not be committed.`
+        );
+        advice.push(`Add ".expo/" to your .gitignore to avoid committing local Expo state.`);
+      }
     }
 
     return { isSuccessful: issues.length === 0, issues, advice };

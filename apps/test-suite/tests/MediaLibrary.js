@@ -12,11 +12,12 @@ const FILES = [
   require('../assets/icons/app.png'),
   require('../assets/icons/loading.png'),
   require('../assets/black-128x256.png'),
+  require('../assets/hdr.jpg'),
   require('../assets/big_buck_bunny.mp4'),
 ];
 
 const WAIT_TIME = 1000;
-const IMG_NUMBER = 3;
+const IMG_NUMBER = 4;
 const VIDEO_NUMBER = 1;
 const DEFAULT_MEDIA_TYPES = [MediaLibrary.MediaType.photo];
 const DEFAULT_PAGE_SIZE = 20;
@@ -144,13 +145,12 @@ export async function test(t) {
       let album;
 
       async function initializeDefaultAssetsAsync() {
-        testAssets = await getAssets(files);
         album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
-        if (album == null) {
-          album = await createAlbum(testAssets, ALBUM_NAME);
-        } else {
-          await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, shouldCopyAssets);
+        if (album != null) {
+          await MediaLibrary.deleteAlbumsAsync(album, true);
         }
+        testAssets = await getAssets(files);
+        album = await createAlbum(testAssets, ALBUM_NAME);
       }
 
       async function cleanupAsync() {

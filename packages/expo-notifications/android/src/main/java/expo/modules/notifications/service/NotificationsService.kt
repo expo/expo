@@ -459,8 +459,7 @@ open class NotificationsService : BroadcastReceiver() {
       // are not allowed. If the notification wants to open foreground app,
       // we should use the dedicated Activity pendingIntent.
       if (action.opensAppToForeground() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val notificationResponse = getNotificationResponseFromBroadcastIntent(intent)
-        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent, notificationResponse)
+        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent)
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
@@ -474,17 +473,24 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
-     * Recreate an Intent from [createNotificationResponseIntent] extras
+     * Recreate an Intent from [createNotificationResponseIntent] intent
      * for [NotificationForwarderActivity] to send broadcasts
      */
-    fun createNotificationResponseBroadcastIntent(context: Context, extras: Bundle?): Intent {
+    fun createNotificationResponseBroadcastIntent(context: Context, intent: Intent?): Intent {
+      val extras = intent?.extras
       val notification = extras?.getParcelable<Notification>(NOTIFICATION_KEY)
       val action = extras?.getParcelable<NotificationAction>(NOTIFICATION_ACTION_KEY)
       if (notification == null || action == null) {
-        throw IllegalArgumentException("notification and action should not be null")
+        throw IllegalArgumentException("notification ($notification) and action ($action) should not be null")
       }
-      val backgroundAction = NotificationAction(action.identifier, action.title, false)
-      val intent = Intent(
+      val textResponse = RemoteInput.getResultsFromIntent(intent)?.getString(USER_TEXT_RESPONSE_KEY)
+      val isTextInputResponse = textResponse != null && action is TextInputNotificationAction
+      val backgroundAction = if (isTextInputResponse) {
+        TextInputNotificationAction(action.identifier, action.title, false, action.placeholder)
+      } else {
+        NotificationAction(action.identifier, action.title, false)
+      }
+      val broadcastIntent = Intent(
         NOTIFICATION_EVENT_ACTION,
         getUriBuilder()
           .appendPath(notification.notificationRequest.identifier)
@@ -498,8 +504,17 @@ open class NotificationsService : BroadcastReceiver() {
         intent.putExtra(EVENT_TYPE_KEY, RECEIVE_RESPONSE_TYPE)
         intent.putExtra(NOTIFICATION_KEY, notification)
         intent.putExtra(NOTIFICATION_ACTION_KEY, backgroundAction as Parcelable)
+
+        // Include the text response in the new intent
+        if (isTextInputResponse) {
+          val remoteInput = RemoteInput.Builder(USER_TEXT_RESPONSE_KEY).build()
+          val remoteInputResults = Bundle().apply {
+            putString(USER_TEXT_RESPONSE_KEY, textResponse)
+          }
+          RemoteInput.addResultsToIntent(arrayOf(remoteInput), intent, remoteInputResults)
+        }
       }
-      return intent
+      return broadcastIntent
     }
 
     fun getNotificationResponseFromBroadcastIntent(intent: Intent): NotificationResponse {

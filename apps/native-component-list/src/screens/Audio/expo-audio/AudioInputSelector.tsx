@@ -17,7 +17,7 @@ function AudioInputSelector({ recorder }: Props) {
     if (recorder) {
       const availInputs = recorder.getAvailableInputs();
       setAvailableInputs(availInputs);
-      const curtInput = recorder.getCurrentInput();
+      const curtInput = await recorder.getCurrentInput();
       setCurrentInput(curtInput);
     }
   }, [recorder]);

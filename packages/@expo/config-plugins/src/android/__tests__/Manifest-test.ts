@@ -48,6 +48,14 @@ describe(getRunnableActivity, () => {
     expect(activity.$['android:name']).toBe('.CustomNamed');
     expect(Array.isArray(activity['intent-filter'])).toBe(true);
   });
+  it(`supports aliases`, async () => {
+    const sampleManifestPath = resolve(__dirname, 'fixtures/icon-aliases-AndroidManifest.xml');
+    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const activity = getRunnableActivity(manifest)!;
+    expect(activity.$).toBeDefined();
+    expect(activity.$['android:name']).toBe('.MainActivity');
+    expect(Array.isArray(activity['intent-filter'])).toBe(true);
+  });
 });
 describe(getMainApplication, () => {
   it(`works`, async () => {

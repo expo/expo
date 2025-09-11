@@ -1,9 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getConfiguration = getConfiguration;
-const utils_1 = require("./utils");
-function getConfiguration(options) {
-    const platformLinking = (0, utils_1.getLinkingImplementationForPlatform)(options.platform);
-    return platformLinking.getConfiguration?.(options);
+const platforms_1 = require("../platforms");
+function getConfiguration({ autolinkingOptions, }) {
+    const platformLinking = (0, platforms_1.getLinkingImplementationForPlatform)(autolinkingOptions.platform);
+    if ('getConfiguration' in platformLinking) {
+        return platformLinking.getConfiguration(autolinkingOptions);
+    }
+    else {
+        return undefined;
+    }
 }
 //# sourceMappingURL=getConfiguration.js.map

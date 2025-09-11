@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { ViewStyle } from 'react-native';
 
+import { ExpoModifier } from '../../types';
+
 export type ShapeProps = {
   /**
    * Corner rounding percentage. Multiplied by the shorter dimension of the view to produce pixel values.
@@ -31,6 +33,8 @@ export type ShapeProps = {
   style?: ViewStyle;
   /** Color of the shape */
   color?: string;
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 const ShapeNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'ShapeView');
@@ -56,9 +60,20 @@ function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'sty
 }
 
 function Polygon(
-  props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color'>
+  props: Pick<
+    ShapeProps,
+    'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color' | 'modifiers'
+  >
 ) {
-  return <ShapeNativeView {...props} style={props.style} type="polygon" />;
+  return (
+    <ShapeNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      style={props.style}
+      type="polygon"
+    />
+  );
 }
 
 export const Shape = {

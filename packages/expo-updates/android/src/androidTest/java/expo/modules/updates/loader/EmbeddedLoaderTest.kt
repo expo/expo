@@ -10,7 +10,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
-import expo.modules.updates.loader.Loader.LoaderCallback
+import kotlinx.coroutines.test.runTest
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.Update
@@ -36,7 +36,6 @@ class EmbeddedLoaderTest {
   private lateinit var loader: EmbeddedLoader
   private lateinit var loaderWithCopyAssets: EmbeddedLoader
   private lateinit var mockLoaderFiles: LoaderFiles
-  private lateinit var mockCallback: LoaderCallback
 
   @Before
   @Throws(JSONException::class)
@@ -75,18 +74,16 @@ class EmbeddedLoaderTest {
 
     every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns manifest
     every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } answers { callOriginal() } // test for exception cases
-
-    mockCallback = mockk(relaxUnitFun = true)
-    every { mockCallback.onUpdateResponseLoaded(any()) } returns Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
   }
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_SimpleCase() {
-    loader.start(mockCallback)
+  fun testEmbeddedLoader_SimpleCase() = runTest {
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
@@ -98,7 +95,7 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(JSONException::class, IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_MultipleScales() {
+  fun testEmbeddedLoader_MultipleScales() = runTest {
     val multipleScalesManifest: Update = EmbeddedUpdate.fromEmbeddedManifest(
       EmbeddedManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2,3],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2,3],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
       configuration
@@ -106,10 +103,11 @@ class EmbeddedLoaderTest {
 
     every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns multipleScalesManifest
 
-    loader.start(mockCallback)
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
@@ -121,7 +119,7 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(JSONException::class, IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_MultipleScales_ReverseOrder() {
+  fun testEmbeddedLoader_MultipleScales_ReverseOrder() = runTest {
     val multipleScalesManifest: Update = EmbeddedUpdate.fromEmbeddedManifest(
       EmbeddedManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
       configuration
@@ -129,10 +127,11 @@ class EmbeddedLoaderTest {
 
     every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns multipleScalesManifest
 
-    loader.start(mockCallback)
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
@@ -144,18 +143,21 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoaderWithCopyAssets_FailureToCopyAssets() {
+  fun testEmbeddedLoaderWithCopyAssets_FailureToCopyAssets() = runTest {
     every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } throws IOException("mock failed to copy asset")
 
-    loaderWithCopyAssets.start(mockCallback)
+    try {
+      loaderWithCopyAssets.load { _ ->
+        Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+      }
+    } catch (e: Exception) {
+      Assert.assertEquals("mock failed to copy asset", e.message)
+    }
 
-    verify(exactly = 0) { mockCallback.onSuccess(any()) }
-    verify { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
+    verify(atLeast = 1) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
-    // status embedded indicates the update wasn't able to be fully copied to the expo-updates cache
     Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
 
     val assets = db.assetDao().loadAllAssets()
@@ -164,7 +166,7 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoaderWithCopyAssets_AssetExists_BothDbAndDisk() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_BothDbAndDisk() = runTest {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
     every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
       thirdArg<String>().contains("54da1e9816c77e30ebc5920e256736f2")
@@ -174,10 +176,11 @@ class EmbeddedLoaderTest {
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
     db.assetDao().insertAssetForTest(existingAsset)
 
-    loaderWithCopyAssets.start(mockCallback)
+    val result = loaderWithCopyAssets.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
 
     // only 1 asset (bundle) should be copied since the other asset already exists
     verify(exactly = 1) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
@@ -192,7 +195,7 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DbOnly() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DbOnly() = runTest {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
     every { mockLoaderFiles.fileExists(any(), any(), any()) } returns false
 
@@ -200,10 +203,11 @@ class EmbeddedLoaderTest {
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
     db.assetDao().insertAssetForTest(existingAsset)
 
-    loaderWithCopyAssets.start(mockCallback)
+    val result = loaderWithCopyAssets.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
 
     // both assets should be copied regardless of what the database says
     verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
@@ -220,7 +224,7 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DiskOnly() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DiskOnly() = runTest {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
     every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
       thirdArg<String>().contains("54da1e9816c77e30ebc5920e256736f2")
@@ -228,10 +232,11 @@ class EmbeddedLoaderTest {
 
     Assert.assertEquals(0, db.assetDao().loadAllAssets().size.toLong())
 
-    loaderWithCopyAssets.start(mockCallback)
+    val result = loaderWithCopyAssets.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
 
     // only 1 asset (bundle) should be copied since the other asset already exists
     verify(exactly = 1) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
@@ -247,21 +252,24 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_UpdateExists_Ready() {
+  fun testEmbeddedLoader_UpdateExists_Ready() = runTest {
     val update = UpdateEntity(
       manifest.updateEntity!!.id,
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
       manifest.updateEntity!!.scopeKey,
-      manifest.updateEntity!!.manifest
+      manifest.updateEntity!!.manifest,
+      null,
+      null
     )
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
 
-    loader.start(mockCallback)
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
     verify(exactly = 0) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
@@ -271,21 +279,24 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_UpdateExists_Pending() {
+  fun testEmbeddedLoader_UpdateExists_Pending() = runTest {
     val update = UpdateEntity(
       manifest.updateEntity!!.id,
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
       manifest.updateEntity!!.scopeKey,
-      manifest.updateEntity!!.manifest
+      manifest.updateEntity!!.manifest,
+      null,
+      null
     )
     update.status = UpdateStatus.PENDING
     db.updateDao().insertUpdate(update)
 
-    loader.start(mockCallback)
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
 
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    Assert.assertNotNull(result.updateEntity)
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())

@@ -421,13 +421,14 @@ function convertNormalizedSetting(range: MediaSettingsRange, value?: number): nu
   if (!value) {
     return;
   }
+  // TODO(@kitten): Handle undefined values / normalize explicitly
   // convert the normalized incoming setting to the native camera zoom range
-  const converted = convertRange(value, [range.min, range.max]);
+  const converted = convertRange(value, [range.min!, range.max!]);
   // clamp value so we don't get an error
-  return Math.min(range.max, Math.max(range.min, converted));
+  return Math.min(range.max!, Math.max(range.min!, converted));
 }
 
-function convertRange(value: number, r2: number[], r1: number[] = [0, 1]): number {
+function convertRange(value: number, r2: [number, number], r1: [number, number] = [0, 1]): number {
   return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
 }
 

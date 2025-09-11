@@ -94,17 +94,22 @@ class BuildDataTest {
     return UpdatesConfiguration(
       scopeKey = updateUrl,
       updateUrl = Uri.parse(updateUrl),
+      originalEmbeddedUpdateUrl = Uri.parse(updateUrl),
       runtimeVersionRaw = "1.0.0",
       launchWaitMs = 0,
       checkOnLaunch = CheckAutomaticallyConfiguration.ALWAYS,
       hasEmbeddedUpdate = hasEmbeddedUpdate,
+      originalHasEmbeddedUpdate = hasEmbeddedUpdate,
       requestHeaders = requestHeaders,
+      originalEmbeddedRequestHeaders = requestHeaders,
       codeSigningCertificate = null,
       codeSigningMetadata = emptyMap(),
       codeSigningIncludeManifestResponseCertificateChain = false,
       codeSigningAllowUnsignedManifests = false,
       enableExpoUpdatesProtocolV0CompatibilityMode = false,
-      disableAntiBrickingMeasures = false
+      disableAntiBrickingMeasures = false,
+      hasUpdatesOverride = false,
+      cachedOverrideMap = emptyMap()
     )
   }
 }

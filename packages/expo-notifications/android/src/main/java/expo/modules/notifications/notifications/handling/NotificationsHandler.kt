@@ -7,10 +7,11 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.NotificationWasAlreadyHandledException
+import expo.modules.notifications.notifications.NotificationManager
 import expo.modules.notifications.notifications.interfaces.NotificationListener
-import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
+import expo.modules.notifications.notifications.model.RemoteNotificationContent
 
 /**
  * [NotificationListener] responsible for managing app's reaction to incoming
@@ -100,6 +101,13 @@ open class NotificationsHandler : Module(), NotificationListener {
    */
   override fun onNotificationReceived(notification: Notification) {
     val context = appContext.reactContext ?: return
+    val content = notification.notificationRequest.content
+    if (content is RemoteNotificationContent && content.isDataOnly) {
+      // We do not notify JS about data-only notifications, for consistency with iOS.
+      // onDidReceiveNotification is triggered
+      // and JS task will run if set up
+      return
+    }
     val task = SingleNotificationHandlerTask(
       context,
       appContext.eventEmitter(this),

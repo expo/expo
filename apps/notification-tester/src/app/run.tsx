@@ -1,4 +1,3 @@
-// @ts-expect-error
 import TestScreen from 'test-suite/screens/TestScreen';
 
 const NotificationTestScreen = require('test-suite/tests/Notifications');
@@ -10,9 +9,7 @@ const NotificationTestScreen = require('test-suite/tests/Notifications');
 export default class NotificationTesterScreen extends TestScreen {
   componentDidMount() {
     const selectedModules = [NotificationTestScreen];
-    // @ts-expect-error
     this._runTests(selectedModules);
-    // @ts-expect-error
     this._isMounted = true;
   }
 }

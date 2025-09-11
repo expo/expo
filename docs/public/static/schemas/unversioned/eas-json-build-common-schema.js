@@ -86,7 +86,7 @@ export default [
     name: 'buildArtifactPaths',
     type: 'string[]',
     description: [
-      'List of paths (or patterns) where EAS Build is going to look for the build artifacts. Use `applicationArchivePath` for specifying the path for uploading the application archive. Build artifacts are uploaded even if the build fails. EAS Build uses the `fast-glob` npm library for [pattern matching](https://github.com/mrmlnc/fast-glob#pattern-syntax).',
+      'List of paths (or patterns) where EAS Build is going to look for the build artifacts. Use `applicationArchivePath` for specifying the path for uploading the application archive. Build artifacts are uploaded even if the build fails. EAS Build uses [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching.',
     ],
   },
   {

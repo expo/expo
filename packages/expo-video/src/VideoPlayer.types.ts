@@ -111,6 +111,17 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   playbackRate: number;
 
   /**
+   * Boolean indicating if the player should keep the screen on while playing.
+   *
+   * > On Android, this property has an effect only when a [`VideoView`](#videoview) is visible. If you want to keep the screen awake at all times use [`expo-keep-awake`](./keep-awake/).
+   *
+   * @default true
+   * @platform android
+   * @platform ios
+   */
+  keepScreenOnWhilePlaying: boolean;
+
+  /**
    * Boolean value indicating whether the player is currently playing a live stream.
    */
   readonly isLive: boolean;
@@ -123,6 +134,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Boolean value determining whether the player should show the now playing notification.
    *
+   * > **Note**: On Android, `supportsBackgroundPlayback` property of the [config plugin](#configuration-in-app-config)
+   * > has to be `true` for the now playing notification to work.
    * @default false
    * @platform android
    * @platform ios
@@ -131,6 +144,9 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Determines whether the player should continue playing after the app enters the background.
+   *
+   * > **Note**: The `supportsBackgroundPlayback` property of the [config plugin](#configuration-in-app-config)
+   * > has to be `true` for the background playback to work.
    * @default false
    * @platform ios
    * @platform android
@@ -311,6 +327,8 @@ export type VideoSource =
   | {
       /**
        * The URI of the video.
+       *
+       * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
        *
        * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
        */

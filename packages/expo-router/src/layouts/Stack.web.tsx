@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react';
 
 import { stackRouterOverride } from './StackClient';
-import { RouterModal, RouterModalScreen } from '../modal/web/ModalStack.web';
+import { RouterModal, RouterModalScreen } from '../modal/web/ModalStack';
 import { Protected } from '../views/Protected';
 
 // The RouterModal already includes Screen and Protected via withLayoutContext

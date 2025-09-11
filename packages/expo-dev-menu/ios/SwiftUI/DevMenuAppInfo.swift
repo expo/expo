@@ -1,40 +1,51 @@
 import SwiftUI
 
+// swiftlint:disable closure_body_length
+
 struct DevMenuAppInfo: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
 
   var body: some View {
-    VStack(spacing: 0) {
-      InfoRow(title: "Version", value: viewModel.appInfo?.appVersion ?? "Unknown")
+    VStack(alignment: .leading) {
+      Text("SYSTEM")
+        .font(.caption)
+        .foregroundColor(.primary.opacity(0.6))
 
-      if let runtimeVersion = viewModel.appInfo?.runtimeVersion {
+      VStack(spacing: 0) {
         Divider()
-        InfoRow(title: "Runtime version", value: runtimeVersion)
-      } else if let sdkVersion = viewModel.appInfo?.sdkVersion {
-        Divider()
-        InfoRow(title: "SDK Version", value: sdkVersion)
-      }
 
-      Divider()
+        InfoRow(title: "Version", value: viewModel.appInfo?.appVersion ?? "Unknown")
 
-      Button {
-        viewModel.copyAppInfo()
-      }
-      label: {
-        HStack {
-          Text(viewModel.clipboardMessage ?? "Tap to Copy All")
-            .foregroundColor(.blue)
-          Spacer()
+        if let runtimeVersion = viewModel.appInfo?.runtimeVersion {
+          Divider()
+          InfoRow(title: "Runtime version", value: runtimeVersion)
+        } else if let sdkVersion = viewModel.appInfo?.sdkVersion {
+          Divider()
+          InfoRow(title: "SDK Version", value: sdkVersion)
         }
-        .padding()
+
+        Divider()
+
+        Button {
+          viewModel.copyAppInfo()
+        }
+        label: {
+          HStack {
+            Text(viewModel.clipboardMessage ?? "Copy system info")
+              .foregroundColor(.blue)
+            Spacer()
+            Image(systemName: "document.on.clipboard")
+              .resizable()
+              .frame(width: 16, height: 16)
+              .opacity(0.6)
+          }
+          .padding(.vertical)
+          .disabled(viewModel.clipboardMessage != nil)
+        }
       }
-      .disabled(viewModel.clipboardMessage != nil)
-      .background(Color(.systemBackground))
+      .background(Color.expoSystemBackground)
+      .cornerRadius(18)
     }
-    .background(Color(.systemBackground))
-    .cornerRadius(12)
-    .padding(.horizontal)
-    .padding(.vertical, 8)
   }
 }
 
@@ -53,6 +64,7 @@ struct InfoRow: View {
         .foregroundColor(.primary)
         .lineLimit(2)
     }
-    .padding()
+    .padding(.vertical)
   }
 }
+// swiftlint:enable closure_body_length

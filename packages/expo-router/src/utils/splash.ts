@@ -25,7 +25,8 @@ export async function preventAutoHideAsync() {
 }
 
 export async function _internal_preventAutoHideAsync(): Promise<boolean> {
-  if (!SplashModule) {
+  // The internal function might be missing if an app is using an older version of the SplashModule
+  if (!SplashModule || !SplashModule.internalPreventAutoHideAsync) {
     return false;
   }
 
@@ -47,7 +48,8 @@ export async function _internal_preventAutoHideAsync(): Promise<boolean> {
 }
 
 export async function _internal_maybeHideAsync() {
-  if (!SplashModule) {
+  // The internal function might be missing if an app is using an older version of the SplashModule
+  if (!SplashModule || !SplashModule.internalMaybeHideAsync) {
     return false;
   }
 

@@ -1,1 +1,1 @@
-export * from './build/jetpack-compose';
+export * from './src/jetpack-compose';

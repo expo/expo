@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
@@ -11,14 +10,6 @@ interface Size {
 interface GetSizeParams {
   size: Size | null;
   ref: React.RefObject<View | null>;
-}
-
-function getElement(component: React.ReactInstance): React.ReactInstance | Element | null | Text {
-  try {
-    return findDOMNode(component);
-  } catch {
-    return component;
-  }
 }
 
 function setRef<T>(refProp: React.Ref<T>, ref: T | null) {
@@ -38,15 +29,16 @@ function getSize({ size, ref }: GetSizeParams): Size {
   } else if (!ref.current || typeof window === 'undefined') {
     return { width: 0, height: 0 };
   }
-  const element = getElement(ref.current);
-  const { offsetWidth: width = 0, offsetHeight: height = 0 } = element as HTMLElement;
+  const element = ref.current as unknown as HTMLElement;
+  const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
   return { width, height };
 }
 
-const Canvas = React.forwardRef(
-  (props: React.ComponentProps<typeof View>, ref: React.Ref<HTMLCanvasElement>) =>
-    createElement('canvas', { ...props, ref })
-);
+const Canvas = (
+  props: React.ComponentProps<typeof View> & {
+    ref?: React.Ref<HTMLCanvasElement>;
+  }
+) => createElement('canvas', props);
 
 const CanvasWrapper: React.FunctionComponent<
   ViewProps & {
@@ -114,7 +106,7 @@ const CanvasWrapper: React.FunctionComponent<
 
   return (
     <View {...props} style={[styles.wrapper, style]} ref={ref} onLayout={onLayout}>
-      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill} />
+      <Canvas ref={_canvasRef} style={[StyleSheet.absoluteFill, { pointerEvents }]} />
       {children}
     </View>
   );

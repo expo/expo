@@ -64,3 +64,8 @@ enum BitRateStrategy: String, Enumerable {
     }
   }
 }
+
+struct RecordOptions: Record {
+  @Field var atTime: Double?
+  @Field var forDuration: Double?
+}

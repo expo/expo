@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 84879d83ac..34b96c71c3 100644
+index 84879d83acd..34b96c71c33 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -14,6 +14,7 @@ react {
@@ -38,8 +38,21 @@ index 84879d83ac..34b96c71c3 100644
          }
      }
  
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+index e61349d1301..267e20c30e5 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
++++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+@@ -24,7 +24,7 @@ class MainApplication : Application(), ReactApplication {
+           override fun getPackages(): List<ReactPackage> {
+             val packages = PackageList(this).packages
+             // Packages that cannot be autolinked yet can be added manually here, for example:
+-            // packages.add(new MyReactNativePackage());
++            // packages.add(MyReactNativePackage())
+             return packages
+           }
+ 
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
-index 51fbc1e5a7..26f3404be2 100644
+index 51fbc1e5a72..26f3404be26 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
 @@ -1,14 +1,7 @@
@@ -59,7 +72,7 @@ index 51fbc1e5a7..26f3404be2 100644
      <item name="android:windowBackground">@drawable/splashscreen_logo</item>
    </style>
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index abbcb8ec8a..fa7b11e23c 100644
+index abbcb8ec8a1..fa7b11e23c1 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -1,41 +1,37 @@
@@ -133,7 +146,7 @@ index abbcb8ec8a..fa7b11e23c 100644
 +apply plugin: "expo-root-project"
 +apply plugin: "com.facebook.react.rootproject"
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index de47429c64..7531e9eb23 100644
+index de47429c64c..7531e9eb23c 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -35,7 +35,7 @@ reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
@@ -146,7 +159,7 @@ index de47429c64..7531e9eb23 100644
  # Use this property to enable or disable the Hermes JS engine.
  # If set to false, you will be using JSC instead.
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
-index 79eb9d003f..37f853b1c8 100644
+index 79eb9d003fe..37f853b1c84 100644
 --- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 @@ -1,6 +1,6 @@
@@ -158,7 +171,7 @@ index 79eb9d003f..37f853b1c8 100644
  validateDistributionUrl=true
  zipStoreBase=GRADLE_USER_HOME
 diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
-index f5feea6d6b..f3b75f3b0d 100755
+index f5feea6d6b1..f3b75f3b0d4 100755
 --- a/templates/expo-template-bare-minimum/android/gradlew
 +++ b/templates/expo-template-bare-minimum/android/gradlew
 @@ -86,8 +86,7 @@ done
@@ -172,7 +185,7 @@ index f5feea6d6b..f3b75f3b0d 100755
  # Use the maximum available, or set MAX_FD != -1 to use that value.
  MAX_FD=maximum
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index 39b188e065..7fe9151221 100644
+index 39b188e065c..7fe91512213 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
 @@ -1,38 +1,39 @@
@@ -240,7 +253,7 @@ index 39b188e065..7fe9151221 100644
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(expoAutolinking.reactNativeGradlePlugin)
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-index 1ccb9b422d..1b7513bd31 100644
+index 1ccb9b422d5..1b7513bd31b 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 @@ -3,33 +3,25 @@
@@ -452,7 +465,7 @@ index 1ccb9b422d..1b7513bd31 100644
  				SDKROOT = iphoneos;
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
 deleted file mode 100644
-index 6a99d7d589..0000000000
+index 6a99d7d589a..00000000000
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
 +++ /dev/null
 @@ -1,10 +0,0 @@
@@ -468,7 +481,7 @@ index 6a99d7d589..0000000000
 -</Workspace>
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 deleted file mode 100644
-index 18d981003d..0000000000
+index 18d981003d6..00000000000
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 +++ /dev/null
 @@ -1,8 +0,0 @@
@@ -482,7 +495,7 @@ index 18d981003d..0000000000
 -</plist>
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
 deleted file mode 100644
-index 1658a437eb..0000000000
+index 1658a437eb3..00000000000
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
 +++ /dev/null
 @@ -1,7 +0,0 @@
@@ -495,7 +508,7 @@ index 1658a437eb..0000000000
 -@end
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 deleted file mode 100644
-index b27f83286d..0000000000
+index b27f83286d2..00000000000
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 +++ /dev/null
 @@ -1,62 +0,0 @@
@@ -563,7 +576,7 @@ index b27f83286d..0000000000
 -@end
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 new file mode 100644
-index 0000000000..a7887e1e5b
+index 00000000000..a7887e1e5b1
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 @@ -0,0 +1,70 @@
@@ -639,7 +652,7 @@ index 0000000000..a7887e1e5b
 +}
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/HelloWorld-Bridging-Header.h b/templates/expo-template-bare-minimum/ios/HelloWorld/HelloWorld-Bridging-Header.h
 new file mode 100644
-index 0000000000..8361941afc
+index 00000000000..8361941afc2
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/HelloWorld-Bridging-Header.h
 @@ -0,0 +1,3 @@
@@ -648,7 +661,7 @@ index 0000000000..8361941afc
 +//
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m b/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
 deleted file mode 100644
-index 25181b6ccb..0000000000
+index 25181b6ccb5..00000000000
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
 +++ /dev/null
 @@ -1,10 +0,0 @@
@@ -663,7 +676,7 @@ index 25181b6ccb..0000000000
 -}
 -
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index f740040e7b..29503ff0cc 100644
+index f740040e7be..29503ff0cc1 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
 @@ -4,7 +4,7 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
@@ -689,15 +702,15 @@ index f740040e7b..29503ff0cc 100644
        '--json',
        '--platform',
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 2f5d2c4280..b17b8ebe28 100644
+index ce89a2c49b2..e19171a3085 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "52.0.76",
-+  "version": "53.0.25",
+-  "version": "52.0.77",
++  "version": "53.0.38",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -705,14 +718,14 @@ index 2f5d2c4280..b17b8ebe28 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~52.0.46",
+-    "expo": "~52.0.47",
 -    "expo-status-bar": "~2.0.1",
 -    "react": "18.3.1",
 -    "react-native": "0.76.9"
-+    "expo": "~53.0.7",
++    "expo": "~53.0.20",
 +    "expo-status-bar": "~2.2.3",
 +    "react": "19.0.0",
-+    "react-native": "0.79.2"
++    "react-native": "0.79.6"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

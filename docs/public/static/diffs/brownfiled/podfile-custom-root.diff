@@ -1,0 +1,39 @@
+diff --git a/Podfile b/Podfile
+index 1472f45..03d4cce 100644
+--- a/Podfile
++++ b/Podfile
+@@ -9,8 +9,11 @@ install! 'cocoapods',
+
+ prepare_react_native_project!
+
++project_root = File.join(__dir__, 'my-project')
++ENV['PROJECT_ROOT'] = project_root
++
+ target 'HelloWorld' do
+-  use_expo_modules!
++  use_expo_modules!({ projectRoot: project_root })
+
+   config_command = [
+     'npx',
+@@ -18,7 +21,11 @@ target 'BlankIOS' do
+     'react-native-config',
+     '--json',
+     '--platform',
+-    'ios'
++    'ios',
++    '--project-root',
++    project_root,
++    '--source-dir',
++    "#{__dir__}"
+   ]
+   config = use_native_modules!(config_command)
+
+@@ -28,7 +35,7 @@ target 'BlankIOS' do
+     :path => config[:reactNativePath],
+     :hermes_enabled => true,
+     # An absolute path to your application root.
+-    :app_path => "#{Pod::Config.instance.installation_root}/..",
++    :app_path => "#{project_root}",
+     :privacy_file_aggregation_enabled => true,
+   )
+

@@ -8,9 +8,89 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+### 💡 Others
+
+## 3.0.10 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.9 — 2025-09-10
 
 ### 💡 Others
+
+- [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
+- Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
+- [iOS] Force codegen for `FBReactNativeSpec` when generated files are missing in React Native source ([#39512](https://github.com/expo/expo/pull/39512) by [@kitten](https://github.com/kitten))
+
+## 3.0.8 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix `platformOptions` not being correctly assigned. ([#39445](https://github.com/expo/expo/pull/39445) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 3.0.7 — 2025-09-04
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.4 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.3 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.2 — 2025-08-16
+
+### 🐛 Bug fixes
+
+- Regression: Use the command's root instead of the app's root when resolving extra build dependencies ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
+- [Android] Update resolveAppProjectConfigAsync to use sourceDir ([#39125](https://github.com/expo/expo/pull/39125) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Refactor command implementations and deprecate old Expo modules autolinking API ([#38907](https://github.com/expo/expo/pull/38907) by [@kitten](https://github.com/kitten))
+- Add internal API to scan only for Expo modules ([#38909](https://github.com/expo/expo/pull/38909) by [@kitten](https://github.com/kitten))
+- Expose `getLinkingImplementationForPlatform` and `PackageRevision` for Expo modules from internal autolinking API ([#38913](https://github.com/expo/expo/pull/38913) by [@kitten](https://github.com/kitten))
+
+## 3.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Reimplement Turbo Modules and Expo Modules discovery algorithm. Native modules are now discovered according to Node resolution by default, which can be overridden to the old behaviour by specifying `searchPaths` manually. The default behaviour will recursively resolve Node `dependencies` and `peerDependencies` ([#38282](https://github.com/expo/expo/pull/38282) by [@kitten](https://github.com/kitten))
+- Update `verify` command to check React Native modules as well, change `--json` output format, and accept `--verbose` option ([#38766](https://github.com/expo/expo/pull/38766) by [@kitten](https://github.com/kitten))
+
+### 🎉 New features
+
+- Add `--source-dir` option ([#38218](https://github.com/expo/expo/pull/38218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add `:projectRoot` option to `use_expo_modules!` ([#38210](https://github.com/expo/expo/pull/38210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Support auto-linking C++-only Turbo Modules on Android (as per `@react-native-community/cli-platform-android` changes) ([#38626](https://github.com/expo/expo/pull/38626) by [@kitten](https://github.com/kitten))
+- Respect `expo.autolinking.exclude` option for React Native modules as well ([#38635](https://github.com/expo/expo/pull/38635) by [@kitten](https://github.com/kitten))
+- Add `expo.autolinking.legacy_shallowReactNativeLinking` option to restore legacy behavior that doesn't autolink transitive React Native modules ([#38635](https://github.com/expo/expo/pull/38635) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+- Prevent Expo Modules from being detected as C++-only React Native modules ([#38658](https://github.com/expo/expo/pull/38658) by [@kitten](https://github.com/kitten))
+- Ignore optional peer dependencies in dependency traversal ([#38713](https://github.com/expo/expo/pull/38713) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- [iOS] Add support for user script sandboxing ([#38206](https://github.com/expo/expo/pull/38206) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactor JSON loading in `findModules` algorithm path to use plain `fs`. ([#38202](https://github.com/expo/expo/pull/38202) by [@kitten](https://github.com/kitten))
+- Add internal API for dual autolinking dependency resolution ([#38680](https://github.com/expo/expo/pull/38680) by [@kitten](https://github.com/kitten))
 
 ## 2.1.14 - 2025-07-07
 

@@ -102,6 +102,12 @@ internal final class AccessPickerUnavailableException: Exception {
   }
 }
 
+internal final class MissingViewControllerException: Exception {
+  override var reason: String {
+    "Could not find the current ViewController"
+  }
+}
+
 internal final class AccessPickerAlreadyPresentedException: Exception {
   override var reason: String {
     "Contact access picker is already presented"

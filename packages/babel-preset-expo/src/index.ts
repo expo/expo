@@ -1,7 +1,8 @@
-import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
 import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
 import {
+  getBabelRuntimeVersion,
   getBaseUrl,
   getBundler,
   getInlineEnvVarsEnabled,
@@ -50,7 +51,7 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-  enableBabelRuntime?: boolean;
+  enableBabelRuntime?: boolean | string;
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 
@@ -358,8 +359,13 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         const presetOpts = {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
-          // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-          enableBabelRuntime: platformOptions.enableBabelRuntime,
+          // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
+          // Set to `false` to disable `@babel/plugin-transform-runtime`
+          enableBabelRuntime:
+            platformOptions.enableBabelRuntime == null ||
+            platformOptions.enableBabelRuntime === true
+              ? getBabelRuntimeVersion()
+              : platformOptions.enableBabelRuntime,
           // This reduces the amount of transforms required, as Hermes supports many modern language features.
           unstable_transformProfile: platformOptions.unstable_transformProfile,
           // Set true to disable `@babel/plugin-transform-react-jsx` and
@@ -410,7 +416,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
         // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
         babelPresetReactNativeEnv.overrides.push({
-          plugins: [require('@babel/plugin-transform-export-namespace-from')],
+          plugins: [require('./babel-plugin-transform-export-namespace-from')],
         });
 
         return babelPresetReactNativeEnv;

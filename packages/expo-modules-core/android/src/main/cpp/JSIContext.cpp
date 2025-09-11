@@ -1,6 +1,7 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JSIContext.h"
+#include "Exceptions.h"
 #include "ExpoModulesHostObject.h"
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
@@ -155,7 +156,10 @@ JSIContext::callGetJavaScriptModuleObjectMethod(const std::string &moduleName) c
       "getJavaScriptModuleObject"
     );
 
-  return method(javaPart_, moduleName);
+  auto jniString = jni::make_jstring(moduleName);
+  auto result = jni::Environment::current()->CallObjectMethod(javaPart_.get(), method.getId(), jniString.get());
+  throwPendingJniExceptionAsCppException();
+  return jni::adopt_local(static_cast<JavaScriptModuleObject::javaobject>(result));
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
@@ -181,7 +185,10 @@ JSIContext::callGetJavaScriptModulesNames() const {
     ->getMethod<jni::local_ref<jni::JArrayClass<jni::JString>>()>(
       "getJavaScriptModulesName"
     );
-  return method(javaPart_);
+
+  auto result = jni::Environment::current()->CallObjectMethod(javaPart_.get(), method.getId());
+  throwPendingJniExceptionAsCppException();
+  return jni::adopt_local(static_cast<jni::JniType<jni::JArrayClass<jni::JString>>>(result));
 }
 
 bool JSIContext::callHasModule(const std::string &moduleName) const {
@@ -193,7 +200,10 @@ bool JSIContext::callHasModule(const std::string &moduleName) const {
     ->getMethod<jboolean(std::string)>(
       "hasModule"
     );
-  return (bool) method(javaPart_, moduleName);
+  auto jniString = jni::make_jstring(moduleName);
+  auto result = jni::Environment::current()->CallBooleanMethod(javaPart_.get(), method.getId(), jniString.get());
+  throwPendingJniExceptionAsCppException();
+  return static_cast<bool>(result);
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>

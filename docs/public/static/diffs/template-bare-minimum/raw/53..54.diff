@@ -1,0 +1,289 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
+index 34b96c71c33..a958e6ba07e 100644
+--- a/templates/expo-template-bare-minimum/android/app/build.gradle
++++ b/templates/expo-template-bare-minimum/android/app/build.gradle
+@@ -64,9 +64,9 @@ react {
+ }
+ 
+ /**
+- * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
++ * Set this to true in release builds to optimize the app using [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization).
+  */
+-def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInReleaseBuilds') ?: false).toBoolean()
++def enableMinifyInReleaseBuilds = (findProperty('android.enableMinifyInReleaseBuilds') ?: false).toBoolean()
+ 
+ /**
+  * The preferred build flavor of JavaScriptCore (JSC)
+@@ -94,6 +94,8 @@ android {
+         targetSdkVersion rootProject.ext.targetSdkVersion
+         versionCode 1
+         versionName "1.0"
++
++        buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
+     }
+     signingConfigs {
+         debug {
+@@ -112,7 +114,7 @@ android {
+             // see https://reactnative.dev/docs/signed-apk-android.
+             signingConfig signingConfigs.debug
+             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
+-            minifyEnabled enableProguardInReleaseBuilds
++            minifyEnabled enableMinifyInReleaseBuilds
+             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+             crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
+         }
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+index 267e20c30e5..7dae736db44 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
++++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+@@ -5,13 +5,13 @@ import android.content.res.Configuration
+ 
+ import com.facebook.react.PackageList
+ import com.facebook.react.ReactApplication
++import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
+ import com.facebook.react.ReactNativeHost
+ import com.facebook.react.ReactPackage
+ import com.facebook.react.ReactHost
+-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
++import com.facebook.react.common.ReleaseLevel
++import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+ import com.facebook.react.defaults.DefaultReactNativeHost
+-import com.facebook.react.soloader.OpenSourceMergedSoMapping
+-import com.facebook.soloader.SoLoader
+ 
+ import expo.modules.ApplicationLifecycleDispatcher
+ import expo.modules.ReactNativeHostWrapper
+@@ -19,21 +19,19 @@ import expo.modules.ReactNativeHostWrapper
+ class MainApplication : Application(), ReactApplication {
+ 
+   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
+-        this,
+-        object : DefaultReactNativeHost(this) {
+-          override fun getPackages(): List<ReactPackage> {
+-            val packages = PackageList(this).packages
+-            // Packages that cannot be autolinked yet can be added manually here, for example:
+-            // packages.add(MyReactNativePackage())
+-            return packages
+-          }
++      this,
++      object : DefaultReactNativeHost(this) {
++        override fun getPackages(): List<ReactPackage> =
++            PackageList(this).packages.apply {
++              // Packages that cannot be autolinked yet can be added manually here, for example:
++              // add(MyReactNativePackage())
++            }
+ 
+           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
+ 
+           override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
+ 
+           override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+-          override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
+       }
+   )
+ 
+@@ -42,11 +40,12 @@ class MainApplication : Application(), ReactApplication {
+ 
+   override fun onCreate() {
+     super.onCreate()
+-    SoLoader.init(this, OpenSourceMergedSoMapping)
+-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+-      // If you opted-in for the New Architecture, we load the native entry point for this app.
+-      load()
++    try {
++      DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
++    } catch (e: IllegalArgumentException) {
++      DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.STABLE
+     }
++    loadReactNative(this)
+     ApplicationLifecycleDispatcher.onApplicationCreate(this)
+   }
+ 
+diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
+index 7531e9eb23c..97271b9456f 100644
+--- a/templates/expo-template-bare-minimum/android/gradle.properties
++++ b/templates/expo-template-bare-minimum/android/gradle.properties
+@@ -15,7 +15,7 @@ org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
+ # When configured, Gradle will run in incubating parallel mode.
+ # This option should only be used with decoupled projects. More details, visit
+ # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
+-# org.gradle.parallel=true
++org.gradle.parallel=true
+ 
+ # AndroidX package structure to make it clearer which packages are bundled with the
+ # Android operating system, and which are packaged with your app's APK
+@@ -41,6 +41,11 @@ newArchEnabled=true
+ # If set to false, you will be using JSC instead.
+ hermesEnabled=true
+ 
++# Use this property to enable edge-to-edge display support.
++# This allows your app to draw behind system bars for an immersive UI.
++# Note: Only works with ReactActivity and should not be used with custom Activity.
++edgeToEdgeEnabled=true
++
+ # Enable GIF support in React Native images (~200 B increase)
+ expo.gif.enabled=true
+ # Enable webp support in React Native images (~85 KB increase)
+diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
+index a4b76b9530d..1b33c55baab 100644
+Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
+diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+index 37f853b1c84..d4081da476b 100644
+--- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
++++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.3-bin.zip
+ networkTimeout=10000
+ validateDistributionUrl=true
+ zipStoreBase=GRADLE_USER_HOME
+diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
+index f3b75f3b0d4..7f94d3d4777 100755
+--- a/templates/expo-template-bare-minimum/android/gradlew
++++ b/templates/expo-template-bare-minimum/android/gradlew
+@@ -114,7 +114,7 @@ case "$( uname )" in                #(
+   NONSTOP* )        nonstop=true ;;
+ esac
+ 
+-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
++CLASSPATH="\\\"\\\""
+ 
+ 
+ # Determine the Java command to use to start the JVM.
+@@ -213,7 +213,7 @@ DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+ set -- \
+         "-Dorg.gradle.appname=$APP_BASE_NAME" \
+         -classpath "$CLASSPATH" \
+-        org.gradle.wrapper.GradleWrapperMain \
++        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+         "$@"
+ 
+ # Stop when "xargs" is not available.
+diff --git a/templates/expo-template-bare-minimum/android/gradlew.bat b/templates/expo-template-bare-minimum/android/gradlew.bat
+index 9b42019c791..5eed7ee8452 100644
+--- a/templates/expo-template-bare-minimum/android/gradlew.bat
++++ b/templates/expo-template-bare-minimum/android/gradlew.bat
+@@ -70,11 +70,11 @@ goto fail
+ :execute
+ @rem Setup the command line
+ 
+-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
++set CLASSPATH=
+ 
+ 
+ @rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
+ 
+ :end
+ @rem End local scope for the variables with windows NT shell
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+index 1b7513bd31b..8a390c764af 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+@@ -168,6 +168,8 @@
+ 			files = (
+ 			);
+ 			inputPaths = (
++				"$(SRCROOT)/.xcode.env",
++				"$(SRCROOT)/.xcode.env.local",
+ 			);
+ 			name = "Bundle React Native code and images";
+ 			outputPaths = (
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
+new file mode 100644
+index 00000000000..255637e0fdb
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
+@@ -0,0 +1,21 @@
++{
++  "images" : [
++    {
++      "filename" : "SplashScreenLegacy.png",
++      "idiom" : "universal",
++      "scale" : "1x"
++    },
++    {
++      "idiom" : "universal",
++      "scale" : "2x"
++    },
++    {
++      "idiom" : "universal",
++      "scale" : "3x"
++    }
++  ],
++  "info" : {
++    "author" : "xcode",
++    "version" : 1
++  }
++}
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png
+new file mode 100644
+index 00000000000..bbf8e9e6016
+Binary files /dev/null and b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png differ
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
+index 29503ff0cc1..84aaf231d62 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile
++++ b/templates/expo-template-bare-minimum/ios/Podfile
+@@ -6,10 +6,9 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
+ 
+ ENV['RCT_NEW_ARCH_ENABLED'] = '0' if podfile_properties['newArchEnabled'] == 'false'
+ ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+-
++ENV['RCT_USE_RN_DEP'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
++ENV['RCT_USE_PREBUILT_RNCORE'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
+ platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+-install! 'cocoapods',
+-  :deterministic_uuids => false
+ 
+ prepare_react_native_project!
+ 
+@@ -49,16 +48,5 @@ target 'HelloWorld' do
+       :mac_catalyst_enabled => false,
+       :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+     )
+-
+-    # This is necessary for Xcode 14, because it signs resource bundles by default
+-    # when building for devices.
+-    installer.target_installation_results.pod_target_installation_results
+-      .each do |pod_name, target_installation_result|
+-      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+-        resource_bundle_target.build_configurations.each do |config|
+-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+-        end
+-      end
+-    end
+   end
+ end
+diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
+index e19171a3085..69919e762b1 100644
+--- a/templates/expo-template-bare-minimum/package.json
++++ b/templates/expo-template-bare-minimum/package.json
+@@ -2,7 +2,7 @@
+   "name": "expo-template-bare-minimum",
+   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
+   "license": "0BSD",
+-  "version": "53.0.38",
++  "version": "54.0.1",
+   "main": "index.js",
+   "scripts": {
+     "start": "expo start --dev-client",
+@@ -11,12 +11,9 @@
+     "web": "expo start --web"
+   },
+   "dependencies": {
+-    "expo": "~53.0.20",
+-    "expo-status-bar": "~2.2.3",
+-    "react": "19.0.0",
+-    "react-native": "0.79.6"
+-  },
+-  "devDependencies": {
+-    "@babel/core": "^7.20.0"
++    "expo": "~54.0.0-preview.1",
++    "expo-status-bar": "~3.0.1",
++    "react": "19.1.0",
++    "react-native": "0.81.0"
+   }
+ }

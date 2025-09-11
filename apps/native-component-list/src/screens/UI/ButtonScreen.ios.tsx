@@ -1,4 +1,3 @@
-import { Button } from '@expo/ui/swift-ui';
 import {
   Button as ButtonPrimitive,
   CircularProgress,
@@ -6,9 +5,9 @@ import {
   Image,
   Text,
   VStack,
-} from '@expo/ui/swift-ui-primitives';
+} from '@expo/ui/swift-ui';
 import * as React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
@@ -25,6 +24,9 @@ export default function ButtonScreen() {
           </Button>
           <Button style={styles.button} variant="glass">
             Glass button
+          </Button>
+          <Button style={styles.button} variant="glassProminent">
+            Glass Prominent
           </Button>
           <Button style={styles.button} variant="bordered">
             Bordered
@@ -93,6 +95,17 @@ export default function ButtonScreen() {
         </Section>
       </ScrollView>
     </Page>
+  );
+}
+
+function Button(
+  props: React.ComponentProps<typeof ButtonPrimitive> & { style?: StyleProp<ViewStyle> }
+) {
+  const { style, ...restProps } = props;
+  return (
+    <Host matchContents style={style}>
+      <ButtonPrimitive {...restProps}>{props.children}</ButtonPrimitive>
+    </Host>
   );
 }
 

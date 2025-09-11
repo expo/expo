@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { getRscMiddleware } from '@expo/server/private';
 import assert from 'assert';
-import { EntriesDev } from 'expo-router/build/rsc/server';
+import type { EntriesDev } from 'expo-router/build/rsc/server';
 import path from 'path';
 import url from 'url';
 
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
 import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
-import { ExportAssetMap } from '../../../export/saveAssets';
+import type { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
@@ -23,7 +23,7 @@ import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import {
   createBundleUrlSearchParams,
-  ExpoMetroOptions,
+  type ExpoMetroOptions,
   getMetroOptionsFromUrl,
 } from '../middleware/metroOptions';
 

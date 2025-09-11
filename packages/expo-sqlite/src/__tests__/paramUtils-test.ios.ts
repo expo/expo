@@ -1,4 +1,4 @@
-import { composeRow, composeRows, normalizeParams } from '../paramUtils';
+import { composeRow, composeRows, normalizeParams, normalizeStorageIndex } from '../paramUtils';
 
 describe(normalizeParams, () => {
   it('should accept no params', () => {
@@ -135,5 +135,91 @@ describe(composeRows, () => {
   it('should return empty array when column values list is empty', () => {
     const columnNames = ['id', 'value', 'intValue'];
     expect(composeRows(columnNames, [])).toEqual([]);
+  });
+});
+
+describe(normalizeStorageIndex, () => {
+  it('should return index for happy path numbers', () => {
+    expect(normalizeStorageIndex(0)).toBe(0);
+    expect(normalizeStorageIndex(100)).toBe(100);
+  });
+
+  it('should floor the index to an integer', () => {
+    expect(normalizeStorageIndex(1.1)).toBe(1);
+    expect(normalizeStorageIndex(1.9)).toBe(1);
+    expect(normalizeStorageIndex(1.5)).toBe(1);
+    expect(normalizeStorageIndex(Number.MIN_VALUE)).toBe(0);
+    expect(normalizeStorageIndex(Number.EPSILON)).toBe(0);
+  });
+
+  it('should support number as string', () => {
+    expect(normalizeStorageIndex('1')).toBe(1);
+    expect(normalizeStorageIndex('100')).toBe(100);
+  });
+
+  it('should support Number object', () => {
+    expect(normalizeStorageIndex(new Number(1))).toBe(1);
+    expect(normalizeStorageIndex(new Number(100))).toBe(100);
+  });
+
+  it('should support boolean as 1 and 0', () => {
+    expect(normalizeStorageIndex(true)).toBe(1);
+    expect(normalizeStorageIndex(false)).toBe(0);
+  });
+
+  it('should support `valueOf` method', () => {
+    const obj = {
+      valueOf() {
+        return 1;
+      },
+    };
+    expect(normalizeStorageIndex(obj)).toBe(1);
+
+    const floatObj = {
+      valueOf() {
+        return 1.1;
+      },
+    };
+    expect(normalizeStorageIndex(floatObj)).toBe(1);
+
+    const invalidObj = {
+      valueOf() {
+        return -1;
+      },
+    };
+    expect(normalizeStorageIndex(invalidObj)).toBeNull();
+  });
+
+  it('should return null for negative numbers', () => {
+    expect(normalizeStorageIndex(-1)).toBeNull();
+    expect(normalizeStorageIndex(-100)).toBeNull();
+    expect(normalizeStorageIndex(Number.MIN_SAFE_INTEGER)).toBeNull();
+  });
+
+  it('should return 0 when index is out of bounds', () => {
+    expect(normalizeStorageIndex(Number.NEGATIVE_INFINITY)).toBe(0);
+    expect(normalizeStorageIndex(Number.POSITIVE_INFINITY)).toBe(0);
+    expect(normalizeStorageIndex(Number.MAX_VALUE)).toBe(0);
+    expect(normalizeStorageIndex(Number.NaN)).toBe(0);
+  });
+
+  it('should return 0 for non-number values', () => {
+    expect(normalizeStorageIndex('a')).toBe(0);
+    expect(normalizeStorageIndex({})).toBe(0);
+    expect(normalizeStorageIndex(() => {})).toBe(0);
+  });
+
+  it('should support bigint with lossy conversion', () => {
+    expect(normalizeStorageIndex(BigInt(1))).toBe(1);
+    expect(normalizeStorageIndex(BigInt(-1))).toBeNull();
+    expect(normalizeStorageIndex(BigInt(Number.MAX_VALUE))).toBe(0);
+  });
+
+  it('should return 0 for IEEE 754 negative zero', () => {
+    expect(normalizeStorageIndex(-0)).toBe(0);
+  });
+
+  it('should support safe integer', () => {
+    expect(normalizeStorageIndex(Number.MAX_SAFE_INTEGER)).toBe(Number.MAX_SAFE_INTEGER);
   });
 });

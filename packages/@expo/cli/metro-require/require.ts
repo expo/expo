@@ -113,8 +113,9 @@ const CYCLE_DETECTED = {};
 const { hasOwnProperty } = {};
 
 if (__DEV__) {
-  global.$RefreshReg$ = () => {};
-  global.$RefreshSig$ = () => (type) => type;
+  // UPSTREAM: https://github.com/facebook/metro/commit/15fef8ebcf5ae0a13e7f0925a22d4211dde95e02
+  global.$RefreshReg$ = global.$RefreshReg$ ?? (() => {});
+  global.$RefreshSig$ = global.$RefreshSig$ ?? (() => type => type);
 }
 
 function clear(): ModuleList {
@@ -185,7 +186,7 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
 }
 
 function metroRequire(
-  moduleId: ModuleID | VerboseModuleNameForDev,
+  moduleId: ModuleID | VerboseModuleNameForDev | null,
   moduleIdHint?: string
 ): Exports {
   // if (__DEV__ && typeof moduleId === 'string') {
@@ -196,6 +197,15 @@ function metroRequire(
   //       'debugging purposes and will BREAK IN PRODUCTION!'
   //   );
   // }
+
+  // UPSTREAM: https://github.com/facebook/metro/commit/5f8548c2210ac824c1989b347aa1b52438449a8d#diff-d1563cf313be4f94a026f469dbd47f0822593ccdbf1eb43ef9f651b6f60fb9ec
+  // Unresolved optional dependencies are nulls in dependency maps
+  if (moduleId === null) {
+    if (__DEV__ && typeof moduleIdHint === 'string') {
+      throw new Error("Cannot find module '" + moduleIdHint + "'");
+    }
+    throw new Error('Cannot find module');
+  }
 
   if (__DEV__) {
     const initializingIndex = initializingModuleIds.indexOf(moduleId);
@@ -472,7 +482,10 @@ function loadModuleImplementation(
       if (Refresh != null) {
         const RefreshRuntime = Refresh;
         global.$RefreshReg$ = (type, id) => {
-          RefreshRuntime.register(type, moduleId + ' ' + id);
+          // UPSTREAM: https://github.com/facebook/metro/commit/c8de6512c63c3c0f6556446f8aec924380ac2014
+          // prefix the id with global prefix to enable multiple HMR clients
+          const prefixedModuleId = __METRO_GLOBAL_PREFIX__ + ' ' + moduleId + ' ' + id;
+          RefreshRuntime.register(type, prefixedModuleId);
         };
         global.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
       }
@@ -503,7 +516,13 @@ function loadModuleImplementation(
       Systrace.endEvent();
 
       if (Refresh != null) {
-        registerExportsForReactRefresh(Refresh, moduleObject.exports, moduleId);
+        // UPSTREAM: https://github.com/facebook/metro/commit/c8de6512c63c3c0f6556446f8aec924380ac2014
+        const prefixedModuleId = __METRO_GLOBAL_PREFIX__ + ' ' + moduleId;
+        registerExportsForReactRefresh(
+          Refresh,
+          moduleObject.exports,
+          prefixedModuleId,
+        );
       }
     }
 
@@ -891,6 +910,18 @@ if (__DEV__) {
     }
   };
 
+  // NOTE(@kitten): This is a modification we slot in for the getter check because
+  // ES Modules with live bindings have getters. Accessing getters on ES Modules is
+  // required and always safe
+  var isSpecifierSafeToCheck = (moduleExports: Exports, key: string): boolean => {
+    if (moduleExports && moduleExports.__esModule) {
+      return true;
+    } else {
+      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
+      return !desc || !desc.get;
+    }
+  };
+
   // Modules that only export components become React Refresh boundaries.
   var isReactRefreshBoundary = function (Refresh: any, moduleExports: Exports): boolean {
     if (Refresh.isLikelyComponentType(moduleExports)) {
@@ -906,9 +937,7 @@ if (__DEV__) {
       hasExports = true;
       if (key === '__esModule') {
         continue;
-      }
-      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
-      if (desc && desc.get) {
+      } else if (!isSpecifierSafeToCheck(moduleExports, key)) {
         // Don't invoke getters as they may have side effects.
         return false;
       }
@@ -951,9 +980,7 @@ if (__DEV__) {
     for (const key in moduleExports) {
       if (key === '__esModule') {
         continue;
-      }
-      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
-      if (desc && desc.get) {
+      } else if (!isSpecifierSafeToCheck(moduleExports, key)) {
         continue;
       }
       const exportValue = moduleExports[key];
@@ -966,7 +993,7 @@ if (__DEV__) {
   var registerExportsForReactRefresh = (
     Refresh: any,
     moduleExports: Exports,
-    moduleID: ModuleID
+    moduleID: string
   ) => {
     Refresh.register(moduleExports, moduleID + ' %exports%');
     if (moduleExports == null || typeof moduleExports !== 'object') {
@@ -975,9 +1002,7 @@ if (__DEV__) {
       return;
     }
     for (const key in moduleExports) {
-      const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
-      if (desc && desc.get) {
-        // Don't invoke getters as they may have side effects.
+      if (!isSpecifierSafeToCheck(moduleExports, key)) {
         continue;
       }
       const exportValue = moduleExports[key];
@@ -1000,8 +1025,18 @@ if (__DEV__) {
     return global[__METRO_GLOBAL_PREFIX__ + '__SYSTRACE'] || metroRequire.Systrace;
   };
 
+  // UPSTREAM: https://github.com/facebook/metro/commit/c8de6512c63c3c0f6556446f8aec924380ac2014
   var requireRefresh = function requireRefresh() {
-    // @ts-expect-error
-    return global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'] || metroRequire.Refresh;
+    // __METRO_GLOBAL_PREFIX__ and global.__METRO_GLOBAL_PREFIX__ differ from
+    // each other when multiple module systems are used - e.g, in the context
+    // of Module Federation, the first one would refer to the local prefix
+    // defined at the top of the bundle, while the other always refers to the
+    // one coming from the Host
+    return (
+      global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'] ||
+      global[global.__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'] ||
+      // @ts-expect-error: missing prop
+      metroRequire.Refresh
+    );
   };
 }

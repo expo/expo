@@ -88,6 +88,37 @@ final class DynamicEitherTypeSpec: ExpoSpec {
       expect(either.is(String.self)) == false
       expect(try either.as(TestSharedObject.self).sharedObjectId) == nativeObject.sharedObjectId
     }
+    it("supports array of either") {
+      let eitherArray2 = try (~[Either<String, Int>].self).cast(["bg", 37], appContext: appContext) as! [Either<String, Int>]
+      expect(eitherArray2[0].is(String.self)) == true
+      expect(eitherArray2[0].get()) == "bg"
+      expect(eitherArray2[1].is(Int.self)) == true
+      expect(eitherArray2[1].is(String.self)) == false
+      expect(eitherArray2[1].get()) == 37
+      
+      let eitherArray3 = try (~[EitherOfThree<Int, String, Bool>].self).cast(["foo", 1, "bar", true, 3], appContext: appContext) as! [EitherOfThree<Int, String, Bool>]
+      expect(eitherArray3[0].is(String.self)) == true
+      expect(eitherArray3[0].get()) == "foo"
+      expect(eitherArray3[1].is(Int.self)) == true
+      expect(eitherArray3[1].get()) == 1
+      expect(eitherArray3[2].is(String.self)) == true
+      expect(eitherArray3[2].get()) == "bar"
+      expect(eitherArray3[3].is(Bool.self)) == true
+      expect(eitherArray3[3].get()) == true
+      expect(eitherArray3[4].is(Int.self)) == true
+      expect(eitherArray3[4].get()) == 3
+      
+      let eitherArray4 = try (~[EitherOfFour<Bool, CGFloat, CGColor, String>].self).cast(["foo", 123.4, false], appContext: appContext) as! [EitherOfFour<Bool, CGFloat, CGColor, String>]
+      expect(eitherArray4[0].is(String.self)) == true
+      expect(eitherArray4[0].get()) == "foo"
+      expect(eitherArray4[1].is(CGFloat.self)) == true
+      expect(eitherArray4[1].get()) == 123.4
+      expect(eitherArray4[1].is(CGColor.self)) == true
+      expect(eitherArray4[1].get()) == 123.4
+      expect(eitherArray4[2].is(Bool.self)) == true
+      expect(eitherArray4[2].get()) == false
+      expect(eitherArray4[2].is(CGFloat.self)) == false
+    }
   }
 }
 

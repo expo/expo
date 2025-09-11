@@ -53,22 +53,20 @@ exports.collectDependenciesForShaking = collectDependenciesForShaking;
  */
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
-const babylon = __importStar(require("@babel/parser"));
-const template_1 = __importDefault(require("@babel/template"));
-const t = __importStar(require("@babel/types"));
-const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
-const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
-const metro_cache_1 = require("metro-cache");
-const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
-const metro_source_map_1 = require("metro-source-map");
-const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
-const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
+const JsFileWrapping_1 = __importDefault(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
+const generateImportNames_1 = __importDefault(require("@expo/metro/metro/ModuleGraph/worker/generateImportNames"));
+const importLocationsPlugin_1 = require("@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin");
+const metro_cache_1 = require("@expo/metro/metro-cache");
+const metro_cache_key_1 = require("@expo/metro/metro-cache-key");
+const metro_source_map_1 = require("@expo/metro/metro-source-map");
+const metroTransformPlugins = __importStar(require("@expo/metro/metro-transform-plugins"));
+const getMinifier_1 = __importDefault(require("@expo/metro/metro-transform-worker/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
+const transform_plugins_1 = require("../transform-plugins");
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -148,7 +146,7 @@ function applyUseStrictDirective(ast) {
     if (ast.program.sourceType === 'module' &&
         directives != null &&
         directives.findIndex((d) => d.value.value === 'use strict') === -1) {
-        directives.push(t.directive(t.directiveLiteral('use strict')));
+        directives.push(core_1.types.directive(core_1.types.directiveLiteral('use strict')));
     }
 }
 function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, }) {
@@ -169,17 +167,17 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
     // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
     if (options.experimentalImportSupport === true) {
-        plugins.push(
-        // Ensure the iife "globals" don't have conflicting variables in the module.
-        renameTopLevelModuleVariables, 
-        //
-        [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts]);
+        const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
+        plugins.push([
+            liveBindings ? transform_plugins_1.importExportLiveBindingsPlugin : transform_plugins_1.importExportPlugin,
+            { ...babelPluginOpts },
+        ]);
     }
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
     // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.
     if (options.inlineRequires) {
         plugins.push([
-            metro_transform_plugins_1.default.inlineRequiresPlugin,
+            metroTransformPlugins.inlineRequiresPlugin,
             {
                 ...babelPluginOpts,
                 ignoredRequires: options.nonInlinedRequires,
@@ -240,7 +238,7 @@ function performConstantFolding(ast, { filename }) {
         configFile: false,
         comments: true,
         filename,
-        plugins: [clearProgramScopePlugin, metro_transform_plugins_1.default.constantFoldingPlugin],
+        plugins: [clearProgramScopePlugin, metroTransformPlugins.constantFoldingPlugin],
         sourceMaps: false,
         // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
         // running with `cloneInputAst: true`.
@@ -265,7 +263,7 @@ async function transformJS(file, { config, options }) {
     }
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
-    let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
+    let ast = file.ast ?? nullthrows((0, core_1.parse)(file.code, { sourceType: 'unambiguous' }));
     // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
     const { importDefault, importAll } = (0, generateImportNames_1.default)(ast);
     // Add "use strict" if the file was parsed as a module, and the directive did
@@ -364,7 +362,7 @@ async function transformJS(file, { config, options }) {
         // TODO: If the module wrapping is disabled then the normalize function needs to change to account for not being in a body.
         !unstable_disableModuleWrapping) {
         // NOTE(EvanBacon): Simply pushing this function will mutate the AST, so it must run before the `generate` step!!
-        reserved.push(...metro_transform_plugins_1.default.normalizePseudoGlobals(wrappedAst, {
+        reserved.push(...metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
             reservedNames: reserved,
         }));
     }
@@ -585,17 +583,22 @@ async function transform(config, projectRoot, filename, data, options) {
     return transformJSWithBabel(file, context);
 }
 function getCacheKey(config) {
-    const { babelTransformerPath, minifierPath, ...remainingConfig } = config;
-    const filesKey = (0, metro_cache_key_1.default)([
+    const { 
+    // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
+    expo_customTransformerPath: _customTransformerPath, babelTransformerPath, minifierPath, 
+    // Pull out of the cache key to prevent accidental cache invalidation.
+    asyncRequireModulePath, ...remainingConfig } = config;
+    // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
+    const filesKey = (0, metro_cache_key_1.getCacheKey)([
         require.resolve(babelTransformerPath),
         require.resolve(minifierPath),
-        require.resolve('metro-transform-worker/src/utils/getMinifier'),
+        require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
         require.resolve('./collect-dependencies'),
         require.resolve('./asset-transformer'),
         require.resolve('./resolveOptions'),
-        require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
-        require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
-        ...metro_transform_plugins_1.default.getTransformPluginCacheKeyFiles(),
+        require.resolve('@expo/metro/metro/ModuleGraph/worker/generateImportNames'),
+        require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
+        ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
     ]);
     const babelTransformer = require(babelTransformerPath);
     return [
@@ -608,7 +611,7 @@ function getCacheKey(config) {
  * Produces a Babel template that transforms an "import(...)" call into a
  * "require(...)" call to the asyncRequire specified.
  */
-const makeShimAsyncRequireTemplate = template_1.default.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
+const makeShimAsyncRequireTemplate = core_1.template.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
 const disabledDependencyTransformer = {
     transformSyncRequire: (path) => { },
     transformImportMaybeSyncCall: () => { },

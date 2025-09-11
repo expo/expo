@@ -26,7 +26,6 @@ describe('exports for hermes with no bytecode', () => {
           E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );
@@ -64,7 +63,7 @@ describe('exports for hermes with no bytecode', () => {
 
     const bundle = await fs.promises.readFile(bundlePath, 'utf8');
     // Minified mark
-    expect(bundle).toMatch('__d((function(g,r,');
+    expect(bundle).toMatch('__d(function(g,r,');
   });
 });
 
@@ -84,7 +83,6 @@ describe('exports for hermes with no bytecode and no minification', () => {
           E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );

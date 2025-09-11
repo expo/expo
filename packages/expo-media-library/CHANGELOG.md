@@ -10,6 +10,62 @@
 
 ### 💡 Others
 
+## 18.1.1 — 2025-09-10
+
+### 💡 Others
+
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
+## 18.1.0 — 2025-09-08
+
+### 🎉 New features
+
+- Add MediaLibrary@Next. ([#38835](https://github.com/expo/expo/pull/38835) by [@Wenszel](https://github.com/wenszel))
+
+## 18.0.6 — 2025-09-02
+
+### 💡 Others
+
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+
+## 18.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- [Android] Fix `getAssetsAsync` loading performance, add `resolveWithFullInfo` option to control whether to load full EXIF data for images. This is a breaking change for Android apps, as it might break the orientation of images in some cases. ([#37957](https://github.com/expo/expo/pull/37957) by [@kosmydel](https://github.com/kosmydel)).
+
+### 🎉 New features
+
+- [iOS] Add support for filtering assets by media subtype. by [@clarkg](https://github.com/clarkg) ([#36756](https://github.com/expo/expo/pull/36756) by [@clarkg](https://github.com/clarkg))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- [Android] Migrate to coroutines. ([#38193](https://github.com/expo/expo/pull/38193) by [@Wenszel](http://github.com/wenszel))
+
 ## 17.1.7 - 2025-06-04
 
 ### 🐛 Bug fixes

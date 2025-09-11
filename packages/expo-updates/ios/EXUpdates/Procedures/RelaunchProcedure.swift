@@ -11,6 +11,7 @@ final class RelaunchProcedure: StateMachineProcedure {
   private let updatesDirectory: URL
   private let logger: UpdatesLogger
   private let shouldRunReaper: Bool
+  private let reloadScreenManager: Reloadable?
   private let triggerReloadCommandListenersReason: String
   private let getLaunchedUpdate: () -> Update?
   private let setLauncher: (_ newLauncher: AppLauncher) -> Void
@@ -29,6 +30,7 @@ final class RelaunchProcedure: StateMachineProcedure {
     logger: UpdatesLogger,
     shouldRunReaper: Bool,
     triggerReloadCommandListenersReason: String,
+    reloadScreenManager: Reloadable?,
     getLaunchedUpdate: @escaping () -> Update?,
     setLauncher: @escaping (_ setCurrentLauncher: AppLauncher) -> Void,
     requestStartErrorMonitoring: @escaping () -> Void,
@@ -43,6 +45,7 @@ final class RelaunchProcedure: StateMachineProcedure {
     self.logger = logger
     self.shouldRunReaper = shouldRunReaper
     self.triggerReloadCommandListenersReason = triggerReloadCommandListenersReason
+    self.reloadScreenManager = reloadScreenManager
     self.getLaunchedUpdate = getLaunchedUpdate
     self.setLauncher = setLauncher
     self.requestStartErrorMonitoring = requestStartErrorMonitoring
@@ -71,6 +74,8 @@ final class RelaunchProcedure: StateMachineProcedure {
           self.requestStartErrorMonitoring()
           RCTReloadCommandSetBundleURL(self.launcherWithDatabase.launchAssetUrl)
           RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
+
+          self.reloadScreenManager?.show()
 
           // TODO(wschurman): this was moved to after the RCT calls to unify reload
           // code between JS API call and error recovery handler. double check that

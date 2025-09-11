@@ -38,6 +38,7 @@ exports.getPathDataFromState = getPathDataFromState;
 exports.appendBaseUrl = appendBaseUrl;
 const queryString = __importStar(require("query-string"));
 const expo = __importStar(require("./getPathFromState-forks"));
+const navigationParams_1 = require("../navigationParams");
 // END FORK
 const getActiveRoute = (state) => {
     const route = typeof state.index === 'number'
@@ -269,6 +270,7 @@ function getPathDataFromState(state, options) {
             }
             // START FORK
             delete focusedParams['#'];
+            focusedParams = (0, navigationParams_1.removeInternalExpoRouterParams)(focusedParams);
             // END FORK
             const query = queryString.stringify(focusedParams, { sort: false });
             if (query) {

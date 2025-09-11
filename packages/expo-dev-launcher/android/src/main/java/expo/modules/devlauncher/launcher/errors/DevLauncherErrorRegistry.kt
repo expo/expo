@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.google.gson.Gson
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
+import androidx.core.content.edit
 
 private const val ERROR_REGISTRY_SHARED_PREFERENCES = "expo.modules.devlauncher.errorregistry"
 private const val ERROR_REGISTRY_SHARED_PREFERENCES_KEY = "SavedError"
@@ -36,9 +37,9 @@ class DevLauncherErrorRegistry(context: Context) {
     val jsonString = Gson().toJson(errorInstance)
 
     sharedPreferences
-      .edit()
-      .putString(ERROR_REGISTRY_SHARED_PREFERENCES_KEY, jsonString)
-      .apply()
+      .edit(commit = true) {
+        putString(ERROR_REGISTRY_SHARED_PREFERENCES_KEY, jsonString)
+      }
   }
 
   fun consumeException(): DevLauncherErrorInstance? {
@@ -49,9 +50,9 @@ class DevLauncherErrorRegistry(context: Context) {
       return Gson().fromJson(jsonString, DevLauncherErrorInstance::class.java)
     } finally {
       sharedPreferences
-        .edit()
-        .remove(ERROR_REGISTRY_SHARED_PREFERENCES_KEY)
-        .apply()
+        .edit(commit = true) {
+          remove(ERROR_REGISTRY_SHARED_PREFERENCES_KEY)
+        }
     }
   }
 }

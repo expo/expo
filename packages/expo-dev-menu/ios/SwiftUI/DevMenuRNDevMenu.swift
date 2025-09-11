@@ -4,19 +4,16 @@ struct DevMenuRNDevMenu: View {
   let onOpenRNDevMenu: () -> Void
 
   var body: some View {
-    Button { onOpenRNDevMenu() }
-    label: {
-      HStack {
-        Text("Open React Native dev menu")
-          .foregroundColor(.primary)
-        Spacer()
-      }
-      .padding()
+    Button {
+      onOpenRNDevMenu()
+    } label: {
+      Text("Open React Native dev menu")
+        .padding()
+        .foregroundColor(.primary)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
-    .background(Color(.systemBackground))
-    .cornerRadius(12)
-    .padding(.horizontal)
-    .padding(.vertical, 8)
+    .background(Color.expoSecondarySystemBackground)
+    .cornerRadius(18)
   }
 }
 

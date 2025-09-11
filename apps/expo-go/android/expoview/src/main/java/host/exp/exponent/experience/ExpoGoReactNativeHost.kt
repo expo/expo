@@ -4,6 +4,7 @@ import android.app.Application
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.shell.MainReactPackage
+import com.swmansion.worklets.WorkletsPackage
 import host.exp.exponent.ExponentManifest
 import host.exp.expoview.Exponent
 import versioned.host.exp.exponent.ExpoReanimatedPackage
@@ -41,6 +42,7 @@ class ExpoGoReactNativeHost(
   override fun getPackages(): MutableList<ReactPackage> {
     return mutableListOf(
       MainReactPackage(null),
+      WorkletsPackage(),
       ExpoReanimatedPackage(),
       ExponentPackage(
         instanceManagerBuilderProperties.experienceProperties,
@@ -95,6 +97,7 @@ class KernelReactNativeHost(
   override fun getPackages(): MutableList<ReactPackage> {
     return mutableListOf(
       MainReactPackage(null),
+      WorkletsPackage(),
       ExpoReanimatedPackage(),
       ExponentPackage.kernelExponentPackage(
         application.applicationContext,

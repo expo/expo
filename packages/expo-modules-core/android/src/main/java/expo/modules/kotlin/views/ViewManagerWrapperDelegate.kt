@@ -28,7 +28,9 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
   fun onViewDidUpdateProps(view: View) {
     definition.onViewDidUpdateProps?.let {
       try {
-        exceptionDecorator({ OnViewDidUpdatePropsException(view.javaClass.kotlin, it) }) {
+        exceptionDecorator(
+          { exception -> OnViewDidUpdatePropsException(view.javaClass.kotlin, exception) }
+        ) {
           it.invoke(view)
         }
       } catch (exception: Throwable) {
@@ -103,17 +105,15 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
     }
   }
 
-  fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    return buildMap<String, Any> {
-      definition
-        .callbacksDefinition
-        ?.names
-        ?.forEach {
-          put(
-            normalizeEventName(it),
-            mapOf("registrationName" to it)
-          )
-        }
-    }
+  fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? = buildMap {
+    definition
+      .callbacksDefinition
+      ?.names
+      ?.forEach {
+        put(
+          normalizeEventName(it),
+          mapOf("registrationName" to it)
+        )
+      }
   }
 }

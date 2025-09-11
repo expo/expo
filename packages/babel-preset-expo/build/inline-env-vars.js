@@ -1,20 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoInlineEnvVars = expoInlineEnvVars;
-const core_1 = require("@babel/core");
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:env-vars');
 function expoInlineEnvVars(api) {
+    const { types: t } = api;
     const isProduction = api.caller(common_1.getIsProd);
     function isFirstInAssign(path) {
-        return core_1.types.isAssignmentExpression(path.parent) && path.parent.left === path.node;
+        return t.isAssignmentExpression(path.parent) && path.parent.left === path.node;
     }
     let addEnvImport;
     const publicEnvVars = new Set();
     return {
         name: 'expo-inline-or-reference-env-vars',
         pre(file) {
-            const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(core_1.types);
+            const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(t);
             addEnvImport = () => {
                 return addNamedImportOnce(file.path, 'env', 'expo/virtual/env');
             };
@@ -23,19 +23,18 @@ function expoInlineEnvVars(api) {
             MemberExpression(path, state) {
                 const filename = state.filename;
                 if (path.get('object').matchesPattern('process.env')) {
-                    // @ts-expect-error
                     const key = path.toComputedKey();
-                    if (core_1.types.isStringLiteral(key) &&
+                    if (t.isStringLiteral(key) &&
                         !isFirstInAssign(path) &&
                         key.value.startsWith('EXPO_PUBLIC_')) {
                         const envVar = key.value;
                         debug(`${isProduction ? 'Inlining' : 'Referencing'} environment variable in %s: %s`, filename, envVar);
                         publicEnvVars.add(envVar);
                         if (isProduction) {
-                            path.replaceWith(core_1.types.valueToNode(process.env[envVar]));
+                            path.replaceWith(t.valueToNode(process.env[envVar]));
                         }
                         else {
-                            path.replaceWith(core_1.types.memberExpression(addEnvImport(), core_1.types.identifier(envVar)));
+                            path.replaceWith(t.memberExpression(addEnvImport(), t.identifier(envVar)));
                         }
                     }
                 }

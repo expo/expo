@@ -11,6 +11,7 @@ internal enum FullscreenOrientation: String, Enumerable {
   case portraitDown
   case `default`
 
+  #if !os(tvOS)
   func toUIInterfaceOrientationMask() -> UIInterfaceOrientationMask {
     switch self {
     case .landscape:
@@ -29,4 +30,5 @@ internal enum FullscreenOrientation: String, Enumerable {
       return .all
     }
   }
+  #endif
 }

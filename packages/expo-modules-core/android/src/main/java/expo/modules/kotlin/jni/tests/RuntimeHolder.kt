@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  * It can't be moved to test package, because it uses the cpp code.
  * We don't want to generate another cpp library just to export those functions.
  */
-@DoNotStrip
 internal class RuntimeHolder : AutoCloseable {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip

@@ -1,7 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/React-Core-umbrella.h>
-
 #import <ExpoModulesCore/EXUIManager.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>

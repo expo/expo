@@ -25,6 +25,7 @@ export async function fetch(url: string, init?: FetchRequestInit): Promise<Fetch
     credentials: init?.credentials ?? 'include',
     headers,
     method: init?.method ?? 'GET',
+    redirect: init?.redirect ?? 'follow',
   };
 
   if (init?.signal && init.signal.aborted) {

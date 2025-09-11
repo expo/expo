@@ -20,12 +20,13 @@ export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
 
   return (
     <SnippetAction
-      leftSlot={<ClipboardIcon className="icon-sm text-icon-secondary max-sm-gutters:-mr-1" />}
+      leftSlot={<ClipboardIcon className="icon-sm text-icon-secondary" />}
       onClick={onCopyClick}
       disabled={copyDone}
+      className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
       aria-label="Copy content"
       {...rest}>
-      <span className="max-sm-gutters:hidden">{copyDone ? 'Copied!' : 'Copy'}</span>
+      {copyDone ? 'Copied!' : 'Copy'}
     </SnippetAction>
   );
 };

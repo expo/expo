@@ -82,7 +82,6 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
     getId(): string | undefined;
     getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
     getState(): TabNavigationState<any>;
-    setStateForNextRouteNamesChange(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
 } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
     getParent<T = NavigationProp<ParamListBase, string, undefined, Readonly<{
         key: string;
@@ -93,8 +92,10 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         type: string;
         stale: false;
     }>, {}, {}> | undefined>(id?: string | undefined): T;
-    setParams(params: Partial<object | undefined>): void;
     setOptions(options: Partial<ExpoTabsNavigatorScreenOptions>): void;
+} & {
+    setParams(params: Partial<object | undefined>): void;
+    replaceParams(params: object | undefined): void;
 } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>>;
 /**
  * @hidden
@@ -113,7 +114,12 @@ export declare const TabsNavigatorContext: import("react").Context<({
         routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }>>) => NavigationAction)): void;
+    }>>) => Readonly<{
+        type: string;
+        payload?: object;
+        source?: string;
+        target?: string;
+    }>)): void;
     navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined, options?: {
         merge?: boolean;
         pop?: boolean;
@@ -163,25 +169,9 @@ export declare const TabsNavigatorContext: import("react").Context<({
         type: string;
         stale: false;
     }>;
-    setStateForNextRouteNamesChange(state: Readonly<{
-        key: string;
-        index: number;
-        routeNames: string[];
-        history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
-        type: string;
-        stale: false;
-    }> | import("@react-navigation/native").PartialState<Readonly<{
-        key: string;
-        index: number;
-        routeNames: string[];
-        history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
-        type: string;
-        stale: false;
-    }>>): void;
 } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<TabNavigationEventMap> & {
-    setParams<RouteName extends string>(params: Partial<object | undefined>): void;
+    setParams(params: Partial<object | undefined>): void;
+    replaceParams(params: object | undefined): void;
 } & TabActionHelpers<ParamListBase>) | null>;
 /**
  * @hidden

@@ -69,6 +69,9 @@ jobs:
       - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
         if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
+        env:
+          RCT_USE_PREBUILT_RNCORE: 1
+          RCT_USE_RN_DEP: 1
         working-directory: apps/native-tests/ios
       - name: 🧪 Run native iOS unit tests
         timeout-minutes: 60

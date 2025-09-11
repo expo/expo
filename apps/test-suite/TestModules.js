@@ -51,7 +51,7 @@ export function getTestModules() {
   modules.push(
     require('./tests/Asset'),
     require('./tests/Constants'),
-    require('./tests/FileSystem'),
+    require('./tests/FileSystem-legacy'),
     require('./tests/Font'),
     require('./tests/ImagePicker'),
     require('./tests/ModulesCore'),
@@ -75,7 +75,8 @@ export function getTestModules() {
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {
-    modules.push(require('./tests/FileSystemNext'));
+    modules.push(require('./tests/Blob'));
+    modules.push(require('./tests/FileSystem'));
   }
 
   if (Platform.OS === 'android') {
@@ -135,6 +136,7 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
+    modules.push(optionalRequire(() => require('./tests/MediaLibraryNext')));
 
     modules.push(optionalRequire(() => require('./tests/Battery')));
     if (Constants.isDevice) {

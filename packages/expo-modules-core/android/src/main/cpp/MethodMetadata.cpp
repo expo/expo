@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <optional>
 
-#include <ReactCommon/LongLivedObject.h>
+#include <react/bridging/LongLivedObject.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

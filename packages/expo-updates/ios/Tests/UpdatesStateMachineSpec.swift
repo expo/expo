@@ -124,6 +124,23 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.context.rollback) == nil
       }
 
+      it("should handle download progress") {
+        let testStateChangeEventManager = TestStateChangeEventManager()
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+        machine.processEventForTesting(.download)
+        expect(machine.getStateForTesting()) == .downloading
+        expect(testStateChangeEventManager.lastContext?.downloadProgress) == 0
+
+        machine.processEventForTesting(.downloadProgress(progress: 0.5))
+        expect(machine.getStateForTesting()) == .downloading
+        expect(testStateChangeEventManager.lastContext?.downloadProgress) == 0.5
+
+        machine.processEventForTesting(.downloadComplete)
+        expect(machine.getStateForTesting()) == .idle
+        expect(testStateChangeEventManager.lastContext?.downloadProgress) == 1
+      }
+
       it("should handle rollback") {
         let testStateChangeEventManager = TestStateChangeEventManager()
         let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))

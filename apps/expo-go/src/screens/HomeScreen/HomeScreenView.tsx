@@ -22,6 +22,7 @@ import { ProjectsSection } from './ProjectsSection';
 import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
 import { RecentlyOpenedSection } from './RecentlyOpenedSection';
 import { SnacksSection } from './SnacksSection';
+import { UpgradeWarning } from './UpgradeWarning';
 import FeatureFlags from '../../FeatureFlags';
 import { APIV2Client } from '../../api/APIV2Client';
 import ApolloClient from '../../api/ApolloClient';
@@ -115,7 +116,9 @@ export class HomeScreenView extends React.Component<Props, State> {
             bounces
             key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
             style={styles.container}
-            contentContainerStyle={[styles.contentContainer]}>
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerStyle={styles.contentContainer}>
+            <UpgradeWarning />
             <UserReviewSection apps={data?.apps} snacks={data?.snacks} />
             <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
             {projects?.length ? (

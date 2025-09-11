@@ -10,6 +10,42 @@
 
 ### 💡 Others
 
+## 5.0.8 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.7 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.4 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.3 — 2025-08-18
+
+### 💡 Others
+
+- Remove `react-native-edge-to-edge` dependency. ([#38769](https://github.com/expo/expo/pull/38769) by [@behenate](https://github.com/behenate))
+
+## 5.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2025-08-13
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))

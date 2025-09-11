@@ -7,7 +7,9 @@
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
 
-#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
+
+@class RCTBridge;
 
 @import EXManifests;
 @import EXUpdates;

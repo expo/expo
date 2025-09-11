@@ -33,6 +33,8 @@
   <string name="perm_read_media_audio">reading audio files from external storage</string>
   <string name="perm_notifications">posting notifications</string>
   <string name="perm_system_brightness">system brightness</string>
+  <string name="perm_hzos_use_avatar_camera">accessing the avatar camera</string>
+  <string name="perm_hzos_use_headset_camera">accessing the headset camera</string>
   <string name="default_notification_channel_group">Default</string>
   <string name="persistent_notification_channel_group">Expo</string>
   <string name="persistent_notification_channel_name">Experience notifications</string>
@@ -43,6 +45,8 @@
   <string name="devmenu_open_js_debugger">Open JS Debugger</string>
   <string name="devmenu_disable_fast_refresh">Disable Fast Refresh</string>
   <string name="devmenu_enable_fast_refresh">Enable Fast Refresh</string>
+  <string name="devmenu_show_fab">Show developer action button</string>
+  <string name="devmenu_hide_fab">Hide developer action button</string>
   <string name="devmenu_fast_refresh_unavailable">Fast Refresh Unavailable</string>
   <string name="devmenu_fast_refresh_unavailable_details">Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh.</string>
   <string name="devmenu_hide_performance_monitor">Hide Performance Monitor</string>

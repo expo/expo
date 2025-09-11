@@ -12,10 +12,7 @@ const DIFF_PATH = '/static/diffs/expo-ios.diff';
 const DIFF_CONTENT = fs.readFileSync(path.join(dirname, '../../../public', DIFF_PATH)).toString();
 
 const validateDiffContent = (screen: Screen) => {
-  expect(screen.getByText('ios/myapp/AppDelegate.swift')).toBeInTheDocument();
   expect(screen.getByText('ios/Podfile')).toBeInTheDocument();
-  expect(screen.getByText('import UIKit')).toBeInTheDocument();
-  expect(screen.getByText('import Expo')).toBeInTheDocument();
 };
 
 describe(DiffBlock, () => {
@@ -28,7 +25,7 @@ describe(DiffBlock, () => {
 
     render(<DiffBlock source={DIFF_PATH} />);
 
-    await screen.findByText('ios/myapp/AppDelegate.swift');
+    await screen.findByText('ios/Podfile');
 
     validateDiffContent(screen);
   });

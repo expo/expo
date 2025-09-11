@@ -16,7 +16,6 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
-import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.Update
@@ -81,7 +80,7 @@ class StartupProcedure(
     object : LoaderTask.LoaderTaskCallback {
       override fun onFailure(e: Exception) {
         logger.error("UpdatesController loaderTask onFailure", e, UpdatesErrorCode.None)
-        launcher = NoDatabaseLauncher(context, logger, e)
+        launcher = NoDatabaseLauncher(context, logger, e, procedureScope)
         emergencyLaunchException = e
         notifyController()
       }
@@ -197,7 +196,8 @@ class StartupProcedure(
         }
         errorRecovery.notifyNewRemoteLoadStatus(remoteLoadStatus)
       }
-    }
+    },
+    procedureScope
   )
 
   override suspend fun run(procedureContext: ProcedureContext) {
@@ -240,13 +240,23 @@ class StartupProcedure(
         }
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
         val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate)
-        remoteLoader.start(object : Loader.LoaderCallback {
-          override fun onFailure(e: Exception) {
-            logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
-            setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
-          }
+        procedureScope.launch {
+          try {
+            val loaderResult = remoteLoader.load { updateResponse ->
+              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+              if (updateDirective != null) {
+                return@load Loader.OnUpdateResponseLoadedResult(
+                  shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                    is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                    is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                  }
+                )
+              }
 
-          override fun onSuccess(loaderResult: Loader.LoaderResult) {
+              val update = updateResponse.manifestUpdateResponsePart?.update ?: return@load Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+              Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(update.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
+            }
+
             setRemoteLoadStatus(
               if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                 ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
@@ -254,25 +264,11 @@ class StartupProcedure(
                 ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               }
             )
+          } catch (e: Exception) {
+            logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
+            setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
           }
-
-          override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
-
-          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            if (updateDirective != null) {
-              return Loader.OnUpdateResponseLoadedResult(
-                shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                  is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                }
-              )
-            }
-
-            val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(update.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
-          }
-        })
+        }
       }
 
       override fun relaunch(callback: Launcher.LauncherCallback) {

@@ -220,3 +220,222 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
     expect(nativeJsContents).toContain('MOCK_CONTENTS_MD5_HASH');
   });
 });
+
+describe('Multiple DOM components metadata accumulation', () => {
+  it('should accumulate metadata from multiple DOM components instead of overwriting', async () => {
+    // This test verifies the fix for the bug where metadata from multiple DOM components
+    // was being overwritten instead of accumulated, causing 404s after EAS updates
+    // See: https://github.com/expo/expo/issues/37269
+
+    const domComponentBundle1: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/web/entry-dom1.js',
+          originFilename: 'components/Editor1.js',
+          type: 'js',
+          metadata: {},
+          source: 'console.log("dom1")',
+        },
+      ],
+      assets: [],
+    };
+
+    const domComponentBundle2: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/web/entry-dom2.js',
+          originFilename: 'components/Editor2.js',
+          type: 'js',
+          metadata: {},
+          source: 'console.log("dom2")',
+        },
+      ],
+      assets: [],
+    };
+
+    const domComponentBundle3: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/web/entry-dom3.js',
+          originFilename: 'components/Editor3.js',
+          type: 'js',
+          metadata: {},
+          source: 'console.log("dom3")',
+        },
+      ],
+      assets: [],
+    };
+
+    // Simulate the metadata accumulation logic from exportApp.ts
+    const domComponentAssetsMetadata: Record<string, any[]> = {};
+    const platform = 'ios';
+
+    // Process first DOM component using the FIXED logic (accumulates)
+    const files1: ExportAssetMap = new Map([
+      ['www.bundle/dom1.html', { contents: '<html>DOM1</html>' }],
+    ]);
+
+    domComponentAssetsMetadata[platform] = [
+      ...(domComponentAssetsMetadata[platform] || []),
+      ...(await addDomBundleToMetadataAsync(domComponentBundle1)),
+      ...transformDomEntryForMd5Filename({
+        files: files1,
+        htmlOutputName: 'www.bundle/dom1.html',
+      }),
+    ];
+
+    // Process second DOM component using the FIXED logic (accumulates)
+    const files2: ExportAssetMap = new Map([
+      ['www.bundle/dom2.html', { contents: '<html>DOM2</html>' }],
+    ]);
+
+    domComponentAssetsMetadata[platform] = [
+      ...(domComponentAssetsMetadata[platform] || []),
+      ...(await addDomBundleToMetadataAsync(domComponentBundle2)),
+      ...transformDomEntryForMd5Filename({
+        files: files2,
+        htmlOutputName: 'www.bundle/dom2.html',
+      }),
+    ];
+
+    // Process third DOM component using the FIXED logic (accumulates)
+    const files3: ExportAssetMap = new Map([
+      ['www.bundle/dom3.html', { contents: '<html>DOM3</html>' }],
+    ]);
+
+    domComponentAssetsMetadata[platform] = [
+      ...(domComponentAssetsMetadata[platform] || []),
+      ...(await addDomBundleToMetadataAsync(domComponentBundle3)),
+      ...transformDomEntryForMd5Filename({
+        files: files3,
+        htmlOutputName: 'www.bundle/dom3.html',
+      }),
+    ];
+
+    // Verify all DOM components are present in metadata (not overwritten)
+    expect(domComponentAssetsMetadata[platform]).toHaveLength(6); // 3 JS + 3 HTML files
+
+    // Verify JS metadata entries
+    const jsEntries = domComponentAssetsMetadata[platform].filter((entry) => entry.ext === 'js');
+    expect(jsEntries).toHaveLength(3);
+    expect(jsEntries[0].path).toBe('www.bundle/_expo/static/js/web/entry-dom1.js');
+    expect(jsEntries[1].path).toBe('www.bundle/_expo/static/js/web/entry-dom2.js');
+    expect(jsEntries[2].path).toBe('www.bundle/_expo/static/js/web/entry-dom3.js');
+
+    // Verify HTML metadata entries
+    const htmlEntries = domComponentAssetsMetadata[platform].filter(
+      (entry) => entry.ext === 'html'
+    );
+    expect(htmlEntries).toHaveLength(3);
+    expect(htmlEntries[0].path).toBe('www.bundle/MOCK_CONTENTS_MD5_HASH.html');
+    expect(htmlEntries[1].path).toBe('www.bundle/MOCK_CONTENTS_MD5_HASH.html');
+    expect(htmlEntries[2].path).toBe('www.bundle/MOCK_CONTENTS_MD5_HASH.html');
+  });
+
+  it('should demonstrate the bug when using the OLD overwriting logic', async () => {
+    // This test simulates the BUGGY behavior that was happening before our fix
+    // It should show only the last DOM component's metadata (the bug!)
+    // See: https://github.com/expo/expo/issues/37269
+
+    const domComponentBundle1: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/web/entry-dom1.js',
+          originFilename: 'components/Editor1.js',
+          type: 'js',
+          metadata: {},
+          source: 'console.log("dom1")',
+        },
+      ],
+      assets: [],
+    };
+
+    const domComponentBundle2: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/web/entry-dom2.js',
+          originFilename: 'components/Editor2.js',
+          type: 'js',
+          metadata: {},
+          source: 'console.log("dom2")',
+        },
+      ],
+      assets: [],
+    };
+
+    const domComponentBundle3: BundleOutput = {
+      artifacts: [
+        {
+          filename: '_expo/static/js/web/entry-dom3.js',
+          originFilename: 'components/Editor3.js',
+          type: 'js',
+          metadata: {},
+          source: 'console.log("dom3")',
+        },
+      ],
+      assets: [],
+    };
+
+    // Simulate the BUGGY metadata accumulation logic (overwriting instead of accumulating)
+    const domComponentAssetsMetadata: Record<string, any[]> = {};
+    const platform = 'ios';
+
+    // Process first DOM component using OLD BUGGY logic (overwrites)
+    const files1: ExportAssetMap = new Map([
+      ['www.bundle/dom1.html', { contents: '<html>DOM1</html>' }],
+    ]);
+
+    domComponentAssetsMetadata[platform] = [
+      ...(await addDomBundleToMetadataAsync(domComponentBundle1)),
+      ...transformDomEntryForMd5Filename({
+        files: files1,
+        htmlOutputName: 'www.bundle/dom1.html',
+      }),
+    ];
+
+    // Process second DOM component using OLD BUGGY logic (overwrites previous!)
+    const files2: ExportAssetMap = new Map([
+      ['www.bundle/dom2.html', { contents: '<html>DOM2</html>' }],
+    ]);
+
+    domComponentAssetsMetadata[platform] = [
+      ...(await addDomBundleToMetadataAsync(domComponentBundle2)),
+      ...transformDomEntryForMd5Filename({
+        files: files2,
+        htmlOutputName: 'www.bundle/dom2.html',
+      }),
+    ];
+
+    // Process third DOM component using OLD BUGGY logic (overwrites previous!)
+    const files3: ExportAssetMap = new Map([
+      ['www.bundle/dom3.html', { contents: '<html>DOM3</html>' }],
+    ]);
+
+    domComponentAssetsMetadata[platform] = [
+      ...(await addDomBundleToMetadataAsync(domComponentBundle3)),
+      ...transformDomEntryForMd5Filename({
+        files: files3,
+        htmlOutputName: 'www.bundle/dom3.html',
+      }),
+    ];
+
+    // With the BUGGY logic, only the LAST DOM component should be present (dom3)
+    expect(domComponentAssetsMetadata[platform]).toHaveLength(2); // Only 1 JS + 1 HTML file (the last one!)
+
+    // Verify only the LAST DOM component's metadata is present
+    const jsEntries = domComponentAssetsMetadata[platform].filter((entry) => entry.ext === 'js');
+    expect(jsEntries).toHaveLength(1);
+    expect(jsEntries[0].path).toBe('www.bundle/_expo/static/js/web/entry-dom3.js'); // Only dom3!
+
+    const htmlEntries = domComponentAssetsMetadata[platform].filter(
+      (entry) => entry.ext === 'html'
+    );
+    expect(htmlEntries).toHaveLength(1);
+    expect(htmlEntries[0].path).toBe('www.bundle/MOCK_CONTENTS_MD5_HASH.html'); // Only dom3's HTML!
+
+    // dom1 and dom2 should be missing (this was the bug!)
+    const allPaths = domComponentAssetsMetadata[platform].map((entry) => entry.path);
+    expect(allPaths).not.toContain('www.bundle/_expo/static/js/web/entry-dom1.js');
+    expect(allPaths).not.toContain('www.bundle/_expo/static/js/web/entry-dom2.js');
+  });
+});

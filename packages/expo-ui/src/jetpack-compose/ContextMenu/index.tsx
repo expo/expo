@@ -3,6 +3,7 @@ import { Children, ReactElement, ReactNode, useMemo } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
 import { MenuElement, transformChildrenToElementArray } from './utils';
+import { ExpoModifier } from '../../types';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
@@ -70,6 +71,9 @@ export type ContextMenuProps = {
    * Optional styles to apply to the `ContextMenu`.
    */
   style?: StyleProp<ViewStyle>;
+
+  /** Modifiers for the component */
+  modifiers?: ExpoModifier[];
 };
 
 /**
@@ -158,6 +162,8 @@ function ContextMenu(props: ContextMenuProps) {
       onContextMenuButtonPressed={createEventHandler('onPress')}
       onContextMenuSwitchValueChanged={createEventHandler('onValueChange')}
       onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')}
+      // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
       {...props}>
       {activationElement}
     </MenuNativeView>

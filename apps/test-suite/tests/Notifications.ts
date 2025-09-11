@@ -1605,7 +1605,7 @@ export async function test(t) {
               }),
             })
           );
-          t.expect(event).toEqual(await Notifications.getLastNotificationResponseAsync());
+          t.expect(event).toEqual(Notifications.getLastNotificationResponse());
         },
         10000
       );

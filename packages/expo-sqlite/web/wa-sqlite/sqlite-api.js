@@ -34,11 +34,12 @@ export function Factory(Module) {
   const tmp = Module._malloc(8);
   const tmpPtr = [tmp, tmp + 4];
 
+  const textEncoder = new TextEncoder();
   // Convert a JS string to a C string. sqlite3_malloc is used to allocate
   // memory (use sqlite3_free to deallocate).
   function createUTF8(s) {
     if (typeof s !== 'string') return 0;
-    const utf8 = new TextEncoder().encode(s);
+    const utf8 = textEncoder.encode(s);
     const zts = Module._sqlite3_malloc(utf8.byteLength + 1);
     Module.HEAPU8.set(utf8, zts);
     Module.HEAPU8[zts + utf8.byteLength] = 0;
@@ -139,6 +140,8 @@ export function Factory(Module) {
         }
       case 'string':
         return sqlite3.bind_text(stmt, i, value);
+      case "boolean":
+        return sqlite3.bind_int(stmt, i, value ? 1 : 0);
       default:
         if (value instanceof Uint8Array || Array.isArray(value)) {
           return sqlite3.bind_blob(stmt, i, value);
@@ -765,7 +768,7 @@ export function Factory(Module) {
       const onFinally = [];
       try {
         // Encode SQL string to UTF-8.
-        const utf8 = new TextEncoder().encode(sql);
+        const utf8 = textEncoder.encode(sql);
 
         // Copy encoded string to WebAssembly memory. The SQLite docs say
         // zero-termination is a minor optimization so add room for that.

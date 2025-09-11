@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { TEMPLATES_DIR } from './Constants';
+import { Package } from './Packages';
 
 export type Template = {
   name: string;
@@ -12,24 +13,29 @@ export type Template = {
 
 const DEPENDENCIES_KEYS = ['dependencies', 'devDependencies', 'peerDependencies'];
 
-export async function getAvailableProjectTemplatesAsync(): Promise<Template[]> {
-  const templates = (await fs.readdir(TEMPLATES_DIR, { withFileTypes: true }))
-    .filter((dirent) => dirent.isDirectory())
+export async function getAvailableProjectTemplatesAsync(): Promise<Package[]> {
+  const directoryEntries = await fs.readdir(TEMPLATES_DIR, { withFileTypes: true });
+
+  const candidateTemplateDirectories = directoryEntries
+    .filter((dirent) => dirent.isDirectory() && !dirent.name.startsWith('.'))
     .map((dirent) => path.join(TEMPLATES_DIR, dirent.name));
 
-  return Promise.all<Template>(
-    templates.map(async (templatePath) => {
-      const packageJson = await JsonFile.readAsync<Template>(
-        path.join(templatePath, 'package.json')
-      );
+  const existingTemplateDirectories = (
+    await Promise.all(
+      candidateTemplateDirectories.map(async (templatePath) => {
+        const fullPackageJsonPath = path.join(templatePath, 'package.json');
+        const hasPackageJson = await fs.pathExists(fullPackageJsonPath);
+        return hasPackageJson ? templatePath : null;
+      })
+    )
+  ).filter((templatePath): templatePath is string => Boolean(templatePath));
 
-      return {
-        name: packageJson.name,
-        version: packageJson.version,
-        path: templatePath,
-      };
-    })
-  );
+  return existingTemplateDirectories.map((templatePath) => {
+    const fullPackageJsonPath = path.join(templatePath, 'package.json');
+    const packageJson = require(fullPackageJsonPath);
+
+    return new Package(templatePath, packageJson);
+  });
 }
 
 /**

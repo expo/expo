@@ -7,6 +7,14 @@ import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from '../index';
+import {
+  getApiRoute,
+  getHtml,
+  getMiddleware,
+  getRoutesManifest,
+  handleRouteError,
+} from '../runtime/node';
+import { createReadableStreamFromReadable } from '../utils/createReadableStreamFromReadable';
 
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
@@ -15,7 +23,13 @@ export type RequestHandler = (req: http.IncomingMessage, res: http.ServerRespons
  * response using Remix.
  */
 export function createRequestHandler({ build }: { build: string }): RequestHandler {
-  const handleRequest = createExpoHandler(build);
+  const handleRequest = createExpoHandler({
+    getRoutesManifest: getRoutesManifest(build),
+    getHtml: getHtml(build),
+    getApiRoute: getApiRoute(build),
+    getMiddleware: getMiddleware(build),
+    handleRouteError: handleRouteError(),
+  });
 
   return async (req, res) => {
     return respond(res, await handleRequest(convertRequest(req, res)));
@@ -65,7 +79,9 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = Readable.toWeb(req) as ReadableStream;
+    // NOTE(@krystofwoldrich) Readable.toWeb breaks the stream in Vercel Functions, unknown why.
+    // No error is thrown, but reading the stream like `await req.json()` never resolves.
+    init.body = createReadableStreamFromReadable(req);
     init.duplex = 'half';
   }
 

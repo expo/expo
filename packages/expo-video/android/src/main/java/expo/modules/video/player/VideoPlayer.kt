@@ -23,6 +23,7 @@ import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
@@ -31,6 +32,7 @@ import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
+import expo.modules.video.getPlaybackServiceErrorMessage
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.BufferOptions
@@ -52,7 +54,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
   private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
-  val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
+  val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
   val trackSelector = DefaultTrackSelector(context)
@@ -64,7 +66,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .build()
 
   private val firstFrameEventGenerator = createFirstFrameEventGenerator()
-  val serviceConnection = PlaybackServiceConnection(WeakReference(this))
+  val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
   var playing by IgnoreSameSet(false) { new, old ->
@@ -81,6 +83,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var status: PlayerStatus = IDLE
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
+    set(value) {
+      field = value
+      if (value) {
+        startPlaybackService()
+      }
+    }
   var preservesPitch = false
     set(preservesPitch) {
       field = preservesPitch
@@ -89,7 +97,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var showNowPlayingNotification = false
     set(value) {
       field = value
-      serviceConnection.playbackServiceBinder?.service?.setShowNotification(value, this.player)
+      serviceSetShowNotification(value)
     }
   var duration = 0f
   var isLive = false
@@ -174,6 +182,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var availableVideoTracks: List<VideoTrack> = emptyList()
     private set
 
+  var keepScreenOnWhilePlaying by VideoPlayerKeepAwake(this, appContext)
+
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
@@ -235,10 +245,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      this@VideoPlayer.duration = 0f
-      this@VideoPlayer.isLive = false
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
         sendEvent(PlayerEvent.PlayedToEnd())
+      } else {
+        // New playback info is set in the onPlaybackStateChanged event, which occurs after mediaItemTransition.
+        // The onPlaybackStateChanged is not triggered if the video repeats (since the state remains STATE_READY)
+        // That is why the playback info is not reset when the transition reason is MEDIA_ITEM_TRANSITION_REASON_REPEAT.
+        resetPlaybackInfo()
       }
       subtitles.setSubtitlesEnabled(false)
       super.onMediaItemTransition(mediaItem, reason)
@@ -249,8 +262,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         return
       }
       if (playbackState == Player.STATE_READY) {
-        this@VideoPlayer.duration = this@VideoPlayer.player.duration / 1000f
-        this@VideoPlayer.isLive = this@VideoPlayer.player.isCurrentMediaItemLive
+        refreshPlaybackInfo()
       }
       setStatus(playerStateToPlayerStatus(playbackState), null)
       super.onPlaybackStateChanged(playbackState)
@@ -269,8 +281,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
     override fun onPlayerErrorChanged(error: PlaybackException?) {
       error?.let {
-        this@VideoPlayer.duration = 0f
-        this@VideoPlayer.isLive = false
+        resetPlaybackInfo()
         setStatus(ERROR, error)
       } ?: run {
         setStatus(playerStateToPlayerStatus(player.playbackState), null)
@@ -288,7 +299,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   init {
-    ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
     player.addListener(playerListener)
     player.addAnalyticsListener(analyticsListener)
     VideoManager.registerVideoPlayer(this)
@@ -300,7 +310,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   override fun close() {
-    appContext?.reactContext?.unbindService(serviceConnection)
+    if (serviceConnection.isConnected) {
+      appContext?.reactContext?.unbindService(serviceConnection)
+    }
     serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
@@ -310,6 +322,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
     uncommittedSource = null
     commitedSource = null
+    // Releases the listeners from VideoPlayerKeepAwake
+    keepScreenOnWhilePlaying = false
   }
 
   override fun deallocate() {
@@ -381,6 +395,39 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     if (this.status != oldStatus) {
       sendEvent(PlayerEvent.StatusChanged(status, oldStatus, playbackError))
     }
+  }
+
+  private fun refreshPlaybackInfo() {
+    duration = player.duration / 1000f
+    isLive = player.isCurrentMediaItemLive
+  }
+
+  private fun resetPlaybackInfo() {
+    duration = 0f
+    isLive = false
+  }
+
+  private fun startPlaybackService(): Boolean {
+    if (serviceConnection.playbackServiceBinder?.service != null) {
+      // PlaybackService already running.
+      return true
+    }
+    val appContext = appContext ?: throw Exceptions.AppContextLost()
+    val serviceStarted = ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
+
+    if (!serviceStarted) {
+      appContext.jsLogger?.error(
+        getPlaybackServiceErrorMessage("Expo-video has failed to bind with the playback service binder")
+      )
+    }
+    return serviceStarted
+  }
+
+  private fun serviceSetShowNotification(showNotification: Boolean) {
+    if (showNotification) {
+      startPlaybackService()
+    }
+    serviceConnection.playbackServiceBinder?.service?.setShowNotification(showNotification, this.player)
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {

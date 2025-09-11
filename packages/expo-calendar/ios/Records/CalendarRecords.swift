@@ -109,6 +109,8 @@ struct Reminder: Record {
   @Field
   var recurrenceRule: RecurrenceRule?
   @Field
+  var allDay: Bool?
+  @Field
   var startDate: Either<String, Double>?
   @Field
   var dueDate: Either<String, Double>?

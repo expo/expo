@@ -1,4 +1,6 @@
-import { serializeHtmlWithAssets } from '../serializeHtml';
+import { SerialAsset } from '@expo/metro-config/src/serializer/serializerAssets';
+
+import { serializeHtmlWithAssets, assetsRequiresSort } from '../serializeHtml';
 
 it('serializes development static html', () => {
   const res = serializeHtmlWithAssets({
@@ -107,4 +109,85 @@ it('serializes development export static html with correct baseUrl and script sr
     // Note the explicit `/Users` part, not adding a double `//` by accident
     /<script src="\/custom\/base\/url\/Users\/path\/to\/expo\/app\/node_modules\/expo\/AppEntry.js" defer>/
   );
+});
+
+it('sorts assets based on requires tree', () => {
+  const assets: SerialAsset[] = [
+    {
+      filename: 'a.js',
+      originFilename: 'a.ts',
+      type: 'js',
+      metadata: { requires: ['d.js', 'b.js'] },
+      source: '// a code',
+    },
+    {
+      filename: 'b.js',
+      originFilename: 'b.ts',
+      type: 'js',
+      metadata: { requires: ['d.js'] },
+      source: '// b code',
+    },
+    {
+      filename: 'c.js',
+      originFilename: 'c.ts',
+      type: 'js',
+      metadata: { requires: [] },
+      source: '// c code',
+    },
+    {
+      filename: 'd.js',
+      originFilename: 'd.ts',
+      type: 'js',
+      metadata: { requires: ['c.js'] },
+      source: '// d code',
+    },
+  ];
+  const sortedAssets = assetsRequiresSort(assets);
+  expect(sortedAssets).toMatchInlineSnapshot(`
+    [
+      {
+        "filename": "c.js",
+        "metadata": {
+          "requires": [],
+        },
+        "originFilename": "c.ts",
+        "source": "// c code",
+        "type": "js",
+      },
+      {
+        "filename": "d.js",
+        "metadata": {
+          "requires": [
+            "c.js",
+          ],
+        },
+        "originFilename": "d.ts",
+        "source": "// d code",
+        "type": "js",
+      },
+      {
+        "filename": "b.js",
+        "metadata": {
+          "requires": [
+            "d.js",
+          ],
+        },
+        "originFilename": "b.ts",
+        "source": "// b code",
+        "type": "js",
+      },
+      {
+        "filename": "a.js",
+        "metadata": {
+          "requires": [
+            "d.js",
+            "b.js",
+          ],
+        },
+        "originFilename": "a.ts",
+        "source": "// a code",
+        "type": "js",
+      },
+    ]
+  `);
 });

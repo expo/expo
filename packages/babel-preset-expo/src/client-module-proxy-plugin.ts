@@ -1,13 +1,16 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, template, types } from '@babel/core';
+import type { ConfigAPI, PluginObj } from '@babel/core';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
 import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from './common';
 
-export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
+export function reactClientReferencesPlugin(
+  api: ConfigAPI & typeof import('@babel/core')
+): PluginObj {
+  const { template, types } = api;
   const isReactServer = api.caller(getIsReactServer);
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
 

@@ -13,6 +13,7 @@ async function directoryExistsAsync(file) {
 }
 async function ensureDirectoryAsync(path) {
     await fs_1.default.promises.mkdir(path, { recursive: true });
+    return path;
 }
 async function moveAsync(src, dest) {
     // First, remove target, so there are no conflicts (explicit overwrite)

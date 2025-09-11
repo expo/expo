@@ -27,7 +27,8 @@ import expo.modules.core.interfaces.Package
 import expo.modules.device.DeviceModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.filesystem.FileSystemModule
-import expo.modules.filesystem.FileSystemPackage
+import expo.modules.filesystem.legacy.FileSystemLegacyModule
+import expo.modules.filesystem.legacy.FileSystemPackage
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.haptics.HapticsModule
@@ -185,6 +186,7 @@ open class HomeActivity : BaseExperienceActivity() {
         DeviceModule::class.java,
         EASClientModule::class.java,
         FileSystemModule::class.java,
+        FileSystemLegacyModule::class.java,
         FontLoaderModule::class.java,
         FontUtilsModule::class.java,
         HapticsModule::class.java,

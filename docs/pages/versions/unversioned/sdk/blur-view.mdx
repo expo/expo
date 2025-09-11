@@ -35,13 +35,13 @@ The blur effect does not update when `BlurView` is rendered before dynamic conte
 <SnackInline label='Basic BlurView usage' dependencies={['expo-blur']}>
 
 ```jsx
-import { Text, StyleSheet, View, SafeAreaView } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 export default function App() {
   const text = 'Hello, my container is blurring contents underneath!';
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.background}>
         {[...Array(20).keys()].map(i => (
           <View
@@ -59,7 +59,7 @@ export default function App() {
       <BlurView intensity={90} tint="dark" style={styles.blurContainer}>
         <Text style={[styles.text, { color: '#fff' }]}>{text}</Text>
       </BlurView>
-    </SafeAreaView>
+    </View>
   );
 }
 

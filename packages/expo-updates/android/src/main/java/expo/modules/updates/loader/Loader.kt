@@ -7,15 +7,23 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.Deferred
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.io.File
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Abstract class responsible for loading an update, enumerating the assets required for
@@ -30,117 +38,91 @@ abstract class Loader protected constructor(
   protected val logger: UpdatesLogger,
   private val database: UpdatesDatabase,
   private val updatesDirectory: File,
-  private val loaderFiles: LoaderFiles
+  private val loaderFiles: LoaderFiles,
+  private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 ) {
   private var updateResponse: UpdateResponse? = null
   private var updateEntity: UpdateEntity? = null
-  private var callback: LoaderCallback? = null
   private var assetTotal = 0
   private var erroredAssetList = mutableListOf<AssetEntity>()
   private var existingAssetList = mutableListOf<AssetEntity>()
   private var finishedAssetList = mutableListOf<AssetEntity>()
+  private val _progressFlow = MutableSharedFlow<AssetLoadProgress>()
+  private var assetProgressMap: MutableMap<AssetEntity, Double> = ConcurrentHashMap()
+
+  internal var assetLoadProgressBlock: ((Double) -> Unit)? = null
+
+  val progressFlow: Flow<AssetLoadProgress> = _progressFlow.asSharedFlow()
 
   data class LoaderResult(val updateEntity: UpdateEntity?, val updateDirective: UpdateDirective?)
 
   data class OnUpdateResponseLoadedResult(val shouldDownloadManifestIfPresentInResponse: Boolean)
 
-  interface LoaderCallback {
-    fun onFailure(e: Exception)
-    fun onSuccess(loaderResult: LoaderResult)
-
-    /**
-     * Called when an asset has either been successfully downloaded or failed to download.
-     *
-     * @param asset Entity representing the asset that was either just downloaded or failed
-     * @param successfulAssetCount The number of assets that have so far been loaded successfully
-     * (including any that were found to already exist on disk)
-     * @param failedAssetCount The number of assets that have so far failed to load
-     * @param totalAssetCount The total number of assets that comprise the update
-     */
-    fun onAssetLoaded(
-      asset: AssetEntity,
-      successfulAssetCount: Int,
-      failedAssetCount: Int,
-      totalAssetCount: Int
-    )
-
-    /**
-     * Called when a response has been downloaded. The calling class should determine whether or not
-     * the RemoteLoader should continue to download the manifest in the manifest part of the update response,
-     * based on (for example) whether or not it already has the update downloaded locally.
-     *
-     * @param updateResponse Response downloaded by Loader
-     * @return true if Loader should download the manifest described in the manifest part of the update response,
-     * false if not.
-     */
-    fun onUpdateResponseLoaded(updateResponse: UpdateResponse): OnUpdateResponseLoadedResult
-  }
-
-  protected abstract fun loadRemoteUpdate(
-    database: UpdatesDatabase,
-    configuration: UpdatesConfiguration,
-    callback: RemoteUpdateDownloadCallback
+  data class AssetLoadProgress(
+    val asset: AssetEntity,
+    val successfulAssetCount: Int,
+    val failedAssetCount: Int,
+    val totalAssetCount: Int
   )
 
-  protected abstract fun loadAsset(
+  fun assetLoadProgressListener(asset: AssetEntity, progress: Double) {
+    assetProgressMap[asset] = progress
+    notifyAssetLoadProgress()
+  }
+
+  private fun notifyAssetLoadProgress() {
+    if (assetTotal > 0) {
+      val progress = assetProgressMap.values.sum() / assetTotal.toDouble()
+      assetLoadProgressBlock?.invoke(progress)
+    }
+  }
+
+  protected abstract suspend fun loadRemoteUpdate(
+    database: UpdatesDatabase,
+    configuration: UpdatesConfiguration
+  ): UpdateResponse
+
+  protected abstract suspend fun loadAsset(
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
     requestedUpdate: UpdateEntity?,
-    embeddedUpdate: UpdateEntity?,
-    callback: AssetDownloadCallback
-  )
+    embeddedUpdate: UpdateEntity?
+  ): FileDownloader.AssetDownloadResult
 
-  // lifecycle methods for class
-  fun start(callback: LoaderCallback) {
-    if (this.callback != null) {
-      callback.onFailure(Exception("RemoteLoader has already started. Create a new instance in order to load multiple URLs in parallel."))
-      return
-    }
-    this.callback = callback
+  suspend fun load(updateResponseDecision: (UpdateResponse) -> OnUpdateResponseLoadedResult): LoaderResult {
+    try {
+      val updateResponse = loadRemoteUpdate(database, configuration)
+      this@Loader.updateResponse = updateResponse
+      val update = updateResponse.manifestUpdateResponsePart?.update
+      val onUpdateResponseLoadedResult = updateResponseDecision(updateResponse)
 
-    loadRemoteUpdate(
-      database,
-      configuration,
-      object : RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          finishWithException(e)
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          this@Loader.updateResponse = updateResponse
-          val update = updateResponse.manifestUpdateResponsePart?.update
-          val onUpdateResponseLoadedResult = this@Loader.callback!!.onUpdateResponseLoaded(updateResponse)
-          if (update !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
-            // if onUpdateResponseLoaded returns true that is a sign that the delegate wants the update manifest
-            // to be processed/downloaded, and therefore the update needs to exist
-            processUpdate(update)
-          } else {
-            updateEntity = null
-            finishWithSuccess()
-          }
-        }
+      if (update !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
+        // if onUpdateResponseLoaded returns true that is a sign that the delegate wants the update manifest
+        // to be processed/downloaded, and therefore the update needs to exist
+        return processUpdate(update)
+      } else {
+        updateEntity = null
+        return finish()
       }
-    )
+    } catch (e: Exception) {
+      logger.error("Load error", e, UpdatesErrorCode.UpdateFailedToLoad)
+      throw e
+    }
   }
 
   private fun reset() {
     updateResponse = null
     updateEntity = null
-    callback = null
     assetTotal = 0
     erroredAssetList = mutableListOf()
     existingAssetList = mutableListOf()
     finishedAssetList = mutableListOf()
+    assetProgressMap = ConcurrentHashMap()
+    assetLoadProgressBlock = null
   }
 
-  private fun finishWithSuccess() {
-    if (callback == null) {
-      val cause = Exception("Null callback in finishWithSuccess")
-      logger.error("${this.javaClass.simpleName} tried to finish but it already finished or was never initialized.", cause, UpdatesErrorCode.UpdateFailedToLoad)
-      return
-    }
-
+  private fun finish(): LoaderResult {
     // store the header data even if only a message was included in the response
     updateResponse!!.responseHeaderData?.let {
       ManifestMetadata.saveMetadata(it, database, configuration)
@@ -148,35 +130,24 @@ abstract class Loader protected constructor(
 
     val updateDirective = updateResponse!!.directiveUpdateResponsePart?.updateDirective
 
-    callback!!.onSuccess(
-      LoaderResult(
-        updateEntity = this.updateEntity,
-        updateDirective = updateDirective
-      )
+    val result = LoaderResult(
+      updateEntity = this.updateEntity,
+      updateDirective = updateDirective
     )
     reset()
-  }
-
-  private fun finishWithException(e: Exception) {
-    logger.error("Load error", e, UpdatesErrorCode.UpdateFailedToLoad)
-    if (callback == null) {
-      logger.error("${this.javaClass.simpleName} tried to finish but it already finished or was never initialized.", e, UpdatesErrorCode.UpdateFailedToLoad)
-      return
-    }
-    callback!!.onFailure(e)
-    reset()
+    return result
   }
 
   // private helper methods
-  private fun processUpdate(update: Update) {
+  private suspend fun processUpdate(update: Update): LoaderResult {
     if (update.isDevelopmentMode) {
       // insert into database but don't try to load any assets;
       // the RN runtime will take care of that and we don't want to cache anything
       val updateEntity = update.updateEntity
       database.updateDao().insertUpdate(updateEntity!!)
       database.updateDao().markUpdateFinished(updateEntity)
-      finishWithSuccess()
-      return
+      this.updateEntity = updateEntity
+      return finish()
     }
 
     val newUpdateEntity = update.updateEntity
@@ -195,7 +166,7 @@ abstract class Loader protected constructor(
     if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
       // hooray, we already have this update downloaded and ready to go!
       updateEntity = existingUpdateEntity
-      finishWithSuccess()
+      return finish()
     } else {
       if (existingUpdateEntity == null) {
         // no update already exists with this ID, so we need to insert it and download everything.
@@ -206,7 +177,7 @@ abstract class Loader protected constructor(
         // however, it's not ready, so we should try to download all the assets again.
         updateEntity = existingUpdateEntity
       }
-      downloadAllAssets(update)
+      return downloadAllAssets(update)
     }
   }
 
@@ -216,11 +187,13 @@ abstract class Loader protected constructor(
     ERRORED
   }
 
-  private fun downloadAllAssets(update: Update) {
+  private suspend fun downloadAllAssets(update: Update): LoaderResult {
     val assetList = update.assetEntityList
     assetTotal = assetList.size
 
     val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)
+    val assetDownloadJobs = mutableListOf<Deferred<AssetLoadResult>>()
+
     for (assetEntityCur in assetList) {
       var assetEntity = assetEntityCur
 
@@ -240,87 +213,78 @@ abstract class Loader protected constructor(
         continue
       }
 
-      loadAsset(
-        assetEntity,
-        updatesDirectory,
-        configuration,
-        requestedUpdate = update.updateEntity,
-        embeddedUpdate = embeddedUpdate?.updateEntity,
-        object : AssetDownloadCallback {
-          override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            val identifier = if (assetEntity.hash != null) {
-              "hash " + UpdatesUtils.bytesToHex(
-                assetEntity.hash!!
-              )
-            } else {
-              "key " + assetEntity.key
-            }
-            logger.error("Failed to download asset with $identifier", e)
-            handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
-          }
+      val job = scope.async {
+        val result = loadAsset(
+          assetEntity,
+          updatesDirectory,
+          configuration,
+          requestedUpdate = update.updateEntity,
+          embeddedUpdate = embeddedUpdate?.updateEntity
+        )
 
-          override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
-            handleAssetDownloadCompleted(
-              assetEntity,
-              if (isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
-            )
-          }
-        }
-      )
+        handleAssetDownloadCompleted(
+          result.assetEntity,
+          if (result.isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
+        )
+      }
+      assetDownloadJobs.add(job)
     }
+
+    // Wait for all asset downloads to complete - this will throw the first exception that occurs
+    assetDownloadJobs.awaitAll()
+
+    try {
+      for (asset in existingAssetList) {
+        val existingAssetFound = database.assetDao()
+          .addExistingAssetToUpdate(updateEntity!!, asset, asset.isLaunchAsset)
+        if (!existingAssetFound) {
+          // the database and filesystem have gotten out of sync
+          // do our best to create a new entry for this file even though it already existed on disk
+          // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
+          var hash: ByteArray? = null
+          try {
+            hash = UpdatesUtils.sha256(File(updatesDirectory, asset.relativePath))
+          } catch (_: Exception) {
+          }
+          asset.downloadTime = Date()
+          asset.hash = hash
+          finishedAssetList.add(asset)
+        }
+      }
+
+      database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
+      database.updateDao().markUpdateFinished(updateEntity!!)
+    } catch (e: Exception) {
+      throw IOException("Error while adding new update to database", e)
+    }
+
+    return finish()
   }
 
-  @Synchronized
-  private fun handleAssetDownloadCompleted(assetEntity: AssetEntity, result: AssetLoadResult) {
+  private suspend fun handleAssetDownloadCompleted(assetEntity: AssetEntity, result: AssetLoadResult): AssetLoadResult {
     when (result) {
       AssetLoadResult.FINISHED -> finishedAssetList.add(assetEntity)
       AssetLoadResult.ALREADY_EXISTS -> existingAssetList.add(assetEntity)
       AssetLoadResult.ERRORED -> erroredAssetList.add(assetEntity)
     }
 
-    callback!!.onAssetLoaded(
-      assetEntity,
-      finishedAssetList.size + existingAssetList.size,
-      erroredAssetList.size,
-      assetTotal
+    // do not emit progress update for errored assets
+    // let the progress bar stay at whatever the last successful progress was
+    if (result == AssetLoadResult.FINISHED || result == AssetLoadResult.ALREADY_EXISTS) {
+      assetProgressMap[assetEntity] = 1.0
+      notifyAssetLoadProgress()
+    }
+
+    _progressFlow.emit(
+      AssetLoadProgress(
+        asset = assetEntity,
+        successfulAssetCount = finishedAssetList.size + existingAssetList.size,
+        failedAssetCount = erroredAssetList.size,
+        totalAssetCount = assetTotal
+      )
     )
 
-    if (finishedAssetList.size + erroredAssetList.size + existingAssetList.size == assetTotal) {
-      try {
-        for (asset in existingAssetList) {
-          val existingAssetFound = database.assetDao()
-            .addExistingAssetToUpdate(updateEntity!!, asset, asset.isLaunchAsset)
-          if (!existingAssetFound) {
-            // the database and filesystem have gotten out of sync
-            // do our best to create a new entry for this file even though it already existed on disk
-            // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
-            var hash: ByteArray? = null
-            try {
-              hash = UpdatesUtils.sha256(File(updatesDirectory, asset.relativePath))
-            } catch (_: Exception) {
-            }
-            asset.downloadTime = Date()
-            asset.hash = hash
-            finishedAssetList.add(asset)
-          }
-        }
-
-        database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
-
-        if (erroredAssetList.size == 0) {
-          database.updateDao().markUpdateFinished(updateEntity!!)
-        }
-      } catch (e: Exception) {
-        finishWithException(IOException("Error while adding new update to database", e))
-        return
-      }
-
-      if (erroredAssetList.size > 0) {
-        finishWithException(Exception("Failed to load all assets"))
-      } else {
-        finishWithSuccess()
-      }
-    }
+    return result
   }
 
   companion object {

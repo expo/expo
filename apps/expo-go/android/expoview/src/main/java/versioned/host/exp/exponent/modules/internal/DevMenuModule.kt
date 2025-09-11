@@ -11,6 +11,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
@@ -25,7 +26,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.UUID
 import javax.inject.Inject
 
-class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any?>, val manifest: Manifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
+class DevMenuModule(
+  reactContext: ReactApplicationContext,
+  val experienceProperties: Map<String, Any?>,
+  val manifest: Manifest?
+) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
+  // Used for modyfing the settings while dev support is disabled
+  private val devInternalSettings: DevInternalSettings by lazy { DevInternalSettings(reactApplicationContext, null) }
 
   @Inject
   internal lateinit var devMenuManager: DevMenuManager
@@ -78,6 +85,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val debuggerMap = Bundle()
     val hmrMap = Bundle()
     val perfMap = Bundle()
+    val fabMap = Bundle()
 
     if (devSettings != null && devSupportManager.devSupportEnabled) {
       inspectorMap.putString("label", getString(if (devSettings.isElementInspectorEnabled) R.string.devmenu_hide_element_inspector else R.string.devmenu_show_element_inspector))
@@ -92,6 +100,17 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       debuggerMap.putString("label", getString(R.string.devmenu_open_js_debugger))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
+    }
+
+    if (!VRUtilities.isQuest()) {
+      val label = if (devInternalSettings.isFloatingActionButtonEnabled) {
+        getString(R.string.devmenu_hide_fab)
+      } else {
+        getString(R.string.devmenu_show_fab)
+      }
+      fabMap.putString("label", label)
+      fabMap.putBoolean("isEnabled", true)
+      items.putBundle("dev-fab", fabMap)
     }
 
     if (devSettings != null && devSupportManager.devSupportEnabled && devSettings is DevInternalSettings) {
@@ -111,7 +130,11 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       perfMap.putString("label", getString(R.string.devmenu_performance_monitor_unavailable))
       perfMap.putBoolean("isEnabled", false)
     }
-    items.putBundle("dev-perf-monitor", perfMap)
+
+    // Quest doesn't support displaying over other apps
+    if (!VRUtilities.isQuest()) {
+      items.putBundle("dev-perf-monitor", perfMap)
+    }
 
     return items
   }
@@ -121,7 +144,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    */
   override fun selectItemWithKey(itemKey: String) {
     val devSupportManager = getDevSupportManager()
-    val devSettings = devSupportManager?.devSettings as DevInternalSettings?
+    val devSettings = devSupportManager?.devSettings as DevInternalSettings? ?: devInternalSettings
 
     if (devSupportManager == null || devSettings == null) {
       return
@@ -146,6 +169,10 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
             requestOverlaysPermission()
           }
           devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
+        }
+        "dev-fab" -> {
+          // When dev support is disabled the devSupportManager setters don't work so we have to modify the property directly
+          devSettings.isFloatingActionButtonEnabled = !devSettings.isFloatingActionButtonEnabled
         }
       }
     }

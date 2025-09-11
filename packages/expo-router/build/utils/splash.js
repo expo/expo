@@ -24,7 +24,8 @@ async function preventAutoHideAsync() {
     return SplashModule.preventAutoHideAsync();
 }
 async function _internal_preventAutoHideAsync() {
-    if (!SplashModule) {
+    // The internal function might be missing if an app is using an older version of the SplashModule
+    if (!SplashModule || !SplashModule.internalPreventAutoHideAsync) {
         return false;
     }
     if (!_initializedErrorHandler) {
@@ -42,7 +43,8 @@ async function _internal_preventAutoHideAsync() {
     return SplashModule.internalPreventAutoHideAsync();
 }
 async function _internal_maybeHideAsync() {
-    if (!SplashModule) {
+    // The internal function might be missing if an app is using an older version of the SplashModule
+    if (!SplashModule || !SplashModule.internalMaybeHideAsync) {
         return false;
     }
     return SplashModule.internalMaybeHideAsync();

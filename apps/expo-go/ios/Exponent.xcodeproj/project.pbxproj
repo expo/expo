@@ -46,9 +46,9 @@
 		4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 408933592CAAF7A20095810E /* ExpoAppInstance.mm */; };
 		40CB1D762CD2A0C200CB3717 /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6C2CD2A0C200CB3717 /* EXSplashScreenModule.m */; };
 		40CB1D772CD2A0C200CB3717 /* EXSplashScreenService.m in Sources */ = {isa = PBXBuildFile; fileRef = 40CB1D6E2CD2A0C200CB3717 /* EXSplashScreenService.m */; };
+		4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4A6280092E69DBF000D916B0 /* AppIcon.icon */; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
 		8397AA3E2CC969A5000A6349 /* EXVersionedNetworkInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */; };
-		83B4FA5F2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */; };
 		84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84713BFA28584A0100E86B56 /* EXErrorView.xib */; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
@@ -143,7 +143,6 @@
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		FB4B49E32E5D99D79400A124 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
-		FCB4079725C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB4079625C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m */; };
 		FCB4099525C6207C00326AC8 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -257,13 +256,12 @@
 		40CB1D6D2CD2A0C200CB3717 /* EXSplashScreenService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenService.h; sourceTree = "<group>"; };
 		40CB1D6E2CD2A0C200CB3717 /* EXSplashScreenService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenService.m; sourceTree = "<group>"; };
 		45675DFC5DFCA8A77C135D1D /* Pods-Expo Go (main)-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
+		4A6280092E69DBF000D916B0 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		71773906C5EB4CA89B3A271F /* Pods-Expo Go (main)-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Tests/Pods-Expo Go (main)-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Expo Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expo Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXVersionedNetworkInterceptor.swift; sourceTree = "<group>"; };
-		83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXGoReactNativeFeatureFlags.mm; sourceTree = "<group>"; };
-		83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXGoReactNativeFeatureFlags.h; sourceTree = "<group>"; };
 		83BF8C0E87795C6808128A31 /* Pods-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go/Pods-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		84713BFA28584A0100E86B56 /* EXErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EXErrorView.xib; sourceTree = "<group>"; };
 		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -439,8 +437,6 @@
 		FACEDA38C6E33F74459F0298 /* Pods-Expo Go (main)-Expo Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.debug.xcconfig"; sourceTree = "<group>"; };
 		FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSerializer.m; sourceTree = "<group>"; };
 		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
-		FCB4079525C5EF3800326AC8 /* EXScopedNotificationCategoryMigrator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoryMigrator.h; sourceTree = "<group>"; };
-		FCB4079625C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoryMigrator.m; sourceTree = "<group>"; };
 		FCB407C525C61D4700326AC8 /* ExpoNotificationServiceExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ExpoNotificationServiceExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -573,8 +569,6 @@
 		40F842852C9CB39F00E1AC82 /* AppInstance */ = {
 			isa = PBXGroup;
 			children = (
-				83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */,
-				83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */,
 				408933582CAAF7870095810E /* ExpoAppInstance.h */,
 				408933592CAAF7A20095810E /* ExpoAppInstance.mm */,
 				40482BA82D6CB90200ACAFBB /* ExpoGoReactNativeFactory.mm */,
@@ -594,6 +588,7 @@
 		78CEE2B71ACD07D70095B124 = {
 			isa = PBXGroup;
 			children = (
+				4A6280092E69DBF000D916B0 /* AppIcon.icon */,
 				B287BB2327DD909B008DA282 /* expo-root.pem */,
 				F12A1AB722ABD461008542C6 /* Build-Phases */,
 				B56C65BF20476834002B2424 /* Client */,
@@ -670,8 +665,6 @@
 				FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */,
 				B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */,
 				B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */,
-				FCB4079525C5EF3800326AC8 /* EXScopedNotificationCategoryMigrator.h */,
-				FCB4079625C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m */,
 			);
 			path = EXNotifications;
 			sourceTree = "<group>";
@@ -1279,6 +1272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B287BB2427DD909C008DA282 /* expo-root.pem in Resources */,
+				4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */,
 				B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */,
 				CBB185782BE29F7A00E5067C /* PrivacyInfo.xcprivacy in Resources */,
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
@@ -1439,11 +1433,15 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-ExponentIntegrationTests/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1475,11 +1473,15 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-Expo Go-Tests/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1516,11 +1518,16 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/Exponent/Supporting/Exponent.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-Expo Go/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-Expo Go/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1630,11 +1637,9 @@
 				B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */,
 				0799CFDA21839B520039E97C /* EXSession.m in Sources */,
 				B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */,
-				83B4FA5F2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm in Sources */,
 				317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */,
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,
-				FCB4079725C5EF4F00326AC8 /* EXScopedNotificationCategoryMigrator.m in Sources */,
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
 				B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */,
 				31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */,
@@ -1895,7 +1900,8 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				APP_OWNER = Expo;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDebug;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
@@ -1943,7 +1949,7 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -D DEBUG -D EXPO_CONFIGURATION_DEBUG";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -D DEBUG -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "Expo Go";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1967,6 +1973,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				APP_OWNER = Expo;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
@@ -2013,7 +2020,7 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -D RELEASE -D EXPO_CONFIGURATION_RELEASE";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -D RELEASE -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "Expo Go";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore host.exp.Exponent";

@@ -122,7 +122,7 @@ async function copyTemplateFileAsync(
     );
   }
 
-  if (configuration === 'debug') {
+  if (configuration === 'debug' || configuration === 'mobileDebug') {
     // We need these permissions when testing but don't want them
     // ending up in our release.
     currentSourceFile = currentSourceFile.replace(
@@ -132,6 +132,8 @@ async function copyTemplateFileAsync(
   }
 
   if (currentSourceFile !== currentDestFile) {
+    const destDir = path.dirname(dest);
+    await fs.mkdir(destDir, { recursive: true });
     await fs.writeFile(dest, currentSourceFile, 'utf8');
   }
 }

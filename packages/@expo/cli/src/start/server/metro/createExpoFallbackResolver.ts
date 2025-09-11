@@ -7,7 +7,7 @@
 // a user's project.
 // See: https://github.com/expo/expo/pull/34286
 
-import type { ResolutionContext } from 'metro-resolver';
+import type { ResolutionContext, PackageJson } from '@expo/metro/metro-resolver/types';
 import path from 'path';
 
 import type { StrictResolver, StrictResolverFactory } from './withMetroMultiPlatform';
@@ -35,11 +35,8 @@ interface PackageMetaPeerDependenciesMetaEntry {
   optional?: boolean;
 }
 
-interface PackageMeta {
+interface PackageMeta extends PackageJson {
   readonly [propName: string]: unknown;
-  readonly name?: string;
-  readonly main?: string;
-  readonly exports?: any; // unused
   readonly dependencies?: Record<string, unknown>;
   readonly peerDependencies?: Record<string, unknown>;
   readonly peerDependenciesMeta?: Record<
@@ -74,7 +71,8 @@ const getModuleDescriptionWithResolver = (
       return null;
     }
     filePath = resolution.filePath;
-    packageMeta = context.getPackage(filePath);
+    // Upcast PackageJson to PackageMeta
+    packageMeta = context.getPackage(filePath) as PackageMeta | null | undefined;
     if (!packageMeta) {
       return null;
     }

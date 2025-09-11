@@ -9,11 +9,12 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/helpers/js.js#L1
  */
 
+import type { MixedOutput, Module } from '@expo/metro/metro/DeltaBundler';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import { addParamsToDefineCall } from '@expo/metro/metro-transform-plugins';
+import type { JsOutput } from '@expo/metro/metro-transform-worker';
 import assert from 'assert';
 import jscSafeUrl from 'jsc-safe-url';
-import type { MixedOutput, Module } from 'metro';
-import { addParamsToDefineCall } from 'metro-transform-plugins';
-import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';
 
 export type Options = {
@@ -63,6 +64,9 @@ export function getModuleParams(
   let hasPaths = false;
 
   const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
+    if (!isResolvedDependency(dependency)) {
+      return null;
+    }
     let modulePath = dependency.absolutePath;
 
     if (modulePath == null) {

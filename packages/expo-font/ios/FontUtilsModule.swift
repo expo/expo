@@ -38,7 +38,11 @@ public final class FontUtilsModule: Module {
 
       do {
         try data.write(to: outputURL, options: .atomic)
-        promise.resolve(outputURL.absoluteString)
+        promise.resolve([
+          "uri": outputURL.absoluteString,
+          "width": image.size.width,
+          "height": image.size.height
+        ])
       } catch {
         promise.reject(SaveImageException(outputURL.absoluteString))
       }

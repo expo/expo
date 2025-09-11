@@ -10,16 +10,13 @@ import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.media.MediaActionSound
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
-import kotlin.math.roundToInt
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
@@ -68,6 +65,7 @@ import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.utils.BarCodeScannerResult
 import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
+import expo.modules.camera.utils.CameraUtils
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
@@ -86,6 +84,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.Float.max
 import java.lang.Float.min
+import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 const val ANIMATION_FAST_MILLIS = 50L
@@ -493,13 +492,17 @@ class ExpoCameraView(
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
       .build()
       .also { analyzer ->
-        if (shouldScanBarcodes) {
-          analyzer.setAnalyzer(
-            ContextCompat.getMainExecutor(context),
-            BarcodeAnalyzer(lensFacing, barcodeFormats) {
-              onBarcodeScanned(it)
-            }
-          )
+        if (shouldScanBarcodes && CameraUtils.isMLKitAvailable(context)) {
+          try {
+            analyzer.setAnalyzer(
+              ContextCompat.getMainExecutor(context),
+              BarcodeAnalyzer(lensFacing, barcodeFormats) {
+                onBarcodeScanned(it)
+              }
+            )
+          } catch (e: Exception) {
+            Log.e(CameraViewModule.TAG, "Failed to initialize BarcodeAnalyzer: ${e.message}")
+          }
         }
       }
 
@@ -632,12 +635,6 @@ class ExpoCameraView(
 
   fun setBarcodeScannerSettings(settings: BarcodeSettings?) {
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
-  }
-
-  private fun getDeviceOrientation() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    context.display.rotation
-  } else {
-    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
   }
 
   private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
@@ -796,12 +793,11 @@ class ExpoCameraView(
 
   private fun cancelCoroutineScope() = try {
     scope.cancel(ModuleDestroyedException())
-  } catch (e: Exception) {
+  } catch (_: Exception) {
     Log.e(CameraViewModule.TAG, "The scope does not have a job in it")
   }
 
-  override fun onDetachedFromWindow() {
-    super.onDetachedFromWindow()
+  fun cleanupCamera() {
     orientationEventListener.disable()
     cancelCoroutineScope()
     cameraProvider?.unbindAll()

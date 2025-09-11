@@ -1,11 +1,13 @@
 import {
   Button,
   ColorPicker,
-  LabelPrimitive,
+  Host,
+  Label,
   List,
   ListStyle,
   Picker,
   Switch,
+  VStack,
 } from '@expo/ui/swift-ui';
 import * as React from 'react';
 
@@ -34,82 +36,46 @@ export default function ListScreen() {
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
 
   return (
-    <>
-      <List listStyle="automatic" scrollEnabled={false}>
-        <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
-        <Switch
-          value={selectEnabled}
-          label="Select enabled"
-          onValueChange={setSelectEnabled}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <Switch
-          value={deleteEnabled}
-          label="Delete enabled"
-          onValueChange={setDeleteEnabled}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <Switch
-          value={moveEnabled}
-          label="Move enabled"
-          onValueChange={setMoveEnabled}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <ColorPicker
-          label="Item icon color"
-          selection={color}
-          supportsOpacity
-          onValueChanged={setColor}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <Picker
-          label="List style"
-          options={listStyleOptions}
-          selectedIndex={selectedIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => {
-            setSelectedIndex(index);
-          }}
-          variant="menu"
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-      </List>
-
-      <List
-        scrollEnabled={false}
-        editModeEnabled={editModeEnabled}
-        onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
-        moveEnabled={moveEnabled}
-        onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
-        onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
-        style={{ flex: 1 }}
-        listStyle={listStyleOptions[selectedIndex ?? 0]}
-        deleteEnabled={deleteEnabled}
-        selectEnabled={selectEnabled}>
-        {data.map((item, index) => (
-          <LabelPrimitive
-            key={index}
-            title={item.text}
-            systemImage={item.systemImage}
-            color={color}
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <List listStyle="automatic" scrollEnabled={false}>
+          <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
+          <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
+          <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
+          <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
+          <ColorPicker
+            label="Item icon color"
+            selection={color}
+            supportsOpacity
+            onValueChanged={setColor}
           />
-        ))}
-      </List>
-    </>
+          <Picker
+            label="List style"
+            options={listStyleOptions}
+            selectedIndex={selectedIndex}
+            onOptionSelected={({ nativeEvent: { index } }) => {
+              setSelectedIndex(index);
+            }}
+            variant="menu"
+          />
+        </List>
+
+        <List
+          scrollEnabled={false}
+          editModeEnabled={editModeEnabled}
+          onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
+          moveEnabled={moveEnabled}
+          onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
+          onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
+          listStyle={listStyleOptions[selectedIndex ?? 0]}
+          deleteEnabled={deleteEnabled}
+          selectEnabled={selectEnabled}>
+          {data.map((item, index) => (
+            <Label key={index} title={item.text} systemImage={item.systemImage} color={color} />
+          ))}
+        </List>
+      </VStack>
+    </Host>
   );
 }
 

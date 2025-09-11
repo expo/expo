@@ -3,13 +3,17 @@ import { processColor } from 'react-native';
 
 import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
 
-const NativeView: React.ComponentType<NativeSymbolViewProps> =
-  requireNativeViewManager('SymbolModule');
+let NativeView: React.ComponentType<NativeSymbolViewProps> | null = null;
+
+if (Platform.OS === 'ios') {
+  NativeView = requireNativeViewManager('SymbolModule');
+}
 
 export function SymbolView(props: SymbolViewProps) {
-  if (Platform.OS === 'android') {
+  if (!NativeView) {
     return <>{props.fallback}</>;
   }
+
   const nativeProps = getNativeProps(props);
   return <NativeView {...nativeProps} />;
 }

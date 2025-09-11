@@ -147,6 +147,9 @@ struct MapProperties: Record {
   @Field var isTrafficEnabled: Bool = false
   @Field var selectionEnabled: Bool = true
   @Field var polylineTapThreshold: Double = 20
+  @Field var elevation: MapStyleElevation = MapStyleElevation.automatic
+  @Field var emphasis: MapStyleEmphasis = MapStyleEmphasis.automatic
+  @Field var pointsOfInterest: MapPointOfInterestCategories = MapPointOfInterestCategories()
 }
 
 enum MapContourStyle: String, Enumerable {
@@ -164,20 +167,277 @@ enum MapContourStyle: String, Enumerable {
   }
 }
 
+enum MapStyleElevation: String, Enumerable {
+  case automatic = "AUTOMATIC"
+  case flat = "FLAT"
+  case realistic = "REALISTIC"
+
+  @available(iOS 17.0, *)
+  func toMapStyleElevation() -> MapStyle.Elevation {
+    switch self {
+    case .flat:
+      return .flat
+    case .realistic:
+      return .realistic
+    default:
+      return .automatic
+    }
+  }
+}
+
+enum MapStyleEmphasis: String, Enumerable {
+  case muted = "MUTED"
+  case automatic = "AUTOMATIC"
+
+  @available(iOS 17.0, *)
+  func toMapStyleEmphasis() -> MapStyle.StandardEmphasis {
+    switch self {
+    case .muted:
+      return .muted
+    default:
+      return .automatic
+    }
+  }
+}
+
 enum MapType: String, Enumerable {
   case standard = "STANDARD"
   case hybrid = "HYBRID"
   case imagery = "IMAGERY"
 
   @available(iOS 17.0, *)
-  func toMapStyle(showsTraffic: Bool = false) -> MapStyle {
-    switch self {
-    case .standard:
-      return .standard(pointsOfInterest: .all, showsTraffic: showsTraffic)
+  func toMapStyle(_ properties: MapProperties) -> MapStyle {
+    let mapType = properties.mapType
+    let elevation = properties.elevation.toMapStyleElevation()
+    let emphasis = properties.emphasis.toMapStyleEmphasis()
+    let pointsOfInterest = properties.pointsOfInterest.toMapPointOfInterestCategories()
+    let showsTraffic = properties.isTrafficEnabled
+
+    switch mapType {
     case .hybrid:
-      return .hybrid(pointsOfInterest: .all, showsTraffic: showsTraffic)
+      return .hybrid(
+        elevation: elevation,
+        pointsOfInterest: pointsOfInterest,
+        showsTraffic: showsTraffic
+      )
     case .imagery:
-      return .imagery
+      return .imagery(
+        elevation: elevation
+      )
+    default:
+      return .standard(
+        elevation: elevation,
+        emphasis: emphasis,
+        pointsOfInterest: pointsOfInterest,
+        showsTraffic: showsTraffic
+      )
     }
+  }
+}
+
+struct MapPointOfInterestCategories: Record {
+  @Field var including: [MapPointOfInterestCategory]?
+  @Field var excluding: [MapPointOfInterestCategory]?
+
+  @available(iOS 17.0, *)
+  func toMapPointOfInterestCategories() -> PointOfInterestCategories {
+    if let including = including {
+      let poiCategories = including.compactMap { $0.toMapPointOfInterestCategory() }
+      return .including(poiCategories)
+    }
+
+    if let excluding = excluding {
+      let poiCategories = excluding.compactMap { $0.toMapPointOfInterestCategory() }
+      return .excluding(poiCategories)
+    }
+
+    // show all POIs by default
+    return .excluding([])
+  }
+}
+
+enum MapPointOfInterestCategory: String, Enumerable {
+  // Arts and culture
+  case museum = "MUSEUM"
+  case musicVenue = "MUSIC_VENUE"
+  case theater = "THEATER"
+
+  // Education
+  case library = "LIBRARY"
+  case planetarium = "PLANETARIUM"
+  case school = "SCHOOL"
+  case university = "UNIVERSITY"
+
+  // Entertainment
+  case movieTheater = "MOVIE_THEATER"
+  case nightlife = "NIGHTLIFE"
+
+  // Health and safety
+  case fireStation = "FIRE_STATION"
+  case hospital = "HOSPITAL"
+  case pharmacy = "PHARMACY"
+  case police = "POLICE"
+
+  // Historical and cultural landmarks
+  case castle = "CASTLE"
+  case fortress = "FORTRESS"
+  case landmark = "LANDMARK"
+  case nationalMonument = "NATIONAL_MONUMENT"
+
+  // Food and drink
+  case bakery = "BAKERY"
+  case brewery = "BREWERY"
+  case cafe = "CAFE"
+  case distillery = "DISTILLERY"
+  case foodMarket = "FOOD_MARKET"
+  case restaurant = "RESTAURANT"
+  case winery = "WINERY"
+
+  // Personal services
+  case animalService = "ANIMAL_SERVICE"
+  case atm = "ATM"
+  case automotiveRepair = "AUTOMOTIVE_REPAIR"
+  case bank = "BANK"
+  case beauty = "BEAUTY"
+  case evCharger = "EV_CHARGER"
+  case fitnessCenter = "FITNESS_CENTER"
+  case laundry = "LAUNDRY"
+  case mailbox = "MAILBOX"
+  case postOffice = "POST_OFFICE"
+  case restroom = "RESTROOM"
+  case spa = "SPA"
+  case store = "STORE"
+
+  // Parks and recreation
+  case amusementPark = "AMUSEMENT_PARK"
+  case aquarium = "AQUARIUM"
+  case beach = "BEACH"
+  case campground = "CAMPGROUND"
+  case fairground = "FAIRGROUND"
+  case marina = "MARINA"
+  case nationalPark = "NATIONAL_PARK"
+  case park = "PARK"
+  case rvPark = "RV_PARK"
+  case zoo = "ZOO"
+
+  // Sports
+  case baseball = "BASEBALL"
+  case basketball = "BASKETBALL"
+  case bowling = "BOWLING"
+  case goKart = "GO_KART"
+  case golf = "GOLF"
+  case hiking = "HIKING"
+  case miniGolf = "MINI_GOLF"
+  case rockClimbing = "ROCK_CLIMBING"
+  case skatePark = "SKATE_PARK"
+  case skating = "SKATING"
+  case skiing = "SKIING"
+  case soccer = "SOCCER"
+  case stadium = "STADIUM"
+  case tennis = "TENNIS"
+  case volleyball = "VOLLEYBALL"
+
+  // Travel
+  case airport = "AIRPORT"
+  case carRental = "CAR_RENTAL"
+  case conventionCenter = "CONVENTION_CENTER"
+  case gasStation = "GAS_STATION"
+  case hotel = "HOTEL"
+  case parking = "PARKING"
+  case publicTransport = "PUBLIC_TRANSPORT"
+
+  // Water sports
+  case fishing = "FISHING"
+  case kayaking = "KAYAKING"
+  case surfing = "SURFING"
+  case swimming = "SWIMMING"
+
+  @available(iOS 18.0, *)
+  private static let ios18CategoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] =
+  [
+    .musicVenue: .musicVenue,
+    .planetarium: .planetarium,
+    .castle: .castle,
+    .fortress: .fortress,
+    .landmark: .landmark,
+    .nationalMonument: .nationalMonument,
+    .distillery: .distillery,
+    .animalService: .animalService,
+    .automotiveRepair: .automotiveRepair,
+    .beauty: .beauty,
+    .baseball: .baseball,
+    .basketball: .basketball,
+    .bowling: .bowling,
+    .goKart: .goKart,
+    .golf: .golf,
+    .hiking: .hiking,
+    .miniGolf: .miniGolf,
+    .rockClimbing: .rockClimbing,
+    .skatePark: .skatePark,
+    .skating: .skating,
+    .skiing: .skiing,
+    .fishing: .fishing,
+    .kayaking: .kayaking,
+    .surfing: .surfing,
+    .swimming: .swimming,
+    .mailbox: .mailbox,
+    .spa: .spa,
+    .fairground: .fairground,
+    .rvPark: .rvPark,
+    .tennis: .tennis,
+    .volleyball: .volleyball,
+    .soccer: .soccer,
+    .conventionCenter: .conventionCenter
+  ]
+
+  private static let categoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] =
+  [
+    .museum: .museum,
+    .theater: .theater,
+    .library: .library,
+    .school: .school,
+    .university: .university,
+    .movieTheater: .movieTheater,
+    .nightlife: .nightlife,
+    .fireStation: .fireStation,
+    .hospital: .hospital,
+    .pharmacy: .pharmacy,
+    .police: .police,
+    .bakery: .bakery,
+    .brewery: .brewery,
+    .cafe: .cafe,
+    .foodMarket: .foodMarket,
+    .restaurant: .restaurant,
+    .winery: .winery,
+    .atm: .atm,
+    .bank: .bank,
+    .evCharger: .evCharger,
+    .fitnessCenter: .fitnessCenter,
+    .laundry: .laundry,
+    .postOffice: .postOffice,
+    .restroom: .restroom,
+    .store: .store,
+    .amusementPark: .amusementPark,
+    .aquarium: .aquarium,
+    .beach: .beach,
+    .campground: .campground,
+    .marina: .marina,
+    .nationalPark: .nationalPark,
+    .park: .park,
+    .zoo: .zoo,
+    .stadium: .stadium,
+    .airport: .airport,
+    .carRental: .carRental,
+    .gasStation: .gasStation,
+    .hotel: .hotel,
+    .parking: .parking,
+    .publicTransport: .publicTransport
+  ]
+
+  func toMapPointOfInterestCategory() -> MKPointOfInterestCategory? {
+    if #available(iOS 18.0, *), let category = Self.ios18CategoryMap[self] {
+      return category
+    }
+    return Self.categoryMap[self]
   }
 }

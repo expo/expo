@@ -86,7 +86,7 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
-    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self];
+    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
   }
   return self;
 }
@@ -340,12 +340,12 @@
 
   [self _addInitModuleObserver];
 #endif
-  
+
   DevLauncherViewController *swiftUIViewController = [[DevLauncherViewController alloc] init];
-  
+
   _window.rootViewController = swiftUIViewController;
   [_window makeKeyAndVisible];
-  
+
   dispatch_async(dispatch_get_main_queue(), ^{
     [self onAppContentDidAppear];
   });
@@ -699,7 +699,10 @@
 -(NSString *)getAppIcon
 {
   NSString *appIcon = @"";
-  NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
+  NSString *appIconName = nil;
+  @try {
+    appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
+  } @catch(NSException *_e) {}
 
   if (appIconName != nil) {
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
@@ -718,9 +721,30 @@
   return appVersion;
 }
 
+-(RCTReleaseLevel)getReactNativeReleaseLevel
+{
+//  @TODO: Read this value from the main react-native factory instance on 0.82
+  NSString *releaseLevelString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
+  RCTReleaseLevel releaseLevel = Stable;
+  if ([releaseLevelString isKindOfClass:[NSString class]]) {
+    NSString *lower = [releaseLevelString lowercaseString];
+    if ([lower isEqualToString:@"canary"]) {
+      releaseLevel = Canary;
+    } else if ([lower isEqualToString:@"experimental"]) {
+      releaseLevel = Experimental;
+    } else if ([lower isEqualToString:@"stable"]) {
+      releaseLevel = Stable;
+    }
+  }
+
+  return releaseLevel;
+}
+
 -(void)copyToClipboard:(NSString *)content {
+#if !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ?: @"");
+#endif
 }
 
 - (void)setDevMenuAppBridge

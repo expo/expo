@@ -10,6 +10,62 @@
 
 ### 💡 Others
 
+## 6.0.11 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.10 — 2025-09-04
+
+### 🐛 Bug fixes
+
+- fix LICENSE.md conflict ([#39373](https://github.com/expo/expo/pull/39373) by [@iameli](https://github.com/iameli))
+
+## 6.0.9 — 2025-09-03
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.8 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.7 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.5 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.4 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.3 — 2025-08-19
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- fix TS error when running tests ([#38660](https://github.com/expo/expo/pull/38660) by [@vonovak](https://github.com/vonovak))
+
 ## 5.2.4 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

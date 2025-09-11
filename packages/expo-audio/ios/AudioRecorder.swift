@@ -113,9 +113,19 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
 
     ref.record()
+
     startTimestamp = deviceCurrentTime
     currentState = .recording
     return getRecordingStatus()
+  }
+
+  // Public method to update state when calling native recording methods directly
+  func updateStateForDirectRecording() {
+    if currentState != .paused {
+      resetDurationTracking()
+    }
+    startTimestamp = deviceCurrentTime
+    currentState = .recording
   }
 
   func stopRecording() {
@@ -145,7 +155,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
       "mediaServicesDidReset": false,
-      "url": ref.url
+      "url": ref.url.absoluteString
     ]
 
     if ref.isMeteringEnabled {
@@ -157,16 +167,24 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+    // Update internal state when recording finishes automatically (e.g., from recordForDuration)
+    currentState = .stopped
+    resetDurationTracking()
+
     emit(event: recordingStatus, arguments: [
       "id": id,
       "isFinished": true,
       "hasError": false,
       "error": nil,
-      "url": recorder.url
+      "url": recorder.url.absoluteString
     ])
   }
 
   func encodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
+    // Update internal state on error
+    currentState = .error
+    resetDurationTracking()
+
     emit(event: recordingStatus, arguments: [
       "id": id,
       "isFinished": true,

@@ -66,8 +66,9 @@ export function SidebarCollapsible({ info, children }: Props) {
     window.sidebarState[info.name] = !isOpen;
   };
 
-  const customDataAttributes = containsActiveChild && {
-    'data-collapsible-active': true,
+  const customDataAttributes = {
+    ...(containsActiveChild && { 'data-collapsible-active': true }),
+    ...(info.type === 'group' && { 'data-group-name': info.name }),
   };
 
   return (

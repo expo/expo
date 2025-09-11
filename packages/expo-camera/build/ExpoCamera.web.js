@@ -92,13 +92,14 @@ const ExponentCamera = ({ facing, poster, ref, ...props }) => {
             StyleSheet.absoluteFill,
             styles.video,
             {
+                pointerEvents: props.pointerEvents,
                 // Flip the camera
                 transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
             },
         ];
-    }, [native.type]);
-    return (<View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
-      <Video autoPlay playsInline muted={isMuted} poster={poster} pointerEvents={props.pointerEvents} ref={video} style={style}/>
+    }, [props.pointerEvents, native.type]);
+    return (<View style={[styles.videoWrapper, props.style]}>
+      <Video autoPlay playsInline muted={isMuted} poster={poster} ref={video} style={style}/>
       {props.children}
     </View>);
 };
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,
         alignItems: 'stretch',
+        pointerEvents: 'box-none',
     },
     video: {
         width: '100%',

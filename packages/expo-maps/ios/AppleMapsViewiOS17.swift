@@ -127,9 +127,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
           "bearing": context.camera.heading
         ])
       }
-      .mapStyle(properties.mapType.toMapStyle(
-        showsTraffic: properties.isTrafficEnabled
-      ))
+      .mapStyle(properties.mapType.toMapStyle(properties))
       .lookAroundViewer(
         isPresented: $state.lookAroundPresented,
         initialScene: state.lookAroundScene,

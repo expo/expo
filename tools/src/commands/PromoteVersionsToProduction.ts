@@ -29,7 +29,7 @@ async function action() {
 
   if (isCorrect) {
     // Promote staging configuration to production.
-    await Versions.setVersionsAsync(versionsStaging);
+    await Versions.setVersionsAsync(versionsStaging, Versions.VersionsApiHost.PRODUCTION);
 
     console.log(
       chalk.green('\nSuccessfully updated production config. You can check it out on'),

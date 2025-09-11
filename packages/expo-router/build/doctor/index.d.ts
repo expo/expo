@@ -5,7 +5,7 @@ type IncorrectDependency = {
     expectedVersionOrRange: string;
     actualVersion: string;
 };
-export declare function doctor(pkg: PackageJSONConfig, appReactNavigationPath: string, { bold, learnMore, }: {
+export declare function doctor(pkg: PackageJSONConfig, appReactNavigationPath: string | undefined, { bold, learnMore, }: {
     bold: (text: string) => string;
     learnMore: (url: string, options?: {
         learnMoreMessage?: string;

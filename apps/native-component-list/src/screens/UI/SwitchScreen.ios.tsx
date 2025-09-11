@@ -1,4 +1,4 @@
-import { Switch } from '@expo/ui/swift-ui';
+import { Host, Switch } from '@expo/ui/swift-ui';
 import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';
@@ -8,33 +8,36 @@ export default function SwitchScreen() {
   return (
     <Page>
       <Section title="Switch">
-        <Switch
-          value={checked}
-          style={{ width: 300, height: 50 }}
-          onValueChange={setChecked}
-          color="#ff0000"
-          label="Never gonna give you up"
-          variant="switch"
-        />
+        <Host matchContents>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            color="#ff0000"
+            label="Never gonna give you up"
+            variant="switch"
+          />
+        </Host>
       </Section>
       <Section title="Checkbox Switch">
-        <Switch
-          value={checked}
-          style={{ width: 300, height: 50 }}
-          onValueChange={setChecked}
-          label="Never gonna let you down"
-          color="#ff0000"
-          variant="checkbox"
-        />
+        <Host matchContents>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            label="Never gonna let you down"
+            color="#ff0000"
+            variant="checkbox"
+          />
+        </Host>
       </Section>
       <Section title="Button Switch">
-        <Switch
-          value={checked}
-          style={{ width: 300, height: 50 }}
-          onValueChange={setChecked}
-          label="Never gonna run around and desert you"
-          variant="button"
-        />
+        <Host matchContents>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            label="Never gonna run around and desert you"
+            variant="button"
+          />
+        </Host>
       </Section>
     </Page>
   );

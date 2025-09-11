@@ -1,9 +1,25 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import React_RCTAppDelegate
+import React
 
-public class ExpoReactNativeFactory: RCTReactNativeFactory {
+@MainActor public class ExpoReactNativeFactory: RCTReactNativeFactory {
   private let reactDelegate = ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers)
+
+  // TODO: Remove check when react-native-macos 0.81 is released
+  #if !os(macOS)
+  @objc public override init(delegate: any RCTReactNativeFactoryDelegate) {
+    let releaseLevel = (Bundle.main.object(forInfoDictionaryKey: "ReactNativeReleaseLevel") as? String)
+      .flatMap { [
+        "canary": RCTReleaseLevel.Canary,
+        "experimental": RCTReleaseLevel.Experimental,
+        "stable": RCTReleaseLevel.Stable
+      ][$0.lowercased()]
+      }
+    ?? RCTReleaseLevel.Stable
+
+    super.init(delegate: delegate, releaseLevel: releaseLevel)
+  }
+  #endif
 
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
     // Alan: This is temporary. We need to cast to ExpoReactNativeFactoryDelegate here because currently, if you extend RCTReactNativeFactory
@@ -26,10 +42,7 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory {
       return weakDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
     }
 
-    // TODO: Remove this check when react-native-macos releases v0.79
-    if configuration.responds(to: Selector(("setJsRuntimeConfiguratorDelegate:"))) {
-      configuration.setValue(delegate, forKey: "jsRuntimeConfiguratorDelegate")
-    }
+    configuration.jsRuntimeConfiguratorDelegate = delegate
 
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
       weakDelegate.createBridge(with: delegate, launchOptions: launchOptions)

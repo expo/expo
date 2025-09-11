@@ -16,7 +16,7 @@ import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
 
-public class NotificationManager implements SingletonModule, expo.modules.notifications.notifications.interfaces.NotificationManager {
+public class NotificationManager implements SingletonModule {
   private static final String SINGLETON_NAME = "NotificationManager";
 
   /**
@@ -50,7 +50,6 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
    *
    * @param listener Listener to be notified of new messages.
    */
-  @Override
   public void addListener(NotificationListener listener) {
     // Check if the listener is already registered
     if (!mListenerReferenceMap.containsKey(listener)) {
@@ -75,7 +74,6 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
    *
    * @param listener Listener previously registered with {@link NotificationManager#addListener(NotificationListener)}.
    */
-  @Override
   public void removeListener(NotificationListener listener) {
     mListenerReferenceMap.remove(listener);
   }
@@ -140,7 +138,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
     // OR a background state (ExpoNotificationLifecycleListener::onNewIntent)
 
     // If we've just come from a background state, we'll have listeners set up
-    // pass on the notification to them
+    // - pass on the notification to them
     if (!mListenerReferenceMap.isEmpty()) {
       for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
         NotificationListener listener = listenerReference.get();

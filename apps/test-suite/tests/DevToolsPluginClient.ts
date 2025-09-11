@@ -1,12 +1,12 @@
 import {
   DevToolsPluginClient,
   getDevToolsPluginClientAsync,
+  unstable_createDevToolsPluginClient as createDevToolsPluginClient,
+  unstable_getConnectionInfo as getConnectionInfo,
+  unstable_WebSocketBackingStore as WebSocketBackingStore,
+  type ConnectionInfo,
   type DevToolsPluginClientOptions,
 } from 'expo/devtools';
-import { createDevToolsPluginClient } from 'expo/src/devtools/DevToolsPluginClientFactory';
-import { WebSocketBackingStore } from 'expo/src/devtools/WebSocketBackingStore';
-import { type ConnectionInfo } from 'expo/src/devtools/devtools.types';
-import { getConnectionInfo } from 'expo/src/devtools/getConnectionInfo';
 
 export const name = 'DevToolsPluginClient';
 
