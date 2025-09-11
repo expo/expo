@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix fallback resolution for modules that failed to hoist (inside `expo` or `expo-router`'s child `node_modules` folder) ([#39581](https://github.com/expo/expo/pull/39581) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Replace usage of metro internals in `instantiateMetro` with `Terminal.log` ([#39531](https://github.com/expo/expo/pull/39531) by [@robhogan](https://github.com/robhogan))
