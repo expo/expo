@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+Fix accepted react-compiler compilationMode values and update documentation.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
