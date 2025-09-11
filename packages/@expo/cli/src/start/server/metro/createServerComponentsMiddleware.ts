@@ -6,9 +6,9 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { EntriesDev } from '@expo/router-server/build/rsc/server';
 import { getRscMiddleware } from '@expo/server/private';
 import assert from 'assert';
-import type { EntriesDev } from 'expo-router/build/rsc/server';
 import path from 'path';
 import url from 'url';
 
@@ -66,8 +66,8 @@ export function createServerComponentsMiddleware(
   }
 ) {
   const routerModule = useClientRouter
-    ? 'expo-router/build/rsc/router/noopRouter'
-    : 'expo-router/build/rsc/router/expo-definedRouter';
+    ? '@expo/router-server/build/rsc/router/noopRouter'
+    : '@expo/router-server/build/rsc/router/expo-definedRouter';
 
   const rscMiddleware = getRscMiddleware({
     config: {},
@@ -309,7 +309,7 @@ export function createServerComponentsMiddleware(
     }
 
     const router = await ssrLoadModule<
-      typeof import('expo-router/build/rsc/router/expo-definedRouter')
+      typeof import('@expo/router-server/build/rsc/router/expo-definedRouter')
     >(
       routerModule,
       {
@@ -441,18 +441,20 @@ export function createServerComponentsMiddleware(
     };
   }
 
-  const rscRendererCache = new Map<string, typeof import('expo-router/build/rsc/rsc-renderer')>();
+  const rscRendererCache = new Map<
+    string,
+    typeof import('@expo/router-server/build/rsc/rsc-renderer')
+  >();
 
   let ensurePromise: Promise<any> | null = null;
   async function ensureSSRReady() {
     // TODO: Extract CSS Modules / Assets from the bundler process
-    const runtime = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
-      'metro-runtime/src/modules/empty-module.js',
-      {
-        environment: 'react-server',
-        platform: 'web',
-      }
-    );
+    const runtime = await ssrLoadModule<
+      typeof import('@expo/router-server/build/rsc/rsc-renderer')
+    >('metro-runtime/src/modules/empty-module.js', {
+      environment: 'react-server',
+      platform: 'web',
+    });
     return runtime;
   }
   const ensureMemo = () => {
@@ -468,13 +470,12 @@ export function createServerComponentsMiddleware(
     }
 
     // TODO: Extract CSS Modules / Assets from the bundler process
-    const renderer = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
-      'expo-router/build/rsc/rsc-renderer',
-      {
-        environment: 'react-server',
-        platform,
-      }
-    );
+    const renderer = await ssrLoadModule<
+      typeof import('@expo/router-server/build/rsc/rsc-renderer')
+    >('@expo/router-server/build/rsc/rsc-renderer', {
+      environment: 'react-server',
+      platform,
+    });
 
     rscRendererCache.set(platform, renderer);
     return renderer;

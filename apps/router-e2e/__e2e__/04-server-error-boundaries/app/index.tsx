@@ -1,7 +1,7 @@
 'use client';
 
 import { ErrorBoundary } from 'expo-router';
-import { ReactServerError } from 'expo-router/build/rsc/router/errors';
+import { ReactServerError } from '@expo/router-server/build/rsc/router/errors';
 import { Try } from 'expo-router/build/views/Try';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -36,7 +36,7 @@ function createFakeProductionError() {
 
         A runtime error was thrown while the worker script executed and
         no response could be returned.
-      
+
 
 test error`,
     'https://x.x.x/_flight/web/ACTION_file:///path/to/action.tsx/serverAction.txt',

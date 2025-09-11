@@ -144,7 +144,7 @@ it('runs `npx expo customize tsconfig.json` sets up typed routes', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'expo-customize-typed-routes',
     'with-router-typed-routes',
-    { reuseExisting: false, linkExpoPackages: ['expo-router'] }
+    { reuseExisting: false, linkExpoPackages: ['expo-router', '@expo/router-server'] }
   );
 
   // `npx expo customize tsconfig.json`

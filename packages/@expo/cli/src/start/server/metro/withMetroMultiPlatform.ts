@@ -238,11 +238,11 @@ export function withExtendedResolver(
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
     }
     if (isReactServerComponentsEnabled) {
-      if (resolveFrom.silent(config.projectRoot, 'expo-router/rsc')) {
-        debug('Enabling bridge alias: expo-router -> expo-router/rsc');
-        _universalAliases.push([/^expo-router$/, 'expo-router/rsc']);
+      if (resolveFrom.silent(config.projectRoot, '@expo/router-server/rsc')) {
+        debug('Enabling bridge alias: expo-router -> @expo/router-server/rsc');
+        _universalAliases.push([/^expo-router$/, '@expo/router-server/rsc']);
         // Bridge the internal entry point which is a standalone import to ensure package.json resolution works as expected.
-        _universalAliases.push([/^expo-router\/entry-classic$/, 'expo-router/rsc/entry']);
+        _universalAliases.push([/^expo-router\/entry-classic$/, '@expo/router-server/rsc/entry']);
       }
     }
     return _universalAliases;

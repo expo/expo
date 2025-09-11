@@ -51,7 +51,7 @@ export async function microBundle({
       'expo-mock/async-require',
       'react-server-dom-webpack/server',
       'react-server-dom-webpack/client',
-      'expo-router/rsc/internal',
+      '@expo/router-server/rsc/internal',
     ]) {
       if (id === mid && !fullFs[mid]) {
         fullFs[mid] = `
@@ -99,7 +99,7 @@ export async function microBundle({
   ]
 > {
   const fullFs = {
-    'expo-router/rsc/internal': ``,
+    '@expo/router-server/rsc/internal': ``,
     'react-server-dom-webpack/server': ``,
     'react-server-dom-webpack/client': ``,
 
