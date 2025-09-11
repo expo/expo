@@ -9,8 +9,8 @@ export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 
 export type DateRange = {
-  lowerBound: string | null;
-  upperBound: string | null;
+  lowerBound?: string | null;
+  upperBound?: string | null;
 };
 
 export type DateTimePickerProps = {
