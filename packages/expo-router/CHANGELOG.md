@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Use `$$EXPO_INITIAL_PROPS` to determine if running inside a dom component.
+- Use `$$EXPO_INITIAL_PROPS` to determine if running inside a dom component. ([#39590](https://github.com/expo/expo/pull/39590) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
