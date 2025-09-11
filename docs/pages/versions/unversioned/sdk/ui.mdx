@@ -226,7 +226,11 @@ import { CODE } from '~/ui/components/Text';
           setSelectedDate(date);
         }}
         displayedComponents='date'
-        initialDate={selectedDate.toISOString()}
+        date={selectedDate.toISOString()}
+        range={{
+          lowerBound: new Date().toISOString(),
+          upperBound: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+        }}
         variant='wheel'
       />
     </Host>
@@ -258,7 +262,11 @@ import { CODE } from '~/ui/components/Text';
           setSelectedDate(date);
         }}
         displayedComponents='hourAndMinute'
-        initialDate={selectedDate.toISOString()}
+        date={selectedDate.toISOString()}
+        range={{
+          lowerBound: new Date().toISOString(),
+          upperBound: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+        }}
         variant='wheel'
       />
     </Host>
@@ -708,7 +716,11 @@ Expo UI is still in active development. We continue to add more functionality an
         setSelectedDate(date);
       }}
       displayedComponents='date'
-      initialDate={selectedDate.toISOString()}
+      date={selectedDate.toISOString()}
+      range={{
+        lowerBound: new Date().toISOString(),
+        upperBound: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+      }}
       variant='picker'
     />
     ```
@@ -736,7 +748,11 @@ Expo UI is still in active development. We continue to add more functionality an
         setSelectedDate(date);
       }}
       displayedComponents='hourAndMinute'
-      initialDate={selectedDate.toISOString()}
+      date={selectedDate.toISOString()}
+      range={{
+        lowerBound: new Date().toISOString(),
+        upperBound: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+      }}
       variant='picker'
     />
     ```

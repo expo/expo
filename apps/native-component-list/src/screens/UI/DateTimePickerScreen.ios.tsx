@@ -38,7 +38,11 @@ export default function DatePickerScreen() {
                   typeOptions[typeIndex] as DateTimePickerProps['displayedComponents']
                 }
                 title="Select date"
-                initialDate={selectedDate.toISOString()}
+                date={selectedDate.toISOString()}
+                range={{
+                  lowerBound: new Date().toISOString(),
+                  upperBound: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+                }}
                 variant={displayOptions[selectedIndex] as DateTimePickerProps['variant']}
               />
 

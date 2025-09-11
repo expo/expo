@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix tvOS compilation. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
+- [iOS] Add support for DateTimePicker date range. Removed "initialDate" and added "date" to allow state changes from the react-native side.
 
 ### 💡 Others
 

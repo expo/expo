@@ -1,11 +1,15 @@
 import { type CommonViewModifierProps } from '../types';
 export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
+export type DateRange = {
+    lowerBound: string | null;
+    upperBound: string | null;
+};
 export type DateTimePickerProps = {
     /**
-     * The initial date to display on the picker.
+     * The date to display on the picker.
      */
-    initialDate?: string | null;
+    date?: string | null;
     /**
      * A title displayed on the picker on iOS.
      * @platform ios
@@ -30,6 +34,11 @@ export type DateTimePickerProps = {
      * The tint color to use on the picker elements.
      */
     color?: string;
+    /**
+     * The date range that the user can select from.
+     * If not provided, the user can select any date.
+     */
+    range?: DateRange;
 } & CommonViewModifierProps;
 /**
  * Renders a `DateTimePicker` component.
