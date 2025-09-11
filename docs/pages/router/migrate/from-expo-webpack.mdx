@@ -84,7 +84,7 @@ module.exports = api => {
   const platform = api.caller(caller => caller && caller.platform);
 
   return {
-    presets: ['babel-preset-expo'],
+    presets: ['expo/babel'],
     plugins: [
       // Add a web-only plugin...
       platform === 'web' && 'custom-web-only-plugin',

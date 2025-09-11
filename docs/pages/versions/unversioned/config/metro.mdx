@@ -370,7 +370,7 @@ module.exports = function (api) {
   // api.cache.invalidate(() => platform);
 
   return {
-    presets: ['babel-preset-expo'],
+    presets: ['expo/babel'],
     plugins: [
       // Add a plugin based on the platform...
       platform === 'web' && 'my-plugin',
@@ -385,7 +385,7 @@ If the caller doesn't have `engine`, `platform`, `bundler`, and so on, then ensu
 
 Always try to implement custom logic in the resolver if possible, caching is much simpler and easier to reason about. For example, if you need to remap an import, it's simpler and faster to resolve to a static file with the resolver than to parse all possible import methods and remap them with the transformer.
 
-Always use `babel-preset-expo` as the default Babel preset, this ensures the transformation is always compatible with Expo runtimes. `babel-preset-expo` uses all of the caller inputs internally to optimize for a given platform, engine, and environment.
+Always use `expo/babel` as the default Babel preset, this ensures the transformation is always compatible with Expo runtimes. Expo's preset, `babel-preset-expo`, uses all of the caller inputs internally to optimize for a given platform, engine, and environment.
 
 ## Node.js built-ins
 

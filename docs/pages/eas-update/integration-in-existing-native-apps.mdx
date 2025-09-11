@@ -24,7 +24,7 @@ You should have a brownfield native project with React Native installed and conf
 - Remove any other update library integration from your app, such as react-native-code-push, and ensure that your app compiles and runs successfully in both debug and release on your supported platforms.
 - Support for Expo modules (through the `expo` package) must be installed and configured in your project. [Learn more](/brownfield/installing-expo-modules/).
 - Your **metro.config.js** [must extend `expo/metro-config`](/guides/customizing-metro/#customizing) .
-- Your **babel.config.js** [must extend `babel-preset-expo`](/versions/latest/config/babel/).
+- Your **babel.config.js** [must extend `expo/babel`](/versions/latest/config/babel/).
 - The command `npx expo export -p android` must run successfully in your project if it supports Android, and `npx expo export -p ios` if it supports iOS.
 
 ## Installation and basic configuration

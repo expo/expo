@@ -136,13 +136,13 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ### Modify babel.config.js
 
-Ensure you use `babel-preset-expo` as the `preset`, in the **babel.config.js** file or delete the file:
+Ensure you use `expo/babel` as the `preset`, in the **babel.config.js** file or delete the file:
 
 ```js babel.config.js
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: ['expo/babel'],
   };
 };
 ```

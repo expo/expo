@@ -45,7 +45,7 @@ Using Next.js with SWC is recommended. You can configure the [**babel.config.js*
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: ['expo/babel'],
   };
 };
 ```
@@ -77,7 +77,7 @@ module.exports = function (api) {
     presets: [
       // Only use next in the browser, it'll break your native project
       isWeb && require('next/babel'),
-      'babel-preset-expo',
+      'expo/babel',
     ].filter(Boolean),
   };
 };
