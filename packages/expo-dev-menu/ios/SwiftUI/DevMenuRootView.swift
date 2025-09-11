@@ -23,6 +23,7 @@ struct DevMenuRootView: View {
         }
       }
     }
+    .navigationViewStyle(.stack)
   }
 }
 
