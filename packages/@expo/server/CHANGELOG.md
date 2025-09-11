@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Re-expose Vercel adapter under `@expo/server/adapter/vercel`
+- Re-expose Vercel adapter under `@expo/server/adapter/vercel` ([#39548](https://github.com/expo/expo/pull/39548) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
