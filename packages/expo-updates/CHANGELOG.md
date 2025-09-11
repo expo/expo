@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Surface iOS compilation errors in updates E2E tests. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
-- Remove tests related files from the published package content.
+- Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 
 ## 29.0.9 — 2025-09-10
 
