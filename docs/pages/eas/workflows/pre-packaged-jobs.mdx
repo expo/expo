@@ -1133,6 +1133,7 @@ jobs:
     type: github-comment
     params:
       payload: string # optional - raw markdown/HTML content for fully custom comment
+```
 
 #### Parameters
 
@@ -1140,7 +1141,7 @@ The job operates in two mutually exclusive modes:
 
 ##### Mode 1: Auto-with-overrides mode
 
-When not using payload, you can optionally specify any combination of these parameters:
+Default behavior is auto discovery builds & updates, you can specify any of these parameters if you want to:
 
 | Parameter        | Type     | Description                                                                                                                                                      |
 | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1358,16 +1359,6 @@ jobs:
 ```
 
 </Collapsible>
-
-### Important notes
-
-- **Mode Mutual Exclusivity**: The `payload` parameter cannot be used together with `message`, `build_ids`, or `update_group_ids`. If you specify `payload`, the job will use payload mode and ignore all other parameters.
-- **Auto-discovery vs Exclusion**: There's an important difference between not specifying a parameter (undefined) and providing an empty array:
-  - `build_ids` undefined → auto-discovers all builds
-  - `build_ids: []` → excludes all builds from the comment
-  - Same applies to `update_group_ids`
-- **GitHub Repository Required**: This job only works when the workflow is triggered from a GitHub repository with proper permissions configured.
-- **non-pull request behavior**: The job is marked as successful if it's not running from a pull request.
 
 ## Require Approval
 
