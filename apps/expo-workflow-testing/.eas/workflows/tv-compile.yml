@@ -108,4 +108,4 @@ jobs:
         id: build
         working_directory: ../../../updates-e2e
         run: |
-          yarn tvos:build | npx @expo/xcpretty
+          yarn tvos:build
