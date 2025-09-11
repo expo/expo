@@ -49,8 +49,13 @@ export function resolvePluginForModule(
     }
   }
 
+  let hint = 'Do you have node modules installed?';
+  if (pluginReference === 'expo-dev-launcher') {
+    hint = 'Did you mean "expo-dev-client"?';
+  }
+
   throw new PluginError(
-    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`,
+    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". ${hint}`,
     'PLUGIN_NOT_FOUND'
   );
 }
