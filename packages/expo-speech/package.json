@@ -1,6 +1,6 @@
 {
   "name": "expo-speech",
-  "version": "14.0.6",
+  "version": "14.0.7",
   "description": "Provides text-to-speech functionality.",
   "main": "build/Speech.js",
   "types": "build/Speech.d.ts",

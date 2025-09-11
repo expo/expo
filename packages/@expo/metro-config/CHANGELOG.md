@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Increase strictness of namespace imports ([#39545](https://github.com/expo/expo/pull/39545) by [@kitten](https://github.com/kitten))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 54.0.2 — 2025-09-11
+
+### 🛠 Breaking changes
+
+- Increase strictness of namespace imports ([#39545](https://github.com/expo/expo/pull/39545) by [@kitten](https://github.com/kitten))
 
 ## 54.0.1 — 2025-09-10
 

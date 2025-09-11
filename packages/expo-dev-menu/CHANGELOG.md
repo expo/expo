@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 7.0.11 — 2025-09-11
+
+### 🐛 Bug fixes
+
 - [Android] Fix desynchronization issue between UI and state. ([#39553](https://github.com/expo/expo/pull/39553) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix UI on iPad. ([#39549](https://github.com/expo/expo/pull/39549) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 7.0.10 — 2025-09-10
 

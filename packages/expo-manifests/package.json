@@ -1,6 +1,6 @@
 {
   "name": "expo-manifests",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "main": "build/Manifests.js",
   "types": "build/Manifests.d.ts",

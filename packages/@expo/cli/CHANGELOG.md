@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.2 — 2025-09-11
+
+### 🐛 Bug fixes
+
 - Fix fallback resolution for modules that failed to hoist (inside `expo` or `expo-router`'s child `node_modules` folder) ([#39581](https://github.com/expo/expo/pull/39581) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

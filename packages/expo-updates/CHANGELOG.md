@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 29.0.10 — 2025-09-11
+
+### 💡 Others
+
 - Surface iOS compilation errors in updates E2E tests. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
 
 ## 29.0.9 — 2025-09-10

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 14.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.6 — 2025-09-02
 
 ### 💡 Others
