@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { ISA, PBXShellScriptBuildPhase } from 'xcparse';
 
+import { installBabelPresetExpoNonInteractiveAsync } from '../../utils/packageInstaller';
 import { withXCParseXcodeProject } from '../ios/withXCParseXcodeProject';
 
 export const withCliIntegration: ConfigPlugin = (config) => {
@@ -67,6 +68,7 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
     async (config) => {
       try {
         const babelConfigPath = await findBabelConfigPathAsync(config.modRequest.projectRoot);
+        await installBabelPresetExpoNonInteractiveAsync(config.modRequest.projectRoot);
         let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
         contents = updateBabelConfig(contents);
         await fs.promises.writeFile(babelConfigPath, contents);

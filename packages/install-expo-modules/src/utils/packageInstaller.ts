@@ -21,6 +21,20 @@ async function installPackageNonInteractiveAsync(projectRoot: string, pkg: strin
   return manager.addAsync([pkg]);
 }
 
+export async function installBabelPresetExpoNonInteractiveAsync(projectRoot: string) {
+  const manager = PackageManager.createForProject(projectRoot, { silent: false });
+  const pkg = 'babel-preset-expo';
+
+  if (manager.name === 'yarn') {
+    const version = await manager.versionAsync();
+    if (semver.major(version) === 1) {
+      return manager.addDevAsync([pkg, '--non-interactive']);
+    }
+  }
+
+  return manager.addDevAsync([pkg]);
+}
+
 /**
  * Install the `expo` package
  *
