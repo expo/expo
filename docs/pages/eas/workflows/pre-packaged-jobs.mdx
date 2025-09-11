@@ -1136,7 +1136,7 @@ jobs:
 
 The job operates in two mutually exclusive modes:
 
-##### Mode 1: Auto-with-Overrides Mode
+##### Mode 1: Auto-with-overrides mode
 
 When not using payload, you can optionally specify any combination of these parameters:
 
@@ -1148,7 +1148,7 @@ When not using payload, you can optionally specify any combination of these para
 
 > **Auto-discovery behavior**: When `build_ids` or `update_group_ids` are not specified (undefined), the job automatically discovers all relevant builds and updates from the current workflow. To explicitly exclude builds or updates, pass an empty array `[]`.
 
-##### Mode 2: Payload Mode
+##### Mode 2: Payload mode
 
 When using payload mode, you cannot specify any other parameters.
 
@@ -1168,7 +1168,7 @@ You can reference the following outputs in subsequent jobs:
 
 Here are practical examples demonstrating both modes of the GitHub Comment job:
 
-#### Auto-with-Overrides Mode Examples
+#### Auto-with-overrides mode examples
 
 <Collapsible summary="Auto-discover all builds and updates">
 
@@ -1273,7 +1273,7 @@ jobs:
 
 </Collapsible>
 
-#### Payload Mode Examples
+#### Payload mode examples
 
 <Collapsible summary="Fully custom comment with payload">
 
@@ -1358,7 +1358,7 @@ jobs:
 
 </Collapsible>
 
-### Important Notes
+### Important notes
 
 - **Mode Mutual Exclusivity**: The `payload` parameter cannot be used together with `message`, `build_ids`, or `update_group_ids`. If you specify `payload`, the job will use payload mode and ignore all other parameters.
 - **Auto-discovery vs Exclusion**: There's an important difference between not specifying a parameter (undefined) and providing an empty array:
