@@ -24,12 +24,12 @@ struct DateTimePickerView: ExpoSwiftUI.View {
   init(props: DateTimePickerProps) {
     self.props = props
   }
-  
+
   @ViewBuilder
   private func makeDatePicker() -> some View {
     let title = props.title ?? ""
     let components = props.displayedComponents.toDatePickerComponent()
-    
+
     if let range = props.range {
       switch (range.lowerBound, range.upperBound) {
       case let (lower?, upper?):
@@ -56,10 +56,10 @@ struct DateTimePickerView: ExpoSwiftUI.View {
         date = props.date ?? Date()
       }
       .onChange(of: date, perform: { newDate in
-        if (props.date == newDate) {
-          return;
+        if props.date == newDate {
+          return
         }
-        
+
         props.onDateSelected(["date": newDate.timeIntervalSince1970 * 1000])
       })
       .onReceive(props.date.publisher, perform: { newDate in
