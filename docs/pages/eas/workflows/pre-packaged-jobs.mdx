@@ -1342,7 +1342,7 @@ jobs:
     type: github-comment
     params:
       message: '✅ Android build succeeded! Ready for testing.'
-      build_ids:
+      build_ids: # provided only for instructional purposes, you could as well omit this here
         - ${{ needs.build_android.outputs.build_id }}
 
   comment_failure:
