@@ -12,7 +12,6 @@ import { Terminal } from '@expo/metro/metro-core';
 import { getDefaultConfig, type LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
-import util from 'node:util';
 import path from 'path';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
@@ -42,12 +41,7 @@ class LogRespectingTerminal extends Terminal {
     super(stream, { ttyPrint: true });
 
     const sendLog = (...args: any[]) => {
-      this._logLines.push(
-        // format args like console.log
-        util.format(...args)
-      );
-      this._scheduleUpdate();
-
+      this.log(...args);
       // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
       this.flush();
     };
