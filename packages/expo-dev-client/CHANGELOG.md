@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Bumps the version of `expo-dev-launcher` to fix a duplicated dependency. ([#39580](https://github.com/expo/expo/issues/39580) by [@carloschida](https://github.com/expo/expo/issues/39580))
+
 ### 💡 Others
 
 ## 6.0.11 — 2025-09-10

@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Version 6.0.10 of this package lists in the repo `expo-dev-menu@7.0.10` as a dependency but the published version in npm lists `expo-dev-menu@7.0.9`. ([#39580](https://github.com/expo/expo/issues/39580) by [@carloschida](https://github.com/expo/expo/issues/39580))
+
 ## 6.0.10 — 2025-09-08
 
 _This version does not introduce any user-facing changes._
