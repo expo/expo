@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove iOS test files from the published package content.
+
 ## 5.0.0 — 2025-08-13
 
 ### 🎉 New features
