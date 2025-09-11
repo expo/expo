@@ -1,60 +1,621 @@
----
-title: EAS Build
-sidebar_title: Introduction
-hideTOC: true
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+// App.js (کاملاً یک‌فایلی - VideoTalk MVP with API integration)
+// توجه: قبل از اجرا BASE_URL را به آدرس سرور خودت تغییر بده.
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList, Image,
+  Alert, SafeAreaView, ScrollView, Dimensions, ActivityIndicator, Platform
+} from "react-native";
+import axios from "axios";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as ImagePicker from 'expo-image-picker';
+import * as Contacts from 'expo-contacts';
+import { Video } from 'expo-av';
+import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { BoxLink } from '~/ui/components/BoxLink';
+// ---------- پیکربندی اولیه ----------
+const BASE_URL = "https://your-server.example.com"; // <<--- این را تغییر بده
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
-**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
+// ---------- کمکی‌های API ----------
+const api = axios.create({
+  baseURL: BASE_URL,
+  timeout: 20000,
+});
 
-It makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+async function saveToken(token) {
+  try { await AsyncStorage.setItem("VT_token", token); } catch (e) {}
+}
+async function getToken() {
+  try { return await AsyncStorage.getItem("VT_token"); } catch (e) { return null; }
+}
+async function authHeader() {
+  const t = await getToken(); return t ? { Authorization: `Bearer ${t}` } : {};
+}
 
-It's designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+// ---------- صفحه Auth (ورود/ثبت‌نام) ----------
+function AuthScreen({ navigation }) {
+  const [mode, setMode] = useState("login"); // login | signup
+  const [identifier, setIdentifier] = useState(""); // phone or email
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-### Get started
+  const handle = async () => {
+    if (!identifier || !password) { Alert.alert("خطا", "همه فیلدها را پر کنید"); return; }
+    setLoading(true);
+    try {
+      const url = mode === "login" ? "/api/auth/login" : "/api/auth/signup";
+      const res = await api.post(url, { identifier, password });
+      if (res.data?.token) {
+        await saveToken(res.data.token);
+        navigation.replace("MainTabs");
+      } else throw new Error("بدون توکن");
+    } catch (err) {
+      console.error(err);
+      Alert.alert("خطا", err.response?.data?.message || err.message || "خطا در اتصال");
+    } finally { setLoading(false); }
+  };
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.h1}>VideoTalk</Text>
+      <Text style={styles.p}>ورود یا ثبت‌نام برای ادامه</Text>
+      <View style={{ width: "90%" }}>
+        <TextInput placeholder="ایمیل یا شماره" value={identifier} onChangeText={setIdentifier} style={styles.input} />
+        <TextInput placeholder="رمز عبور" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
+        <TouchableOpacity style={styles.primaryBtn} onPress={handle} disabled={loading}>
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={{color:"#fff"}}>{mode==="login"?"ورود":"ثبت‌نام"}</Text>}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setMode(mode==="login"?"signup":"login")}>
+          <Text style={{color:"#09f", marginTop:12}}>{mode==="login"?"نداری؟ ثبت‌نام":"حساب داری؟ ورود"}</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+// ---------- Home (Shorts feed: عمودی اسکرول با ویدئوها کوتاه) ----------
+function HomeShortsScreen({ navigation }) {
+  const [shorts, setShorts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+  const load = async () => {
+    setLoading(true);
+    try {
+      const headers = await authHeader();
+      const res = await api.get("/api/shorts", { headers });
+      setShorts(res.data || []);
+    } catch (err) {
+      console.error(err);
+      Alert.alert("خطا", "بارگذاری شورت‌ها ناموفق بود");
+    } finally { setLoading(false); }
+  };
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+  useEffect(() => { load(); }, []);
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, but you can also run it on your own machine, for example, to debug or to comply with any company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+  if (loading) return <View style={styles.center}><ActivityIndicator /></View>;
+  if (!shorts.length) return <View style={styles.center}><Text style={{color:"#fff"}}>شورت ویدئو موجود نیست</Text></View>;
 
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+  return (
+    <FlatList
+      data={shorts}
+      keyExtractor={i=>i.id}
+      renderItem={({item}) => (
+        <View style={{ height: windowHeight, backgroundColor:"#000", justifyContent:"center", alignItems:"center" }}>
+          <Video
+            source={{ uri: item.uri }}
+            rate={1.0}
+            isLooping
+            resizeMode="cover"
+            shouldPlay
+            useNativeControls={false}
+            style={{ width: "100%", height: "100%" }}
+          />
+          <View style={{ position:"absolute", left:10, bottom:30 }}>
+            <Text style={{ color:"#fff", fontSize:18 }}>{item.title}</Text>
+            <Text style={{ color:"#ddd" }}>{item.channelName}</Text>
+          </View>
+          <View style={{ position:"absolute", right:12, bottom:80 }}>
+            <TouchableOpacity style={styles.iconCircle}><Text style={{color:"#fff"}}>❤</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.iconCircle,{marginTop:12}]}><Text style={{color:"#fff"}}>💬</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.iconCircle,{marginTop:12}]}><Text style={{color:"#fff"}}>↗</Text></TouchableOpacity>
+          </View>
+        </View>
+      )}
+      pagingEnabled
+      horizontal={false}
+    />
+  );
+}
+
+// ---------- Long Videos screen (Video feed) ----------
+function VideosScreen() {
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    (async ()=> {
+      setLoading(true);
+      try {
+        const res = await api.get("/api/videos");
+        setVideos(res.data || []);
+      } catch(e) { console.error(e); Alert.alert("خطا","بارگذاری ویدئوها نشد"); }
+      setLoading(false);
+    })();
+  }, []);
+  if (loading) return <View style={styles.center}><ActivityIndicator/></View>;
+  return (
+    <FlatList
+      data={videos}
+      keyExtractor={v=>v.id}
+      renderItem={({item}) => (
+        <View style={{ padding: 10 }}>
+          <Text style={{ color:"#fff", fontWeight:"bold" }}>{item.title}</Text>
+          <Video source={{uri: item.uri}} useNativeControls style={{ width:"100%", height:240, backgroundColor:"#000" }} />
+        </View>
+      )}
+    />
+  );
+}
+
+// ---------- Channels & Groups screen ----------
+function ChannelsScreen({ navigation }) {
+  const [channels, setChannels] = useState([]);
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const headers = await authHeader();
+      const res = await api.get("/api/channels", { headers });
+      setChannels(res.data || []);
+    } catch (e) { console.error(e); Alert.alert("خطا","بارگذاری کانال‌ها ناموفق"); }
+    setLoading(false);
+  };
+
+  useEffect(()=> { load(); }, []);
+
+  const filtered = channels.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+
+  return (
+    <View style={{flex:1, backgroundColor:"#000"}}>
+      <View style={styles.searchRow}>
+        <TextInput style={styles.searchInput} placeholder="جستجو کانال یا گروه..." placeholderTextColor="#999" value={query} onChangeText={setQuery} />
+        <TouchableOpacity style={styles.smallBtn} onPress={() => navigation.navigate("CreateChoice")}>
+          <Text style={{color:"#fff"}}>+</Text>
+        </TouchableOpacity>
+      </View>
+      {loading ? <ActivityIndicator style={{marginTop:20}}/> :
+      <FlatList data={filtered} keyExtractor={i=>i.id} renderItem={({item}) => (
+        <TouchableOpacity style={styles.channelRow} onPress={()=>navigation.navigate("ChannelProfile", { channelId: item.id })}>
+          <Text style={{color:"#fff", fontSize:16}}>{item.name}</Text>
+          <Text style={{color:"#aaa"}}>👥 {item.followers} • 👀 {item.views}</Text>
+        </TouchableOpacity>
+      )} />}
+    </View>
+  );
+}
+
+// ---------- CreateChoice screen (Add Group or Channel UI) ----------
+function CreateChoiceScreen({ navigation }) {
+  return (
+    <View style={styles.center}>
+      <View style={{ width:"90%", backgroundColor:"#111", padding:16, borderRadius:8 }}>
+        <Text style={{color:"#fff", fontSize:18, marginBottom:12}}>اضافه کردن</Text>
+        <TouchableOpacity style={styles.primaryBtn} onPress={() => navigation.navigate("CreateGroup")}>
+          <Text style={{color:"#fff"}}>اضافه کردن گروه</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.primaryBtn,{marginTop:10}]} onPress={() => navigation.navigate("CreateChannel")}>
+          <Text style={{color:"#fff"}}>اضافه کردن کانال</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// ---------- Create Group: picks contacts and sends to API ----------
+function CreateGroupScreen({ navigation }) {
+  const [selected, setSelected] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status !== 'granted') { Alert.alert("اجازه دسترسی مخاطبین لازم است"); return; }
+      const { data } = await Contacts.getContactsAsync({ fields: [Contacts.Fields.PhoneNumbers] });
+      setContacts(data || []);
+    })();
+  }, []);
+
+  const toggle = (c) => {
+    setSelected(prev => prev.some(x=>x.id===c.id) ? prev.filter(x=>x.id!==c.id) : [...prev,c]);
+  };
+
+  const create = async () => {
+    if (!selected.length) { Alert.alert("انتخاب نشده"); return; }
+    try {
+      setLoading(true);
+      const headers = await authHeader();
+      const members = selected.map(s => s.phoneNumbers?.[0]?.number).filter(Boolean);
+      await api.post("/api/groups", { members }, { headers });
+      Alert.alert("گروه ساخته شد");
+      navigation.goBack();
+    } catch (e) {
+      console.error(e);
+      Alert.alert("خطا", "ساخت گروه ناموفق");
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <View style={{flex:1, backgroundColor:"#000"}}>
+      <Text style={{color:"#fff", padding:12}}>انتخاب مخاطبین ({selected.length})</Text>
+      <FlatList data={contacts} keyExtractor={i=>i.id} renderItem={({item}) => (
+        <TouchableOpacity onPress={()=>toggle(item)} style={{padding:12, borderBottomWidth:1, borderColor:"#111"}}>
+          <Text style={{color:"#fff"}}>{item.name} {selected.some(s=>s.id===item.id) && <Text style={{color:"#0f0"}}> ✓</Text>}</Text>
+          <Text style={{color:"#aaa"}}>{item.phoneNumbers?.[0]?.number||"بدون شماره"}</Text>
+        </TouchableOpacity>
+      )} />
+      <TouchableOpacity style={[styles.primaryBtn,{margin:12}]} onPress={create} disabled={loading}>
+        <Text style={{color:"#fff"}}>{loading?"در حال ساخت...":"ساخت گروه"}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ---------- Create Channel Screen ----------
+function CreateChannelScreen({ navigation }) {
+  const [name, setName] = useState("");
+  const create = async () => {
+    if (!name.trim()) { Alert.alert("نام کانال را وارد کنید"); return; }
+    try {
+      const headers = await authHeader();
+      await api.post("/api/channels", { name }, { headers });
+      Alert.alert("کانال ساخته شد");
+      navigation.goBack();
+    } catch (e) { console.error(e); Alert.alert("خطا","ساخت کانال ناموفق"); }
+  };
+  return (
+    <View style={styles.center}>
+      <TextInput placeholder="نام کانال" placeholderTextColor="#888" value={name} onChangeText={setName} style={styles.input} />
+      <TouchableOpacity style={styles.primaryBtn} onPress={create}><Text style={{color:"#fff"}}>ساخت کانال</Text></TouchableOpacity>
+    </View>
+  );
+}
+
+// ---------- Channel Profile screen ----------
+function ChannelProfileScreen({ route, navigation }) {
+  const channelId = route.params?.channelId;
+  const [channel, setChannel] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(()=> {
+    (async ()=>{
+      try {
+        const headers = await authHeader();
+        const res = await api.get(`/api/channels/${channelId}`, { headers });
+        setChannel(res.data);
+        // optionally fetch follow status
+      } catch(e){ console.error(e); Alert.alert("خطا","بارگذاری کانال"); }
+    })();
+  }, [channelId]);
+
+  if (!channel) return <View style={styles.center}><ActivityIndicator/></View>;
+
+  const follow = async () => {
+    try {
+      const headers = await authHeader();
+      await api.post(`/api/channels/${channelId}/follow`, {}, { headers });
+      setIsFollowing(true);
+    } catch(e){ console.error(e); Alert.alert("خطا","عملیات ناموفق"); }
+  };
+
+  const message = () => { navigation.navigate("Inbox", { startConversationWith: channel.name }); };
+  const call = () => { Alert.alert("تماس","درخواست تماس ارسال شد (شبیه‌سازی)"); };
+
+  return (
+    <ScrollView style={{flex:1, backgroundColor:"#000"}}>
+      <View style={styles.channelHeader}>
+        <View>
+          <Text style={styles.channelTitleLarge}>{channel.name}</Text>
+          <Text style={{color:"#aaa"}}>👥 {channel.followers} • 👤 {channel.following} • 👀 {channel.views}</Text>
+        </View>
+        <View style={{flexDirection:"row"}}>
+          <TouchableOpacity style={[styles.smallBtn,{backgroundColor:isFollowing?"#333":"#0095f6"}]} onPress={follow}><Text style={{color:"#fff"}}>{isFollowing?"Following":"Follow"}</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.smallBtn,{marginLeft:8, backgroundColor:"#444"}]} onPress={message}><Text style={{color:"#fff"}}>Message</Text></TouchableOpacity>
+          <TouchableOpacity style={[styles.smallBtn,{marginLeft:8, backgroundColor:"#666"}]} onPress={call}><Text style={{color:"#fff"}}>Call</Text></TouchableOpacity>
+        </View>
+      </View>
+      <FlatList data={channel.videos} keyExtractor={v=>v.id} renderItem={({item})=>(
+        <View style={{padding:12}}>
+          <Text style={{color:"#fff"}}>{item.title}</Text>
+          <Video source={{uri:item.uri}} useNativeControls style={{width:"100%", height:220}} />
+        </View>
+      )} />
+    </ScrollView>
+  );
+}
+
+// ---------- Inbox / Messages (با قابلیت خواندن مخاطبین) ----------
+function InboxScreen({ route }) {
+  const [convs, setConvs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(()=> {
+    (async ()=> {
+      setLoading(true);
+      try {
+        const headers = await authHeader();
+        const res = await api.get("/api/conversations", { headers });
+        setConvs(res.data || []);
+      } catch(e) { console.error(e); Alert.alert("خطا","بارگذاری پیام‌ها ناموفق"); }
+      setLoading(false);
+    })();
+  }, []);
+
+  // اگر route.params.startConversationWith موجود باشه، نمایش پیام آغازین
+  useEffect(() => {
+    if (route?.params?.startConversationWith) {
+      const name = route.params.startConversationWith;
+      setConvs(prev => [{ id:`tmp-${Date.now()}`, with:name, last:`${name} به VideoTalk پیوست` }, ...prev]);
+    }
+  }, [route?.params?.startConversationWith]);
+
+  if (loading) return <View style={styles.center}><ActivityIndicator/></View>;
+
+  return (
+    <FlatList data={convs} keyExtractor={i=>i.id} renderItem={({item})=>(
+      <View style={styles.conversationItem}>
+        <Text style={{color:"#fff", fontSize:16}}>{item.with}</Text>
+        <Text style={{color:"#aaa"}}>{item.last}</Text>
+      </View>
+    )} />
+  );
+}
+
+// ---------- Add Post + Filters (تصویر تستی + overlay filters) ----------
+function AddPostScreen({ navigation, route }) {
+  const [image, setImage] = useState(null);
+  const [filters, setFilters] = useState([]);
+
+  useEffect(()=> {
+    // تولید 150 فیلتر ساده شبیه‌سازی‌شده (tint/opacity)
+    const arr = Array.from({length:150}).map((_,i)=> {
+      const r = Math.floor((Math.sin(i*0.21)+1)*120)%256;
+      const g = Math.floor((Math.cos(i*0.17)+1)*120)%256;
+      const b = Math.floor((Math.sin(i*0.13+2)+1)*120)%256;
+      const op = 0.05 + (Math.abs(Math.sin(i*0.11))*0.65);
+      return { id:`f${i}`, name:`فیلتر ${i+1}`, tint:`rgba(${r},${g},${b},${op.toFixed(2)})`, opacity:op };
+    });
+    setFilters(arr);
+  }, []);
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') { Alert.alert("اجازه دسترسی به گالری لازم است"); return; }
+    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
+    if (!res.cancelled) setImage(res.uri);
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') { Alert.alert("اجازه دسترسی به دوربین لازم است"); return; }
+    const res = await ImagePicker.launchCameraAsync({ quality:0.7 });
+    if (!res.cancelled) setImage(res.uri);
+  };
+
+  const publish = async (filter) => {
+    try {
+      const headers = await authHeader();
+      const body = new FormData();
+      body.append("caption", `Filter: ${filter.name}`);
+      if (image) {
+        const filename = image.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image`;
+        body.append("file", { uri: image, name: filename, type });
+      }
+      // Example: /api/posts expects multipart
+      await api.post("/api/posts", body, { headers: { ...headers, 'Content-Type': 'multipart/form-data' } });
+      Alert.alert("منتشر شد", `پست با ${filter.name} ارسال شد`);
+      navigation.navigate("HomeMain");
+    } catch(e) { console.error(e); Alert.alert("خطا","ارسال ناموفق"); }
+  };
+
+  return (
+    <View style={{flex:1, backgroundColor:"#000"}}>
+      <View style={{flexDirection:"row", justifyContent:"space-around", padding:8}}>
+        <TouchableOpacity style={styles.smallBtn} onPress={pickImage}><Text style={{color:"#fff"}}>گالری</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.smallBtn} onPress={takePhoto}><Text style={{color:"#fff"}}>دوربین</Text></TouchableOpacity>
+      </View>
+      {!image ? <View style={styles.center}><Text style={{color:"#fff"}}>عکس انتخاب نشده</Text></View> :
+        <FlatList data={filters} keyExtractor={f=>f.id} numColumns={3} renderItem={({item})=> {
+          const size = (windowWidth-48)/3;
+          return (
+            <TouchableOpacity onPress={()=>publish(item)} style={{margin:6}}>
+              <View style={{ width:size, height:size, overflow:"hidden", borderRadius:8 }}>
+                <Image source={{uri:image}} style={{width:"100%", height:"100%"}} />
+                <View style={{position:"absolute", left:0, top:0, right:0, bottom:0, backgroundColor:item.tint}} />
+              </View>
+              <Text style={{color:"#fff", textAlign:"center", width:size}} numberOfLines={1}>{item.name}</Text>
+            </TouchableOpacity>
+          );
+        }} />
+      }
+    </View>
+  );
+}
+
+// ---------- GPT Chat screen (ارتباط با سرور که خود سرور به OpenAI وصل می‌شود) ----------
+function GPTScreen() {
+  const [messages, setMessages] = useState([{role:"system", text:"شما دستیار VideoTalk هستید."}]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = { role:"user", text: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+    try {
+      const headers = await authHeader();
+      const res = await api.post("/api/gpt", { messages: [...messages, userMsg] }, { headers });
+      const reply = res.data?.reply || "بدون پاسخ";
+      setMessages(prev => [...prev, { role:"assistant", text: reply }]);
+    } catch (e) {
+      console.error(e);
+      Alert.alert("خطا","ارتباط با سرویس GPT برقرار نشد");
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <View style={{flex:1, backgroundColor:"#000"}}>
+      <FlatList data={messages} keyExtractor={(m,i)=>i.toString()} renderItem={({item})=> (
+        <View style={{padding:8, alignSelf:item.role==="user"?"flex-end":"flex-start", maxWidth:"80%"}}>
+          <View style={{backgroundColor:item.role==="user"?"#0095f6":"#222", padding:10, borderRadius:8}}>
+            <Text style={{color:"#fff"}}>{item.text}</Text>
+          </View>
+        </View>
+      )} />
+      <View style={{flexDirection:"row", padding:8, alignItems:"center"}}>
+        <TextInput placeholder="پیام..." placeholderTextColor="#888" value={input} onChangeText={setInput} style={styles.chatInput} />
+        <TouchableOpacity style={styles.primaryBtn} onPress={send} disabled={loading}><Text style={{color:"#fff"}}>{loading?"...":"ارسال"}</Text></TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// ---------- Games screen (لیست بازی‌ها و نمایش با WebView) ----------
+function GamesScreen() {
+  const games = Array.from({length:200}).map((_,i)=>({
+    id:`g${i+1}`, title:`Game ${i+1}`, url: `https://example.com/game/${i+1}` // باید URL های واقعی بذاری
+  }));
+  const [selected, setSelected] = useState(null);
+  if (selected) {
+    return (
+      <View style={{flex:1}}>
+        <TouchableOpacity style={{padding:10}} onPress={()=>setSelected(null)}><Text style={{color:"#09f"}}>بازگشت</Text></TouchableOpacity>
+        <WebView source={{ uri: selected.url }} style={{flex:1}} />
+      </View>
+    );
+  }
+  return (
+    <FlatList data={games} keyExtractor={g=>g.id} renderItem={({item})=>(
+      <TouchableOpacity style={{padding:12, borderBottomWidth:1, borderColor:"#111"}} onPress={()=>setSelected(item)}>
+        <Text style={{color:"#fff"}}>{item.title}</Text>
+      </TouchableOpacity>
+    )} />
+  );
+}
+
+// ---------- Profile screen ----------
+function ProfileScreen() {
+  const [profile, setProfile] = useState(null);
+  useEffect(()=> {
+    (async ()=> {
+      try {
+        const headers = await authHeader();
+        const res = await api.get("/api/me", { headers });
+        setProfile(res.data);
+      } catch(e){ console.error(e); }
+    })();
+  }, []);
+  if (!profile) return <View style={styles.center}><ActivityIndicator/></View>;
+  return (
+    <View style={styles.center}>
+      <Image source={{uri: profile.avatar || SAMPLE_IMAGE}} style={{width:100, height:100, borderRadius:50}} />
+      <Text style={{color:"#fff", marginTop:8}}>{profile.username}</Text>
+      <Text style={{color:"#aaa"}}>👥 {profile.followers} • 👤 {profile.following} • 👀 {profile.views}</Text>
+    </View>
+  );
+}
+
+// ---------- Navigation setup ----------
+const Stack = createNativeStackNavigator();
+function HomeStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="HomeMain" component={HomeShortsScreen} options={{ title: "Shorts" }} />
+      <Stack.Screen name="ChannelProfile" component={ChannelProfileScreen} options={{ title: "پروفایل کانال" }} />
+      <Stack.Screen name="AddFilters" component={AddPostScreen} options={{ title: "افزودن پست" }} />
+      <Stack.Screen name="CreateChoice" component={CreateChoiceScreen} options={{ title: "افزودن" }} />
+      <Stack.Screen name="CreateGroup" component={CreateGroupScreen} options={{ title: "ساخت گروه" }} />
+      <Stack.Screen name="CreateChannel" component={CreateChannelScreen} options={{ title: "ساخت کانال" }} />
+      <Stack.Screen name="ChannelsList" component={ChannelsScreen} options={{ title: "کانال‌ها و گروه‌ها" }} />
+      <Stack.Screen name="Inbox" component={InboxScreen} options={{ title: "پیام‌ها" }} />
+    </Stack.Navigator>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+// ---------- App main ----------
+export default function App() {
+  const [ready, setReady] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
+
+  useEffect(()=> {
+    (async ()=> {
+      const token = await getToken();
+      setIsLogged(!!token);
+      setReady(true);
+    })();
+  }, []);
+
+  if (!ready) return <View style={styles.center}><ActivityIndicator/></View>;
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{headerShown:false}}>
+        {!isLogged ? (
+          <Stack.Screen name="Auth" component={AuthScreen} />
+        ) : (
+          <Stack.Screen name="MainTabs" component={MainTabs} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+// Tabs are defined below separately because MainTabs used above
+function MainTabs() {
+  return (
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Home" component={HomeStack} />
+      <Tab.Screen name="Videos" component={VideosScreen} />
+      <Tab.Screen name="Channels" component={ChannelsScreen} />
+      <Tab.Screen name="GPT" component={GPTScreen} />
+      <Tab.Screen name="Games" component={GamesScreen} />
+      <Tab.Screen name="Add" component={AddPostScreen} />
+      <Tab.Screen name="Inbox" component={InboxScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+}
+
+// ---------- Styles ----------
+const styles = StyleSheet.create({
+  container:{flex:1, backgroundColor:"#000", alignItems:"center", paddingTop:40},
+  h1:{fontSize:32, color:"#fff", fontWeight:"bold"},
+  p:{color:"#aaa", marginBottom:12},
+  input:{backgroundColor:"#111", color:"#fff", padding:12, borderRadius:8, marginVertical:8},
+  primaryBtn:{backgroundColor:"#0095f6", padding:12, borderRadius:8, alignItems:"center"},
+  smallBtn:{padding:8, backgroundColor:"#222", borderRadius:8, alignItems:"center"},
+  center:{flex:1, justifyContent:"center", alignItems:"center", backgroundColor:"#000"},
+  iconCircle:{width:48, height:48, borderRadius:24, backgroundColor:"rgba(0,0,0,0.5)", justifyContent:"center", alignItems:"center"},
+  searchRow:{flexDirection:"row", padding:8, backgroundColor:"#000", alignItems:"center"},
+  searchInput:{flex:1, backgroundColor:"#111", color:"#fff", padding:8, borderRadius:8},
+  channelItem:{padding:12, borderBottomWidth:1, borderBottomColor:"#111"},
+  channelRow:{padding:12, borderBottomWidth:1, borderBottomColor:"#111"},
+  channelHeader:{padding:12, backgroundColor:"#000", borderBottomWidth:1, borderBottomColor:"#111", flexDirection:"row", justifyContent:"space-between", alignItems:"center"},
+  channelTitleLarge:{fontSize:20, fontWeight:"bold", color:"#fff"},
+  smallBtn:{padding:8, borderRadius:6, backgroundColor:"#0095f6"},
+  conversationItem:{padding:12, borderBottomWidth:1, borderBottomColor:"#222"},
+  chatInput:{flex:1, backgroundColor:"#111", color:"#fff", padding:10, borderRadius:8, marginRight:8},
+});
+
+// ---------- پایان فایل ----------
