@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace usage of metro internals in `instantiateMetro` with `Terminal.log` ([#39531](https://github.com/expo/expo/pull/39531) by [@robhogan](https://github.com/robhogan))
+
 ## 54.0.1 — 2025-09-10
 
 _This version does not introduce any user-facing changes._
