@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix incorrect text color in the error dialog.
+- [iOS] Fix UI on iPad.
 
 ### 💡 Others
 

@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix desynchronization issue between UI and state. ([#39553](https://github.com/expo/expo/pull/39553) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix UI on iPad.
 
 ### 💡 Others
 
