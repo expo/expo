@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Import default Babel preset from `expo/babel` ([#39573](https://github.com/expo/expo/pull/39573) by [@kitten](https://github.com/kitten)) 
+
 ## 54.0.1 — 2025-09-10
 
 ### 🐛 Bug fixes

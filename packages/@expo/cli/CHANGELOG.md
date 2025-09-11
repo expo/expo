@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Replace usage of metro internals in `instantiateMetro` with `Terminal.log` ([#39531](https://github.com/expo/expo/pull/39531) by [@robhogan](https://github.com/robhogan))
+- Update default Babel preset template output to `expo/babel` ([#39573](https://github.com/expo/expo/pull/39573) by [@kitten](https://github.com/kitten))
 
 ## 54.0.1 — 2025-09-10
 
