@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
+import React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
-import React from "react";
 
 export type BottomSheetProps = {
   /**
