@@ -68,9 +68,12 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[192px] bg-gradient-to-br from-palette-gray10 from-15% to-[#1a1a1a]',
+            'col-span-2 min-h-[192px] bg-gradient-to-br from-palette-gray10 from-15% to-[#1a1a1a]',
             'border border-palette-gray11 selection:bg-palette-gray8',
-            'dark:border-palette-gray7 dark:from-palette-gray3 dark:to-[#0a0a0a]'
+            'dark:border-palette-gray7 dark:from-palette-gray3 dark:to-[#0a0a0a]',
+            'max-xl-gutters:col-span-1',
+            'max-lg-gutters:col-span-2',
+            'max-md-gutters:col-span-1'
           )}>
           <div
             className={mergeClasses(
