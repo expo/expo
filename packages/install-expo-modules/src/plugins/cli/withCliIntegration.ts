@@ -11,7 +11,6 @@ import fs from 'fs';
 import path from 'path';
 import { ISA, PBXShellScriptBuildPhase } from 'xcparse';
 
-import { installBabelPresetExpoNonInteractiveAsync } from '../../utils/packageInstaller';
 import { withXCParseXcodeProject } from '../ios/withXCParseXcodeProject';
 
 export const withCliIntegration: ConfigPlugin = (config) => {
