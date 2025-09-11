@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix crash on android API < 29. ([#39460](https://github.com/expo/expo/pull/39460) by [@ACHP](https://github.com/ACHP))
+
 ### 💡 Others
 
 ## 10.0.7 — 2025-09-10
