@@ -1,6 +1,6 @@
-import {Button, BottomSheet} from '@expo/ui/jetpack-compose';
+import { Button, BottomSheet } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 export default function BottomSheetScreen() {
   const [isOpened, setIsOpened] = React.useState<boolean>(false);
