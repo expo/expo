@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove tests related files from the published package content.
+
 ## 0.32.10 — 2025-09-04
 
 ### 🐛 Bug fixes

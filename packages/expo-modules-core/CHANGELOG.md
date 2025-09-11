@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove tests related files from the published package content.
+
 ## 3.0.15 — 2025-09-10
 
 ### 🐛 Bug fixes

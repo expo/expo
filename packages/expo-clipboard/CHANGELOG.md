@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove tests related files from the published package content.
+
 ## 8.0.6 — 2025-09-02
 
 ### 💡 Others

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove tests related files from the published package content.
+
 ## 1.0.7 — 2025-09-02
 
 _This version does not introduce any user-facing changes._
