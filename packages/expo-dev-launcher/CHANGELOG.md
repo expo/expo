@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix incorrect text color in the error dialog.
+
 ### 💡 Others
 
 ## 6.0.10 — 2025-09-08
