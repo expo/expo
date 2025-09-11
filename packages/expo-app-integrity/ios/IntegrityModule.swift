@@ -26,8 +26,7 @@ public class IntegrityModule: Module {
 
       do {
         let result = try await service.attestKey(key, clientDataHash: clientDataHash)
-        let attestationString = result.base64EncodedString()
-        return attestationString
+        return result.base64EncodedString()
       } catch let error {
         throw handleIntegrityCheckError(error)
       }
@@ -38,8 +37,7 @@ public class IntegrityModule: Module {
       let clientDataHash = Data(SHA256.hash(data: data))
       do {
         let result = try await service.generateAssertion(key, clientDataHash: clientDataHash)
-        let assertionString = result.base64EncodedString()
-        return assertionString
+        return result.base64EncodedString()
       } catch let error {
         throw handleIntegrityCheckError(error)
       }
