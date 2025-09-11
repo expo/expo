@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] appended removal info (SDK-55) to the deprecation message of the `EXAppDelegateWrapper` interface.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
