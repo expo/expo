@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix NSURL to JSIString conversion returning nil.
+
 ### 💡 Others
 
 ## 3.0.15 — 2025-09-10
