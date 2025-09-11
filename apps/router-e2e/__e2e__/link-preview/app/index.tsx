@@ -21,6 +21,7 @@ const HomeIndex = () => {
       <CaseLink href="/menu" text="Menu" />
       <CaseLink href="/nested" text="Nested" />
       <CaseLink href="/performance" text="Performance" />
+      <CaseLink href="/param" text="Param" />
     </ScrollView>
   );
 };

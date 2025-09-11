@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix link preview to a param route ([#39569](https://github.com/expo/expo/pull/39569) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.0 — 2025-09-10
