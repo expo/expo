@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing trailing `/` to `transformIgnorePatterns` resolving pnpm isolated modules paths. ([#39605](https://github.com/expo/expo/pull/39605) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 54.0.10 — 2025-09-10
