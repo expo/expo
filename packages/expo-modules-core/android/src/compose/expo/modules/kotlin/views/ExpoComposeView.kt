@@ -52,16 +52,19 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   @Composable
-  protected fun Children() {
-    if (withHostingView) {
-      Content(modifier = Modifier.applyTestTag(testID))
-      return
-    }
-
+  protected fun ComposeChildren() {
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
       child.Content(modifier = Modifier.applyTestTag(child.testID))
     }
+  }
+
+  @Composable
+  protected fun Children() {
+    if (withHostingView) {
+      return Content(modifier = Modifier.applyTestTag(testID))
+    }
+    return ComposeChildren()
   }
 
   init {

@@ -22,6 +22,7 @@
 
 - [iOS] Add `foregroundStyle` modifier, deprecated `foregroundColor` ([#39183](https://github.com/expo/expo/pull/39183) by [@hirbod](https://github.com/hirbod))
 - [iOS] Add `matchedGeometryEffect` modifier and `ZStack` ([#39463](https://github.com/expo/expo/pull/39463) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Add BottomSheet. ([#37553](https://github.com/expo/expo/pull/37553) by [@Jeroen-G](https://github.com/Jeroen-G))
 
 ### 💡 Others
 
