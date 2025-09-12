@@ -270,7 +270,7 @@ et generate-docs-api-data --packageName expo-constants
 
 #### NOTE ####
 # To update a specific SDK reference, run the command by mentioning the SDK version
-et gdad -p expo-constants --sdk 51
+et gdad -p expo-constants --sdk 54
 
 # For more information about et command, run: et gdad --help
 ```

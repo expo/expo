@@ -14,6 +14,8 @@ const BACKGROUND_TEST_INFO = `[notification-tester app only]: To test background
 
 const remotePushSupported = Device.isDevice;
 
+const welcomeCategoryId = 'welcome';
+
 export default class NotificationScreen extends React.Component<
   void,
   {
@@ -37,7 +39,7 @@ export default class NotificationScreen extends React.Component<
       return;
     }
     // Using the same category as in `registerForPushNotificationsAsync`
-    Notifications.setNotificationCategoryAsync('welcome', [
+    Notifications.setNotificationCategoryAsync(welcomeCategoryId, [
       {
         buttonTitle: `Don't open app`,
         identifier: 'first-button',
@@ -51,6 +53,9 @@ export default class NotificationScreen extends React.Component<
         textInput: {
           submitButtonTitle: 'Submit button',
           placeholder: 'Placeholder text',
+        },
+        options: {
+          opensAppToForeground: false,
         },
       },
       {
@@ -107,7 +112,7 @@ export default class NotificationScreen extends React.Component<
             });
             await Notifications.scheduleNotificationAsync({
               content: {
-                categoryIdentifier: 'welcome',
+                categoryIdentifier: welcomeCategoryId,
                 title: 'Here is a notification!',
                 body: 'This one has buttons!',
                 autoDismiss: true,
@@ -229,7 +234,7 @@ export default class NotificationScreen extends React.Component<
   _handleNotificationResponseReceived = (
     notificationResponse: Notifications.NotificationResponse
   ) => {
-    console.log({ notificationResponse });
+    console.log('NCL', { notificationResponse });
 
     // Calling alert(message) immediately fails to show the alert on Android
     // if after backgrounding the app and then clicking on a notification

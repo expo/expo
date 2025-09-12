@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 18.1.1 — 2025-09-10
+
+### 💡 Others
+
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
+## 18.1.0 — 2025-09-08
+
+### 🎉 New features
+
+- Add MediaLibrary@Next. ([#38835](https://github.com/expo/expo/pull/38835) by [@Wenszel](https://github.com/wenszel))
+
 ## 18.0.6 — 2025-09-02
 
 ### 💡 Others

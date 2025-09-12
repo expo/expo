@@ -229,7 +229,7 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
-      makePage('brownfield/installing-expo-modules.mdx'),
+      makePage('brownfield/get-started.mdx'),
     ]),
     makeGroup(
       'Reference',

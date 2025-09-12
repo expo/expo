@@ -19,6 +19,7 @@ import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -38,7 +39,7 @@ abstract class Loader protected constructor(
   private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val loaderFiles: LoaderFiles,
-  private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+  private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 ) {
   private var updateResponse: UpdateResponse? = null
   private var updateEntity: UpdateEntity? = null

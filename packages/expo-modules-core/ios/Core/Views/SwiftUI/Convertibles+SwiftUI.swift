@@ -3,9 +3,9 @@
 import SwiftUI
 
 extension Color: Convertible {
-  public static func convert(from value: Any?, appContext: AppContext) throws -> Color {
+  public static func convert(from value: Any?) throws -> Color {
     // Simply reuse the logic from UIColor
-    if let uiColor = try? UIColor.convert(from: value, appContext: appContext) {
+    if let uiColor = try? UIColor.convert(from: value) {
       return Color(uiColor)
     }
     // Context-dependent colors
@@ -13,6 +13,9 @@ extension Color: Convertible {
       return color
     }
     throw Conversions.ConvertingException<Color>(value)
+  }
+  public static func convert(from value: Any?, appContext: AppContext) throws -> Color {
+    return try convert(from: value)
   }
 
   private static func colorFromName(_ name: String) -> Color? {

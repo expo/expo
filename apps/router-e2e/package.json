@@ -35,19 +35,19 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "@expo/dom-webview": "0.2.6",
+    "@expo/dom-webview": "0.2.7",
     "@expo/vector-icons": "^15.0.2",
-    "expo": "~54.0.0-preview.13",
-    "expo-haptics": "~15.0.6",
-    "expo-linking": "~8.0.6",
-    "expo-router": "^6.0.0-preview.13",
-    "expo-speech": "~14.0.6",
-    "expo-sqlite": "~16.0.7",
+    "expo": "~54.0.4",
+    "expo-haptics": "~15.0.7",
+    "expo-linking": "~8.0.8",
+    "expo-router": "^6.0.2",
+    "expo-speech": "~14.0.7",
+    "expo-sqlite": "~16.0.8",
     "jose": "^5",
     "react": "19.1.0",
-    "react-native": "0.81.1",
+    "react-native": "0.81.4",
     "react-native-safe-area-context": "5.6.0",
-    "react-native-screens": "4.15.4",
+    "react-native-screens": "4.16.0",
     "react-native-webview": "13.13.5"
   },
   "devDependencies": {

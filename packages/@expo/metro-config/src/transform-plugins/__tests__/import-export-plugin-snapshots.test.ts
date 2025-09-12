@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
 
-import { importExportPlugin } from '../import-export-plugin';
+import { importExportPlugin, importExportLiveBindingsPlugin } from '../index';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
 
 // This file includes test for functionality that was added to the import-export-plugin
@@ -11,16 +11,19 @@ const opts = {
   importDefault: '_$$_IMPORT_DEFAULT',
 };
 
-const test =
-  (name: string) =>
-  ([code]: readonly string[]) => [name, code];
-
 describe.each([
   ['with live bindings', true],
   ['without live bindings', false],
 ])('%s', (_message, liveBindings) => {
-  const getExpected = (code: string) =>
-    generate(transformToAst([importExportPlugin], code, { ...opts, liveBindings })).code;
+  const getExpected = (code: string) => {
+    const plugin = liveBindings ? importExportLiveBindingsPlugin : importExportPlugin;
+    return generate(transformToAst([plugin], code, { ...opts })).code;
+  };
+
+  let n = 0;
+  const test =
+    (name: string) =>
+    ([code]: readonly string[]) => [`${++n}. ${name}`, code];
 
   it.each([
     // Exports
@@ -270,6 +273,10 @@ describe.each([
       import { default as local } from 'apple-icons';
       export const { a, b } = local;
     `,
+    test('export nested destructured object w/ rest from import specifier')`
+      import { test } from 'apple-icons';
+      export const { a, _b: { b, ...rest } } = test;
+    `,
 
     // Export destructure array
     test('export destructured array from imported namespace by specifier')`
@@ -297,7 +304,13 @@ describe.each([
     test('import side effect')`
       import 'apple-icons';
     `,
-  ])('transforms %s', (_name, code) => {
+
+    // Regressions
+    test('export-named "__proto__" export by specifier')`
+      export function __proto__() {}
+      export function __nonProto__() {}
+    `,
+  ])('%s', (_name, code) => {
     expect(getExpected(code)).toMatchSnapshot();
   });
 });

@@ -10,6 +10,49 @@
 
 ### 💡 Others
 
+## 54.0.3 — 2025-09-12
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.2 — 2025-09-11
+
+### 🐛 Bug fixes
+
+- Fix fallback resolution for modules that failed to hoist (inside `expo` or `expo-router`'s child `node_modules` folder) ([#39581](https://github.com/expo/expo/pull/39581) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Replace usage of metro internals in `instantiateMetro` with `Terminal.log` ([#39531](https://github.com/expo/expo/pull/39531) by [@robhogan](https://github.com/robhogan))
+- Don't enforce `@expo/metro-runtime` for web exports anymore ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
+
+## 54.0.1 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0 — 2025-09-10
+
+### 💡 Others
+
+- Apply upstream changes to optional require runtime fork ([#39473](https://github.com/expo/expo/pull/39473) by [@kitten](https://github.com/kitten))
+- Fix fast refresh with live bindings by applying getter exception and always using forked module system ([#39525](https://github.com/expo/expo/pull/39525) by [@kitten](https://github.com/kitten))
+
+## 0.26.9 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- Fix Expo Go docs link in ExpoGoInstaller ([#39394](https://github.com/expo/expo/pull/39394) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Fix UTF-8 characters in project path causing `setHeader` error in Metro middleware ([#39285](https://github.com/expo/expo/pull/39285) by [@HMYang33](https://github.com/HMYang33))
+
+## 0.26.8 — 2025-09-03
+
+### 🎉 New features
+
+- [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Parse and print code frames above import stack for native bundling errors ([#39150](https://github.com/expo/expo/pull/39150) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 0.26.7 — 2025-09-02
 
 ### 🐛 Bug fixes

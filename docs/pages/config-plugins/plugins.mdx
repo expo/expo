@@ -11,7 +11,7 @@ import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-This guide covers sections how to create a config plugin, how to pass parameters to a config plugin, and how to chain multiple config plugins together. It also covers how to use a config plugin from an Expo library.
+This guide covers sections on how to create a config plugin, how to pass parameters to a config plugin, and how to chain multiple config plugins together. It also covers how to use a config plugin from an Expo library.
 
 Using the diagram below, in this guide, you will learn the first two parts of the config plugin hierarchy:
 
@@ -133,7 +133,7 @@ export default withPlugin;
 
 ### Add TypeScript support and convert to dynamic app config
 
-We recommend writing config plugins in TypeScript, since this will provide intellisense for the configuration objects. However, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. Therefore, you will need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
+We recommend writing config plugins in TypeScript, since this will provide intellisense for the configuration objects. However, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. Therefore, you will need to add a parser for the TypeScript files from the **plugins** directory to **app.config.ts** file.
 
 Install `tsx` library by running the following command:
 

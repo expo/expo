@@ -26,10 +26,7 @@ public class IntegrityModule: Module {
 
       do {
         let result = try await service.attestKey(key, clientDataHash: clientDataHash)
-        guard let attestation = String(data: result, encoding: .utf8) else {
-          throw IntegrityException("Failed to decode attestation result from data", code: IntegrityErrorCodes.decodeFailed)
-        }
-        return attestation
+        return result.base64EncodedString()
       } catch let error {
         throw handleIntegrityCheckError(error)
       }
@@ -40,10 +37,7 @@ public class IntegrityModule: Module {
       let clientDataHash = Data(SHA256.hash(data: data))
       do {
         let result = try await service.generateAssertion(key, clientDataHash: clientDataHash)
-        guard let assertion = String(data: result, encoding: .utf8) else {
-          throw IntegrityException("Failed to decode assertion result from data", code: IntegrityErrorCodes.decodeFailed)
-        }
-        return assertion
+        return result.base64EncodedString()
       } catch let error {
         throw handleIntegrityCheckError(error)
       }

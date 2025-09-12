@@ -1,6 +1,6 @@
 {
   "name": "install-expo-modules",
-  "version": "0.13.7",
+  "version": "0.13.10",
   "license": "MIT",
   "description": "Tools to install expo-modules for existing react-native projects",
   "keywords": [
@@ -36,15 +36,15 @@
     "directory": "packages/install-expo-modules"
   },
   "devDependencies": {
-    "@expo/config": "~12.0.7",
-    "@expo/config-plugins": "~11.0.7",
-    "@expo/package-manager": "^1.9.6",
+    "@expo/config": "~12.0.9",
+    "@expo/config-plugins": "~54.0.1",
+    "@expo/package-manager": "^1.9.7",
+    "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
     "@types/semver": "^7.0.0",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "expo-module-scripts": "^5.0.6",
-    "find-up": "^5.0.0",
+    "expo-module-scripts": "^5.0.7",
     "glob": "^10.4.2",
     "prompts": "^2.3.2",
     "resolve-from": "^5.0.0",

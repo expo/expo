@@ -10,7 +10,7 @@
       "node": "22.17.1",
       "credentialsSource": "local",
       "android": {
-        "image": "latest",
+        "image": "sdk-54",
         "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
@@ -21,11 +21,7 @@
         }
       },
       "ios": {
-        "cache": {
-          "key": "sdk54-0.81.1",
-          "customPaths": ["../expo-go/ios/Pods"]
-        },
-        "image": "latest",
+        "image": "sdk-54",
         "cocoapods": "1.16.2",
         "resourceClass": "medium",
         "env": {

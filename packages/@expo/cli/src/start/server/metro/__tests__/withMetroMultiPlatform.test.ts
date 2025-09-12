@@ -1027,7 +1027,7 @@ describe(withExtendedResolver, () => {
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         3,
         expect.objectContaining({
-          originModulePath: '/node_modules/expo',
+          originModulePath: '/node_modules/expo/index.js',
           nodeModulesPaths: ['/node_modules/expo'],
         }),
         '@babel/runtime/helpers/interopRequireDefault',
@@ -1105,7 +1105,7 @@ describe(withExtendedResolver, () => {
       expect(getResolveFunc()).toHaveBeenNthCalledWith(
         4,
         expect.objectContaining({
-          originModulePath: '/node_modules/expo-router',
+          originModulePath: '/node_modules/expo-router/index.js',
           nodeModulesPaths: ['/node_modules/expo-router'],
         }),
         'example',

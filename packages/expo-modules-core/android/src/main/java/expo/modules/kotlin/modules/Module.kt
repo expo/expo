@@ -3,6 +3,7 @@ package expo.modules.kotlin.modules
 import android.os.Bundle
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.convertToString
 import expo.modules.kotlin.providers.AppContextProvider
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.types.Enumerable
@@ -44,11 +45,11 @@ abstract class Module : AppContextProvider {
   }
 
   fun <T> sendEvent(enum: T, body: Bundle? = Bundle.EMPTY) where T : Enumerable, T : Enum<T> {
-    moduleEventEmitter?.emit(convertEnumToString(enum), body)
+    moduleEventEmitter?.emit(enum.convertToString(), body)
   }
 
   fun <T> sendEvent(enum: T, body: Map<String, Any?>? = null) where T : Enumerable, T : Enum<T> {
-    moduleEventEmitter?.emit(convertEnumToString(enum), body)
+    moduleEventEmitter?.emit(enum.convertToString(), body)
   }
 
   open fun converters(): TypeConverterProvider? = null

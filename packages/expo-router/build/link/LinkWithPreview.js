@@ -85,7 +85,6 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
-    const highlightBorderRadius = rest.style && 'borderRadius' in rest.style ? rest.style.borderRadius : undefined;
     const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
@@ -119,7 +118,7 @@ function LinkWithPreview({ children, ...rest }) {
             if (!isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
-        }} style={react_native_1.StyleSheet.flatten([{ display: 'contents', borderRadius: highlightBorderRadius }])} disableForceFlatten>
+        }} style={{ display: 'contents' }} disableForceFlatten>
       <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
         <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
         {preview}

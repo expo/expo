@@ -142,6 +142,16 @@ function ContactsView({ navigation }: Props) {
     loadAsync();
   }, []);
 
+  React.useEffect(() => {
+    const subscription = Contacts.addContactsChangeListener(() => {
+      loadAsync({}, true);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   useFocusEffect(onFocus);
 
   return (

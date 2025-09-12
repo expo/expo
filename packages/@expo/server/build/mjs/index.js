@@ -1,6 +1,7 @@
 import { ImmutableRequest } from './ImmutableRequest';
 import { ExpoError } from './error';
 import { getRedirectRewriteLocation, isResponse, parseParams } from './utils';
+import { shouldRunMiddleware } from './utils/middleware';
 export { ExpoError } from './error';
 function noopBeforeResponse(responseInit, _route) {
     return responseInit;
@@ -24,10 +25,10 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         }
         let request = incomingRequest;
         let url = new URL(request.url);
-        if (manifest.middleware && shouldRunMiddleware(request, manifest.middleware)) {
+        if (manifest.middleware) {
             try {
                 const middlewareModule = await getMiddleware(manifest.middleware);
-                if (middlewareModule?.default) {
+                if (shouldRunMiddleware(request, middlewareModule)) {
                     const middlewareFn = middlewareModule.default;
                     const middlewareResponse = await middlewareFn(new ImmutableRequest(request));
                     if (middlewareResponse instanceof Response) {
@@ -221,16 +222,5 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         }
         return Response.redirect(target, status);
     }
-}
-/**
- * Determines whether middleware should run for a given request based on matcher configuration.
- */
-function shouldRunMiddleware(request, middleware) {
-    // TODO(@hassankhan): Implement pattern matching for middleware
-    return true;
-    // No matcher means middleware runs on all requests
-    // if (!middleware.matcher) {
-    //   return true;
-    // }
 }
 //# sourceMappingURL=index.js.map

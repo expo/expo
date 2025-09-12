@@ -1,5 +1,5 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
 
@@ -18,7 +18,7 @@ import { UIScreens } from '../screens/UI/UIScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
 import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const ScreensList: ScreenConfig[] = [
   {
@@ -51,6 +51,12 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
     },
     name: 'BlurView',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/GlassView/GlassViewScreen'));
+    },
+    name: 'GlassView',
   },
   {
     getComponent() {

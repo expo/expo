@@ -6,14 +6,15 @@ export default function Layout() {
       <Stack.Screen name="index" options={{ title: 'News' }} />
       <Stack.Screen
         name="news/[title]"
-        options={{
+        options={({ route }) => ({
           headerShown: true,
           headerLargeTitle: true,
           headerLargeStyle: { backgroundColor: 'transparent' },
           headerStyle: { backgroundColor: 'transparent' },
           headerTransparent: true,
           headerBlurEffect: 'systemChromeMaterial',
-        }}
+          title: String(route.params?.title),
+        })}
       />
     </Stack>
   );

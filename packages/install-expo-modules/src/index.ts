@@ -21,7 +21,11 @@ import { withSwiftVersion } from './plugins/ios/withSwiftVersion';
 import { withXCParseXcodeProjectBaseMod } from './plugins/ios/withXCParseXcodeProject';
 import { getDefaultSdkVersion, getVersionInfo, VersionInfo } from './utils/expoVersionMappings';
 import { learnMore } from './utils/link';
-import { installExpoPackageAsync, installPodsAsync } from './utils/packageInstaller';
+import {
+  installBabelPresetExpoNonInteractiveAsync,
+  installExpoPackageAsync,
+  installPodsAsync,
+} from './utils/packageInstaller';
 import { normalizeProjectRootAsync } from './utils/projectRoot';
 
 const packageJSON = require('../package.json');
@@ -186,6 +190,9 @@ async function runAsync() {
 
   console.log('\u203A Installing expo packages...');
   await installExpoPackageAsync(projectRoot, expoPackageVersion);
+  if (cliIntegration) {
+    await installBabelPresetExpoNonInteractiveAsync(projectRoot);
+  }
 
   console.log('\u203A Installing ios pods...');
   await installPodsAsync(projectRoot);

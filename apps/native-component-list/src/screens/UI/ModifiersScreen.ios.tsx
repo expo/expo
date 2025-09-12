@@ -1,4 +1,4 @@
-import { Host, Section, Text, Form, VStack, HStack } from '@expo/ui/swift-ui';
+import { Host, Section, Text, Form, VStack, HStack, ColorPicker } from '@expo/ui/swift-ui';
 import {
   background,
   cornerRadius,
@@ -22,6 +22,7 @@ import {
   colorInvert,
   clipShape,
   glassEffect,
+  foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -31,7 +32,7 @@ export default function ModifiersScreen() {
   const [playSounds, setPlaySounds] = useState(true);
   const dimensions = useWindowDimensions();
   const safeAreaInsets = useSafeAreaInsets();
-
+  const [color, setColor] = useState<string | null>('blue');
   return (
     <ScrollView>
       <Host matchContents>
@@ -42,6 +43,39 @@ export default function ModifiersScreen() {
               width: dimensions.width,
             }),
           ]}>
+          {/* Basic  Modifier using foregroundStyle */}
+
+          <Section
+            title="Foreground Style Modifier"
+            modifiers={[
+              foregroundStyle({
+                type: 'linearGradient',
+                colors: [
+                  'deeppink',
+                  'cyan',
+                  'blue',
+                  'burlywood',
+                  'purple',
+                  'cadetblue',
+                  'pink',
+                  'brown',
+                ],
+                startPoint: { x: 0, y: 0 },
+                endPoint: { x: 1, y: 1 },
+              }),
+            ]}>
+            <Text color={color ?? 'primary'} size={12}>
+              Hello world, I don't react on foregroundStyle
+            </Text>
+            <ColorPicker
+              label="Select a color"
+              selection={color}
+              onValueChanged={setColor}
+              // primary is a named color in SwiftUI
+              modifiers={[foregroundStyle({ type: 'color', color: 'primary' })]}
+            />
+          </Section>
+
           {/* New Modifier System Demo Section */}
           <Section title="SwiftUI Modifiers Demo">
             {/* Basic Appearance Modifiers */}

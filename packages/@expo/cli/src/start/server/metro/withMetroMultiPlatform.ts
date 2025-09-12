@@ -853,7 +853,6 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
-    isNamedRequiresEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
@@ -870,14 +869,12 @@ export async function withMetroMultiPlatformAsync(
     getMetroBundler: () => Bundler;
   }
 ) {
-  if (isNamedRequiresEnabled) {
-    debug('Using Expo metro require runtime.');
-    // Change the default metro-runtime to a custom one that supports bundle splitting.
-    const metroDefaults: Mutable<
-      typeof import('@expo/metro/metro-config/defaults/defaults')
-    > = require('@expo/metro/metro-config/defaults/defaults');
-    metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
-  }
+  // Change the default metro-runtime to a custom one that supports bundle splitting.
+  // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
+  const metroDefaults: Mutable<
+    typeof import('@expo/metro/metro-config/defaults/defaults')
+  > = require('@expo/metro/metro-config/defaults/defaults');
+  metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
 
   if (!config.projectRoot) {
     // @ts-expect-error: read-only types

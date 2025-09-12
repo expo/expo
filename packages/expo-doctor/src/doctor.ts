@@ -101,13 +101,14 @@ export async function runChecksAsync(
   checkParams: DoctorCheckParams,
   onCheckComplete: (checkRunnerJob: DoctorCheckRunnerJob) => void
 ): Promise<DoctorCheckRunnerJob[]> {
+  const cache = Object.create(null);
   return await Promise.all(
     checks.map((check) =>
       (async function () {
         const job = { check } as DoctorCheckRunnerJob;
         try {
           startTimer(check.description);
-          job.result = await check.runAsync(checkParams);
+          job.result = await check.runAsync(checkParams, cache);
           job.duration = endTimer(check.description);
         } catch (e) {
           if (e instanceof Error) {

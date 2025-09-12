@@ -8,9 +8,41 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix tvOS compile error. ([#39345](https://github.com/expo/expo/pull/39345) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 19.0.13 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- [Android] Fix incorrect AndroidManifest.xml location. ([#39134](https://github.com/expo/expo/pull/39134) by [@robertying](https://github.com/robertying))
+
+## 19.0.12 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.11 — 2025-09-10
+
+### 🎉 New features
+
+- [iOS] Add `pickDirectoryAsync` support ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
+### 🐛 Bug fixes
+
+- Add minimal web stub to fix broken imports on web ([#39400](https://github.com/expo/expo/pull/39400) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+
+## 19.0.10 — 2025-09-08
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.9 — 2025-09-03
+
+### 🎉 New features
+
+- Add stubs for legacy methods imported from "expo-file-system". ([#39244](https://github.com/expo/expo/pull/39244) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compile error. ([#39345](https://github.com/expo/expo/pull/39345) by [@douglowder](https://github.com/douglowder))
 
 ## 19.0.8 — 2025-09-02
 
