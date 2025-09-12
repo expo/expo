@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add support for experimental node:sqlite in API routes. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for cli command extension in expo modules
 
 ### 🐛 Bug fixes
 

@@ -1,18 +1,12 @@
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
+import { DevToolsPlugin } from './DevToolsPlugin';
+import { DevToolsPluginInfo } from './DevToolsPlugin.schema';
+import { Log } from '../../log';
+
 const debug = require('debug')('expo:start:server:devtools');
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';
-
-interface AutolinkingPlugin {
-  packageName: string;
-  packageRoot: string;
-  webpageRoot: string;
-}
-
-export interface DevToolsPlugin extends AutolinkingPlugin {
-  webpageEndpoint: string;
-}
 
 export default class DevToolsPluginManager {
   private plugins: DevToolsPlugin[] | null = null;
@@ -23,11 +17,16 @@ export default class DevToolsPluginManager {
     if (this.plugins) {
       return this.plugins;
     }
-    const plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot)).map((plugin) => ({
-      ...plugin,
-      webpageEndpoint: `${DevToolsPluginEndpoint}/${plugin.packageName}`,
-    }));
-    this.plugins = plugins;
+    this.plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot))
+      .map((plugin) => {
+        try {
+          return new DevToolsPlugin(plugin, this.projectRoot);
+        } catch (error) {
+          Log.error(`Failed to create DevToolsPlugin for "${plugin.packageName}":\n${error}`);
+          return null;
+        }
+      })
+      .filter((p) => p != null) as DevToolsPlugin[];
     return this.plugins;
   }
 
@@ -37,7 +36,7 @@ export default class DevToolsPluginManager {
     return plugin?.webpageRoot ?? null;
   }
 
-  private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<AutolinkingPlugin[]> {
+  private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<DevToolsPluginInfo[]> {
     const autolinking: typeof import('expo/internal/unstable-autolinking-exports') = require('expo/internal/unstable-autolinking-exports');
     const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
     const revisions = await autolinking.scanExpoModuleResolutionsForPlatform(linker, 'devtools');
