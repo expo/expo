@@ -3,7 +3,7 @@ import HMRClient from './HMRClient';
 if (
   typeof window !== 'undefined' &&
   // @ts-expect-error: Added via react-native-webview
-  typeof window.ReactNativeWebView !== 'undefined'
+  typeof window.$$EXPO_INITIAL_PROPS !== 'undefined'
 ) {
   // Sets up developer tools for web platforms when running in a webview. This ensures that logs are visible in the terminal.
   // We assume full control over the console and send JavaScript logs to Metro.
