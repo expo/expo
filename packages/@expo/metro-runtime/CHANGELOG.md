@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Move `@expo/metro-runtime` to peer dependencies, since that conveys our intention better ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 6.1.1 — 2025-08-26
