@@ -1,4 +1,62 @@
----
+---import React from "react"; import { Button } from "@/components/ui/button"; import { Card, CardContent } from "@/components/ui/card"; import { MapPin, Bike, User, Phone } from "lucide-react"; import { motion } from "framer-motion";
+
+export default function MotoTaxiApp() { return ( <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4 gap-6"> {/* Splash Screen */} <motion.div initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} className="text-center mt-10" > <h1 className="text-4xl font-bold text-yellow-500">MotoTáxi Go</h1> <p className="text-gray-600 mt-2">Sua corrida rápida e segura, em duas rodas.</p> </motion.div>
+
+{/* Tela de Login */}
+  <Card className="w-full max-w-md shadow-xl rounded-2xl">
+    <CardContent className="p-6 flex flex-col gap-4">
+      <h2 className="text-xl font-semibold text-gray-800 text-center">Entrar</h2>
+      <Button className="w-full bg-yellow-500 hover:bg-yellow-600">Entrar com Google</Button>
+      <Button className="w-full bg-gray-800 hover:bg-black text-white">Entrar com Facebook</Button>
+      <Button variant="outline" className="w-full">Entrar com telefone</Button>
+    </CardContent>
+  </Card>
+
+  {/* Tela do Passageiro */}
+  <Card className="w-full max-w-md shadow-xl rounded-2xl">
+    <CardContent className="p-6 flex flex-col gap-4">
+      <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+        <MapPin className="text-yellow-500" /> Para onde você vai?
+      </h2>
+      <input
+        type="text"
+        placeholder="Digite o destino..."
+        className="border rounded-xl p-3 w-full"
+      />
+      <Button className="w-full bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2">
+        <Bike /> Chamar Moto Táxi
+      </Button>
+      <div className="text-sm text-gray-500">
+        <p>Estimativa: R$ 12,00 | 5 min até você</p>
+      </div>
+    </CardContent>
+  </Card>
+
+  {/* Tela do Mototaxista */}
+  <Card className="w-full max-w-md shadow-xl rounded-2xl">
+    <CardContent className="p-6 flex flex-col gap-4">
+      <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+        <User className="text-yellow-500" /> Corrida disponível
+      </h2>
+      <p className="text-gray-600">Passageiro: João Silva</p>
+      <p className="text-gray-600">Local: Av. Central, 1200</p>
+      <div className="flex gap-3">
+        <Button className="flex-1 bg-green-500 hover:bg-green-600">Aceitar</Button>
+        <Button className="flex-1 bg-red-500 hover:bg-red-600">Recusar</Button>
+      </div>
+    </CardContent>
+  </Card>
+
+  {/* Segurança */}
+  <div className="flex gap-4 mt-4">
+    <Button variant="outline" className="flex items-center gap-2">
+      <Phone className="text-red-500" /> Emergência
+    </Button>
+    <Button variant="outline">Compartilhar Corrida</Button>
+  </div>
+</div>
+
+); }
 title: Next steps
 description: Develop, review, and submit your project.
 hideTOC: true
