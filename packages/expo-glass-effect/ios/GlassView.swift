@@ -70,4 +70,11 @@ public final class GlassView: ExpoView {
       #endif
     }
   }
+  public override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
+    glassEffectView.contentView.insertSubview(childComponentView, at: index)
+  }
+
+  public override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
+    childComponentView.removeFromSuperview()
+  }
 }
