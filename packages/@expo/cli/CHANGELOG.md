@@ -19,6 +19,7 @@
 ### 💡 Others
 
 - Replace usage of metro internals in `instantiateMetro` with `Terminal.log` ([#39531](https://github.com/expo/expo/pull/39531) by [@robhogan](https://github.com/robhogan))
+- Don't enforce `@expo/metro-runtime` for web exports anymore ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
 
 ## 54.0.1 — 2025-09-10
 
