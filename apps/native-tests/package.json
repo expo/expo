@@ -9,13 +9,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~54.0.4",
+    "expo": "~54.0.5",
     "expo-clipboard": "8.0.7",
     "expo-dev-client": "~6.0.12",
     "expo-image": "~3.0.8",
     "expo-media-library": "18.1.1",
     "expo-notifications": "~0.32.11",
-    "expo-splash-screen": "~31.0.9",
+    "expo-splash-screen": "~31.0.10",
     "expo-updates": "29.0.10",
     "react": "19.1.0",
     "react-dom": "19.1.0",
