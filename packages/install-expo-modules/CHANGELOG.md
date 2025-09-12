@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Added support for react-native 0.81 and Expo SDK 54 ([#39575](https://github.com/expo/expo/pull/39575) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 0.13.10 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Added support for react-native 0.81 and Expo SDK 54 ([#39575](https://github.com/expo/expo/pull/39575) by [@vonovak](https://github.com/vonovak))
 
 ## 0.13.9 — 2025-09-11
 

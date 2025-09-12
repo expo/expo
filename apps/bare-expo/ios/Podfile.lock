@@ -49,7 +49,7 @@ PODS:
   - EXNotifications/Tests (0.32.11):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.2):
+  - Expo (54.0.3):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -374,7 +374,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDomWebView (0.2.7):
     - ExpoModulesCore
-  - ExpoFileSystem (19.0.12):
+  - ExpoFileSystem (19.0.13):
     - ExpoModulesCore
   - ExpoFont (14.0.8):
     - ExpoModulesCore
@@ -560,7 +560,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (6.0.7):
     - ExpoModulesCore
-  - ExpoUI (0.2.0-beta.1):
+  - ExpoUI (0.2.0-beta.2):
     - ExpoModulesCore
   - ExpoVideo (3.0.11):
     - ExpoModulesCore
@@ -3558,7 +3558,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
-  Expo: 646aa13e22ed3e6ff215f384f36367917180a3bd
+  Expo: 4bd9eb0ea2781ab56b8b70cbb6eca5904e810cab
   expo-dev-client: b0363ce1f16a248d7c9b67ceaee2dbee058c1e05
   expo-dev-launcher: 903b23df8c217bfad6d3692fec0368074eb22dc0
   expo-dev-menu: e5b5cfce6ef9f4559d7c2f7cb928afb4810dfabf
@@ -3582,7 +3582,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 205f817268e7cc1acdbc354a425626bf328d0004
   ExpoDocumentPicker: dbe4eeeb771891209fee044a6b0bafbd1fdcc4fa
   ExpoDomWebView: f8d74b970eede6e02ca2f215742812472f046817
-  ExpoFileSystem: b53b412b0d375bf47dfdf6058f622ca6c6d4e939
+  ExpoFileSystem: 70cf85636b654fc88723b602b1fadfacd798d4b3
   ExpoFont: d3e56c7cc03d9fd113b90a5513ad32b4bf46b0ff
   ExpoGL: 39262a8c3d4c36d48a28bc412e3392c25c5391c9
   ExpoGlassEffect: 64eb49c7228037e20873750c34f3f45057b5f84f
@@ -3619,7 +3619,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: ef7b8ac77ac2d496b1bc3f0f7daf5e19c3a9933a
   ExpoSystemUI: 5e7fbe4b716edb9e3a7bc0441e4a3b6b1f9eb1ea
   ExpoTrackingTransparency: fee2dc0cea16d12aeffde2f388671b029c563ed3
-  ExpoUI: 8059f7420632ac2d996986a2a0a9a536cd6dfe19
+  ExpoUI: be345251bff779bde97c2b927562404268526bf3
   ExpoVideo: 7e39a5933892dc640b1b83013f3f9d9d37072151
   ExpoVideoThumbnails: c951ae8c6ed9974dd3ae5f79b2dd1d9b6e8ab266
   ExpoWebBrowser: 4f0dc52a559027cc0fba6920adc19a7604e2733d

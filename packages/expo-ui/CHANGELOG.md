@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.0-beta.2 — 2025-09-12
+
+_This version does not introduce any user-facing changes._
+
 ## 0.2.0-beta.1 — 2025-09-11
 
 ### 🐛 Bug fixes
