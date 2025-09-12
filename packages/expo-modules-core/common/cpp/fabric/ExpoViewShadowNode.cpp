@@ -31,6 +31,15 @@ void ExpoViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
   }
+
+  if (YGNodeStyleGetDisplay(&yogaNode_) == YGDisplayContents) {
+    auto it = viewProps.propsMap.find("disableForceFlatten");
+    bool disableForceFlatten = (it != viewProps.propsMap.end()) ? it->second.getBool() : false;
+    
+    if (disableForceFlatten) {
+      traits_.unset(react::ShadowNodeTraits::Trait::ForceFlattenView);
+    }
+  }
 }
 
 } // namespace expo

@@ -50,7 +50,7 @@ abstract class ExpoView(
     super.requestLayout()
     if (shouldUseAndroidLayout) {
       // We need to force measure and layout, because React Native doesn't do it for us.
-      post(Runnable { measureAndLayout() })
+      post { measureAndLayout() }
     }
   }
 

@@ -117,14 +117,9 @@ public final class ImageView: ExpoView {
     addSubview(sdImageView)
   }
 
-  public override func didMoveToWindow() {
-    if window == nil {
-      // Cancel pending requests when the view is unmounted.
-      cancelPendingOperation()
-      return
-    }
-
-    loadPlaceholderIfNecessary()
+  deinit {
+    // Cancel pending requests when the view is deallocated.
+    cancelPendingOperation()
   }
 
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

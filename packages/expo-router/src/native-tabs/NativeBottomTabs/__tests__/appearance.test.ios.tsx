@@ -40,6 +40,7 @@ describe(createStandardAppearanceFromOptions, () => {
         selectedIconColor: 'blue',
         backgroundColor: 'white',
         badgeBackgroundColor: 'green',
+        shadowColor: 'gray',
         titlePositionAdjustment: { horizontal: 10, vertical: 20 },
         labelStyle: {
           fontSize: 20,
@@ -61,6 +62,7 @@ describe(createStandardAppearanceFromOptions, () => {
         compactInline: baseAppearanceItem,
         tabBarBackgroundColor: '#fff',
         tabBarBlurEffect: 'light',
+        tabBarShadowColor: 'blue',
       };
 
       const result = createStandardAppearanceFromOptions(options, baseAppearance);
@@ -92,6 +94,7 @@ describe(createStandardAppearanceFromOptions, () => {
         compactInline: expectedItemAppearance,
         tabBarBackgroundColor: 'white',
         tabBarBlurEffect: 'light',
+        tabBarShadowColor: 'gray',
       };
       expect(result).toEqual(expectedAppearance);
     }
@@ -115,6 +118,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
       compactInline: expectedItemAppearance,
       tabBarBackgroundColor: undefined,
       tabBarBlurEffect: 'none',
+      tabBarShadowColor: 'transparent',
     };
     expect(result).toEqual(expectedAppearance);
   });
@@ -126,6 +130,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
         selectedIconColor: 'blue',
         backgroundColor: 'white',
         badgeBackgroundColor: 'green',
+        shadowColor: 'blue',
         titlePositionAdjustment: { horizontal: 10, vertical: 20 },
         labelStyle: {
           fontSize: 20,
@@ -147,6 +152,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
         compactInline: baseAppearanceItem,
         tabBarBackgroundColor: '#fff',
         tabBarBlurEffect: 'light',
+        tabBarShadowColor: 'gray',
       };
       const result = createScrollEdgeAppearanceFromOptions(options, baseAppearance);
       const expectedItemAppearance: BottomTabsScreenItemAppearance = {
@@ -176,6 +182,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
         compactInline: expectedItemAppearance,
         tabBarBackgroundColor: disableTransparentOnScrollEdge ? 'white' : undefined,
         tabBarBlurEffect: disableTransparentOnScrollEdge ? 'light' : 'none',
+        tabBarShadowColor: disableTransparentOnScrollEdge ? 'blue' : 'transparent',
       };
       expect(result).toEqual(expectedAppearance);
     }

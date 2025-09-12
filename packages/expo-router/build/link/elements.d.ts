@@ -1,4 +1,5 @@
 import React, { type PropsWithChildren, type ReactElement } from 'react';
+import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export interface LinkMenuActionProps {
     /**
@@ -95,7 +96,7 @@ export interface LinkMenuProps {
  * @platform ios
  */
 export declare const LinkMenu: React.FC<LinkMenuProps>;
-export interface LinkPreviewProps {
+export type LinkPreviewStyle = Omit<ViewStyle, 'position' | 'width' | 'height'> & {
     /**
      * Sets the preferred width of the preview.
      * If not set, full width of the screen will be used.
@@ -110,7 +111,15 @@ export interface LinkPreviewProps {
      * This is only **preferred** height, the actual height may be different
      */
     height?: number;
+};
+export interface LinkPreviewProps {
     children?: React.ReactNode;
+    /**
+     * Custom styles for the preview container.
+     *
+     * Note that some styles may not work, as they are limited or reset by the native view
+     */
+    style?: LinkPreviewStyle;
 }
 /**
  * A component used to render and customize the link preview.

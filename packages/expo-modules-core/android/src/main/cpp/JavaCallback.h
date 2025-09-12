@@ -14,7 +14,7 @@
 #include <react/jni/WritableNativeMap.h>
 #include <fbjni/detail/CoreClasses.h>
 #include <ReactCommon/CallInvoker.h>
-#include <ReactCommon/LongLivedObject.h>
+#include <react/bridging/LongLivedObject.h>
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;

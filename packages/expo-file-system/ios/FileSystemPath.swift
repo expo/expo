@@ -4,6 +4,10 @@ import ExpoModulesCore
 internal class FileSystemPath: SharedObject {
   var url: URL
 
+  func validateType() throws {
+    throw NotImplementedException()
+  }
+
   init(url: URL, isDirectory: Bool) {
     let standardizedUrl = url.deletingLastPathComponent().appendingPathComponent(url.lastPathComponent, isDirectory: isDirectory)
     self.url = standardizedUrl
@@ -76,6 +80,19 @@ internal class FileSystemPath: SharedObject {
     url = destinationUrl
   }
 
+  func getRenamedUrl(newName: String) -> URL {
+    return url.deletingLastPathComponent().appendingPathComponent(newName)
+  }
+
+  func rename(_ newName: String) throws {
+    try validatePermission(.write)
+    let newUrl = getRenamedUrl(newName: newName)
+    try FileManager.default.moveItem(at: url, to: newUrl)
+    // Refetch the URL to ensure it has the correct trailing slash, which differs for directories and files.
+    let updatedUrl = getRenamedUrl(newName: newName)
+    url = updatedUrl
+  }
+
   var modificationTime: Int64 {
     get throws {
       let modificationDate: Date = try getAttribute(.modificationDate, atPath: url.path)
@@ -101,5 +118,18 @@ internal class FileSystemPath: SharedObject {
       throw UnableToGetFileAttribute("\(key) is not of expected type")
     }
     return attributeCasted
+  }
+
+  @discardableResult
+  func withCorrectTypeAndScopedAccess<T>(
+    permission: FileSystemPermissionFlags,
+    _ work: () throws -> T
+  ) throws -> T {
+    let accessed = url.startAccessingSecurityScopedResource()
+    defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+
+    try validatePermission(permission)
+
+    return try work()
   }
 }

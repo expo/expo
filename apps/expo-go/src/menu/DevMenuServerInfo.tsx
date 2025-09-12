@@ -1,10 +1,11 @@
 import Constants from 'expo-constants';
-import { Row, View, Text, Spacer } from 'expo-dev-client-components';
+import { Row, Text, Spacer, useExpoTheme, padding } from 'expo-dev-client-components';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Clipboard } from 'react-native';
 
 import { ClipboardIcon } from './ClipboardIcon';
 import DevIndicator from '../components/DevIndicator';
+import { CappedWidthContainerView } from '../components/Views';
 import FriendlyUrls from '../legacy/FriendlyUrls';
 
 type Props = {
@@ -27,9 +28,17 @@ export function DevMenuServerInfo({ task }: Props) {
     Clipboard.setString(manifestUrl);
     alert(`Copied "${manifestUrl}" to the clipboard.`);
   }
+  const theme = useExpoTheme();
 
   return (
-    <View bg="default" padding="medium">
+    <CappedWidthContainerView
+      style={{
+        backgroundColor: theme.background.default,
+        ...padding.padding.medium,
+      }}
+      wrapperStyle={{
+        backgroundColor: theme.background.default,
+      }}>
       {devServerName ? (
         <>
           <Text size="small" type="InterRegular">
@@ -51,7 +60,7 @@ export function DevMenuServerInfo({ task }: Props) {
           <ClipboardIcon />
         </Row>
       </TouchableOpacity>
-    </View>
+    </CappedWidthContainerView>
   );
 }
 

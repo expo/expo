@@ -328,11 +328,11 @@ async function preparePackageJson(
           'adb install android/app/build/outputs/apk/release/app-release.apk',
         'maestro:android:uninstall': 'adb uninstall dev.expo.updatese2e',
         'maestro:ios:debug:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         'maestro:ios:debug:install':
           'xcrun simctl install booted ios/build/Build/Products/Debug-iphonesimulator/updatese2e.app',
         'maestro:ios:release:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         'maestro:ios:release:install':
           'xcrun simctl install booted ios/build/Build/Products/Release-iphonesimulator/updatese2e.app',
         'maestro:ios:uninstall': 'xcrun simctl uninstall booted dev.expo.updatese2e',
@@ -340,7 +340,7 @@ async function preparePackageJson(
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
         'tvos:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
         'start:dev-client':
           'npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
@@ -397,8 +397,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.81.0-0',
-        '@react-native-tvos/config-tv': '^0.1.3',
+        'react-native': 'npm:react-native-tvos@0.81.4-0',
+        '@react-native-tvos/config-tv': '^0.1.4',
       },
       expo: {
         install: {

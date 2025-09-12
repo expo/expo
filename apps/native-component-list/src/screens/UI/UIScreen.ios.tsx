@@ -146,6 +146,22 @@ export const UIScreens = [
       return optionalRequire(() => require('./AnimationModifierScreen'));
     },
   },
+  {
+    name: 'Glass Effect',
+    route: 'ui/glass-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GlassEffectScreen'));
+    },
+  },
+  {
+    name: 'Matched Geometry Effect',
+    route: 'ui/matched-geometry-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

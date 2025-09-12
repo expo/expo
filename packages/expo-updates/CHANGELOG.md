@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 29.0.10 — 2025-09-11
+
+### 💡 Others
+
+- Surface iOS compilation errors in updates E2E tests. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
+
+## 29.0.9 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- [Android] Propagate controller scope to state machine. ([#39526](https://github.com/expo/expo/pull/39526) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.8 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.7 — 2025-08-31
+
+### 💡 Others
+
+- [iOS] Migrate multipart parsers to Swift. ([#39144](https://github.com/expo/expo/pull/39144) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.6 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
 ## 29.0.5 — 2025-08-26
 
 _This version does not introduce any user-facing changes._

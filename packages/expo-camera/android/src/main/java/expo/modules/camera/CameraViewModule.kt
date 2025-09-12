@@ -20,6 +20,7 @@ import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.tasks.writeStreamToFile
+import expo.modules.camera.utils.CameraUtils
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.core.utilities.VRUtilities
@@ -65,11 +66,10 @@ class CameraViewModule : Module() {
 
     Events("onModernBarcodeScanned")
 
-    // Aligned with iOS which has the same property. Will always be true on Android since
-    // the Google code scanner's min sdk is 21 - and our min sdk is currently 24.
-    // False on Horizon OS, as there is no google services.
+    // Aligned with iOS which has the same property. True when ML Kit is available.
+    // False on Horizon OS (Quest devices) and devices without Google Play Services.
     Property("isModernBarcodeScannerAvailable") {
-      !VRUtilities.isQuest()
+      !VRUtilities.isQuest() && CameraUtils.isMLKitAvailable(appContext.reactContext)
     }
 
     // Again, aligned with iOS.
@@ -110,19 +110,33 @@ class CameraViewModule : Module() {
     }
 
     AsyncFunction("scanFromURLAsync") { url: String, barcodeTypes: List<BarcodeType>, promise: Promise ->
+      if (!CameraUtils.isMLKitAvailable(appContext.reactContext)) {
+        promise.reject(CameraExceptions.MLKitUnavailableException())
+        return@AsyncFunction
+      }
+
       appContext.imageLoader?.loadImageForManipulationFromURL(
         url,
         object : ImageLoaderInterface.ResultListener {
           override fun onSuccess(bitmap: Bitmap) {
-            val scanner = MLKitBarCodeScanner()
-            val formats = barcodeTypes.map { it.mapToBarcode() }
-            scanner.setSettings(formats)
+            try {
+              val scanner = MLKitBarCodeScanner()
+              val formats = barcodeTypes.map { it.mapToBarcode() }
+              scanner.setSettings(formats)
 
-            moduleScope.launch {
-              val barcodes = scanner.scan(bitmap)
-                .filter { formats.contains(it.type) }
-                .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
-              promise.resolve(barcodes)
+              moduleScope.launch {
+                try {
+                  val barcodes = scanner.scan(bitmap)
+                    .filter { formats.contains(it.type) }
+                    .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
+                  promise.resolve(barcodes)
+                } catch (e: Exception) {
+                  Log.e(TAG, "ML Kit scanning failed: ${e.message}")
+                  promise.reject(CameraExceptions.MLKitUnavailableException())
+                }
+              }
+            } catch (e: Exception) {
+              promise.reject(CameraExceptions.MLKitUnavailableException())
             }
           }
 
@@ -134,6 +148,11 @@ class CameraViewModule : Module() {
     }
 
     AsyncFunction("launchScanner") { settings: BarcodeSettings, promise: Promise ->
+      if (!CameraUtils.hasGooglePlayServices(appContext.reactContext)) {
+        promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
+        return@AsyncFunction
+      }
+
       val reactContext = appContext.reactContext
 
       if (reactContext == null) {
@@ -141,28 +160,32 @@ class CameraViewModule : Module() {
         return@AsyncFunction
       }
 
-      val options = GmsBarcodeScannerOptions.Builder().apply {
-        if (settings.barcodeTypes.isNotEmpty()) {
-          setBarcodeFormats(
-            settings.barcodeTypes.first().mapToBarcode(),
-            *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
-          )
-        }
-      }.build()
+      try {
+        val options = GmsBarcodeScannerOptions.Builder().apply {
+          if (settings.barcodeTypes.isNotEmpty()) {
+            setBarcodeFormats(
+              settings.barcodeTypes.first().mapToBarcode(),
+              *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
+            )
+          }
+        }.build()
 
-      val scanner = GmsBarcodeScanning.getClient(reactContext, options)
-      scanner.startScan()
-        .addOnSuccessListener { barcode ->
-          val result = BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode)
-          sendEvent("onModernBarcodeScanned", BarCodeScannerResultSerializer.toBundle(result, 1.0f))
-          promise.resolve()
-        }
-        .addOnCanceledListener {
-          promise.reject(CameraExceptions.BarcodeScanningCancelledException())
-        }
-        .addOnFailureListener {
-          promise.reject(CameraExceptions.BarcodeScanningFailedException())
-        }
+        val scanner = GmsBarcodeScanning.getClient(reactContext, options)
+        scanner.startScan()
+          .addOnSuccessListener { barcode ->
+            val result = BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode)
+            sendEvent("onModernBarcodeScanned", BarCodeScannerResultSerializer.toBundle(result, 1.0f))
+            promise.resolve()
+          }
+          .addOnCanceledListener {
+            promise.reject(CameraExceptions.BarcodeScanningCancelledException())
+          }
+          .addOnFailureListener {
+            promise.reject(CameraExceptions.BarcodeScanningFailedException())
+          }
+      } catch (_: Exception) {
+        promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
+      }
     }
 
     AsyncFunction("dismissScanner") {

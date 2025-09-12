@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 6.0.12 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.11 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.10 — 2025-09-04
+
+### 🐛 Bug fixes
+
+- fix LICENSE.md conflict ([#39373](https://github.com/expo/expo/pull/39373) by [@iameli](https://github.com/iameli))
+
+## 6.0.9 — 2025-09-03
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.8 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.7 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.5 — 2025-08-25
 
 _This version does not introduce any user-facing changes._

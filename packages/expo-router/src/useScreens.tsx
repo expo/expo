@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  useIsFocused,
   useStateForPath,
   type EventMapBase,
   type NavigationState,
@@ -9,7 +8,7 @@ import {
   type RouteProp,
   type ScreenListeners,
 } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
@@ -255,7 +254,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     ...props
   }: any) {
     const stateForPath = useStateForPath();
-    const isFocused = useIsFocused();
+    const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
 
     if (isFocused) {
@@ -263,6 +262,20 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       const isLeaf = !('state' in state.routes[state.index]);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
     }
+
+    useEffect(
+      () =>
+        navigation.addListener('focus', () => {
+          const state = navigation.getState();
+          const isLeaf = !('state' in state.routes[state.index]);
+          // Because setFocusedState caches the route info, this call will only trigger rerenders
+          // if the component itself didn’t rerender and the route info changed.
+          // Otherwise, the update from the `if` above will handle it,
+          // and this won’t cause a redundant second update.
+          if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+        }),
+      [navigation]
+    );
 
     return (
       <Route node={value} route={route}>

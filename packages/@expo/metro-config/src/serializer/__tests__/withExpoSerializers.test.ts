@@ -682,8 +682,13 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "foo", {
+          enumerable: true,
+          get: function () {
+            return foo;
+          }
+        });
         const foo = 'foo';
-        exports.foo = foo;
       },"/app/foo.js",[],"foo.js");
       TEST_RUN_MODULE("/app/index.js");"
     `);
@@ -755,7 +760,7 @@ describe('serializes', () => {
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
         "_expo/static/js/web/index-0b3b05dfd72525874c3b666ed3231144.js",
-        "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+        "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
 
@@ -771,7 +776,7 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/index.js": {
-                "/app/foo.js": "/_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+                "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
             "reactClientReferences": [],
@@ -781,12 +786,12 @@ describe('serializes', () => {
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         _dependencyMap[0];
-      },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js"}});
+      },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+          "filename": "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -805,8 +810,13 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "foo", {
+          enumerable: true,
+          get: function () {
+            return foo;
+          }
+        });
         const foo = 'foo';
-        exports.foo = foo;
       },"/app/foo.js",[]);",
           "type": "js",
         },
@@ -839,7 +849,7 @@ describe('serializes', () => {
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
         "_expo/static/js/web/index-8cc83f2e616cdd8e531ae27d9127c263.js",
-        "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+        "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
 
@@ -856,7 +866,7 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/index.js": {
-                "/app/foo.js": "/_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+                "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
             "reactClientReferences": [],
@@ -866,7 +876,7 @@ describe('serializes', () => {
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
-      },"/app/index.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js"}});
+      },"/app/index.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js"}});
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
@@ -874,7 +884,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+          "filename": "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -893,8 +903,13 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "foo", {
+          enumerable: true,
+          get: function () {
+            return foo;
+          }
+        });
         const foo = 'foo';
-        exports.foo = foo;
       },"/app/foo.js",[]);",
           "type": "js",
         },
@@ -932,7 +947,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toEqual([
       '_expo/static/js/web/index-95c9198c40034f849b6c9f8b62d0bd22.js',
-      '_expo/static/js/web/index-7a32f921c2f0758792cf0bf8ddd33c77.js',
+      '_expo/static/js/web/index-25b349d9df4cf37e2ce96f19a911e4eb.js',
       '_expo/static/js/web/[foo]-b99e2a64404cca4d65e32984620b7bf1.js',
       '_expo/static/js/web/{foo}-d032e4cf31d79b9563f18fce5c4d4da8.js',
       '_expo/static/js/web/+foo-2b47c1ed90cec08c1514324d9ade788c.js',
@@ -994,7 +1009,7 @@ describe('serializes', () => {
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
         "_expo/static/js/web/index-2f681759ccdffed0c24df6bd62adc744.js",
-        "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+        "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
 
@@ -1012,7 +1027,7 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/two.js": {
-                "/app/foo.js": "/_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+                "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
             "reactClientReferences": [],
@@ -1027,7 +1042,7 @@ describe('serializes', () => {
       },"/app/index.js",["/app/two.js"]);
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
-      },"/app/two.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js"}});
+      },"/app/two.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js"}});
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
@@ -1035,7 +1050,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
+          "filename": "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1054,8 +1069,13 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "foo", {
+          enumerable: true,
+          get: function () {
+            return foo;
+          }
+        });
         const foo = 'foo';
-        exports.foo = foo;
       },"/app/foo.js",[]);",
           "type": "js",
         },
@@ -1116,10 +1136,10 @@ describe('serializes', () => {
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
         "_expo/static/js/web/index-ab51a54090935dbdd8a8f1ab4caa8eca.js",
-        "_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js",
-        "_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js",
-        "_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js",
-        "_expo/static/js/web/__common-f00c61b44236e82179327dcfbabec508.js",
+        "_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
+        "_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
+        "_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
+        "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
         "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
       ]
     `);
@@ -1137,15 +1157,15 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/index.js": {
-                "/app/a.js": "/_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js",
-                "/app/b.js": "/_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js",
-                "/app/c.js": "/_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js",
+                "/app/a.js": "/_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
+                "/app/b.js": "/_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
+                "/app/c.js": "/_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
               },
             },
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
-              "_expo/static/js/web/__common-f00c61b44236e82179327dcfbabec508.js",
+              "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
           },
@@ -1154,7 +1174,7 @@ describe('serializes', () => {
         _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
         _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[2], _dependencyMap.paths);
         _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[3], _dependencyMap.paths);
-      },"/app/index.js",{"0":"/app/a.js","1":"/app/expo-mock/async-require","2":"/app/b.js","3":"/app/c.js","paths":{"/app/a.js":"/_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js","/app/b.js":"/_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js","/app/c.js":"/_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js"}});
+      },"/app/index.js",{"0":"/app/a.js","1":"/app/expo-mock/async-require","2":"/app/b.js","3":"/app/c.js","paths":{"/app/a.js":"/_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js","/app/b.js":"/_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js","/app/c.js":"/_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js"}});
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
@@ -1162,7 +1182,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js",
+          "filename": "_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1183,15 +1203,20 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "a", {
+          enumerable: true,
+          get: function () {
+            return a;
+          }
+        });
         _$$_REQUIRE(_dependencyMap[0]);
         _$$_REQUIRE(_dependencyMap[1]);
         const a = 'a';
-        exports.a = a;
       },"/app/a.js",["/app/d.js","/app/e.js"]);",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js",
+          "filename": "_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1212,14 +1237,19 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "b", {
+          enumerable: true,
+          get: function () {
+            return b;
+          }
+        });
         _$$_REQUIRE(_dependencyMap[0]);
         const b = 'b';
-        exports.b = b;
       },"/app/b.js",["/app/d.js"]);",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js",
+          "filename": "_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1240,14 +1270,19 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "c", {
+          enumerable: true,
+          get: function () {
+            return c;
+          }
+        });
         _$$_REQUIRE(_dependencyMap[0]);
         const c = 'c';
-        exports.c = c;
       },"/app/c.js",["/app/e.js"]);",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/__common-f00c61b44236e82179327dcfbabec508.js",
+          "filename": "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1269,8 +1304,13 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "d", {
+          enumerable: true,
+          get: function () {
+            return d;
+          }
+        });
         const d = 'd';
-        exports.d = d;
       },"/app/d.js",[]);
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
@@ -1278,8 +1318,13 @@ describe('serializes', () => {
         Object.defineProperty(exports, '__esModule', {
           value: true
         });
+        Object.defineProperty(exports, "e", {
+          enumerable: true,
+          get: function () {
+            return e;
+          }
+        });
         const e = 'e';
-        exports.e = e;
       },"/app/e.js",[]);",
           "type": "js",
         },
@@ -1465,12 +1510,17 @@ describe('serializes', () => {
           Object.defineProperty(exports, '__esModule', {
             value: true
           });
+          Object.defineProperty(exports, "foo", {
+            enumerable: true,
+            get: function () {
+              return foo;
+            }
+          });
           const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("./other.js");
           module.exports = proxy;
           const foo = _$$_REQUIRE(_dependencyMap[0]).registerClientReference(function () {
             throw new Error("Attempted to call foo() of /app/other.js from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
           }, "./other.js", "foo");
-          exports.foo = foo;
         },"/app/other.js",["/app/react-server-dom-webpack/server"]);
         __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);
         TEST_RUN_MODULE("/app/index.js");"

@@ -28,6 +28,13 @@ class PrintModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoPrint")
 
+    Constant("Orientation") {
+      mapOf(
+        "portrait" to ORIENTATION_PORTRAIT,
+        "landscape" to ORIENTATION_LANDSCAPE
+      )
+    }
+
     AsyncFunction("print") Coroutine { options: PrintOptions ->
       return@Coroutine print(options)
     }
@@ -35,13 +42,6 @@ class PrintModule : Module() {
     AsyncFunction("printToFileAsync") Coroutine { options: PrintOptions ->
       return@Coroutine printToFile(options)
     }
-
-    Constants(
-      "Orientation" to mapOf(
-        "portrait" to ORIENTATION_PORTRAIT,
-        "landscape" to ORIENTATION_LANDSCAPE
-      )
-    )
   }
 
   val context: Context

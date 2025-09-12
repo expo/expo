@@ -8,13 +8,13 @@ expoModule {
 }
 
 group = "host.exp.exponent"
-version = "6.0.5"
+version = "6.0.12"
 
 android {
   namespace "expo.modules.devclient"
   defaultConfig {
     versionCode 1
-    versionName "6.0.5"
+    versionName "6.0.12"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
@@ -27,6 +27,12 @@ android {
   buildFeatures {
     buildConfig true
     viewBinding true
+  }
+
+  packaging {
+    resources {
+      merges.add("/META-INF/LICENSE*")
+    }
   }
 }
 

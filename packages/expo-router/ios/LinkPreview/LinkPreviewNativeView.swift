@@ -2,9 +2,9 @@ import ExpoModulesCore
 
 class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   LinkPreviewModalDismissible, LinkPreviewMenuUpdatable {
-  var triggerBorderRadius: Double = 0
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
+  private var directChild: UIView?
   var nextScreenId: String? {
     didSet {
       performUpdateOfPreloadedView()
@@ -54,13 +54,20 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       if let previewView = childComponentView as? NativeLinkPreviewContentView {
         preview = previewView
-        if let interaction = self.interaction {
-          self.addInteraction(interaction)
-        }
       } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
         actionView.parentMenuUpdatable = self
         actions.append(actionView)
       } else {
+        if directChild != nil {
+          print(
+            "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
+          )
+          return
+        }
+        directChild = childComponentView
+        if let interaction = self.interaction {
+          childComponentView.addInteraction(interaction)
+        }
         super.mountChildComponentView(childComponentView, index: index)
       }
     }
@@ -68,15 +75,28 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     override func unmountChildComponentView(_ child: UIView, index: Int) {
       if child is NativeLinkPreviewContentView {
         preview = nil
-        if let interaction = self.interaction {
-          self.removeInteraction(interaction)
-        }
       } else if let actionView = child as? LinkPreviewNativeActionView {
         actions.removeAll(where: {
           $0 == actionView
         })
       } else {
-        super.unmountChildComponentView(child, index: index)
+        if let directChild = directChild {
+          if directChild != child {
+            print(
+              "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
+            )
+            return
+          }
+          if let interaction = self.interaction {
+            directChild.removeInteraction(interaction)
+          }
+          super.unmountChildComponentView(child, index: index)
+        } else {
+          print(
+            "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
+          )
+          return
+        }
       }
     }
   #endif
@@ -104,14 +124,15 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     highlightPreviewForItemWithIdentifier identifier: any NSCopying
   ) -> UITargetedPreview? {
     if let superview = self.superview {
-      let target = UIPreviewTarget(container: superview, center: self.center)
+      if let directChild = self.directChild {
+        let target = UIPreviewTarget(
+          container: superview, center: self.convert(directChild.center, to: superview))
 
-      let parameters = UIPreviewParameters()
-      parameters.backgroundColor = .clear
-      parameters.shadowPath = UIBezierPath(
-        roundedRect: self.bounds, cornerRadius: self.triggerBorderRadius)
+        let parameters = UIPreviewParameters()
+        parameters.backgroundColor = .clear
 
-      return UITargetedPreview(view: self, parameters: parameters, target: target)
+        return UITargetedPreview(view: directChild, parameters: parameters, target: target)
+      }
     }
     return nil
   }
@@ -161,7 +182,6 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     }
 
     let vc = PreviewViewController(linkPreviewNativePreview: preview)
-    vc.view.addSubview(preview)
     let preferredSize = preview.preferredContentSize
     vc.preferredContentSize.width = preferredSize.width
     vc.preferredContentSize.height = preferredSize.height
@@ -192,6 +212,10 @@ class PreviewViewController: UIViewController {
   init(linkPreviewNativePreview: NativeLinkPreviewContentView) {
     self.linkPreviewNativePreview = linkPreviewNativePreview
     super.init(nibName: nil, bundle: nil)
+  }
+
+  override func loadView() {
+    self.view = linkPreviewNativePreview
   }
 
   @available(*, unavailable)

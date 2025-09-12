@@ -19,6 +19,7 @@ import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -45,13 +46,13 @@ class DisabledUpdatesController(
 ) : IUpdatesController {
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
-  private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
   // disabled controller state machine can only be idle or restarting
-  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting), controllerScope)
 
   private var isStarted = false
   private var startupStartTimeMillis: Long? = null
@@ -106,7 +107,7 @@ class DisabledUpdatesController(
     isStarted = true
     startupStartTimeMillis = System.currentTimeMillis()
 
-    launcher = NoDatabaseLauncher(context, logger, fatalException)
+    launcher = NoDatabaseLauncher(context, logger, fatalException, controllerScope)
 
     startupEndTimeMillis = System.currentTimeMillis()
     notifyController()
@@ -143,7 +144,8 @@ class DisabledUpdatesController(
         override fun onSuccess() {
           continuation.resume(Unit)
         }
-      }
+      },
+      controllerScope
     )
     stateMachine.queueExecution(procedure)
   }

@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 10.0.7 — 2025-09-10
+
+### 💡 Others
+
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
+## 10.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.3 — 2025-08-25
 
 _This version does not introduce any user-facing changes._

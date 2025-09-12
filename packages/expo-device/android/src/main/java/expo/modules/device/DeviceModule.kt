@@ -34,36 +34,78 @@ class DeviceModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoDevice")
 
-    Constants {
-      return@Constants mapOf(
-        "isDevice" to !isRunningOnEmulator,
-        "brand" to Build.BRAND,
-        "manufacturer" to Build.MANUFACTURER,
-        "modelName" to Build.MODEL,
-        "designName" to Build.DEVICE,
-        "productName" to Build.PRODUCT,
-        "deviceYearClass" to deviceYearClass,
-        "totalMemory" to run {
-          val memoryInfo = ActivityManager.MemoryInfo()
-          (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
-          memoryInfo.totalMem
-        },
-        "deviceType" to run {
-          getDeviceType(context).JSValue
-        },
-        "supportedCpuArchitectures" to Build.SUPPORTED_ABIS?.takeIf { it.isNotEmpty() },
-        "osName" to systemName,
-        "osVersion" to Build.VERSION.RELEASE,
-        "osBuildId" to Build.DISPLAY,
-        "osInternalBuildId" to Build.ID,
-        "osBuildFingerprint" to Build.FINGERPRINT,
-        "platformApiLevel" to Build.VERSION.SDK_INT,
-        "deviceName" to if (Build.VERSION.SDK_INT <= 31) {
-          Settings.Secure.getString(context.contentResolver, "bluetooth_name")
-        } else {
-          Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
-        }
-      )
+    Constant("isDevice") {
+      !isRunningOnEmulator
+    }
+
+    Constant("brand") {
+      Build.BRAND
+    }
+
+    Constant("manufacturer") {
+      Build.MANUFACTURER
+    }
+
+    Constant("modelName") {
+      Build.MODEL
+    }
+
+    Constant("designName") {
+      Build.DEVICE
+    }
+
+    Constant("productName") {
+      Build.PRODUCT
+    }
+
+    Constant("deviceYearClass") {
+      deviceYearClass
+    }
+
+    Constant("totalMemory") {
+      val memoryInfo = ActivityManager.MemoryInfo()
+      (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
+      memoryInfo.totalMem
+    }
+
+    Constant("deviceType") {
+      getDeviceType(context).JSValue
+    }
+
+    Constant("supportedCpuArchitectures") {
+      Build.SUPPORTED_ABIS?.takeIf { it.isNotEmpty() }
+    }
+
+    Constant("osName") {
+      systemName
+    }
+
+    Constant("osVersion") {
+      Build.VERSION.RELEASE
+    }
+
+    Constant("osBuildId") {
+      Build.DISPLAY
+    }
+
+    Constant("osInternalBuildId") {
+      Build.ID
+    }
+
+    Constant("osBuildFingerprint") {
+      Build.FINGERPRINT
+    }
+
+    Constant("platformApiLevel") {
+      Build.VERSION.SDK_INT
+    }
+
+    Constant("deviceName") {
+      if (Build.VERSION.SDK_INT <= 31) {
+        Settings.Secure.getString(context.contentResolver, "bluetooth_name")
+      } else {
+        Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
+      }
     }
 
     AsyncFunction<Int>("getDeviceTypeAsync") {

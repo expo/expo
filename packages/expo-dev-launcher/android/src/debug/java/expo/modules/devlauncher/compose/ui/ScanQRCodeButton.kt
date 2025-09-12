@@ -4,16 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.Button
-import com.composeunstyled.Icon
-import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
@@ -34,8 +30,8 @@ fun ScanQRCodeButton(
     ) {
       Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Companion.CenterVertically,
-        modifier = Modifier.Companion
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
           .fillMaxWidth()
           .padding(NewAppTheme.spacing.`3`)
       ) {
@@ -43,12 +39,9 @@ fun ScanQRCodeButton(
           "Scan QR Code"
         )
 
-        Icon(
-          painter = painterResource(R.drawable.scan),
-          contentDescription = "Fetch development servers icon",
-          tint = NewAppTheme.colors.icon.quaternary,
-          modifier = Modifier
-            .size(20.dp)
+        LauncherIcons.Scan(
+          size = 20.dp,
+          tint = NewAppTheme.colors.icon.quaternary
         )
       }
     }

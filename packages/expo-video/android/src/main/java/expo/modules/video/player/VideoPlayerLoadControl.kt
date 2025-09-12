@@ -6,7 +6,7 @@ import androidx.media3.common.util.Util
 import expo.modules.video.records.BufferOptions
 
 @UnstableApi
-class VideoPlayerLoadControl: DefaultLoadControl() {
+class VideoPlayerLoadControl : DefaultLoadControl() {
   private var targetBufferMs: Long
     get() = maxBufferUs / 1000
     set(value) {
@@ -25,7 +25,6 @@ class VideoPlayerLoadControl: DefaultLoadControl() {
     set(value) {
       bufferForPlaybackAfterRebufferUs = Util.msToUs(value)
     }
-
 
   fun applyBufferOptions(bufferOptions: BufferOptions) {
     targetBufferMs = bufferOptions.preferredForwardBufferDuration?.let { (it * 1000).toLong() }

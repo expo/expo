@@ -97,6 +97,101 @@ it('should protect routes during the initial load', () => {
   });
 });
 
+it('should protect nested protected routes', () => {
+  let useStateResultA: [boolean, Dispatch<SetStateAction<boolean>>];
+  let useStateResultB: [boolean, Dispatch<SetStateAction<boolean>>];
+  let useStateResultC: [boolean, Dispatch<SetStateAction<boolean>>];
+
+  renderRouter({
+    _layout: function Layout() {
+      useStateResultA = useState(false);
+      useStateResultB = useState(false);
+      useStateResultC = useState(false);
+
+      return (
+        <Stack id={undefined}>
+          <Stack.Protected guard={useStateResultA[0]}>
+            <Stack.Screen name="a" />
+
+            <Stack.Protected guard={useStateResultB[0]}>
+              <Stack.Screen name="b" />
+
+              <Stack.Protected guard={useStateResultC[0]}>
+                <Stack.Screen name="c" />
+              </Stack.Protected>
+            </Stack.Protected>
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => {
+      return <Text testID="index">index</Text>;
+    },
+    a: () => <Text testID="a">a</Text>,
+    b: () => <Text testID="b">B</Text>,
+    c: () => <Text testID="c">C</Text>,
+  });
+
+  // try to navigate to all protected routes should not change the current
+  // route since all the guards are false
+  act(() => router.replace('/a'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
+  act(() => router.replace('/b'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
+  act(() => router.replace('/c'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
+  // change the guards for routes A and C to true: should make A available but
+  // not C as it is nested under B and the guard for B is still false
+  act(() => {
+    useStateResultA[1](true);
+    useStateResultC[1](true);
+  });
+
+  act(() => router.replace('/a'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  act(() => router.replace('/b'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  act(() => router.replace('/c'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  expect(store.state.index).toBe(0);
+  expect(store.state.routes[0].name).toBe('__root');
+  expect(store.state.routes[0].state.routeNames).toStrictEqual(['a', 'index']);
+
+  // change the guard for route B to true: should make B available and also C
+  // should be available now as all its parents guards are true
+  act(() => {
+    useStateResultB[1](true);
+  });
+
+  act(() => router.replace('/a'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  act(() => router.replace('/b'));
+  expect(screen.getByTestId('b')).toBeVisible();
+  expect(screen).toHavePathname('/b');
+
+  act(() => router.replace('/c'));
+  expect(screen.getByTestId('c')).toBeVisible();
+  expect(screen).toHavePathname('/c');
+
+  expect(store.state.index).toBe(0);
+  expect(store.state.routes[0].name).toBe('__root');
+  expect(store.state.routes[0].state.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
+});
+
 it('should default to anchor during initial load', () => {
   let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 

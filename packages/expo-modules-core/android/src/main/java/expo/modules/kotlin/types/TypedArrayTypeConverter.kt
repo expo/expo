@@ -17,59 +17,38 @@ import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
 import expo.modules.kotlin.typedarray.Uint8ClampedArray
 
-abstract class BaseTypeArrayConverter<T : TypedArray>() : NonNullableTypeConverter<T>() {
+open class BaseTypeArrayConverter<T : TypedArray>(
+  val typedArrayWrapper: (rawArray: JavaScriptTypedArray) -> T
+) : NonNullableTypeConverter<T>() {
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T = wrapJavaScriptTypedArray(value as JavaScriptTypedArray)
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.TYPED_ARRAY)
   override fun isTrivial() = false
 
-  abstract fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray): T
+  fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray): T = typedArrayWrapper(value)
 }
 
-class Int8ArrayTypeConverter() : BaseTypeArrayConverter<Int8Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Int8Array(value)
-}
+class Int8ArrayTypeConverter() : BaseTypeArrayConverter<Int8Array>(::Int8Array)
 
-class Int16ArrayTypeConverter() : BaseTypeArrayConverter<Int16Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Int16Array(value)
-}
+class Int16ArrayTypeConverter() : BaseTypeArrayConverter<Int16Array>(::Int16Array)
 
-class Int32ArrayTypeConverter() : BaseTypeArrayConverter<Int32Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Int32Array(value)
-}
+class Int32ArrayTypeConverter() : BaseTypeArrayConverter<Int32Array>(::Int32Array)
 
-class Uint8ArrayTypeConverter() : BaseTypeArrayConverter<Uint8Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Uint8Array(value)
-}
+class Uint8ArrayTypeConverter() : BaseTypeArrayConverter<Uint8Array>(::Uint8Array)
 
-class Uint8ClampedArrayTypeConverter() : BaseTypeArrayConverter<Uint8ClampedArray>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Uint8ClampedArray(value)
-}
+class Uint8ClampedArrayTypeConverter() : BaseTypeArrayConverter<Uint8ClampedArray>(::Uint8ClampedArray)
 
-class Uint16ArrayTypeConverter() : BaseTypeArrayConverter<Uint16Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Uint16Array(value)
-}
+class Uint16ArrayTypeConverter() : BaseTypeArrayConverter<Uint16Array>(::Uint16Array)
 
-class Uint32ArrayTypeConverter() : BaseTypeArrayConverter<Uint32Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Uint32Array(value)
-}
+class Uint32ArrayTypeConverter() : BaseTypeArrayConverter<Uint32Array>(::Uint32Array)
 
-class Float32ArrayTypeConverter() : BaseTypeArrayConverter<Float32Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Float32Array(value)
-}
+class Float32ArrayTypeConverter() : BaseTypeArrayConverter<Float32Array>(::Float32Array)
 
-class Float64ArrayTypeConverter() : BaseTypeArrayConverter<Float64Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = Float64Array(value)
-}
+class Float64ArrayTypeConverter() : BaseTypeArrayConverter<Float64Array>(::Float64Array)
 
-class BigInt64ArrayTypeConverter() : BaseTypeArrayConverter<BigInt64Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = BigInt64Array(value)
-}
+class BigInt64ArrayTypeConverter() : BaseTypeArrayConverter<BigInt64Array>(::BigInt64Array)
 
-class BigUint64ArrayTypeConverter() : BaseTypeArrayConverter<BigUint64Array>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = BigUint64Array(value)
-}
+class BigUint64ArrayTypeConverter() : BaseTypeArrayConverter<BigUint64Array>(::BigUint64Array)
 
-class TypedArrayTypeConverter() : BaseTypeArrayConverter<TypedArray>() {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray): TypedArray = value
+class TypedArrayTypeConverter() : BaseTypeArrayConverter<TypedArray>({ it }) {
   override fun isTrivial() = true
 }

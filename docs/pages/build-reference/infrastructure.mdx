@@ -28,7 +28,6 @@ When selecting an image for the build you can use the full name provided below o
 - The `sdk-54` alias will be assigned to the image best suited for SDK 54 builds.
 - The `sdk-53` alias will be assigned to the image best suited for SDK 53 builds.
 - The `sdk-52` alias will be assigned to the image best suited for SDK 52 builds.
-- The `sdk-51` alias will be assigned to the image best suited for SDK 51 builds.
 - SDK aliases will be updated with every new SDK release.
 - The `latest` alias will be updated with every new image release.
 
@@ -307,7 +306,32 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### <CopyTextButton>`macos-sequoia-15.5-xcode-26.0`</CopyTextButton>
+#### <CopyTextButton>`macos-sequoia-15.6-xcode-26.0` (`sdk-54`)</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- macOS Sequoia 15.6
+- Xcode 26.0 RC 1 (17A321)
+- Node.js 20.19.4
+- Bun 1.2.21
+- Yarn 1.22.22
+- pnpm 10.15.1
+- npm 10.9.3
+- fastlane 2.228.0
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 11.3.0
+- jq 1.8.0
+- Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
+- Git 2.49.0
+- Git LFS 3.6.1
+- applesimutils 0.9.12
+- idb-companion 1.1.8
+- Maestro 2.0.2
+
+</Collapsible>
+
+#### <CopyTextButton>`macos-sequoia-15.5-xcode-26.0`</CopyTextButton> (recommended for SDK 53 if you want to use Xcode 26.0)
 
 <Collapsible summary="Details">
 
@@ -331,7 +355,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### <CopyTextButton>`macos-sequoia-15.6-xcode-16.4` (`sdk-54`)</CopyTextButton>
+#### <CopyTextButton>`macos-sequoia-15.6-xcode-16.4`</CopyTextButton> (recommended for SDK 54 if you don't want to use Xcode 26)
 
 <Collapsible summary="Details">
 

@@ -35,7 +35,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.PointerInputScope
 import com.facebook.react.devsupport.DevInternalSettings
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.fab.ExpoVelocityTracker.PointF
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.kernel.fab.FloatingActionButtonContent
@@ -61,18 +63,18 @@ fun ComposeMovableFloatingActionButton(
   onRefreshPress: () -> Unit = {},
   onOpenMenuPress: () -> Unit = {}
 ) {
-  var visible by remember { mutableStateOf(false) }
+  var visible by remember { mutableStateOf(VRUtilities.isQuest()) }
 
   remember {
     val listener = object : DevInternalSettings.Listener {
       lateinit var parent: WeakReference<DevInternalSettings>
       override fun onInternalSettingsChanged() {
-        visible = parent.get()?.isFloatingActionButtonEnabled == true
+        visible = VRUtilities.isQuest() || parent.get()?.isFloatingActionButtonEnabled == true
       }
     }
 
     DevInternalSettings(context, listener).also {
-      visible = it.isFloatingActionButtonEnabled
+      visible = VRUtilities.isQuest() || it.isFloatingActionButtonEnabled
       listener.parent = WeakReference(it)
     }
   }
@@ -110,6 +112,45 @@ fun ComposeMovableFloatingActionButton(
       }
     }
 
+    val gestureHandler: suspend PointerInputScope.() -> Unit = {
+      coroutineScope {
+        while (true) {
+          awaitPointerEventScope {
+            val firstDown = awaitFirstDown(requireUnconsumed = false)
+            val pointerId = firstDown.id
+
+            launch {
+              animatedOffset.stop()
+            }
+
+            var dragDistance = 0f
+            var dragOffset = animatedOffset.value
+
+            drag(pointerId) { change ->
+              dragOffset = (dragOffset + change.positionChange())
+                .coerceIn(maxX = bounds.x, maxY = bounds.y)
+              dragDistance += change.positionChange().getDistance()
+              velocityTracker.registerPosition(dragOffset.x, dragOffset.y)
+
+              if (dragDistance > ClickDragTolerance) {
+                launch {
+                  animatedOffset.animateTo(dragOffset)
+                }
+              }
+            }
+            if (dragDistance < ClickDragTolerance) {
+              velocityTracker.clear()
+              launch {
+                pillInteractionSource.emitRelease(firstDown.position)
+              }
+            } else {
+              handleRelease(animatedOffset, velocityTracker, totalFabSizePx, bounds)
+            }
+          }
+        }
+      }
+    }
+
     AnimatedVisibility(
       visible = visible,
       enter = fadeIn(),
@@ -120,45 +161,7 @@ fun ComposeMovableFloatingActionButton(
           .offset { animatedOffset.value.toIntOffset() }
           .size(totalFabSize)
           .padding(margin)
-          .pointerInput(bounds.x, bounds.y) {
-            coroutineScope {
-              while (true) {
-                awaitPointerEventScope {
-                  val firstDown = awaitFirstDown(requireUnconsumed = false)
-                  val pointerId = firstDown.id
-
-                  launch {
-                    animatedOffset.stop()
-                  }
-
-                  var dragDistance = 0f
-                  var dragOffset = animatedOffset.value
-
-                  drag(pointerId) { change ->
-                    dragOffset = (dragOffset + change.positionChange())
-                      .coerceIn(maxX = bounds.x, maxY = bounds.y)
-                    dragDistance += change.positionChange().getDistance()
-                    velocityTracker.registerPosition(dragOffset.x, dragOffset.y)
-                    change.consume()
-
-                    if (dragDistance > ClickDragTolerance) {
-                      launch {
-                        animatedOffset.animateTo(dragOffset)
-                      }
-                    }
-                  }
-                  if (dragDistance < ClickDragTolerance) {
-                    velocityTracker.clear()
-                    launch {
-                      pillInteractionSource.emitRelease(firstDown.position)
-                    }
-                  } else {
-                    handleRelease(animatedOffset, velocityTracker, totalFabSizePx, bounds)
-                  }
-                }
-              }
-            }
-          }
+          .pointerInput(Unit, gestureHandler)
       ) {
         FloatingActionButtonContent(
           interactionSource = pillInteractionSource,

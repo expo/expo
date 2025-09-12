@@ -11,9 +11,7 @@ export default [
   {
     name: 'image',
     type: 'string',
-    description: [
-      '[Image with build environment](/build-reference/infrastructure/).',
-    ],
+    description: ['[Image with build environment](/build-reference/infrastructure/).'],
   },
   {
     name: 'resourceClass',
@@ -29,7 +27,7 @@ export default [
   {
     name: 'ndk',
     type: 'string',
-    description: [ 'Version of Android NDK.' ],
+    description: ['Version of Android NDK.'],
   },
   {
     name: 'autoIncrement',
@@ -40,7 +38,7 @@ export default [
       'Allowed values:',
       ' - `"version"` - bumps the patch of `expo.version` (for example, `1.2.3` to `1.2.4`).',
       ' - `"versionCode"` (or `true`) - bumps `expo.android.versionCode` (for example, `3` to `4`).',
-      ' - `false` - versions won\'t be bumped automatically (default).',
+      " - `false` - versions won't be bumped automatically (default).",
       '',
       'Based on the value of [`cli.appVersionSource` in **eas.json**](/build-reference/app-versions/), the values will be updated locally in your project or on EAS servers.',
     ],
@@ -66,7 +64,7 @@ export default [
     name: 'applicationArchivePath',
     type: 'string',
     description: [
-      'Path (or pattern) where EAS Build is going to look for the application archive. EAS Build uses the `fast-glob` npm library for [pattern matching](https://github.com/mrmlnc/fast-glob#pattern-syntax). The default value is `android/app/build/outputs/**/*.{apk,aab}`.'
+      'Path (or pattern) where EAS Build is going to look for the application archive. EAS Build uses [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching. The default value is `android/app/build/outputs/**/*.{apk,aab}`.',
     ],
   },
   {
@@ -75,7 +73,7 @@ export default [
     description: [
       'Custom workflow file name that will be used to run this Android build. You can also specify this property on profile level for platform-agnostic workflows. [Learn more](/custom-builds/get-started/).',
       '',
-      'Example: `"config": "production-android.yml"` will use workflow from `.eas/build/production-android.yml`.'
+      'Example: `"config": "production-android.yml"` will use workflow from `.eas/build/production-android.yml`.',
     ],
   },
-]
+];
