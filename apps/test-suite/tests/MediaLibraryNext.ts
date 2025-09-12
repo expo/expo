@@ -197,6 +197,18 @@ export async function test(t) {
     });
   });
 
+  t.describe('Album get', () => {
+    t.it('gets an album by title', async () => {
+      const albumName = createAlbumName('gets an album by title');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+
+      const fetchedAlbum = await Album.get(albumName);
+      t.expect(fetchedAlbum).toBeDefined();
+      t.expect(fetchedAlbum.id).toBe(album.id);
+    });
+  });
+
   t.describe('Album deletion', () => {
     t.it('deletes an album', async () => {
       const albumName = createAlbumName('album deletion');

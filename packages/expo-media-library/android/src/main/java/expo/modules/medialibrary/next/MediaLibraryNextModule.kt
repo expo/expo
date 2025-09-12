@@ -11,6 +11,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.toKClass
 import expo.modules.medialibrary.next.objects.album.Album
+import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
@@ -36,6 +37,10 @@ class MediaLibraryNextModule : Module() {
 
   private val mediaStorePermissionsDelegate by lazy {
     MediaStorePermissionsDelegate(appContext)
+  }
+
+  private val albumQuery by lazy {
+    AlbumQuery(context)
   }
 
   private val albumFactory by lazy {
@@ -219,6 +224,11 @@ class MediaLibraryNextModule : Module() {
       }
       val assetPaths = assetRefs.get(toKClass<List<Uri>>())
       return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
+    }
+
+    AsyncFunction("getAlbum") Coroutine { title: String ->
+      systemPermissionsDelegate.requireSystemPermissions(false)
+      albumQuery.getAlbum(title)
     }
 
     AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->

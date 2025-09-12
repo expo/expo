@@ -134,6 +134,14 @@ public final class MediaLibraryNextModule: Module {
       }
     }
 
+    AsyncFunction("getAlbum") { (title: String) -> Album? in
+      try await checkIfPermissionGranted()
+      guard let collection = AssetCollectionRepository.shared.get(byTitle: title) else {
+        return nil
+      }
+      return Album(id: collection.localIdentifier)
+    }
+    
     AsyncFunction("deleteManyAlbums") { (albums: [Album], deleteAssets: Bool) async throws in
       try await checkIfPermissionGranted()
       let albumsIds = albums.map { $0.id }
