@@ -54,7 +54,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
