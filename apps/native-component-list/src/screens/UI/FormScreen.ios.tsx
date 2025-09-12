@@ -38,6 +38,9 @@ export default function FormScreen() {
               Labeled Content Button
             </Button>
           </LabeledContent>
+          <LabeledContent label="Name">
+            <Text>Beto</Text>
+          </LabeledContent>
           <LabeledContent label="Labeled Slider ">
             <Slider value={sliderValue} onValueChange={setSliderValue} />
           </LabeledContent>
