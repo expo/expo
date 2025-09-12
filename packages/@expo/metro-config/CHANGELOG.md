@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add fallback resolution for `@expo/metro-runtime` pre-module ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
+
 ## 54.0.2 — 2025-09-11
 
 ### 🛠 Breaking changes
