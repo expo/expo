@@ -340,16 +340,16 @@ export function getDefaultConfig(
         if (stdRuntime) {
           preModules.push(stdRuntime);
         } else {
-          debug('@expo/metro-runtime not found, this may cause issues');
+          debug('"expo/src/winter" not found, this may cause issues');
         }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
-        const metroRuntime = resolveFrom.silent(projectRoot, '@expo/metro-runtime');
+        const metroRuntime = getExpoMetroRuntimeOptional(projectRoot);
         if (metroRuntime) {
           preModules.push(metroRuntime);
         } else {
-          debug('@expo/metro-runtime not found, this may cause issues');
+          debug('"@expo/metro-runtime" not found, this may cause issues');
         }
 
         return preModules;
@@ -449,4 +449,21 @@ function findUpPackageJson(cwd: string): string | null {
     return found;
   }
   return findUpPackageJson(path.dirname(cwd));
+}
+
+function getExpoMetroRuntimeOptional(projectRoot: string): string | undefined {
+  const EXPO_METRO_RUNTIME = '@expo/metro-runtime';
+  let metroRuntime = resolveFrom.silent(projectRoot, EXPO_METRO_RUNTIME);
+  if (!metroRuntime) {
+    // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
+    // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
+    // try to also resolve it via `expo-router`, where it's a required peer
+    const baseExpoRouter = resolveFrom.silent(projectRoot, 'expo-router/package.json');
+    // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
+    // optional peer dependency
+    metroRuntime = baseExpoRouter
+      ? resolveFrom.silent(baseExpoRouter, EXPO_METRO_RUNTIME)
+      : resolveFrom.silent(require.resolve('expo/package.json'), EXPO_METRO_RUNTIME);
+  }
+  return metroRuntime;
 }
