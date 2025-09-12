@@ -44,9 +44,7 @@ declare namespace globalThis {
 const { createFromFetch, encodeReply } = RSDWClient;
 
 // TODO: Maybe this could be a bundler global instead.
-const IS_DOM =
-  // @ts-expect-error: Added via react-native-webview
-  typeof ReactNativeWebView !== 'undefined';
+const IS_DOM = typeof window !== 'undefined' && window.isDOMComponentContext === true;
 
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
