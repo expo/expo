@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Realign `babel-plugin-syntax-hermes-parser@^0.29.1` with `react-native@0.81.4`. ([#39600](https://github.com/expo/expo/pull/39600) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 54.0.0 — 2025-09-10
