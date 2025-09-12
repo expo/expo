@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+Child views of `<GlassView/>` gains all animations from parent view.
 
 ### 🐛 Bug fixes
 
