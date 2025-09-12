@@ -91,6 +91,10 @@ declare global {
      * ExpoDomWebView is defined in `@expo/dom-webview` runtime.
      */
     var ExpoDomWebView: ExpoDomWebView;
+    /**
+     * isDOMComponentContext is defined in `webview-wrapper.tsx`
+     */
+    var isDOMComponentContext: boolean | undefined;
 }
 export type ExpoDomWebView = Record<string, unknown>;
 export type { ExpoGlobal };

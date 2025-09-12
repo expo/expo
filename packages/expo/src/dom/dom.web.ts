@@ -1,6 +1,4 @@
 export * from './dom-hooks';
 
 // TODO: Maybe this could be a bundler global instead.
-export const IS_DOM =
-  // @ts-expect-error: Added via react-native-webview
-  typeof ReactNativeWebView !== 'undefined';
+export const IS_DOM = typeof window !== 'undefined' && window.isDOMComponentContext === true;
