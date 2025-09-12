@@ -20,12 +20,8 @@ const withNewArchPlistHotfix = config => {
   });
 };
 function getNewArchEnabled(config) {
-  const newArchEnabled = config.newArchEnabled ?? null;
-  const newArchEnabledIOS = config.ios?.newArchEnabled ?? null;
-  if (typeof newArchEnabledIOS === 'boolean') {
-    return newArchEnabledIOS;
-  }
-  return !!newArchEnabled;
+  const newArchEnabled = (config.ios?.newArchEnabled ?? config.newArchEnabled)?.toString();
+  return newArchEnabled !== 'false';
 }
 function setNewArchPlistHotfixConfig(config, infoPlist) {
   const newArchEnabled = getNewArchEnabled(config);
@@ -34,6 +30,5 @@ function setNewArchPlistHotfixConfig(config, infoPlist) {
     RCTNewArchEnabled: newArchEnabled
   };
 }
-;
 var _default = exports.default = withNewArchPlistHotfix;
 //# sourceMappingURL=new-arch-plist-hotfix.js.map
