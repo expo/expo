@@ -1,6 +1,6 @@
 {
   "@expo/fingerprint": "~0.15.0",
-  "@expo/metro-runtime": "~6.1.1",
+  "@expo/metro-runtime": "~6.1.2",
   "@expo/vector-icons": "^15.0.2",
   "@expo/ui": "~0.2.0-beta.2",
   "@react-native-async-storage/async-storage": "2.2.0",

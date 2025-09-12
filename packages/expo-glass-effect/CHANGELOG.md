@@ -5,11 +5,16 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-Add child view support to <GlassView />, allowing child views to inherit animations from the parent view. ([#39595](https://github.com/expo/expo/pull/39595) by [@patrikduksin](https://github.com/patrikduksin))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.1.3 — 2025-09-12
+
+### 🎉 New features
+
+Add child view support to <GlassView />, allowing child views to inherit animations from the parent view. ([#39595](https://github.com/expo/expo/pull/39595) by [@patrikduksin](https://github.com/patrikduksin))
 
 ## 0.1.2 — 2025-09-11
 
