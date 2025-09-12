@@ -1,6 +1,6 @@
 extends: capitalization
 message: "'%s' should be in sentence case"
-link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#headings'
+link: "https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#headings"
 level: warning
 scope:
   - heading.h2
@@ -9,205 +9,205 @@ scope:
   - heading.h5
 match: $sentence
 exceptions:
-  - '.*2FA.*'
+  - ".*2FA.*"
   - '.*app\.config\.js.*'
   - '.*app\.json.*'
   - '.*app\.plugin\.js.*'
-  - '.*app directory.*'
-  - '.*assets.*'
-  - '.*create-expo-app.*'
-  - '.*create-react-native-app.*'
-  - '.*^iOS(.*)'
-  - '.*web.*'
-  - '.*AASA.*'
-  - '.*API.*'
-  - '.*APIs.*'
-  - '.*^Android(.*)'
-  - '.*AndroidManifest.*'
-  - '.*Android.*Bundle.*'
-  - '.*Android.*Package.*'
-  - '.*Android Studio.*'
-  - '.*APNs.*'
-  - '.*App Links.*'
-  - '.*AppDelegate.*'
-  - '.*App Store.*'
-  - '.*App Store Connect.*'
-  - '.*Apple.*'
-  - '.*Apple App Store.*'
-  - '.*Apple Developer.*'
-  - '.*Apple Developer Account.*'
-  - '.*Apple Developer Console.*'
-  - '.*Apple Developer Portal.*'
-  - '.*Apple ID.*'
-  - '.*Apple Pay.*'
-  - '.*Asset Links.*'
-  - '.*Async Storage.*'
-  - '.*Autolinking.*'
-  - '.*AuthSession.*'
-  - '.*AWS Amplify Console.*'
-  - '.*AWS.*'
-  - '.*Babel.*'
+  - ".*app directory.*"
+  - ".*assets.*"
+  - ".*create-expo-app.*"
+  - ".*create-react-native-app.*"
+  - ".*^iOS(.*)"
+  - ".*web.*"
+  - ".*AASA.*"
+  - ".*API.*"
+  - ".*APIs.*"
+  - ".*^Android(.*)"
+  - ".*AndroidManifest.*"
+  - ".*Android.*Bundle.*"
+  - ".*Android.*Package.*"
+  - ".*Android Studio.*"
+  - ".*APNs.*"
+  - ".*App Links.*"
+  - ".*AppDelegate.*"
+  - ".*App Store.*"
+  - ".*App Store Connect.*"
+  - ".*Apple.*"
+  - ".*Apple App Store.*"
+  - ".*Apple Developer.*"
+  - ".*Apple Developer Account.*"
+  - ".*Apple Developer Console.*"
+  - ".*Apple Developer Portal.*"
+  - ".*Apple ID.*"
+  - ".*Apple Pay.*"
+  - ".*Asset Links.*"
+  - ".*Async Storage.*"
+  - ".*Autolinking.*"
+  - ".*AuthSession.*"
+  - ".*AWS Amplify Console.*"
+  - ".*AWS.*"
+  - ".*Babel.*"
   - '.*babel\.config\.js.*'
-  - '.*Bundler.*'
-  - '.*Cache-Control.*'
-  - '.*Can I pay.*'
-  - '.*CSS.*'
-  - '.*CDN.*'
-  - '.*Chrome.*'
-  - '.*CLI.*'
-  - '.*Classic Updates.*'
-  - '.*CNG.*'
-  - '.*CocoaPods.*'
-  - '.*CodePush.*'
-  - '.*Command Line Tools.*'
-  - '.*Config Plugin.*'
-  - '.*CORS.*'
-  - '.*CRUD.*'
+  - ".*Bundler.*"
+  - ".*Cache-Control.*"
+  - ".*Can I pay.*"
+  - ".*CSS.*"
+  - ".*CDN.*"
+  - ".*Chrome.*"
+  - ".*CLI.*"
+  - ".*Classic Updates.*"
+  - ".*CNG.*"
+  - ".*CocoaPods.*"
+  - ".*CodePush.*"
+  - ".*Command Line Tools.*"
+  - ".*Config Plugin.*"
+  - ".*CORS.*"
+  - ".*CRUD.*"
   - '.*credentials\.json.*'
-  - '.*DevTools.*'
-  - '.*Developer Console.*'
-  - '.*Developer Mode.*'
-  - '.*detach.*'
-  - '.*develop.*apps.*Windows.*'
-  - '.*DNS.*'
-  - '.*E2E.*'
-  - '.*EAS.*'
-  - '.*EAS Build.*'
-  - '.*EAS Submit.*'
-  - '.*EAS Metadata.*'
-  - '.*EAS Update.*'
-  - '.*EAS Insights.*'
-  - '.*Element Inspector.*'
-  - '.*Environment Variables.*'
-  - '.*ESLint.*'
-  - '.*Expo.*'
-  - '.*ExpoKit.*'
-  - '.*Expo Application Services.*'
-  - '.*eject.*'
-  - '.*esbuild.*'
-  - '.*ESM.*'
-  - '.*expo.*'
-  - '.*Fastlane.*'
-  - '.*Firebase.*'
-  - '.*FileSystem.*'
-  - '.*Flipper.*'
-  - '.*Frequently Asked Questions.*'
-  - '.*Frame Content-Security Policy.*'
-  - '.*FAQ.*'
-  - '.*FCM.*'
-  - '.*FYI.*'
-  - '.*fingerprintignore.*'
-  - '.*fingerprint.config.js.*'
-  - '.*Generate.*Android.*'
-  - '.*GitHub.*'
-  - '.*GitHub Pages.*'
-  - '.*Google.*'
-  - '.*Google Developer.*'
-  - '.*Google Font.*'
-  - '.*Google Service Account.*'
-  - '.*Google Pay.*'
+  - ".*DevTools.*"
+  - ".*Developer Console.*"
+  - ".*Developer Mode.*"
+  - ".*detach.*"
+  - ".*develop.*apps.*Windows.*"
+  - ".*DNS.*"
+  - ".*E2E.*"
+  - ".*EAS.*"
+  - ".*EAS Build.*"
+  - ".*EAS Submit.*"
+  - ".*EAS Metadata.*"
+  - ".*EAS Update.*"
+  - ".*EAS Insights.*"
+  - ".*Element Inspector.*"
+  - ".*Environment Variables.*"
+  - ".*ESLint.*"
+  - ".*Expo.*"
+  - ".*ExpoKit.*"
+  - ".*Expo Application Services.*"
+  - ".*eject.*"
+  - ".*esbuild.*"
+  - ".*ESM.*"
+  - ".*expo.*"
+  - ".*Fastlane.*"
+  - ".*Firebase.*"
+  - ".*FileSystem.*"
+  - ".*Flipper.*"
+  - ".*Frequently Asked Questions.*"
+  - ".*Frame Content-Security Policy.*"
+  - ".*FAQ.*"
+  - ".*FCM.*"
+  - ".*FYI.*"
+  - ".*fingerprintignore.*"
+  - ".*fingerprint.config.js.*"
+  - ".*Generate.*Android.*"
+  - ".*GitHub.*"
+  - ".*GitHub Pages.*"
+  - ".*Google.*"
+  - ".*Google Developer.*"
+  - ".*Google Font.*"
+  - ".*Google Service Account.*"
+  - ".*Google Pay.*"
   - ".*Giphy's.*"
-  - '.*GLView.*'
-  - '.*gitignore.*'
-  - '.*Play Store.*'
-  - '.*Gradle.*'
-  - '.*Gymfile.*'
-  - '.*Headless.*Background.*'
-  - '.*Help.*published.*'
-  - '.*Hermes.*'
-  - '.*HTML.*'
-  - '.*HTTP.*'
-  - '.*HTTPS.*'
+  - ".*GLView.*"
+  - ".*gitignore.*"
+  - ".*Play Store.*"
+  - ".*Gradle.*"
+  - ".*Gymfile.*"
+  - ".*Headless.*Background.*"
+  - ".*Help.*published.*"
+  - ".*Hermes.*"
+  - ".*HTML.*"
+  - ".*HTTP.*"
+  - ".*HTTPS.*"
   - '.*Info\.plist.*'
-  - '.*iOS.*Simulator.*'
-  - '.*JSON.*'
-  - '.*JavaScript.*'
-  - '.*JavaScriptCore.*'
-  - '.*Java Development Kit.*'
-  - '.*Jest.*'
-  - '.*Keychain.*'
-  - '.*Kotlin.*'
-  - '.*layout.*'
-  - '.*Legend-State.*'
-  - '.*Link component.*'
-  - '.*Linking.*'
-  - '.*macOS.*'
+  - ".*iOS.*Simulator.*"
+  - ".*JSON.*"
+  - ".*JavaScript.*"
+  - ".*JavaScriptCore.*"
+  - ".*Java Development Kit.*"
+  - ".*Jest.*"
+  - ".*Keychain.*"
+  - ".*Kotlin.*"
+  - ".*layout.*"
+  - ".*Legend-State.*"
+  - ".*Link component.*"
+  - ".*Linking.*"
+  - ".*macOS.*"
   - '.*manifest\.json.*'
   - '.*metro\.config\.js.*'
-  - '.*Netlify.*'
+  - ".*Netlify.*"
   - '.*Node\.js.*'
-  - '.*Node Package Managers.*'
-  - '.*NavigationContainer.*'
+  - ".*Node Package Managers.*"
+  - ".*NavigationContainer.*"
   - '.*Next\.js.*'
-  - '.*New Architecture.*'
-  - '.*Notification Message.*'
-  - '.*npm.*'
-  - '.*OAuth.*'
-  - '.*OTA.*'
-  - '.*OTF.*'
-  - '.*PostCSS.*'
-  - '.*PRAGMA.*'
-  - '.*Prebuild.*'
-  - '.*Privacy Shield.*'
-  - '.*Push Notification.*'
-  - '.*PWA.*'
+  - ".*New Architecture.*"
+  - ".*Notification Message.*"
+  - ".*npm.*"
+  - ".*OAuth.*"
+  - ".*OTA.*"
+  - ".*OTF.*"
+  - ".*PostCSS.*"
+  - ".*PRAGMA.*"
+  - ".*Prebuild.*"
+  - ".*Privacy Shield.*"
+  - ".*Push Notification.*"
+  - ".*PWA.*"
   - '.*package\.json.*'
-  - '.*props.*'
-  - '.*QR.*'
-  - '.*RTL.*'
-  - '.*React.*'
-  - '.*React Native.*'
-  - '.*React Navigation.*'
-  - '.*Reanimated.*'
-  - '.*Remote Debugging.*'
-  - '.*REST API.*'
-  - '.*Remote JS.*'
-  - '.*Router.*'
+  - ".*props.*"
+  - ".*QR.*"
+  - ".*RTL.*"
+  - ".*React.*"
+  - ".*React Native.*"
+  - ".*React Navigation.*"
+  - ".*Reanimated.*"
+  - ".*Remote Debugging.*"
+  - ".*REST API.*"
+  - ".*Remote JS.*"
+  - ".*Router.*"
   - ".*Router's.*"
-  - '.*SAF.*'
-  - '.*SASS.*'
-  - '.*SDK.*'
-  - '.*SecureStore.*'
-  - '.*Sentry.*'
-  - '.*Server-side.*'
-  - '.*Sierra.*'
-  - '.*SLAs.*'
-  - '.*Smart Banner.*'
-  - '.*Smart App Banners.*'
-  - '.*SMS.*'
-  - '.*Software Mansion.*'
-  - '.*SQLite.*'
-  - '.*SQLCipher.*'
-  - '.*Statically-typed.*'
-  - '.*Storage Access Framework.*'
-  - '.*Strict-Transport-Security.*'
-  - '.*SSO.*'
-  - '.*Swift.*'
-  - '.*Terser.*'
-  - '.*TestFlight.*'
-  - '.*TLS.*'
-  - '.*Transporter.*'
-  - '.*TTF.*'
-  - '.*Turtle.*'
-  - '.*TV.*'
-  - '.*TypeScript.*'
-  - '.*TypeScript module.*'
-  - '.*Watchman.*'
-  - '.*UI.*'
-  - '.*USB.*'
-  - '.*URI.*'
-  - '.*URL.*'
-  - '.*URLs.*'
-  - '.*V8.*'
-  - '.*VS Code.*'
-  - '.*WebGL.*'
-  - '.*WebView.*'
-  - '.*Wix.*'
-  - '.*webpack.*'
-  - '.*Xcode.*'
-  - '.*XDE.*'
-  - '.*Yarn.*'
-  - '.*YAML.*'
+  - ".*SAF.*"
+  - ".*SASS.*"
+  - ".*SDK.*"
+  - ".*SecureStore.*"
+  - ".*Sentry.*"
+  - ".*Server-side.*"
+  - ".*Sierra.*"
+  - ".*SLAs.*"
+  - ".*Smart Banner.*"
+  - ".*Smart App Banners.*"
+  - ".*SMS.*"
+  - ".*Software Mansion.*"
+  - ".*SQLite.*"
+  - ".*SQLCipher.*"
+  - ".*Statically-typed.*"
+  - ".*Storage Access Framework.*"
+  - ".*Strict-Transport-Security.*"
+  - ".*SSO.*"
+  - ".*Swift.*"
+  - ".*Terser.*"
+  - ".*TestFlight.*"
+  - ".*TLS.*"
+  - ".*Transporter.*"
+  - ".*TTF.*"
+  - ".*Turtle.*"
+  - ".*TV.*"
+  - ".*TypeScript.*"
+  - ".*TypeScript module.*"
+  - ".*Watchman.*"
+  - ".*UI.*"
+  - ".*USB.*"
+  - ".*URI.*"
+  - ".*URL.*"
+  - ".*URLs.*"
+  - ".*V8.*"
+  - ".*VS Code.*"
+  - ".*WebGL.*"
+  - ".*WebView.*"
+  - ".*Wix.*"
+  - ".*webpack.*"
+  - ".*Xcode.*"
+  - ".*XDE.*"
+  - ".*Yarn.*"
+  - ".*YAML.*"
   # PascalCase for React component names that end with common component suffixes
   - '^[A-Z][a-zA-Z]*(?:Input|Sheet|Picker|Progress|Menu|View|Button|Switch|Slider|Text|TextInput)(?:\s*\([^)]+\))?$'
   # Standalone Expo UI component names
@@ -279,3 +279,5 @@ exceptions:
   - Secure Context in DOM
   - Enterprise Support
   - Use Stacks
+  - Mode 1: Auto-with-overrides mode
+  - Mode 2: Payload mode

@@ -1163,8 +1163,8 @@ When using payload mode, you cannot specify any other parameters.
 
 You can reference the following outputs in subsequent jobs:
 
-| Output      | Type   | Description                                                                           |
-| ----------- | ------ | ------------------------------------------------------------------------------------- |
+| Output      | Type   | Description                                                                                |
+| ----------- | ------ | ------------------------------------------------------------------------------------------ |
 | comment_url | string | URL of the posted GitHub comment (only available when the comment is successfully posted). |
 
 ### Examples
@@ -1203,8 +1203,7 @@ Adds a custom message while still auto-discovering all builds and updates.
 name: PR Custom Message
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  pull_request: {}
 
 jobs:
   # ...
@@ -1214,7 +1213,7 @@ jobs:
     after: [build_ios, build_android, publish_update]
     type: github-comment
     params:
-      message: "🎉 Preview builds are ready! Please test these changes before approving the PR."
+      message: '🎉 Preview builds are ready! Please test these changes before approving the PR.'
       # build_ids and update_group_ids are undefined, so auto-discovery is enabled
 ```
 
@@ -1228,8 +1227,7 @@ Explicitly specify which builds and updates to include in the comment.
 name: PR Specific Builds
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  pull_request: {}
 
 jobs:
   # ...
@@ -1239,7 +1237,7 @@ jobs:
     after: [build_ios, build_android, publish_update]
     type: github-comment
     params:
-      message: "Testing builds ready for QA review"
+      message: 'Testing builds ready for QA review'
       build_ids:
         - ${{ after.build_ios.outputs.build_id }}
         - ${{ after.build_android.outputs.build_id }}
@@ -1257,8 +1255,7 @@ Use empty arrays to exclude specific content types.
 name: PR Updates Only
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  pull_request: {}
 
 jobs:
   # ...
@@ -1268,7 +1265,7 @@ jobs:
     after: [publish_update]
     type: github-comment
     params:
-      message: "New update available for testing!"
+      message: 'New update available for testing!'
       build_ids: [] # Empty array excludes all builds
       # update_group_ids undefined = auto-discover updates
 ```
@@ -1285,8 +1282,7 @@ Payload mode gives you complete control over the comment content. Note that when
 name: Custom PR Comment
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  pull_request: {}
 
 jobs:
   # ...
@@ -1325,8 +1321,7 @@ This workflow posts different comments based on whether the build succeeded or f
 name: Conditional PR Comment
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  pull_request: {}
 
 jobs:
   build_android:
