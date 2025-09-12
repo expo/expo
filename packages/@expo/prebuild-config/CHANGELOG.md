@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Always set RCTNewArchEnabled ([#39626](https://github.com/expo/expo/pull/39626) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 54.0.2 — 2025-09-12
