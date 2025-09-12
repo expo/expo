@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Fix runtime error due to passing undefined into function that doesnt receive any argument
 
 ### 💡 Others
 
