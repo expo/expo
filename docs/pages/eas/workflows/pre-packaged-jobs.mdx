@@ -37,6 +37,12 @@ You can pass the following parameters into the `params` list:
 | platform  | string | **Required.** The platform to build for. Can be either `android` or `ios`. |
 | profile   | string | Optional. The build profile to use. Defaults to `production`.              |
 
+#### Environment Variables
+
+If you need certain environment variables during the build process, you can include them in your
+[eas.json](/eas/json/#environment), for your specified build `profile`. They will be pulled from
+[EAS environment variables](/eas/environment-variables/).
+
 #### Outputs
 
 You can reference the following outputs in subsequent jobs:
@@ -266,7 +272,16 @@ Calculates a fingerprint of your project.
 jobs:
   fingerprint:
     type: fingerprint
+    environment: production | preview | development # optional, defaults to production
+    env: # optional list of environment variables
+      ENV_VAR_NAME: value
 ```
+
+#### Environment Variables
+
+You can pass a list of environment variables into the `env` section. These environment variables will be pulled from
+[EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the
+Environment variable's environment, useful for when the same environment variable is defined for different environments.
 
 #### Outputs
 
@@ -650,6 +665,9 @@ To publish update previews and to send over-the-air updates, you'll need to run 
 jobs:
   publish_update:
     type: update
+    environment: production | preview | development # optional, defaults to production
+    env: # optional list of environment variables
+      ENV_VAR_NAME: value
     params:
       message: string # optional
       platform: string # optional - android | ios | all, defaults to all
@@ -657,6 +675,12 @@ jobs:
       channel: string # optional - cannot be used with branch
       private_key_path: string # optional
 ```
+
+#### Environment Variables
+
+You can pass a list of environment variables into the `env` section. These environment variables will be pulled from
+[EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the
+Environment variable's environment, useful for when the same environment variable is defined for different environments.
 
 #### Parameters
 
