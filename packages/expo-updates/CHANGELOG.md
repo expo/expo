@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix invalid path pattern in podspec for projects with spaces ([#38695](https://github.com/expo/expo/pull/38695) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 29.0.10 — 2025-09-11
