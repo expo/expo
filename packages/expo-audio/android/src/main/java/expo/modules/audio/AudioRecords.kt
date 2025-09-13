@@ -26,7 +26,8 @@ data class RecordingOptions(
   @Field val outputFormat: AndroidOutputFormat?,
   @Field val audioEncoder: AndroidAudioEncoder?,
   @Field val maxFileSize: Int?,
-  @Field val isMeteringEnabled: Boolean = false
+  @Field val isMeteringEnabled: Boolean = false,
+  @Field val audioSource: RecordingSource?
 ) : Record
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {
@@ -86,3 +87,25 @@ class RecordOptions(
   @Field val atTime: Double?,
   @Field val forDuration: Double?
 ) : Record
+
+enum class RecordingSource(val value: String) : Enumerable {
+  CAMCORDER("camcorder"),
+  DEFAULT("default"),
+  MIC("mic"),
+  REMOTE_SUBMIX("remote_submix"),
+  UNPROCESSED("unprocessed"),
+  VOICE_COMMUNICATION("voice_communication"),
+  VOICE_PERFORMANCE("voice_performance"),
+  VOICE_RECOGNITION("voice_recognition");
+
+  fun toAudioSource() = when (this) {
+    CAMCORDER -> MediaRecorder.AudioSource.CAMCORDER
+    DEFAULT -> MediaRecorder.AudioSource.DEFAULT
+    MIC -> MediaRecorder.AudioSource.MIC
+    REMOTE_SUBMIX -> MediaRecorder.AudioSource.REMOTE_SUBMIX
+    UNPROCESSED -> MediaRecorder.AudioSource.UNPROCESSED
+    VOICE_COMMUNICATION -> MediaRecorder.AudioSource.VOICE_COMMUNICATION
+    VOICE_PERFORMANCE -> MediaRecorder.AudioSource.VOICE_PERFORMANCE
+    VOICE_RECOGNITION -> MediaRecorder.AudioSource.VOICE_RECOGNITION
+  }
+}
