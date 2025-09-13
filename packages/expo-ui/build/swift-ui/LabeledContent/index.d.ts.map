@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/swift-ui/LabeledContent/index.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,KAAK,uBAAuB,EAAE,MAAM,UAAU,CAAC;AAExD,MAAM,MAAM,mBAAmB,GAAG;IAChC;;OAEG;IACH,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B,GAAG,uBAAuB,CAAC;AAO5B;;;;;GAKG;AACH,wBAAgB,cAAc,CAAC,KAAK,EAAE,mBAAmB,+BASxD"}

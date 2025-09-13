@@ -10,6 +10,7 @@ import {
   Text,
   DisclosureGroup,
   ContentUnavailableView,
+  LabeledContent,
 } from '@expo/ui/swift-ui';
 import { useState } from 'react';
 
@@ -32,6 +33,17 @@ export default function FormScreen() {
             Some text!
           </Text>
           <Button onPress={() => alert('Clicked!')}>I'm a button</Button>
+          <LabeledContent label="Labeled Content">
+            <Button variant="borderless" onPress={() => alert('Clicked!')}>
+              Labeled Content Button
+            </Button>
+          </LabeledContent>
+          <LabeledContent label="Name">
+            <Text>Beto</Text>
+          </LabeledContent>
+          <LabeledContent label="Labeled Slider ">
+            <Slider value={sliderValue} onValueChange={setSliderValue} />
+          </LabeledContent>
           <Switch value={switchValue} label="This is a switch" onValueChange={setSwitchValue} />
           <ColorPicker
             label="Select a color"
