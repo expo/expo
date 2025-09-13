@@ -22,8 +22,19 @@ export type ButtonProps = {
      */
     onPress?: () => void;
     /**
+     * A string describing the leading icon to display in the button.
+     * Uses Material Icons on Android.
+     */
+    leadingIcon?: MaterialIcon;
+    /**
+     * A string describing the trailing icon to display in the button.
+     * Uses Material Icons on Android.
+     */
+    trailingIcon?: MaterialIcon;
+    /**
      * A string describing the system image to display in the button.
      * Uses Material Icons on Android.
+     * @deprecated Use `leadingIcon` instead.
      */
     systemImage?: MaterialIcon;
     /**
@@ -57,9 +68,10 @@ export type ButtonProps = {
 /**
  * @hidden
  */
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage'> & {
+export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'leadingIcon' | 'trailingIcon' | 'systemImage'> & {
     text: string;
-    systemImage?: string;
+    leadingIcon?: string;
+    trailingIcon?: string;
 } & ViewEvent<'onButtonPressed', void>;
 /**
  * @hidden
