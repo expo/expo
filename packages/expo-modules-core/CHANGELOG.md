@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Starts using precompiled headers to improve build times.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

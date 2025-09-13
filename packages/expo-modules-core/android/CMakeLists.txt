@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.16)
 
 project(expo-modules-core)
 
@@ -42,6 +42,8 @@ add_library(
         ${sources_android_types}
         ${sources_android_javaclasses}
 )
+
+target_precompile_headers(${PACKAGE_NAME} PRIVATE ${SRC_DIR}/main/cpp/ExpoHeader.pch)
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
   add_subdirectory("${SRC_DIR}/fabric")

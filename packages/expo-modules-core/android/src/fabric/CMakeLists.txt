@@ -9,6 +9,8 @@ add_library(fabric STATIC
   ${SOURCES}
 )
 
+target_precompile_headers(fabric PRIVATE ${SRC_DIR}/main/cpp/ExpoHeader.pch)
+
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
 
 target_compile_options(fabric PRIVATE
