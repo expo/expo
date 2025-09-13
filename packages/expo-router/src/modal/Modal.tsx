@@ -8,6 +8,7 @@ import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
 import { useNavigation } from '../useNavigation';
+import { DetentChangeData } from './types';
 import { areDetentsValid } from './utils';
 
 export interface ModalProps extends ViewProps {
@@ -30,6 +31,14 @@ export interface ModalProps extends ViewProps {
    * Callback that is called after modal is shown.
    */
   onShow?: () => void;
+  /**
+   * Callback that is called after detent change.
+   * Works only when `presentation` is set to `formSheet`.
+   *
+   * @platform ios
+   * @platform android
+   */
+  onDetentChange?: (data: DetentChangeData) => void;
   /**
    * The animation type for the modal.
    * This can be one of 'none', 'slide', or 'fade'.
@@ -108,6 +117,7 @@ export function Modal(props: ModalProps) {
     visible,
     onClose,
     onShow,
+    onDetentChange,
     animationType,
     presentationStyle,
     transparent,
@@ -190,9 +200,15 @@ export function Modal(props: ModalProps) {
           setCurrentModalId(undefined);
         }
       });
+      const unsubscribeDetentChange = addEventListener('detentChange', (id, data) => {
+        if (id === currentModalId) {
+          onDetentChange?.(data);
+        }
+      });
       return () => {
         unsubscribeShow();
         unsubscribeClose();
+        unsubscribeDetentChange();
       };
     }
     return () => {};
