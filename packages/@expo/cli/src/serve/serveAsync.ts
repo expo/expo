@@ -70,8 +70,13 @@ async function startStaticServerAsync(dist: string, options: Options) {
     })
       .on('error', (err: any) => {
         if (err.status === 404) {
-          res.statusCode = 404;
-          res.end('Not Found');
+          // Return the index.html as a fallback for spa apps
+          send(req, 'index.html', { root: dist })
+            .on('error', (err2: any) => {
+              res.statusCode = err2.status || 500;
+              res.end('Internal Server Error');
+            })
+            .pipe(res);
           return;
         }
         res.statusCode = err.status || 500;
