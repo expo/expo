@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Remove UIBackgroundMode location requirement for geofencing. [#39419](https://github.com/expo/expo/pull/39419)
+
 ### 💡 Others
 
 ## 19.0.7 — 2025-09-11
