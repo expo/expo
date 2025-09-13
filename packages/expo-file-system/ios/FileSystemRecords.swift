@@ -34,3 +34,10 @@ struct DirectoryInfo: Record {
   @Field var modificationTime: Int64?
   @Field var creationTime: Int64?
 }
+
+struct FilePickerOptions: Record {
+  @Field var initialUri: URL?
+  @Field var mimeType: String?
+  @Field var openAsCopy: Bool = true
+  @Field var allowsMultipleSelection: Bool = false
+}
