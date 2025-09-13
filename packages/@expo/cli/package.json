@@ -102,7 +102,8 @@
     "terminal-link": "^2.1.1",
     "undici": "^6.18.2",
     "wrap-ansi": "^7.0.0",
-    "ws": "^8.12.1"
+    "ws": "^8.12.1",
+    "zod": "^3.25.76"
   },
   "taskr": {
     "requires": [

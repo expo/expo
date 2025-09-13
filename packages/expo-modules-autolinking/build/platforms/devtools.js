@@ -14,7 +14,10 @@ async function resolveModuleAsync(packageName, revision) {
     return {
         packageName,
         packageRoot: revision.path,
-        webpageRoot: path_1.default.join(revision.path, devtoolsConfig.webpageRoot),
+        webpageRoot: devtoolsConfig.webpageRoot
+            ? path_1.default.join(revision.path, devtoolsConfig.webpageRoot)
+            : undefined,
+        cliExtensions: devtoolsConfig.cliExtensions,
     };
 }
 async function resolveExtraBuildDependenciesAsync(_projectNativeRoot) {
