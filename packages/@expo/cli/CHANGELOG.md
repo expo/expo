@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent iOS device builds from being remotely cached ([#39621](https://github.com/expo/expo/pull/39621) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Prevent empty/non-string logs
+- Prevent empty/non-string logs ([#39635](https://github.com/expo/expo/pull/39635) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
