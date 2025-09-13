@@ -45,13 +45,13 @@ export async function launchAppAsync(
 
   XcodeBuild.logPrettyItem(chalk`{bold Installing} on ${props.device.name}`);
 
-  const device = await AppleDeviceManager.resolveAsync({ device: props.device });
-  await device.installAppAsync(binaryPath);
+  const deviceManager = await AppleDeviceManager.resolveAsync({ device: props.device });
+  await deviceManager.installAppAsync(binaryPath);
 
-  XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${device.name} {dim (${appId})}`);
+  XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${deviceManager.name} {dim (${appId})}`);
 
   if (props.shouldStartBundler) {
-    await SimulatorLogStreamer.getStreamer(device.device, {
+    await SimulatorLogStreamer.getStreamer(deviceManager.device, {
       appId,
     }).attachAsync();
   }
@@ -61,7 +61,7 @@ export async function launchAppAsync(
     {
       applicationId: appId,
     },
-    { device }
+    { device: deviceManager.device }
   );
 }
 
