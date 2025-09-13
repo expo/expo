@@ -40,10 +40,12 @@ class LogRespectingTerminal extends Terminal {
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
     super(stream, { ttyPrint: true });
 
-    const sendLog = (format: string, ...args: any[]) => {
-      this.log(format, ...args);
-      // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
-      this.flush();
+    const sendLog = (format: unknown, ...args: any[]) => {
+      if (format != null) {
+        this.log(format as string, ...args);
+        // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
+        this.flush();
+      }
     };
 
     console.log = sendLog;
