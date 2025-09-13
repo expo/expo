@@ -128,6 +128,7 @@
     "tsd": "^0.28.1"
   },
   "dependencies": {
+    "@expo/metro-runtime": "^6.1.2",
     "@expo/schema-utils": "^0.1.7",
     "@expo/server": "^0.7.4",
     "@radix-ui/react-slot": "1.2.0",
