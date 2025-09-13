@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- fix undefined logs being printed.
 - Prevent iOS device builds from being remotely cached ([#39621](https://github.com/expo/expo/pull/39621) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
