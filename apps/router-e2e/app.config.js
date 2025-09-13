@@ -6,11 +6,9 @@ const subdomain = process.env.EXPO_TUNNEL_SUBDOMAIN ?? 'expo-e2e-universal-linki
 module.exports = {
   name: 'Router E2E',
   slug: 'expo-router-e2e',
-
   sdkVersion: process.env.E2E_ROUTER_USE_PUBLISHED_EXPO_GO ? undefined : 'UNVERSIONED',
   icon: './assets/icon.png',
   scheme: 'router-e2e',
-
   userInterfaceStyle: 'automatic',
   ios: {
     supportsTablet: true,
@@ -41,6 +39,7 @@ module.exports = {
     reactCompiler: process.env.E2E_ROUTER_COMPILER,
     reactServerComponentRoutes: process.env.E2E_RSC_ENABLED,
     reactServerFunctions: process.env.E2E_SERVER_FUNCTIONS,
+    functionalCSS: process.env.E2E_NATIVE_CSS === 'true',
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',

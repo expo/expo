@@ -23,6 +23,7 @@ export declare function transformCssModuleWeb(props: {
     output: string;
     css: string;
     map: void | Uint8Array<ArrayBufferLike>;
+    exports: void | import("lightningcss").CSSModuleExports;
 }>;
 export declare function convertLightningCssToReactNativeWebStyleSheet(input: import('lightningcss').CSSModuleExports): {
     styles: Record<string, string>;

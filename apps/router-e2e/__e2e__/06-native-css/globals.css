@@ -1,0 +1,36 @@
+.container {
+  flex: 1;
+  padding: 20px;
+  justify-content: center;
+
+  background-color: papayawhip;
+}
+
+@keyframes fadeInOut {
+  0% {
+    /* opacity: 0; */
+    transform: translateY(-10px);
+  }
+  50% {
+    /* opacity: 1; */
+    transform: translateY(0);
+  }
+  100% {
+    /* opacity: 0; */
+    transform: translateY(10px);
+  }
+}
+
+.text {
+  color: dodgerblue;
+  animation: fadeInOut 2s ease-in-out 6;
+  transition-duration: 200ms;
+  transition-property: all;
+}
+
+/* dark mode */
+@media (prefers-color-scheme: dark) {
+  .text {
+    color: indianred;
+  }
+}

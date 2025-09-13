@@ -32,6 +32,7 @@ export type JsOutput = {
 };
 export type CSSMetadata = {
     code: string;
+    exports: Record<string, string>;
     lineCount: number;
     map: unknown[];
     functionMap: null;

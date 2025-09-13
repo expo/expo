@@ -312,6 +312,10 @@ export interface ExpoConfig {
      */
     reactCompiler?: boolean;
     /**
+     * Experimentally enable functional CSS support which is a hooks-based implementation of a subset of CSS that works on native platforms.
+     */
+    functionalCSS?: boolean;
+    /**
      * Experimentally enable React Server Components by default in Expo Router and concurrent routing for transitions.
      */
     reactServerComponentRoutes?: boolean;

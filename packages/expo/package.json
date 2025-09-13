@@ -23,6 +23,7 @@
     "internal",
     "ios",
     "scripts",
+    "css",
     "src",
     "AppEntry.js",
     "Expo.podspec",
@@ -93,6 +94,7 @@
     "expo-modules-autolinking": "3.0.10",
     "expo-modules-core": "3.0.15",
     "pretty-format": "^29.7.0",
+    "react-native-css": "^3.0.0-preview.3",
     "react-refresh": "^0.14.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },

@@ -1,0 +1,20 @@
+:root {
+  /* Accent colors */
+  --sf-bg-2: rgb(242 242 247);
+
+  @media (prefers-color-scheme: dark) {
+    --sf-bg-2: rgb(28 28 30);
+  }
+}
+
+@media ios {
+  :root {
+    --sf-bg-2: platformColor(secondarySystemBackground);
+  }
+}
+
+.card {
+  -rn-border-curve: continuous;
+  border-radius: 24px;
+  background-color: var(--sf-bg-2);
+}

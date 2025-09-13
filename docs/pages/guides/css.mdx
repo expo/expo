@@ -1,0 +1,135 @@
+---
+title: Functional CSS
+sidebar_title: CSS
+maxHeadingDepth: 4
+description: Learn about using functional CSS to style native apps
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+> Experimentally available in **SDK 54 and above**. This is a beta release and subject to breaking changes.
+
+Expo's bundler supports full comprehensive CSS for web platforms, but this traditionally doesn't work for React Native because the native platform doesn't support CSS files. However, you can use **Functional CSS** to enable a subset of CSS features on native platforms.
+
+## What is Functional CSS?
+
+Functional CSS is a system for parsing CSS styles to JS objects, then using React hooks to apply those objects to components and reactively update them when media queries and CSS variables change. This is limited however:
+
+- Only class selectors are supported (e.g. `.my-class { color: red; }`), element selectors (e.g. `div { color: red; }`) and ID selectors (e.g. `#my-id { color: red; }`) are not supported.
+- Only a subset of CSS properties are supported. If the underlying native platform doesn't support a style property, it won't work in Functional CSS.
+- Cascading is not supported. This is with exception to nested text elements.
+
+## How to use Functional CSS
+
+Enable the experimental Functional CSS feature in your **app.json** or **app.config.js**:
+
+```json app.json
+{
+  "experiments": {
+    "functionalCSS": true
+  }
+}
+```
+
+Define some CSS styles. You can use CSS Modules, Sass, SCSS, PostCSS, Tailwind CSS, or global CSS styles.
+
+```css globals.css
+:root {
+  --background: #fff;
+  --text: #000;
+}
+
+.container {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background);
+}
+
+.text {
+  font-size: 20px;
+  color: var(--text);
+}
+```
+
+Now wrap components with hooks to convert the `className` prop to a style object:
+
+```tsx app/index.tsx
+import { Text as RNText, TextProps, View as RNView, ViewProps } from 'react-native';
+import { useCssElement } from 'expo/css';
+
+import '../globals.css';
+
+function Text(props: TextProps & { className?: string }) {
+  return useCssElement(RNText, props, {
+    className: 'style',
+  });
+}
+
+function View(props: ViewProps & { className?: string }) {
+  return useCssElement(RNView, props, {
+    className: 'style',
+  });
+}
+
+export default function Page() {
+  return (
+    <View className="container">
+      <Text className="text">Index</Text>
+    </View>
+  );
+}
+```
+
+Now run `npx expo` to start the project. You should see a white screen with black text. On web, this will fallback to standard CSS behavior.
+
+## Media queries
+
+You can use media queries to adapt styles based on the device's screen size, platform, and color scheme. For example, you can add the following CSS to your **globals.css** file:
+
+```css globals.css
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000;
+    --text: #fff;
+  }
+}
+
+@media ios {
+  :root {
+    --background: #ff00ff;
+  }
+}
+
+@media android {
+  :root {
+    --background: #ffff00;
+  }
+}
+```
+
+## Benefits of Functional CSS
+
+- CSS is backwards compatible and follows a well defined specification.
+- When you use CSS, Expo can automatically optimize the styles for different platforms resulting in more performant bundles and faster load times.
+- CSS has dynamic functionality that would normally require React hooks. React hooks are limiting as they don't support server rendering, and you cannot call them conditionally meaning you need to refactor components to optimize them.
+- High-performance animations and built-in. We use the native Reanimated animation library on native and CSS as-is on web. This results in smooth max-fps animations on all platforms.
+- Additional CSS units such as `vw`, `vh`, `%`, `em`, and `rem` are supported.
+
+## Migration from React Native
+
+Unlike React Native APIs which have no commitment to backwards-compatibility, Tailwind classes are generally considered very stable. They're also globally available and don't require imports in every file, this leads to more composable code that's easier to copy and paste. Here's some APIs that you can migrate to Expo CSS:
+
+- `useColorScheme()` hook can be replaced with declarative classes like `dark:text-white` or `dark:bg-black`.
+- `useWindowDimensions()` can be replaced with media query fallbacks like `md:text-lg` or `lg:bg-gray-200`. This allows you to use the same styles on web and native without needing to write platform-specific code.
+- `useWindowDimensions()` for clamping to the window size can be replaced with `vw` and `vh` units in CSS, e.g. `width: 100vw; height: 100vh;`.
+- `useAnimatedValue()` can generally be replaced with CSS transitions and animations. For example, you can use `transition-all` to animate all properties, or `transition-colors` to animate color changes.
+- `expo-linear-gradient` can be replaced with `linear-gradient()` in CSS. This is a more standard way to create gradients and works on web and native. Also consider using inner shadows for gradients that fade content.
+- `react-native-svg` for radial gradients can be replaced with `radial-gradient()` in CSS.
+- `StyleSheet.hairlineWidth` can be replaced with `border-[0.5px]` in CSS. This is a more standard way to create thin borders and works on web and native.
+- `StyleSheet.absoluteFillObject` can be replaced with `absolute inset-0` in CSS.
+- The non-standard `pointerEvent` prop can be replaced with `pointer-events-none` or `pointer-events-auto` in CSS.
+- Custom fonts (such as the ones loaded with `expo-font`) should generally be avoided in favor of the built-in native fonts like `font-mono`, `font-sans`, `font-serif`, and `font-rounded`. These fonts are optimized for accessibility and performance, and they have fallbacks on web and Android.

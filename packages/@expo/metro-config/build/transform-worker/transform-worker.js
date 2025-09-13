@@ -46,6 +46,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = transform;
 const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines"));
 const node_path_1 = require("node:path");
+const nativeCSSCompiler = __importStar(require("react-native-css/compiler"));
 const browserslist_1 = require("./browserslist");
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
@@ -180,14 +181,64 @@ async function transform(config, projectRoot, filename, data, options) {
 function isReactServerEnvironment(options) {
     return options.customTransformOptions?.environment === 'react-server';
 }
+function getNativeInjectionCode(cssFilePaths, values) {
+    const importStatements = cssFilePaths.map((filePath) => `import "${filePath}";`).join('\n');
+    const contents = values
+        .map((value) => `StyleCollection.inject(${JSON.stringify(value)});`)
+        .join('\n');
+    return `import { StyleCollection } from "react-native-css/native-internal";\n${importStatements}\n${contents};export {};`;
+}
+function isCustomTruthy(value) {
+    return String(value) === 'true' || String(value) === '1';
+}
 async function transformCss(config, projectRoot, filename, data, options) {
     // If the platform is not web, then return an empty module.
     if (options.platform !== 'web') {
-        const code = (0, css_modules_1.matchCssModule)(filename) ? 'module.exports={ unstable_styles: {} };' : '';
-        return worker.transform(config, projectRoot, filename, 
-        // TODO: Native CSS Modules
-        Buffer.from(code), options);
+        if (!isCustomTruthy(options.customTransformOptions?.css)) {
+            // Fallback to noop behavior when native CSS is not enabled.
+            const code = (0, css_modules_1.matchCssModule)(filename) ? 'module.exports={ unstable_styles: {} };' : '';
+            return worker.transform(config, projectRoot, filename, 
+            // TODO: Native CSS Modules
+            Buffer.from(code), options);
+        }
+        // Evaluate the CSS modules, etc. to standard CSS.
+        const cssResults = await transformCssOnly(config, projectRoot, filename, data, options);
+        // @ts-expect-error: css is added
+        const css = cssResults.output[0].data.css.code.toString();
+        const cssModuleExports = cssResults.output[0].data.css.exports;
+        // Parse evaluated CSS to a collection of JS values to inject.
+        const productionJS = nativeCSSCompiler
+            .compile(css, {
+            // ...options.reactNativeCSS,
+            // inlineRem?: number | false;
+            // selectorPrefix?: string;
+            // stylesheetOrder?: number;
+            // features?: FeatureFlagRecord;
+            // logger?: (message: string) => void | Debugger;
+            // /** Strip unused variables declarations. Defaults: false */
+            // stripUnusedVariables?: boolean;
+            // /** @internal */
+            // ignorePropertyWarningRegex?: (string | RegExp)[];
+            // preserveVariables?: boolean;
+            // hexColors?: boolean;
+            // colorPrecision?: number;
+            filename,
+            projectRoot,
+        })
+            .stylesheet();
+        let cssToJs = getNativeInjectionCode([], [productionJS]);
+        if (cssModuleExports) {
+            const { styles, reactNativeWeb, variables } = (0, css_modules_1.convertLightningCssToReactNativeWebStyleSheet)(cssModuleExports);
+            const outputModule = `module.exports=Object.assign(${JSON.stringify(styles)},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
+            cssToJs += '\n' + outputModule;
+        }
+        data = Buffer.from(cssToJs);
+        return worker.transform(config, projectRoot, `${filename}.js`, data, options);
     }
+    return await transformCssOnly(config, projectRoot, filename, data, options);
+}
+// Transform CSS for web, no native checks.
+async function transformCssOnly(config, projectRoot, filename, data, options) {
     let code = data.toString('utf8');
     // Apply postcss transforms
     const postcssResults = await (0, postcss_1.transformPostCssModule)(projectRoot, {
@@ -227,6 +278,7 @@ async function transformCss(config, projectRoot, filename, data, options) {
                     ...jsModuleResults.output[0]?.data,
                     // Append additional css metadata for static extraction.
                     css: {
+                        exports: results.exports,
                         code: cssCode,
                         lineCount: (0, countLines_1.default)(cssCode),
                         map: [],

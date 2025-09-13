@@ -100,6 +100,9 @@ export function getRewriteRequestUrl(projectRoot: string) {
           String(!!exp.experiments?.reactCompiler)
         );
       }
+      if (!ensured.searchParams.has('transform.css') && exp.experiments?.functionalCSS) {
+        ensured.searchParams.set('transform.css', '1');
+      }
       if (!ensured.searchParams.has('transform.asyncRoutes')) {
         const asyncRoutes = getAsyncRoutesFromExpoConfig(
           exp,

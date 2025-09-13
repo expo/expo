@@ -413,7 +413,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     clientBoundaries?: string[];
     platform?: string;
   } = {}) {
-    const { mode, minify, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+    const { mode, minify, isExporting, baseUrl, css, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
       mode != null &&
@@ -443,12 +443,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       clientBoundaries,
       reactCompiler,
       bytecode: false,
+      css,
     });
   }
 
   private async getStaticPageAsync(pathname: string) {
-    const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
-      this.instanceMetroOptions;
+    const {
+      mode,
+      isExporting,
+      clientBoundaries,
+      baseUrl,
+      css,
+      reactCompiler,
+      routerRoot,
+      asyncRoutes,
+    } = this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
@@ -466,6 +475,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       environment: 'client',
       reactCompiler,
+      css,
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform }),
       lazy: !env.EXPO_NO_METRO_LAZY,
       baseUrl,
@@ -1008,6 +1018,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
     const reactCompiler = !!exp.experiments?.reactCompiler;
+    const css = !!exp.experiments?.functionalCSS;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
@@ -1034,6 +1045,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       routerRoot,
       reactCompiler,
+      css,
       minify: options.minify,
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.

@@ -84,6 +84,9 @@ function getRewriteRequestUrl(projectRoot) {
             if (!ensured.searchParams.has('transform.reactCompiler') && exp.experiments?.reactCompiler) {
                 ensured.searchParams.set('transform.reactCompiler', String(!!exp.experiments?.reactCompiler));
             }
+            if (!ensured.searchParams.has('transform.css') && exp.experiments?.nativeCss) {
+                ensured.searchParams.set('transform.css', '1');
+            }
             if (!ensured.searchParams.has('transform.asyncRoutes')) {
                 const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, isDev ? 'development' : 'production', platform);
                 if (asyncRoutes) {
