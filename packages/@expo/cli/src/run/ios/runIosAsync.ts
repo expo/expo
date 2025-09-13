@@ -1,4 +1,3 @@
-import { getConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -15,6 +14,7 @@ import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
+import { createTempFilePath } from '../../utils/createTempPath';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
@@ -27,6 +27,18 @@ import { startBundlerAsync } from '../startBundler';
 const debug = require('debug')('expo:run:ios');
 
 export async function runIosAsync(projectRoot: string, options: Options) {
+  const generatedConfigPath = createTempFilePath(); // Doesn't actually create a file
+  try {
+    process.env.__EXPO_GENERATED_CONFIG_PATH = generatedConfigPath;
+    await runIosAsyncWithoutTmpConfig(projectRoot, options);
+  } finally {
+    try {
+      await fs.promises.rm(generatedConfigPath, { force: true });
+    } catch {} // Ignore errors
+  }
+}
+
+export async function runIosAsyncWithoutTmpConfig(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
 
@@ -41,7 +53,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
 
-  const projectConfig = getConfig(projectRoot);
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
     const localPath = await resolveBuildCache({
       projectRoot,

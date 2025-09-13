@@ -1,0 +1,1 @@
+{"version":3,"file":"private.js","names":["_generatedConfig","data","require"],"sources":["../src/private.ts"],"sourcesContent":["export { getGeneratedConfigPath, appendShallowGeneratedConfig } from './generatedConfig';\n"],"mappings":";;;;;;;;;;;;;;;;;AAAA,SAAAA,iBAAA;EAAA,MAAAC,IAAA,GAAAC,OAAA;EAAAF,gBAAA,YAAAA,CAAA;IAAA,OAAAC,IAAA;EAAA;EAAA,OAAAA,IAAA;AAAA","ignoreList":[]}

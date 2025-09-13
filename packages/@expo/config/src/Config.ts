@@ -19,6 +19,7 @@ import {
   ProjectTarget,
   WriteConfigOptions,
 } from './Config.types';
+import { withInternalGeneratedConfig } from './generatedConfig';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
 import { getExpoSDKVersion } from './getExpoSDKVersion';
 import { withConfigPlugins } from './plugins/withConfigPlugins';
@@ -142,6 +143,11 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       hasUnusedStaticConfig:
         !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig,
     };
+
+    configWithDefaultValues.exp = withInternalGeneratedConfig(
+      projectRoot,
+      configWithDefaultValues.exp
+    );
 
     if (options.isModdedConfig) {
       // @ts-ignore: Add the mods back to the object.

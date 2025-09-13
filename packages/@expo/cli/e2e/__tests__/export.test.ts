@@ -415,3 +415,64 @@ describe('server', () => {
     ]);
   });
 });
+
+describe('deploy', () => {
+  let projectRoot: string;
+
+  beforeAll(async () => {
+    projectRoot = await setupTestProjectWithOptionsAsync('export-with-deploy', 'with-api-routes');
+  });
+
+  it('runs `npx expo export` with `EXPO_UNSTABLE_DEPLOY_SERVER=1`', async () => {
+    // `npx expo export`
+    const result = await executeExpoAsync(projectRoot, ['export'], {
+      env: {
+        NODE_ENV: 'production',
+        TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+        EXPO_UNSTABLE_DEPLOY_SERVER: '1',
+      },
+    });
+
+    const outputDir = path.join(projectRoot, 'dist');
+    const deploymentTargetDir = path.join(projectRoot, 'deploy-target');
+
+    const generatedConfigPath =
+      result.stdout.match(/(\/[^\s]+\.expo\/generated\/app\.config\.json)/)?.[1] ?? null;
+
+    // Expect the deployment user to be printed in the logs.
+    expect(result.stdout).toMatch(/Server deployed to: https:\/\/example1234-expo.app\//);
+    expect(result.stdout).toMatch(/Saved deployed URL https:\/\/example1234-expo.app\/ to /);
+    expect(generatedConfigPath).toBeTruthy();
+
+    const generatedConfig = await JsonFile.readAsync(generatedConfigPath!);
+    expect(generatedConfig).toEqual({
+      'expo.extra.router.generatedOrigin': 'https://example1234-expo.app/',
+    });
+
+    // Expect only server is deployed, not the whole web app
+    expect(findProjectFiles(deploymentTargetDir)).toEqual([
+      '_expo/functions/hello+api.js',
+      '_expo/functions/hello+api.js.map',
+      '_expo/routes.json',
+    ]);
+
+    // Expect the ios, android and the whole web app is exported
+    expect(findProjectFiles(outputDir)).toEqual(
+      expect.arrayContaining([
+        'metadata.json',
+        // Native Bundles
+        expect.pathMatching(new RegExp(`_expo/static/js/android/entry-${MD5_REGEX.source}\\.hbc$`)),
+        expect.pathMatching(new RegExp(`_expo/static/js/ios/entry-${MD5_REGEX.source}\\.hbc$`)),
+        // Web Client Bundle
+        expect.pathMatching(
+          new RegExp(`client/_expo/static/js/web/entry-${MD5_REGEX.source}\\.js$`)
+        ),
+        // Server files
+        'server/+not-found.html',
+        'server/_expo/functions/hello+api.js',
+        'server/_expo/functions/hello+api.js.map',
+        'server/_expo/routes.json',
+      ])
+    );
+  });
+});

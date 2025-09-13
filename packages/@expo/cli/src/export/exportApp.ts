@@ -4,6 +4,7 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
+import { string } from 'getenv';
 import path from 'path';
 
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
@@ -15,11 +16,7 @@ import {
   transformDomEntryForMd5Filename,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import {
-  exportApiRoutesStandaloneAsync,
-  exportFromServerAsync,
-  injectScriptTags,
-} from './exportStaticAsync';
+import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -33,6 +30,11 @@ import {
 } from './saveAssets';
 import { createAssetMap } from './writeContents';
 import * as Log from '../log';
+import {
+  getServerDeploymentScript,
+  runServerDeployCommandAsync,
+  saveDeploymentUrl,
+} from './deployServer';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
@@ -44,6 +46,8 @@ import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTempla
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
+
+const debug = require('debug')('expo:export');
 
 export async function exportAppAsync(
   projectRoot: string,
@@ -304,6 +308,49 @@ export async function exportAppAsync(
           }
         })
       );
+
+      // API Routes Deployment
+      const apiRoutesEnabled =
+        devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
+      if (
+        apiRoutesEnabled &&
+        // Only deploy API routes for iOS or Android
+        (platforms.includes('ios') || platforms.includes('android'))
+      ) {
+        await exportApiRoutesStandaloneAsync(devServer, {
+          files,
+          platform: 'web',
+          apiRoutesOnly: true,
+        });
+
+        // Copy over public folder items
+        await copyPublicFolderAsync(publicPath, outputPath); // TODO: Should be /client or /server?
+
+        // Copy over the server output on top of the public folder.
+        await persistMetroFilesAsync(files, outputPath);
+
+        // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
+        const userDefinedServerUrl = exp.extra?.router?.origin;
+
+        // Add an opaque flag to disable server deployment.
+        if (env.EXPO_NO_DEPLOY) {
+          Log.log('Skipping server deployment because environment variable EXPO_NO_DEPLOY is set.');
+          Log.log();
+        } else {
+          const deployedServerUrl = await runServerDeployCommandAsync(projectRoot, {
+            distDirectory: outputDir,
+            deployScript: getServerDeploymentScript(projectConfig.pkg.scripts),
+          });
+
+          console.log(`Deployed server to ${deployedServerUrl}`);
+
+          saveDeploymentUrl({
+            deployedServerUrl,
+            userDefinedServerUrl,
+            projectRoot,
+          });
+        }
+      }
 
       if (devServer.isReactServerComponentsEnabled) {
         const isWeb = platforms.includes('web');

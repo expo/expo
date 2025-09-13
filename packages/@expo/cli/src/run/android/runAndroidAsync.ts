@@ -9,6 +9,7 @@ import { Log } from '../../log';
 import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
+import { createTempFilePath } from '../../utils/createTempPath';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
@@ -19,7 +20,22 @@ import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');
 
-export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
+export async function runAndroidAsync(projectRoot: string, options: Options) {
+  const generatedConfigPath = createTempFilePath(); // Doesn't actually create a file
+  try {
+    process.env.__EXPO_GENERATED_CONFIG_PATH = generatedConfigPath;
+    await runAndroidAsyncWithoutTmpConfig(projectRoot, { generatedConfigPath, ...options });
+  } finally {
+    try {
+      await fs.promises.rm(generatedConfigPath, { force: true });
+    } catch {} // Ignore errors
+  }
+}
+
+async function runAndroidAsyncWithoutTmpConfig(
+  projectRoot: string,
+  { install, generatedConfigPath, ...options }: Options & { generatedConfigPath: string }
+) {
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
   const isProduction = options.variant?.toLowerCase().endsWith('release');
   setNodeEnv(isProduction ? 'production' : 'development');

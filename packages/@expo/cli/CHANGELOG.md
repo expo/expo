@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support native server deployments in `export` (EAS Update)
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
