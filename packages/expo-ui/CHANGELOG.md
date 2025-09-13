@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] tvOS 26 compile fix and card button. ([#39639](https://github.com/expo/expo/pull/39639) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.2.0-beta.2 — 2025-09-12
