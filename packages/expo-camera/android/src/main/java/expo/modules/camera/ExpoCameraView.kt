@@ -492,7 +492,7 @@ class ExpoCameraView(
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
       .build()
       .also { analyzer ->
-        if (shouldScanBarcodes && CameraUtils.isMLKitAvailable(context)) {
+        if (shouldScanBarcodes && CameraUtils.isMLKitBarcodeScannerAvailable()) {
           try {
             analyzer.setAnalyzer(
               ContextCompat.getMainExecutor(context),
