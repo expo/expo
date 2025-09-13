@@ -212,7 +212,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
   const handleOnLongPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
-      onPress?.(event);
+      onLongPress?.(event);
       if (!trigger) return;
       if (event?.isDefaultPrevented()) return;
 
