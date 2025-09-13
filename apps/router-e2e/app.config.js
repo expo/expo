@@ -77,6 +77,7 @@ module.exports = {
         unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
       },
     ],
+    // ['./plugins/material-you/withPlugin.js'],
   ],
 };
 

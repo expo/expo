@@ -1,6 +1,7 @@
 import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { Badge, Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
+import { DynamicColor, ContentBasedDynamicColor } from 'expo-system-ui';
 import { useState } from 'react';
 import { Appearance, Platform, useColorScheme } from 'react-native';
 
@@ -13,30 +14,43 @@ if (process.env.EXPO_OS !== 'web') {
 export default function Layout() {
   const [activeTabs, setActiveTabs] = useState<string[]>([]);
   const scheme = useColorScheme();
+  console.log('DynamicColor(Background)=', DynamicColor('Background')); // This should be null, as it does not exist
+  console.log('DynamicColor(Surface)=', DynamicColor('Surface'));
+  console.log('DynamicColor(Error)=', DynamicColor('Error'));
+  console.log('DynamicColor(Primary)=', DynamicColor('Primary'));
+
+  console.log(
+    'ContentBasedDynamicColor(Primary)=',
+    ContentBasedDynamicColor(
+      'Primary',
+      'Qk3mBAAAAAAAADYAAAAoAAAAFAAAABQAAAABABgAAAAAALAEAAAjLgAAIy4AAAAAAAAAAAAAtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYNRi3NRi3NRi3NRi3NRi3NRi3NRi3NRi3tzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgYtzgY'
+    )
+  );
+
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ActiveTabsContext.Provider value={{ activeTabs, setActiveTabs }}>
         <NativeTabs
-        // Both platforms
-        // labelStyle={{
-        //   fontSize: 16,
-        //   fontWeight: 700,
-        //   fontStyle: 'italic',
-        //   // fontFamily: 'Courier New',
-        //   color: Platform.OS === 'android' ? '#888' : undefined,
-        // }}
-        // backgroundColor={Platform.OS === 'android' ? 'black' : undefined}
-        // badgeBackgroundColor="green"
-        // tintColor="orange"
-        // iconColor={Platform.OS === 'android' ? '#888' : undefined}
-        // iOS only
-        // blurEffect="systemChromeMaterial"
-        // minimizeBehavior="onScrollDown"
-        // disableTransparentOnScrollEdge
-        // Android only
-        // labelVisibilityMode="auto"
-        // rippleColor="orange"
-        // indicatorColor="black"
+          // Both platforms
+          // labelStyle={{
+          //   fontSize: 16,
+          //   fontWeight: 700,
+          //   fontStyle: 'italic',
+          //   // fontFamily: 'Courier New',
+          //   color: Platform.OS === 'android' ? '#888' : undefined,
+          // }}
+          backgroundColor={DynamicColor('SurfaceContainer')}
+          // badgeBackgroundColor="green"
+          // tintColor="orange"
+          // iconColor={Platform.OS === 'android' ? '#888' : undefined}
+          // iOS only
+          // blurEffect="systemChromeMaterial"
+          // minimizeBehavior="onScrollDown"
+          // disableTransparentOnScrollEdge
+          // Android only
+          // labelVisibilityMode="auto"
+          // rippleColor="orange"
+          // indicatorColor="black"
         >
           <NativeTabs.Trigger name="index">
             <Label
