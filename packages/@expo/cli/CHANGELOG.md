@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Prevent iOS device builds from being remotely cached ([#39621](https://github.com/expo/expo/pull/39621) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.24.21 — 2025-08-22
 
 ### 🐛 Bug fixes
@@ -35,7 +37,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Add e2e tests for browser back/forward buttons  ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
+- Add e2e tests for browser back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
 
 ## 0.24.17 — 2025-07-02
 

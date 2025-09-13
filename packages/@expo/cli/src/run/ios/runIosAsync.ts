@@ -42,6 +42,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
 
   const projectConfig = getConfig(projectRoot);
+  // We only support build cache for simulator builds for now.
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
     const localPath = await resolveBuildCache({
       projectRoot,
@@ -129,7 +130,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     // Find the path to the built app binary, this will be used to install the binary
     // on a device.
     binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
-    shouldUpdateBuildCache = true;
+    // We only support build cache for simulator builds for now.
+    shouldUpdateBuildCache = props.isSimulator;
   }
   debug('Binary path:', binaryPath);
 
