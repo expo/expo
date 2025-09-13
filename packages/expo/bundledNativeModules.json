@@ -39,7 +39,7 @@
   "expo-dev-client": "~6.0.12",
   "expo-device": "~8.0.7",
   "expo-document-picker": "~14.0.7",
-  "expo-file-system": "~19.0.13",
+  "expo-file-system": "~19.0.14",
   "expo-font": "~14.0.8",
   "expo-gl": "~16.0.7",
   "expo-google-app-auth": "~8.3.0",
