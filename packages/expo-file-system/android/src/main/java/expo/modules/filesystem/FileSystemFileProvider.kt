@@ -1,4 +1,4 @@
-package expo.modules.filesystem.legacy
+package expo.modules.filesystem
 
 import androidx.core.content.FileProvider
 
