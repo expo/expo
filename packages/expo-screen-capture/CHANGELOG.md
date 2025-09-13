@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent multiple blur views from being added during rapid app state changes. ([#39633](https://github.com/expo/expo/pull/39633) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ### 💡 Others
 
 ## 8.0.7 — 2025-09-11
