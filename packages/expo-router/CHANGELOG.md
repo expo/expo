@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `expo-router/ui`: `TabTrigger` now correctly calls `onLongPress` prop instead of `onPress`. ([#39638](https://github.com/expo/expo/pull/39638) by [@TmLev](https://github.com/TmLev))
+
 ### 💡 Others
 
 ## 6.0.3 — 2025-09-12
