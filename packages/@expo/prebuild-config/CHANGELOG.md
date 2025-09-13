@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `SplashScreen.storyboard` not being added to the `PBXBuildFile` section. ([#38862](https://github.com/expo/expo/pull/38862) by [@callaars](https://github.com/callaars))
+
 ### 💡 Others
 
 ## 54.0.3 — 2025-09-12

@@ -55,7 +55,8 @@ async function setSplashStoryboardAsync({
     _configPlugins().IOSConfig.XcodeUtils.addResourceFileToGroup({
       filepath: storyboardFilePath,
       groupName: projectName,
-      project
+      project,
+      isBuildFile: true,
     });
   }
   return project;
