@@ -1,32 +1,641 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
-searchRank: 3
----
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظم المهام الذكي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(25deg);
+        }
+        
+        .app-title {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .app-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .app-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .app-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .task-form-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            height: fit-content;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            background: var(--primary-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.85rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.85rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tasks-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .task-filters {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover {
+            background-color: #dee2e6;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .task-list {
+            list-style: none;
+        }
+        
+        .task-item {
+            background: var(--light-color);
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--primary-color);
+            transition: transform 0.3s;
+        }
+        
+        .task-item:hover {
+            transform: translateX(-5px);
+        }
+        
+        .task-item.high-priority {
+            border-left-color: var(--warning-color);
+        }
+        
+        .task-item.medium-priority {
+            border-left-color: var(--primary-color);
+        }
+        
+        .task-item.low-priority {
+            border-left-color: var(--success-color);
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-info h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .task-info p {
+            color: var(--gray-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--gray-color);
+        }
+        
+        .task-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-complete, .btn-edit, .btn-delete {
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+        
+        .btn-complete {
+            background-color: var(--success-color);
+        }
+        
+        .btn-edit {
+            background-color: #ffc107;
+            color: var(--dark-color);
+        }
+        
+        .btn-delete {
+            background-color: var(--warning-color);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: white;
+            text-align: center;
+            padding: 1.2rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+            color: var(--secondary-color);
+        }
+        
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-color);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .priority-high {
+            background-color: #ffcccc;
+            color: #d63384;
+        }
+        
+        .priority-medium {
+            background-color: #cce7ff;
+            color: #0d6efd;
+        }
+        
+        .priority-low {
+            background-color: #d4edda;
+            color: #198754;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            background-color: #e9ecef;
+            color: var(--dark-color);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="app-title"><i class="fas fa-tasks"></i> منظم المهام الذكي</h1>
+            <p class="app-description">نظم مهامك وزد إنتاجيتك بطريقة ذكية وبسيطة</p>
+        </header>
+        
+        <div class="app-content">
+            <div>
+                <section class="task-form-section">
+                    <h2 class="section-title"><i class="fas fa-plus"></i> إضافة مهمة جديدة</h2>
+                    <form id="addTaskForm">
+                        <div class="form-group">
+                            <label for="taskTitle"><i class="fas fa-heading"></i> عنوان المهمة</label>
+                            <input type="text" id="taskTitle" required placeholder="أدخل عنوان المهمة">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskDescription"><i class="fas fa-align-left"></i> وصف المهمة</label>
+                            <textarea id="taskDescription" rows="3" placeholder="أدخل وصف المهمة (اختياري)"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskCategory"><i class="fas fa-tag"></i> الفئة</label>
+                            <select id="taskCategory">
+                                <option value="عمل">عمل</option>
+                                <option value="شخصي">شخصي</option>
+                                <option value="دراسة">دراسة</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskPriority"><i class="fas fa-exclamation-circle"></i> الأولوية</label>
+                            <select id="taskPriority">
+                                <option value="high">عالي</option>
+                                <option value="medium">متوسط</option>
+                                <option value="low">منخفض</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskDueDate"><i class="fas fa-calendar-day"></i> الموعد النهائي</label>
+                            <input type="date" id="taskDueDate">
+                        </div>
+                        
+                        <button type="submit"><i class="fas fa-plus-circle"></i> إضافة المهمة</button>
+                    </form>
+                </section>
+                
+                <section class="stats-container">
+                    <div class="stat-card">
+                        <i class="fas fa-tasks"></i>
+                        <div class="stat-number" id="totalTasks">0</div>
+                        <div class="stat-label">إجمالي المهام</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="stat-number" id="completedTasks">0</div>
+                        <div class="stat-label">المكتملة</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-number" id="pendingTasks">0</div>
+                        <div class="stat-label">المعلقة</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="stat-number" id="highPriorityTasks">0</div>
+                        <div class="stat-label">عالية الأولوية</div>
+                    </div>
+                </section>
+            </div>
+            
+            <section class="tasks-container">
+                <h2 class="section-title"><i class="fas fa-list-check"></i> قائمة المهام</h2>
+                
+                <div class="task-filters">
+                    <button class="filter-btn active" data-filter="all">الكل</button>
+                    <button class="filter-btn" data-filter="عمل">عمل</button>
+                    <button class="filter-btn" data-filter="شخصي">شخصي</button>
+                    <button class="filter-btn" data-filter="دراسة">دراسة</button>
+                    <button class="filter-btn" data-filter="high">عالي الأولوية</button>
+                </div>
+                
+                <ul class="task-list" id="taskList">
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>لا توجد مهام حتى الآن</h3>
+                        <p>ابدأ بإضافة مهمة جديدة باستخدام النموذج على اليسار</p>
+                    </div>
+                </ul>
+            </section>
+        </div>
+        
+        <footer>
+            <p>© 2023 منظم المهام الذكي - صمم لزيادة إنتاجيتك</p>
+        </footer>
+    </div>
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
-
-Let's set up a local development environment for running your project on Android and iOS.
-
-## Where would you like to develop?
-
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
-
-<PlatformAndDeviceForm />
-
-## How would you like to develop?
-
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
-
-<DevelopmentModeForm />
-
----
-
-<DevelopmentEnvironmentInstructions />
-
-## Next step
-
-You have a project and a development environment. Now it's time to start developing.
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // العناصر الرئيسية
+            const addTaskForm = document.getElementById('addTaskForm');
+            const taskList = document.getElementById('taskList');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            // تحميل المهام من localStorage عند بدء التطبيق
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            
+            // عرض المهام
+            function renderTasks(filter = 'all') {
+                taskList.innerHTML = '';
+                
+                if (tasks.length === 0) {
+                    taskList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h3>لا توجد مهام حتى الآن</h3>
+                            <p>ابدأ بإضافة مهمة جديدة باستخدام النموذج على اليسار</p>
+                        </div>
+                    `;
+                    updateStats();
+                    return;
+                }
+                
+                let filteredTasks = tasks;
+                if (filter !== 'all') {
+                    if (filter === 'high') {
+                        filteredTasks = tasks.filter(task => task.priority === 'high');
+                    } else {
+                        filteredTasks = tasks.filter(task => task.category === filter);
+                    }
+                }
+                
+                if (filteredTasks.length === 0) {
+                    taskList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h3>لا توجد مهام تطابق التصفية</h3>
+                            <p>جرب استخدام تصفية مختلفة أو أضف مهام جديدة</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                filteredTasks.forEach((task, index) => {
+                    const li = document.createElement('li');
+                    li.className = `task-item ${task.priority}-priority`;
+                    
+                    const priorityText = task.priority === 'high' ? 'عالي' : task.priority === 'medium' ? 'متوسط' : 'منخفض';
+                    const priorityClass = task.priority === 'high' ? 'priority-high' : task.priority === 'medium' ? 'priority-medium' : 'priority-low';
+                    
+                    li.innerHTML = `
+                        <div class="task-info">
+                            <h3>${task.title}</h3>
+                            ${task.description ? `<p>${task.description}</p>` : ''}
+                            <div class="task-meta">
+                                <span><i class="fas fa-tag"></i> <span class="category-badge">${task.category}</span></span>
+                                <span><i class="fas fa-exclamation-circle"></i> <span class="priority-badge ${priorityClass}">${priorityText}</span></span>
+                                ${task.dueDate ? `<span><i class="fas fa-calendar-day"></i> ${formatDate(task.dueDate)}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn-complete" title="إكمال المهمة"><i class="fas fa-check"></i></button>
+                            <button class="btn-edit" title="تعديل المهمة"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete" title="حذف المهمة"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                    
+                    li.querySelector('.btn-complete').addEventListener('click', () => completeTask(index));
+                    li.querySelector('.btn-edit').addEventListener('click', () => editTask(index));
+                    li.querySelector('.btn-delete').addEventListener('click', () => deleteTask(index));
+                    
+                    taskList.appendChild(li);
+                });
+                
+                updateStats();
+            }
+            
+            // تحديث الإحصائيات
+            function updateStats() {
+                document.getElementById('totalTasks').textContent = tasks.length;
+                document.getElementById('completedTasks').textContent = tasks.filter(task => task.completed).length;
+                document.getElementById('pendingTasks').textContent = tasks.filter(task => !task.completed).length;
+                document.getElementById('highPriorityTasks').textContent = tasks.filter(task => task.priority === 'high').length;
+            }
+            
+            // تنسيق التاريخ
+            function formatDate(dateString) {
+                if (!dateString) return '';
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('ar-EG', options);
+            }
+            
+            // إضافة مهمة جديدة
+            addTaskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newTask = {
+                    title: document.getElementById('taskTitle').value,
+                    description: document.getElementById('taskDescription').value,
+                    category: document.getElementById('taskCategory').value,
+                    priority: document.getElementById('taskPriority').value,
+                    dueDate: document.getElementById('taskDueDate').value,
+                    completed: false,
+                    createdAt: new Date()
+                };
+                
+                tasks.push(newTask);
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                
+                addTaskForm.reset();
+                renderTasks();
+                
+                alert('تم إضافة المهمة بنجاح!');
+            });
+            
+            // إكمال المهمة
+            function completeTask(index) {
+                tasks[index].completed = true;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+                alert('تهانينا! لقد أكملت المهمة بنجاح.');
+            }
+            
+            // تعديل المهمة
+            function editTask(index) {
+                const task = tasks[index];
+                
+                document.getElementById('taskTitle').value = task.title;
+                document.getElementById('taskDescription').value = task.description;
+                document.getElementById('taskCategory').value = task.category;
+                document.getElementById('taskPriority').value = task.priority;
+                document.getElementById('taskDueDate').value = task.dueDate;
+                
+                tasks.splice(index, 1);
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+                
+                alert('يمكنك الآن تعديل المهمة في نموذج الإضافة');
+            }
+            
+            // حذف المهمة
+            function deleteTask(index) {
+                if (confirm('هل أنت متأكد من حذف هذه المهمة؟')) {
+                    tasks.splice(index, 1);
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                    renderTasks();
+                    alert('تم حذف المهمة بنجاح');
+                }
+            }
+            
+            // تصفية المهام
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    renderTasks(filter);
+                });
+            });
+            
+            // التهيئة الأولية
+            renderTasks();
+        });
+    </script>
+</body>
+</html>
