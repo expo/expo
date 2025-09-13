@@ -49,7 +49,7 @@ PODS:
   - EXNotifications/Tests (0.32.11):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.6):
+  - Expo (54.0.7):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -513,7 +513,7 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (15.0.7):
     - ExpoModulesCore
-  - ExpoScreenCapture (8.0.7):
+  - ExpoScreenCapture (8.0.8):
     - ExpoModulesCore
   - ExpoScreenOrientation (9.0.7):
     - ExpoModulesCore
@@ -3558,7 +3558,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
-  Expo: f89002877456bb2686d806a9452dac488abddf7d
+  Expo: 24f225a64acfd5fb3d9949f2d02a3cceb2d4620b
   expo-dev-client: b0363ce1f16a248d7c9b67ceaee2dbee058c1e05
   expo-dev-launcher: 903b23df8c217bfad6d3692fec0368074eb22dc0
   expo-dev-menu: e5b5cfce6ef9f4559d7c2f7cb928afb4810dfabf
@@ -3606,7 +3606,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
-  ExpoScreenCapture: d0c55915af30258fd8a2f1df64812fcae68d3985
+  ExpoScreenCapture: 0c785ab7e1fa38943f04b16060d54ae8f886544a
   ExpoScreenOrientation: d762490d3d7857fbaddd61f418744f85f6458db1
   ExpoSecureStore: f44dee1354536bdb3d7fab8cc451ee737c41beca
   ExpoSensors: 4e9582fe20b9829a3a1d276e07ecd7916ee1ca84
