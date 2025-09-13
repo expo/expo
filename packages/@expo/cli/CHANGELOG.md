@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `--yes/-y` flag to `expo prebuild` to skip git confirmation prompt and continue with uncommitted changes ([#39107](https://github.com/expo/expo/pull/39107) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - Prevent iOS device builds from being remotely cached ([#39621](https://github.com/expo/expo/pull/39621) by [@gabrieldonadel](https://github.com/gabrieldonadel))
