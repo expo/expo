@@ -9,6 +9,7 @@ export interface ModalConfig {
     transparent?: boolean;
     viewProps?: ViewProps;
     detents?: number[] | 'fitToContents';
+    unstable_footer?: () => React.ReactNode;
 }
 export interface ModalsRendererProps {
     children?: React.ReactNode;
