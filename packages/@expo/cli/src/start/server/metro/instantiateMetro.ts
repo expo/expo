@@ -41,11 +41,9 @@ class LogRespectingTerminal extends Terminal {
     super(stream, { ttyPrint: true });
 
     const sendLog = (format: unknown, ...args: any[]) => {
-      if (format != null) {
-        this.log(format as string, ...args);
-        // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
-        this.flush();
-      }
+      this.log(format != null ? (format as string) : '', ...args);
+      // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
+      this.flush();
     };
 
     console.log = sendLog;
