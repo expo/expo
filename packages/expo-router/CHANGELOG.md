@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `@expo/metro-runtime` to dependencies & peer dependencies to fix Yarn v1 having no auto-installs ([#39644](https://github.com/expo/expo/pull/39644) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 6.0.3 — 2025-09-12
