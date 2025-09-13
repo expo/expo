@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+### 🎉 New features
+
+- [Android] Include an `ongoing` option for location notifications. ([#36984](https://github.com/expo/expo/pull/36984) by [@riadhriadh](https://github.com/riadhriadh))
+
 ### 💡 Others
 
 ## 19.0.7 — 2025-09-11
