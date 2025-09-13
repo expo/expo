@@ -23,10 +23,6 @@ export function warn(...message: string[]): void {
 }
 
 export function log(...message: string[]): void {
-  if (!message.length) {
-    console.log('');
-    return;
-  }
   console.log(...message);
 }
 
