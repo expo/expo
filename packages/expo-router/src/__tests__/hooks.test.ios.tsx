@@ -1,55 +1,21 @@
-import { renderHook as tlRenderHook, act } from '@testing-library/react-native';
+import { act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 import { expectType } from 'tsd';
 
-import { ExpoRoot, Slot, router } from '../exports';
+import { router, Slot } from '../exports';
 import {
   useGlobalSearchParams,
   useLocalSearchParams,
-  useSearchParams,
   usePathname,
-  useSegments,
   useRootNavigationState,
+  useSearchParams,
+  useSegments,
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
-import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
-
-/*
- * Creates an Expo Router context around the hook, where every router renders the hook
- * This allows you full navigation
- */
-function renderHook<T>(
-  renderCallback: () => T,
-  routes: string[] = ['index'],
-  { initialUrl = '/' }: { initialUrl?: string } = {}
-) {
-  return tlRenderHook(renderCallback, {
-    wrapper: function Wrapper({ children }) {
-      const context: MemoryContext = {};
-      for (const key of routes) {
-        context[key] = () => <>{children}</>;
-      }
-
-      return (
-        <ExpoRoot
-          context={inMemoryContext(context)}
-          location={new URL(initialUrl, 'test://test')}
-        />
-      );
-    },
-  });
-}
-
-function renderHookOnce<T>(
-  renderCallback: () => T,
-  routes?: string[],
-  options?: { initialUrl?: string }
-) {
-  return renderHook<T>(renderCallback, routes, options).result.current;
-}
+import { renderHook, renderHookOnce } from '../testing-library/hooks';
 
 describe(useSegments, () => {
   it(`defaults abstract types`, () => {

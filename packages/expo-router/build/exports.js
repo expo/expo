@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.router = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -51,6 +51,8 @@ Object.defineProperty(exports, "useLocalSearchParams", { enumerable: true, get: 
 Object.defineProperty(exports, "useSegments", { enumerable: true, get: function () { return hooks_1.useSegments; } });
 Object.defineProperty(exports, "useRootNavigation", { enumerable: true, get: function () { return hooks_1.useRootNavigation; } });
 Object.defineProperty(exports, "useRootNavigationState", { enumerable: true, get: function () { return hooks_1.useRootNavigationState; } });
+var useLoaderData_1 = require("./loaders/useLoaderData");
+Object.defineProperty(exports, "useLoaderData", { enumerable: true, get: function () { return useLoaderData_1.useLoaderData; } });
 var imperative_api_1 = require("./imperative-api");
 Object.defineProperty(exports, "router", { enumerable: true, get: function () { return imperative_api_1.router; } });
 __exportStar(require("./link/Link"), exports);
