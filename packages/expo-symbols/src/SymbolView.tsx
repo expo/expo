@@ -26,12 +26,16 @@ function getNativeProps(props: SymbolViewProps): NativeSymbolViewProps {
   const style = props.style
     ? [{ width: size, height: size }, props.style]
     : { width: size, height: size };
+  const name = typeof props.name === 'object' ? props.name.ios : props.name;
+  const weight = typeof props.weight === 'object' ? props.weight.ios : props.weight;
 
   return {
     ...props,
+    name,
     style,
     colors: colors.map((c) => processColor(c)),
     tint: processColor(props.tintColor),
+    weight,
     animated,
     type,
   };
