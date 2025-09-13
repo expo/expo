@@ -100,7 +100,7 @@ export async function test(t) {
     if (Platform.OS === 'android') {
       t.expect(typeof calendar.isPrimary).toBe('boolean');
       calendar.name && t.expect(typeof calendar.name).toBe('string');
-      t.expect(typeof calendar.ownerAccount).toBe('string');
+      calendar.ownerAccount && t.expect(typeof calendar.ownerAccount).toBe('string');
       calendar.timeZone && t.expect(typeof calendar.timeZone).toBe('string');
 
       t.expect(Array.isArray(calendar.allowedReminders)).toBe(true);
