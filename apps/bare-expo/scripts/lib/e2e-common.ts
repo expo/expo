@@ -21,7 +21,11 @@ export interface MaestroFlowParams {
   confirmFirstRunPrompt?: boolean;
 }
 
-export async function createMaestroFlowAsync({ appId, workflowFile, confirmFirstRunPrompt }: MaestroFlowParams): Promise<void> {
+export async function createMaestroFlowAsync({
+  appId,
+  workflowFile,
+  confirmFirstRunPrompt,
+}: MaestroFlowParams): Promise<void> {
   const inputFile = await import('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS as string[];
   const contents = [

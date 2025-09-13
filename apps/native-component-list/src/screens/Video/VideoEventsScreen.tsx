@@ -78,7 +78,7 @@ export default function VideoEventsScreen() {
           Buffered to: {Math.round((timeUpdate?.bufferedPosition ?? 0) * 100) / 100} {'\n'}
           Volume: {volume} {'\n'}
           Is Muted: {muted ? 'true' : 'false'} {'\n'}
-          Status: {JSON.stringify(status)} {'\n'}
+          Status: {status} {'\n'}
           Playback rate: {playbackRate} {'\n'}
           Is external playback active: {isExternalPlaybackActive ? 'true' : 'false'} {'\n'}
           {error && 'Error: ' + error.message} {'\n'}
@@ -123,6 +123,5 @@ function subtitleTracksToString(tracks?: SubtitleTrack[]) {
 const myStyles = StyleSheet.create({
   metadataContainer: {
     alignSelf: 'stretch',
-    padding: 10,
   },
 });

@@ -42,19 +42,27 @@ const __dirname = dirname(__filename);
       );
       const deviceId = await queryDeviceIdAsync(adbPath);
       if (!deviceId) {
-        throw new Error(`No connected Android device found`);
+        throw new Error(
+          `No connected Android device found. In CI, it should be started via the 'Use Android Emulator' action.`
+        );
       }
-      const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
-      await createMaestroFlowAsync({
-        appId: APP_ID,
-        workflowFile: maestroFlowFilePath,
-        confirmFirstRunPrompt: true,
-      });
-
-      await retryAsync((retryNumber) => {
-        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath);
-      }, NUM_OF_RETRIES);
+      await testAsync(
+        path.join(projectRoot, 'e2e/video-e2e.yaml'),
+        deviceId,
+        appBinaryPath,
+        adbPath
+      );
+      // const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
+      // await createMaestroFlowAsync({
+      //   appId: APP_ID,
+      //   workflowFile: maestroFlowFilePath,
+      //   confirmFirstRunPrompt: true,
+      // });
+      //
+      // await retryAsync((retryNumber) => {
+      //   console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+      //   return testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath);
+      // }, NUM_OF_RETRIES);
     }
   } catch (e) {
     console.error('Uncaught Error', e);

@@ -42,17 +42,19 @@ const __dirname = dirname(__filename);
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
-      const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
-      await createMaestroFlowAsync({
-        appId: APP_ID,
-        workflowFile: maestroFlowFilePath,
-        confirmFirstRunPrompt: true,
-      });
+      await testAsync(path.join(projectRoot, 'e2e/video-e2e.yaml'), deviceId, appBinaryPath);
 
-      await retryAsync((retryNumber) => {
-        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(maestroFlowFilePath, deviceId, appBinaryPath);
-      }, NUM_OF_RETRIES);
+      // const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
+      // await createMaestroFlowAsync({
+      //   appId: APP_ID,
+      //   workflowFile: maestroFlowFilePath,
+      //   confirmFirstRunPrompt: true,
+      // });
+      //
+      // await retryAsync((retryNumber) => {
+      //   console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+      //   return testAsync(maestroFlowFilePath, deviceId, appBinaryPath);
+      // }, NUM_OF_RETRIES);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
