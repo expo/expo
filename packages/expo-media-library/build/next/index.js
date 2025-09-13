@@ -1,6 +1,9 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
+export * from './MediaLibraryNext.types';
+export class Query extends ExpoMediaLibraryNext.Query {
+}
 export class Asset extends ExpoMediaLibraryNext.Asset {
     static create(filePath, album) {
         return ExpoMediaLibraryNext.createAsset(filePath, album);

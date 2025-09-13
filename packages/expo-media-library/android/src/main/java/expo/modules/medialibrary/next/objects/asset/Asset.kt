@@ -8,6 +8,7 @@ import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetLegacyDelegate
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetModernDelegate
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,7 +43,7 @@ class Asset(contentUri: Uri, context: Context) : SharedObject() {
   suspend fun getWidth(): Int =
     assetDelegate.getWidth()
 
-  suspend fun getMediaType(): String =
+  suspend fun getMediaType(): MediaType =
     assetDelegate.getMediaType()
 
   suspend fun getModificationTime(): Long? =

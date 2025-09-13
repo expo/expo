@@ -3,6 +3,7 @@ package expo.modules.medialibrary.next.objects.asset.delegates
 import android.net.Uri
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 
 interface AssetDelegate {
@@ -12,7 +13,7 @@ interface AssetDelegate {
   suspend fun getFilename(): String
   suspend fun getHeight(): Int
   suspend fun getWidth(): Int
-  suspend fun getMediaType(): String
+  suspend fun getMediaType(): MediaType
   suspend fun getModificationTime(): Long?
   suspend fun getUri(): Uri
   suspend fun getMimeType(): MimeType

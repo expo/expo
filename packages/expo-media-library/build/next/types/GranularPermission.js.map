@@ -1,0 +1,1 @@
+{"version":3,"file":"GranularPermission.js","sourceRoot":"","sources":["../../../src/next/types/GranularPermission.ts"],"names":[],"mappings":"","sourcesContent":["export type GranularPermission = 'audio' | 'photo' | 'video';\n"]}

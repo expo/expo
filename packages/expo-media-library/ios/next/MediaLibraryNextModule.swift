@@ -51,6 +51,63 @@ public final class MediaLibraryNextModule: Module {
       }
     }
 
+    // swiftlint:disable:next closure_body_length
+    Class(Query.self) {
+      Constructor {
+        return Query()
+      }
+
+      Function("eq") { (this: Query, assetField: AssetField, value: Either<MediaTypeNext, Int>) in
+        try this.eq(assetField, value)
+      }
+
+      Function("in_") { (this: Query, assetField: AssetField, values: Either<[MediaTypeNext], [Int]>) in
+        try this.`in`(assetField, values)
+      }
+
+      Function("gt") { (this: Query, assetField: AssetField, value: Int) in
+        this.gt(assetField, value)
+      }
+
+      Function("gte") { (this: Query, assetField: AssetField, value: Int) in
+        this.gte(assetField, value)
+      }
+
+      Function("lt") { (this: Query, assetField: AssetField, value: Int) in
+        this.lt(assetField, value)
+      }
+
+      Function("lte") { (this: Query, assetField: AssetField, value: Int) in
+        this.lte(assetField, value)
+      }
+
+      Function("limit") { (this: Query, limit: Int) in
+        this.limit(limit)
+      }
+
+      Function("offset") { (this: Query, offset: Int) in
+        this.offset(offset)
+      }
+
+      Function("album") { (this: Query, album: Album) in
+        this.album(album)
+      }
+
+      Function("orderBy") { (this: Query, sortDescriptor: Either<SortDescriptor, AssetField>) in
+        if sortDescriptor.is(SortDescriptor.self) {
+          let sd = try sortDescriptor.as(SortDescriptor.self)
+          return this.orderBy(sortDescriptor: sd)
+        }
+        let assetField = try sortDescriptor.as(AssetField.self)
+        let sd = SortDescriptor(key: assetField)
+        return this.orderBy(sortDescriptor: sd)
+      }
+
+      AsyncFunction("exe") { (this: Query) in
+        try await this.exe()
+      }
+    }
+
     Class(Album.self) {
       Constructor { (id: String) -> Album in
         return Album(id: id)
@@ -142,13 +199,14 @@ public final class MediaLibraryNextModule: Module {
     if assetRefs.is([Asset].self) {
       let assets = try assetRefs.as([Asset].self)
       ids = assets.map { $0.id }
-    } else if assetRefs.is([URL].self) {
+      return ids
+    }
+    if assetRefs.is([URL].self) {
       let filePaths = try assetRefs.as([URL].self)
       ids = try await AssetRepository.shared.add(from: filePaths)
-    } else {
-      throw FailedToCreateAlbumException("Unsupported assetRefs type")
+      return ids
     }
-    return ids
+    throw FailedToCreateAlbumException("Unsupported assetRefs type")
   }
 
   private func checkIfPermissionGranted() async throws {
@@ -163,9 +221,9 @@ public final class MediaLibraryNextModule: Module {
               return
             }
             continuation.resume(returning: ())
-          } else {
-            continuation.resume(throwing: FailedToGrantPermissions())
+            return
           }
+          continuation.resume(throwing: FailedToGrantPermissions())
         },
         reject: { _, _, error in
           if let error = error {

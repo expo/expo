@@ -1,0 +1,1 @@
+{"version":3,"file":"SortDescriptor.js","sourceRoot":"","sources":["../../../src/next/types/SortDescriptor.ts"],"names":[],"mappings":"","sourcesContent":["import { AssetField } from './AssetField';\n\nexport type SortDescriptor = {\n  key: AssetField;\n  ascending?: boolean;\n};\n"]}
