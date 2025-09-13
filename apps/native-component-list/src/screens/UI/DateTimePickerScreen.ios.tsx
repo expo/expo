@@ -1,6 +1,6 @@
 import { DateTimePicker, DateTimePickerProps, Host, Picker, VStack } from '@expo/ui/swift-ui';
 import * as React from 'react';
-import { ScrollView, Text } from 'react-native';
+import { Button, ScrollView, Text } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
@@ -23,6 +23,14 @@ export default function DatePickerScreen() {
       <Page>
         <Section title="Selected Date">
           <Text>{selectedDate.toDateString()}</Text>
+          <Button
+            title="Select Today + 15 Days"
+            onPress={() => {
+              const futureDate = new Date();
+              futureDate.setDate(futureDate.getDate() + 15);
+              setSelectedDate(futureDate);
+            }}
+          />
         </Section>
         <Section title="Selected Time">
           <Text>{selectedDate.toTimeString()}</Text>
@@ -38,7 +46,11 @@ export default function DatePickerScreen() {
                   typeOptions[typeIndex] as DateTimePickerProps['displayedComponents']
                 }
                 title="Select date"
-                initialDate={selectedDate.toISOString()}
+                date={selectedDate.toISOString()}
+                range={{
+                  lowerBound: new Date().toISOString(),
+                  upperBound: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+                }}
                 variant={displayOptions[selectedIndex] as DateTimePickerProps['variant']}
               />
 
