@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Conditionally add `module` main field depending on ESM or CJS resolution ([#39659](https://github.com/expo/expo/pull/39659) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.5 — 2025-09-13
