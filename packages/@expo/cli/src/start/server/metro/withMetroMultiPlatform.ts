@@ -28,12 +28,12 @@ import { createFastResolver, FailedToResolvePathError } from './createExpoMetroR
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
+import { prependMainFields } from './prependMainFields';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
-import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
@@ -264,12 +264,10 @@ export function withExtendedResolver(
       );
       let mainFields = _cache[key];
       if (!mainFields) {
-        const defaultMainFields = isServerEnv ? ['react-native'] : ['react-native', 'browser'];
-        let baseMainFields =
+        // NOTE(@kitten): The default conditions here are defined for unit tests
+        const defaultMainFields = ['react-native', 'browser'];
+        const baseMainFields =
           (platform != null && preferredMainFields[platform]) || defaultMainFields;
-        if (isServerEnv) {
-          baseMainFields = baseMainFields.filter((fieldName) => fieldName !== 'browser');
-        }
         mainFields = prependMainFields(baseMainFields, {
           isESMImport,
           isServerEnv,
@@ -802,9 +800,6 @@ export function withExtendedResolver(
 
         context.unstable_enablePackageExports = true;
         context.unstable_conditionsByPlatform = {};
-        // NOTE(@kitten): This was incorrect before. We must not change the resolution order
-        // based of "main" or "module" based on `isReactServerComponents` on the server-side
-        context.mainFields = getMainFields(platform, !!context.isESMImport, true);
 
         // Enable react-server import conditions.
         if (context.customResolverOptions?.environment === 'react-server') {
@@ -812,6 +807,10 @@ export function withExtendedResolver(
         } else {
           context.unstable_conditionNames = ['node'];
         }
+
+        // NOTE(@kitten): This was incorrect before. We must not change the resolution order
+        // based of "main" or "module" based on `isReactServerComponents` on the server-side
+        context.mainFields = getMainFields(platform, !!context.isESMImport, true);
       } else {
         // Non-server changes
         context.mainFields = getMainFields(platform, !!context.isESMImport, false);
@@ -949,49 +948,4 @@ export async function withMetroMultiPlatformAsync(
 
 function isDirectoryIn(targetPath: string, rootPath: string) {
   return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
-}
-
-function prependMainFields(
-  baseMainFields: readonly string[],
-  input: {
-    isESMImport: boolean;
-    isServerEnv: boolean;
-    userMainFields: readonly string[] | null | undefined;
-  }
-): readonly string[] {
-  // We don't allow the config's main fields to re-order the base fields or to include any
-  // conditions we're already appending
-  const userMainFields = input.userMainFields?.filter((fieldName) => {
-    switch (fieldName) {
-      case 'main':
-      case 'module':
-        return false;
-      case 'react-native':
-      case 'browser':
-        return !env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
-      default:
-        return !baseMainFields.includes(fieldName);
-    }
-  });
-  // The fields shoudl be in-order (config first then base fields) but not repeat themselves
-  const mainFields = [...(userMainFields ?? []), ...baseMainFields].filter(
-    (fieldName, index, mainFields) => {
-      return (
-        fieldName !== 'main' && fieldName !== 'module' && mainFields.indexOf(fieldName) === index
-      );
-    }
-  );
-  // Depending on whether we're in ESM-import resolution mode, we have to either
-  // prefer "module" or "main" over the other
-  if (input.isESMImport) {
-    mainFields.push('module', 'main');
-  } else {
-    mainFields.push('main');
-    // Exception: If the user requested "module" to be included in the defaults we append
-    // it after the "main" field here (ESM-only but without package.json:exports)
-    if (input.isServerEnv || input.userMainFields?.includes('module')) {
-      mainFields.push('module');
-    }
-  }
-  return mainFields;
 }
