@@ -141,6 +141,43 @@ describe(withExtendedResolver, () => {
     );
   });
 
+  it(`resolves a file with module condition for ESM`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      tsconfig: null,
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    const platform = 'ios';
+
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        isESMImport: true,
+      },
+      'react-native',
+      platform
+    );
+
+    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    expect(getResolveFunc()).toHaveBeenCalledWith(
+      expect.objectContaining({
+        extraNodeModules: {},
+        mainFields: ['react-native', 'browser', 'module', 'main'],
+        nodeModulesPaths: ['/root/node_modules'],
+        preferNativePlatform: true,
+        sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
+        customResolverOptions: {},
+        originModulePath: expect.anything(),
+        getPackage: expect.any(Function),
+      }),
+      'react-native',
+      platform
+    );
+  });
+
   it(`resolves against tsconfig baseUrl`, async () => {
     mockMinFs();
 
@@ -208,7 +245,7 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
-        mainFields: ['browser', 'module', 'main'],
+        mainFields: ['browser', 'main'],
         preferNativePlatform: false,
       }),
       '/src/react-native',
@@ -231,7 +268,7 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
-        mainFields: ['browser', 'module', 'main'],
+        mainFields: ['browser', 'main'],
         preferNativePlatform: false,
       }),
       'react-native-web',
@@ -258,7 +295,7 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
-        mainFields: ['browser', 'module', 'main'],
+        mainFields: ['browser', 'main'],
         preferNativePlatform: false,
       }),
       'expo-asset/build/resolveAssetSource',
@@ -473,7 +510,7 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
-        mainFields: ['browser', 'module', 'main'],
+        mainFields: ['browser', 'main'],
         preferNativePlatform: false,
       }),
       'node:path',
@@ -510,7 +547,7 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/root/node_modules'],
-        mainFields: ['browser', 'module', 'main'],
+        mainFields: ['browser', 'main'],
         preferNativePlatform: false,
       }),
       'node:path',
