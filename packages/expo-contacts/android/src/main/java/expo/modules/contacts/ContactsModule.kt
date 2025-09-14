@@ -367,7 +367,12 @@ class ContactsModule : Module() {
     if (data.containsKey("image")) {
       val image = data["image"]
       if (image is Map<*, *> && image.containsKey("uri")) {
-        contact.photoUri = image["uri"] as String?
+        val uri = image["uri"] as String?
+        // Check if this is a remote URI (http/https)
+        if (uri != null && (uri.startsWith("http://") || uri.startsWith("https://"))) {
+          throw RemoteImageUriException()
+        }
+        contact.photoUri = uri
         contact.hasPhoto = true
       }
     }

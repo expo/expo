@@ -19,3 +19,5 @@ class ContactNotFoundException : CodedException("Couldn't find contact")
 class ContactUpdateException : CodedException("Given contact couldn't be updated")
 
 class LookupKeyNotFoundException : CodedException("Couldn't find lookup key for contact")
+
+class RemoteImageUriException : CodedException("Remote image URIs are not supported. Please download the image first using File.downloadFileAsync from expo-file-system and provide a local URI.")

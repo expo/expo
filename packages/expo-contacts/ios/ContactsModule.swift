@@ -553,6 +553,11 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       throw FilePermissionException(uri)
     }
 
+    // Check if this is a remote URI (http/https)
+    guard url.scheme != "http" && url.scheme != "https" else {
+      throw RemoteImageUriException()
+    }
+
     let path = url.path
     let standardizedPath = NSString(string: path).standardizingPath
 

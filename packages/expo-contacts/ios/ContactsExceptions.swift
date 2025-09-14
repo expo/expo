@@ -113,3 +113,9 @@ internal final class AccessPickerAlreadyPresentedException: Exception {
     "Contact access picker is already presented"
   }
 }
+
+internal final class RemoteImageUriException: Exception {
+  override var reason: String {
+    "Remote image URIs are not supported. Please download the image first using File.downloadFileAsync from expo-file-system and provide a local URI."
+  }
+}
