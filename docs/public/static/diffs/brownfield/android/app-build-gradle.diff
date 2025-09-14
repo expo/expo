@@ -1,0 +1,41 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index 57ed10f..cb9cbc6 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -1,6 +1,7 @@
+ apply plugin: "com.android.application"
+ apply plugin: "org.jetbrains.kotlin.android"
+ apply plugin: "org.jetbrains.kotlin.plugin.compose"
++apply plugin: "com.facebook.react"
+
+ android {
+     namespace 'com.example.blankandroid'
+@@ -29,6 +30,8 @@ android {
+ }
+
+ dependencies {
++    implementation("com.facebook.react:react-android")
++    implementation("com.facebook.react:hermes-android")
+
+     implementation libs.androidx.core.ktx
+     implementation libs.androidx.lifecycle.runtime.ktx
+@@ -47,4 +50,19 @@ dependencies {
+     debugImplementation libs.androidx.ui.test.manifest
+ }
+
++def projectRoot = rootDir.getAbsoluteFile().getAbsolutePath()
++react {
++    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
++    reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
++    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
++    codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
++    enableBundleCompression = false
++
++    // Use Expo CLI to bundle the app, this ensures the Metro config works correctly with Expo projects.
++    cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
++    bundleCommand = "export:embed"
++
++    /* Autolinking */
++    autolinkLibrariesWithApp()
++}
+
