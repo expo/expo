@@ -258,15 +258,21 @@ export function withExtendedResolver(
       }
     }
     const _cache: Record<string, readonly string[]> = {};
-    return (platform: string | null, isESMImport: boolean) => {
-      const key = `${isESMImport ? 'esm' : 'cjs'}_${platform}`;
+    return (platform: string | null, isESMImport: boolean, isServerEnv: boolean) => {
+      const key = [isESMImport ? 'esm' : 'cjs', isServerEnv ? 'server' : 'client', platform].join(
+        '_'
+      );
       let mainFields = _cache[key];
       if (!mainFields) {
-        const defaultMainFields = ['react-native', 'browser'];
-        const baseMainFields =
+        const defaultMainFields = isServerEnv ? ['react-native'] : ['react-native', 'browser'];
+        let baseMainFields =
           (platform != null && preferredMainFields[platform]) || defaultMainFields;
+        if (isServerEnv) {
+          baseMainFields = baseMainFields.filter((fieldName) => fieldName !== 'browser');
+        }
         mainFields = prependMainFields(baseMainFields, {
           isESMImport,
+          isServerEnv,
           userMainFields: config.resolver?.resolverMainFields,
         });
         _cache[key] = mainFields;
@@ -796,34 +802,9 @@ export function withExtendedResolver(
 
         context.unstable_enablePackageExports = true;
         context.unstable_conditionsByPlatform = {};
-
-        const isReactServerComponents =
-          context.customResolverOptions?.environment === 'react-server';
-
-        // TODO(@kitten): Most of this is incorrect/obsolete now and not a good idea because it doesn't
-        // follow `context.isESMImport`. We should move away from this being customisable
-        // This should eventually use the `getMainFields` helper as well for `mainFields`
-        if (isReactServerComponents) {
-          // NOTE: Align the behavior across server and client. This is a breaking change so we'll just roll it out with React Server Components.
-          // This ensures that react-server and client code both resolve `module` and `main` in the same order.
-          if (platform === 'web') {
-            // Node.js runtimes should only be importing main at the moment.
-            // This is a temporary fix until we can support the package.json exports.
-            context.mainFields = ['module', 'main'];
-          } else {
-            // In Node.js + native, use the standard main fields.
-            context.mainFields = ['react-native', 'module', 'main'];
-          }
-        } else {
-          if (platform === 'web') {
-            // Node.js runtimes should only be importing main at the moment.
-            // This is a temporary fix until we can support the package.json exports.
-            context.mainFields = ['main', 'module'];
-          } else {
-            // In Node.js + native, use the standard main fields.
-            context.mainFields = ['react-native', 'main', 'module'];
-          }
-        }
+        // NOTE(@kitten): This was incorrect before. We must not change the resolution order
+        // based of "main" or "module" based on `isReactServerComponents` on the server-side
+        context.mainFields = getMainFields(platform, !!context.isESMImport, true);
 
         // Enable react-server import conditions.
         if (context.customResolverOptions?.environment === 'react-server') {
@@ -833,7 +814,7 @@ export function withExtendedResolver(
         }
       } else {
         // Non-server changes
-        context.mainFields = getMainFields(platform, !!context.isESMImport);
+        context.mainFields = getMainFields(platform, !!context.isESMImport, false);
       }
 
       return context;
@@ -974,6 +955,7 @@ function prependMainFields(
   baseMainFields: readonly string[],
   input: {
     isESMImport: boolean;
+    isServerEnv: boolean;
     userMainFields: readonly string[] | null | undefined;
   }
 ): readonly string[] {
@@ -1007,7 +989,7 @@ function prependMainFields(
     mainFields.push('main');
     // Exception: If the user requested "module" to be included in the defaults we append
     // it after the "main" field here (ESM-only but without package.json:exports)
-    if (input.userMainFields?.includes('module')) {
+    if (input.isServerEnv || input.userMainFields?.includes('module')) {
       mainFields.push('module');
     }
   }
