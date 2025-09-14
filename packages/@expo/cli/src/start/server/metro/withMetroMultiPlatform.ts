@@ -248,12 +248,32 @@ export function withExtendedResolver(
     return _universalAliases;
   }
 
-  const preferredMainFields: { [key: string]: string[] } = {
-    // Defaults from Expo Webpack. Most packages using `react-native` don't support web
-    // in the `react-native` field, so we should prefer the `browser` field.
-    // https://github.com/expo/router/issues/37
-    web: ['browser', 'module', 'main'],
-  };
+  /** Gets the main fields to resolver dependent on the platform and `context.isESMImport` */
+  const getMainFields = (() => {
+    const preferredMainFields: Record<string, readonly string[]> = { web: ['browser'] };
+    // All configured React Native platforms should prefer the "react-native" condition
+    for (const platform of config.resolver?.platforms ?? []) {
+      if (!preferredMainFields[platform]) {
+        preferredMainFields[platform] = ['react-native'];
+      }
+    }
+    const _cache: Record<string, readonly string[]> = {};
+    return (platform: string | null, isESMImport: boolean) => {
+      const key = `${isESMImport ? 'esm' : 'cjs'}_${platform}`;
+      let mainFields = _cache[key];
+      if (!mainFields) {
+        const defaultMainFields = ['react-native', 'browser'];
+        const baseMainFields =
+          (platform != null && preferredMainFields[platform]) || defaultMainFields;
+        mainFields = prependMainFields(baseMainFields, {
+          isESMImport,
+          userMainFields: config.resolver?.resolverMainFields,
+        });
+        _cache[key] = mainFields;
+      }
+      return mainFields;
+    };
+  })();
 
   let tsConfigResolve =
     isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
@@ -780,6 +800,9 @@ export function withExtendedResolver(
         const isReactServerComponents =
           context.customResolverOptions?.environment === 'react-server';
 
+        // TODO(@kitten): Most of this is incorrect/obsolete now and not a good idea because it doesn't
+        // follow `context.isESMImport`. We should move away from this being customisable
+        // This should eventually use the `getMainFields` helper as well for `mainFields`
         if (isReactServerComponents) {
           // NOTE: Align the behavior across server and client. This is a breaking change so we'll just roll it out with React Server Components.
           // This ensures that react-server and client code both resolve `module` and `main` in the same order.
@@ -810,10 +833,7 @@ export function withExtendedResolver(
         }
       } else {
         // Non-server changes
-
-        if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
-          context.mainFields = preferredMainFields[platform];
-        }
+        context.mainFields = getMainFields(platform, !!context.isESMImport);
       }
 
       return context;
@@ -948,4 +968,43 @@ export async function withMetroMultiPlatformAsync(
 
 function isDirectoryIn(targetPath: string, rootPath: string) {
   return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
+}
+
+function prependMainFields(
+  baseMainFields: readonly string[],
+  input: {
+    isESMImport: boolean;
+    userMainFields: readonly string[] | null | undefined;
+  }
+): readonly string[] {
+  // We don't allow the config's main fields to re-order the base fields or to include any
+  // conditions we're already appending
+  const userMainFields = input.userMainFields?.filter((fieldName) => {
+    switch (fieldName) {
+      case 'main':
+      case 'module':
+        return false;
+      case 'react-native':
+      case 'browser':
+        return !env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
+      default:
+        return !baseMainFields.includes(fieldName);
+    }
+  });
+  // The fields shoudl be in-order (config first then base fields) but not repeat themselves
+  const mainFields = [...(userMainFields ?? []), ...baseMainFields].filter(
+    (fieldName, index, mainFields) => {
+      return (
+        fieldName !== 'main' && fieldName !== 'module' && mainFields.indexOf(fieldName) === index
+      );
+    }
+  );
+  // Depending on whether we're in ESM-import resolution mode, we have to either
+  // prefer "module" or "main" over the other
+  if (input.isESMImport) {
+    mainFields.push('module', 'main');
+  } else {
+    mainFields.push('main', 'module');
+  }
+  return mainFields;
 }
