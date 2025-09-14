@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - Fix runtime error due to passing undefined into function that doesnt receive any argument ([#39594](https://github.com/expo/expo/pull/39594) by [@mrevanzak](https://github.com/mrevanzak))
 
 ### 💡 Others
