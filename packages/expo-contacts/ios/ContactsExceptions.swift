@@ -116,12 +116,12 @@ internal final class AccessPickerAlreadyPresentedException: Exception {
 
 internal final class RemoteImageUriException: Exception {
   private let providedUri: String
-  
+
   init(_ uri: String) {
     self.providedUri = uri
     super.init()
   }
-  
+
   override var reason: String {
     "Only file:// URIs are supported for contact images. Provided URI: '\(providedUri)'. Please download the image first using File.downloadFileAsync from expo-file-system and provide a local file URI."
   }
