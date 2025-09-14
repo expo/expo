@@ -553,9 +553,9 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       throw FilePermissionException(uri)
     }
 
-    // Check if this is a remote URI (http/https)
-    guard url.scheme != "http" && url.scheme != "https" else {
-      throw RemoteImageUriException()
+    // Check if this is a file URI (required for local images)
+    guard url.isFileURL else {
+      throw RemoteImageUriException(uri)
     }
 
     let path = url.path
