@@ -91,6 +91,7 @@ android {
           "-DUSE_HERMES=${USE_HERMES}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
           "-DUNIT_TEST=${isExpoModulesCoreTests}"
+          "-DCMAKE_OBJECT_PATH_MAX=1024"
       }
     }
   }
