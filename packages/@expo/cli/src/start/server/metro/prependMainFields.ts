@@ -31,7 +31,10 @@ export function prependMainFields(
     }
   );
 
-  if (!input.isServerEnv || input.userMainFields?.includes('browser')) {
+  if (
+    !input.isServerEnv &&
+    (input.userMainFields?.includes('browser') || baseMainFields.includes('browser'))
+  ) {
     mainFields.push('browser');
   }
 
