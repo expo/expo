@@ -108,17 +108,14 @@ const styles = StyleSheet.create({
 
 Since you are using Google as the map provider, you need to add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/). Copy your **API Key** into your project to either a **.env** file or copy it directly and then add it to your app config under the `plugins.react-native-maps.androidGoogleMapsApiKey` field like:
 
-```json app.json
+```json app.config.js
 {
   "expo": {
-    "plugins": [
-      [
-        "react-native-maps",
-        {
-          "androidGoogleMapsApiKey": "process.env.YOUR_GOOGLE_MAPS_API_KEY"
-        }
-      ]
-    ]
+    "ios": {
+      "config": {
+        "googleMapsApiKey": process.env.YOUR_GOOGLE_MAPS_API_KEY
+      }
+    },
   }
 }
 ```
@@ -157,17 +154,16 @@ Since you are using Google as the map provider, you need to add the API key to t
 
 Since you are using Google as the map provider, you need to add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/). Copy your **API Key** into your project to either a **.env** file or copy it directly and then add it to your app config under the `plugins.react-native-maps.iosGoogleMapsApiKey` field like:
 
-```json app.json
+```json app.config.js
 {
   "expo": {
-    "plugins": [
-      [
-        "react-native-maps",
-        {
-          "iosGoogleMapsApiKey": "process.env.YOUR_GOOGLE_MAPS_API_KEY"
+    "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": process.env.YOUR_GOOGLE_MAPS_API_KEY
         }
-      ]
-    ]
+      },
+    },
   }
 }
 ```
