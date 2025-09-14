@@ -1004,7 +1004,12 @@ function prependMainFields(
   if (input.isESMImport) {
     mainFields.push('module', 'main');
   } else {
-    mainFields.push('main', 'module');
+    mainFields.push('main');
+    // Exception: If the user requested "module" to be included in the defaults we append
+    // it after the "main" field here (ESM-only but without package.json:exports)
+    if (input.userMainFields?.includes('module')) {
+      mainFields.push('module');
+    }
   }
   return mainFields;
 }
