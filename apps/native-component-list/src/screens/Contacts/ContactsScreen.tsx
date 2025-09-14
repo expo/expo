@@ -1,6 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Contacts from 'expo-contacts';
+import { Directory, File, Paths } from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -46,9 +47,32 @@ export default function ContactsScreen({ navigation }: Props) {
           <HeaderIconButton
             disabled={Platform.select({ web: true, default: false })}
             name="add"
-            onPress={() => {
+            onPress={async () => {
               const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
-              ContactUtils.presentNewContactFormAsync({ contact: randomContact });
+              try {
+                // Download a placeholder avatar image
+                const destination = new Directory(Paths.cache, 'avatars');
+                destination.create();
+                const output = await File.downloadFileAsync(
+                  'https://raw.githubusercontent.com/expo/expo/main/.github/resources/banner.png',
+                  destination
+                );
+                output.rename('expo-avatar.png');
+                const localUri = output.uri;
+
+                const randomContact = {
+                  note: 'Likes expo...',
+                  image: { uri: localUri },
+                } as Contacts.Contact;
+
+                ContactUtils.presentNewContactFormAsync({
+                  contact: { ...randomContact, image: { uri: localUri } },
+                });
+              } catch (error) {
+                console.error('Failed to download avatar:', error);
+                // Fallback to contact without image
+                ContactUtils.presentNewContactFormAsync({ contact: randomContact });
+              }
             }}
           />
         </HeaderContainerRight>
