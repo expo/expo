@@ -603,6 +603,7 @@ describe(withExtendedResolver, () => {
     modified.resolver.resolveRequest!(
       {
         ...getDefaultRequestContext(),
+        isESMImport: true,
         customResolverOptions: {
           environment: 'react-server',
         },
@@ -626,6 +627,7 @@ describe(withExtendedResolver, () => {
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        isESMImport: true,
       },
       'react-foobar',
       platform
@@ -642,6 +644,7 @@ describe(withExtendedResolver, () => {
 
     const platform = 'web';
 
+    // CommonJS
     modified.resolver.resolveRequest!(
       {
         ...getDefaultRequestContext(),
@@ -654,7 +657,40 @@ describe(withExtendedResolver, () => {
     );
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toHaveBeenCalledWith(
+    expect(getResolveFunc()).toHaveBeenLastCalledWith(
+      {
+        customResolverOptions: { environment: 'react-server' },
+        dev: true,
+        extraNodeModules: {},
+        mainFields: ['main', 'module'],
+        nodeModulesPaths: ['/root/node_modules'],
+        originModulePath: '/root/index.js',
+        preferNativePlatform: false,
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        unstable_conditionNames: ['node', 'react-server', 'workerd'],
+        unstable_conditionsByPlatform: {},
+        unstable_enablePackageExports: true,
+        getPackage: expect.any(Function),
+      },
+      'react-foobar',
+      platform
+    );
+
+    // ESM
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        isESMImport: true,
+        customResolverOptions: {
+          environment: 'react-server',
+        },
+      },
+      'react-foobar',
+      platform
+    );
+
+    expect(getResolveFunc()).toHaveBeenCalledTimes(2);
+    expect(getResolveFunc()).toHaveBeenLastCalledWith(
       {
         customResolverOptions: { environment: 'react-server' },
         dev: true,
@@ -668,6 +704,7 @@ describe(withExtendedResolver, () => {
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        isESMImport: true,
       },
       'react-foobar',
       platform
