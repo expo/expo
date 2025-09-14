@@ -29,6 +29,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.io.File
 
 // TODO: MaidenName Nickname
 class Contact(var contactId: String, var appContext: AppContext) {
@@ -553,7 +554,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
 
   private fun getThumbnailBitmap(photoUri: String?): Bitmap {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    val uri = Uri.parse(photoUri)
+    val uri = Uri.fromFile(File(photoUri))
     context.contentResolver.openInputStream(uri).use { inputStream ->
       return BitmapFactory.decodeStream(inputStream)
     }
