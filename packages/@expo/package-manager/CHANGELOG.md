@@ -10,7 +10,6 @@
 
 - Sort dependencies when installing a dependency with expo-cli and NPM ([#39660](https://github.com/expo/expo/pull/39660) by [@blazejkustra](https://github.com/blazejkustra))
 
-
 ### 💡 Others
 
 ## 1.9.7 — 2025-09-10
