@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] fix Invalid prop style supplied to React.Fragment ([#39685](https://github.com/expo/expo/pull/39685) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.5 — 2025-09-16
