@@ -525,7 +525,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
       contactData.add(notes)
 
       if (!photoUri.isNullOrBlank()) {
-        val photo = getThumbnailBitmap(Uri.parse(photoUri).path)
+        val photo = getThumbnailBitmap(photoUri)
         val image = ContentValues().apply {
           put(Columns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
           put(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
@@ -554,7 +554,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
 
   private fun getThumbnailBitmap(photoUri: String?): Bitmap {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    val uri = Uri.fromFile(File(photoUri))
+    val uri = Uri.parse(photoUri)
     context.contentResolver.openInputStream(uri).use { inputStream ->
       return BitmapFactory.decodeStream(inputStream)
     }
