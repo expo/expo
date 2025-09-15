@@ -36,61 +36,51 @@ class Query(context: Context) : SharedObject() {
   private var limit: Int? = null
   private var offset: Int? = null
 
-  fun eq(field: AssetField, value: String): Query {
+  fun eq(field: AssetField, value: String) = apply {
     clauses.add("${field.toMediaStoreColumn()} = ?")
     args.add(value)
-    return this
   }
 
-  fun within(field: AssetField, values: List<String>): Query {
+  fun within(field: AssetField, values: List<String>) = apply {
     val questionMarks = values.joinToString(", ") { "?" }
     clauses.add("${field.toMediaStoreColumn()} IN ($questionMarks)")
     args.addAll(values)
-    return this
   }
 
-  fun gt(field: AssetField, value: String): Query {
+  fun gt(field: AssetField, value: String) = apply {
     clauses.add("${field.toMediaStoreColumn()} > ?")
     args.add(value)
-    return this
   }
 
-  fun gte(field: AssetField, value: String): Query {
+  fun gte(field: AssetField, value: String) = apply {
     clauses.add("${field.toMediaStoreColumn()} >= ?")
     args.add(value)
-    return this
   }
 
-  fun lt(field: AssetField, value: String): Query {
+  fun lt(field: AssetField, value: String) = apply {
     clauses.add("${field.toMediaStoreColumn()} < ?")
     args.add(value)
-    return this
   }
 
-  fun lte(field: AssetField, value: String): Query {
+  fun lte(field: AssetField, value: String) = apply {
     clauses.add("${field.toMediaStoreColumn()} <= ?")
     args.add(value)
-    return this
   }
 
-  fun limit(limit: Int): Query {
+  fun limit(limit: Int) = apply {
     this.limit = limit
-    return this
   }
 
-  fun album(album: Album): Query {
+  fun album(album: Album) = apply {
     this.album = album
-    return this
   }
 
-  fun offset(count: Int): Query {
+  fun offset(count: Int) = apply {
     this.offset = count
-    return this
   }
 
-  fun orderBy(descriptor: SortDescriptor): Query {
+  fun orderBy(descriptor: SortDescriptor) = apply {
     orderBy.add(descriptor)
-    return this
   }
 
   suspend fun exe(): List<Asset> = withContext(Dispatchers.IO) {
