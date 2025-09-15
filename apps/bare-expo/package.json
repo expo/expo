@@ -66,7 +66,7 @@
     "native-component-list": "*",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.81.4",
+    "react-native": "0.82.0-rc.1",
     "react-native-edge-to-edge": "~1.6.1",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-keyboard-controller": "^1.18.5",

@@ -15,12 +15,7 @@
     "open:ios": "xed example/ios",
     "open:android": "open -a \"Android Studio\" example/android"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "<%- project.slug %>",
-    "<%- project.name %>"
-  ],
+  "keywords": ["react-native", "expo", "<%- project.slug %>", "<%- project.name %>"],
   "repository": "<%- repo %>",
   "bugs": {
     "url": "<%- repo %>/issues"
@@ -33,7 +28,7 @@
     "@types/react": "~19.1.0",
     "expo-module-scripts": "^5.0.7",
     "expo": "^54.0.8",
-    "react-native": "0.81.4"
+    "react-native": "0.82.0-rc.1"
   },
   "peerDependencies": {
     "expo": "*",

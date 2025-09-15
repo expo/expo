@@ -69,7 +69,7 @@
     "@babel/plugin-transform-parameters": "^7.24.7",
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
-    "@react-native/babel-preset": "0.81.4",
+    "@react-native/babel-preset": "0.82.0-rc.1",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "babel-plugin-react-native-web": "~0.21.0",
     "babel-plugin-transform-flow-enums": "^0.0.2",
