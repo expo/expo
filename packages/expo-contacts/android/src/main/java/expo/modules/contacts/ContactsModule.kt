@@ -368,7 +368,6 @@ class ContactsModule : Module() {
       val image = data["image"]
       if (image is Map<*, *> && image.containsKey("uri")) {
         val uri = image["uri"] as String?
-        // Check if this is a file URI (required for local images)
         if (uri != null && !uri.startsWith("file://")) {
           throw RemoteImageUriException(uri)
         }

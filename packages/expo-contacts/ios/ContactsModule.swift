@@ -553,7 +553,6 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       throw FilePermissionException(uri)
     }
 
-    // Check if this is a file URI (required for local images)
     guard url.isFileURL else {
       throw RemoteImageUriException(uri)
     }
