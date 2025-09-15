@@ -10,6 +10,7 @@ struct CreateOptions: Record {
 
 struct DownloadOptions: Record {
   @Field var headers: [String: String]?
+  @Field var idempotent: Bool = false
 }
 
 struct FileInfo: Record {
