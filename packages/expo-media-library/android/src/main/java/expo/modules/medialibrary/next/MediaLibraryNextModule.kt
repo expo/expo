@@ -168,9 +168,9 @@ class MediaLibraryNextModule : Module() {
         self.eq(field, MediaStoreQueryFormatter.parse(value))
       }
 
-      Function("in_") { self: Query, field: AssetField, values: List<Either<MediaType, Int>> ->
+      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Int>> ->
         val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(value) }
-        self.`in`(field, stringValues)
+        self.within(field, stringValues)
       }
 
       Function("gt") { self: Query, field: AssetField, value: Int ->

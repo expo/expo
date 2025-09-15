@@ -27,7 +27,7 @@ export declare class Query {
    * @param value - An array of values that the field should match. Each field has a specific unique type.
    * @returns The updated query object for chaining.
    */
-  in_<T extends AssetField>(field: T, value: AssetFieldValueMap[T][]): Query;
+  within<T extends AssetField>(field: T, value: AssetFieldValueMap[T][]): Query;
   /**
    * Filters assets where the specified field is greater than the given value.
    * @param field - an {@link AssetField} to filter by.

@@ -42,7 +42,7 @@ class Query(context: Context) : SharedObject() {
     return this
   }
 
-  fun `in`(field: AssetField, values: List<String>): Query {
+  fun within(field: AssetField, values: List<String>): Query {
     val questionMarks = values.joinToString(", ") { "?" }
     clauses.add("${field.toMediaStoreColumn()} IN ($questionMarks)")
     args.addAll(values)

@@ -18,7 +18,7 @@ class Query: SharedObject {
     return self
   }
 
-  func `in`(_ assetField: AssetField, _ values: Either<[MediaTypeNext], [Int]>) throws -> Query {
+  func within(_ assetField: AssetField, _ values: Either<[MediaTypeNext], [Int]>) throws -> Query {
     let predicate = try AssetFieldPredicateBuilder.buildPredicate(
       assetField: assetField,
       values: values,

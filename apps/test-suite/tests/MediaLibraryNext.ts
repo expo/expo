@@ -395,7 +395,7 @@ export async function test(t) {
       // when
       const [videoAsset] = await new Query()
         .limit(1)
-        .in_(AssetField.MEDIA_TYPE, [MediaType.VIDEO])
+        .within(AssetField.MEDIA_TYPE, [MediaType.VIDEO])
         .exe();
       // then
       t.expect(await videoAsset.getMediaType()).toBe(MediaType.VIDEO);
@@ -407,7 +407,7 @@ export async function test(t) {
         const asset = await Asset.create(mp3File.localUri);
         assetsContainer.push(asset);
         // when
-        const query = new Query().limit(1).in_(AssetField.MEDIA_TYPE, [MediaType.AUDIO]);
+        const query = new Query().limit(1).within(AssetField.MEDIA_TYPE, [MediaType.AUDIO]);
         const [audioAsset] = await query.exe();
         // then
         t.expect(await audioAsset.getMediaType()).toBe(MediaType.AUDIO);

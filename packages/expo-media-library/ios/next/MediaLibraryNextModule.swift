@@ -61,8 +61,8 @@ public final class MediaLibraryNextModule: Module {
         try this.eq(assetField, value)
       }
 
-      Function("in_") { (this: Query, assetField: AssetField, values: Either<[MediaTypeNext], [Int]>) in
-        try this.`in`(assetField, values)
+      Function("within") { (this: Query, assetField: AssetField, values: Either<[MediaTypeNext], [Int]>) in
+        try this.within(assetField, values)
       }
 
       Function("gt") { (this: Query, assetField: AssetField, value: Int) in
