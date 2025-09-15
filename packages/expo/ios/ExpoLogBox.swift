@@ -1,39 +1,41 @@
-import SwiftUI
+import UIKit
 import WebKit
 
 @objc public class SwiftUIScreenProvider: NSObject {
     @objc public static func makeHostingController() -> UIViewController {
-        if #available(iOS 26.0, *) {
-            let view = MySwiftUIView()
-            let controller =  UIHostingController(rootView: view)
-            return controller
-        } else {
-            // TODO: Should we only use UIKit WebView?
-            // Fallback on earlier versions
-            let view = EmptyView();
-            let controller = UIHostingController(rootView: view)
-            return controller
-        }
+        return WebViewController()
     }
 }
 
-@available(iOS 26.0, *)
-struct MySwiftUIView: View {
-    @State private var page = WebPage();
+class WebViewController: UIViewController {
 
-    var body: some View {
-        let bundleName = "ExpoLogBox"
-        let htmlFileName = "index"
-        let bundleURL = Bundle.main.url(forResource: bundleName, withExtension: "bundle")
+    private var webView: WKWebView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Create webView
+        let config = WKWebViewConfiguration()
+        webView = WKWebView(frame: .zero, configuration: config)
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        }
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(webView)
+
+        // Constrain to fill entire view
+        NSLayoutConstraint.activate([
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.topAnchor.constraint(equalTo: view.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        let bundleURL = Bundle.main.url(forResource: "ExpoLogBox", withExtension: "bundle")
         let bundle = Bundle(url: bundleURL!)
-        let path = bundle!.path(forResource: htmlFileName, ofType: "html")
-        let html = try? String(contentsOfFile: path!)
+        let url = bundle!.url(forResource: "index", withExtension: "html")
         
-        WebView(page)
-            //.scrollBounceBehavior(.always) //TODO: How to make the sheet dismiss on pull down?
-            .webViewBackForwardNavigationGestures(.disabled)
-            .onAppear {
-                page.load(html: html!)
-            }
+        // Load a URL
+        webView.loadFileURL(url!, allowingReadAccessTo: url!.deletingLastPathComponent())
     }
 }
