@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Allow `expo-atlas` (devtool Expo Module) to be discovered in `devDependencies` ([#39688](https://github.com/expo/expo/pull/39688) by [@kitten](https://github.com/kitten))
+
 ## 3.0.10 — 2025-09-10
 
 _This version does not introduce any user-facing changes._
