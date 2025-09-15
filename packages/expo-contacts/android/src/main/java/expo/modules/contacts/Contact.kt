@@ -230,14 +230,17 @@ class Contact(var contactId: String, var appContext: AppContext) {
     ops.add(op.build())
     op.withYieldAllowed(true)
     if (!TextUtils.isEmpty(photoUri) || !TextUtils.isEmpty(rawPhotoUri)) {
-      val photo = getThumbnailBitmap(if (TextUtils.isEmpty(rawPhotoUri)) photoUri else rawPhotoUri)
-      ops.add(
-        ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-          .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-          .withValue(Columns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-          .withValue(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
-          .build()
-      )
+      val maybePhoto = rawPhotoUri ?: photoUri
+      if (!maybePhoto.isNullOrBlank()) {
+        val photo = getThumbnailBitmap(maybePhoto)
+        ops.add(
+          ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+            .withValue(Columns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+            .withValue(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
+            .build()
+        )
+      }
     }
     for (map in baseModels) {
       for (item in map) {
@@ -274,19 +277,22 @@ class Contact(var contactId: String, var appContext: AppContext) {
     ops.add(op.build())
     op.withYieldAllowed(true)
     if (!TextUtils.isEmpty(photoUri) || !TextUtils.isEmpty(rawPhotoUri)) {
-      val photo = getThumbnailBitmap(if (TextUtils.isEmpty(rawPhotoUri)) photoUri else rawPhotoUri)
-      ops.add(
-        ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-          .withSelection(selection, arrayOf(rawContactId, CommonDataKinds.Photo.CONTENT_ITEM_TYPE))
-          .build()
-      )
-      ops.add(
-        ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-          .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId)
-          .withValue(Columns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-          .withValue(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
-          .build()
-      )
+      val maybePhoto = rawPhotoUri ?: photoUri
+      if (!maybePhoto.isNullOrBlank()) {
+        val photo = getThumbnailBitmap(maybePhoto)
+        ops.add(
+          ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+            .withSelection(selection, arrayOf(rawContactId, CommonDataKinds.Photo.CONTENT_ITEM_TYPE))
+            .build()
+        )
+        ops.add(
+          ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId)
+            .withValue(Columns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+            .withValue(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
+            .build()
+        )
+      }
     }
     op = ContentProviderOperation.newUpdate(ContactsContract.Contacts.CONTENT_URI)
       .withSelection("${ContactsContract.Contacts._ID}=?", arrayOf(contactId))
@@ -523,17 +529,18 @@ class Contact(var contactId: String, var appContext: AppContext) {
         put(CommonDataKinds.Note.NOTE, note)
       }
       contactData.add(notes)
-
-      if (!photoUri.isNullOrBlank()) {
-        val photo = getThumbnailBitmap(photoUri)
+      val maybePhotoUri = photoUri
+      if (!maybePhotoUri.isNullOrBlank()) {
+        val photo = getThumbnailBitmap(maybePhotoUri)
         val image = ContentValues().apply {
           put(Columns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
           put(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
         }
         contactData.add(image)
       }
-      if (!rawPhotoUri.isNullOrBlank()) {
-        val photo = getThumbnailBitmap(rawPhotoUri)
+      val maybeRawPhotoUri = rawPhotoUri
+      if (!maybeRawPhotoUri.isNullOrBlank()) {
+        val photo = getThumbnailBitmap(maybeRawPhotoUri)
         val image = ContentValues().apply {
           put(Columns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
           put(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
@@ -552,7 +559,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
       return contactData
     }
 
-  private fun getThumbnailBitmap(photoUri: String?): Bitmap {
+  private fun getThumbnailBitmap(photoUri: String): Bitmap {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
     val uri = Uri.parse(photoUri)
     context.contentResolver.openInputStream(uri).use { inputStream ->
