@@ -258,10 +258,12 @@ export function withExtendedResolver(
       }
     }
     const _cache: Record<string, readonly string[]> = {};
-    return (platform: string | null, isESMImport: boolean, isServerEnv: boolean) => {
-      const key = [isESMImport ? 'esm' : 'cjs', isServerEnv ? 'server' : 'client', platform].join(
-        '_'
-      );
+    return (platform: string | null, enableModuleField: boolean, isServerEnv: boolean) => {
+      const key = [
+        enableModuleField ? 'esm' : 'cjs',
+        isServerEnv ? 'server' : 'client',
+        platform,
+      ].join('_');
       let mainFields = _cache[key];
       if (!mainFields) {
         // NOTE(@kitten): The default conditions here are defined for unit tests
@@ -269,7 +271,7 @@ export function withExtendedResolver(
         const baseMainFields =
           (platform != null && preferredMainFields[platform]) || defaultMainFields;
         mainFields = prependMainFields(baseMainFields, {
-          isESMImport,
+          enableModuleField,
           isServerEnv,
           userMainFields: config.resolver?.resolverMainFields,
         });
@@ -791,6 +793,12 @@ export function withExtendedResolver(
         context.disableHierarchicalLookup = false;
       }
 
+      // NOTE(@kitten): When RSC is enabed, we must avoid dual-package hazards as much as possible
+      // As such, we always treat imports as ESM i.e. enable the "package.json:module" main field
+      // For backwards-compatibility, this currently isn't enabled otherwise.
+      // A lot of the dual-package imports come from expo-router itself, which is currentlty transpiled to CJS
+      const enableModuleField = isReactServerComponentsEnabled || !!context.isESMImport;
+
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
@@ -810,10 +818,10 @@ export function withExtendedResolver(
 
         // NOTE(@kitten): This was incorrect before. We must not change the resolution order
         // based of "main" or "module" based on `isReactServerComponents` on the server-side
-        context.mainFields = getMainFields(platform, !!context.isESMImport, true);
+        context.mainFields = getMainFields(platform, enableModuleField, true);
       } else {
         // Non-server changes
-        context.mainFields = getMainFields(platform, !!context.isESMImport, false);
+        context.mainFields = getMainFields(platform, enableModuleField, false);
       }
 
       return context;

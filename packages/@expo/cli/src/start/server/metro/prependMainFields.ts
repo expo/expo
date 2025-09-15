@@ -1,7 +1,7 @@
 export function prependMainFields(
   baseMainFields: readonly string[],
   input: {
-    isESMImport: boolean;
+    enableModuleField: boolean;
     isServerEnv: boolean;
     userMainFields: readonly string[] | null | undefined;
   }
@@ -38,15 +38,23 @@ export function prependMainFields(
     mainFields.push('browser');
   }
 
+  const userModuleIdx = input.userMainFields?.indexOf('module') ?? -1;
+  const userMainIdx = input.userMainFields?.indexOf('main') ?? -1;
   // Depending on whether we're in ESM-import resolution mode, we have to either
   // prefer "module" or "main" over the other
-  if (input.isESMImport) {
+  // In the future we should make this consitently and replace all of this with `mainFields.push('module', 'main')` always
+  if (input.enableModuleField || (userModuleIdx > -1 && userModuleIdx < userMainIdx)) {
+    // TODO(@kitten): A lot of react-native modules may not expect us to load `module`
+    // first unless we're in an ESM import, so we currently only enable this for ESM imports.
+    // Switch this to be consistent in the future.
+    // We currently explicitly enable this if the user has requested `module` fields to be preferred
     mainFields.push('module', 'main');
   } else {
     mainFields.push('main');
     // Exception: If the user requested "module" to be included in the defaults we append
     // it after the "main" field here (ESM-only but without package.json:exports)
-    if (input.isServerEnv || input.userMainFields?.includes('module')) {
+    // We also forcefully enable it for all server-side environments, since they always had it
+    if (input.isServerEnv || userModuleIdx > -1) {
       mainFields.push('module');
     }
   }

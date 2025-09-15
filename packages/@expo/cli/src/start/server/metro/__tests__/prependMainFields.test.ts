@@ -8,28 +8,28 @@ it('it constructs default fields', () => {
 
   // CommonJS + client-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: false,
+    enableModuleField: false,
     isServerEnv: false,
     userMainFields: DEFAULT_FIELDS,
   });
   expect(mainFields).toEqual(['react-native', 'browser', 'main']);
   // ESM + client-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: true,
+    enableModuleField: true,
     isServerEnv: false,
     userMainFields: DEFAULT_FIELDS,
   });
   expect(mainFields).toEqual(['react-native', 'browser', 'module', 'main']);
   // CommonJS + server-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: false,
+    enableModuleField: false,
     isServerEnv: true,
     userMainFields: DEFAULT_FIELDS,
   });
   expect(mainFields).toEqual(['react-native', 'main', 'module']);
   // ESM + server-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: true,
+    enableModuleField: true,
     isServerEnv: true,
     userMainFields: DEFAULT_FIELDS,
   });
@@ -41,28 +41,28 @@ it('it constructs web fields', () => {
 
   // CommonJS + client-side
   mainFields = prependMainFields(['browser'], {
-    isESMImport: false,
+    enableModuleField: false,
     isServerEnv: false,
     userMainFields: DEFAULT_FIELDS,
   });
   expect(mainFields).toEqual(['browser', 'main']);
   // ESM + client-side
   mainFields = prependMainFields(['browser'], {
-    isESMImport: true,
+    enableModuleField: true,
     isServerEnv: false,
     userMainFields: DEFAULT_FIELDS,
   });
   expect(mainFields).toEqual(['browser', 'module', 'main']);
   // CommonJS + server-side
   mainFields = prependMainFields(['browser'], {
-    isESMImport: false,
+    enableModuleField: false,
     isServerEnv: true,
     userMainFields: DEFAULT_FIELDS,
   });
   expect(mainFields).toEqual(['main', 'module']);
   // ESM + server-side
   mainFields = prependMainFields(['browser'], {
-    isESMImport: true,
+    enableModuleField: true,
     isServerEnv: true,
     userMainFields: DEFAULT_FIELDS,
   });
@@ -74,28 +74,28 @@ it('it constructs customized fields', () => {
 
   // CommonJS + client-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: false,
+    enableModuleField: false,
     isServerEnv: false,
     userMainFields: ['custom'],
   });
   expect(mainFields).toEqual(['custom', 'react-native', 'main']);
   // ESM + client-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: true,
+    enableModuleField: true,
     isServerEnv: false,
     userMainFields: ['custom'],
   });
   expect(mainFields).toEqual(['custom', 'react-native', 'module', 'main']);
   // CommonJS + server-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: false,
+    enableModuleField: false,
     isServerEnv: true,
     userMainFields: ['custom'],
   });
   expect(mainFields).toEqual(['custom', 'react-native', 'main', 'module']);
   // ESM + server-side
   mainFields = prependMainFields(['react-native'], {
-    isESMImport: true,
+    enableModuleField: true,
     isServerEnv: true,
     userMainFields: ['custom'],
   });
