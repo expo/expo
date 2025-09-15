@@ -1,20 +1,62 @@
 #!/usr/bin/env node
 
 /**
- * This script is used to reset the project to a blank state.
- * It deletes or moves the /app, /components, /hooks, /scripts, and /constants directories to /app-example based on user input and creates a new /app directory with an index.tsx and _layout.tsx file.
- * You can remove the `reset-project` script from package.json and safely delete this file after running it.
+ * Reset Project Script
+ * --------------------
+ * This script resets the project to a blank state:
+ * 1. Asks whether to move boilerplate dirs to /app-example or delete them
+ * 2. Creates a fresh /app directory with index.tsx and _layout.tsx
+ * 3. Optionally uninstalls unused boilerplate packages
+ *
+ * After running, you can remove the `reset-project` script from package.json.
  */
 
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
+const { exec } = require("child_process");
 
 const root = process.cwd();
 const oldDirs = ["app", "components", "hooks", "constants", "scripts"];
 const exampleDir = "app-example";
 const newAppDir = "app";
 const exampleDirPath = path.join(root, exampleDir);
+
+const packagesToRemove = [
+  "@expo/vector-icons",
+  "@react-navigation/bottom-tabs",
+  "@react-navigation/elements",
+  "@react-navigation/native",
+  "expo-blur",
+  "expo-haptics",
+  "expo-image",
+  "expo-linking",
+  "expo-symbols",
+  "expo-system-ui",
+  "expo-web-browser",
+  "react-native-gesture-handler",
+  "react-native-reanimated",
+  "react-native-webview",
+];
+
+// Detect package manager
+let packageManager = "npm";
+if (fs.existsSync(path.join(root, "yarn.lock"))) {
+  packageManager = "yarn";
+} else if (fs.existsSync(path.join(root, "pnpm-lock.yaml"))) {
+  packageManager = "pnpm";
+}
+
+const getUninstallCommand = (pm, packages) => {
+  switch (pm) {
+    case "yarn":
+      return `yarn remove ${packages.join(" ")}`;
+    case "pnpm":
+      return `pnpm remove ${packages.join(" ")}`;
+    default:
+      return `npm uninstall ${packages.join(" ")}`;
+  }
+};
 
 const indexContent = `import { Text, View } from "react-native";
 
@@ -44,6 +86,22 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+
+const uninstallPackages = async (cmd) => {
+  return new Promise((resolve, reject) => {
+    console.log(`\n📦 Uninstalling unused packages...`);
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`❌ Error uninstalling packages: ${stderr}`);
+        reject(error);
+      } else {
+        console.log(stdout);
+        console.log("✅ Packages uninstalled successfully.");
+        resolve();
+      }
+    });
+  });
+};
 
 const moveDirectories = async (userInput) => {
   try {
@@ -85,16 +143,38 @@ const moveDirectories = async (userInput) => {
     await fs.promises.writeFile(layoutPath, layoutContent);
     console.log("📄 app/_layout.tsx created.");
 
-    console.log("\n✅ Project reset complete. Next steps:");
-    console.log(
-      `1. Run \`npx expo start\` to start a development server.\n2. Edit app/index.tsx to edit the main screen.${
-        userInput === "y"
-          ? `\n3. Delete the /${exampleDir} directory when you're done referencing it.`
-          : ""
-      }`
+    // Ask about uninstalling packages
+    rl.question(
+      "Do you also want to uninstall boilerplate packages? (Y/n): ",
+      async (answer) => {
+        const uninstallInput = answer.trim().toLowerCase() || "y";
+        if (uninstallInput === "y") {
+          const uninstallCmd = getUninstallCommand(
+            packageManager,
+            packagesToRemove
+          );
+          console.log(`➡️ Detected package manager: ${packageManager}`);
+          console.log(`➡️ Running command: ${uninstallCmd}`);
+          await uninstallPackages(uninstallCmd);
+        } else {
+          console.log("➡️ Skipping package uninstall.");
+        }
+
+        console.log("\n✅ Project reset complete. Next steps:");
+        console.log(
+          `1. Run \`npx expo start\` to start a development server.\n2. Edit app/index.tsx to edit the main screen.${
+            userInput === "y"
+              ? `\n3. Delete the /${exampleDir} directory when you're done referencing it.`
+              : ""
+          }`
+        );
+
+        rl.close();
+      }
     );
   } catch (error) {
     console.error(`❌ Error during script execution: ${error.message}`);
+    rl.close();
   }
 };
 
@@ -103,7 +183,7 @@ rl.question(
   (answer) => {
     const userInput = answer.trim().toLowerCase() || "y";
     if (userInput === "y" || userInput === "n") {
-      moveDirectories(userInput).finally(() => rl.close());
+      moveDirectories(userInput);
     } else {
       console.log("❌ Invalid input. Please enter 'Y' or 'N'.");
       rl.close();
