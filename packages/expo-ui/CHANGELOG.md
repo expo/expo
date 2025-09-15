@@ -7,7 +7,6 @@
 ### 🎉 New features
 
 - [iOS] Add `LabeledContent` view ([#39463](https://github.com/expo/expo/pull/39617) by [@betomoedano](https://github.com/betomoedano))
-- [Android] **Button**: Add support for `leadingIcon` and `trailingIcon` props for better icon positioning in buttons and context menus. ([#39095](https://github.com/expo/expo/pull/39095) by [@benjaminkomen](https://github.com/benjaminkomen))
 
 ### 🐛 Bug fixes
 
