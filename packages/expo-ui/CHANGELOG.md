@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [Android] **Button**: Deprecate `systemImage` prop in favor of `leadingIcon` and `trailingIcon` for more flexible icon placement. The `systemImage` prop will continue to work as `leadingIcon` for backward compatibility. ([#39095](https://github.com/expo/expo/pull/39095) by [@benjaminkomen](https://github.com/benjaminkomen))
+
 ## 0.2.0-beta.2 — 2025-09-12
 
 _This version does not introduce any user-facing changes._
