@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
@@ -13,6 +12,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.RawContacts
 import android.text.TextUtils
 import android.util.Log
+import androidx.core.net.toUri
 import expo.modules.contacts.models.BaseModel
 import expo.modules.contacts.models.DateModel
 import expo.modules.contacts.models.EmailModel
@@ -29,7 +29,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.io.File
 
 // TODO: MaidenName Nickname
 class Contact(var contactId: String, var appContext: AppContext) {
@@ -561,7 +560,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
 
   private fun getThumbnailBitmap(photoUri: String): Bitmap {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    val uri = Uri.parse(photoUri)
+    val uri = photoUri.toUri()
     context.contentResolver.openInputStream(uri).use { inputStream ->
       return BitmapFactory.decodeStream(inputStream)
     }
