@@ -2,6 +2,11 @@ import { PermissionResponse, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
+import { GranularPermission } from './types/GranularPermission';
+
+export * from './MediaLibraryNext.types';
+
+export class Query extends ExpoMediaLibraryNext.Query {}
 
 export class Asset extends ExpoMediaLibraryNext.Asset {
   static create(filePath: string, album?: Album): Promise<Asset> {
@@ -34,8 +39,6 @@ export class Album extends ExpoMediaLibraryNext.Album {
     return ExpoMediaLibraryNext.getAllAlbums();
   }
 }
-
-export type GranularPermission = 'audio' | 'photo' | 'video';
 
 export async function requestPermissionsAsync(
   writeOnly: boolean = false,

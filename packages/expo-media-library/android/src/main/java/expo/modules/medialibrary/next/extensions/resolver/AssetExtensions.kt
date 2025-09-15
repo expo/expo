@@ -18,25 +18,28 @@ suspend fun ContentResolver.queryAssetDisplayName(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.MediaColumns.DISPLAY_NAME, Cursor::getString)
 
 suspend fun ContentResolver.queryGetCreationTime(contentUri: Uri): Long? =
-  queryOne(contentUri, MediaStore.Images.Media.DATE_TAKEN, Cursor::getLong)
+  queryOne(contentUri, MediaStore.MediaColumns.DATE_TAKEN, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetModificationTime(contentUri: Uri): Long? =
-  queryOne(contentUri, MediaStore.Images.Media.DATE_MODIFIED, Cursor::getLong)
+  queryOne(contentUri, MediaStore.MediaColumns.DATE_MODIFIED, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetDuration(contentUri: Uri): Long? =
   queryOne(contentUri, MediaStore.Video.VideoColumns.DURATION, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.Images.Media.WIDTH, Cursor::getInt)
+  queryOne(contentUri, MediaStore.MediaColumns.WIDTH, Cursor::getInt)
 
 suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.Images.Media.HEIGHT, Cursor::getInt)
+  queryOne(contentUri, MediaStore.MediaColumns.HEIGHT, Cursor::getInt)
 
 suspend fun ContentResolver.queryAssetPath(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.Files.FileColumns.DATA, Cursor::getString)
 
 suspend fun ContentResolver.queryAssetBucketId(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.Images.Media.BUCKET_ID, Cursor::getInt)
+  queryOne(contentUri, MediaStore.MediaColumns.BUCKET_ID, Cursor::getInt)
+
+suspend fun ContentResolver.queryAssetMediaType(contentUri: Uri): Int? =
+  queryOne(contentUri, MediaStore.Files.FileColumns.MEDIA_TYPE, Cursor::getInt)
 
 suspend fun ContentResolver.insertPendingAsset(
   displayName: String,
