@@ -285,6 +285,148 @@ export default function TabLayout() {
 }
 ```
 
+### iOS 26 features
+
+> **info** To use these features, compile your app with Xcode 26 or later.
+
+#### Separate search tab
+
+<ContentSpotlight
+  alt="A screenshot of a tab bar with separate search tab."
+  src="/static/images/expo-router/ios-26-search-tab.png"
+  className="max-w-[540px]"
+/>
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search">
+        <Label>Search</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+#### Tabbar search input
+
+<ContentSpotlight
+  alt="A screenshot of a tab bar search."
+  src="/static/images/expo-router/ios-26-search-bar.png"
+  className="max-w-[540px]"
+/>
+
+To add a search field to the tab bar, wrap the screen in a Stack navigator and configure `headerSearchBarOptions`.
+
+<FileTree
+  files={['app/_layout.tsx', 'app/index.tsx', 'app/search/_layout.tsx', 'app/search/index.tsx']}
+/>
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search">
+        <Label>Search</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+```tsx app/search/_layout.tsx
+import { Stack } from 'expo-router/unstable-native-tabs';
+
+export default function SearchLayout() {
+  return <Stack />;
+}
+```
+
+```tsx app/search/index.tsx
+import { Stack } from 'expo-router/unstable-native-tabs';
+
+export default function SearchIndex() {
+  return (
+    <>
+      <Stack.Screen
+        name="index"
+        options={{
+          title: 'Search',
+          headerSearchBarOptions: {
+            placement: 'automatic',
+            placeholder: 'Search',
+            onChangeText: () => {},
+          },
+        }}
+      />
+      <ScrollView>{/* Screen content */}</ScrollView>
+    </>
+  );
+}
+```
+
+#### Tab bar minimize behavior
+
+<ContentSpotlight
+  alt="A video presenting tab bar minimize behavior."
+  file="expo-router/native-tabs-minimize-behavior.mp4"
+/>
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="tab-1">
+        <Label>Tab 1</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+### Integration with `@expo/vector-icons`
+
+> **info** When possible, we recommend using SF Symbols on iOS. They offer higher quality and platform feeling than vector icons.
+
+To use icons from `@expo/vector-icons`, you can use `VectorIcon` component.
+
+```tsx
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
+import { Platform } from 'react-native';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+        {Platform.select({
+          ios: <Icon sf="house.fill" />,
+          android: <Icon src={<VectorIcon family={MIcons} name="home" />} />,
+        })}
+      </NativeTabs.Trigger>
+      ...
+    </NativeTabs>
+  );
+}
+```
+
 ## Migrating from JavaScript tabs
 
 Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/router/advanced/tabs/). The native tabs are constrained to the native platform behavior, whereas the JavaScript tabs can be customized more freely. If you aren't interested in the native platform behavior, you can continue using the JavaScript tabs.
