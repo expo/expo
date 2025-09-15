@@ -4,7 +4,7 @@ import ExpoModulesCore
 class AssetFieldPredicateBuilder {
   static func buildPredicate(assetField: AssetField, value: Int, symbol: String) -> NSPredicate {
     if assetField == .CREATION_TIME || assetField == .MODIFICATION_TIME {
-      let date = Date(timeIntervalSince1970: TimeInterval(value))
+      let date = Date(milliseconds: value)
       return NSPredicate(format: "\(assetField.photosKey()) \(symbol) %@", argumentArray: [date])
     }
     return NSPredicate(format: "\(assetField.photosKey()) \(symbol) %@", argumentArray: [value])

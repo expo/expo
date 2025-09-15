@@ -134,13 +134,13 @@ public final class MediaLibraryNextModule: Module {
       }
     }
 
-    AsyncFunction("deleteManyAlbums") { (albums: [Album], deleteAssets: Bool) async throws in
+    AsyncFunction("deleteAlbums") { (albums: [Album], deleteAssets: Bool) async throws in
       try await checkIfPermissionGranted()
       let albumsIds = albums.map { $0.id }
       try await AssetCollectionRepository.shared.delete(by: albumsIds, deleteAssets: deleteAssets)
     }
 
-    AsyncFunction("deleteManyAssets") { (assets: [Asset]) async throws in
+    AsyncFunction("deleteAssets") { (assets: [Asset]) async throws in
       try await checkIfPermissionGranted()
       let assetIds = assets.map { $0.id }
       try await AssetRepository.shared.delete(by: assetIds)

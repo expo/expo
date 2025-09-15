@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [next] Fix `asset.getModificationTime` to return milliseconds
+
 ### 💡 Others
 
 ## 18.1.1 — 2025-09-10
