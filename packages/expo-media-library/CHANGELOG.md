@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [next][android] Change default root directory to Pictures
 - [next] Fix `asset.getModificationTime` to return milliseconds ([#39715](https://github.com/expo/expo/pull/39715) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others

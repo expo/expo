@@ -35,7 +35,7 @@ class AssetLegacyFactory(context: Context) : AssetFactory {
     val baseDir = if (relativePath != null) {
       File(relativePath.toFilePath())
     } else {
-      mimeType.externalStoragePublicDirectory()
+      mimeType.externalStorageAssetDirectory()
     }
     baseDir.mkdirs()
 
