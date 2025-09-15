@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Regression: Support search paths and `nativeModulesDir` pointing directly at module folder ([#39669](https://github.com/expo/expo/pull/39669) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 3.0.10 — 2025-09-10
