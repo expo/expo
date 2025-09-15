@@ -1,0 +1,13 @@
+diff --git a/app/src/debug/AndroidManifest.xml b/app/src/debug/AndroidManifest.xml
+index 91f84ed..7412c2d 100644
+--- a/app/src/debug/AndroidManifest.xml
++++ b/app/src/debug/AndroidManifest.xml
+@@ -2,5 +2,7 @@
+     xmlns:tools="http://schemas.android.com/tools">
+     <application
+         tools:targetApi="28"
++        android:usesCleartextTraffic="true"
++        tools:replace="android:usesCleartextTraffic"
+     />
+ </manifest>
+\ No newline at end of file

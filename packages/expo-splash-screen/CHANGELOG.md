@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 31.0.10 — 2025-09-12
+
+_This version does not introduce any user-facing changes._
+
 ## 31.0.9 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

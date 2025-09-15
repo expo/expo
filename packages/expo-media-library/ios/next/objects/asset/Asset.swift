@@ -50,23 +50,23 @@ class Asset: SharedObject {
     return Int(date.timeIntervalSince1970)
   }
 
-  func getMediaType() async throws -> Int {
+  func getMediaType() async throws -> MediaTypeNext {
     let phAsset = try await requirePHAsset()
-    return phAsset.mediaType.rawValue
+    return MediaTypeNext.from(phAsset.mediaType)
   }
 
   func getUri() async throws -> String {
     let phAsset = try await requirePHAsset()
 
-    switch try await getMediaType() {
-      case PHAssetMediaType.image.rawValue:
+    switch phAsset.mediaType {
+      case PHAssetMediaType.image:
         let contentEditingInput = try await phAsset.requestContentEditingInput()
         guard let url = contentEditingInput.fullSizeImageURL else {
           throw FailedToGetPropertyException("uri")
         }
         return url.absoluteString
 
-      case PHAssetMediaType.video.rawValue:
+      case PHAssetMediaType.video:
         let options = PHVideoRequestOptions()
         options.version = .original
         guard let avAsset = try await PHImageManager.default()

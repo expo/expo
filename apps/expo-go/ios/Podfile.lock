@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.32.11):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.4):
+  - Expo (54.0.7):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -101,7 +101,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDomWebView (0.2.7):
     - ExpoModulesCore
-  - ExpoFileSystem (19.0.13):
+  - ExpoFileSystem (19.0.14):
     - ExpoModulesCore
   - ExpoFont (14.0.8):
     - ExpoModulesCore
@@ -112,7 +112,7 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (15.0.7):
     - ExpoModulesCore
-  - ExpoHead (6.0.2):
+  - ExpoHead (6.0.4):
     - ExpoModulesCore
     - RNScreens
   - ExpoImage (3.0.8):
@@ -229,7 +229,7 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (15.0.7):
     - ExpoModulesCore
-  - ExpoScreenCapture (8.0.7):
+  - ExpoScreenCapture (8.0.8):
     - ExpoModulesCore
   - ExpoScreenOrientation (9.0.7):
     - boost
@@ -4278,7 +4278,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
-  Expo: ba29f2e34ab33691ff5a064228622b49b3cc0136
+  Expo: 394446b28e729dfcb9819785de26a48d85d4591a
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
   ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
   ExpoAudio: 7cf373698f2aabe2f9f8a93c95f41efa3427f273
@@ -4296,12 +4296,12 @@ SPEC CHECKSUMS:
   ExpoDevice: 205f817268e7cc1acdbc354a425626bf328d0004
   ExpoDocumentPicker: dbe4eeeb771891209fee044a6b0bafbd1fdcc4fa
   ExpoDomWebView: f8d74b970eede6e02ca2f215742812472f046817
-  ExpoFileSystem: 70cf85636b654fc88723b602b1fadfacd798d4b3
+  ExpoFileSystem: adffad7d1f57f768ca7a5e3bf450312fb9ebd27a
   ExpoFont: d3e56c7cc03d9fd113b90a5513ad32b4bf46b0ff
   ExpoGL: 39262a8c3d4c36d48a28bc412e3392c25c5391c9
   ExpoGlassEffect: 02d9577dfe05a6b6c9856fd71514120e96792052
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
-  ExpoHead: 88f936e864e6bf5ee52435edeb713e5c3834a0a6
+  ExpoHead: 5c65e4caac7bfed3c69492198f385aa575d247bc
   ExpoImage: 306dd755c842dba9f3ee654c51834a9cc657e6ca
   ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
   ExpoImagePicker: bd0a5c81d7734548f6908a480609257e85d19ea8
@@ -4319,7 +4319,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
-  ExpoScreenCapture: d0c55915af30258fd8a2f1df64812fcae68d3985
+  ExpoScreenCapture: 0c785ab7e1fa38943f04b16060d54ae8f886544a
   ExpoScreenOrientation: 3d7f279ae28b395ba6d313768735cfba40710c49
   ExpoSecureStore: f44dee1354536bdb3d7fab8cc451ee737c41beca
   ExpoSensors: 4e9582fe20b9829a3a1d276e07ecd7916ee1ca84

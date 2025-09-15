@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- [iOS] Add `LabeledContent` view ([#39463](https://github.com/expo/expo/pull/39617) by [@betomoedano](https://github.com/betomoedano))
 - [Android] **Button**: Add support for `leadingIcon` and `trailingIcon` props for better icon positioning in buttons and context menus. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#39095](https://github.com/expo/expo/pull/39095) by [@benjaminkomen](https://github.com/benjaminkomen))
 
 ### 🐛 Bug fixes
+
+- [ios] tvOS 26 compile fix and card button. ([#39639](https://github.com/expo/expo/pull/39639) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

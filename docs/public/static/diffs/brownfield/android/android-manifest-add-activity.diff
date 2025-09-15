@@ -1,0 +1,16 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 42c0681..d89f66c 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -24,6 +24,10 @@
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+         </activity>
++        <activity
++            android:name=".MyReactActivity"
++            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
++        </activity>
+     </application>
+
+ </manifest>
+\ No newline at end of file

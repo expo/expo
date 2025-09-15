@@ -38,6 +38,7 @@ function NativeBottomTabsNavigator({
     <BottomTabs
       tabBarBackgroundColor={rest.tabBarStyle?.backgroundColor}
       tabBarTintColor={rest.tabBarActiveTintColor}
+      experimentalControlNavigationStateInJS={false}
       onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
         const descriptor = descriptors[tabKey];
         const route = descriptor.route;
