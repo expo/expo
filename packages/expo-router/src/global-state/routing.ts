@@ -28,8 +28,21 @@ import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 
+function isCurrentNavigatorReady() {
+  let state = store.navigationRef.getRootState();
+  while (state) {
+    const index = state.index ?? 0;
+    const route = state.routes[index];
+    if (route.params && 'screen' in route.params && !route.state) {
+      return false;
+    }
+    state = route.state;
+  }
+  return true;
+}
+
 function assertIsReady() {
-  if (!store.navigationRef.isReady()) {
+  if (!store.navigationRef.isReady() || !isCurrentNavigatorReady()) {
     throw new Error(
       'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
     );
