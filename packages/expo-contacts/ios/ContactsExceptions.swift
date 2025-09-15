@@ -123,6 +123,6 @@ internal final class RemoteImageUriException: Exception {
   }
 
   override var reason: String {
-    "Only file:// URIs are supported for contact images. Provided URI: '\(providedUri)'. Please download the image first using File.downloadFileAsync from expo-file-system and provide a local file URI."
+    "Only file:// URIs are supported for contact images. Provided URI: '\(providedUri)'. Download the image first using File.downloadFileAsync from expo-file-system and provide a local file URI."
   }
 }
