@@ -145,12 +145,15 @@ export async function scanExpoModuleResolutionsForPlatform(
 ): Promise<Record<string, PackageRevision>> {
   const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
   const resolutions = mergeResolutionResults(
-    await Promise.all([
-      ...searchPaths.map((searchPath) => {
-        return linker.scanDependenciesInSearchPath(searchPath);
-      }),
-      linker.scanDependenciesRecursively(),
-    ])
+    await Promise.all(
+      [
+        ...searchPaths.map((searchPath) => {
+          return linker.scanDependenciesInSearchPath(searchPath);
+        }),
+        platform === 'devtools' ? linker.scanDevDependenciesShallowly() : null,
+        linker.scanDependenciesRecursively(),
+      ].filter((x) => x != null)
+    )
   );
   return await filterMapResolutionResult(resolutions, async (resolution) => {
     return !excludeNames.has(resolution.name)
