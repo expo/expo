@@ -38,9 +38,6 @@ suspend fun ContentResolver.queryAssetPath(contentUri: Uri): String? =
 suspend fun ContentResolver.queryAssetBucketId(contentUri: Uri): Int? =
   queryOne(contentUri, MediaStore.MediaColumns.BUCKET_ID, Cursor::getInt)
 
-suspend fun ContentResolver.queryAssetMediaType(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.Files.FileColumns.MEDIA_TYPE, Cursor::getInt)
-
 suspend fun ContentResolver.insertPendingAsset(
   displayName: String,
   mimeType: MimeType,
