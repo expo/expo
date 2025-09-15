@@ -7,7 +7,6 @@ import android.provider.MediaStore
 import androidx.annotation.DeprecatedSinceApi
 import expo.modules.medialibrary.next.exceptions.QueryCouldNotBeExecuted
 import expo.modules.medialibrary.next.extensions.resolver.EXTERNAL_CONTENT_URI
-import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.records.SortDescriptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,12 +16,13 @@ class QueryLegacyExecutor(
   private val clauses: MutableList<String>,
   private val args: MutableList<String>,
   private val sortDescriptors: MutableList<SortDescriptor>,
-  private val album: Album?,
   private val limit: Int?,
   private val offset: Int?
 ) : QueryExecutor {
-  override suspend fun exe(projection: Array<String>, contentResolver: ContentResolver): Cursor = withContext(Dispatchers.IO) {
-    addAlbumArgIfNotNull()
+  override suspend fun exe(
+    projection: Array<String>,
+    contentResolver: ContentResolver
+  ): Cursor = withContext(Dispatchers.IO) {
     val selection = buildSelection()
     val sortOrder = buildSortOrder()
     val selectionArgs = args.toTypedArray()
@@ -32,8 +32,8 @@ class QueryLegacyExecutor(
 
   private fun buildSortOrder(): String {
     var sortOrder = buildOrderBy()
-    sortOrder = addLimitIfNotNull(sortOrder)
-    return addOffsetIfNotNull(sortOrder)
+    sortOrder = addLimit(sortOrder)
+    return addOffset(sortOrder)
   }
 
   private fun buildSelection(): String {
@@ -48,7 +48,7 @@ class QueryLegacyExecutor(
     }
   }
 
-  private fun addLimitIfNotNull(sortOrder: String?): String {
+  private fun addLimit(sortOrder: String?): String {
     return if (limit != null) {
       requireNotEmptySortOrder(sortOrder) + " LIMIT $limit"
     } else if (offset != null) {
@@ -63,18 +63,11 @@ class QueryLegacyExecutor(
     return sortOrder ?: MediaStore.Files.FileColumns._ID
   }
 
-  private fun addOffsetIfNotNull(orderBy: String): String {
+  private fun addOffset(orderBy: String): String {
     return if (offset != null) {
       "$orderBy OFFSET $offset"
     } else {
       orderBy
-    }
-  }
-
-  private fun addAlbumArgIfNotNull() {
-    if (album != null) {
-      clauses.add("${MediaStore.MediaColumns.BUCKET_ID} = ?")
-      args.add(album.id)
     }
   }
 }

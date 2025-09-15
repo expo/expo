@@ -9,11 +9,9 @@ import android.content.ContentResolver.QUERY_ARG_SQL_SORT_ORDER
 import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.medialibrary.next.exceptions.QueryCouldNotBeExecuted
 import expo.modules.medialibrary.next.extensions.resolver.EXTERNAL_CONTENT_URI
-import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.records.SortDescriptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,19 +21,19 @@ class QueryModernExecutor(
   private var clauses: MutableList<String>,
   private var args: MutableList<String>,
   private val sortDescriptors: MutableList<SortDescriptor>,
-  private val album: Album?,
   private val limit: Int?,
   private val offset: Int?
 ) : QueryExecutor {
-  override suspend fun exe(projection: Array<String>, contentResolver: ContentResolver): Cursor = withContext(Dispatchers.IO) {
+  override suspend fun exe(
+    projection: Array<String>,
+    contentResolver: ContentResolver
+  ): Cursor = withContext(Dispatchers.IO) {
     val queryArgs = build()
     return@withContext contentResolver.query(EXTERNAL_CONTENT_URI, projection, queryArgs, null)
       ?: throw QueryCouldNotBeExecuted("Cursor is null")
   }
 
   private fun build(): Bundle {
-    addAlbumArgIfNotNull()
-
     val selection = buildSelection()
     val selectionArgs = args.toTypedArray()
     val sortOrder = buildSortOrder()
@@ -70,12 +68,5 @@ class QueryModernExecutor(
       return null
     }
     return sortDescriptors.joinToString(", ") { it.toMediaStoreQueryString() }
-  }
-
-  private fun addAlbumArgIfNotNull() {
-    if (album != null) {
-      clauses.add("${MediaStore.MediaColumns.BUCKET_ID} = ?")
-      args.add(album.id)
-    }
   }
 }

@@ -72,7 +72,8 @@ class Query(context: Context) : SharedObject() {
   }
 
   fun album(album: Album) = apply {
-    this.album = album
+    clauses.add("${MediaStore.MediaColumns.BUCKET_ID} = ?")
+    args.add(album.id)
   }
 
   fun offset(count: Int) = apply {
@@ -85,9 +86,9 @@ class Query(context: Context) : SharedObject() {
 
   suspend fun exe(): List<Asset> = withContext(Dispatchers.IO) {
     val queryExecutor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      QueryModernExecutor(clauses, args, orderBy, album, limit, offset)
+      QueryModernExecutor(clauses, args, orderBy, limit, offset)
     } else {
-      QueryLegacyExecutor(clauses, args, orderBy, album, limit, offset)
+      QueryLegacyExecutor(clauses, args, orderBy, limit, offset)
     }
     val projection = arrayOf(
       MediaStore.Files.FileColumns._ID,
