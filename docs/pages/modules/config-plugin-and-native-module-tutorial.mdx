@@ -1,7 +1,7 @@
 ---
 title: 'Tutorial: Create a module with a config plugin'
 sidebar_title: Create a module with a config plugin
-description: A tutorial on creating a native module with a config plugin using Expo modules API.
+description: A tutorial on creating a native module with a config plugin using Expo Modules API.
 searchRank: 3
 ---
 
@@ -11,7 +11,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Config plugins let you customize native Android and iOS projects generated with `npx expo prebuild`. You can use them to add properties to native config files, copy assets to native projects, or apply advanced configurations, such as adding an [app extension target](/build-reference/app-extensions/).
+[Config plugins](/config-plugins/introduction/) let you customize native Android and iOS projects generated with `npx expo prebuild` in [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) projects. You can use them to add properties to native config files, copy assets to native projects, or apply advanced configurations, such as adding an [app extension target](/build-reference/app-extensions/).
 
 As an app developer, config plugins help you apply customizations not exposed in the default [app config](/workflow/configuration). As a library author, they enable you to configure native projects automatically for developers using your library.
 
@@ -25,7 +25,7 @@ Start by initializing a new Expo module project with `create-expo-module`. This 
 
 <Terminal cmd={['$ npx create-expo-module expo-native-configuration']} />
 
-This guide uses the name `expo-native-configuration`/`ExpoNativeConfiguration` for the project. However, you can choose any name you prefer.
+This guide uses the name `expo-native-configuration`/`ExpoNativeConfiguration` for the module project. However, you can choose any name you prefer.
 
 </Step>
 
@@ -140,10 +140,10 @@ In another terminal window, compile and run the example app:
   cmd={[
     '# Navigate to the example project',
     '$ cd example',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
@@ -155,7 +155,7 @@ You should see a screen with the text "API key: api-key".
 
 ## Create a new config plugin
 
-Plugins are synchronous functions that accept an `ExpoConfig` and return a modified `ExpoConfig`. By convention, these functions are prefixed with the word `with`. Name your plugin `withMyApiKey` or use a different name, as long as it follows this convention.
+[Plugins](/config-plugins/introduction/#plugin-function) are synchronous functions that accept an `ExpoConfig` and return a modified `ExpoConfig`. By convention, these functions are prefixed with the word `with`. Name your plugin `withMyApiKey` or use a different name, as long as it follows this convention.
 
 Here is an example of a basic config plugin function:
 
