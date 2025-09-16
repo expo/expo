@@ -35,17 +35,17 @@ final class AssetCollectionRepository {
   }
 
   func get(byTitle title: String) -> PHAssetCollection? {
-     let pHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
-     var fetchedCollection: PHAssetCollection?
-     pHFetchResult.enumerateObjects { collection, _, stop in
-       if collection.localizedTitle == title {
-         fetchedCollection = collection
-         stop.pointee = true
-       }
-     }
-     return fetchedCollection
-   }
-  
+    let pHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
+    var fetchedCollection: PHAssetCollection?
+    pHFetchResult.enumerateObjects { collection, _, stop in
+      if collection.localizedTitle == title {
+        fetchedCollection = collection
+        stop.pointee = true
+      }
+    }
+    return fetchedCollection
+  }
+
   func delete(by collectionIds: [String], deleteAssets: Bool = false) async throws {
     let albums = get(by: collectionIds)
     try await delete(by: albums, deleteAssets: deleteAssets)
