@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Regression: Support search paths and `nativeModulesDir` pointing directly at module folder ([#39669](https://github.com/expo/expo/pull/39669) by [@kitten](https://github.com/kitten))
+- Mark `ios|macos|tvos` as supported when an Expo Module marks `apple` as a supported platform ([#39700](https://github.com/expo/expo/pull/39700) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
