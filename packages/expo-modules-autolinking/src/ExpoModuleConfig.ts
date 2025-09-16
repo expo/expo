@@ -44,7 +44,10 @@ export class ExpoModuleConfig {
   supportsPlatform(platform: SupportedPlatform): boolean {
     const supportedPlatforms = this.rawConfig.platforms ?? [];
 
-    if (platform === 'apple') {
+    if (platform === 'web') {
+      // Web platform is implicitly supported for autolinking resolution but has no special behavior
+      return true;
+    } else if (platform === 'apple') {
       // Apple platform is supported when any of iOS, macOS and tvOS is supported.
       return supportedPlatforms.some((supportedPlatform) => {
         return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
