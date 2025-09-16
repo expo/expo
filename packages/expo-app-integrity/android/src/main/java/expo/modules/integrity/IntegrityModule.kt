@@ -182,11 +182,6 @@ class IntegrityModule : Module() {
   }
 
   private fun isHardwareAttestationSupported(): Boolean {
-    // Hardware attestation is supported on Android 7.0 (API level 24) and above
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      return false
-    }
-
     return try {
       // Verify we can actually access the hardware keystore
       val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
@@ -198,10 +193,6 @@ class IntegrityModule : Module() {
   }
 
   private fun generateHardwareAttestedKey(keyAlias: String, challenge: String) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      throw Exception("Hardware attestation requires Android 7.0 or higher")
-    }
-
     try {
       val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
       keyStore.load(null)
