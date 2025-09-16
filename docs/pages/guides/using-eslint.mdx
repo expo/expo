@@ -54,7 +54,7 @@ Running the above command will run the `lint` script from **package.json**.
 
 ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app that runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
 
-The approach to configure environment-specific globals differs between flat config and legacy config:
+The approach to configure environment-specific globals differs between Flat config and legacy config:
 
 <Tabs>
 
