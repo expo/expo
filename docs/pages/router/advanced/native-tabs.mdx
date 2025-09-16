@@ -287,7 +287,7 @@ export default function TabLayout() {
 
 ### iOS 26 features
 
-> **info** To use these features, compile your app with Xcode 26 or later.
+> **info** To use features described in this section, compile your app with Xcode 26 or higher.
 
 #### Separate search tab
 
@@ -296,6 +296,8 @@ export default function TabLayout() {
   src="/static/images/expo-router/ios-26-search-tab.png"
   className="max-w-[540px]"
 />
+
+To add a separate search tab, assign the `role` with its value set to `search` to the native tab you want to display separately.
 
 ```tsx app/_layout.tsx
 import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
@@ -382,6 +384,7 @@ export default function SearchIndex() {
   alt="A video presenting tab bar minimize behavior."
   file="expo-router/native-tabs-minimize-behavior.mp4"
 />
+To implement the minimize behavior on the tab bar, you can use [`minimizeBehavior`](/versions/latest/sdk/router-native-tabs/#minimizebehavior) prop on `NativeTabs`. In the example below, the tab bar is minimized when scrolling down.
 
 ```tsx app/_layout.tsx
 import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
@@ -402,11 +405,11 @@ export default function TabLayout() {
 
 ### Integration with `@expo/vector-icons`
 
-> **info** When possible, we recommend using SF Symbols on iOS. They offer higher quality and platform feeling than vector icons.
+> **info** **Recommended**: Use [SF Symbols on iOS](#icon). They offer higher quality and a native platform feeling than vector icons.
 
 To use icons from `@expo/vector-icons`, you can use `VectorIcon` component.
 
-```tsx
+```tsx app/_layout.tsx|collapseHeight=480
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
 import { Platform } from 'react-native';
@@ -421,7 +424,6 @@ export default function TabLayout() {
           android: <Icon src={<VectorIcon family={MIcons} name="home" />} />,
         })}
       </NativeTabs.Trigger>
-      ...
     </NativeTabs>
   );
 }
