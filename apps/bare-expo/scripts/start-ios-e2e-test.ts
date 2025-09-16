@@ -87,6 +87,62 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
   return binaryPath;
 }
 
+function prettyPrintTestSuiteLogs(logs: string[]) {
+  const lastTestSuiteLog = logs.reverse().find((logItem) => logItem.includes('TEST-SUITE-END'));
+  if (!lastTestSuiteLog) {
+    return '';
+  }
+  const jsonPart = lastTestSuiteLog?.match(/{.*}/);
+  if (!jsonPart || !jsonPart[0]) {
+    return '';
+  }
+  const testSuiteResult = JSON.parse(jsonPart[0]);
+  if ((testSuiteResult?.failures.length ?? 0) <= 0) {
+    return '';
+  }
+  const result = [];
+  result.push('  ❌ Test suite had following test failures:');
+  testSuiteResult?.failures?.split('\n').forEach((failure) => {
+    if (failure.length > 0) {
+      result.push(`    ${failure}`);
+    }
+  });
+  return result.join('\n');
+}
+
+function prettyPrintNativeErrorLogs(logs: string[]) {
+  // the output shape is always: actual logs, some unrelated stuff from simctrl
+  return logs.slice(0, -1).join('\n');
+}
+
+async function isAppRunning() {
+  const { output } = await spawnAsync('xcrun', ['simctl', 'spawn', 'booted', 'launchctl', 'list']);
+  return output.find((line) => line.includes(APP_ID));
+}
+
+export function setupLogger(predicate: string): () => Promise<string[]> {
+  const loggerProcess = spawnAsync('xcrun', [
+    'simctl',
+    'spawn',
+    'booted',
+    'log',
+    'stream',
+    '--level',
+    'debug',
+    '--predicate',
+    predicate,
+  ]);
+  return async () => {
+    loggerProcess.child.kill();
+    try {
+      const { output } = await loggerProcess;
+      return output;
+    } catch (error) {
+      return error.output;
+    }
+  };
+}
+
 async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
@@ -102,14 +158,35 @@ async function testAsync(
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
+    const getTestSuiteLogs = setupLogger('(subsystem == "com.facebook.react.log")');
+    const getNativeErrorLogs = setupLogger(
+      '(process == "BareExpo" AND (messageType == "error" OR messageType == "fault"))'
+    );
+
     console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
-    await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        MAESTRO_DRIVER_STARTUP_TIMEOUT,
-      },
-    });
+    try {
+      await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          MAESTRO_DRIVER_STARTUP_TIMEOUT,
+        },
+      });
+    } catch {
+      console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
+      console.log(prettyPrintTestSuiteLogs(await getTestSuiteLogs()));
+      // we need to always get these logs since it stops listener process
+      const nativeLogs = await getNativeErrorLogs();
+      if (!(await isAppRunning())) {
+        console.warn(
+          '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
+        );
+        console.log(prettyPrintNativeErrorLogs(nativeLogs));
+      }
+
+      console.log('\n\n');
+      throw new Error('e2e tests have failed.');
+    }
   } finally {
     await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
   }
