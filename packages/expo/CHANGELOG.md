@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Remove overlapping properties that were defined upstream from `react-native-web.d.ts` ([#39710](https://github.com/expo/expo/pull/39710) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 54.0.8 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- Remove overlapping properties that were defined upstream from `react-native-web.d.ts` ([#39710](https://github.com/expo/expo/pull/39710) by [@kitten](https://github.com/kitten))
 
 ## 54.0.7 — 2025-09-13
 

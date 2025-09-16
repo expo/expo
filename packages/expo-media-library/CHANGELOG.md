@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [next] Add Query ([#39559](https://github.com/expo/expo/pull/39559) by [@Wenszel](https://github.com/Wenszel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 18.2.0 — 2025-09-16
+
+### 🎉 New features
+
+- [next] Add Query ([#39559](https://github.com/expo/expo/pull/39559) by [@Wenszel](https://github.com/Wenszel))
 
 ## 18.1.1 — 2025-09-10
 
