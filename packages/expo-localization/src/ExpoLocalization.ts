@@ -121,7 +121,7 @@ export default {
       };
     });
   },
-  getCalendars(): Calendar[] {
+  getCalendars(): [Calendar, ...Calendar[]] {
     const locale = ((typeof Intl !== 'undefined'
       ? Intl.DateTimeFormat().resolvedOptions()
       : null) ?? null) as unknown as null | ExtendedLocale;
