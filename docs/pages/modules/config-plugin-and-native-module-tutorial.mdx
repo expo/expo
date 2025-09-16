@@ -212,10 +212,11 @@ module.exports = require('./plugin/build');
 
 At the root of your project, run `npm run build plugin` to start the TypeScript compiler in watch mode. Next, configure your example project to use your plugin by adding the following line to the **example/app.json** file:
 
+{/* prettier-ignore */}
 ```json example/app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "plugins": ["../app.plugin.js"]
   }
 }
@@ -294,10 +295,11 @@ export default withMyApiKey;
 
 With the plugin ready to use, update the example app to pass your API key to the plugin as a configuration option. Modify the `plugins` field in **example/app.json** as shown below:
 
+{/* prettier-ignore */}
 ```json example/app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "plugins": [["../app.plugin.js", { "apiKey": "custom_secret_api" }]]
   }
 }
