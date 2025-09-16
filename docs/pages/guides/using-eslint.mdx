@@ -54,7 +54,47 @@ Running the above command will run the `lint` script from **package.json**.
 
 ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app that runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
 
-You can add the `eslint-env` comment directive to the top of a file to tell ESLint which environment the file is running in. For example, to tell ESLint that a file is run in Node.js, add the following comment to the top of the file:
+The approach to configure environment-specific globals differs between flat config and legacy config:
+
+<Tabs>
+
+<Tab label="Flat config">
+
+For flat config, use `languageOptions.globals` in your **eslint.config.js** to include Node.js global variables for specific configuration files:
+
+```js eslint.config.js
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+
+module.exports = defineConfig([
+  expoConfig,
+  {
+    files: ['metro.config.js', 'babel.config.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+]);
+```
+
+This configuration allows Node.js globals like `__dirname` to be used without ESLint errors:
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(
+  /* @info This will no longer assert linting errors. */ __dirname /* @end */
+);
+
+module.exports = config;
+```
+
+</Tab>
+
+<Tab label="Legacy config">
+
+For legacy config, you can add the `eslint-env` comment to the top of a file to tell ESLint which environment the file is running in:
 
 ```js metro.config.js
 /* eslint-env node */
@@ -67,6 +107,10 @@ const config = getDefaultConfig(
 
 module.exports = config;
 ```
+
+</Tab>
+
+</Tabs>
 
 ## Prettier
 
