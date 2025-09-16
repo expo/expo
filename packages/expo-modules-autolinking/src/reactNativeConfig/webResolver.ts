@@ -18,7 +18,8 @@ export async function checkDependencyWebAsync(
     return null;
   }
 
-  if (!reactNativeConfig.root) {
+  const hasReactNativeConfig = !!reactNativeConfig && Object.keys(reactNativeConfig).length > 0;
+  if (!hasReactNativeConfig) {
     const packageJson = JSON.parse(
       await fs.readFile(path.join(resolution.path, 'package.json'), 'utf8')
     );
