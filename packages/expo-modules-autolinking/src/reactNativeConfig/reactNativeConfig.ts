@@ -13,6 +13,7 @@ import type {
   RNConfigDependency,
   RNConfigDependencyAndroid,
   RNConfigDependencyIos,
+  RNConfigDependencyWeb,
   RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
@@ -28,6 +29,7 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
+import { checkDependencyWebAsync } from './webResolver';
 
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
   const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
@@ -80,7 +82,11 @@ export async function resolveReactNativeModule(
     }
   }
 
-  let platformData: RNConfigDependencyAndroid | RNConfigDependencyIos | null = null;
+  let platformData:
+    | RNConfigDependencyAndroid
+    | RNConfigDependencyIos
+    | RNConfigDependencyWeb
+    | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
       resolution.path,
@@ -94,14 +100,11 @@ export async function resolveReactNativeModule(
       maybeExpoModuleConfig
     );
   } else if (platform === 'web') {
-    // For autolinking resolution for web, we only check if a library root or config exists
-    return !!libraryConfig || !!reactNativeConfig.root
-      ? {
-          root: resolution.path,
-          name: resolution.name,
-          platforms: {},
-        }
-      : null;
+    platformData = await checkDependencyWebAsync(
+      resolution,
+      reactNativeConfig,
+      maybeExpoModuleConfig
+    );
   }
   return (
     platformData && {
