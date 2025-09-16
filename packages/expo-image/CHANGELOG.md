@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Upgrades Glide to `5.0.5`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
