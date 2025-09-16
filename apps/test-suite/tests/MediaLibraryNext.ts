@@ -18,7 +18,7 @@ const jpgPath = require('../assets/qrcode_expo.jpg');
 
 export async function test(t) {
   let permissions;
-  let files, filesWithAudio;
+  let files;
   let jpgFile, pngFile, mp4File, mp3File;
 
   const checkIfAllPermissionsWereGranted = () => {
@@ -34,7 +34,6 @@ export async function test(t) {
     [jpgFile] = await ExpoAsset.loadAsync(jpgPath);
     [mp4File] = await ExpoAsset.loadAsync(mp4Path);
     files = [pngFile, jpgFile, mp4File];
-    filesWithAudio = [pngFile, jpgFile, mp4File, mp3File];
     permissions = await requestPermissionsAsync();
     if (!checkIfAllPermissionsWereGranted()) {
       console.warn('Tests will fail - not enough permissions to run them.');
