@@ -53,6 +53,7 @@ Locate the following files and replace them with the provided minimal boilerplat
 - **src/ExpoNativeConfigurationModule.ts**
 - **src/index.ts**
 - **example/App.tsx**
+- **package.json**
 
 ```kotlin android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationModule.kt
 package expo.modules.nativeconfiguration
@@ -117,6 +118,17 @@ export default function App() {
 }
 ```
 
+{/* prettier-ignore */}
+```json package.json
+{
+  /* @hide ... */ /* @end */
+  "dependencies": {
+    "expo-native-configuration": "file:.."
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
 </Step>
 
 <Step label="3">
@@ -136,12 +148,16 @@ In the root of your project, run the TypeScript compiler to watch for changes an
 In another terminal window, compile and run the example app:
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
   cmd={[
     '# Navigate to the example project',
     '$ cd example',
+    '',
+    '# Reinstall the dependencies',
+    '$ rm -rf node_modules && npm install',
+    '',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '',
     '# Run the example app on iOS',
     '$ npx expo run:ios',
   ]}
@@ -224,7 +240,10 @@ At the root of your project, run `npm run build plugin` to start the TypeScript 
 
 When you run the `npx expo prebuild` command inside your **example** directory, the terminal logs "my custom plugin" through a console statement.
 
-<Terminal cmd={['$ cd example', '$ npx expo prebuild --clean']} />
+<Terminal
+  cmd={['$ cd example', '$ npx expo prebuild --clean']}
+  cmdCopy="$ cd example && npx expo prebuild --clean"
+/>
 
 To inject your custom API keys into **AndroidManifest.xml** and **Info.plist**, use helper [`mods` provided by `expo/config-plugins`](/config-plugins/plugins-and-mods/#what-are-mods). These make it easy to modify native files. For this example, use `withAndroidManifest` and `withInfoPlist`.
 
@@ -305,7 +324,7 @@ With the plugin ready to use, update the example app to pass your API key to the
 }
 ```
 
-After making this change, test that the plugin works correctly by running `npx expo prebuild --clean` inside the **example** directory. This command executes your plugin and updates native files, injecting `"MY_CUSTOM_API_KEY"` into **AndroidManifest.xml** and **Info.plist**. You can verify this by checking the contents of **example/android/app/src/main/AndroidManifest.xml**.
+After making this change, test that the plugin works correctly by running `npx expo prebuild --clean` inside the **example** directory. This command executes your plugin and updates native files, injecting `"MY_CUSTOM_API_KEY"` into **AndroidManifest.xml** and **Info.plist**. You can verify this by checking the contents of **example/android/app/src/main/AndroidManifest.xml** and **example/ios/exponativeconfigurationexample/Info.plist**.
 
 </Step>
 
@@ -362,13 +381,15 @@ public class ExpoNativeConfigurationModule: Module {
 With your native modules reading the fields added to the native files, you can now run the example app and access your custom API key using the `ExamplePlugin.getApiKey()` function.
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
   cmd={[
     '$ cd example',
-    '# execute our plugin and update native files',
+    '',
+    '# Execute our plugin and update native files',
     '$ npx expo prebuild',
+    '',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '',
     '# Run the example app on iOS',
     '$ npx expo run:ios',
   ]}
