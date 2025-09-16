@@ -7,8 +7,7 @@ import {
   withDangerousMod,
   withMainApplication,
 } from 'expo/config-plugins';
-import filesystem from 'fs';
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 
 import { appendContentsInsideDeclarationBlock, addImports } from './utils';
@@ -69,7 +68,7 @@ function addLauncherClassToProject(config: ExpoConfig) {
 
       const fullPath = path.join(dir, fileName);
 
-      if (filesystem.existsSync(fullPath)) {
+      if (fs.existsSync(fullPath)) {
         return config;
       }
 
@@ -92,7 +91,7 @@ class BrowserLauncherActivity : Activity() {
 }
 `;
 
-      await fs.writeFile(fullPath, classTemplate);
+      await fs.promises.writeFile(fullPath, classTemplate);
       return config;
     },
   ]);
@@ -109,11 +108,13 @@ function modifyMainApplication(config: ExpoConfig) {
     );
 
     let contents = importsMod;
-    if (!importsMod.includes('registerActivityLifecycleCallbacks(lifecycleCallbacks)')) {
+    if (
+      !mainApplication.contents.includes('registerActivityLifecycleCallbacks(lifecycleCallbacks)')
+    ) {
       contents = appendContentsInsideDeclarationBlock(
         importsMod,
         'onCreate',
-        '  registerActivityLifecycleCallbacks(lifecycleCallbacks)'
+        'registerActivityLifecycleCallbacks(lifecycleCallbacks)'
       );
     }
 
