@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix setting audio quality for recordings.
+
 ### 💡 Others
 
 ## 1.0.11 — 2025-09-11
