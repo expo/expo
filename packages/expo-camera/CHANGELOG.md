@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix barcode scanner on devices without access to Google Play Services. ([#39612](https://github.com/expo/expo/pull/39612) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 17.0.8 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- [Android] Fix barcode scanner on devices without access to Google Play Services. ([#39612](https://github.com/expo/expo/pull/39612) by [@behenate](https://github.com/behenate))
 
 ## 17.0.7 — 2025-09-10
 
