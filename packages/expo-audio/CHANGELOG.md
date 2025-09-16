@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Expose MediaRecorder.AudioSource on RecordingOptionsAndroid ([#38271](https://github.com/expo/expo/pull/38271) by [@vipierozan99](https://github.com/vipierozan99))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -80,7 +82,6 @@ _This version does not introduce any user-facing changes._
 
 - [Android] Add support for `recordForDuration`. ([#38405](https://github.com/expo/expo/pull/38405) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS][Android][Web]: Add downloadFirst option for audio playback and update related documentation ([#38563](https://github.com/expo/expo/pull/38563) by [@hirbod](https://github.com/hirbod))
-- [Android] Expose MediaRecorder.AudioSource on RecordingOptionsAndroid ([#38271](https://github.com/expo/expo/pull/38271) by [@vipierozan99](https://github.com/vipierozan99))
 
 ### 🐛 Bug fixes
 
