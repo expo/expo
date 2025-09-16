@@ -50,7 +50,15 @@ export class ExpoModuleConfig {
         return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
       });
     }
-    return supportedPlatforms.includes(platform);
+    switch (platform) {
+      case 'ios':
+      case 'macos':
+      case 'tvos':
+        // ios|macos|tvos are supported when the module supports "apple" as a platform in general
+        return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
+      default:
+        return supportedPlatforms.includes(platform);
+    }
   }
 
   /**
