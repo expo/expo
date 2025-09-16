@@ -161,6 +161,11 @@ module Expo
       return @target_definition.platform&.string_name
     end
 
+    # Returns the custom project root if provided in the options.
+    public def custom_project_root
+      @options.fetch(:projectRoot, nil)
+    end
+
     # privates
 
     private def resolve
@@ -225,12 +230,16 @@ module Expo
     end
 
     public def generate_modules_provider_command_args(target_path)
+      command_args = ['--target', target_path]
+
+      project_root = @options.fetch(:projectRoot, nil)
+      if project_root
+        command_args.concat(['--project-root', project_root])
+      end
+
       node_command_args('generate-modules-provider').concat(
-        [
-          '--target',
-          target_path,
-          '--packages'
-        ],
+        command_args,
+        ['--packages'],
         packages_to_generate.map(&:name)
       )
     end
