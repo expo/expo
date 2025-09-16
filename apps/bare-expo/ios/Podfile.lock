@@ -353,7 +353,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (15.0.7):
     - ExpoModulesCore
-  - ExpoCamera (17.0.7):
+  - ExpoCamera (17.0.8):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -560,7 +560,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (6.0.7):
     - ExpoModulesCore
-  - ExpoUI (0.2.0-beta.2):
+  - ExpoUI (0.2.0-beta.3):
     - ExpoModulesCore
   - ExpoVideo (3.0.11):
     - ExpoModulesCore
@@ -3574,7 +3574,7 @@ SPEC CHECKSUMS:
   ExpoBlur: b5b7a26572b3c33a11f0b2aa2f95c17c4c393b76
   ExpoBrightness: 7c3c86da46b847aadf44401bd28fb6d67050f324
   ExpoCalendar: 46ad51c48d2cb1a95439c2215b182428919a0c3d
-  ExpoCamera: b24c98ce95fe6da580e0dcfe40d4c1be8c46f41f
+  ExpoCamera: 6d0c5bc68bc8de669f1ecd4242284de0827c4431
   ExpoCellular: 539c6092e755f7b2c37d80f18d9c1f3d7f09e4ab
   ExpoClipboard: 99109306a2d9ed2fbd16f6b856e6267b2afa8472
   ExpoContacts: 82f80ddc812c85548b8edab4153fbc3e8a39212e
@@ -3619,7 +3619,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: ef7b8ac77ac2d496b1bc3f0f7daf5e19c3a9933a
   ExpoSystemUI: 5e7fbe4b716edb9e3a7bc0441e4a3b6b1f9eb1ea
   ExpoTrackingTransparency: fee2dc0cea16d12aeffde2f388671b029c563ed3
-  ExpoUI: be345251bff779bde97c2b927562404268526bf3
+  ExpoUI: 54732dfe9e601d3515e9d715eddb466d4184577a
   ExpoVideo: 7e39a5933892dc640b1b83013f3f9d9d37072151
   ExpoVideoThumbnails: c951ae8c6ed9974dd3ae5f79b2dd1d9b6e8ab266
   ExpoWebBrowser: 4f0dc52a559027cc0fba6920adc19a7604e2733d

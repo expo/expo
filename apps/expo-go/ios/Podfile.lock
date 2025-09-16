@@ -80,7 +80,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (15.0.7):
     - ExpoModulesCore
-  - ExpoCamera (17.0.7):
+  - ExpoCamera (17.0.8):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -112,7 +112,7 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (15.0.7):
     - ExpoModulesCore
-  - ExpoHead (6.0.4):
+  - ExpoHead (6.0.5):
     - ExpoModulesCore
     - RNScreens
   - ExpoImage (3.0.8):
@@ -4288,7 +4288,7 @@ SPEC CHECKSUMS:
   ExpoBlur: b5b7a26572b3c33a11f0b2aa2f95c17c4c393b76
   ExpoBrightness: 7c3c86da46b847aadf44401bd28fb6d67050f324
   ExpoCalendar: 46ad51c48d2cb1a95439c2215b182428919a0c3d
-  ExpoCamera: b24c98ce95fe6da580e0dcfe40d4c1be8c46f41f
+  ExpoCamera: 6d0c5bc68bc8de669f1ecd4242284de0827c4431
   ExpoCellular: 539c6092e755f7b2c37d80f18d9c1f3d7f09e4ab
   ExpoClipboard: 99109306a2d9ed2fbd16f6b856e6267b2afa8472
   ExpoContacts: 82f80ddc812c85548b8edab4153fbc3e8a39212e
@@ -4301,7 +4301,7 @@ SPEC CHECKSUMS:
   ExpoGL: 39262a8c3d4c36d48a28bc412e3392c25c5391c9
   ExpoGlassEffect: 02d9577dfe05a6b6c9856fd71514120e96792052
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
-  ExpoHead: 5c65e4caac7bfed3c69492198f385aa575d247bc
+  ExpoHead: 050ee8a854f672522b19ba477e8d09719b7ff374
   ExpoImage: 306dd755c842dba9f3ee654c51834a9cc657e6ca
   ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
   ExpoImagePicker: bd0a5c81d7734548f6908a480609257e85d19ea8
