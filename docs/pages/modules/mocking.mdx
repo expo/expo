@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The recommended way to write unit tests for an Expo project is to use [Jest](https://jestjs.io/) and the `jest-expo` preset.
 
-To write a unit test for an app that uses native code, you need to mock native calls. The term **Mocking** means to replace the actual implementation of a function with a fake version that does not perform any actions. This approach is useful for running unit tests on a local computer as it involves bypassing the need for native code which is only available on a device, and any code that calls native functions on a local machine will not work.
+To write a unit test for an app that uses native code, you need to mock native calls. The term **mocking** means to replace the actual implementation of a function with a fake version that does not perform any actions. This approach is useful for running unit tests on a local computer, as it involves bypassing the need for native code, which can only run on an actual Android or iOS device.
 
 Expo SDK includes a set of default mocks for each of our community packages. You can also mock any JS code yourself using built-in Jest APIs such as [mock functions](https://jestjs.io/docs/mock-functions).
 
