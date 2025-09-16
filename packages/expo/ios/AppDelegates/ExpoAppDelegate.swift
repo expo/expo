@@ -12,12 +12,6 @@ import ReactAppDependencyProvider
  */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: NSObject, UIApplicationDelegate {
-  @objc public var factory: RCTReactNativeFactory?
-
-  public func bindReactNativeFactory(_ factory: RCTReactNativeFactory) {
-    self.factory = factory
-  }
-
   // MARK: - Initializing the App
 #if os(iOS) || os(tvOS)
 
