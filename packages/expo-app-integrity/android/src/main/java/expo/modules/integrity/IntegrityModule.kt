@@ -28,9 +28,6 @@ class IntegrityModule : Module() {
   companion object {
     private const val PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME = "prepareIntegrityTokenProvider"
     private const val REQUEST_INTEGRITY_CHECK_METHOD_NAME = "requestIntegrityCheck"
-    private const val IS_HARDWARE_ATTESTATION_SUPPORTED_METHOD_NAME = "isHardwareAttestationSupported"
-    private const val GENERATE_HARDWARE_ATTESTED_KEY_METHOD_NAME = "generateHardwareAttestedKey"
-    private const val GET_ATTESTATION_CERTIFICATE_CHAIN_METHOD_NAME = "getAttestationCertificateChain"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
   }
 
@@ -99,7 +96,7 @@ class IntegrityModule : Module() {
       )
     }
 
-    AsyncFunction(IS_HARDWARE_ATTESTATION_SUPPORTED_METHOD_NAME) { promise: Promise ->
+    AsyncFunction("isHardwareAttestationSupported") { promise: Promise ->
       try {
         val isSupported = isHardwareAttestationSupported()
         promise.resolve(isSupported)
@@ -108,7 +105,7 @@ class IntegrityModule : Module() {
       }
     }
 
-    AsyncFunction(GENERATE_HARDWARE_ATTESTED_KEY_METHOD_NAME) { keyAlias: String, challenge: String, promise: Promise ->
+    AsyncFunction("generateHardwareAttestedKey") { keyAlias: String, challenge: String, promise: Promise ->
       try {
         generateHardwareAttestedKey(keyAlias, challenge)
         promise.resolve()
@@ -117,7 +114,7 @@ class IntegrityModule : Module() {
       }
     }
 
-    AsyncFunction(GET_ATTESTATION_CERTIFICATE_CHAIN_METHOD_NAME) { keyAlias: String, promise: Promise ->
+    AsyncFunction("getAttestationCertificateChain") { keyAlias: String, promise: Promise ->
       try {
         val certificateChain = getAttestationCertificateChain(keyAlias)
         promise.resolve(certificateChain)
