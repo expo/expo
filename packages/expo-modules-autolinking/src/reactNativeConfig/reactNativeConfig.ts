@@ -93,6 +93,15 @@ export async function resolveReactNativeModule(
       reactNativeConfig.platforms?.ios,
       maybeExpoModuleConfig
     );
+  } else if (platform === 'web') {
+    // For autolinking resolution for web, we only check if a library root or config exists
+    return !!libraryConfig || !!reactNativeConfig.root
+      ? {
+          root: resolution.path,
+          name: resolution.name,
+          platforms: {},
+        }
+      : null;
   }
   return (
     platformData && {
