@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix multiple runs of prebuild repeateadly adding generated code.
+
 ### 💡 Others
 
 ## 15.0.7 — 2025-09-11

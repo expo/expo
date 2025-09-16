@@ -7,6 +7,7 @@ import {
   withDangerousMod,
   withMainApplication,
 } from 'expo/config-plugins';
+import { existsSync } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -62,6 +63,16 @@ function addLauncherClassToProject(config: ExpoConfig) {
     'android',
     async (config) => {
       const fileName = 'BrowserLauncherActivity.kt';
+      const dir = path.dirname(
+        AndroidConfig.Paths.getProjectFilePath(config.modRequest.projectRoot, 'MainApplication')
+      );
+
+      const fullPath = path.join(dir, fileName);
+
+      if (existsSync(fullPath)) {
+        return config;
+      }
+
       const classTemplate = `package ${config.android?.package || ''};
   
 import android.app.Activity
@@ -81,11 +92,6 @@ class BrowserLauncherActivity : Activity() {
 }
 `;
 
-      const dir = path.dirname(
-        AndroidConfig.Paths.getProjectFilePath(config.modRequest.projectRoot, 'MainApplication')
-      );
-
-      const fullPath = path.join(dir, fileName);
       await fs.writeFile(fullPath, classTemplate);
       return config;
     },
@@ -102,11 +108,14 @@ function modifyMainApplication(config: ExpoConfig) {
       false
     );
 
-    const onCreateMod = appendContentsInsideDeclarationBlock(
-      importsMod,
-      'onCreate',
-      '  registerActivityLifecycleCallbacks(lifecycleCallbacks)'
-    );
+    let onCreateMod = importsMod;
+    if (!importsMod.includes('registerActivityLifecycleCallbacks(lifecycleCallbacks)')) {
+      onCreateMod = appendContentsInsideDeclarationBlock(
+        importsMod,
+        'onCreate',
+        '  registerActivityLifecycleCallbacks(lifecycleCallbacks)'
+      );
+    }
 
     const result = addMainApplicationMod(onCreateMod);
 
@@ -121,6 +130,10 @@ function modifyMainApplication(config: ExpoConfig) {
 }
 
 function addMainApplicationMod(contents: string) {
+  if (contents.includes('private val runningActivities = ArrayList<Class<*>>()')) {
+    return contents;
+  }
+
   const codeMod = `
   private val runningActivities = ArrayList<Class<*>>()
 
