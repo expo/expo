@@ -40,6 +40,7 @@
 
 - Added MCP tunnel integration. ([#39392](https://github.com/expo/expo/pull/39392) by [@kudo](https://github.com/kudo))
 - Allow `experiments.autolinkingModuleResolution` to apply to web bundling ([#39701](https://github.com/expo/expo/pull/39701) by [@kitten](https://github.com/kitten))
+- Add `--api-only` as an alias for `--ssg-only` to `expo export -p web` ([#39709](https://github.com/expo/expo/pull/39709) by [@kitten](https://github.com/kitten))
 
 ## 54.0.5 — 2025-09-13
 
