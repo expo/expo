@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withWebBrowserAndroid = void 0;
 const config_plugins_1 = require("expo/config-plugins");
-const fs_1 = require("fs");
+const fs_1 = __importDefault(require("fs"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("./utils");
@@ -51,7 +51,7 @@ function addLauncherClassToProject(config) {
             const fileName = 'BrowserLauncherActivity.kt';
             const dir = path_1.default.dirname(config_plugins_1.AndroidConfig.Paths.getProjectFilePath(config.modRequest.projectRoot, 'MainApplication'));
             const fullPath = path_1.default.join(dir, fileName);
-            if ((0, fs_1.existsSync)(fullPath)) {
+            if (fs_1.default.existsSync(fullPath)) {
                 return config;
             }
             const classTemplate = `package ${config.android?.package || ''};
@@ -81,11 +81,11 @@ function modifyMainApplication(config) {
     return (0, config_plugins_1.withMainApplication)(config, (config) => {
         const mainApplication = config.modResults;
         const importsMod = (0, utils_1.addImports)(mainApplication.contents, ['android.app.Activity', 'android.os.Bundle'], false);
-        let onCreateMod = importsMod;
+        let contents = importsMod;
         if (!importsMod.includes('registerActivityLifecycleCallbacks(lifecycleCallbacks)')) {
-            onCreateMod = (0, utils_1.appendContentsInsideDeclarationBlock)(importsMod, 'onCreate', '  registerActivityLifecycleCallbacks(lifecycleCallbacks)');
+            contents = (0, utils_1.appendContentsInsideDeclarationBlock)(importsMod, 'onCreate', '  registerActivityLifecycleCallbacks(lifecycleCallbacks)');
         }
-        const result = addMainApplicationMod(onCreateMod);
+        const result = addMainApplicationMod(contents);
         return {
             ...config,
             modResults: {

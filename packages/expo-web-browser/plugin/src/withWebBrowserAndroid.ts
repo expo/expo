@@ -7,7 +7,7 @@ import {
   withDangerousMod,
   withMainApplication,
 } from 'expo/config-plugins';
-import { existsSync } from 'fs';
+import filesystem from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -69,7 +69,7 @@ function addLauncherClassToProject(config: ExpoConfig) {
 
       const fullPath = path.join(dir, fileName);
 
-      if (existsSync(fullPath)) {
+      if (filesystem.existsSync(fullPath)) {
         return config;
       }
 
@@ -108,16 +108,16 @@ function modifyMainApplication(config: ExpoConfig) {
       false
     );
 
-    let onCreateMod = importsMod;
+    let contents = importsMod;
     if (!importsMod.includes('registerActivityLifecycleCallbacks(lifecycleCallbacks)')) {
-      onCreateMod = appendContentsInsideDeclarationBlock(
+      contents = appendContentsInsideDeclarationBlock(
         importsMod,
         'onCreate',
         '  registerActivityLifecycleCallbacks(lifecycleCallbacks)'
       );
     }
 
-    const result = addMainApplicationMod(onCreateMod);
+    const result = addMainApplicationMod(contents);
 
     return {
       ...config,
