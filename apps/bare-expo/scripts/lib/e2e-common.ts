@@ -154,3 +154,25 @@ export function setupLogger(command: string, signal: AbortSignal): () => Promise
     }
   };
 }
+
+export const getCustomMaestroFlowsAsync = async (projectRoot: string): Promise<string[]> => {
+  const maestroFlows = await fs.readdir(path.join(projectRoot, 'e2e'));
+  return maestroFlows.filter((file) => file.endsWith('.yaml') && file !== 'maestro-generated.yaml');
+};
+
+export const runCustomMaestroFlowsAsync = async (
+  projectRoot: string,
+  fn: (maestroFlowFilePath: string) => Promise<void>
+) => {
+  const retriesForCustomTests = 3;
+
+  const maestroFlows = await getCustomMaestroFlowsAsync(projectRoot);
+  for (const maestroFlowFilePath of maestroFlows) {
+    await retryAsync((retryNumber) => {
+      console.log(
+        `${maestroFlowFilePath} test suite attempt ${retryNumber + 1} of ${retriesForCustomTests}`
+      );
+      return fn(maestroFlowFilePath);
+    }, retriesForCustomTests);
+  }
+};

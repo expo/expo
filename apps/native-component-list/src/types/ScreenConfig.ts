@@ -5,6 +5,7 @@ export type ScreenConfig = {
   name: string;
   route?: string;
   options?: object;
+  e2e?: boolean;
 };
 
 export type ScreenApiItem = {

@@ -50,6 +50,7 @@ const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
 
+// TODO skip apis in CI?
 const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
   routes.apis = NativeComponentList.apis.navigator;

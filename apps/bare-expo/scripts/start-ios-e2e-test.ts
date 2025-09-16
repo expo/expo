@@ -14,6 +14,8 @@ import {
   retryAsync,
   getMaestroFlowFilePath,
   prettyPrintTestSuiteLogs,
+  getCustomMaestroFlowsAsync,
+  runCustomMaestroFlowsAsync,
 } from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
@@ -43,7 +45,9 @@ const __dirname = dirname(__filename);
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
-      await testAsync(path.join(projectRoot, 'e2e/video-e2e.yaml'), deviceId, appBinaryPath);
+      await runCustomMaestroFlowsAsync(projectRoot, (maestroFlowFilePath) =>
+        testAsync(maestroFlowFilePath, deviceId, appBinaryPath)
+      );
 
       // const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
       // await createMaestroFlowAsync({
