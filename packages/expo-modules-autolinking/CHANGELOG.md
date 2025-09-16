@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
 - Regression: Support search paths and `nativeModulesDir` pointing directly at module folder ([#39669](https://github.com/expo/expo/pull/39669) by [@kitten](https://github.com/kitten))

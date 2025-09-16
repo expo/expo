@@ -14,7 +14,10 @@ export async function resolveModuleAsync(
   return {
     packageName,
     packageRoot: revision.path,
-    webpageRoot: path.join(revision.path, devtoolsConfig.webpageRoot),
+    webpageRoot: devtoolsConfig.webpageRoot
+      ? path.join(revision.path, devtoolsConfig.webpageRoot)
+      : undefined,
+    cliExtensions: devtoolsConfig.cliExtensions,
   };
 }
 
