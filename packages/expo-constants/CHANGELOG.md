@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Removed unused native dependencies.
+
 ## 18.0.9 — 2025-09-16
 
 _This version does not introduce any user-facing changes._
