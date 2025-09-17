@@ -13,7 +13,8 @@ public class BackgroundTaskModule: Module {
     Events(onTasksExpired)
 
     OnStartObserving(onTasksExpired) {
-      NotificationCenter.default.addObserver(self, selector: #selector(handleTasksExpiredNotification), name: onTasksExpiredNotification, object: nil)
+      NotificationCenter.default.addObserver(self, selector: #selector(handleTasksExpiredNotification),
+        name: onTasksExpiredNotification, object: nil)
     }
 
     OnStopObserving(onTasksExpired) {
