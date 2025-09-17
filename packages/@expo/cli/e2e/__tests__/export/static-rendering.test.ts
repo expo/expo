@@ -57,9 +57,7 @@ describe('exports static', () => {
 
     ['other', 'welcome-to-the-universe'].forEach((post) => {
       it(`can serve up statically generated html for post: ${post}`, async () => {
-        const html = getHtml(
-          await server.fetchAsync(`/${post}`).then((res) => res.text())
-        );
+        const html = getHtml(await server.fetchAsync(`/${post}`).then((res) => res.text()));
         expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
           `Post: ${post}`
         );
@@ -107,7 +105,15 @@ describe('exports static', () => {
         expect.arrayContaining([
           '__prelude__',
           // NOTE: No `/Users/evanbacon/`...
-          expect.pathMatching(/\/node_modules\/metro-runtime\/src\/polyfills\/require\.js/),
+          // NOTE(@kitten): We can slot in our own runtime here
+          expect.pathMatching(
+            new RegExp(
+              [
+                '/node_modules/metro-runtime/src/polyfills/require.js',
+                '/@expo/cli/build/metro-require/require.js',
+              ].join('|')
+            )
+          ),
 
           // NOTE: relative to the server root for optimal source map support
           expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),

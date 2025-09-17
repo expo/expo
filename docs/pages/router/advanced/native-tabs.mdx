@@ -218,7 +218,7 @@ export default function TabLayout() {
 
 ## Customizing the tab bar
 
-Since the native tab layout's appearance varies by platform, the customization options are also different. For all customization options, see the [API reference for `NativeTabs`](/versions/unversioned/sdk/router-native-tabs/).
+Since the native tab layout's appearance varies by platform, the customization options are also different. For all customization options, see the [API reference for `NativeTabs`](/versions/latest/sdk/router-native-tabs/).
 
 ## Advanced
 
@@ -279,6 +279,153 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Label>Settings</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+### iOS 26 features
+
+> **info** To use features described in this section, compile your app with Xcode 26 or higher.
+
+#### Separate search tab
+
+<ContentSpotlight
+  alt="A screenshot of a tab bar with separate search tab."
+  src="/static/images/expo-router/ios-26-search-tab.png"
+  className="max-w-[540px]"
+/>
+
+To add a separate search tab, assign the `role` with its value set to `search` to the native tab you want to display separately.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search">
+        <Label>Search</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+#### Tabbar search input
+
+<ContentSpotlight
+  alt="A screenshot of a tab bar search."
+  src="/static/images/expo-router/ios-26-search-bar.png"
+  className="max-w-[540px]"
+/>
+
+To add a search field to the tab bar, wrap the screen in a Stack navigator and configure `headerSearchBarOptions`.
+
+<FileTree
+  files={['app/_layout.tsx', 'app/index.tsx', 'app/search/_layout.tsx', 'app/search/index.tsx']}
+/>
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search">
+        <Label>Search</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+```tsx app/search/_layout.tsx
+import { Stack } from 'expo-router/unstable-native-tabs';
+
+export default function SearchLayout() {
+  return <Stack />;
+}
+```
+
+```tsx app/search/index.tsx
+import { Stack } from 'expo-router/unstable-native-tabs';
+
+export default function SearchIndex() {
+  return (
+    <>
+      <Stack.Screen
+        name="index"
+        options={{
+          title: 'Search',
+          headerSearchBarOptions: {
+            placement: 'automatic',
+            placeholder: 'Search',
+            onChangeText: () => {},
+          },
+        }}
+      />
+      <ScrollView>{/* Screen content */}</ScrollView>
+    </>
+  );
+}
+```
+
+#### Tab bar minimize behavior
+
+<ContentSpotlight
+  alt="A video presenting tab bar minimize behavior."
+  file="expo-router/native-tabs-minimize-behavior.mp4"
+/>
+
+To implement the minimized behavior on the tab bar, you can use
+[`minimizeBehavior`](/versions/latest/sdk/router-native-tabs/#minimizebehavior) prop on
+`NativeTabs`. In the example below, the tab bar is minimized when scrolling down.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="tab-1">
+        <Label>Tab 1</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+### Integration with `@expo/vector-icons`
+
+> **info** **Recommended**: Use [SF Symbols on iOS](#icon). They offer higher quality and a native platform feeling than vector icons.
+
+To use icons from `@expo/vector-icons`, you can use `VectorIcon` component.
+
+```tsx app/_layout.tsx|collapseHeight=480
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
+import { Platform } from 'react-native';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+        {Platform.select({
+          ios: <Icon sf="house.fill" />,
+          android: <Icon src={<VectorIcon family={MIcons} name="home" />} />,
+        })}
       </NativeTabs.Trigger>
     </NativeTabs>
   );

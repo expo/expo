@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- [Android] Upgrades Glide to `5.0.5`. ([#39713](https://github.com/expo/expo/pull/39713) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.0.8 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
 
 ## 3.0.7 — 2025-09-03
 

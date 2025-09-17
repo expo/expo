@@ -19,16 +19,19 @@ class CoreModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Property("expoModulesCoreVersion") {
-      return@Property BuildConfig.EXPO_MODULES_CORE_VERSION.let { version ->
-        version.split("-")[0].split(".").map { it.toInt() }.let { (major, minor, patch) ->
-          mapOf(
-            "version" to version,
-            "major" to major,
-            "minor" to minor,
-            "patch" to patch
-          )
-        }
-      }
+      val version = BuildConfig.EXPO_MODULES_CORE_VERSION
+      val (major, minor, patch) = version
+        .split("-")
+        .first()
+        .split(".")
+        .map { it.toInt() }
+
+      return@Property mapOf(
+        "version" to version,
+        "major" to major,
+        "minor" to minor,
+        "patch" to patch
+      )
     }
 
     Property("cacheDir") {
@@ -47,7 +50,7 @@ class CoreModule : Module() {
     Function("uuidv5") { name: String, namespace: String ->
       val namespaceUUID = try {
         UUID.fromString(namespace)
-      } catch (e: IllegalArgumentException) {
+      } catch (_: IllegalArgumentException) {
         throw InvalidNamespaceException(namespace)
       }
       return@Function uuidv5(namespaceUUID, name).toString()
@@ -57,7 +60,9 @@ class CoreModule : Module() {
       val holder = runtimeContext.registry.getModuleHolder(moduleName)
         ?: return@Function null
 
-      val viewManagerDefinition = holder.definition.viewManagerDefinitions[viewName ?: DEFAULT_MODULE_VIEW]
+      val viewManagerDefinition = holder
+        .definition
+        .viewManagerDefinitions[viewName ?: DEFAULT_MODULE_VIEW]
         ?: return@Function null
 
       val validAttributes = viewManagerDefinition

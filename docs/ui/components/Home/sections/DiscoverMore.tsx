@@ -78,7 +78,7 @@ export function DiscoverMore() {
           <SnackImage />
           <RawH3 className="!font-bold !text-palette-orange11">Try Expo in your browser</RawH3>
           <P className="max-w-[24ch] !text-xs !text-palette-orange11">
-            Expo’s Snack lets you try Expo with zero local setup.
+            Expo's Snack lets you try Expo with zero local setup.
           </P>
           <HomeButton
             className={mergeClasses(

@@ -180,7 +180,7 @@ internal struct ForegroundStyleModifier: ViewModifier, Record {
       case .quaternary:
         content.foregroundStyle(.quaternary)
       case .quinary:
-        if #available(iOS 16.0, *) {
+        if #available(iOS 16.0, tvOS 17.0, *) {
           content.foregroundStyle(.quinary)
         } else {
           content.foregroundStyle(.quaternary)
@@ -484,6 +484,23 @@ internal struct BackgroundOverlayModifier: ViewModifier, Record {
       content.background(color, alignment: alignment.toAlignment())
     } else {
       content
+    }
+  }
+}
+
+internal struct FixedSizeModifier: ViewModifier, Record {
+  @Field var horizontal: Bool?
+  @Field var vertical: Bool?
+
+  func body(content: Content) -> some View {
+    if let horizontal, let vertical {
+      content.fixedSize(horizontal: horizontal, vertical: vertical)
+    } else if let horizontal {
+      content.fixedSize(horizontal: horizontal, vertical: false)
+    } else if let vertical {
+      content.fixedSize(horizontal: false, vertical: vertical)
+    } else {
+      content.fixedSize()
     }
   }
 }
@@ -931,6 +948,10 @@ extension ViewModifierRegistry {
 
     register("matchedGeometryEffect") { params, appContext, _ in
       return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
+    }
+
+    register("fixedSize") { params, appContext, _ in
+      return try FixedSizeModifier(from: params, appContext: appContext)
     }
   }
 }

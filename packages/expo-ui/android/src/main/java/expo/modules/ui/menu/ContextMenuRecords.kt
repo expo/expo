@@ -42,6 +42,8 @@ class ContextMenuButtonProps(
   @Field val text: String = "",
   @Field val variant: ButtonVariant? = ButtonVariant.DEFAULT,
   @Field val elementColors: ButtonColors = ButtonColors(),
+  @Field val leadingIcon: String? = null,
+  @Field val trailingIcon: String? = null,
   @Field val disabled: Boolean = false
 ) : Record, Serializable
 

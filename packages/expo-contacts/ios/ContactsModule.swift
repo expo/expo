@@ -2,6 +2,8 @@ import ExpoModulesCore
 import Contacts
 import ContactsUI
 
+let onContactsChangeEventName = "onContactsChange"
+
 public class ContactsModule: Module, OnContactPickingResultHandler {
   private let contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
@@ -9,14 +11,28 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
   private var contactPickerDelegate: ContactPickerControllerDelegate?
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
+  private var contactChangeObserver: NSObjectProtocol?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
+    Events(onContactsChangeEventName)
 
     OnCreate {
       appContext?.permissions?.register([
         ContactsPermissionRequester()
       ])
+    }
+
+    OnDestroy {
+      stopObservingContactChanges()
+    }
+
+    OnStartObserving(onContactsChangeEventName) {
+      startObservingContactChanges()
+    }
+
+    OnStopObserving(onContactsChangeEventName) {
+      stopObservingContactChanges()
     }
 
     AsyncFunction("getDefaultContainerIdentifierAsync") {
@@ -537,6 +553,10 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       throw FilePermissionException(uri)
     }
 
+    guard url.isFileURL else {
+      throw RemoteImageUriException(uri)
+    }
+
     let path = url.path
     let standardizedPath = NSString(string: path).standardizingPath
 
@@ -637,5 +657,32 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }
 
     return fetchRequest
+  }
+
+  private func startObservingContactChanges() {
+    guard contactChangeObserver == nil else { return }
+
+    contactChangeObserver = NotificationCenter.default.addObserver(
+      forName: .CNContactStoreDidChange,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.handleContactStoreChange()
+    }
+  }
+
+  private func stopObservingContactChanges() {
+    if let observer = contactChangeObserver {
+      NotificationCenter.default.removeObserver(observer)
+      contactChangeObserver = nil
+    }
+  }
+
+  private func handleContactStoreChange() {
+    // Send event when contacts change - CNContactStoreDidChangeNotification
+    // only tells us that something changed, not what specifically changed
+    sendEvent(onContactsChangeEventName, [
+      "body": nil
+    ])
   }
 }

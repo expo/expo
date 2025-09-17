@@ -6,9 +6,18 @@
 
 ### 🎉 New features
 
+- Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.0.11 — 2025-09-11
+
+### 🐛 Bug fixes
+
+- [Android] Fix incorrect text color in the error dialog. ([#39550](https://github.com/expo/expo/pull/39550) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix UI on iPad. ([#39549](https://github.com/expo/expo/pull/39549) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 6.0.10 — 2025-09-08
 

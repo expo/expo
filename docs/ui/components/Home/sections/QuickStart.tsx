@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
-import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
-import { Cloud01DuotoneIcon } from '@expo/styleguide-icons/duotone/Cloud01DuotoneIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 
 import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
@@ -68,39 +68,47 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-purple3',
-            'selection:bg-palette-purple5'
+            'col-span-2 min-h-[192px] overflow-hidden bg-gradient-to-br from-[#F3E5F5] via-[#E3F2FD] to-[#E3F2FD]',
+            'border border-palette-gray7 selection:bg-palette-blue8',
+            'dark:border-[#2d3748] dark:from-[#0a0a0a] dark:via-[#1a1a2e] dark:to-[#16213e]',
+            'max-xl-gutters:col-span-1',
+            'max-lg-gutters:col-span-2',
+            'max-md-gutters:col-span-1'
           )}>
-          <AppleAppStoreIcon className="absolute -bottom-16 -right-10 size-72 text-palette-purple10 opacity-10" />
-          <div className="relative z-10 flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 !font-bold !text-palette-purple10 heading-lg">
-              <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
-            </h2>
-            <div>
-              <Terminal cmd={['$ npx testflight']} className="asset-shadow rounded-md" />
-              <CALLOUT theme="secondary">
-                This is an iOS-only command that will upload your app to TestFlight.
-              </CALLOUT>
-            </div>
+          <div
+            className={mergeClasses(
+              'absolute inset-0 size-full rounded-lg bg-gradient-to-br from-palette-blue3 via-palette-purple3 to-palette-blue3 opacity-5',
+              'dark:from-palette-blue3 dark:via-palette-purple3 dark:to-palette-blue3 dark:opacity-20'
+            )}
+          />
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute left-12 top-8 size-1 animate-pulse rounded-full bg-palette-blue9 dark:bg-palette-white" />
+            <div className="absolute right-20 top-16 size-0.5 animate-pulse rounded-full bg-palette-purple8 delay-1000 dark:bg-palette-blue8" />
+            <div className="absolute bottom-12 left-24 size-0.5 animate-pulse rounded-full bg-palette-blue9 delay-500 dark:bg-palette-white" />
+            <div className="absolute right-8 top-24 size-1 animate-pulse rounded-full bg-palette-purple7 delay-75 dark:bg-palette-blue7" />
+            <div className="absolute bottom-8 right-32 size-0.5 animate-pulse rounded-full bg-palette-blue9 delay-300 dark:bg-palette-white" />
           </div>
-        </GridCell>
-        <GridCell
-          className={mergeClasses(
-            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-green3',
-            'selection:bg-palette-green4'
-          )}>
-          <Cloud01DuotoneIcon className="absolute -bottom-20 -right-8 size-80 text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
+          <Rocket02Icon className="absolute -bottom-20 -right-12 size-80 rotate-12 text-palette-blue9 opacity-[0.08] dark:opacity-[0.03]" />
+
           <div className="relative z-10 flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] heading-lg dark:!text-[#4eca8c]">
-              <Cloud01DuotoneIcon className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy
-              your web app
+            <h2 className="flex items-center gap-3 !font-bold !text-palette-gray12 heading-lg dark:!text-palette-white">
+              <div className="rounded-lg bg-gradient-to-br from-palette-blue9 to-palette-purple9 p-2 shadow-lg">
+                <Rocket02Icon className="icon-lg text-palette-white" />
+              </div>
+              Launch to app stores
             </h2>
             <div>
-              <Terminal cmd={['$ npx eas-cli deploy']} className="asset-shadow rounded-md" />
-              <CALLOUT theme="secondary">
-                For prerequisites and complete instructions, see{' '}
-                <A href="/deploy/web/#export-your-web-project/">our guide</A>.
-              </CALLOUT>
+              <P className="mb-4 max-w-[80ch] !text-sm leading-relaxed !text-palette-gray11 dark:!text-palette-blue11">
+                Ship apps with zero config or no prior experience. Launch easily guides you through
+                the technical stuff, directly from GitHub. No config or prior knowledge needed.
+              </P>
+              <HomeButton
+                className="!relative !bottom-auto border-2 border-palette-white bg-palette-white font-semibold text-palette-black shadow-md hocus:border-palette-gray1 hocus:bg-palette-gray1 hocus:text-palette-black dark:hocus:border-palette-gray11 dark:hocus:bg-palette-gray11 dark:hocus:text-palette-black"
+                href="https://launch.expo.dev/"
+                target="_blank"
+                rightSlot={<ArrowUpRightIcon className="icon-md text-palette-black" />}>
+                Try Launch
+              </HomeButton>
             </div>
           </div>
         </GridCell>

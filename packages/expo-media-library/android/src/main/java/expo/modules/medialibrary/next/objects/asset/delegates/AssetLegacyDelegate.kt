@@ -19,16 +19,19 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetModificationTime
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetPath
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
-import expo.modules.medialibrary.next.extensions.resolver.queryGetCreationTime
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetCreationTime
 import expo.modules.medialibrary.next.extensions.safeCopy
 import expo.modules.medialibrary.next.extensions.safeMove
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @DeprecatedSinceApi(Build.VERSION_CODES.Q)
 class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
@@ -49,7 +52,7 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
 
   override suspend fun getCreationTime(): Long? {
     return contentResolver
-      .queryGetCreationTime(contentUri)
+      .queryAssetCreationTime(contentUri)
       .takeIf { it != 0L }
   }
 
@@ -71,7 +74,7 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
     val height = contentResolver.queryAssetHeight(contentUri)
       ?: throw AssetPropertyNotFoundException("Height")
     // If height is not saved to the database
-    if (getMediaType().contains("image") && height <= 0) {
+    if (getMediaType() == MediaType.IMAGE && height <= 0) {
       return downloadBitmapAndGet { it.outHeight }
     }
     return height
@@ -80,7 +83,7 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
   override suspend fun getWidth(): Int {
     val width = contentResolver.queryAssetWidth(contentUri)
       ?: throw AssetPropertyNotFoundException("Width")
-    if (getMediaType().contains("image") && width <= 0) {
+    if (getMediaType() == MediaType.IMAGE && width <= 0) {
       return downloadBitmapAndGet { it.outWidth }
     }
     return width
@@ -93,12 +96,14 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
     return extract(options)
   }
 
-  override suspend fun getMediaType(): String =
-    contentResolver.getType(contentUri)
-      ?: throw AssetPropertyNotFoundException("MediaType")
+  override suspend fun getMediaType(): MediaType =
+    MediaType.fromContentUri(contentUri)
 
   override suspend fun getModificationTime(): Long? =
-    contentResolver.queryAssetModificationTime(contentUri).takeIf { it != 0L }
+    contentResolver.queryAssetModificationTime(contentUri)
+      ?.takeIf { it != 0L }
+      ?.toDuration(DurationUnit.SECONDS)
+      ?.inWholeMilliseconds
 
   override suspend fun getMimeType(): MimeType {
     return contentResolver.getType(contentUri)?.let { MimeType(it) }

@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '10.0.6'
+version = '10.0.7'
 
 android {
   namespace "expo.modules.videothumbnails"
   defaultConfig {
     versionCode 14
-    versionName '10.0.6'
+    versionName '10.0.7'
   }
 }
 

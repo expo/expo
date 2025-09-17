@@ -8,9 +8,35 @@
 
 ### 🐛 Bug fixes
 
-- Collapse `InternalBytecode.js` stack frames ([#39490](https://github.com/expo/expo/pull/39490) by [@kitten](https://github.com/kitten))
+### 💡 Others
+
+## 54.0.3 — 2025-09-12
 
 ### 💡 Others
+
+- Add fallback resolution for `@expo/metro-runtime` pre-module ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
+
+## 54.0.2 — 2025-09-11
+
+### 🛠 Breaking changes
+
+- Increase strictness of namespace imports ([#39545](https://github.com/expo/expo/pull/39545) by [@kitten](https://github.com/kitten))
+
+## 54.0.1 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- Add worklets version to transform key ([#39541](https://github.com/expo/expo/pull/39541) by [@brentvatne](https://github.com/brentvatne))
+
+## 54.0.0 — 2025-09-10
+
+### 🎉 New features
+
+- Updated `lightningcss` to `^1.30.1` ([#39506](https://github.com/expo/expo/pull/39506) by [@marklawlor](https://github.com/marklawlor))
+
+### 🐛 Bug fixes
+
+- Collapse `InternalBytecode.js` stack frames ([#39490](https://github.com/expo/expo/pull/39490) by [@kitten](https://github.com/kitten))
 
 ## 0.21.11 — 2025-09-08
 

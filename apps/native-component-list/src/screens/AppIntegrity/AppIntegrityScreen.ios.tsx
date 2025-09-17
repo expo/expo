@@ -41,22 +41,7 @@ export default function AppIntegrityIOSScreen() {
     }
   };
 
-  const testGenerateAssertion = async () => {
-    setIsLoading(true);
-    try {
-      const key = await AppIntegrity.generateKey();
-      addResult(`Generated key: ${key}`);
-      const challenge = 'test-challenge-' + Date.now();
-      const assertion = await AppIntegrity.generateAssertion(key, challenge);
-      addResult(`generateAssertion: Success (assertion length: ${assertion.length})`);
-    } catch (error) {
-      addResult(`generateAssertion error: ${error}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const testFullFlow = async () => {
+  const testAssertion = async () => {
     setIsLoading(true);
     try {
       const key = await AppIntegrity.generateKey();
@@ -90,12 +75,8 @@ export default function AppIntegrityIOSScreen() {
           <Text style={styles.buttonText}>Test attestKey</Text>
         </Pressable>
 
-        <Pressable style={styles.button} onPress={testGenerateAssertion} disabled={isLoading}>
-          <Text style={styles.buttonText}>Test generateAssertion</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={testFullFlow} disabled={isLoading}>
-          <Text style={styles.buttonText}>Test Full Flow</Text>
+        <Pressable style={styles.button} onPress={testAssertion} disabled={isLoading}>
+          <Text style={styles.buttonText}>Test Assertion</Text>
         </Pressable>
 
         <Pressable style={[styles.button, styles.clearButton]} onPress={clearResults}>

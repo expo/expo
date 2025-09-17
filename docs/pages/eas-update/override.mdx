@@ -22,9 +22,9 @@ Another potential use case is to provide different updates to different users, f
 
 ### How it works
 
-You can override the `expo-channel-name` request header by calling [`Updates.setUpdateRequestHeadersOverride`](/versions/unversioned/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders). This will override update requests to fetch updates from the specified channel.
+You can override the `expo-channel-name` request header by calling [`Updates.setUpdateRequestHeadersOverride`](/versions/latest/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders). This will override update requests to fetch updates from the specified channel.
 
-Somewhere in your app, you would provide a way for users to trigger the change to request headers. This may be in a hidden menu that only trusted users have access to, or some other mechanism, depending on your use case. After the parameters are changed, you can call [`fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync) to fetch the update, and then [`reloadAsync()`](/versions/unversioned/sdk/updates/#updatesreloadasyncoptions) to reload the app. Or you can wait for the next launch, which will automatically fetch and install the update.
+Somewhere in your app, you would provide a way for users to trigger the change to request headers. This may be in a hidden menu that only trusted users have access to, or some other mechanism, depending on your use case. After the parameters are changed, you can call [`fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync) to fetch the update, and then [`reloadAsync()`](/versions/latest/sdk/updates/#updatesreloadasyncoptions) to reload the app. Or you can wait for the next launch, which will automatically fetch and install the update.
 
 ```js
 import * as Updates from 'expo-updates';

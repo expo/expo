@@ -40,7 +40,10 @@ class EnumTypeConverter(
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
-      return convertEnumWithoutParameter(value.asString() ?: throw DynamicCastException(String::class), enumConstants)
+      return convertEnumWithoutParameter(
+        value.asString() ?: throw DynamicCastException(String::class),
+        enumConstants
+      )
     } else if (primaryConstructor.parameters.size == 1) {
       return convertEnumWithParameter(
         value,
@@ -93,28 +96,32 @@ class EnumTypeConverter(
     filed.isAccessible = true
 
     val parameterType = filed.type
-    val jsUnwrapValue = if (jsValue is Dynamic) {
-      if (parameterType == String::class.java) {
-        jsValue.asString()
-      } else {
-        jsValue.asInt()
-      }
-    } else {
-      if (parameterType == String::class.java) {
-        jsValue as String
-      } else {
-        if (jsValue is Double) {
-          jsValue.toInt()
-        } else {
-          jsValue as Int
-        }
-      }
-    }
+    val jsUnwrapValue = jsValue.unwrapValue(parameterType)
 
     return requireNotNull(
       enumConstants.find {
         filed.get(it) == jsUnwrapValue
       }
     ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where $parameterName is the enum parameter" }
+  }
+
+  private fun Any.unwrapValue(parameterType: Class<*>): Any? {
+    if (this is Dynamic) {
+      if (parameterType == String::class.java) {
+        return asString()
+      }
+
+      return asInt()
+    }
+
+    if (parameterType == String::class.java) {
+      return this as String
+    }
+
+    if (this is Double) {
+      return toInt()
+    }
+
+    return this as Int
   }
 }

@@ -59,6 +59,7 @@ const storeRef = {
     current: {},
 };
 const routeInfoCache = new WeakMap();
+const routeInfoValuesCache = new Map();
 let splashScreenAnimationFrame;
 let hasAttemptedToHideSplash = false;
 exports.store = {
@@ -177,6 +178,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
             initialState = linking.getStateFromPath(initialPath, linking.config);
             const initialRouteInfo = (0, routeInfo_1.getRouteInfoFromState)(initialState);
             routeInfoCache.set(initialState, initialRouteInfo);
+            routeInfoValuesCache.set(JSON.stringify(initialRouteInfo), initialRouteInfo);
         }
     }
     else {
@@ -237,18 +239,17 @@ function getCachedRouteInfo(state) {
     let routeInfo = routeInfoCache.get(state);
     if (!routeInfo) {
         routeInfo = (0, routeInfo_1.getRouteInfoFromState)(state);
-        const previousRouteInfo = storeRef.current.routeInfo;
-        if (previousRouteInfo && areRouteInfosEqual(routeInfo, previousRouteInfo)) {
-            // If they are equal, keep the previous route info for object reference equality
-            routeInfo = previousRouteInfo;
+        const routeInfoString = JSON.stringify(routeInfo);
+        // Using cached values to avoid re-renders, to increase the chance that the object reference is the same
+        const cachedRouteInfo = routeInfoValuesCache.get(routeInfoString);
+        if (cachedRouteInfo) {
+            routeInfo = cachedRouteInfo;
+        }
+        else {
+            routeInfoValuesCache.set(routeInfoString, routeInfo);
         }
         routeInfoCache.set(state, routeInfo);
     }
     return routeInfo;
-}
-function areRouteInfosEqual(routeInfo1, routeInfo2) {
-    return (routeInfo1.segments.length === routeInfo2.segments.length &&
-        routeInfo1.segments.every((segment, index) => segment === routeInfo2.segments[index]) &&
-        routeInfo1.pathnameWithParams === routeInfo2.pathnameWithParams);
 }
 //# sourceMappingURL=router-store.js.map

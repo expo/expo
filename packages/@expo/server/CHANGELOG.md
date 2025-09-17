@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.7.4 — 2025-09-11
+
+### 🐛 Bug fixes
+
+- Re-expose Vercel adapter under `@expo/server/adapter/vercel` ([#39548](https://github.com/expo/expo/pull/39548) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 0.7.3 — 2025-09-03
 
 ### 🎉 New features

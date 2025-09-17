@@ -307,7 +307,7 @@ import { CODE } from '~/ui/components/Text';
 
 ### Host
 
-A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/hostingview) to render the SwiftUI views in UIKit.
+A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
 
 Since the `Host` component is a React Native [`View`](https://reactnative.dev/docs/view), you can pass the [`style`](https://reactnative.dev/docs/style) prop to it or `matchContents` prop to make the `Host` component match the contents' size.
 
@@ -608,10 +608,20 @@ Expo UI is still in active development. We continue to add more functionality an
     <Button
       style={{ flex: 1 }}
       variant="default"
+      leadingIcon="filled.Edit"
       onPress={() => {
         setEditingProfile(true);
       }}>
       Edit profile
+    </Button>
+
+    {/* Button with both leading and trailing icons */}
+    <Button
+      variant="bordered"
+      leadingIcon="filled.Add"
+      trailingIcon="filled.ArrowForward"
+      onPress={() => console.log('Action')}>
+      Add Item
     </Button>
     ```
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/button)*
@@ -660,12 +670,15 @@ Expo UI is still in active development. We continue to add more functionality an
       <ContextMenu.Items>
         <Button
           elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
+          leadingIcon="filled.Person"
           onPress={() => console.log('Pressed1')}>
           Hello
         </Button>
         <Button
           variant="bordered"
           color="#ff0000"
+          leadingIcon="filled.Favorite"
+          trailingIcon="filled.Star"
           onPress={() => console.log('Pressed2')}>
           Love it
         </Button>
@@ -685,6 +698,58 @@ Expo UI is still in active development. We continue to add more functionality an
     </ContextMenu>
     ```
     *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/menu)*
+
+  </Tab>
+</Tabs>
+
+### Chip
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Chip component on Android."
+      src="/static/images/expo-ui/chip/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Chip } from '@expo/ui/jetpack-compose';
+
+    // Assist chip with icon
+    <Chip
+      variant="assist"
+      label="Book"
+      leadingIcon="filled.Add"
+      onPress={() => console.log('Opening flight booking...')}
+    />
+
+    // Filter chip with selection
+    <Chip
+      variant="filter"
+      label="Images"
+      leadingIcon="filled.Star"
+      selected={selectedFilters.includes('Images')}
+      onPress={() => handleFilterToggle('Images')}
+    />
+
+    // Input chip with dismiss
+    <Chip
+      variant="input"
+      label="Work"
+      leadingIcon="filled.Create"
+      onDismiss={() => handleInputDismiss('Work')}
+    />
+
+    // Suggestion chip
+    <Chip
+      variant="suggestion"
+      label="Nearby"
+      leadingIcon="filled.LocationOn"
+      onPress={() => console.log('Searching nearby...')}
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/chip)*
 
   </Tab>
 </Tabs>

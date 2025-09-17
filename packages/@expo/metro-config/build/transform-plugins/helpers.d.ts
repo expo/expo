@@ -1,6 +1,5 @@
 import type { types, template } from '@babel/core';
 export declare const defaultWrapHelper: ({ statement }: typeof template, name: string) => types.Statement;
-export declare const strictNamespaceWrapHelper: ({ statement }: typeof template, name: string) => types.Statement;
 export declare const namespaceWrapHelper: ({ statement }: typeof template, name: string) => types.Statement;
 export declare const liveExportAllHelper: ({ statement }: typeof template, id: string) => types.Statement;
 export declare const liveExportHelper: (t: typeof types, exportName: string, expr: types.Expression) => types.Statement;
