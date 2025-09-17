@@ -495,7 +495,7 @@ internal struct FixedSizeModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     if let horizontal, let vertical {
       content.fixedSize(horizontal: horizontal, vertical: vertical)
-    } else if let horizontal = horizontal {
+    } else if let horizontal {
       content.fixedSize(horizontal: horizontal, vertical: false)
     } else if let vertical = vertical {
       content.fixedSize(horizontal: false, vertical: vertical)
