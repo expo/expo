@@ -171,14 +171,17 @@ class IntegrityModule : Module() {
       exception.message?.contains("not supported", ignoreCase = true) == true -> 
         IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_NOT_SUPPORTED, exception.message ?: "Hardware attestation not supported", exception)
       exception.message?.contains("key generation", ignoreCase = true) == true -> 
-        IntegrityException(IntegrityErrorCodes.KEY_GENERATION_FAILED, exception.message ?: "Key generation failed", exception)
+        IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_KEY_GENERATION_FAILED, exception.message ?: "Key generation failed", exception)
       exception.message?.contains("certificate", ignoreCase = true) == true -> 
-        IntegrityException(IntegrityErrorCodes.CERTIFICATE_CHAIN_INVALID, exception.message ?: "Certificate chain invalid", exception)
-      else -> IntegrityException(IntegrityErrorCodes.ATTESTATION_FAILED, exception.message ?: "Hardware attestation failed", exception)
+        IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_CERTIFICATE_CHAIN_INVALID, exception.message ?: "Certificate chain invalid", exception)
+      else -> IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_FAILED, exception.message ?: "Hardware attestation failed", exception)
     }
   }
 
   private fun isHardwareAttestationSupported(): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      return false
+    }
     return try {
       // Verify we can actually access the hardware keystore
       val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
@@ -190,6 +193,9 @@ class IntegrityModule : Module() {
   }
 
   private fun generateHardwareAttestedKey(keyAlias: String, challenge: String) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      throw Exception("Hardware attestation is not supported on this Android version.")
+    }
     try {
       val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
       keyStore.load(null)
@@ -202,7 +208,7 @@ class IntegrityModule : Module() {
       
       val keyGenParameterSpec = KeyGenParameterSpec.Builder(
         keyAlias,
-        KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
+        KeyProperties.PURPOSE_SIGN
       )
         .setDigests(KeyProperties.DIGEST_SHA256)
         .setAttestationChallenge(challenge.toByteArray())
