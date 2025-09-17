@@ -17,7 +17,6 @@ import expo.modules.kotlin.Promise
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
 import java.security.KeyPairGenerator
 import java.security.KeyStore
-import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
 class IntegrityModule : Module() {
@@ -165,11 +164,11 @@ class IntegrityModule : Module() {
 
   private fun handleHardwareAttestationError(exception: Throwable): IntegrityException {
     return when {
-      exception.message?.contains("not supported", ignoreCase = true) == true -> 
+      exception.message?.contains("not supported", ignoreCase = true) == true ->
         IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_NOT_SUPPORTED, exception.message ?: "Hardware attestation not supported", exception)
-      exception.message?.contains("key generation", ignoreCase = true) == true -> 
+      exception.message?.contains("key generation", ignoreCase = true) == true ->
         IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_KEY_GENERATION_FAILED, exception.message ?: "Key generation failed", exception)
-      exception.message?.contains("certificate", ignoreCase = true) == true -> 
+      exception.message?.contains("certificate", ignoreCase = true) == true ->
         IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_CERTIFICATE_CHAIN_INVALID, exception.message ?: "Certificate chain invalid", exception)
       else -> IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_FAILED, exception.message ?: "Hardware attestation failed", exception)
     }
@@ -199,7 +198,7 @@ class IntegrityModule : Module() {
       }
 
       val keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEYSTORE)
-      
+
       val keyGenParameterSpec = KeyGenParameterSpec.Builder(
         keyAlias,
         KeyProperties.PURPOSE_SIGN
