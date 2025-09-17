@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Removed unused `androidx.legacy:legacy-support-v4` dependency.
+
 ## 14.0.7 — 2025-09-10
 
 ### 💡 Others
