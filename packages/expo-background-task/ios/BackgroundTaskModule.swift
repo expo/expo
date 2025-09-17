@@ -21,6 +21,7 @@ public class BackgroundTaskModule: Module {
     }
 
     OnStopObserving(onTasksExpired) {
+      // swiftlint:disable:next notification_center_detachment
       NotificationCenter.default.removeObserver(self)
     }
 
