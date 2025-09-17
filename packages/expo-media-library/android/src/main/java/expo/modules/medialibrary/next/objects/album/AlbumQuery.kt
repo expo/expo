@@ -20,4 +20,3 @@ class AlbumQuery(context: Context) {
     return Album(id, contextRef.getOrThrow())
   }
 }
-

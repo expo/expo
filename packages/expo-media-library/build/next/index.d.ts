@@ -24,7 +24,7 @@ export declare class Album extends ExpoMediaLibraryNext.Album {
      * }
      * ```
      */
-    static get(title: String): Promise<Album | null>;
+    static get(title: string): Promise<Album | null>;
 }
 export declare function requestPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
 //# sourceMappingURL=index.d.ts.map

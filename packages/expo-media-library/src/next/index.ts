@@ -48,7 +48,7 @@ export class Album extends ExpoMediaLibraryNext.Album {
    * }
    * ```
    */
-  static get(title: String): Promise<Album | null> {
+  static get(title: string): Promise<Album | null> {
     return ExpoMediaLibraryNext.getAlbum(title);
   }
 }
