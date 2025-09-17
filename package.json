@@ -21,9 +21,9 @@
   },
   "resolutions": {
     "@expo/metro": "~54.0.0",
-    "react-native": "0.82.0-rc.1",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react-native": "0.82.0-rc.3",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",

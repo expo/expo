@@ -30,8 +30,8 @@
     "expo-notifications": "0.32.11",
     "expo-task-manager": "14.0.7",
     "react-native-gesture-handler": "~2.28.0",
-    "react": "19.1.0",
-    "react-native": "0.82.0-rc.1",
+    "react": "19.1.1",
+    "react-native": "0.82.0-rc.3",
     "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "4.16.0"
   },
@@ -41,7 +41,7 @@
     "@types/react": "~19.1.10"
   },
   "resolutions": {
-    "react-test-renderer": "19.1.0"
+    "react-test-renderer": "19.1.1"
   },
   "expo": {
     "autolinking": {

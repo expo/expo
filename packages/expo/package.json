@@ -101,9 +101,9 @@
     "@types/react": "~19.1.10",
     "@types/react-test-renderer": "~19.1.0",
     "expo-module-scripts": "^5.0.7",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-native": "0.82.0-rc.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-native": "0.82.0-rc.3",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {
