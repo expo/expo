@@ -381,7 +381,7 @@ PODS:
   - ExpoGL (16.0.7):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - ExpoGlassEffect (0.1.3):
+  - ExpoGlassEffect (0.1.4):
     - ExpoModulesCore
   - ExpoHaptics (15.0.7):
     - ExpoModulesCore
@@ -3585,7 +3585,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: adffad7d1f57f768ca7a5e3bf450312fb9ebd27a
   ExpoFont: d3e56c7cc03d9fd113b90a5513ad32b4bf46b0ff
   ExpoGL: 39262a8c3d4c36d48a28bc412e3392c25c5391c9
-  ExpoGlassEffect: 02d9577dfe05a6b6c9856fd71514120e96792052
+  ExpoGlassEffect: 11f4ae0db0d49a6e96ecd81ef524ba3124a39fdc
   ExpoHaptics: b48d913e7e5f23816c6f130e525c9a6501b160b5
   ExpoImage: 306dd755c842dba9f3ee654c51834a9cc657e6ca
   ExpoImageManipulator: dbf5b8fc805b55463811cb3da96ab60c532faae8
