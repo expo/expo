@@ -16,9 +16,7 @@ class AlbumQuery(context: Context) {
 
   suspend fun getAlbum(title: String): Album? {
     val id = contentResolver.queryAlbumId(title)
-    if (id == null) {
-      return null
-    }
+      ?: return null
     return Album(id, contextRef.getOrThrow())
   }
 }
