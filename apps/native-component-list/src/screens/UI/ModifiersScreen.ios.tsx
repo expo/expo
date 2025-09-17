@@ -184,7 +184,7 @@ export default function ModifiersScreen() {
                 offset({ x: 100, y: 0 }),
                 shadow({ radius: 3, y: 2 }),
               ]}>
-              Text should break out of the 200px frame
+              Text should break out of the 100px frame
             </Text>
 
             {/* Complex Combination */}
