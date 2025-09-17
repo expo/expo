@@ -82,7 +82,7 @@ export async function requestIntegrityCheck(requestHash: string) {
  */
 export async function isHardwareAttestationSupported() {
   if (Platform.OS !== 'android') {
-    throw new Error('isHardwareAttestationSupported is only available on Android');
+    return false;
   }
   return ExpoAppIntegrity.isHardwareAttestationSupported();
 }
