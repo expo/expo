@@ -1,0 +1,13 @@
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://components/image/comparison
+# approve the deep linking prompt on iOS
+- tapOn:
+    text: 'Open'
+    optional: true
+
+- runFlow:
+    file: ../screenshot-comparison.yaml
+    env:
+      screenshotOutputPath: expo-image/comparison-with-core-image

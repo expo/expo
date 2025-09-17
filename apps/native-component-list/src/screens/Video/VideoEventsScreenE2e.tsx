@@ -79,7 +79,7 @@ export default function VideoEventsScreen() {
           Is playing: {String(isPlaying)} {'\n'}
           isAtStart: {String(currentTime === 0)} {'\n'}
           Volume: {volume} {'\n'}
-          Is Muted: {false} {'\n'}{' '}
+          Is Muted: {String(false)} {'\n'}
           {/* muted is false now cuz we use build output from other action run */}
           Status: {status} {'\n'}
           Playback rate: {playbackRate} {'\n'}

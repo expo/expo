@@ -1,0 +1,21 @@
+# Screenshot comparison flow for expo-image
+# This flow can be reused across different image comparison tests
+# it fails if the images are too different
+
+# Parameters:
+#   - screenshotOutputPath: The path including the name of the screenshot to take and compare
+
+appId: dev.expo.Payments
+---
+- takeScreenshot: ${screenshotOutputPath}.${maestro.platform}
+- runScript:
+    file: ./compare-images-http.js
+    env:
+      baseImage: ${screenshotOutputPath}.base.${maestro.platform}
+      currentScreenshot: ${screenshotOutputPath}.${maestro.platform}
+      outputPath: ~/.maestro/${screenshotOutputPath}.diff.${maestro.platform}
+      # todo - make the threshold configurable
+
+- assertTrue:
+    condition: ${output.comparisonResult.success}
+    label: Screenshot comparison check (see screenshot comparison server logs for details)

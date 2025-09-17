@@ -1,5 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
+import { glob } from 'glob';
 import * as path from 'path';
 
 export type StartMode = 'BUILD' | 'TEST' | 'BUILD_AND_TEST';
@@ -99,9 +100,9 @@ export async function delayAsync(timeMs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
 
-export const getMaestroFlowFilePath = (projectRoot: string): string => {
-  const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
-  return path.join(projectRoot, MAESTRO_GENERATED_FLOW);
+export const getMaestroFlowFilePath = (e2eDir: string): string => {
+  const MAESTRO_GENERATED_FLOW = 'maestro-generated.yaml';
+  return path.join(e2eDir, MAESTRO_GENERATED_FLOW);
 };
 
 export function prettyPrintTestSuiteLogs(logs: string[]) {
@@ -155,22 +156,29 @@ export function setupLogger(command: string, signal: AbortSignal): () => Promise
   };
 }
 
-export const getCustomMaestroFlowsAsync = async (projectRoot: string): Promise<string[]> => {
-  const maestroFlows = await fs.readdir(path.join(projectRoot, 'e2e'));
-  return maestroFlows.filter((file) => file.endsWith('.yaml') && file !== 'maestro-generated.yaml');
+const getCustomMaestroFlowsAsync = async (e2eDir: string): Promise<string[]> => {
+  const yamlFiles = await glob.glob('**/*.yaml', {
+    cwd: e2eDir,
+    maxDepth: 2, // e2e root + one level deep
+    ignore: ['maestro-generated.yaml', 'screenshot-comparison.yaml'],
+  });
+
+  console.log({ 'maestro yaml files': yamlFiles });
+  return yamlFiles;
 };
 
 export const runCustomMaestroFlowsAsync = async (
-  projectRoot: string,
+  e2eDir: string,
   fn: (maestroFlowFilePath: string) => Promise<void>
 ) => {
   const retriesForCustomTests = 3;
 
-  const maestroFlows = await getCustomMaestroFlowsAsync(projectRoot);
-  for (const maestroFlowFilePath of maestroFlows) {
+  const maestroFlows = await getCustomMaestroFlowsAsync(e2eDir);
+  for (const maestroFlowRelativePath of maestroFlows) {
+    const maestroFlowFilePath = path.join(e2eDir, maestroFlowRelativePath);
     await retryAsync((retryNumber) => {
       console.log(
-        `${maestroFlowFilePath} test suite attempt ${retryNumber + 1} of ${retriesForCustomTests}`
+        `${maestroFlowRelativePath} test suite attempt ${retryNumber + 1} of ${retriesForCustomTests}`
       );
       return fn(maestroFlowFilePath);
     }, retriesForCustomTests);

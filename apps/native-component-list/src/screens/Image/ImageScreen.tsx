@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 
-import { optionalRequire } from '../../navigation/routeBuilder';
+import { optionalRequire, routeFilterForE2e } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const ImageScreens = [
@@ -11,6 +11,7 @@ export const ImageScreens = [
     getComponent() {
       return optionalRequire(() => require('./ImageComparisonScreen'));
     },
+    e2e: true,
   },
   {
     name: 'Animated styles',
@@ -174,7 +175,7 @@ if (Platform.OS === 'ios') {
 }
 
 export default function ImageScreen() {
-  const apis: ListElement[] = ImageScreens.map((screen) => {
+  const apis: ListElement[] = ImageScreens.filter(routeFilterForE2e).map((screen) => {
     return {
       name: screen.name,
       isAvailable: true,
