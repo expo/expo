@@ -175,6 +175,7 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Image/ImageScreen'));
     },
     name: 'Image',
+    e2e: true,
   },
   {
     getComponent() {

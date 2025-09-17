@@ -49,20 +49,21 @@ const __dirname = dirname(__filename);
           `No connected Android device found. In CI, it should be started via the 'Use Android Emulator' action.`
         );
       }
-      await runCustomMaestroFlowsAsync(projectRoot, (maestroFlowFilePath) =>
-        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath)
+      const e2eDir = path.join(projectRoot, 'e2e');
+      await runCustomMaestroFlowsAsync(e2eDir, (maestroFlowFilePath) =>
+        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
       );
 
-      // const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
-      // await createMaestroFlowAsync({
-      //   appId: APP_ID,
-      //   workflowFile: maestroFlowFilePath,
-      //   confirmFirstRunPrompt: true,
-      // });
-      //
+      const maestroFlowFilePath = getMaestroFlowFilePath(e2eDir);
+      await createMaestroFlowAsync({
+        appId: APP_ID,
+        workflowFile: maestroFlowFilePath,
+        confirmFirstRunPrompt: true,
+      });
+
       // await retryAsync((retryNumber) => {
       //   console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-      //   return testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath);
+      //   return testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir);
       // }, NUM_OF_RETRIES);
     }
   } catch (e) {
@@ -83,7 +84,8 @@ async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
   appBinaryPath: string,
-  adbPath: string
+  adbPath: string,
+  maestroWorkspaceRoot: string
 ): Promise<void> {
   const stopLogCollectionController = new AbortController();
 

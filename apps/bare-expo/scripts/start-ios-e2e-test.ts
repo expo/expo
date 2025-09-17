@@ -45,8 +45,9 @@ const __dirname = dirname(__filename);
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
-      await runCustomMaestroFlowsAsync(projectRoot, (maestroFlowFilePath) =>
-        testAsync(maestroFlowFilePath, deviceId, appBinaryPath)
+      const e2eDir = path.join(projectRoot, 'e2e');
+      await runCustomMaestroFlowsAsync(e2eDir, (maestroFlowFilePath) =>
+        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, e2eDir)
       );
 
       // const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
@@ -92,6 +93,31 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
   // @ts-expect-error missing typings
   const binaryPath = await XcodeBuild.default.getAppBinaryPath(buildOutput);
   return binaryPath;
+}
+
+const runsOnCI = Boolean(process.env.CI);
+
+function prettyPrintTestSuiteLogs(logs: string[]) {
+  const lastTestSuiteLog = logs.reverse().find((logItem) => logItem.includes('TEST-SUITE-END'));
+  if (!lastTestSuiteLog) {
+    return '';
+  }
+  const jsonPart = lastTestSuiteLog?.match(/{.*}/);
+  if (!jsonPart || !jsonPart[0]) {
+    return '';
+  }
+  const testSuiteResult = JSON.parse(jsonPart[0]);
+  if ((testSuiteResult?.failures.length ?? 0) <= 0) {
+    return '';
+  }
+  const result = [];
+  result.push('  ❌ Test suite had following test failures:');
+  testSuiteResult?.failures?.split('\n').forEach((failure) => {
+    if (failure.length > 0) {
+      result.push(`    ${failure}`);
+    }
+  });
+  return result.join('\n');
 }
 
 function prettyPrintNativeErrorLogs(logs: string[]) {
@@ -183,7 +209,8 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60
 async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
-  appBinaryPath: string
+  appBinaryPath: string,
+  maestroWorkspaceRoot: string
 ): Promise<void> {
   const stopLogCollectionController = new AbortController();
 
@@ -191,6 +218,11 @@ async function testAsync(
     await startSimulatorAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
+    console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
+    await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
+    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
+      stdio: 'inherit',
+    });
 
     const getTestSuiteLogs = setupLogger(
       '(subsystem == "com.facebook.react.log")',
@@ -205,6 +237,7 @@ async function testAsync(
     try {
       await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
         stdio: 'inherit',
+        cwd: maestroWorkspaceRoot,
         env: {
           ...process.env,
           MAESTRO_DRIVER_STARTUP_TIMEOUT,
@@ -237,7 +270,7 @@ async function testAsync(
     throw e;
   } finally {
     stopLogCollectionController.abort();
-    await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
+    runsOnCI && (await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' }));
   }
 }
 

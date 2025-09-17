@@ -3,6 +3,8 @@
 /ios/Pods
 /android/app/src/androidTest/assets/TestSuite.json
 /e2e/maestro-generated.yaml
+/e2e/**/*.png
+!/e2e/**/*.base.*.png
 .kotlin/
 dist/
 
