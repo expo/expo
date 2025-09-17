@@ -5,20 +5,72 @@ export * from './MediaLibraryNext.types';
 export class Query extends ExpoMediaLibraryNext.Query {
 }
 export class Asset extends ExpoMediaLibraryNext.Asset {
+    /*
+     * Creates a new asset from a given file path.
+     * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
+     *
+     * @param filePath - Local filesystem path (e.g., `file:///...`) of the file to import.
+     * @param album - Optional `Album` instance to place the asset in.
+     * @returns A promise resolving to the created `Asset`.
+     *
+     * @example
+     * ```ts
+     * const asset = await Asset.create("file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg");
+     * console.log(await asset.getFilename()); // "IMG_20230915_123456.jpg"
+     * ```
+     */
     static create(filePath, album) {
         return ExpoMediaLibraryNext.createAsset(filePath, album);
     }
+    /*
+     * A static function. Deletes multiple assets at once.
+     * @param assets - An array of `Asset` instances to delete.
+     * @returns A promise that resolves once the assets have been deleted.
+     *
+     * @example
+     * ```ts
+     * const asset = await Asset.create("file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg");
+     * await Asset.delete([asset]);
+     * ```
+     */
     static delete(assets) {
         return ExpoMediaLibraryNext.deleteAssets(assets);
     }
 }
 export class Album extends ExpoMediaLibraryNext.Album {
+    /*
+     * A static function. Creates a new album with a given name and assets.
+     * On Android, if assets are provided and `moveAssets` is true, the assets will be moved into the new album. If false or not supported, the assets will be copied.
+     *
+     * @param name - Name of the new album.
+     * @param assetsRefs - List of {@link Asset} objects or file paths (file:///...) to include.
+     * @param moveAssets - On Android, whether to move assets into the album.
+     * @returns A promise resolving to the created {@link Album}.
+     *
+     * @example
+     * ```ts
+     * const album = await Album.create("My Album", [asset]);
+     * console.log(await album.getTitle()); // "My Album"
+     * ```
+     */
     static create(name, assetsRefs, moveAssets = true) {
         if (Platform.OS === 'ios') {
             return ExpoMediaLibraryNext.createAlbum(name, assetsRefs);
         }
         return ExpoMediaLibraryNext.createAlbum(name, assetsRefs, moveAssets);
     }
+    /*
+     * A static function. Deletes multiple albums at once.
+     * @param albums - An array of `Album` instances to delete.
+     * @param deleteAssets - Whether to delete the assets in the albums as well.
+     * @returns A promise that resolves once the albums have been deleted.
+     *
+     * @example
+     * ```ts
+     * const album = await Album.create("My Album", [asset]);
+     * await Album.delete([album]);
+     * ```
+     */
     static delete(albums, deleteAssets = false) {
         if (Platform.OS === 'ios') {
             return ExpoMediaLibraryNext.deleteAlbums(albums, deleteAssets);
@@ -27,16 +79,15 @@ export class Album extends ExpoMediaLibraryNext.Album {
             return ExpoMediaLibraryNext.deleteAlbums(albums);
         }
     }
-    /**
-     * Retrieves an album with the given title.
-     * If multiple albums share the same title only one will be returned.
+    /*
+     * A static function. Retrieves an album by its title.
      * @param title - The title of the album to retrieve.
-     * @returns A promise resolving to the `Album` if found, or `null` if no album with the given title exists.
+     * @return A promise resolving to the `Album` if found, or `null` if not found.
      * @example
      * ```ts
      * const album = await Album.get("Camera");
      * if (album) {
-     *   console.log(`Found album with ID: ${album.id}`);
+     *   console.log(await album.getTitle()); // "Camera"
      * }
      * ```
      */
@@ -44,6 +95,15 @@ export class Album extends ExpoMediaLibraryNext.Album {
         return ExpoMediaLibraryNext.getAlbum(title);
     }
 }
+/**
+ * Asks the user to grant permissions for accessing media in user's media library.
+ * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
+ * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ *
+ * > When using granular permissions with a custom config plugin configuration, make sure that all the requested permissions are included in the plugin.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
+ */
 export async function requestPermissionsAsync(writeOnly = false, granularPermissions) {
     if (!ExpoMediaLibraryNext.requestPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
