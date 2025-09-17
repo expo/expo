@@ -23,6 +23,7 @@ import {
   clipShape,
   glassEffect,
   foregroundStyle,
+  fixedSize,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -170,6 +171,20 @@ export default function ModifiersScreen() {
                 shadow({ radius: 3, y: 2 }),
               ]}>
               📐 2:1 Aspect ratio blue card
+            </Text>
+
+            <Text
+              modifiers={[
+                background('#E67E22'),
+                cornerRadius(8),
+                padding({ all: 12 }),
+                fixedSize(),
+                frame({ width: 100, height: 60 }),
+                border({ color: '#D35400', width: 2 }),
+                offset({ x: 100, y: 0 }),
+                shadow({ radius: 3, y: 2 }),
+              ]}>
+              Text should break out of the 100px frame
             </Text>
 
             {/* Complex Combination */}
