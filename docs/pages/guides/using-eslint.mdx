@@ -60,7 +60,7 @@ The approach to configure environment-specific globals differs between Flat conf
 
 <Tab label="Flat config">
 
-For flat config, use `languageOptions.globals` in your **eslint.config.js** to include Node.js global variables for specific configuration files:
+For Flat config, **metro.config.js** files already work with Node.js globals because of the built-in support in `eslint-config-expo`. For other configuration files that might need Node.js globals, use [`languageOptions.globals`](https://eslint.org/docs/latest/use/configure/language-options#predefined-global-variables) in your **eslint.config.js**:
 
 ```js eslint.config.js
 const { defineConfig } = require('eslint/config');
@@ -69,7 +69,8 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    files: ['metro.config.js', 'babel.config.js'],
+    ignores: ['dist/*'],
+    files: ['babel.config.js'],
     languageOptions: {
       globals: globals.node,
     },
@@ -77,17 +78,18 @@ module.exports = defineConfig([
 ]);
 ```
 
-This configuration allows Node.js globals like `__dirname` to be used without ESLint errors:
+For example, with this setup, you can now use Node.js globals in **babel.config.js**:
 
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
+```js babel.config.js
+import path from 'path';
+const __dirname = path.dirname(__filename);
 
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(
-  /* @info This will no longer assert linting errors. */ __dirname /* @end */
-);
-
-module.exports = config;
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};
 ```
 
 </Tab>
