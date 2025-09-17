@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ### 💡 Others
 
 ## 15.0.9 — 2025-10-01
