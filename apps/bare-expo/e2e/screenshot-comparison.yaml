@@ -13,7 +13,8 @@ appId: dev.expo.Payments
     env:
       baseImage: ${screenshotOutputPath}.base.${maestro.platform}
       currentScreenshot: ${screenshotOutputPath}.${maestro.platform}
-      outputPath: ~/.maestro/${screenshotOutputPath}.diff.${maestro.platform}
+      # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
+      outputPath: ~/.maestro/tests/${screenshotOutputPath}.diff.${maestro.platform}
       # todo - make the threshold configurable
 
 - assertTrue:

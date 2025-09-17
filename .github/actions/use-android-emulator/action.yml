@@ -60,10 +60,6 @@ runs:
           ${{ inputs.script }}
         working-directory: ${{ inputs.working-directory }}
 
-    #    - name: List available adb devices
-    #      shell: bash
-    #      run: avdmanager list device
-
     - name: '💿 Setup Android Emulator #2'
       id: retries-2
       continue-on-error: true
