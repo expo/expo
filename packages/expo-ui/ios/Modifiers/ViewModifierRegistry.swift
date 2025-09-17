@@ -488,6 +488,23 @@ internal struct BackgroundOverlayModifier: ViewModifier, Record {
   }
 }
 
+internal struct FixedSizeModifier: ViewModifier, Record {
+  @Field var horizontal: Bool?
+  @Field var vertical: Bool?
+
+  func body(content: Content) -> some View {
+    if let horizontal = horizontal, let vertical = vertical {
+      content.fixedSize(horizontal: horizontal, vertical: vertical)
+    } else if let horizontal = horizontal {
+      content.fixedSize(horizontal: horizontal, vertical: false)
+    } else if let vertical = vertical {
+      content.fixedSize(horizontal: false, vertical: vertical)
+    } else {
+      content.fixedSize()
+    }
+  }
+}
+
 /**
  * A type-erased wrapper for `ViewModifier`
  */
@@ -931,6 +948,10 @@ extension ViewModifierRegistry {
 
     register("matchedGeometryEffect") { params, appContext, _ in
       return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
+    }
+
+    register("fixedSize") { params, appContext, _ in
+      return try FixedSizeModifier(from: params, appContext: appContext)
     }
   }
 }

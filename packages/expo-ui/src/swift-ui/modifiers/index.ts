@@ -85,9 +85,11 @@ export const padding = (params: {
 
 /**
  * Controls fixed size behavior.
- * @param enabled - Whether the view should use its natural size
+ * @param horizontal - Whether the view should use its ideal width
+ * @param vertical - Whether the view should use its ideal height
  */
-export const fixedSize = (enabled: boolean = true) => createModifier('fixedSize', { enabled });
+export const fixedSize = (params?: { horizontal?: boolean; vertical?: boolean }) =>
+  createModifier('fixedSize', params);
 
 /**
  * Adds a tap gesture recognizer.

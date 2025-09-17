@@ -56,9 +56,13 @@ export declare const padding: (params: {
 }) => ModifierConfig;
 /**
  * Controls fixed size behavior.
- * @param enabled - Whether the view should use its natural size
+ * @param horizontal - Whether the view should use its ideal width
+ * @param vertical - Whether the view should use its ideal height
  */
-export declare const fixedSize: (enabled?: boolean) => ModifierConfig;
+export declare const fixedSize: (params?: {
+    horizontal?: boolean;
+    vertical?: boolean;
+}) => ModifierConfig;
 /**
  * Adds a tap gesture recognizer.
  * @param handler - Function to call when tapped
