@@ -15,7 +15,9 @@ export function ensureNativeModulesAreInstalled(): void {
       // but to keep backwards compatibility let's just ignore it in SDK 50.
       // In most cases the modules were already installed from the native side.
       (
-        require('react-native').TurboModuleRegistry.get('ExpoModulesCore') as { installModules: () => void } | null
+        require('react-native').TurboModuleRegistry.get('ExpoModulesCore') as {
+          installModules: () => void;
+        } | null
       )?.installModules();
     }
   } catch (error) {
