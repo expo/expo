@@ -13,9 +13,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
-- **`docs`**
-  - Fixed terminal copy button functionality for multi-line array commands. ([#39730](https://github.com/expo/expo/issues/39730) by [@mensonones](https://github.com/mensonones))
-
 ## 54.0.0 — 2025-09-10
 
 ### 📚 3rd party library updates
