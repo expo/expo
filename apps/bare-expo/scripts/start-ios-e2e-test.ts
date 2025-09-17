@@ -120,7 +120,7 @@ async function isAppRunning() {
   return output.find((line) => line.includes(APP_ID));
 }
 
-export function setupLogger(predicate: string): () => Promise<string[]> {
+export function setupLogger(predicate: string, signal: AbortSignal): () => Promise<string[]> {
   const loggerProcess = spawnAsync('xcrun', [
     'simctl',
     'spawn',
@@ -132,8 +132,19 @@ export function setupLogger(predicate: string): () => Promise<string[]> {
     '--predicate',
     predicate,
   ]);
+
+  // Kill process when aborted
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (loggerProcess.child) {
+        loggerProcess.child.kill('SIGTERM');
+      }
+    },
+    { once: true }
+  );
+
   return async () => {
-    loggerProcess.child.kill();
     try {
       const { output } = await loggerProcess;
       return output;
@@ -148,6 +159,8 @@ async function testAsync(
   deviceId: string,
   appBinaryPath: string
 ): Promise<void> {
+  const stopLogCollectionController = new AbortController();
+
   try {
     console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
     await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
@@ -158,9 +171,13 @@ async function testAsync(
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
-    const getTestSuiteLogs = setupLogger('(subsystem == "com.facebook.react.log")');
+    const getTestSuiteLogs = setupLogger(
+      '(subsystem == "com.facebook.react.log")',
+      stopLogCollectionController.signal
+    );
     const getNativeErrorLogs = setupLogger(
-      '(process == "BareExpo" AND (messageType == "error" OR messageType == "fault"))'
+      '(process == "BareExpo" AND (messageType == "error" OR messageType == "fault"))',
+      stopLogCollectionController.signal
     );
 
     console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
@@ -173,6 +190,7 @@ async function testAsync(
         },
       });
     } catch {
+      stopLogCollectionController.abort();
       console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
       console.log(prettyPrintTestSuiteLogs(await getTestSuiteLogs()));
       // we need to always get these logs since it stops listener process
@@ -188,6 +206,7 @@ async function testAsync(
       throw new Error('e2e tests have failed.');
     }
   } finally {
+    stopLogCollectionController.abort();
     await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
   }
 }
