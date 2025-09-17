@@ -136,10 +136,13 @@ export function setupLogger(predicate: string, signal: AbortSignal): () => Promi
   // Kill process when aborted
   signal.addEventListener(
     'abort',
-    () => {
+    async () => {
       if (loggerProcess.child) {
         loggerProcess.child.kill('SIGTERM');
       }
+      try {
+        await loggerProcess;
+      } catch {}
     },
     { once: true }
   );
