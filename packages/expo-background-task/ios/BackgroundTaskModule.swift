@@ -13,8 +13,11 @@ public class BackgroundTaskModule: Module {
     Events(onTasksExpired)
 
     OnStartObserving(onTasksExpired) {
-      NotificationCenter.default.addObserver(self, selector: #selector(handleTasksExpiredNotification),
-        name: onTasksExpiredNotification, object: nil)
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(handleTasksExpiredNotification),
+        name: onTasksExpiredNotification,
+        object: nil)
     }
 
     OnStopObserving(onTasksExpired) {
@@ -43,7 +46,8 @@ public class BackgroundTaskModule: Module {
       }
 
       // Register task
-      taskManager.registerTask(withName: name, consumer: BackgroundTaskConsumer.self, options: options)
+      taskManager.registerTask(
+        withName: name, consumer: BackgroundTaskConsumer.self, options: options)
     }
 
     AsyncFunction("unregisterTaskAsync") { (name: String) in
@@ -65,8 +69,8 @@ public class BackgroundTaskModule: Module {
     }
 
     AsyncFunction("getStatusAsync") {
-      return BackgroundTaskScheduler.supportsBackgroundTasks() ?
-        BackgroundTaskStatus.available : .restricted
+      return BackgroundTaskScheduler.supportsBackgroundTasks()
+        ? BackgroundTaskStatus.available : .restricted
     }
   }
 
