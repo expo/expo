@@ -1,10 +1,14 @@
 import * as AppIntegrity from '@expo/app-integrity';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 
 export default function AppIntegrityAndroidScreen() {
   const [results, setResults] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hardwareAttestationSupported, setHardwareAttestationSupported] = useState<boolean | null>(
+    null
+  );
+  const [lastGeneratedKeyAlias, setLastGeneratedKeyAlias] = useState<string>('');
 
   const addResult = (message: string) => {
     setResults((prev) => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
@@ -13,6 +17,21 @@ export default function AppIntegrityAndroidScreen() {
   const clearResults = () => {
     setResults([]);
   };
+
+  useEffect(() => {
+    const checkHardwareAttestationSupport = async () => {
+      try {
+        const supported = await AppIntegrity.isHardwareAttestationSupported();
+        setHardwareAttestationSupported(supported);
+        addResult(`Hardware attestation supported: ${supported}`);
+      } catch (error) {
+        setHardwareAttestationSupported(false);
+        addResult(`Hardware attestation check error: ${error}`);
+      }
+    };
+
+    checkHardwareAttestationSupport();
+  }, []);
 
   const testPrepareIntegrityTokenProvider = async () => {
     setIsLoading(true);
@@ -55,28 +74,160 @@ export default function AppIntegrityAndroidScreen() {
     }
   };
 
+  const testGenerateHardwareAttestedKey = async () => {
+    setIsLoading(true);
+    try {
+      const keyAlias = 'test_key';
+      const challenge = 'hw_challenge';
+
+      await AppIntegrity.generateHardwareAttestedKey(keyAlias, challenge);
+      addResult(`generateHardwareAttestedKey: Success (alias: ${keyAlias})`);
+      setLastGeneratedKeyAlias(keyAlias);
+    } catch (error) {
+      addResult(`generateHardwareAttestedKey error: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const testGetAttestationCertificateChain = async () => {
+    setIsLoading(true);
+    try {
+      const keyAlias = lastGeneratedKeyAlias;
+      if (!keyAlias) {
+        addResult(`No key alias found. Please generate a key first.`);
+        return;
+      }
+      const certificates = await AppIntegrity.getAttestationCertificateChain(keyAlias);
+
+      addResult(`getAttestationCertificateChain: Success`);
+      addResult(`Certificate chain length: ${certificates.length}`);
+
+      certificates.forEach((cert, index) => {
+        const certPreview = cert.substring(0, 50) + '...';
+        addResult(`Cert ${index}: ${certPreview}`);
+      });
+    } catch (error) {
+      addResult(`getAttestationCertificateChain error: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const testHardwareAttestationFullFlow = async () => {
+    setIsLoading(true);
+    try {
+      const keyAlias = 'full_flow_key';
+      const challenge = 'full_challenge';
+
+      await AppIntegrity.generateHardwareAttestedKey(keyAlias, challenge);
+      addResult(`✓ Generated hardware-attested key: ${keyAlias}`);
+
+      const certificates = await AppIntegrity.getAttestationCertificateChain(keyAlias);
+      addResult(`✓ Retrieved certificate chain (${certificates.length} certificates)`);
+      // console.log('certificates ', certificates);
+
+      addResult(`Challenge used: ${challenge}`);
+      addResult(`Certificate chain ready for server verification`);
+      addResult(`--- Certificate Details ---`);
+
+      certificates.forEach((cert, index) => {
+        const certLength = cert.length;
+        const certPreview = cert.substring(0, 64);
+        addResult(`Cert ${index}: ${certLength} chars, starts with: ${certPreview}...`);
+      });
+
+      addResult(`✓ Hardware attestation flow completed successfully!`);
+    } catch (error) {
+      addResult(`Hardware attestation full flow error: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ gap: 16 }}>
       <View style={{ gap: 4 }}>
         <Text style={styles.title}>Android App Integrity Test</Text>
-        <Text style={styles.subtitle}>Uses Play Integrity API</Text>
+        <Text style={styles.subtitle}>Play Integrity API & Hardware Attestation</Text>
       </View>
+
+      {/* Play Integrity API Section */}
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>🛡️ Play Integrity API</Text>
+        <Text style={styles.sectionSubtitle}>Requires Google Play Services</Text>
+        <View style={styles.buttonContainer}>
+          <Pressable
+            style={styles.button}
+            onPress={testPrepareIntegrityTokenProvider}
+            disabled={isLoading}>
+            <Text style={styles.buttonText}>Test prepareIntegrityTokenProvider</Text>
+          </Pressable>
+
+          <Pressable style={styles.button} onPress={testRequestIntegrityCheck} disabled={isLoading}>
+            <Text style={styles.buttonText}>Test requestIntegrityCheck</Text>
+          </Pressable>
+
+          <Pressable style={styles.button} onPress={testFullFlow} disabled={isLoading}>
+            <Text style={styles.buttonText}>Test Full Flow</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Hardware Attestation Section */}
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>🔒 Hardware Attestation</Text>
+        <Text style={styles.sectionSubtitle}>
+          Works on GrapheneOS & secure Android distributions
+        </Text>
+        <Text
+          style={[
+            styles.supportStatus,
+            {
+              color:
+                hardwareAttestationSupported === true
+                  ? '#34C759'
+                  : hardwareAttestationSupported === false
+                    ? '#FF3B30'
+                    : '#666',
+            },
+          ]}>
+          Support:{' '}
+          {hardwareAttestationSupported === null
+            ? 'Checking...'
+            : hardwareAttestationSupported
+              ? 'Available ✓'
+              : 'Not Available ✗'}
+        </Text>
+
+        <View style={styles.buttonContainer}>
+          <Pressable
+            style={[styles.button, !hardwareAttestationSupported && styles.disabledButton]}
+            onPress={testGenerateHardwareAttestedKey}
+            disabled={isLoading || !hardwareAttestationSupported}>
+            <Text style={styles.buttonText}>Generate Hardware Key</Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.button,
+              (!hardwareAttestationSupported || !lastGeneratedKeyAlias) && styles.disabledButton,
+            ]}
+            onPress={testGetAttestationCertificateChain}
+            disabled={isLoading || !hardwareAttestationSupported || !lastGeneratedKeyAlias}>
+            <Text style={styles.buttonText}>Get Certificate Chain</Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.button, !hardwareAttestationSupported && styles.disabledButton]}
+            onPress={testHardwareAttestationFullFlow}
+            disabled={isLoading || !hardwareAttestationSupported}>
+            <Text style={styles.buttonText}>Hardware Attestation Full Flow</Text>
+          </Pressable>
+        </View>
+      </View>
+
       <View style={styles.buttonContainer}>
-        <Pressable
-          style={styles.button}
-          onPress={testPrepareIntegrityTokenProvider}
-          disabled={isLoading}>
-          <Text style={styles.buttonText}>Test prepareIntegrityTokenProvider</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={testRequestIntegrityCheck} disabled={isLoading}>
-          <Text style={styles.buttonText}>Test requestIntegrityCheck</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={testFullFlow} disabled={isLoading}>
-          <Text style={styles.buttonText}>Test Full Flow</Text>
-        </Pressable>
-
         <Pressable style={[styles.button, styles.clearButton]} onPress={clearResults}>
           <Text style={styles.buttonText}>Clear Results</Text>
         </Pressable>
@@ -132,10 +283,37 @@ const styles = StyleSheet.create({
   clearButton: {
     backgroundColor: '#FF3B30',
   },
+  disabledButton: {
+    backgroundColor: '#cccccc',
+    opacity: 0.6,
+  },
   buttonText: {
     color: 'white',
     textAlign: 'center',
     fontWeight: '600',
+  },
+  sectionContainer: {
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    gap: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: -8,
+  },
+  supportStatus: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: -4,
   },
   resultsContainer: {
     backgroundColor: 'white',
