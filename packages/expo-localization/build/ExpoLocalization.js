@@ -75,7 +75,7 @@ export default {
             textDirection =
                 locale.getTextInfo?.()?.direction ??
                     locale.textInfo?.direction ??
-                    languageTextDirection(locale);
+                    languageTextDirection(language);
             if (region) {
                 temperatureUnit = regionToTemperatureUnit(region);
             }
@@ -115,8 +115,7 @@ export default {
 function regionToTemperatureUnit(region) {
     return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
 }
-function languageTextDirection(locale) {
-    // getTextInfo fallback
-    return USES_RTL.includes(locale.language) ? 'rtl' : 'ltr';
+function languageTextDirection(language) {
+    return USES_RTL.includes(language) ? 'rtl' : 'ltr';
 }
 //# sourceMappingURL=ExpoLocalization.js.map

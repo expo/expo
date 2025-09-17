@@ -103,7 +103,7 @@ export default {
       textDirection =
         locale.getTextInfo?.()?.direction ??
         locale.textInfo?.direction ??
-        languageTextDirection(locale);
+        languageTextDirection(language);
 
       if (region) {
         temperatureUnit = regionToTemperatureUnit(region);
@@ -147,7 +147,6 @@ function regionToTemperatureUnit(region: string) {
   return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
 }
 
-function languageTextDirection(locale: ExtendedLocale) {
-  // getTextInfo fallback
-  return USES_RTL.includes(locale.language) ? 'rtl' : 'ltr';
+function languageTextDirection(language: string) {
+  return USES_RTL.includes(language) ? 'rtl' : 'ltr';
 }
