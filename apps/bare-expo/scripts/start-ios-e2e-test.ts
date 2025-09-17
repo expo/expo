@@ -14,7 +14,6 @@ import {
   retryAsync,
   getMaestroFlowFilePath,
   prettyPrintTestSuiteLogs,
-  getCustomMaestroFlowsAsync,
   runCustomMaestroFlowsAsync,
 } from './lib/e2e-common';
 

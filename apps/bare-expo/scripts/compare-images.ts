@@ -98,7 +98,7 @@ export function compareImages(
       const expandedPath = expandTilde(outputPath);
       fs.mkdirSync(path.dirname(expandedPath), { recursive: true });
       fs.writeFileSync(expandedPath, PNG.sync.write(diff));
-      console.log(`Diff image written to absolute path: ${path.resolve(expandedPath)}`);
+      console.log(`Diff image written to: ${path.resolve(expandedPath)}`);
     }
 
     const totalPixels = width * height;
