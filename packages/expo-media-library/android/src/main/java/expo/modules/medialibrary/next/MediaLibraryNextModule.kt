@@ -164,29 +164,29 @@ class MediaLibraryNextModule : Module() {
         self.album(album)
       }
 
-      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Int> ->
-        self.eq(field, MediaStoreQueryFormatter.parse(value))
+      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Long> ->
+        self.eq(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Int>> ->
-        val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(value) }
+      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Long>> ->
+        val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(field, value) }
         self.within(field, stringValues)
       }
 
-      Function("gt") { self: Query, field: AssetField, value: Int ->
-        self.gt(field, MediaStoreQueryFormatter.parse(value))
+      Function("gt") { self: Query, field: AssetField, value: Long ->
+        self.gt(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("gte") { self: Query, field: AssetField, value: Int ->
-        self.gte(field, MediaStoreQueryFormatter.parse(value))
+      Function("gte") { self: Query, field: AssetField, value: Long ->
+        self.gte(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("lt") { self: Query, field: AssetField, value: Int ->
-        self.lt(field, MediaStoreQueryFormatter.parse(value))
+      Function("lt") { self: Query, field: AssetField, value: Long ->
+        self.lt(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("lte") { self: Query, field: AssetField, value: Int ->
-        self.lte(field, MediaStoreQueryFormatter.parse(value))
+      Function("lte") { self: Query, field: AssetField, value: Long ->
+        self.lte(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
       Function("orderBy") { self: Query, sortDescriptorRef: Either<AssetField, SortDescriptor> ->

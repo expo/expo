@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [next] Fix `asset.getModificationTime` to return milliseconds ([#39715](https://github.com/expo/expo/pull/39715) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 18.2.0 — 2025-09-16
