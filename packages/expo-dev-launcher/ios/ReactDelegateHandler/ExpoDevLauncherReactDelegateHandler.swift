@@ -50,21 +50,21 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
-      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
-      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
+    guard let reactDelegate = self.reactDelegate else {
+      fatalError("`reactDelegate` should not be nil")
     }
-    self.reactNativeFactory = appDelegate.factory as? RCTReactNativeFactory
+
+    self.reactNativeFactory = reactDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    if self.reactNativeFactory?.delegate?.newArchEnabled() ?? false {
+    if RCTIsNewArchEnabled() {
       self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
       self.reactNativeFactory?.bridge = nil
       self.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
-    let rootView = appDelegate.recreateRootView(
+    let rootView = reactDelegate.reactNativeFactory.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,

@@ -49,13 +49,25 @@ class ExpoModuleConfig {
      */
     supportsPlatform(platform) {
         const supportedPlatforms = this.rawConfig.platforms ?? [];
-        if (platform === 'apple') {
+        if (platform === 'web') {
+            // Web platform is implicitly supported for autolinking resolution but has no special behavior
+            return true;
+        }
+        else if (platform === 'apple') {
             // Apple platform is supported when any of iOS, macOS and tvOS is supported.
             return supportedPlatforms.some((supportedPlatform) => {
                 return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
             });
         }
-        return supportedPlatforms.includes(platform);
+        switch (platform) {
+            case 'ios':
+            case 'macos':
+            case 'tvos':
+                // ios|macos|tvos are supported when the module supports "apple" as a platform in general
+                return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
+            default:
+                return supportedPlatforms.includes(platform);
+        }
     }
     /**
      * Returns the generic config for all Apple platforms with a fallback to the legacy iOS config.

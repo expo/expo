@@ -35,8 +35,21 @@ export class Album extends ExpoMediaLibraryNext.Album {
       return ExpoMediaLibraryNext.deleteAlbums(albums);
     }
   }
-  static getAll(): Promise<Album[]> {
-    return ExpoMediaLibraryNext.getAllAlbums();
+  /**
+   * Retrieves an album with the given title.
+   * If multiple albums share the same title only one will be returned.
+   * @param title - The title of the album to retrieve.
+   * @returns A promise resolving to the `Album` if found, or `null` if no album with the given title exists.
+   * @example
+   * ```ts
+   * const album = await Album.get("Camera");
+   * if (album) {
+   *   console.log(`Found album with ID: ${album.id}`);
+   * }
+   * ```
+   */
+  static get(title: string): Promise<Album | null> {
+    return ExpoMediaLibraryNext.getAlbum(title);
   }
 }
 

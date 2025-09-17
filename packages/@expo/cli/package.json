@@ -1,12 +1,13 @@
 {
   "name": "@expo/cli",
-  "version": "54.0.5",
+  "version": "54.0.6",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
     "expo-internal": "build/bin/cli"
   },
   "files": [
+    "add-module.js",
     "internal",
     "static",
     "build"
@@ -48,10 +49,11 @@
     "@expo/env": "~2.0.7",
     "@expo/image-utils": "^0.8.7",
     "@expo/json-file": "^10.0.7",
+    "@expo/mcp-tunnel": "~0.0.7",
     "@expo/metro": "~0.1.1",
     "@expo/metro-config": "~54.0.3",
     "@expo/osascript": "^2.3.7",
-    "@expo/package-manager": "^1.9.7",
+    "@expo/package-manager": "^1.9.8",
     "@expo/plist": "^0.4.7",
     "@expo/prebuild-config": "^54.0.3",
     "@expo/schema-utils": "^0.1.7",

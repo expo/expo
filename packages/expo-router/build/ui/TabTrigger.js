@@ -117,7 +117,7 @@ function useTabTrigger(options) {
         switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
     }, [onPress, name, reset, trigger]);
     const handleOnLongPress = (0, react_1.useCallback)((event) => {
-        onPress?.(event);
+        onLongPress?.(event);
         if (!trigger)
             return;
         if (event?.isDefaultPrevented())
