@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed timing issue where background task iOS handler was not registered when we try to schedule a task.
+
 ### 💡 Others
 
 ## 1.0.7 — 2025-09-11
