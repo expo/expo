@@ -179,12 +179,12 @@ export default function ModifiersScreen() {
                 cornerRadius(8),
                 padding({ all: 12 }),
                 fixedSize(),
-                frame({ width: 200, height: 60 }),
+                frame({ width: 100, height: 60 }),
                 border({ color: '#D35400', width: 2 }),
+                offset({ x: 100, y: 0 }),
                 shadow({ radius: 3, y: 2 }),
               ]}>
-              This is a very long text that should break out of the 200px frame because of
-              fixedSize()
+              Text should break out of the 200px frame
             </Text>
 
             {/* Complex Combination */}
