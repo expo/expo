@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.6 — 2025-09-16

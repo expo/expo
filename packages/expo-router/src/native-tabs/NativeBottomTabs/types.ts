@@ -156,7 +156,7 @@ export type SymbolOrImageSource =
       /**
        * The image source to use as an icon.
        */
-      src?: ImageSourcePropType | Promise<ImageSourcePropType>;
+      src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
     };
 
 export interface ExtendedNativeTabOptions extends NativeTabOptions {
