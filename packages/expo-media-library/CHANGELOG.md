@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [next] Add documentation
+
 ## 18.2.0 — 2025-09-16
 
 ### 🎉 New features
