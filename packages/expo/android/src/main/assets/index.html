@@ -1,47 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expo LogBox Hello World</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-      background-color: #fff3f3;
-      color: #c00;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>ExpoLogBoxDemo2</title>
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+  <link rel="preload" href="./_expo/static/css/ErrorCodeFrame.module-c54cd0ccfceaebc4b8716a06274ef99c.css" as="style"><link rel="stylesheet" href="./_expo/static/css/ErrorCodeFrame.module-c54cd0ccfceaebc4b8716a06274ef99c.css"><link rel="preload" href="./_expo/static/css/ErrorOverlayHeader.module-eb2dfa246b953e3662c4dc5065f7a071.css" as="style"><link rel="stylesheet" href="./_expo/static/css/ErrorOverlayHeader.module-eb2dfa246b953e3662c4dc5065f7a071.css"><link rel="preload" href="./_expo/static/css/StackTraceList.module-d79769ba10320a4b6e55bed89da924d3.css" as="style"><link rel="stylesheet" href="./_expo/static/css/StackTraceList.module-d79769ba10320a4b6e55bed89da924d3.css"><link rel="preload" href="./_expo/static/css/ErrorOverlay-b6a93e1cba10fb56c5fdd710349fb920.css" as="style"><link rel="stylesheet" href="./_expo/static/css/ErrorOverlay-b6a93e1cba10fb56c5fdd710349fb920.css"><link rel="preload" href="./_expo/static/css/ErrorOverlay.module-c81027c4f681795b3838b39d06393f11.css" as="style"><link rel="stylesheet" href="./_expo/static/css/ErrorOverlay.module-c81027c4f681795b3838b39d06393f11.css"><link rel="icon" href="./favicon.ico" /></head>
 
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: 1rem;
-      color: #333;
-    }
-
-    .box {
-      border: 1px solid #c00;
-      padding: 2rem;
-      border-radius: 8px;
-      background-color: #fff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body>
-  <div class="box">
-    <h1>Hello World</h1>
-    <p>This is a basic LogBox-style HTML page.</p>
-  </div>
+  <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  <script src="./_expo/static/js/web/index-66321de14f294e8af98da3e9f93edc5c.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,22 @@
+{
+  "name": "@expo/log-box",
+  "version": "0.0.0",
+  "main": "app/index.ts",
+  "scripts": {
+    "build:web": "expo export -p web --no-minify",
+    "start": "expo start",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~54.0.7",
+    "expo-status-bar": "~3.0.8",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.4",
+    "react-native-web": "^0.21.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "typescript": "~5.9.2"
+  }
+}

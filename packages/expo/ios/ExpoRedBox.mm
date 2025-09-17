@@ -33,13 +33,13 @@
 }
 
 - (void)my_showErrorMessage:(NSString *)message {
-  // Call original (because of swizzling)
+  // Call original (because of swizzling)s
   // [self my_showErrorMessage:message];
 
   // Custom behavior
   NSLog(@"[Swizzled RCTRedBox] Intercepted error: %@", message);
     
-  UIViewController *vc = [SwiftUIScreenProvider makeHostingController];
+  UIViewController *vc = [SwiftUIScreenProvider makeHostingControllerWithMessage:message];
   [RCTKeyWindow().rootViewController presentViewController:vc animated:YES completion:nil];
 }
 

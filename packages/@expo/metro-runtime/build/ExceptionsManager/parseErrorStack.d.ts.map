@@ -1,0 +1,1 @@
+{"version":3,"file":"parseErrorStack.d.ts","sourceRoot":"","sources":["../../src/ExceptionsManager/parseErrorStack.ts"],"names":[],"mappings":"AAAA,OAAO,EAAS,KAAK,UAAU,IAAI,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEjF,MAAM,MAAM,eAAe,GAAG,kBAAkB,GAAG;IAAE,QAAQ,CAAC,EAAE,OAAO,CAAA;CAAE,CAAC;AAE1E,wBAAgB,eAAe,CAAC,KAAK,CAAC,EAAE,MAAM,GAAG,eAAe,EAAE,CAejE"}
