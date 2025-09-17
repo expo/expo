@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@expo/dom-webview": "0.2.7",
+    "@expo/ui": "^0.2.0-beta.2",
     "@expo/vector-icons": "^15.0.2",
     "expo": "~54.0.7",
     "expo-haptics": "~15.0.7",
@@ -43,6 +44,7 @@
     "expo-router": "^6.0.5",
     "expo-speech": "~14.0.7",
     "expo-sqlite": "~16.0.8",
+    "expo-system-ui": "^6.0.7",
     "jose": "^5",
     "react": "19.1.0",
     "react-native": "0.81.4",
