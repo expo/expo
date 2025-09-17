@@ -203,7 +203,7 @@ function attemptLookup(moduleName) {
     const fileContents = fs.readFileSync(line.fileName, { encoding: 'utf8' });
     // Matches requireNativeModule<OptionalGeneric>("ModuleName")
     const regexPattern = new RegExp(
-      `requireNativeModule\\s*(?:<${moduleName}Module>)?\\s*\\(['"]${moduleName}['"]\\)`
+      `require(?:Optional)?NativeModule\\s*(?:<${moduleName}Module>)?\\s*\\(['"]${moduleName}['"]\\)`
     );
 
     if (regexPattern.test(fileContents)) {
