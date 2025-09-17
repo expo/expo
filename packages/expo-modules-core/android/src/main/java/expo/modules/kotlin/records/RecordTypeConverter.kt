@@ -38,7 +38,7 @@ class RecordTypeConverter<T : Record>(
         return@mapNotNull property to PropertyDescriptor(
           typeConverter,
           fieldAnnotation,
-          isRequired = property.findAnnotation<Required>() != null,
+          isRequired = property.findAnnotation<Required>() != null
         )
       }
       .toMap()
@@ -102,6 +102,6 @@ class RecordTypeConverter<T : Record>(
   private data class PropertyDescriptor(
     val typeConverter: TypeConverter<*>,
     val fieldAnnotation: Field,
-    val isRequired: Boolean,
+    val isRequired: Boolean
   )
 }
