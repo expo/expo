@@ -20,6 +20,7 @@
 ### 🐛 Bug fixes
 
 - Fix runtime error due to passing undefined into function that doesnt receive any argument ([#39594](https://github.com/expo/expo/pull/39594) by [@mrevanzak](https://github.com/mrevanzak))
+- Fix build error on Vite due to non-existent import for `TurboModuleRegistry` on web ([#39726](https://github.com/expo/expo/pull/39726) by [@satya164](https://github.com/satya164))
 
 ## 3.0.15 — 2025-09-10
 
