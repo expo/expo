@@ -37,7 +37,7 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
 
     return true
   }
-  
+
   private func reschedule() {
     // Reschedule
     Task {
