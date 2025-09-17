@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.0.12 — 2025-09-16
+
+### 🎉 New features
+
+- [Android] Expose MediaRecorder.AudioSource on RecordingOptionsAndroid ([#38271](https://github.com/expo/expo/pull/38271) by [@vipierozan99](https://github.com/vipierozan99))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 1.0.11 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

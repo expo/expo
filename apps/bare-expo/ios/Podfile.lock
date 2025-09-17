@@ -32,7 +32,7 @@ PODS:
   - EXAV (16.0.7):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXConstants (18.0.8):
+  - EXConstants (18.0.9):
     - ExpoModulesCore
   - EXImageLoader (6.0.0):
     - ExpoModulesCore
@@ -49,7 +49,7 @@ PODS:
   - EXNotifications/Tests (0.32.11):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.7):
+  - Expo (54.0.8):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -337,7 +337,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAsset (12.0.8):
     - ExpoModulesCore
-  - ExpoAudio (1.0.11):
+  - ExpoAudio (1.0.12):
     - ExpoModulesCore
   - ExpoBackgroundFetch (14.0.7):
     - ExpoModulesCore
@@ -353,7 +353,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (15.0.7):
     - ExpoModulesCore
-  - ExpoCamera (17.0.7):
+  - ExpoCamera (17.0.8):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -448,16 +448,16 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.12.7):
     - ExpoModulesCore
-  - ExpoMediaLibrary (18.1.1):
+  - ExpoMediaLibrary (18.2.0):
     - ExpoModulesCore
     - React-Core
-  - ExpoMediaLibrary/Tests (18.1.1):
+  - ExpoMediaLibrary/Tests (18.2.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
   - ExpoMeshGradient (0.4.7):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.15):
+  - ExpoModulesCore (3.0.16):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -480,7 +480,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesCore/Tests (3.0.15):
+  - ExpoModulesCore/Tests (3.0.16):
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -560,7 +560,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (6.0.7):
     - ExpoModulesCore
-  - ExpoUI (0.2.0-beta.2):
+  - ExpoUI (0.2.0-beta.3):
     - ExpoModulesCore
   - ExpoVideo (3.0.11):
     - ExpoModulesCore
@@ -3553,12 +3553,12 @@ SPEC CHECKSUMS:
   EASClient: de38c20c1dd9af7ff435afdc8b2c9b7c20d46767
   EXApplication: a9d1c46d473d36f61302a9a81db2379441f3f094
   EXAV: f33ecd2d85522045cb1f0cc2fae3aa53e4e0c3c0
-  EXConstants: 0246c66e19d755cd9c88504d5c69896bba41d8a6
+  EXConstants: 59d46d25b89f88cc38291a56dbce4d550758f72d
   EXImageLoader: e501c001bc40b8326605e82e6e80363c80fe06b5
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
   EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
-  Expo: 24f225a64acfd5fb3d9949f2d02a3cceb2d4620b
+  Expo: 40b8889f991ca5f25ead0bfcbc1f818b01efab9e
   expo-dev-client: b0363ce1f16a248d7c9b67ceaee2dbee058c1e05
   expo-dev-launcher: 903b23df8c217bfad6d3692fec0368074eb22dc0
   expo-dev-menu: e5b5cfce6ef9f4559d7c2f7cb928afb4810dfabf
@@ -3566,7 +3566,7 @@ SPEC CHECKSUMS:
   ExpoAppIntegrity: 6efc2990e5b2859bfe3595f3d289a96c12c1dd77
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
   ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
-  ExpoAudio: 7cf373698f2aabe2f9f8a93c95f41efa3427f273
+  ExpoAudio: 80c3cce8e252081c24837ef4c7bedda78f3ce8de
   ExpoBackgroundFetch: e0a8fba22cb21473f667eb8220cab7feef18e63c
   ExpoBackgroundTask: c6f9ddfb624d9b5ec548d69fd7195745e08ff987
   ExpoBattery: da883ecca2a79507916edd00836ef6a50afecac2
@@ -3574,7 +3574,7 @@ SPEC CHECKSUMS:
   ExpoBlur: b5b7a26572b3c33a11f0b2aa2f95c17c4c393b76
   ExpoBrightness: 7c3c86da46b847aadf44401bd28fb6d67050f324
   ExpoCalendar: 46ad51c48d2cb1a95439c2215b182428919a0c3d
-  ExpoCamera: b24c98ce95fe6da580e0dcfe40d4c1be8c46f41f
+  ExpoCamera: 6d0c5bc68bc8de669f1ecd4242284de0827c4431
   ExpoCellular: 539c6092e755f7b2c37d80f18d9c1f3d7f09e4ab
   ExpoClipboard: 99109306a2d9ed2fbd16f6b856e6267b2afa8472
   ExpoContacts: 82f80ddc812c85548b8edab4153fbc3e8a39212e
@@ -3600,9 +3600,9 @@ SPEC CHECKSUMS:
   ExpoLocation: 1dc9e4c06ef66ed081348a11eb637d1dfecc7d61
   ExpoMailComposer: 8771121c8d5e6e0e194537fab79360d0f443f70d
   ExpoMaps: ac5024fd6b3db82da997bdc4074bda5c3e2e7764
-  ExpoMediaLibrary: f4a11c4c762f83a81ab85bf4761a41cbd6d907c5
+  ExpoMediaLibrary: 648cee3f5dcba13410ec9cc8ac9a426e89a61a31
   ExpoMeshGradient: 763087d3b1e6e9a0974e9700ea24cb598816d93c
-  ExpoModulesCore: c91f6219ddb4386f73fa4650bc66dc51224c28a9
+  ExpoModulesCore: af36f958c77e8551bc34cd62cf166eeb6a8d9920
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
@@ -3619,7 +3619,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: ef7b8ac77ac2d496b1bc3f0f7daf5e19c3a9933a
   ExpoSystemUI: 5e7fbe4b716edb9e3a7bc0441e4a3b6b1f9eb1ea
   ExpoTrackingTransparency: fee2dc0cea16d12aeffde2f388671b029c563ed3
-  ExpoUI: be345251bff779bde97c2b927562404268526bf3
+  ExpoUI: 54732dfe9e601d3515e9d715eddb466d4184577a
   ExpoVideo: 7e39a5933892dc640b1b83013f3f9d9d37072151
   ExpoVideoThumbnails: c951ae8c6ed9974dd3ae5f79b2dd1d9b6e8ab266
   ExpoWebBrowser: 4f0dc52a559027cc0fba6920adc19a7604e2733d

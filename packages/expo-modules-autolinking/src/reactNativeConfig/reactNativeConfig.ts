@@ -13,6 +13,7 @@ import type {
   RNConfigDependency,
   RNConfigDependencyAndroid,
   RNConfigDependencyIos,
+  RNConfigDependencyWeb,
   RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
@@ -28,6 +29,7 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
+import { checkDependencyWebAsync } from './webResolver';
 
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
   const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
@@ -80,7 +82,11 @@ export async function resolveReactNativeModule(
     }
   }
 
-  let platformData: RNConfigDependencyAndroid | RNConfigDependencyIos | null = null;
+  let platformData:
+    | RNConfigDependencyAndroid
+    | RNConfigDependencyIos
+    | RNConfigDependencyWeb
+    | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
       resolution.path,
@@ -91,6 +97,12 @@ export async function resolveReactNativeModule(
     platformData = await resolveDependencyConfigImplIosAsync(
       resolution,
       reactNativeConfig.platforms?.ios,
+      maybeExpoModuleConfig
+    );
+  } else if (platform === 'web') {
+    platformData = await checkDependencyWebAsync(
+      resolution,
+      reactNativeConfig,
       maybeExpoModuleConfig
     );
   }

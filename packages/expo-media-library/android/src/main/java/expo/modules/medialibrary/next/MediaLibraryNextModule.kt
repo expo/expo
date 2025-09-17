@@ -11,6 +11,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.toKClass
 import expo.modules.medialibrary.next.objects.album.Album
+import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
@@ -36,6 +37,10 @@ class MediaLibraryNextModule : Module() {
 
   private val mediaStorePermissionsDelegate by lazy {
     MediaStorePermissionsDelegate(appContext)
+  }
+
+  private val albumQuery by lazy {
+    AlbumQuery(context)
   }
 
   private val albumFactory by lazy {
@@ -164,29 +169,29 @@ class MediaLibraryNextModule : Module() {
         self.album(album)
       }
 
-      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Int> ->
-        self.eq(field, MediaStoreQueryFormatter.parse(value))
+      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Long> ->
+        self.eq(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Int>> ->
-        val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(value) }
+      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Long>> ->
+        val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(field, value) }
         self.within(field, stringValues)
       }
 
-      Function("gt") { self: Query, field: AssetField, value: Int ->
-        self.gt(field, MediaStoreQueryFormatter.parse(value))
+      Function("gt") { self: Query, field: AssetField, value: Long ->
+        self.gt(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("gte") { self: Query, field: AssetField, value: Int ->
-        self.gte(field, MediaStoreQueryFormatter.parse(value))
+      Function("gte") { self: Query, field: AssetField, value: Long ->
+        self.gte(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("lt") { self: Query, field: AssetField, value: Int ->
-        self.lt(field, MediaStoreQueryFormatter.parse(value))
+      Function("lt") { self: Query, field: AssetField, value: Long ->
+        self.lt(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
-      Function("lte") { self: Query, field: AssetField, value: Int ->
-        self.lte(field, MediaStoreQueryFormatter.parse(value))
+      Function("lte") { self: Query, field: AssetField, value: Long ->
+        self.lte(field, MediaStoreQueryFormatter.parse(field, value))
       }
 
       Function("orderBy") { self: Query, sortDescriptorRef: Either<AssetField, SortDescriptor> ->
@@ -219,6 +224,11 @@ class MediaLibraryNextModule : Module() {
       }
       val assetPaths = assetRefs.get(toKClass<List<Uri>>())
       return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
+    }
+
+    AsyncFunction("getAlbum") Coroutine { title: String ->
+      systemPermissionsDelegate.requireSystemPermissions(false)
+      albumQuery.getAlbum(title)
     }
 
     AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->

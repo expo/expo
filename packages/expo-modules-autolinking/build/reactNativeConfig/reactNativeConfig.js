@@ -13,6 +13,7 @@ const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
 const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const dependencies_1 = require("../dependencies");
+const webResolver_1 = require("./webResolver");
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath) => {
     const generatedDir = path_1.default.resolve(reactNativePath, 'React/FBReactNativeSpec');
     try {
@@ -63,6 +64,9 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
     }
     else if (platform === 'ios') {
         platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios, maybeExpoModuleConfig);
+    }
+    else if (platform === 'web') {
+        platformData = await (0, webResolver_1.checkDependencyWebAsync)(resolution, reactNativeConfig, maybeExpoModuleConfig);
     }
     return (platformData && {
         root: resolution.path,

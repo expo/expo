@@ -40,17 +40,23 @@ function usePermission<Permission extends PermissionResponse, Options extends ob
   const { get = true, request = false, ...permissionOptions } = options || {};
 
   const getPermission = useCallback(async () => {
-    const response = await methods.getMethod(
-      Object.keys(permissionOptions).length > 0 ? (permissionOptions as Options) : undefined
-    );
+    let response: Permission;
+    if (Object.keys(permissionOptions).length > 0) {
+      response = await methods.getMethod(permissionOptions as Options);
+    } else {
+      response = await methods.getMethod();
+    }
     if (isMounted.current) setStatus(response);
     return response;
   }, [methods.getMethod]);
 
   const requestPermission = useCallback(async () => {
-    const response = await methods.requestMethod(
-      Object.keys(permissionOptions).length > 0 ? (permissionOptions as Options) : undefined
-    );
+    let response: Permission;
+    if (Object.keys(permissionOptions).length > 0) {
+      response = await methods.requestMethod(permissionOptions as Options);
+    } else {
+      response = await methods.requestMethod();
+    }
     if (isMounted.current) setStatus(response);
     return response;
   }, [methods.requestMethod]);

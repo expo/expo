@@ -2,13 +2,14 @@ import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
-import { scanDependenciesRecursively } from '../resolution';
+import { scanDependenciesRecursively, scanDevDependenciesShallowly } from '../resolution';
 
 function mockedNodeModule(
   name: string,
   options?: {
     pkgVersion?: string;
     pkgDependencies?: Record<string, string>;
+    pkgDevDependencies?: Record<string, string>;
     pkgExtra?: Record<string, unknown>;
   }
 ): NestedDirectoryJSON {
@@ -17,6 +18,7 @@ function mockedNodeModule(
       name,
       version: options?.pkgVersion ?? '0.0.1',
       dependencies: options?.pkgDependencies ?? {},
+      devDependencies: options?.pkgDevDependencies ?? {},
       ...options?.pkgExtra,
     }),
   };
@@ -469,6 +471,42 @@ describe(scanDependenciesRecursively, () => {
           "path": "/fake/project/node_modules/react-native-third-party",
           "source": 0,
           "version": "0.0.1",
+        },
+      }
+    `);
+  });
+});
+
+describe(scanDevDependenciesShallowly, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('discovers flat dev dependencies', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedNodeModule('root', {
+          pkgDevDependencies: { 'expo-atlas': '*' },
+        }),
+        node_modules: {
+          'expo-atlas': mockedNodeModule('expo-atlas'),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDevDependenciesShallowly(projectRoot);
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "expo-atlas": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "expo-atlas",
+          "originPath": "/fake/project/node_modules/expo-atlas",
+          "path": "/fake/project/node_modules/expo-atlas",
+          "source": 0,
+          "version": "",
         },
       }
     `);

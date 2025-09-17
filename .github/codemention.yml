@@ -211,7 +211,7 @@ rules:
   - patterns: ['packages/expo-tracking-transparency/**']
     mentions: ['alanjhughes']
   - patterns: ['packages/expo-ui/**']
-    mentions: ['aleqsio', 'behenate']
+    mentions: ['aleqsio', 'behenate', 'douglowder']
   - patterns: ['packages/expo-updates/**']
     mentions: ['wschurman', 'kudo', 'douglowder']
   - patterns: ['packages/expo-updates-interface/**']

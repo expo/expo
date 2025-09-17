@@ -32,7 +32,7 @@ const KNOWN_STICKY_DEPENDENCIES = [
   'react-native-reanimated',
 ];
 
-const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
+const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
 type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 
 const escapeDependencyName = (dependency: string) =>

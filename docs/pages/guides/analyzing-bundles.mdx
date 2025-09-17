@@ -1,6 +1,9 @@
 ---
-title: Analyzing JavaScript bundles
-description: Learn about improving the production JavaScript bundle size of Expo apps and websites.
+title: Analyzing JavaScript bundles with Expo Atlas and Lighthouse
+sidebar_title: Analyzing JavaScript bundles
+description: Learn about improving the production JavaScript bundle size of Expo apps and websites with Expo Atlas and Lighthouse.
+searchRank: 90
+searchPosition: 1
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -9,7 +12,7 @@ import { Step } from '~/ui/components/Step';
 
 Bundle performance varies for different platforms. For example, web browsers don't support precompiled bytecode, so the JavaScript bundle size is important for improving startup time and performance. The smaller the bundle, the faster it can be downloaded and parsed.
 
-## Analyzing bundle size with Atlas
+## Analyzing bundle size with Expo Atlas
 
 <ContentSpotlight alt="Expo Atlas overview page." src="/static/images/atlas/atlas-overview.avif" />
 
@@ -36,7 +39,7 @@ By default, Expo starts the local development server in [development mode](/work
   ]}
 />
 
-### Using Atlas with `npx expo export`
+### Using Expo Atlas with `npx expo export`
 
 You can also use Expo Atlas when generating a production bundle for your app or EAS Update. Atlas generates a **.expo/atlas.jsonl** file during export, which you can share and open without having access to the project.
 
@@ -45,12 +48,12 @@ You can also use Expo Atlas when generating a production bundle for your app or 
     '# Export your app for all platforms',
     '$ EXPO_ATLAS=true npx expo export',
     '',
-    '# Open the generated Atlas file',
+    '# Open the generated Expo Atlas file',
     '$ npx expo-atlas .expo/atlas.jsonl',
   ]}
 />
 
-You can also specify the platforms you want to analyze using the `--platform` option. Atlas will gather the data for the exported platforms only.
+You can also specify the platforms you want to analyze using the `--platform` option. Expo Atlas will gather the data for the exported platforms only.
 
 ### Analyzing transformed modules
 

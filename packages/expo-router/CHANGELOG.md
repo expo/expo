@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 6.0.6 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- [android] fix Invalid prop style supplied to React.Fragment ([#39685](https://github.com/expo/expo/pull/39685) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.5 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- `expo-router/ui`: `TabTrigger` now correctly calls `onLongPress` prop instead of `onPress`. ([#39638](https://github.com/expo/expo/pull/39638) by [@TmLev](https://github.com/TmLev))
+
 ## 6.0.4 — 2025-09-13
 
 ### 🐛 Bug fixes

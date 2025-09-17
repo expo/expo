@@ -32,7 +32,6 @@ class Query(context: Context) : SharedObject() {
   private val args = mutableListOf<String>()
   private val orderBy = mutableListOf<SortDescriptor>()
 
-  private var album: Album? = null
   private var limit: Int? = null
   private var offset: Int? = null
 

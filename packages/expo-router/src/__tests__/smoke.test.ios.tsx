@@ -1,5 +1,5 @@
 import { act, screen } from '@testing-library/react-native';
-import React, { Text } from 'react-native';
+import { Text } from 'react-native';
 
 import { Slot, router, useGlobalSearchParams, usePathname } from '../exports';
 import { Drawer } from '../layouts/Drawer';
