@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- [iOS] Updated description for glass button styles availability
 
 ### 💡 Others
 
