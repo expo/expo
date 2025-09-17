@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix resizeMode on reload screen image.
+
 ### 💡 Others
 
 ## 29.0.10 — 2025-09-11
