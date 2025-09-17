@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improve local mock lookup. ([#39743](https://github.com/expo/expo/pull/39743) by [@aleqsio](https://github.com/aleqsio))
+
 ## 54.0.10 — 2025-09-10
 
 _This version does not introduce any user-facing changes._
