@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- [iOS] Added support for passing pod targets that should be statically linked and not built as frameworks.
 - [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
 - Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
 

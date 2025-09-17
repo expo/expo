@@ -19,6 +19,10 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propValueGetter: (config) => config.ios?.useFrameworks,
     },
     {
+        propName: 'ios.forceStaticLinking',
+        propValueGetter: (config) => JSON.stringify(config.ios?.forceStaticLinking ?? []),
+    },
+    {
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
         propValueGetter: (config) => (config.ios?.networkInspector ?? true).toString(),
     },
