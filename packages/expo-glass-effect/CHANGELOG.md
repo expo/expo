@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Set defualt glass style to regular
+
 ### 💡 Others
 
 ## 0.1.3 — 2025-09-12
