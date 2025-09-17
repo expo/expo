@@ -16,5 +16,4 @@ android {
 
 dependencies {
   api 'com.facebook.device.yearclass:yearclass:2.1.0'
-  api "androidx.legacy:legacy-support-v4:1.0.0"
 }
