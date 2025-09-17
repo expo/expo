@@ -11,6 +11,7 @@ export * from './Gauge';
 export * from './Host';
 export * from './Image';
 export * from './Label';
+export * from './LabeledContent';
 export * from './Layout';
 export * from './List';
 export * from './Picker';

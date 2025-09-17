@@ -4,13 +4,44 @@
 
 ### 🛠 Breaking changes
 
-- [iOS] appended removal info (SDK-55) to the deprecation message of the `EXAppDelegateWrapper` interface. ([#39574](https://github.com/expo/expo/pull/39574) by [@chrfalch](https://github.com/chrfalch))
-
 ### 🎉 New features
+
+- Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Remove bindReactNativeFactory function ([#39418](https://github.com/expo/expo/pull/39418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 54.0.8 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- Remove overlapping properties that were defined upstream from `react-native-web.d.ts` ([#39710](https://github.com/expo/expo/pull/39710) by [@kitten](https://github.com/kitten))
+
+## 54.0.7 — 2025-09-13
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.6 — 2025-09-13
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.5 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Use `$$EXPO_INITIAL_PROPS` to determine if running inside a dom component. ([#39590](https://github.com/expo/expo/pull/39590) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 54.0.4 — 2025-09-12
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.3 — 2025-09-12
+
+### 🛠 Breaking changes
+
+- [iOS] appended removal info (SDK-55) to the deprecation message of the `EXAppDelegateWrapper` interface. ([#39574](https://github.com/expo/expo/pull/39574) by [@chrfalch](https://github.com/chrfalch))
 
 ## 54.0.2 — 2025-09-11
 

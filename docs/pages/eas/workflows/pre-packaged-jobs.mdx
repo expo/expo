@@ -25,7 +25,7 @@ jobs:
     type: build
     params:
       platform: android | ios # required
-      profile: string # optional, default: production
+      profile: string # optional - default: production
 ```
 
 #### Parameters
@@ -459,7 +459,7 @@ jobs:
     type: submit
     params:
       build_id: string # required
-      profile: string # optional, default: production
+      profile: string # optional - default: production
 ```
 
 #### Parameters
@@ -553,7 +553,7 @@ jobs:
     type: testflight
     params:
       build_id: string # required
-      profile: string # optional, default: production
+      profile: string # optional - default: production
       internal_groups: string[] # optional
       external_groups: string[] # optional
       changelog: string # optional
@@ -767,17 +767,17 @@ Run Maestro tests on a Android emulator or iOS Simulator build.
 jobs:
   run_maestro_tests:
     type: maestro
-    environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    environment: production | preview | development # optional - defaults to preview
+    image: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
     params:
       build_id: string # required
       flow_path: string | string[] # required
-      shards: number # optional, defaults to 1
-      retries: number # optional, defaults to 1
-      record_screen: boolean # optional, defaults to false
+      shards: number # optional - defaults to 1
+      retries: number # optional - defaults to 1
+      record_screen: boolean # optional - defaults to false
       include_tags: string | string[] # optional
       exclude_tags: string | string[] # optional
-      maestro_version: string # optional, defaults to latest
+      maestro_version: string # optional - defaults to latest
       android_system_image_package: string # optional
       device_identifier: string | { android: string, ios: string } # optional
 ```
@@ -917,24 +917,24 @@ Run Maestro tests on Maestro Cloud.
 jobs:
   run_maestro_tests:
     type: maestro-cloud
-    environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    environment: production | preview | development # optional - defaults to preview
+    image: string # optional- see https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
     params:
-      build_id: string # required. ID of the build to test.
-      maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
-      flows: string # required. Path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.
-      maestro_api_key: string # optional, defaults to `$MAESTRO_CLOUD_API_KEY`
-      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
-      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
-      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_api_level: string # optional. Android API level to use for the tests. Will be passed to Maestro as `--android-api-level`.
-      maestro_config: string # optional. Path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
-      device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
-      device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
-      device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
-      name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
-      branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
-      async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+      build_id: string # required - ID of the build to test.
+      maestro_project_id: string # required - Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
+      flows: string # required - Path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.
+      maestro_api_key: string # optional - defaults to `$MAESTRO_CLOUD_API_KEY`
+      include_tags: string | string[] # optional - tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional - tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional - version of Maestro to use for the tests. If not provided, the latest version will be used.
+      android_api_level: string # optional - Android API level to use for the tests. Will be passed to Maestro as `--android-api-level`.
+      maestro_config: string # optional - path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
+      device_locale: string # optional - device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
+      device_model: string # optional - model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
+      device_os: string # optional - OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
+      name: string # optional - name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
+      branch: string # optional - override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
+      async: boolean # optional - run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
 ```
 
 #### Parameters
@@ -1126,7 +1126,7 @@ jobs:
     params:
       message: string # optional - custom message to include in the report
       build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
-      update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workfow
+      update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
 
   # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
   custom_github_comment:

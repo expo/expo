@@ -75,10 +75,16 @@ export interface ModuleDescriptorDevTools {
   webpageRoot: string;
 }
 
+export interface ModuleDescriptorWeb {
+  packageName: string;
+  packageRoot: string;
+}
+
 export type ModuleDescriptor =
   | ModuleDescriptorAndroid
   | ModuleDescriptorIos
-  | ModuleDescriptorDevTools;
+  | ModuleDescriptorDevTools
+  | ModuleDescriptorWeb;
 
 export interface AndroidGradlePluginDescriptor {
   /**

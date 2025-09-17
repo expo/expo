@@ -173,7 +173,7 @@ describe('product', () => {
       );
 
       await waitFor(() => {
-        expect(getMethod).toHaveBeenCalledWith(undefined);
+        expect(getMethod).toHaveBeenCalledWith();
       });
     });
 
@@ -181,7 +181,7 @@ describe('product', () => {
       const getMethod = jest.fn(async () => permissionGranted);
 
       renderHook(
-        createPermissionHook({
+        createPermissionHook<PermissionResponse, { setting: string }>({
           getMethod,
           requestMethod: async () => permissionDenied,
         }),
@@ -255,7 +255,7 @@ describe('product', () => {
       );
 
       await waitFor(() => {
-        expect(requestMethod).toHaveBeenCalledWith(undefined);
+        expect(requestMethod).toHaveBeenCalledWith();
       });
     });
 
@@ -263,7 +263,7 @@ describe('product', () => {
       const requestMethod = jest.fn(async () => permissionGranted);
 
       renderHook(
-        createPermissionHook({
+        createPermissionHook<PermissionResponse, { setting: string }>({
           requestMethod,
           getMethod: async () => permissionDenied,
         }),

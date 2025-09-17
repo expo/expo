@@ -740,24 +740,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-icons@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "@expo/styleguide-icons@npm:2.2.2"
+"@expo/styleguide-icons@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@expo/styleguide-icons@npm:2.2.3"
   dependencies:
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     react: ">= 16"
-  checksum: 10c0/df24b2c7652f4237eb6db9301cb58dbbe81bb955e94f69469a0e6e2668b9312828283f8dbbc3ae9382ac00a7ea6142222af553f80ba6443ddfca08d240b70948
+  checksum: 10c0/e29cc2676845c250103678c27e362353a543847317bf41667bf034cfcf697e170a8b570b6b6e14388eb745b3a29e8d70a72d113321168f6670bad94670f780ca
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@expo/styleguide-search-ui@npm:3.2.0"
+"@expo/styleguide-search-ui@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@expo/styleguide-search-ui@npm:3.2.1"
   dependencies:
-    "@expo/styleguide": "npm:^9.2.0"
-    "@expo/styleguide-icons": "npm:^2.2.2"
-    "@kapaai/react-sdk": "npm:^0.3.0"
+    "@expo/styleguide": "npm:^9.2.2"
+    "@expo/styleguide-icons": "npm:^2.2.3"
+    "@kapaai/react-sdk": "npm:^0.5.1"
     "@sanity/client": "npm:^6.28.3"
     "@sanity/image-url": "npm:^1.1.0"
     cmdk: "npm:^0.2.1"
@@ -766,24 +766,24 @@ __metadata:
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/64815806026f6285319e5b9b8549fecb5f819c8225da2908dde9da83b38d8aff9188c9827b1d685986fc315b0c2d536d225581a15caf69eb6bed332347989a51
+  checksum: 10c0/6b692644e45526fc322687971431f2551e05cbada26db5413bc00d955cc54b07833362e60cdb402a97967c74f1875aede5caa4dab48915d1f1ecf2f160360a36
   languageName: node
   linkType: hard
 
-"@expo/styleguide@npm:^9.2.0":
-  version: 9.2.0
-  resolution: "@expo/styleguide@npm:9.2.0"
+"@expo/styleguide@npm:^9.2.2":
+  version: 9.2.2
+  resolution: "@expo/styleguide@npm:9.2.2"
   dependencies:
     "@expo/styleguide-base": "npm:^2.0.3"
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/585fa2e8e3cef5043a8b952ca6c87acb76dc186b365df99a42b6b9ebb2fa4d4598393deb883d9c4dff7e8464be4eb4ab5e4214db366a0b49787ff95e20a1e944
+  checksum: 10c0/75592a8f0159cc3342a357113614150b4629d30731ea79c4e3aaa9343f5f0b5b39eb0647a72d67c3d548fe2e196ffbf50461725ee85327d07ad12c685065078c
   languageName: node
   linkType: hard
 
-"@fingerprintjs/fingerprintjs-pro-react@npm:^2.6.3":
+"@fingerprintjs/fingerprintjs-pro-react@npm:^2.7.0":
   version: 2.7.0
   resolution: "@fingerprintjs/fingerprintjs-pro-react@npm:2.7.0"
   dependencies:
@@ -1468,11 +1468,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kapaai/react-sdk@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@kapaai/react-sdk@npm:0.3.0"
+"@kapaai/react-sdk@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@kapaai/react-sdk@npm:0.5.1"
   dependencies:
-    "@fingerprintjs/fingerprintjs-pro-react": "npm:^2.6.3"
+    "@fingerprintjs/fingerprintjs-pro-react": "npm:^2.7.0"
     "@hcaptcha/react-hcaptcha": "npm:^1.12.0"
     "@tanstack/react-query": "npm:^5.74.3"
     js-cookie: "npm:^3.0.5"
@@ -1480,7 +1480,7 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
-  checksum: 10c0/5e68cbebcbe74940e1894e8b1d6e93f78dce45b7571556846ee07fbb8d91774b8fc60162548477aecddfb038caec2601f55a5ebcc34d7f91098f53aec5efe9ce
+  checksum: 10c0/d4022cdb91fa33a680173b99da32afc7753389d6530a95f9383df3b156bebc68bb2f45de688297b42c53bdbb5edfccf5fb3d5353a4639b3e39da43daf5b2ce1e
   languageName: node
   linkType: hard
 
@@ -7126,10 +7126,10 @@ __metadata:
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.9.3"
     "@expo/spawn-async": "npm:^1.7.2"
-    "@expo/styleguide": "npm:^9.2.0"
+    "@expo/styleguide": "npm:^9.2.2"
     "@expo/styleguide-base": "npm:^2.0.3"
-    "@expo/styleguide-icons": "npm:^2.2.2"
-    "@expo/styleguide-search-ui": "npm:^3.2.0"
+    "@expo/styleguide-icons": "npm:^2.2.3"
+    "@expo/styleguide-search-ui": "npm:^3.2.1"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"

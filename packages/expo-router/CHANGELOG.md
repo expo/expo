@@ -8,9 +8,39 @@
 
 ### 🐛 Bug fixes
 
-- Move `@expo/metro-runtime` to peer dependencies, since that conveys our intention better ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
+- fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
+
+## 6.0.6 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- [android] fix Invalid prop style supplied to React.Fragment ([#39685](https://github.com/expo/expo/pull/39685) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.5 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- `expo-router/ui`: `TabTrigger` now correctly calls `onLongPress` prop instead of `onPress`. ([#39638](https://github.com/expo/expo/pull/39638) by [@TmLev](https://github.com/TmLev))
+
+## 6.0.4 — 2025-09-13
+
+### 🐛 Bug fixes
+
+- Add `@expo/metro-runtime` to dependencies & peer dependencies to fix Yarn v1 having no auto-installs ([#39644](https://github.com/expo/expo/pull/39644) by [@kitten](https://github.com/kitten))
+
+## 6.0.3 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Use `$$EXPO_INITIAL_PROPS` to determine if running inside a dom component. ([#39590](https://github.com/expo/expo/pull/39590) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.0.2 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Move `@expo/metro-runtime` to peer dependencies, since that conveys our intention better ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
 
 ## 6.0.1 — 2025-09-11
 

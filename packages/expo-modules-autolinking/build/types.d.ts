@@ -55,7 +55,11 @@ export interface ModuleDescriptorDevTools {
     packageRoot: string;
     webpageRoot: string;
 }
-export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos | ModuleDescriptorDevTools;
+export interface ModuleDescriptorWeb {
+    packageName: string;
+    packageRoot: string;
+}
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos | ModuleDescriptorDevTools | ModuleDescriptorWeb;
 export interface AndroidGradlePluginDescriptor {
     /**
      * Gradle plugin ID

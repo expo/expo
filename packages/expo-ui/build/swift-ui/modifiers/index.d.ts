@@ -2,13 +2,16 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
+import { ColorValue } from 'react-native';
 import { animation } from './animation/index';
 import { createModifier, ModifierConfig } from './createModifier';
+type NamedColor = 'primary' | 'secondary' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'white' | 'gray' | 'black' | 'clear' | 'mint' | 'teal' | 'cyan' | 'indigo' | 'brown';
+type Color = string | ColorValue | NamedColor;
 /**
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
-export declare const background: (color: string) => ModifierConfig;
+export declare const background: (color: Color) => ModifierConfig;
 /**
  * Applies corner radius to a view.
  * @param radius - The corner radius value
@@ -21,7 +24,7 @@ export declare const shadow: (params: {
     radius: number;
     x?: number;
     y?: number;
-    color?: string;
+    color?: Color;
 }) => ModifierConfig;
 /**
  * Adds a matched geometry effect to a view.
@@ -56,9 +59,13 @@ export declare const padding: (params: {
 }) => ModifierConfig;
 /**
  * Controls fixed size behavior.
- * @param enabled - Whether the view should use its natural size
+ * @param horizontal - Whether the view should use its ideal width
+ * @param vertical - Whether the view should use its ideal height
  */
-export declare const fixedSize: (enabled?: boolean) => ModifierConfig;
+export declare const fixedSize: (params?: {
+    horizontal?: boolean;
+    vertical?: boolean;
+}) => ModifierConfig;
 /**
  * Adds a tap gesture recognizer.
  * @param handler - Function to call when tapped
@@ -85,7 +92,7 @@ export declare const clipShape: (shape: "rectangle" | "circle" | "roundedRectang
  * Adds a border to a view.
  */
 export declare const border: (params: {
-    color: string;
+    color: Color;
     width?: number;
 }) => ModifierConfig;
 /**
@@ -110,7 +117,7 @@ export declare const offset: (params: {
  * @param color - The foreground color (hex string)
  * @deprecated Use foregroundStyle instead
  */
-export declare const foregroundColor: (color: string) => ModifierConfig;
+export declare const foregroundColor: (color: Color) => ModifierConfig;
 /**
  * Sets the foreground style of a view with comprehensive styling options.
  *
@@ -231,7 +238,7 @@ export declare const foregroundStyle: (style: string | {
  * Sets the tint color of a view.
  * @param color - The tint color (hex string)
  */
-export declare const tint: (color: string) => ModifierConfig;
+export declare const tint: (color: Color) => ModifierConfig;
 /**
  * Hides or shows a view.
  * @param hidden - Whether the view should be hidden
@@ -309,7 +316,7 @@ export declare const mask: (shape: "rectangle" | "circle" | "roundedRectangle", 
  * @param alignment - Overlay alignment
  */
 export declare const overlay: (params: {
-    color?: string;
+    color?: Color;
     alignment?: "center" | "top" | "bottom" | "leading" | "trailing";
 }) => ModifierConfig;
 /**
@@ -318,7 +325,7 @@ export declare const overlay: (params: {
  * @param alignment - Background alignment
  */
 export declare const backgroundOverlay: (params: {
-    color?: string;
+    color?: Color;
     alignment?: "center" | "top" | "bottom" | "leading" | "trailing";
 }) => ModifierConfig;
 /**
@@ -342,7 +349,7 @@ export declare const glassEffect: (params?: {
     glass?: {
         variant: "regular" | "clear" | "identity";
         interactive?: boolean;
-        tint?: string;
+        tint?: Color;
     };
     shape?: "circle" | "capsule" | "rectangle" | "ellipse";
 }) => ModifierConfig;

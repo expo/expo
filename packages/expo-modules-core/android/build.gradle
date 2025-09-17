@@ -1,4 +1,6 @@
+import com.android.build.gradle.tasks.ExternalNativeBuildJsonTask
 import expo.modules.plugin.gradle.ExpoModuleExtension
+import groovy.json.JsonSlurper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -14,6 +16,8 @@ buildscript {
     if (shouldIncludeCompose) {
       classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     }
+
+    classpath("org.apache.commons:commons-text:1.14.0")
   }
 }
 
@@ -25,7 +29,7 @@ if (shouldIncludeCompose) {
 }
 
 group = 'host.exp.exponent'
-version = '3.0.15'
+version = '3.0.16'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -75,7 +79,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "3.0.15"
+    versionName "3.0.16"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
@@ -138,8 +142,8 @@ android {
     // Required or mockk will crash
     resources {
       excludes += [
-          "META-INF/LICENSE.md",
-          "META-INF/LICENSE-notice.md"
+        "META-INF/LICENSE.md",
+        "META-INF/LICENSE-notice.md"
       ]
     }
 
@@ -229,4 +233,57 @@ if (shouldTurnWarningsIntoErrors) {
   tasks.withType(KotlinCompile) configureEach {
     compilerOptions.allWarningsAsErrors = true
   }
+}
+
+// Generates the PCH file during sync if it doesn't exist yet
+def generatePCHTask = tasks.register("generatePCH") {
+  def configureTaskName = "configureCMakeDebug"
+  dependsOn(configureTaskName)
+
+  doLast {
+    reactNativeArchitectures().each { abi ->
+      def configureTaskNameForAbi = configureTaskName + "[" + abi + "]"
+      ExternalNativeBuildJsonTask configureTask = tasks.named(configureTaskNameForAbi).get() as ExternalNativeBuildJsonTask
+
+      // Gets CxxModel for the given ABI
+      File cxxBuildFolder = configureTask.abi.cxxBuildFolder
+
+      // Gets compile_commands.json file to find the command to generate the PCH file
+      File compileCommandsFile = new File(cxxBuildFolder, "compile_commands.json")
+      if (!compileCommandsFile.exists()) {
+        return
+      }
+
+      def parsedJson = new JsonSlurper().parseText(compileCommandsFile.text)
+      for (int i = 0; i < parsedJson.size(); i++) {
+        def commandObj = parsedJson[i]
+
+        def path = commandObj.file
+        if (!path.endsWith("cmake_pch.hxx.cxx")) {
+          continue
+        }
+
+        def generatedFilePath = path.substring(0, path.length() - ".cxx".length()) + ".pch"
+        // Checks if the file already exists, and skip if so
+        if (new File(generatedFilePath).exists()) {
+          continue
+        }
+
+        def tokenizer = new org.apache.commons.text.StringTokenizer(commandObj.command, " ")
+        def tokens = tokenizer.tokenList
+
+        def workingDirFile = new File(commandObj.directory)
+  
+        providers.exec {
+          workingDir(providers.provider { workingDirFile }.get())
+          commandLine(tokens)
+        }.getResult().get().assertNormalExitValue()
+      }
+    }
+  }
+}
+
+// This task will run on the IDE project sync, ensuring the PCH file is generated early enough
+tasks.register("prepareKotlinBuildScriptModel") {
+  dependsOn(generatePCHTask)
 }

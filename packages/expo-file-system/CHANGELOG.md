@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix incorrect AndroidManifest.xml location. ([#39134](https://github.com/expo/expo/pull/39134) by [@robertying](https://github.com/robertying))
-
 ### 💡 Others
+
+## 19.0.14 — 2025-09-13
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.13 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- [Android] Fix incorrect AndroidManifest.xml location. ([#39134](https://github.com/expo/expo/pull/39134) by [@robertying](https://github.com/robertying))
 
 ## 19.0.12 — 2025-09-11
 

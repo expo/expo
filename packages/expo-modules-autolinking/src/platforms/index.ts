@@ -7,6 +7,7 @@ interface PlatformImplementations {
   apple: typeof import('./apple/apple');
   android: typeof import('./android/android');
   devtools: typeof import('./devtools');
+  web: typeof import('./web');
 }
 
 function getLinkingImplementationForPlatform<Platform extends keyof PlatformImplementations>(
@@ -21,6 +22,7 @@ function getLinkingImplementationForPlatform(
 function getLinkingImplementationForPlatform(
   platform: 'devtools'
 ): PlatformImplementations['devtools'];
+function getLinkingImplementationForPlatform(platform: 'web'): PlatformImplementations['web'];
 function getLinkingImplementationForPlatform(
   platform: SupportedPlatform
 ): PlatformImplementations[keyof PlatformImplementations];
@@ -41,6 +43,8 @@ function getLinkingImplementationForPlatform(
       return require('../platforms/android');
     case 'devtools':
       return require('../platforms/devtools');
+    case 'web':
+      return require('../platforms/web');
     default:
       throw new Error(`No linking implementation is available for platform "${platform}"`);
   }

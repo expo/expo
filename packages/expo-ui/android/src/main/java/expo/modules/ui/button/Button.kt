@@ -60,7 +60,8 @@ data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT),
   val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
-  val systemImage: MutableState<String?> = mutableStateOf(null),
+  val leadingIcon: MutableState<String?> = mutableStateOf(null),
+  val trailingIcon: MutableState<String?> = mutableStateOf(null),
   val disabled: MutableState<Boolean> = mutableStateOf(false),
   val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
@@ -150,7 +151,8 @@ class Button(context: Context, appContext: AppContext) :
     val (variant) = props.variant
     val (text) = props.text
     val (colors) = props.elementColors
-    val (systemImage) = props.systemImage
+    val (leadingIcon) = props.leadingIcon
+    val (trailingIcon) = props.trailingIcon
     val (disabled) = props.disabled
     DynamicTheme {
       StyledButton(
@@ -160,19 +162,28 @@ class Button(context: Context, appContext: AppContext) :
         onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
         modifier = Modifier.fromExpoModifiers(props.modifiers.value)
       ) {
-        if (systemImage != null) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            getImageVector(systemImage)?.let {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          leadingIcon?.let { iconName ->
+            getImageVector(iconName)?.let {
               Icon(
                 it,
-                contentDescription = systemImage,
+                contentDescription = iconName,
                 modifier = Modifier.padding(end = 8.dp)
               )
             }
-            Text(text)
           }
-        } else {
+          
           Text(text)
+          
+          trailingIcon?.let { iconName ->
+            getImageVector(iconName)?.let {
+              Icon(
+                it,
+                contentDescription = iconName,
+                modifier = Modifier.padding(start = 8.dp)
+              )
+            }
+          }
         }
       }
     }

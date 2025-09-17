@@ -553,6 +553,10 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       throw FilePermissionException(uri)
     }
 
+    guard url.isFileURL else {
+      throw RemoteImageUriException(uri)
+    }
+
     let path = url.path
     let standardizedPath = NSString(string: path).standardizingPath
 

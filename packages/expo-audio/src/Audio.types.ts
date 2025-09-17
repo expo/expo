@@ -438,6 +438,10 @@ export type RecordingOptionsAndroid = {
    * `65536`
    */
   maxFileSize?: number;
+  /**
+   * The desired audio Source. See the [`AndroidAudioSource`](#androidaudiosource) enum for all valid values.
+   */
+  audioSource?: RecordingSource;
 };
 
 export type AudioMode = {
@@ -497,3 +501,29 @@ export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
  * @platform android
  */
 export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
+
+/**
+ * Recording source for android.
+ *
+ * An audio source defines both a default physical source of audio signal, and a recording configuration.
+ *
+ * - `camcorder`: Microphone audio source tuned for video recording, with the same orientation as the camera if available.
+ * - `default`: The default audio source.
+ * - `mic`: Microphone audio source.
+ * - `unprocessed`: Microphone audio source tuned for unprocessed (raw) sound if available, behaves like `default` otherwise.
+ * - `voice_communication`: Microphone audio source tuned for voice communications such as VoIP. It will for instance take advantage of echo cancellation or automatic gain control if available.
+ * - `voice_performance`: Source for capturing audio meant to be processed in real time and played back for live performance (e.g karaoke). The capture path will minimize latency and coupling with playback path.
+ * - `voice_recognition`: Microphone audio source tuned for voice recognition.
+ *
+ * @see https://developer.android.com/reference/android/media/MediaRecorder.AudioSource
+ * @platform android
+ */
+export type RecordingSource =
+  | 'camcorder'
+  | 'default'
+  | 'mic'
+  | 'remote_submix'
+  | 'unprocessed'
+  | 'voice_communication'
+  | 'voice_performance'
+  | 'voice_recognition';

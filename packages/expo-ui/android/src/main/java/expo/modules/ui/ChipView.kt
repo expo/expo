@@ -85,7 +85,9 @@ class ChipView(context: Context, appContext: AppContext) :
           {
             ChipIcon(iconName = "filled.Done", iconSize = iconSize)
           }
-        } else null,
+        } else {
+          null
+        },
         trailingIcon = {
           trailingIcon?.let {
             ChipIcon(iconName = it, iconSize = iconSize)
@@ -166,6 +168,7 @@ private fun ChipText(label: String, textStyle: String = "labelSmall") {
     )
   }
 }
+
 @Composable
 private fun ChipIcon(
   iconName: String,

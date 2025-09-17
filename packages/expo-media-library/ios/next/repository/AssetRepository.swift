@@ -41,6 +41,24 @@ final class AssetRepository {
     return assets
   }
 
+  func get(with options: PHFetchOptions) -> [PHAsset] {
+    var assets: [PHAsset] = []
+    let fetchedAssets = PHAsset.fetchAssets(with: options)
+    fetchedAssets.enumerateObjects { asset, _, _ in
+      assets.append(asset)
+    }
+    return assets
+  }
+
+  func get(by collection: PHAssetCollection, with options: PHFetchOptions) -> [PHAsset] {
+    var assets: [PHAsset] = []
+    let fetchedAssets = PHAsset.fetchAssets(in: collection, options: options)
+    fetchedAssets.enumerateObjects { asset, _, _ in
+      assets.append(asset)
+    }
+    return assets
+  }
+
   func add(from filePaths: [URL]) async throws -> [String] {
     var assetIds: [String] = []
     try await PHPhotoLibrary.shared().performChanges {

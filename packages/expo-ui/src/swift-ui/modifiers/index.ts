@@ -3,6 +3,8 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
+import { ColorValue } from 'react-native';
+
 import { animation } from './animation/index';
 import { createModifier, ModifierConfig } from './createModifier';
 
@@ -17,6 +19,28 @@ function createModifierWithEventListener(
   return { $type: type, ...params, eventListener };
 }
 
+type NamedColor =
+  | 'primary'
+  | 'secondary'
+  | 'red'
+  | 'orange'
+  | 'yellow'
+  | 'green'
+  | 'blue'
+  | 'purple'
+  | 'pink'
+  | 'white'
+  | 'gray'
+  | 'black'
+  | 'clear'
+  | 'mint'
+  | 'teal'
+  | 'cyan'
+  | 'indigo'
+  | 'brown';
+
+type Color = string | ColorValue | NamedColor;
+
 // =============================================================================
 // Built-in Modifier Functions
 // =============================================================================
@@ -25,7 +49,7 @@ function createModifierWithEventListener(
  * Sets the background of a view.
  * @param color - The background color (hex string, e.g., '#FF0000')
  */
-export const background = (color: string) => createModifier('background', { color });
+export const background = (color: Color) => createModifier('background', { color });
 
 /**
  * Applies corner radius to a view.
@@ -36,7 +60,7 @@ export const cornerRadius = (radius: number) => createModifier('cornerRadius', {
 /**
  * Adds a shadow to a view.
  */
-export const shadow = (params: { radius: number; x?: number; y?: number; color?: string }) =>
+export const shadow = (params: { radius: number; x?: number; y?: number; color?: Color }) =>
   createModifier('shadow', params);
 
 /**
@@ -85,9 +109,11 @@ export const padding = (params: {
 
 /**
  * Controls fixed size behavior.
- * @param enabled - Whether the view should use its natural size
+ * @param horizontal - Whether the view should use its ideal width
+ * @param vertical - Whether the view should use its ideal height
  */
-export const fixedSize = (enabled: boolean = true) => createModifier('fixedSize', { enabled });
+export const fixedSize = (params?: { horizontal?: boolean; vertical?: boolean }) =>
+  createModifier('fixedSize', params);
 
 /**
  * Adds a tap gesture recognizer.
@@ -128,7 +154,7 @@ export const clipShape = (
 /**
  * Adds a border to a view.
  */
-export const border = (params: { color: string; width?: number }) =>
+export const border = (params: { color: Color; width?: number }) =>
   createModifier('border', params);
 
 /**
@@ -153,7 +179,7 @@ export const offset = (params: { x?: number; y?: number }) => createModifier('of
  * @param color - The foreground color (hex string)
  * @deprecated Use foregroundStyle instead
  */
-export const foregroundColor = (color: string) => createModifier('foregroundColor', { color });
+export const foregroundColor = (color: Color) => createModifier('foregroundColor', { color });
 
 /**
  * Sets the foreground style of a view with comprehensive styling options.
@@ -274,7 +300,7 @@ export const foregroundStyle = (
  * Sets the tint color of a view.
  * @param color - The tint color (hex string)
  */
-export const tint = (color: string) => createModifier('tint', { color });
+export const tint = (color: Color) => createModifier('tint', { color });
 
 /**
  * Hides or shows a view.
@@ -371,7 +397,7 @@ export const mask = (shape: 'rectangle' | 'circle' | 'roundedRectangle', cornerR
  * @param alignment - Overlay alignment
  */
 export const overlay = (params: {
-  color?: string;
+  color?: Color;
   alignment?: 'center' | 'top' | 'bottom' | 'leading' | 'trailing';
 }) => createModifier('overlay', params);
 
@@ -381,7 +407,7 @@ export const overlay = (params: {
  * @param alignment - Background alignment
  */
 export const backgroundOverlay = (params: {
-  color?: string;
+  color?: Color;
   alignment?: 'center' | 'top' | 'bottom' | 'leading' | 'trailing';
 }) => createModifier('backgroundOverlay', params);
 
@@ -406,7 +432,7 @@ export const glassEffect = (params?: {
   glass?: {
     variant: 'regular' | 'clear' | 'identity';
     interactive?: boolean;
-    tint?: string;
+    tint?: Color;
   };
   shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse';
 }) => createModifier('glassEffect', params);

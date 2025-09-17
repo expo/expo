@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 3.0.11 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- Regression: Support search paths and `nativeModulesDir` pointing directly at module folder ([#39669](https://github.com/expo/expo/pull/39669) by [@kitten](https://github.com/kitten))
+- Mark `ios|macos|tvos` as supported when an Expo Module marks `apple` as a supported platform ([#39700](https://github.com/expo/expo/pull/39700) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Allow `expo-atlas` (devtool Expo Module) to be discovered in `devDependencies` ([#39688](https://github.com/expo/expo/pull/39688) by [@kitten](https://github.com/kitten))
+- Allow resolving native modules via a `web` platform heuristic for autolinking module resolution in Expo CLI ([#39701](https://github.com/expo/expo/pull/39701) by [@kitten](https://github.com/kitten))
+
 ## 3.0.10 — 2025-09-10
 
 _This version does not introduce any user-facing changes._
