@@ -1,3 +1,4 @@
+import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { Slot, router, useGlobalSearchParams, usePathname } from '../exports';
@@ -5,7 +6,7 @@ import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
-import { act, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('404', () => {
   renderRouter(
@@ -20,7 +21,9 @@ it('404', () => {
   expect(screen.getByText('Unmatched Route')).toBeOnTheScreen();
   expect(screen).toHavePathname('/404');
   expect(screen).toHaveSegments(['+not-found']);
-  expect(screen).toHaveSearchParams({ 'not-found': ['404'] });
+  expect(screen).toHaveSearchParams({
+    'not-found': ['404'],
+  });
 });
 
 it('can render a route', async () => {
@@ -244,54 +247,11 @@ it('deep linking nested groups', async () => {
   expect(OtherTabsIndex).toHaveBeenCalledTimes(1);
 });
 
-// Skipped due to 0.74.0-rc.2 regression.
-// react-native-gesture-handler is failing in Fabric.
-// https://exponent-internal.slack.com/archives/C0447EFTS74/p1709588600921339?thread_ts=1709578927.565339&cid=C0447EFTS74
-// Please enable once `react-native-gesture-handler` is updated
-it.skip('can navigate across the drawer navigator', () => {
-  renderRouter({
-    _layout: () => <Stack />,
-    index: () => <Text testID="index" />,
-    '(group)/_layout': () => <Drawer />,
-    '(group)/one': () => <Text testID="one" />,
-    '(group)/two': () => <Text testID="two" />,
-    '(group_two)/three': () => <Text testID="three" />,
-    '(group_two)/_layout': () => <Drawer />,
-    '(group_two)/nested/folder/_layout': () => <Drawer />,
-    '(group_two)/nested/folder/four': () => <Text testID="four" />,
-  });
-
-  expect(screen).toHavePathname('/');
-  expect(screen.getByTestId('index')).toBeOnTheScreen();
-
-  // Navigate to a drawer screen
-  act(() => router.push('/one'));
-  expect(screen).toHavePathname('/one');
-  expect(screen.getByTestId('one')).toBeOnTheScreen();
-
-  // Navigate within the drawer
-  act(() => router.push('/two'));
-  expect(screen).toHavePathname('/two');
-  expect(screen.getByTestId('two')).toBeOnTheScreen();
-
-  // Navigate to a different drawer
-  act(() => router.push('/three'));
-  expect(screen).toHavePathname('/three');
-  expect(screen.getByTestId('three')).toBeOnTheScreen();
-
-  // Navigate to a nested folder
-  act(() => router.push('/nested/folder/four'));
-  expect(screen).toHavePathname('/nested/folder/four');
-  expect(screen.getByTestId('four')).toBeOnTheScreen();
-
-  // Navigate back to one
-  act(() => router.push('/one'));
-  expect(screen).toHavePathname('/one');
-  expect(screen.getByTestId('one')).toBeOnTheScreen();
-});
-
 it('can redirect during the initial render', () => {
   renderRouter({
+    // This needs to be added, for the layout to be rendered
+    // Otherwise would fall back to the root 404
+    '+not-found': () => <Text>Unmatched Route</Text>,
     _layout: function Layout() {
       const pathName = usePathname();
 
