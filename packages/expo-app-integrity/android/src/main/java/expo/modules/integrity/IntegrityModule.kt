@@ -96,30 +96,27 @@ class IntegrityModule : Module() {
       )
     }
 
-    AsyncFunction("isHardwareAttestationSupported") { promise: Promise ->
+    AsyncFunction("isHardwareAttestationSupported") {
       try {
-        val isSupported = isHardwareAttestationSupported()
-        promise.resolve(isSupported)
+        isHardwareAttestationSupported()
       } catch (e: Exception) {
-        promise.reject(IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_NOT_SUPPORTED, e.message ?: "Failed to check hardware attestation support", e))
+        throw IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_NOT_SUPPORTED, e.message ?: "Failed to check hardware attestation support", e)
       }
     }
 
-    AsyncFunction("generateHardwareAttestedKey") { keyAlias: String, challenge: String, promise: Promise ->
+    AsyncFunction("generateHardwareAttestedKey") { keyAlias: String, challenge: String ->
       try {
         generateHardwareAttestedKey(keyAlias, challenge)
-        promise.resolve()
       } catch (e: Exception) {
-        promise.reject(handleHardwareAttestationError(e))
+        throw handleHardwareAttestationError(e)
       }
     }
 
-    AsyncFunction("getAttestationCertificateChain") { keyAlias: String, promise: Promise ->
+    AsyncFunction("getAttestationCertificateChain") { keyAlias: String ->
       try {
-        val certificateChain = getAttestationCertificateChain(keyAlias)
-        promise.resolve(certificateChain)
+        getAttestationCertificateChain(keyAlias)
       } catch (e: Exception) {
-        promise.reject(handleHardwareAttestationError(e))
+        throw handleHardwareAttestationError(e)
       }
     }
   }
@@ -179,16 +176,13 @@ class IntegrityModule : Module() {
   }
 
   private fun isHardwareAttestationSupported(): Boolean {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      return false
-    }
     return try {
       // Verify we can actually access the hardware keystore
       val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
       keyStore.load(null)
       true
     } catch (e: Exception) {
-      false
+      throw e
     }
   }
 
