@@ -37,11 +37,9 @@ You can pass the following parameters into the `params` list:
 | platform  | string | **Required.** The platform to build for. Can be either `android` or `ios`. |
 | profile   | string | Optional. The build profile to use. Defaults to `production`.              |
 
-#### Environment Variables
+#### Environment variables
 
-If you need certain environment variables during the build process, you can include them in your
-[eas.json](/eas/json/#environment), for your specified build `profile`. They will be pulled from
-[EAS environment variables](/eas/environment-variables/).
+If you need certain environment variables during the build process, you can include them in your [eas.json](/eas/json/#environment), for your specified build `profile`. They will be pulled from [EAS environment variables](/eas/environment-variables/).
 
 #### Outputs
 
@@ -277,11 +275,9 @@ jobs:
       ENV_VAR_NAME: value
 ```
 
-#### Environment Variables
+#### Environment variables
 
-You can pass a list of environment variables into the `env` section. These environment variables will be pulled from
-[EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the
-Environment variable's environment, useful for when the same environment variable is defined for different environments.
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Outputs
 
@@ -676,11 +672,9 @@ jobs:
       private_key_path: string # optional
 ```
 
-#### Environment Variables
+#### Environment variables
 
-You can pass a list of environment variables into the `env` section. These environment variables will be pulled from
-[EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the
-Environment variable's environment, useful for when the same environment variable is defined for different environments.
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Parameters
 
