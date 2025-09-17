@@ -21,6 +21,8 @@
 
 - Fix runtime error due to passing undefined into function that doesnt receive any argument ([#39594](https://github.com/expo/expo/pull/39594) by [@mrevanzak](https://github.com/mrevanzak))
 
+- [Web] Only import `TurboModuleRegistry` when not on web. ([#39737](https://github.com/expo/expo/pull/39737) by [@Bram-dc](https://github.com/Bram-dc))
+
 ## 3.0.15 — 2025-09-10
 
 ### 🐛 Bug fixes
