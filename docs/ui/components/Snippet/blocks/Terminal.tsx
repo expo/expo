@@ -36,14 +36,23 @@ export const Terminal = ({
 
 /**
  * This method attempts to naively generate the basic cmdCopy from the given cmd list.
- * Currently, the implementation is simple, but we can add multiline support in the future.
+ * Supports both single and multiple commands.
  */
 function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
   const validLines = cmd.filter(line => !line.startsWith('#') && line !== '');
+  
+  if (validLines.length === 0) {
+    return undefined;
+  }
+  
   if (validLines.length === 1) {
     return validLines[0].startsWith('$') ? validLines[0].slice(2) : validLines[0];
   }
-  return undefined;
+  
+  // For multiple commands, join them with newlines
+  return validLines
+    .map(line => line.startsWith('$') ? line.slice(2) : line)
+    .join('\n');
 }
 
 function renderCopyButton({ cmd, cmdCopy }: TerminalProps) {
