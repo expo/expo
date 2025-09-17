@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Remove unused `androidx.annotation:annotation` dependency.
+
 ## 10.0.7 — 2025-09-10
 
 ### 💡 Others
