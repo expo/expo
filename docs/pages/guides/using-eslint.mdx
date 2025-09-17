@@ -63,10 +63,11 @@ The approach to configure environment-specific globals differs between Flat conf
 For Flat config, **metro.config.js** files already work with Node.js globals because of the built-in support in `eslint-config-expo`. For other configuration files that might need Node.js globals, use [`languageOptions.globals`](https://eslint.org/docs/latest/use/configure/language-options#predefined-global-variables) in your **eslint.config.js**:
 
 ```js eslint.config.js
-const { defineConfig } = require('eslint/config');
+const { defineConfig, globalIgnores } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 
 module.exports = defineConfig([
+  globalIgnores(['dist/*']),
   expoConfig,
   {
     files: ['babel.config.js'],
