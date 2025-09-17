@@ -8,6 +8,7 @@ import {
   parseErrorStringToObject,
 } from '../../serverLogLikeMetro';
 import {
+  extractCodeFrame,
   formatUsingNodeStandardLibraryError,
   isNodeStdLibraryModule,
   MetroTerminalReporter,
@@ -406,5 +407,93 @@ describe(formatUsingNodeStandardLibraryError, () => {
       It failed because the native React runtime does not include the Node standard library.
       Learn more: https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries"
     `);
+  });
+});
+
+describe('extractCodeFrame', () => {
+  it('extracts code frame from a message', () => {
+    const inputMessage = `
+Metro error: Unable to resolve module @expo/ui/swift-ui-primitives from /Users/krystofwoldrich/repos/krystofwoldrich/ev-charging-map/app/(tabs)/index.tsx: @expo/ui/swift-ui-primitives could not be found within the project or in these directories:
+  node_modules
+  33 |
+  34 |
+> 35 | import { Button, ContextMenu, Host, HStack, Image, TextField, VStack } from "@expo/ui/swift-ui-primitives";
+     |                                                                              ^
+  36 | // import { Button, ContextMenu, Host, HStack, Image, TextField, VStack } from "@expo/ui/swift-ui";
+  37 | import {
+  38 |   cornerRadius,
+    `;
+
+    const expectedCodeFrame = `  33 |
+  34 |
+> 35 | import { Button, ContextMenu, Host, HStack, Image, TextField, VStack } from "@expo/ui/swift-ui-primitives";
+     |                                                                              ^
+  36 | // import { Button, ContextMenu, Host, HStack, Image, TextField, VStack } from "@expo/ui/swift-ui";
+  37 | import {
+  38 |   cornerRadius,`;
+
+    const actualCodeFrame = extractCodeFrame(inputMessage);
+    expect(actualCodeFrame).toBe(expectedCodeFrame);
+  });
+
+  it('extracts code frame with ANSI codes', () => {
+    const inputMessage = `
+Unable to resolve module @expo/ui/swift-ui-primitives from /Users/krystofwoldrich/repos/krystofwoldrich/ev-charging-map/app/(tabs)/index.tsx: @expo/ui/swift-ui-primitives could not be found within the project or in these directories:
+  node_modules
+\x1b[0m \x1b[90m 33 |\x1b[39m
+\x1b[90m 34 |\x1b[39m
+\x1b[31m\x1b[1m>\x1b[22m\x1b[39m\x1b[90m 35 |\x1b[39m \x1b[36mimport\x1b[39m { \x1b[33mButton\x1b[39m\x1b[33m,\x1b[39m \x1b[33mContextMenu\x1b[39m\x1b[33m,\x1b[39m \x1b[33mHost\x1b[39m\x1b[33m,\x1b[39m \x1b[33mHStack\x1b[39m\x1b[33m,\x1b[39m \x1b[33mImage\x1b[39m\x1b[33m,\x1b[39m \x1b[33mTextField\x1b[39m\x1b[33m,\x1b[39m \x1b[33mVStack\x1b[39m } \x1b[36mfrom\x1b[39m \x1b[32m"@expo/ui/swift-ui-primitives"\x1b[39m\x1b[33m;\x1b[39m
+\x1b[90m    |\x1b[39m                                                                              \x1b[31m\x1b[1m^\x1b[22m\x1b[39m
+\x1b[90m 36 |\x1b[39m \x1b[90m// import { Button, ContextMenu, Host, HStack, Image, TextField, VStack } from "@expo/ui/swift-ui";\x1b[39m
+\x1b[90m 37 |\x1b[39m \x1b[36mimport\x1b[39m {
+\x1b[90m 38 |\x1b[39m   cornerRadius\x1b[33m,\x1b[39m\x1b[0m
+    `.trim();
+
+    const expectedCodeFrame = `\x1b[0m \x1b[90m 33 |\x1b[39m
+\x1b[90m 34 |\x1b[39m
+\x1b[31m\x1b[1m>\x1b[22m\x1b[39m\x1b[90m 35 |\x1b[39m \x1b[36mimport\x1b[39m { \x1b[33mButton\x1b[39m\x1b[33m,\x1b[39m \x1b[33mContextMenu\x1b[39m\x1b[33m,\x1b[39m \x1b[33mHost\x1b[39m\x1b[33m,\x1b[39m \x1b[33mHStack\x1b[39m\x1b[33m,\x1b[39m \x1b[33mImage\x1b[39m\x1b[33m,\x1b[39m \x1b[33mTextField\x1b[39m\x1b[33m,\x1b[39m \x1b[33mVStack\x1b[39m } \x1b[36mfrom\x1b[39m \x1b[32m"@expo/ui/swift-ui-primitives"\x1b[39m\x1b[33m;\x1b[39m
+\x1b[90m    |\x1b[39m                                                                              \x1b[31m\x1b[1m^\x1b[22m\x1b[39m
+\x1b[90m 36 |\x1b[39m \x1b[90m// import { Button, ContextMenu, Host, HStack, Image, TextField, VStack } from "@expo/ui/swift-ui";\x1b[39m
+\x1b[90m 37 |\x1b[39m \x1b[36mimport\x1b[39m {
+\x1b[90m 38 |\x1b[39m   cornerRadius\x1b[33m,\x1b[39m\x1b[0m`;
+
+    const actualCodeFrame = extractCodeFrame(inputMessage);
+    expect(actualCodeFrame).toBe(expectedCodeFrame);
+  });
+
+  it('returns empty string when no code frame is found', () => {
+    const inputMessage = `This is a test message without a code frame.`;
+    const actualCodeFrame = extractCodeFrame(inputMessage);
+    expect(actualCodeFrame).toBeFalsy();
+  });
+
+  it('returns empty string for code frame look alike', () => {
+    const inputMessage = `This is a test error message 37 | import {`;
+    const actualCodeFrame = extractCodeFrame(inputMessage);
+    expect(actualCodeFrame).toBeFalsy();
+  });
+
+  it('returns only the first code frame when multiple are present', () => {
+    const inputMessage = `
+This is error with multiple code frames.
+  34 |
+> 35 | const a = 1;
+     |       ^
+  36 | // comment
+
+Caused by: Another message
+  78 |
+> 79 | const b = 2;
+     |       ^
+  80 | // another comment
+    `;
+
+    const expectedCodeFrame = `  34 |
+> 35 | const a = 1;
+     |       ^
+  36 | // comment`;
+
+    const actualCodeFrame = extractCodeFrame(inputMessage);
+    expect(actualCodeFrame).toBe(expectedCodeFrame);
   });
 });

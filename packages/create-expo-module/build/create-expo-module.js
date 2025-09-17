@@ -8,7 +8,6 @@ const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("commander");
 const download_tarball_1 = __importDefault(require("download-tarball"));
 const ejs_1 = __importDefault(require("ejs"));
-const find_up_1 = __importDefault(require("find-up"));
 const fs_1 = __importDefault(require("fs"));
 const getenv_1 = require("getenv");
 const path_1 = __importDefault(require("path"));
@@ -39,7 +38,14 @@ const IGNORES_PATHS = [
 const DOCS_URL = 'https://docs.expo.dev/modules';
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
 async function getCorrectLocalDirectory(targetOrSlug) {
-    const packageJsonPath = await (0, find_up_1.default)('package.json', { cwd: CWD });
+    let packageJsonPath = null;
+    for (let dir = CWD; path_1.default.dirname(dir) !== dir; dir = path_1.default.dirname(dir)) {
+        const file = path_1.default.resolve(dir, 'package.json');
+        if (fs_1.default.existsSync(file)) {
+            packageJsonPath = file;
+            break;
+        }
+    }
     if (!packageJsonPath) {
         console.log(chalk_1.default.red.bold('⚠️ This command should be run inside your Expo project when run with the --local flag.'));
         console.log(chalk_1.default.red('For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'));

@@ -3,7 +3,10 @@ import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { Log } from '../utils/log';
-import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
+import {
+  getVersionedNativeModuleNamesAsync,
+  VersionedNativeModuleNamesCache,
+} from '../utils/versionedNativeModules';
 
 interface PackageJson {
   name: string;
@@ -12,12 +15,17 @@ interface PackageJson {
   peerDependenciesMeta?: Record<string, { optional?: boolean }>;
 }
 
-export class PeerDependencyChecks implements DoctorCheck {
+type DoctorCache = VersionedNativeModuleNamesCache;
+
+export class PeerDependencyChecks implements DoctorCheck<DoctorCache> {
   description = 'Check that required peer dependencies are installed';
 
   sdkVersionRange = '*';
 
-  async runAsync({ pkg, projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync(
+    { pkg, projectRoot, exp }: DoctorCheckParams,
+    cache: DoctorCache
+  ): Promise<DoctorCheckResult> {
     const issues: string[] = [];
     const advice: string[] = [];
 
@@ -34,10 +42,10 @@ export class PeerDependencyChecks implements DoctorCheck {
       };
     }
 
-    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(
+    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(cache, {
       projectRoot,
-      exp.sdkVersion!
-    );
+      sdkVersion: exp.sdkVersion,
+    });
     if (!bundledNativeModules) {
       // If we can't get bundled native modules, return early to avoid false positives
       return {

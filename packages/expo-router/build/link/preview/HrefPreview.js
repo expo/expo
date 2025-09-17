@@ -73,7 +73,13 @@ function PreviewForRootHrefState({ hrefState, href }) {
 }
 function PreviewForInternalRoutes() {
     const pathname = (0, hooks_1.usePathname)();
-    return (<react_native_1.View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+    return (<react_native_1.View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 8,
+            backgroundColor: 'white',
+        }}>
       <react_native_1.Text style={{ fontWeight: '600', fontSize: 24 }}>Invalid preview</react_native_1.Text>
       <react_native_1.Text style={{ fontWeight: '200', fontSize: 14 }}>{pathname}</react_native_1.Text>
     </react_native_1.View>);

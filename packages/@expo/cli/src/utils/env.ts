@@ -275,6 +275,17 @@ class Env {
   get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
     return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
   }
+
+  /**
+   * Enable the experimental MCP integration or further specify the MCP server URL.
+   */
+  get EXPO_UNSTABLE_MCP_SERVER(): string {
+    const value = string('EXPO_UNSTABLE_MCP_SERVER', '');
+    if (value === '1' || value.toLowerCase() === 'true') {
+      return this.EXPO_STAGING ? 'staging-mcp.expo.dev' : 'mcp.expo.dev';
+    }
+    return value;
+  }
 }
 
 export const env = new Env();

@@ -12,7 +12,7 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
-version = '7.0.7'
+version = '7.0.11'
 
 expoModule {
   canBePublished false
@@ -22,7 +22,7 @@ android {
   namespace "expo.modules.devmenu"
   defaultConfig {
     versionCode 10
-    versionName '7.0.7'
+    versionName '7.0.11'
   }
   buildFeatures {
     compose true

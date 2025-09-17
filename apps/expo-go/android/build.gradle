@@ -10,6 +10,7 @@ buildscript {
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '36.0.0'
     kotlinVersion = "2.1.20"
+    kspVersion = "2.1.20-2.0.1"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -98,6 +99,7 @@ def ktlintTarget = '**/*.kt'
 subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
   if (project.name.startsWith("vendored_")) { return; }
+  if (project.name.startsWith("react-native")) { return; }
   if (project.projectDir.toString().contains("/node_modules/")) { return; }
   if (project.projectDir.toString().contains("/modules/")) { return; }
 

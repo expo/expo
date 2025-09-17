@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 3.0.11 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- Regression: Support search paths and `nativeModulesDir` pointing directly at module folder ([#39669](https://github.com/expo/expo/pull/39669) by [@kitten](https://github.com/kitten))
+- Mark `ios|macos|tvos` as supported when an Expo Module marks `apple` as a supported platform ([#39700](https://github.com/expo/expo/pull/39700) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Allow `expo-atlas` (devtool Expo Module) to be discovered in `devDependencies` ([#39688](https://github.com/expo/expo/pull/39688) by [@kitten](https://github.com/kitten))
+- Allow resolving native modules via a `web` platform heuristic for autolinking module resolution in Expo CLI ([#39701](https://github.com/expo/expo/pull/39701) by [@kitten](https://github.com/kitten))
+
+## 3.0.10 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.9 — 2025-09-10
+
+### 💡 Others
+
+- [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
+- Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
+- [iOS] Force codegen for `FBReactNativeSpec` when generated files are missing in React Native source ([#39512](https://github.com/expo/expo/pull/39512) by [@kitten](https://github.com/kitten))
+
+## 3.0.8 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix `platformOptions` not being correctly assigned. ([#39445](https://github.com/expo/expo/pull/39445) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 3.0.7 — 2025-09-04
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.5 — 2025-08-31
 
 _This version does not introduce any user-facing changes._

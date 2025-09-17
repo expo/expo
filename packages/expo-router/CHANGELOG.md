@@ -6,11 +6,83 @@
 
 ### 🎉 New features
 
-- apply display contents to link ([#39245](https://github.com/expo/expo/pull/39245) by [@Ubax](https://github.com/Ubax))
+### 🐛 Bug fixes
+
+- fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+## 6.0.6 — 2025-09-16
 
 ### 🐛 Bug fixes
 
+- [android] fix Invalid prop style supplied to React.Fragment ([#39685](https://github.com/expo/expo/pull/39685) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.5 — 2025-09-16
+
+### 🐛 Bug fixes
+
+- `expo-router/ui`: `TabTrigger` now correctly calls `onLongPress` prop instead of `onPress`. ([#39638](https://github.com/expo/expo/pull/39638) by [@TmLev](https://github.com/TmLev))
+
+## 6.0.4 — 2025-09-13
+
+### 🐛 Bug fixes
+
+- Add `@expo/metro-runtime` to dependencies & peer dependencies to fix Yarn v1 having no auto-installs ([#39644](https://github.com/expo/expo/pull/39644) by [@kitten](https://github.com/kitten))
+
+## 6.0.3 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Use `$$EXPO_INITIAL_PROPS` to determine if running inside a dom component. ([#39590](https://github.com/expo/expo/pull/39590) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.0.2 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Move `@expo/metro-runtime` to peer dependencies, since that conveys our intention better ([#39603](https://github.com/expo/expo/pull/39603) by [@kitten](https://github.com/kitten))
+
+## 6.0.1 — 2025-09-11
+
+### 🐛 Bug fixes
+
+- fix link preview to a param route ([#39569](https://github.com/expo/expo/pull/39569) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.0 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- fix nested protected routes not taking into account the parents guard prop ([#39437](https://github.com/expo/expo/pull/39437) by [@saviocmc](https://github.com/saviocmc))
+- Fix `ExpoRoot`'s wrapper forcing a remount due to a `SafeAreaProvider` update ([#39476](https://github.com/expo/expo/pull/39476) by [@kitten](https://github.com/kitten))
+- fix unecessary render on screen blur ([#39454](https://github.com/expo/expo/pull/39454) by [@Ubax](https://github.com/Ubax))
+- fix routeInfo not updating on back navigation ([#39513](https://github.com/expo/expo/pull/39513) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.0-preview.16 — 2025-09-08
+
+### 🐛 Bug fixes
+
+- use shadowColor to remove shadow on scroll edge ([#39396](https://github.com/expo/expo/pull/39396) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.0-preview.15 — 2025-09-04
+
 ### 💡 Others
+
+- simplify link preview hierarchy and expose more customization options ([#39357](https://github.com/expo/expo/pull/39357) by [@Ubax](https://github.com/Ubax))
+
+## 6.0.0-preview.14 — 2025-09-03
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0-preview.13 — 2025-09-02
+
+### 🎉 New features
+
+- apply display contents to link ([#39245](https://github.com/expo/expo/pull/39245) by [@Ubax](https://github.com/Ubax))
+- [web] add matcher support for server middleware ([#39225](https://github.com/expo/expo/pull/39225) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- fix link preview navigation to same href ([#39329](https://github.com/expo/expo/pull/39329) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.0-preview.12 — 2025-08-31
 
@@ -197,6 +269,7 @@ _This version does not introduce any user-facing changes._
 - Refactor link preview to show components in docs ([#38696](https://github.com/expo/expo/pull/38696) by [@Ubax](https://github.com/Ubax))
 - refactor tabs for docs export ([#38684](https://github.com/expo/expo/pull/38684) by [@Ubax](https://github.com/Ubax))
 - Use `@expo/server/private` for RSC Middleware imports ([#38717](https://github.com/expo/expo/pull/38717) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
 
 ## 5.1.4 - 2025-07-18
 

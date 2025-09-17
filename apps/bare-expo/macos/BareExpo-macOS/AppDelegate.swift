@@ -16,7 +16,6 @@ public class AppDelegate: ExpoAppDelegate {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
-    bindReactNativeFactory(factory)
 
     let launchOptions = notification.userInfo
     window = UIWindow(

@@ -134,6 +134,98 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
+internal enum ForegroundStyleType: String, Enumerable {
+  case color
+  case hierarchical
+  case linearGradient
+  case radialGradient
+  case angularGradient
+}
+
+internal enum ForegroundHierarchicalStyleType: String, Enumerable {
+  case primary
+  case secondary
+  case tertiary
+  case quaternary
+  case quinary
+}
+
+internal struct ForegroundStyleModifier: ViewModifier, Record {
+  @Field var styleType: ForegroundStyleType = .color
+  @Field var hierarchicalStyle: ForegroundHierarchicalStyleType = .primary
+  @Field var color: Color?
+  @Field var colors: [Color]?
+  @Field var startPoint: UnitPoint?
+  @Field var endPoint: UnitPoint?
+  @Field var center: UnitPoint?
+  @Field var startRadius: CGFloat?
+  @Field var endRadius: CGFloat?
+
+  func body(content: Content) -> some View {
+    switch styleType {
+    case .color:
+      if let color {
+        content.foregroundStyle(color)
+      } else {
+        content
+      }
+    case .hierarchical:
+      switch hierarchicalStyle {
+      case .primary:
+        content.foregroundStyle(.primary)
+      case .secondary:
+        content.foregroundStyle(.secondary)
+      case .tertiary:
+        content.foregroundStyle(.tertiary)
+      case .quaternary:
+        content.foregroundStyle(.quaternary)
+      case .quinary:
+        if #available(iOS 16.0, tvOS 17.0, *) {
+          content.foregroundStyle(.quinary)
+        } else {
+          content.foregroundStyle(.quaternary)
+        }
+      }
+    case .linearGradient:
+      if let colors, let startPoint, let endPoint {
+        content.foregroundStyle(
+          LinearGradient(
+            colors: colors,
+            startPoint: startPoint,
+            endPoint: endPoint
+          )
+        )
+      } else {
+        content
+      }
+    case .radialGradient:
+      if let colors, let center, let startRadius, let endRadius {
+        content.foregroundStyle(
+          RadialGradient(
+            colors: colors,
+            center: center,
+            startRadius: startRadius,
+            endRadius: endRadius
+          )
+        )
+      } else {
+        content
+      }
+    case .angularGradient:
+      if let colors, let center {
+        content.foregroundStyle(
+          AngularGradient(
+            colors: colors,
+            center: center
+          )
+        )
+      } else {
+        content
+      }
+    }
+  }
+}
+
 internal struct TintModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -396,6 +488,23 @@ internal struct BackgroundOverlayModifier: ViewModifier, Record {
   }
 }
 
+internal struct FixedSizeModifier: ViewModifier, Record {
+  @Field var horizontal: Bool?
+  @Field var vertical: Bool?
+
+  func body(content: Content) -> some View {
+    if let horizontal, let vertical {
+      content.fixedSize(horizontal: horizontal, vertical: vertical)
+    } else if let horizontal {
+      content.fixedSize(horizontal: horizontal, vertical: false)
+    } else if let vertical {
+      content.fixedSize(horizontal: false, vertical: vertical)
+    } else {
+      content.fixedSize()
+    }
+  }
+}
+
 /**
  * A type-erased wrapper for `ViewModifier`
  */
@@ -425,7 +534,7 @@ internal struct GlassEffectModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       let interactive = glass?.interactive ?? false
       let tint = glass?.tint
@@ -449,7 +558,7 @@ internal struct GlassEffectModifier: ViewModifier, Record {
   }
 
   #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
   private func parseGlassVariant(_ glassString: String) -> Glass {
     switch glassString {
     case "regular":
@@ -463,59 +572,108 @@ internal struct GlassEffectModifier: ViewModifier, Record {
   #endif
 }
 
-internal struct AnimationModifier: ViewModifier {
-  let animationConfig: [String: Any]
-  let animatedValue: AnyHashable?
+internal struct GlassEffectIdModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
 
   func body(content: Content) -> some View {
-    let animationValue = parseAnimation(animationConfig)
-    if let value = animatedValue {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+        content.glassEffectID(id, in: namespace)
+      } else {
+        content
+      }
+      #else
+      content
+      #endif
+    } else {
+      content
+    }
+  }
+}
+
+internal enum AnimationType: String, Enumerable {
+  case easeInOut
+  case easeIn
+  case easeOut
+  case linear
+  case spring
+  case interpolatingSpring
+  case `default`
+}
+
+internal struct AnimationConfig: Record {
+  @Field var type: AnimationType = .default
+  @Field var duration: Double?
+  @Field var response: Double?
+  @Field var dampingFraction: Double?
+  @Field var blendDuration: Double?
+  @Field var bounce: Double?
+  @Field var mass: Double?
+  @Field var stiffness: Double?
+  @Field var damping: Double?
+  @Field var initialVelocity: Double?
+  @Field var delay: Double?
+  @Field var repeatCount: Int?
+  @Field var autoreverses: Bool?
+}
+
+internal struct AnimationModifier: ViewModifier, Record {
+  @Field var animation: AnimationConfig
+  @Field var animatedValue: Either<Bool, Double>?
+
+  func body(content: Content) -> some View {
+    let animationValue = parseAnimation(animation)
+    if let value: Bool = animatedValue?.get() {
+      content.animation(animationValue, value: value)
+    } else if let value: Double = animatedValue?.get() {
       content.animation(animationValue, value: value)
     } else {
       content
     }
   }
 
-  private func parseAnimation(_ config: [String: Any]) -> Animation {
-    let type = config["type"] as? String ?? "default"
+  private func parseAnimation(_ config: AnimationConfig) -> Animation {
+    let type = config.type
 
     var animation: Animation
 
     switch type {
-    case "easeIn":
-      if let duration = config["duration"] as? Double {
+    case .easeIn:
+      if let duration = config.duration {
         animation = .easeIn(duration: duration)
       } else {
         animation = .easeIn
       }
 
-    case "easeOut":
-      if let duration = config["duration"] as? Double {
+    case .easeOut:
+      if let duration = config.duration {
         animation = .easeOut(duration: duration)
       } else {
         animation = .easeOut
       }
 
-    case "linear":
-      if let duration = config["duration"] as? Double {
+    case .linear:
+      if let duration = config.duration {
         animation = .linear(duration: duration)
       } else {
         animation = .linear
       }
 
-    case "easeInOut":
-      if let duration = config["duration"] as? Double {
+    case .easeInOut:
+      if let duration = config.duration {
         animation = .easeInOut(duration: duration)
       } else {
         animation = .easeInOut
       }
 
-    case "spring":
-      let duration = config["duration"] as? Double
-      let bounce = config["bounce"] as? Double
-      let response = config["response"] as? Double
-      let dampingFraction = config["dampingFraction"] as? Double
-      let blendDuration = config["blendDuration"] as? Double
+    case .spring:
+      let duration = config.duration
+      let bounce = config.bounce
+      let response = config.response
+      let dampingFraction = config.dampingFraction
+      let blendDuration = config.blendDuration
 
       if response != nil || dampingFraction != nil {
         // default values are 0.5, 0.825, 0.0
@@ -529,13 +687,13 @@ internal struct AnimationModifier: ViewModifier {
         animation = .spring
       }
 
-    case "interpolatingSpring":
-      let duration = config["duration"] as? Double
-      let bounce = config["bounce"] as? Double
-      let mass = config["mass"] as? Double
-      let stiffness = config["stiffness"] as? Double
-      let damping = config["damping"] as? Double
-      let initialVelocity = config["initialVelocity"] as? Double
+    case .interpolatingSpring:
+      let duration = config.duration
+      let bounce = config.bounce
+      let mass = config.mass
+      let stiffness = config.stiffness
+      let damping = config.stiffness
+      let initialVelocity = config.initialVelocity
 
       if duration != nil || bounce != nil {
         animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
@@ -549,12 +707,12 @@ internal struct AnimationModifier: ViewModifier {
       animation = .default
     }
 
-    if let delay = config["delay"] as? Double {
+    if let delay = config.delay {
       animation = animation.delay(delay)
     }
 
-    if let repeatCount = config["repeatCount"] as? Int {
-      let autoreverses = config["autoreverses"] as? Bool ?? false
+    if let repeatCount = config.repeatCount {
+      let autoreverses = config.autoreverses ?? false
       animation = animation.repeatCount(repeatCount, autoreverses: autoreverses)
     }
 
@@ -622,6 +780,19 @@ internal class ViewModifierRegistry {
   }
 }
 
+internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
+  @Field var id: String?
+  @Field var namespaceId: String?
+
+  func body(content: Content) -> some View {
+    if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
+      content.matchedGeometryEffect(id: id, in: namespace)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -665,6 +836,10 @@ extension ViewModifierRegistry {
 
     register("foregroundColor") { params, appContext, _ in
       return try ForegroundColorModifier(from: params, appContext: appContext)
+    }
+
+    register("foregroundStyle") { params, appContext, _ in
+      return try ForegroundStyleModifier(from: params, appContext: appContext)
     }
 
     register("tint") { params, appContext, _ in
@@ -763,11 +938,20 @@ extension ViewModifierRegistry {
       return try GlassEffectModifier(from: params, appContext: appContext)
     }
 
-    register("animation") { params, _, _ in
-      let animationConfig = params["animation"] as? [String: Any] ?? ["type": "default"]
-      let animatedValue = params["animatedValue"] as? AnyHashable
+    register("animation") { params, appContext, _ in
+      return try AnimationModifier.init(from: params, appContext: appContext)
+    }
 
-      return AnimationModifier(animationConfig: animationConfig, animatedValue: animatedValue)
+    register("glassEffectId") { params, appContext, _ in
+      return try GlassEffectIdModifier.init(from: params, appContext: appContext)
+    }
+
+    register("matchedGeometryEffect") { params, appContext, _ in
+      return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
+    }
+
+    register("fixedSize") { params, appContext, _ in
+      return try FixedSizeModifier(from: params, appContext: appContext)
     }
   }
 }

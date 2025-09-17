@@ -1,6 +1,7 @@
 // UIKit is unavailable on macOS, so platform checks are necessary.
 // For macOS support, we should consider using NSOpenPanel: https://developer.apple.com/documentation/appkit/nsopenpanel
-#if os(iOS) || os(tvOS)
+// UIDocumentPickerViewController is unavailable on tvOS
+#if os(iOS)
 import ExpoModulesCore
 import UIKit
 
@@ -66,6 +67,13 @@ internal class FilePickingHandler: FilePickingResultHandler {
     handlePickingResult { context in
       let file = FileSystemFile(url: url)
       context.promise.resolve(file)
+    }
+  }
+
+  func didPickDirectoryAt(url: URL) {
+    handlePickingResult { context in
+      let directory = FileSystemDirectory(url: url)
+      context.promise.resolve(directory)
     }
   }
 

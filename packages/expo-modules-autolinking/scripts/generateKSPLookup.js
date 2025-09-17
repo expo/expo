@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 const minKotlinVersion = '2.0.0';
-const maxKotlinVersion = '2.2.0';
+const maxKotlinVersion = '2.2.20';
 
 const groupId = 'com.google.devtools.ksp';
 const artifactId = 'symbol-processing-gradle-plugin';
@@ -11,32 +11,31 @@ const path = require('path').resolve(
   '../android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/KSPLookup.kt'
 );
 
-const mavenRows = 30;
-const mavenSearchUrl = 'https://search.maven.org/solrsearch/select';
+const numberPerPage = 30;
+const githubReleaseUrl = 'https://api.github.com/repos/google/ksp/releases';
 
-async function* fetchMavenVersions(groupId, artifactId) {
-  const query = `g:"${groupId}" AND a:"${artifactId}"`;
-  const url = `${mavenSearchUrl}?q=${encodeURIComponent(query)}&core=gav&rows=${mavenRows}&wt=json`;
+async function* fetchKSPReleases() {
+  const url = `${githubReleaseUrl}?per_page=${numberPerPage}`;
 
-  let currentIndex = 0;
+  let currentPage = 1;
   while (true) {
-    const urlWithIndex = `${url}&start=${currentIndex}`;
+    const urlWithIndex = `${url}&page=${currentPage}`;
     console.log(`Fetching versions from: ${urlWithIndex}...`);
-    const response = await fetch(`${url}&start=${currentIndex}`);
+    const response = await fetch(urlWithIndex);
 
     if (!response.ok) {
       throw new Error(`HTTP error, status: ${response.status}`);
     }
 
     const data = await response.json();
-    const versions = data.response.docs
-      .map((doc) => doc.v)
+    const versions = data
+      .map((release) => release.tag_name)
       // Filter out release candidates, beta and milestone versions
       .filter((version) => !/(rc|beta|m1)/i.test(version));
 
     yield versions;
 
-    currentIndex += mavenRows;
+    currentPage += 1;
   }
 }
 
@@ -82,7 +81,7 @@ function groupByKotlinVersion(versions) {
 }
 
 async function generateKSPLookup() {
-  const versionsGenerator = fetchMavenVersions(groupId, artifactId, minKotlinVersion);
+  const versionsGenerator = fetchKSPReleases(groupId, artifactId, minKotlinVersion);
   const versions = groupByKotlinVersion(
     await filterByKotinVersion(versionsGenerator, minKotlinVersion, maxKotlinVersion)
   );

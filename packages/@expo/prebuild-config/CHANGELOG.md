@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 54.0.3 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Always set RCTNewArchEnabled ([#39626](https://github.com/expo/expo/pull/39626) by [@brentvatne](https://github.com/brentvatne))
+
+## 54.0.2 — 2025-09-12
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.1 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.8 — 2025-09-02
+
+### 💡 Others
+
+- warn when using the deprecated notification app config field ([#39325](https://github.com/expo/expo/pull/39325) by [@vonovak](https://github.com/vonovak))
+
 ## 10.0.7 — 2025-08-31
 
 _This version does not introduce any user-facing changes._

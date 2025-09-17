@@ -56,7 +56,6 @@ class AppDelegate: ExpoAppDelegate {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
-    bindReactNativeFactory(factory)
 
     // AppController instance must always be created first.
     // expo-updates creates a different type of controller

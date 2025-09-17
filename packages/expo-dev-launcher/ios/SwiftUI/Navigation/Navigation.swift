@@ -32,7 +32,7 @@ struct DevLauncherNavigationHeader: View {
           let appIcon = loadAppIcon(from: path) {
           Image(uiImage: appIcon)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(width: 32, height: 32)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
@@ -96,7 +96,7 @@ struct DevLauncherNavigationHeader: View {
       Avatar(url: url) { image in
         image
           .resizable()
-          .aspectRatio(contentMode: .fill)
+          .scaledToFill()
       } placeholder: {
         Circle()
           .fill(Color.expoSystemGray5)

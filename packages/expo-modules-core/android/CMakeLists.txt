@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.16)
 
 project(expo-modules-core)
 
@@ -16,6 +16,7 @@ endif ()
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
+
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
 file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
@@ -42,6 +43,8 @@ add_library(
         ${sources_android_types}
         ${sources_android_javaclasses}
 )
+
+target_precompile_headers(${PACKAGE_NAME} PRIVATE ${SRC_DIR}/main/cpp/ExpoHeader.pch)
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
   add_subdirectory("${SRC_DIR}/fabric")
@@ -89,15 +92,11 @@ find_package(fbjni REQUIRED CONFIG)
 
 # includes
 
-if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
-  get_target_property(INCLUDE_reactnativejni
-       ReactAndroid::reactnative
-       INTERFACE_INCLUDE_DIRECTORIES)
-else()
-  get_target_property(INCLUDE_reactnativejni
-        ReactAndroid::reactnativejni
-        INTERFACE_INCLUDE_DIRECTORIES)
-endif()
+
+get_target_property(INCLUDE_reactnativejni
+  ReactAndroid::reactnative
+  INTERFACE_INCLUDE_DIRECTORIES
+)
 
 target_include_directories(
        ${PACKAGE_NAME}
@@ -131,16 +130,8 @@ target_link_libraries(
   ${NEW_ARCHITECTURE_DEPENDENCIES}
 )
 
-if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
-   target_link_libraries(
-    ${PACKAGE_NAME}
-    ReactAndroid::reactnative
-   )
-else()
-  target_link_libraries(
-    ${PACKAGE_NAME}
-    ReactAndroid::reactnativejni
-    ReactAndroid::folly_runtime
-    ReactAndroid::react_nativemodule_core
-  )
-endif()
+
+target_link_libraries(
+  ${PACKAGE_NAME}
+  ReactAndroid::reactnative
+)

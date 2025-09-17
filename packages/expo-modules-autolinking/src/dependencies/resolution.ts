@@ -200,3 +200,48 @@ const isOptionalPeerDependencyMeta = (
     !!peerDependenciesMeta[packageName].optional
   );
 };
+
+export async function scanDevDependenciesShallowly(
+  rawPath: string,
+  { shouldIncludeDependency = defaultShouldIncludeDependency }: ResolutionOptions = {}
+): Promise<ResolutionResult> {
+  const rootPath = await maybeRealpath(rawPath);
+  if (!rootPath) {
+    return {};
+  }
+
+  const getNodeModulePaths = createNodeModulePathsCreator();
+  const searchResults: ResolutionResult = Object.create(null);
+  const nodeModulePaths = await getNodeModulePaths(rootPath);
+  const packageJson = await loadPackageJson(fastJoin(rootPath, 'package.json'));
+  if (!packageJson) {
+    return searchResults;
+  }
+
+  const devDependencies =
+    packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
+      ? packageJson.devDependencies
+      : {};
+  for (const dependencyName in devDependencies) {
+    if (!shouldIncludeDependency(dependencyName)) {
+      continue;
+    }
+    for (let idx = 0; idx < nodeModulePaths.length; idx++) {
+      const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
+      const nodeModulePath = await maybeRealpath(originPath);
+      if (nodeModulePath != null) {
+        searchResults[dependencyName] = {
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          name: dependencyName,
+          version: '',
+          path: nodeModulePath,
+          originPath,
+          duplicates: null,
+          depth: 0,
+        };
+        break;
+      }
+    }
+  }
+  return searchResults;
+}

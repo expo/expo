@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix multiple runs of prebuild repeateadly adding generated code. ([#39702](https://github.com/expo/expo/pull/39702) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 15.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
 
 ## 15.0.5 — 2025-08-31
 

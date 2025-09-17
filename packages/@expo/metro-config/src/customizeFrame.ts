@@ -33,7 +33,7 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     // Babel helpers that implement language features
     'node_modules/@babel/runtime/.+\\.js$',
     // Hide Hermes internal bytecode
-    '/InternalBytecode/InternalBytecode\\.js$',
+    '/(?:InternalBytecode/)?InternalBytecode\\.js$',
     // Block native code invocations
     `\\[native code\\]`,
     // Hide react-dom (web)
@@ -105,6 +105,13 @@ export function getDefaultCustomizeFrame(): CustomizeFrameFunc {
         ['global', 'global code'].includes(frame.methodName) &&
         frame.file?.match(/^https?:\/\//g)
       ) {
+        collapse = true;
+      } else if (
+        (frame.file === 'unknown' || frame.file === '<anonymous>') &&
+        (frame.column == null || frame.column === -1)
+      ) {
+        // If we definitively don't have a file, as indicated by the invalid column value,
+        // this frame won't be able to desymbolicate properly
         collapse = true;
       } else if (frame.file === '<native>') {
         collapse = true;

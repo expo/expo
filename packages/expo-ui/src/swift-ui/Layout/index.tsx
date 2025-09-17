@@ -90,3 +90,33 @@ export function Group(props: GroupProps) {
   return <GroupNativeView {...transformGroupProps(props)} />;
 }
 //#endregion
+
+//#region ZStack Component
+export interface ZStackProps extends StackBaseProps {
+  alignment?:
+    | 'center'
+    | 'leading'
+    | 'trailing'
+    | 'top'
+    | 'bottom'
+    | 'topLeading'
+    | 'topTrailing'
+    | 'bottomLeading'
+    | 'bottomTrailing'
+    | 'centerFirstTextBaseline'
+    | 'centerLastTextBaseline'
+    | 'leadingFirstTextBaseline'
+    | 'leadingLastTextBaseline'
+    | 'trailingFirstTextBaseline'
+    | 'trailingLastTextBaseline';
+}
+
+const ZStackNativeView: React.ComponentType<NativeStackProps> = requireNativeView(
+  'ExpoUI',
+  'ZStackView'
+);
+
+export function ZStack(props: ZStackProps) {
+  return <ZStackNativeView {...transformNativeProps(props)} />;
+}
+//#endregion

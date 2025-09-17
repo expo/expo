@@ -1,4 +1,4 @@
-import { importExportPlugin } from '../import-export-plugin';
+import { importExportLiveBindingsPlugin, importExportPlugin } from '../index';
 import { compare } from './__mocks__/test-helpers-upstream';
 import { showTransformedDeps } from './utils';
 
@@ -149,10 +149,9 @@ it('exports members of another module directly from an import (as bax) with live
     var _bar = require('bar');
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
-  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
-    .toMatchInlineSnapshot(`
+  expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
     > 2 |     export {foo as bax, baz} from 'bar';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)"
@@ -177,10 +176,9 @@ it('imports members from another module and export them in separate statement wi
     var _bar = require('bar');
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
-  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
-    .toMatchInlineSnapshot(`
+  expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
     > 2 |     import { foo } from 'bar';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)"
@@ -196,12 +194,15 @@ it('imports multiple members from another module and export them in separate sta
 
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
     Object.defineProperty(exports, "bar", {
       enumerable: true,
       get: function () {
-        return function (m) {
-          return m && m.__esModule ? m.default : m;
-        }(_bar);
+        return bar.default;
       }
     });
     Object.defineProperty(exports, "foo", {
@@ -217,16 +218,13 @@ it('imports multiple members from another module and export them in separate sta
       }
     });
     var _bar = require('bar');
-    var bar = _$$_IMPORT_DEFAULT('bar');
+    var bar = _interopDefault(_bar);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
-  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
-    .toMatchInlineSnapshot(`
+  expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
-    > 2 |     import bar, { foo, baz } from 'bar';
-        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)
     > 2 |     import bar, { foo, baz } from 'bar';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)"
   `);
@@ -247,10 +245,9 @@ it('transforms and import statements to require live bindings', () => {
     console.log(_qux.y);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
-  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
-    .toMatchInlineSnapshot(`
+  expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
     > 2 |     import {x} from 'baz';
         |     ^^^^^^^^^^^^^^^^^^^^^^ dep #0 (baz)
@@ -265,21 +262,44 @@ it('transforms and extracts "import" statements as live bindings', () => {
     import * as w from 'bar';
     import {x} from 'baz';
     import {y as z} from 'qux';
+    test(v, w, x, z);
     import 'side-effect';
   `;
 
   const expected = `
-    var v = _$$_IMPORT_DEFAULT('foo');
-    var w = _$$_IMPORT_ALL('bar');
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
+    function _interopNamespace(e) {
+      if (e && e.__esModule) return e;
+      var n = {};
+      if (e) Object.keys(e).forEach(function (k) {
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () {
+            return e[k];
+          }
+        });
+      });
+      n.default = e;
+      return n;
+    }
+    var _foo = require('foo');
+    var v = _interopDefault(_foo);
+    var _bar = require('bar');
+    var w = _interopNamespace(_bar);
     var _baz = require('baz');
     var _qux = require('qux');
     require('side-effect');
+    test(v.default, w, _baz.x, _qux.y);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
-  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
-    .toMatchInlineSnapshot(`
+  expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
     > 2 |     import v from 'foo';
         |     ^^^^^^^^^^^^^^^^^^^^ dep #0 (foo)
@@ -289,7 +309,7 @@ it('transforms and extracts "import" statements as live bindings', () => {
         |     ^^^^^^^^^^^^^^^^^^^^^^ dep #2 (baz)
     > 5 |     import {y as z} from 'qux';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #3 (qux)
-    > 6 |     import 'side-effect';
+    > 7 |     import 'side-effect';
         |     ^^^^^^^^^^^^^^^^^^^^^ dep #4 (side-effect)"
   `);
 });
@@ -303,25 +323,20 @@ it('transforms export all as live bindings (no named exports)', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var _exportedNames = {};
     var _foo = require('foo');
-    Object.keys(_foo).forEach(function (_key) {
-      if (_key === "default" || _key === "__esModule") return;
-      if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-      if (_key in exports && exports[_key] === _foo[_key]) return;
-      Object.defineProperty(exports, _key, {
-        enumerable: true,
-        get: function () {
-          return _foo[_key];
-        }
-      });
+    Object.keys(_foo).forEach(function (k) {
+      if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+        Object.defineProperty(exports, k, {
+          enumerable: true,
+          get: function () { return _foo[k]; }
+        });
+      }
     });
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
-  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
-    .toMatchInlineSnapshot(`
+  expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
     > 2 |     export * from 'foo';
         |     ^^^^^^^^^^^^^^^^^^^^ dep #0 (foo)"
@@ -340,34 +355,33 @@ it('places export all with live bindings above export default and named', () => 
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var _exportedNames = {
-      "baz": true
-    };
     Object.defineProperty(exports, "baz", {
       enumerable: true,
       get: function () {
         return _bar.baz;
       }
     });
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function () {
+        return _default;
+      }
+    });
     var _foo = require('foo');
-    Object.keys(_foo).forEach(function (_key) {
-      if (_key === "default" || _key === "__esModule") return;
-      if (Object.prototype.hasOwnProperty.call(_exportedNames, _key)) return;
-      if (_key in exports && exports[_key] === _foo[_key]) return;
-      Object.defineProperty(exports, _key, {
-        enumerable: true,
-        get: function () {
-          return _foo[_key];
-        }
-      });
+    Object.keys(_foo).forEach(function (k) {
+      if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
+        Object.defineProperty(exports, k, {
+          enumerable: true,
+          get: function () { return _foo[k]; }
+        });
+      }
     });
     var _bar = require('bar');
     const bax = 'bax';
     var _default = bax;
-    exports.default = _default;
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('places export all above export default and named', () => {
@@ -409,15 +423,34 @@ it('does not transform import all as export as live bindings', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var foo = _$$_IMPORT_ALL('bar');
-
-    exports.foo = foo;
+    function _interopNamespace(e) {
+      if (e && e.__esModule) return e;
+      var n = {};
+      if (e) Object.keys(e).forEach(function (k) {
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () {
+            return e[k];
+          }
+        });
+      });
+      n.default = e;
+      return n;
+    }
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return foo;
+      }
+    });
+    var _bar = require('bar');
+    var foo = _interopNamespace(_bar);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 
-  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
-    .toMatchInlineSnapshot(`
+  expect(showTransformedDeps(code, [importExportLiveBindingsPlugin])).toMatchInlineSnapshot(`
     "
     > 2 |     import * as foo from 'bar';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)"
@@ -433,12 +466,16 @@ it('does not transform export default class as live bindings', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function () {
+        return foo;
+      }
+    });
     class foo {};
-
-    exports.default = foo;
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('does not transform direct export default as live binding', () => {
@@ -452,12 +489,23 @@ it('does not transform direct export default as live binding', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
-    var foo = _$$_IMPORT_DEFAULT('bar');
-    var _default = foo;
-    exports.default = _default;
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function () {
+        return _default;
+      },
+    });
+    var _bar = require('bar');
+    var foo = _interopDefault(_bar);
+    var _default = foo.default;
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('transforms export as default as live binding', () => {
@@ -478,7 +526,7 @@ it('transforms export as default as live binding', () => {
     var _bar = require('bar');
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('transforms export as default as live binding with shared module', () => {
@@ -505,7 +553,7 @@ it('transforms export as default as live binding with shared module', () => {
     var _bar = require('bar');
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('transforms export default as local with live binding', () => {
@@ -517,18 +565,22 @@ it('transforms export default as local with live binding', () => {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
     Object.defineProperty(exports, "foo", {
       enumerable: true,
       get: function () {
-        return function (m) {
-          return m && m.__esModule ? m.default : m;
-        }(_bar);
+        return _bar2.default;
       }
     });
     var _bar = require('bar');
+    var _bar2 = _interopDefault(_bar);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('transforms export default as local then >1 locals with live binding', () => {
@@ -542,12 +594,15 @@ it('transforms export default as local then >1 locals with live binding', () => 
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
     Object.defineProperty(exports, "b", {
       enumerable: true,
       get: function () {
-        return function (m) {
-          return m && m.__esModule ? m.default : m;
-        }(_bar);
+        return _bar2.default;
       }
     });
     Object.defineProperty(exports, "c", {
@@ -563,21 +618,30 @@ it('transforms export default as local then >1 locals with live binding', () => 
       }
     });
     var _bar = require('bar');
+    var _bar2 = _interopDefault(_bar);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('transforms import default as local with live binding', () => {
   const code = `
     import { default as foo } from 'bar';
+    test(foo);
   `;
 
   const expected = `
-    var foo = _$$_IMPORT_DEFAULT('bar');
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
+    var _bar = require('bar');
+    var foo = _interopDefault(_bar);
+    test(foo.default);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('transforms import default as local then >1 locals with live binding', () => {
@@ -588,13 +652,18 @@ it('transforms import default as local then >1 locals with live binding', () => 
   `;
 
   const expected = `
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
     var _bar = require('bar');
-    var b = _$$_IMPORT_DEFAULT('bar');
+    var b = _interopDefault(_bar);
 
-    test(b, _bar.c, _bar.d)
+    test(b.default, _bar.c, _bar.d)
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('transforms import default and named as local with live binding', () => {
@@ -604,12 +673,17 @@ it('transforms import default and named as local with live binding', () => {
   `;
 
   const expected = `
+    function _interopDefault(e) {
+      return e && e.__esModule ? e : {
+        default: e
+      };
+    }
     var _bar = require('bar');
-    var foo = _$$_IMPORT_DEFAULT('bar');
-    console.log(foo, _bar.baz);
+    var foo = _interopDefault(_bar);
+    console.log(foo.default, _bar.baz);
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });
 
 it('hoists declarations to the top with live bindings', () => {
@@ -620,8 +694,8 @@ it('hoists declarations to the top with live bindings', () => {
 
   const expected = `
     var _bar = require('bar');
-    _bar.foo();
+    (0, _bar.foo)();
   `;
 
-  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+  compare([importExportLiveBindingsPlugin], code, expected, { ...opts });
 });

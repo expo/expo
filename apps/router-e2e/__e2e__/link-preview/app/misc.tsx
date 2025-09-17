@@ -1,6 +1,13 @@
 import { Link, usePathname } from 'expo-router';
 import React from 'react';
-import { View, Text, useWindowDimensions, TouchableOpacity, ScrollView, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  useWindowDimensions,
+  TouchableOpacity,
+  ScrollView,
+  Pressable,
+} from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
 
@@ -18,10 +25,14 @@ const HomeIndex = () => {
         <Text>Misc</Text>
         <Text>Current Path: {pathname}</Text>
       </View>
-      <Text style={{ marginBottom: 16 }}>Time: {time}</Text>
+      <Text>Time: {time}</Text>
       <Spacer />
       <Link href="/">
         <Link.Trigger>Link.Preview: /</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/misc">
+        <Link.Trigger>Link.Preview: /misc</Link.Trigger>
         <Link.Preview />
       </Link>
       <Spacer />
@@ -77,11 +88,25 @@ const HomeIndex = () => {
       <Spacer />
       <Link href="/one">
         <Link.Trigger>Link.Preview 200x100: /one</Link.Trigger>
-        <Link.Preview width={200} height={100} />
+        <Link.Preview style={{ width: 200, height: 100 }} />
       </Link>
       <Link href="/one">
         <Link.Trigger>Link.Preview 16:9: /one</Link.Trigger>
-        <Link.Preview width={width} height={width * (9 / 16)} />
+        <Link.Preview style={{ width, height: width * (9 / 16) }} />
+      </Link>
+      <Link href="/one">
+        <Link.Trigger>Link.Preview 1234x4321: /one</Link.Trigger>
+        <Link.Preview style={{ width: 1234, height: 4321 }} />
+      </Link>
+      <Link href="/one">
+        <Link.Trigger>Link.Preview styled: /one</Link.Trigger>
+        <Link.Preview
+          style={{
+            width: 300,
+            height: 400,
+            borderRadius: 2,
+          }}
+        />
       </Link>
       <Spacer />
       <Link href={`/one?time=${time}`}>

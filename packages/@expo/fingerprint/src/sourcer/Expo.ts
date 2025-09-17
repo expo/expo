@@ -82,7 +82,14 @@ export async function getExpoConfigSourcesAsync(
     // google service files
     isAndroid ? expoConfig.android?.googleServicesFile : undefined,
     isIos ? expoConfig.ios?.googleServicesFile : undefined,
-  ].filter(Boolean) as string[];
+  ]
+    .filter((file): file is string => Boolean(file))
+    .map((filePath) => {
+      // The filePath could be relative (`./assets/icon.png`, `assets/icon.png`) or even absolute.
+      // We need to normalize the path and return as relative path without `./` prefix.
+      const absolutePath = path.resolve(projectRoot, filePath);
+      return path.relative(projectRoot, absolutePath);
+    });
   const externalFileSources = (
     await Promise.all(
       externalFiles.map(async (file) => {

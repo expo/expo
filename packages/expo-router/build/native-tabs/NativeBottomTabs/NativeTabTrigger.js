@@ -195,7 +195,7 @@ function convertSrcOrComponentToSrc(src) {
     return undefined;
 }
 function appendTabBarOptions(options, props) {
-    const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, } = props;
+    const { backgroundColor, blurEffect, iconColor, disableTransparentOnScrollEdge, badgeBackgroundColor, badgeTextColor, indicatorColor, labelStyle, shadowColor, } = props;
     if (backgroundColor) {
         options.backgroundColor = backgroundColor;
     }
@@ -204,6 +204,9 @@ function appendTabBarOptions(options, props) {
     if (process.env.EXPO_OS !== 'android') {
         if (blurEffect) {
             options.blurEffect = blurEffect;
+        }
+        if (shadowColor) {
+            options.shadowColor = shadowColor;
         }
         if (iconColor) {
             options.iconColor = iconColor;

@@ -3,7 +3,6 @@ package expo.modules.devmenu.compose.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuActionHandler
@@ -13,10 +12,13 @@ import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.ToggleSwitch
-import expo.modules.devmenu.compose.utils.IsRunningInPreview
 
 @Composable
-fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSettings) {
+fun ToolsSection(
+  onAction: DevMenuActionHandler,
+  devToolsSettings: DevToolsSettings,
+  showFab: Boolean
+) {
   Section.Header(
     "TOOLS"
   )
@@ -39,7 +41,7 @@ fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSetti
           )
         },
         onClick = {
-          onAction(DevMenuAction.Reload)
+          onAction(DevMenuAction.TogglePerformanceMonitor)
         }
       )
 
@@ -125,7 +127,7 @@ fun ToolsSection(onAction: DevMenuActionHandler, devToolsSettings: DevToolsSetti
         },
         rightComponent = {
           ToggleSwitch(
-            isToggled = if (IsRunningInPreview) false else DevMenuPreferencesHandle.showFab
+            isToggled = showFab
           )
         },
         onClick = {

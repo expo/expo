@@ -42,6 +42,7 @@ public struct DevLauncherRootView: View {
       .environmentObject(viewModel)
       .environmentObject(DevLauncherNavigation(showingUserProfile: $showingUserProfile))
     }
+    .navigationViewStyle(.stack)
     .sheet(isPresented: $showingUserProfile) {
       AccountSheet()
         .environmentObject(viewModel)

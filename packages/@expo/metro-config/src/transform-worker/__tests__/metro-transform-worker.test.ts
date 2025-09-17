@@ -376,7 +376,8 @@ it('transforms async generators', async () => {
 });
 
 it('transforms import/export syntax when experimental flag is on', async () => {
-  const contents = ['import c from "./c";'].join('\n');
+  // NOTE(@kitten): We have to add a side-effect, or the import will be dropped
+  const contents = ['import c from "./c"; test(c);'].join('\n');
 
   const result = await Transformer.transform(
     baseConfig,
@@ -392,7 +393,14 @@ it('transforms import/export syntax when experimental flag is on', async () => {
       HEADER_DEV,
       '  "use strict";',
       '',
-      '  var c = _$$_IMPORT_DEFAULT(_dependencyMap[0], "./c");',
+      '  function _interopDefault(e) {',
+      '    return e && e.__esModule ? e : {',
+      '      default: e',
+      '    };',
+      '  }',
+      '  var _c = _$$_REQUIRE(_dependencyMap[0], "./c");',
+      '  var c = _interopDefault(_c);',
+      '  test(c.default);',
       '});',
     ].join('\n')
   );
@@ -400,25 +408,19 @@ it('transforms import/export syntax when experimental flag is on', async () => {
   const trace = toTraceMap(result.output[0], contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 7 })).toMatchObject({
-    line: 4,
-    column: 6,
+    line: 10,
+    column: 28,
   });
 
-  expect(originalPositionFor(trace, { line: 4, column: 6 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 11, column: 7 })).toMatchObject({
     line: 1,
-    column: 7,
+    column: 26,
     name: 'c',
   });
 
-  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
-  expect(originalPositionFor(trace, { line: 4, column: 10 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 9, column: 30 })).toMatchObject({
     line: 1,
-    column: 8,
-    name: '_$$_IMPORT_DEFAULT',
-  });
-  expect(originalPositionFor(trace, { line: 4, column: 29 })).toMatchObject({
-    line: 1,
-    column: 8,
+    column: 0,
     name: '_dependencyMap',
   });
 

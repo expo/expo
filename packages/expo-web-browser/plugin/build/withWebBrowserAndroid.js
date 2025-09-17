@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withWebBrowserAndroid = void 0;
 const config_plugins_1 = require("expo/config-plugins");
-const promises_1 = __importDefault(require("fs/promises"));
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("./utils");
 const withWebBrowserAndroid = (config) => {
@@ -48,6 +48,11 @@ function addLauncherClassToProject(config) {
         'android',
         async (config) => {
             const fileName = 'BrowserLauncherActivity.kt';
+            const dir = path_1.default.dirname(config_plugins_1.AndroidConfig.Paths.getProjectFilePath(config.modRequest.projectRoot, 'MainApplication'));
+            const fullPath = path_1.default.join(dir, fileName);
+            if (fs_1.default.existsSync(fullPath)) {
+                return config;
+            }
             const classTemplate = `package ${config.android?.package || ''};
   
 import android.app.Activity
@@ -66,9 +71,7 @@ class BrowserLauncherActivity : Activity() {
   }
 }
 `;
-            const dir = path_1.default.dirname(config_plugins_1.AndroidConfig.Paths.getProjectFilePath(config.modRequest.projectRoot, 'MainApplication'));
-            const fullPath = path_1.default.join(dir, fileName);
-            await promises_1.default.writeFile(fullPath, classTemplate);
+            await fs_1.default.promises.writeFile(fullPath, classTemplate);
             return config;
         },
     ]);
@@ -77,8 +80,11 @@ function modifyMainApplication(config) {
     return (0, config_plugins_1.withMainApplication)(config, (config) => {
         const mainApplication = config.modResults;
         const importsMod = (0, utils_1.addImports)(mainApplication.contents, ['android.app.Activity', 'android.os.Bundle'], false);
-        const onCreateMod = (0, utils_1.appendContentsInsideDeclarationBlock)(importsMod, 'onCreate', '  registerActivityLifecycleCallbacks(lifecycleCallbacks)');
-        const result = addMainApplicationMod(onCreateMod);
+        let contents = importsMod;
+        if (!mainApplication.contents.includes('registerActivityLifecycleCallbacks(lifecycleCallbacks)')) {
+            contents = (0, utils_1.appendContentsInsideDeclarationBlock)(importsMod, 'onCreate', 'registerActivityLifecycleCallbacks(lifecycleCallbacks)');
+        }
+        const result = addMainApplicationMod(contents);
         return {
             ...config,
             modResults: {
@@ -89,6 +95,9 @@ function modifyMainApplication(config) {
     });
 }
 function addMainApplicationMod(contents) {
+    if (contents.includes('private val runningActivities = ArrayList<Class<*>>()')) {
+        return contents;
+    }
     const codeMod = `
   private val runningActivities = ArrayList<Class<*>>()
 

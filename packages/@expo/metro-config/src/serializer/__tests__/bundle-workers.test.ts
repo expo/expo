@@ -152,6 +152,9 @@ it(`supports worker bundle with shared deps`, async () => {
   );
 
   expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/c.js',
+    }),
     {
       absolutePath: '/app/b.js',
       data: expect.objectContaining({
@@ -165,9 +168,6 @@ it(`supports worker bundle with shared deps`, async () => {
       data: expect.objectContaining({
         name: 'expo-mock/async-require',
       }),
-    }),
-    expect.objectContaining({
-      absolutePath: '/app/c.js',
     }),
   ]);
   expectImports(graph, '/app/b.js').toEqual([

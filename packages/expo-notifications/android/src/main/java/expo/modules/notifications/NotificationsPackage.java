@@ -40,7 +40,7 @@ public class NotificationsPackage extends BasePackage {
 
   @Override
   public List<ReactActivityLifecycleListener> createReactActivityLifecycleListeners(Context activityContext) {
-    return Collections.singletonList(new ExpoNotificationLifecycleListener(activityContext, mNotificationManager));
+    return Collections.singletonList(new ExpoNotificationLifecycleListener(mNotificationManager));
   }
 }
 

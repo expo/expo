@@ -242,8 +242,11 @@ function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
   useEffect(() => {
     const loadIcon = async () => {
       if (src && src instanceof Promise) {
-        const currentAwaitedIcon = { src: await src };
-        setAwaitedIcon(currentAwaitedIcon);
+        const awaitedSrc = await src;
+        if (awaitedSrc) {
+          const currentAwaitedIcon = { src: awaitedSrc };
+          setAwaitedIcon(currentAwaitedIcon);
+        }
       }
     };
     loadIcon();

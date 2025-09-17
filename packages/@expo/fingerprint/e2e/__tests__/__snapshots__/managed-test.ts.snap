@@ -131,21 +131,21 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "contents",
   },
   {
-    "filePath": "./assets/icon.png",
+    "filePath": "assets/icon.png",
     "reasons": [
       "expoConfigExternalFile",
     ],
     "type": "file",
   },
   {
-    "filePath": "./assets/adaptive-icon.png",
+    "filePath": "assets/adaptive-icon.png",
     "reasons": [
       "expoConfigExternalFile",
     ],
     "type": "file",
   },
   {
-    "filePath": "./assets/splash.png",
+    "filePath": "assets/splash.png",
     "reasons": [
       "expoConfigExternalFile",
     ],

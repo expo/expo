@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "14.0.5",
+  "version": "54.0.1",
   "description": "The Babel preset for Expo projects",
   "main": "build/index.js",
   "files": [
@@ -69,11 +69,11 @@
     "@babel/plugin-transform-parameters": "^7.24.7",
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
-    "@react-native/babel-preset": "0.81.1",
+    "@react-native/babel-preset": "0.81.4",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "babel-plugin-react-native-web": "~0.21.0",
     "babel-plugin-transform-flow-enums": "^0.0.2",
-    "babel-plugin-syntax-hermes-parser": "^0.25.1",
+    "babel-plugin-syntax-hermes-parser": "^0.29.1",
     "debug": "^4.3.4",
     "resolve-from": "^5.0.0"
   },
@@ -81,7 +81,7 @@
     "@babel/core": "^7.26.0",
     "@types/babel__core": "^7.20.5",
     "@expo/metro": "~0.1.1",
-    "expo-module-scripts": "^5.0.6",
+    "expo-module-scripts": "^5.0.7",
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2"
   }

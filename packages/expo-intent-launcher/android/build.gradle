@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '13.0.5'
+version = '13.0.7'
 
 android {
   namespace "expo.modules.intentlauncher"
   defaultConfig {
     versionCode 14
-    versionName '13.0.5'
+    versionName '13.0.7'
   }
 }
 

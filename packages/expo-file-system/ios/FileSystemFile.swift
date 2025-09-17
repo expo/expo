@@ -8,7 +8,7 @@ internal final class FileSystemFile: FileSystemPath {
     super.init(url: url, isDirectory: false)
   }
 
-  func validateType() throws {
+  override func validateType() throws {
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
       if isDirectory.boolValue {
@@ -18,17 +18,17 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func create(_ options: CreateOptions) throws {
-    try validatePermission(.write)
-    try validateType()
-    try validateCanCreate(options)
-    do {
-      if options.intermediates {
-        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+    try withCorrectTypeAndScopedAccess(permission: .write) {
+      try validateCanCreate(options)
+      do {
+        if options.intermediates {
+          try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        }
+        try? FileManager.default.removeItem(atPath: url.path)
+        FileManager.default.createFile(atPath: url.path, contents: nil)
+      } catch {
+        throw UnableToCreateException(error.localizedDescription)
       }
-      try? FileManager.default.removeItem(atPath: url.path)
-      FileManager.default.createFile(atPath: url.path, contents: nil)
-    } catch {
-      throw UnableToCreateException(error.localizedDescription)
     }
   }
 
@@ -52,10 +52,11 @@ internal final class FileSystemFile: FileSystemPath {
 
   var md5: String {
     get throws {
-      try validatePermission(.read)
-      let fileData = try Data(contentsOf: url)
-      let hash = Insecure.MD5.hash(data: fileData)
-      return hash.map { String(format: "%02hhx", $0) }.joined()
+      return try withCorrectTypeAndScopedAccess(permission: .read) {
+        let fileData = try Data(contentsOf: url)
+        let hash = Insecure.MD5.hash(data: fileData)
+        return hash.map { String(format: "%02hhx", $0) }.joined()
+      }
     }
   }
 
@@ -75,58 +76,59 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func write(_ content: String) throws {
-    try validateType()
-    try validatePermission(.write)
-    try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+    try withCorrectTypeAndScopedAccess(permission: .write) {
+      try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+    }
   }
 
   // TODO: blob support
   func write(_ content: TypedArray) throws {
-    try validateType()
-    try validatePermission(.write)
-    try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
+    try withCorrectTypeAndScopedAccess(permission: .write) {
+      try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
+    }
   }
 
   func text() throws -> String {
-    try validateType()
-    try validatePermission(.read)
-    return try String(contentsOf: url)
+    return try withCorrectTypeAndScopedAccess(permission: .write) {
+      return try String(contentsOf: url)
+    }
   }
 
   func bytes() throws -> Data {
-    try validateType()
-    try validatePermission(.read)
-    return try Data(contentsOf: url)
+    return try withCorrectTypeAndScopedAccess(permission: .write) {
+      return try Data(contentsOf: url)
+    }
   }
 
   func base64() throws -> String {
-    try validatePermission(.read)
-    return try Data(contentsOf: url).base64EncodedString()
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
+      return try Data(contentsOf: url).base64EncodedString()
+    }
   }
 
   func info(options: InfoOptions) throws -> FileInfo {
-    try validateType()
-    try validatePermission(.read)
-    if !exists {
-      let result = FileInfo()
-      result.exists = false
-      result.uri = url.absoluteString
-      return result
-    }
-    switch url.scheme {
-    case "file":
-      let result = FileInfo()
-      result.exists = true
-      result.uri = url.absoluteString
-      result.size = try size
-      result.modificationTime = try modificationTime
-      result.creationTime = try creationTime
-      if options.md5 {
-        result.md5 = try md5
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
+      if !exists {
+        let result = FileInfo()
+        result.exists = false
+        result.uri = url.absoluteString
+        return result
       }
-      return result
-    default:
-      throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
+      switch url.scheme {
+      case "file":
+        let result = FileInfo()
+        result.exists = true
+        result.uri = url.absoluteString
+        result.size = try size
+        result.modificationTime = try modificationTime
+        result.creationTime = try creationTime
+        if options.md5 {
+          result.md5 = try md5
+        }
+        return result
+      default:
+        throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
+      }
     }
   }
 }

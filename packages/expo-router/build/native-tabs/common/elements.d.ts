@@ -93,7 +93,7 @@ export interface VectorIconProps<NameT extends string> {
      * ```
      */
     family: {
-        getImageSource: (name: NameT, size: number, color: ColorValue) => Promise<ImageSourcePropType>;
+        getImageSource: (name: NameT, size: number, color: ColorValue) => Promise<ImageSourcePropType | null>;
     };
     /**
      * The name of the vector icon.
