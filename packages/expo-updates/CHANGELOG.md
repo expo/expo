@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix resizeMode on reload screen image.
+- [iOS] Fix resizeMode on reload screen image. ([#39768](https://github.com/expo/expo/pull/39768) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
