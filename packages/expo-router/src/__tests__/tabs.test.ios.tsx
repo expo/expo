@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { router } from '../exports';
 import { store } from '../global-state/router-store';
@@ -464,4 +464,56 @@ it('does not re-render when navigating to different tab', () => {
   expect(screen.getByTestId('one')).toBeVisible();
   expect(onOneRender).toHaveBeenCalledTimes(1);
   expect(onTwoRender).toHaveBeenCalledTimes(0);
+});
+
+it('updates route info, when going back to initial screen', () => {
+  renderRouter({
+    _layout: function Layout() {
+      const segments = useSegments();
+      return (
+        <View>
+          <Text testID="layout">{JSON.stringify(segments)}</Text>
+          <Stack />
+        </View>
+      );
+    },
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/index': function Index() {
+      const segments = useSegments();
+      return <Text testID="index">{JSON.stringify(segments)}</Text>;
+    },
+    second: function Second() {
+      const segments = useSegments();
+      return <Text testID="second">{JSON.stringify(segments)}</Text>;
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('index')).toHaveTextContent('["(tabs)"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["(tabs)"]');
+
+  act(() => router.push('/second'));
+  expect(screen.getByTestId('second')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('second')).toHaveTextContent('["second"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["second"]');
+
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('index')).toHaveTextContent('["(tabs)"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["(tabs)"]');
+
+  act(() => router.push('/second'));
+  expect(screen.getByTestId('second')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('second')).toHaveTextContent('["second"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["second"]');
+
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('layout')).toBeVisible();
+  expect(screen.getByTestId('index')).toHaveTextContent('["(tabs)"]');
+  expect(screen.getByTestId('layout')).toHaveTextContent('["(tabs)"]');
 });
