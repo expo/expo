@@ -3,7 +3,7 @@ import { MediaType } from './MediaType';
 /**
  * Represents a single media asset on the device (image, video, or audio).
  *
- * An `Asset` instance corresponds to an entry in the device's media store.
+ * An {@link Asset} instance corresponds to an entry in the device's media store.
  * It exposes metadata (such as filename, dimensions, or creation time) and utility methods (like deleting).
  *
  * To create a new asset, use {@link Asset.create}, if you already have an asset ID, you can instantiate it directly using the constructor.
@@ -17,7 +17,7 @@ export declare class Asset {
 
   /**
    * ID of the asset.
-   * Can be used to re-instantiate an `Asset` later.
+   * Can be used to re-instantiate an {@link Asset} later.
    * For android it is a contentUri and PHAsset localIdentifier for iOS.
    */
   id: string;
@@ -85,6 +85,7 @@ export declare class Asset {
   /**
    * Deletes the asset from the device’s media store.
    * @returns A promise that resolves once the deletion has completed.
+   *
    * @example
    * ```ts
    * await asset.delete();

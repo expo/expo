@@ -10,8 +10,9 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
      * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
      *
      * @param filePath - Local filesystem path (e.g., `file:///...`) of the file to import.
-     * @param album - Optional `Album` instance to place the asset in.
-     * @returns A promise resolving to the created `Asset`.
+     * @param album - Optional {@link Album} instance to place the asset in.
+     * @returns A promise resolving to the created {@link Asset}.
+     * @throws An exception if the asset could not be created, e.g., if the file does not exist or permission is denied.
      *
      * @example
      * ```ts
@@ -24,7 +25,7 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
     }
     /*
      * A static function. Deletes multiple assets at once.
-     * @param assets - An array of `Asset` instances to delete.
+     * @param assets - An array of {@link Asset} instances to delete.
      * @returns A promise that resolves once the assets have been deleted.
      *
      * @example
@@ -61,7 +62,7 @@ export class Album extends ExpoMediaLibraryNext.Album {
     }
     /*
      * A static function. Deletes multiple albums at once.
-     * @param albums - An array of `Album` instances to delete.
+     * @param albums - An array of {@link Album} instances to delete.
      * @param deleteAssets - Whether to delete the assets in the albums as well.
      * @returns A promise that resolves once the albums have been deleted.
      *
@@ -82,7 +83,8 @@ export class Album extends ExpoMediaLibraryNext.Album {
     /*
      * A static function. Retrieves an album by its title.
      * @param title - The title of the album to retrieve.
-     * @return A promise resolving to the `Album` if found, or `null` if not found.
+     * @return A promise resolving to the {@link Album} if found, or `null` if not found.
+     *
      * @example
      * ```ts
      * const album = await Album.get("Camera");

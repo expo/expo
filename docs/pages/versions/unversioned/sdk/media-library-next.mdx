@@ -20,7 +20,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <APIInstallSection />
 
-## Examples
+## Usage
 
 <Collapsible summary="Add a new asset from the web">
 <SnackInline label="Add a new asset from the web" dependencies={['expo-file-system', 'expo-image', 'expo-media-library']}>
@@ -46,12 +46,12 @@ export default function SaveToMediaLibraryExample() {
   };
 
   useEffect(() => {
-    async function downloadAndSaveAsset() {
+    const downloadAndSaveAsset() = async () => {
       const file = await downloadFile();
-
       const { status } = await requestPermissionsAsync();
-      if (status !== 'granted') return;
-
+      if (status !== 'granted') {
+        return;
+      }
       const asset = await Asset.create(file.uri);
       setAsset(asset);
     }
@@ -98,8 +98,13 @@ export default function RetrievingAssetPropertiesExample() {
 
   useEffect(() => {
     const querySomeAsset = async () => {
-      await requestPermissionsAsync();
+      const { status } = await requestPermissionsAsync();
+      if (status !== 'granted') {
+        return;
+      }
+
       const [asset] = await new Query().limit(1).eq(AssetField.MEDIA_TYPE, MediaType.IMAGE).exe();
+
       if (asset) {
         const filename = await asset.getFilename();
         const mediaType = (await asset.getMediaType()).toString();
@@ -126,7 +131,7 @@ export default function RetrievingAssetPropertiesExample() {
 
   return (
     <View>
-      {assetInfo && (
+      {assetInfo ? (
         <View>
           <Text>Asset ID: {assetInfo.id}</Text>
           <Text>Filename: {assetInfo.filename}</Text>
@@ -147,6 +152,8 @@ export default function RetrievingAssetPropertiesExample() {
               : 'Unavailable'}
           </Text>
         </View>
+      ) : (
+        <Text>Fetching asset ...</Text>
       )}
     </View>
   );
@@ -171,7 +178,7 @@ import {
   Album,
 } from 'expo-media-library/next';
 
-export default function AlbumExample() {
+export default function CreateAlbumExample() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [album, setAlbum] = useState<Album | null>(null);
   const [albumTitle, setAlbumTitle] = useState<string>('');
