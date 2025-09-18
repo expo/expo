@@ -80,7 +80,7 @@
     "@expo/config-plugins": "~54.0.1",
     "@expo/devtools": "0.1.7",
     "@expo/fingerprint": "0.15.1",
-    "@expo/metro": "~0.1.1",
+    "@expo/metro": "~54.0.0",
     "@expo/metro-config": "54.0.3",
     "@expo/vector-icons": "^15.0.2",
     "@ungap/structured-clone": "^1.3.0",
