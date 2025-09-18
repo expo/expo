@@ -18,21 +18,17 @@ export function MarkdownActionsDropdown() {
 
   const pathname = router?.pathname;
 
-  const filePath = useMemo(() => {
+  const rawMarkdownUrl = useMemo(() => {
     if (!pathname) {
       return null;
     }
 
-    const resolved = getPageMdxFilePath(pathname);
-    return resolved ? resolved : null;
-  }, [pathname]);
-
-  const rawMarkdownUrl = useMemo(() => {
-    if (!pathname || !filePath) {
+    const filePath = getPageMdxFilePath(pathname);
+    if (!filePath) {
       return null;
     }
     return githubRawUrl(pathname);
-  }, [filePath, pathname]);
+  }, [pathname]);
 
   const handleCopyMarkdown = useCallback(async () => {
     if (!rawMarkdownUrl) {
@@ -57,9 +53,6 @@ export function MarkdownActionsDropdown() {
     }
   }, [rawMarkdownUrl]);
 
-  const actionLabel = 'Copy as';
-  const iconClassName = 'icon-xs text-icon-secondary';
-
   const chatGptUrl = useMemo(() => {
     if (!rawMarkdownUrl) {
       return null;
@@ -82,9 +75,9 @@ export function MarkdownActionsDropdown() {
       aria-label="Copy as Markdown and AI actions">
       <div className="flex flex-row items-center gap-1.5">
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
-          {actionLabel}
+          Copy as
         </FOOTNOTE>
-        <ChevronDownIcon className={iconClassName} />
+        <ChevronDownIcon className="icon-xs text-icon-secondary" />
       </div>
     </Button>
   );
