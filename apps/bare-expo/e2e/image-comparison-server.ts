@@ -5,11 +5,11 @@ import * as path from 'path';
 import { compareImages, type ComparisonResult } from '../scripts/compare-images';
 
 const PORT = process.env.PORT || 3000;
-// const MAESTRO_DIR = path.join(__dirname, '.maestro');
 
 // @ts-ignore bun types
 Bun.serve({
   port: PORT,
+  hostname: '127.0.0.1', // Only bind to localhost for security
   async fetch(req) {
     const url = new URL(req.url);
 
@@ -24,13 +24,14 @@ Bun.serve({
       try {
         const body = await req.json();
         const { image1, image2, outputPath } = body;
+        const message = 'Both image1 and image2 paths are required';
 
         if (!image1 || !image2) {
-          console.error('Both image1 and image2 paths are required');
+          console.error(message);
           return new Response(
             JSON.stringify({
               success: false,
-              message: 'Both image1 and image2 paths are required',
+              message,
             }),
             {
               status: 400,
@@ -39,28 +40,38 @@ Bun.serve({
           );
         }
 
-        // Resolve full paths
-        const image1Path = path.resolve(image1);
-        const image2Path = path.resolve(image2);
+        // Only allow files within the project directory
+        const projectRoot = path.resolve(__dirname, '..');
+        const image1Path = path.resolve(projectRoot, image1);
+        const image2Path = path.resolve(projectRoot, image2);
+
+        if (!image1Path.startsWith(projectRoot) || !image2Path.startsWith(projectRoot)) {
+          return new Response(
+            JSON.stringify({
+              success: false,
+              message: 'Invalid file paths - must be within project directory',
+            }),
+            {
+              status: 403,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
 
         const image1exists = fs.existsSync(image1Path);
         const image2exists = fs.existsSync(image2Path);
         if (!image1exists || !image2exists) {
-          console.error(
-            'Not found: image1: ',
-            image1exists,
-            ' (path: ',
-            image1Path,
-            ') image2: ',
-            image2exists,
-            ' (path: ',
-            image2Path,
-            ')'
-          );
+          const missingFiles = [];
+          if (!image1exists) missingFiles.push(`image1: ${image1Path}`);
+          if (!image2exists) missingFiles.push(`image2: ${image2Path}`);
+
+          const errorMessage = `File(s) not found: ${missingFiles.join(', ')}`;
+          console.error(errorMessage);
+
           return new Response(
             JSON.stringify({
               success: false,
-              message: `Not found: image1: ${image1exists} (path: ${image1Path}) image2: ${image2exists} (path: ${image2Path})`,
+              message: errorMessage,
             }),
             {
               status: 404,
