@@ -46,7 +46,7 @@ export default function SaveToMediaLibraryExample() {
   };
 
   useEffect(() => {
-    const downloadAndSaveAsset() = async () => {
+    const downloadAndSaveAsset = async () => {
       const file = await downloadFile();
       const { status } = await requestPermissionsAsync();
       if (status !== 'granted') {
