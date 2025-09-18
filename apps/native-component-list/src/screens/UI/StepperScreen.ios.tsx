@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
-import MonoText from '../../components/MonoText';
 
 const modifiers = [
   padding({ all: 16 }),
@@ -112,7 +111,6 @@ export default function StepperScreen() {
           </Host>
         </View>
       </View>
-
       <View style={styles.section}>
         <HeadingText style={styles.sectionTitle}>Disabled State</HeadingText>
         <View style={styles.stepperContainer}>
@@ -140,15 +138,6 @@ export default function StepperScreen() {
               modifiers={modifiers}
             />
           </Host>
-        </View>
-      </View>
-      <View style={styles.section}>
-        <HeadingText style={styles.sectionTitle}>Current Values</HeadingText>
-        <View style={styles.valuesContainer}>
-          <MonoText textStyle={styles.valuesText}>
-            Quantity: {quantity} | Temperature: {temperature}°C | Volume: {volume}%{'\n'}Speed:{' '}
-            {speed}/10 | Rating: {rating} stars | Items: {items}
-          </MonoText>
         </View>
       </View>
     </ScrollView>
@@ -199,17 +188,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginBottom: 8,
     color: '#333',
-  },
-  valuesContainer: {
-    backgroundColor: '#f0f0f0',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  valuesText: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#666',
   },
 });
 
