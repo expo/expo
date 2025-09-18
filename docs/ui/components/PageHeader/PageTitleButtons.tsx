@@ -15,16 +15,19 @@ import { SdkPackageButton } from './SdkPackageButton';
 type Props = {
   packageName?: string;
   sourceCodeUrl?: string;
+  showMarkdownActions?: boolean;
 };
 
-export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
+export function PageTitleButtons({ packageName, sourceCodeUrl, showMarkdownActions }: Props) {
   const router = useRouter();
   const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
   const currentPath = router?.asPath ?? router?.pathname;
-  const showMarkdownActions = shouldShowMarkdownActions({
-    packageName,
-    path: currentPath,
-  });
+  const markdownActionsEnabled =
+    showMarkdownActions ??
+    shouldShowMarkdownActions({
+      packageName,
+      path: currentPath,
+    });
 
   return (
     <>
@@ -43,7 +46,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           </div>
         </Button>
       )}
-      {showMarkdownActions && <MarkdownActionsDropdown />}
+      {markdownActionsEnabled && <MarkdownActionsDropdown />}
       {sourceCodeUrl && (
         <SdkPackageButton
           label="GitHub"
