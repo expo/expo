@@ -1,3 +1,6 @@
+import versions from '~/public/static/constants/versions.json';
+import { getThreeVersions } from '~/ui/components/SDKTables/utils';
+
 import { generateApiSectionMarkdownAsync } from './apiSectionMarkdown';
 import { generateAppConfigSchemaMarkdownAsync } from './appConfigSchema';
 import { DEVELOPMENT_MODE_MARKDOWN, PLATFORM_AND_DEVICE_MARKDOWN } from './constants';
@@ -17,6 +20,8 @@ import {
   generateProjectStructureMarkdownAsync,
   generateTemplateFeaturesMarkdownAsync,
 } from './startDevelopingScenes';
+
+const { LATEST_VERSION } = versions;
 
 type SchemaMarkdownReplacer = {
   regex: RegExp;
@@ -111,6 +116,7 @@ export async function prepareMarkdownForCopyAsync(
   content = stripLayoutComponents(content);
   content = replaceApiInstallSections(content, enrichedContext);
   content = replaceConfigPluginPropertiesSections(content);
+  content = replaceCompatibilityTables(content, enrichedContext);
 
   content = await replaceSchemaComponentsAsync(content, schemaImports, enrichedContext);
   content = await replaceApiSectionsAsync(content, enrichedContext);
@@ -394,6 +400,90 @@ function renderPluginPropertiesTable(properties: any[]) {
 
 function escapeTableCell(value: string) {
   return value.replace(/\|/g, '\\|');
+}
+
+function replaceCompatibilityTables(content: string, context: MarkdownContext) {
+  const sdkVersion = resolveSdkVersionFromContext(context);
+  const versionsToShow = getThreeVersions(sdkVersion);
+
+  const reactNativeTable = renderReactNativeCompatibilityTable(versionsToShow);
+  const androidIosTable = renderAndroidIosCompatibilityTable(versionsToShow);
+
+  let updated = content;
+  updated = updated.replace(
+    /<ReactNativeCompatibilityTable\s*\/>/g,
+    reactNativeTable ? `\n${reactNativeTable}\n` : ''
+  );
+  updated = updated.replace(
+    /<AndroidIOSCompatibilityTable\s*\/>/g,
+    androidIosTable ? `\n${androidIosTable}\n` : ''
+  );
+
+  return updated;
+}
+
+function renderReactNativeCompatibilityTable(versionsToShow: ReturnType<typeof getThreeVersions>) {
+  if (versionsToShow.length === 0) {
+    return '';
+  }
+
+  const header = [
+    '| Expo SDK version | React Native version | React version | React Native Web version | Minimum Node.js version |',
+    '| --- | --- | --- | --- | --- |',
+  ];
+
+  const rows = versionsToShow.map(version => {
+    const sdk = getCellValue(version.sdk);
+    const reactNative = getCellValue(version['react-native']);
+    const react = getCellValue(version['react']);
+    const reactNativeWeb = getCellValue(version['react-native-web']);
+    const node = getCellValue(version['node']);
+    return `| ${sdk} | ${reactNative} | ${react} | ${reactNativeWeb} | ${node} |`;
+  });
+
+  return [...header, ...rows].join('\n');
+}
+
+function renderAndroidIosCompatibilityTable(versionsToShow: ReturnType<typeof getThreeVersions>) {
+  if (versionsToShow.length === 0) {
+    return '';
+  }
+
+  const header = [
+    '| Expo SDK version | Android version | `compileSdkVersion` | `targetSdkVersion` | iOS version | Xcode version |',
+    '| --- | --- | --- | --- | --- | --- |',
+  ];
+
+  const rows = versionsToShow.map(version => {
+    const sdk = getCellValue(version.sdk);
+    const android = getCellValue(version.android);
+    const compileSdk = getCellValue(version.compileSdkVersion);
+    const targetSdk = getCellValue(version.targetSdkVersion);
+    const ios = getCellValue(version.ios);
+    const xcode = getCellValue(version.xcode);
+    return `| ${sdk} | ${android} | ${compileSdk} | ${targetSdk} | ${ios} | ${xcode} |`;
+  });
+
+  return [...header, ...rows].join('\n');
+}
+
+function resolveSdkVersionFromContext(context: MarkdownContext) {
+  const path = context.path ?? '';
+  const match = path.match(/\/(?:versions|archives)\/([^/]+)/);
+  let version = match ? match[1] : LATEST_VERSION;
+
+  if (version === 'latest' || version === 'unversioned') {
+    version = LATEST_VERSION;
+  }
+
+  return version;
+}
+
+function getCellValue(value: unknown) {
+  if (value === undefined || value === null || value === '') {
+    return '-';
+  }
+  return String(value);
 }
 
 function resolveInstallCommands(attributes: Record<string, any>, context: MarkdownContext) {
