@@ -59,6 +59,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Stepper component',
+    route: 'ui/stepper',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./StepperScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
