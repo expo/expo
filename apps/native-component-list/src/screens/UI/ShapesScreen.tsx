@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   Rectangle,
   RoundedRectangle,
@@ -14,7 +12,8 @@ import {
   Form,
   Text,
 } from '@expo/ui/swift-ui';
-import { frame, border, shadow, fill } from '@expo/ui/swift-ui/modifiers';
+import { frame, shadow, fill } from '@expo/ui/swift-ui/modifiers';
+import React from 'react';
 
 export default function ShapesScreen() {
   return (
