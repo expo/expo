@@ -7,7 +7,7 @@ import { useRouter } from 'next/compat/router';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
 import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/MarkdownActionsDropdown';
-import { shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/utils';
+import { shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 import { SdkPackageButton } from './SdkPackageButton';

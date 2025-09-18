@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 
 import * as Dropdown from '~/ui/components/Dropdown';
 import { githubRawUrl, getPageMdxFilePath } from '~/ui/components/Footer/utils';
-import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/utils';
+import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/processMarkdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 const getPrompt = (markdownUrl: string) =>
