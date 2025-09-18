@@ -44,10 +44,14 @@ export async function test(t) {
   let assetsContainer = [];
 
   t.afterAll(async () => {
-    await Album.delete(albumsContainer.flat(), true);
-    await Asset.delete(assetsContainer.flat());
-    albumsContainer = [];
-    assetsContainer = [];
+    try {
+      await Asset.delete(assetsContainer.flat());
+      await Album.delete(albumsContainer.flat(), true);
+      albumsContainer = [];
+      assetsContainer = [];
+    } catch (error) {
+      console.error('Error cleaning up test assets:', error);
+    }
   });
 
   t.describe('Album creation', () => {
@@ -63,7 +67,6 @@ export async function test(t) {
       t.expect(assets.length).toBe(files.length);
       t.expect(await album.getTitle()).toBe(albumName);
     });
-
     t.it('creates an album from a list of assets', async () => {
       // given
       const assets = await Promise.all(files.map((f) => Asset.create(f.localUri)));

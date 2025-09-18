@@ -12,6 +12,10 @@ import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.copyUriContent
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
+import expo.modules.medialibrary.next.objects.asset.delegates.AssetLegacyDelegate
+import expo.modules.medialibrary.next.objects.asset.delegates.AssetModernDelegate
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
@@ -20,13 +24,25 @@ import java.io.File
 import java.lang.ref.WeakReference
 
 @DeprecatedSinceApi(Build.VERSION_CODES.Q)
-class AssetLegacyFactory(context: Context) : AssetFactory {
+class AssetLegacyFactory(
+  val assetDeleter: AssetDeleter,
+  context: Context
+): AssetFactory {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
     get() = contextRef
       .getOrThrow()
       .contentResolver ?: throw ContentResolverNotObtainedException()
+
+  private fun getAssetDelegate(contentUri: Uri): AssetDelegate {
+    return AssetLegacyDelegate(contentUri, assetDeleter, contextRef.getOrThrow())
+  }
+
+  override fun create(contentUri: Uri): Asset {
+    val assetDelegate = getAssetDelegate(contentUri)
+    return Asset(assetDelegate)
+  }
 
   override suspend fun create(filePath: Uri, relativePath: RelativePath?): Asset = withContext(Dispatchers.IO) {
     val mimeType = contentResolver.getType(filePath)?.let { MimeType(it) }
@@ -47,6 +63,6 @@ class AssetLegacyFactory(context: Context) : AssetFactory {
     if (uri == null) {
       throw AssetCouldNotBeCreated("Failed to create asset: could not add asset to MediaStore")
     }
-    return@withContext Asset(uri, contextRef.getOrThrow())
+    return@withContext create(uri)
   }
 }

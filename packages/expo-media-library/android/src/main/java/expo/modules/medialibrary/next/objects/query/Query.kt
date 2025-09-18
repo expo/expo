@@ -10,6 +10,7 @@ import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.extractAssetContentUri
 import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
 import expo.modules.medialibrary.next.objects.query.builder.QueryLegacyExecutor
 import expo.modules.medialibrary.next.objects.query.builder.QueryModernExecutor
 import expo.modules.medialibrary.next.records.AssetField
@@ -20,7 +21,10 @@ import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import kotlin.collections.joinToString
 
-class Query(context: Context) : SharedObject() {
+class Query(
+  val assetFactory: AssetFactory,
+  context: Context
+): SharedObject() {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
@@ -101,7 +105,7 @@ class Query(context: Context) : SharedObject() {
       val typeColumn = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MEDIA_TYPE)
       it.asIterable()
         .map { row -> row.extractAssetContentUri(idColumn, typeColumn) }
-        .map { uri -> Asset(uri, contextRef.getOrThrow()) }
+        .map { uri -> assetFactory.create(uri) }
         .toList()
     }
   }

@@ -15,6 +15,9 @@ import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetIntermediateDeleter
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetLegacyDeleter
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetModernDeleter
 import expo.modules.medialibrary.next.objects.asset.factories.AssetModernFactory
 import expo.modules.medialibrary.next.objects.asset.factories.AssetLegacyFactory
 import expo.modules.medialibrary.next.objects.query.MediaStoreQueryFormatter
@@ -40,22 +43,30 @@ class MediaLibraryNextModule : Module() {
   }
 
   private val albumQuery by lazy {
-    AlbumQuery(context)
+    AlbumQuery(albumFactory, context)
   }
 
   private val albumFactory by lazy {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      AlbumModernFactory(assetFactory, context)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      AlbumModernFactory(assetFactory, assetDeleter, context)
     } else {
-      AlbumLegacyFactory(assetFactory, context)
+      AlbumLegacyFactory(assetFactory, assetDeleter, context)
     }
   }
 
   private val assetFactory by lazy {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      AssetModernFactory(context)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      AssetModernFactory(assetDeleter, context)
     } else {
-      AssetLegacyFactory(context)
+      AssetLegacyFactory(assetDeleter, context)
+    }
+  }
+
+  private val assetDeleter by lazy {
+    when {
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> AssetModernDeleter(mediaStorePermissionsDelegate)
+      Build.VERSION.SDK_INT == Build.VERSION_CODES.Q -> AssetIntermediateDeleter(context)
+      else -> AssetLegacyDeleter(context)
     }
   }
 
@@ -64,7 +75,7 @@ class MediaLibraryNextModule : Module() {
 
     Class(Asset::class) {
       Constructor { contentUri: Uri ->
-        Asset(contentUri, context)
+        assetFactory.create(contentUri)
       }
 
       Property("id") { self: Asset ->
@@ -114,14 +125,13 @@ class MediaLibraryNextModule : Module() {
 
       AsyncFunction("delete") Coroutine { self: Asset ->
         systemPermissionsDelegate.requireSystemPermissions(true)
-        mediaStorePermissionsDelegate.requestMediaLibraryActionPermission(listOf(self.contentUri), needsDeletePermission = true)
         self.delete()
       }
     }
 
     Class(Album::class) {
       Constructor { id: String ->
-        Album(id, context)
+        Album(id, assetDeleter, assetFactory, context)
       }
 
       Property("id") { self: Album ->
@@ -140,21 +150,19 @@ class MediaLibraryNextModule : Module() {
 
       AsyncFunction("add") Coroutine { self: Album, asset: Asset ->
         systemPermissionsDelegate.requireSystemPermissions(true)
-        mediaStorePermissionsDelegate.requestMediaLibraryActionPermission(listOf(asset.contentUri))
+        mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(listOf(asset.contentUri))
         self.add(asset)
       }
 
       AsyncFunction("delete") Coroutine { self: Album ->
         systemPermissionsDelegate.requireSystemPermissions(true)
-        val assetIdsToDelete = self.getAssets().map { it.contentUri }
-        mediaStorePermissionsDelegate.requestMediaLibraryActionPermission(assetIdsToDelete, needsDeletePermission = true)
         self.delete()
       }
     }
 
     Class(Query::class) {
       Constructor {
-        Query(context)
+        Query(assetFactory, context)
       }
 
       Function("limit") { self: Query, limit: Int ->
@@ -233,14 +241,16 @@ class MediaLibraryNextModule : Module() {
 
     AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->
       systemPermissionsDelegate.requireSystemPermissions(true)
-      albums.forEach { album -> album.delete() }
+      val contentUris = albums
+        .map { it.getAssets() }
+        .flatten()
+        .map { it.contentUri }
+      assetDeleter.delete(contentUris)
     }
 
     AsyncFunction("deleteAssets") Coroutine { assets: List<Asset> ->
       systemPermissionsDelegate.requireSystemPermissions(true)
-      val assetIdsToDelete = assets.map { it.contentUri }
-      mediaStorePermissionsDelegate.requestMediaLibraryActionPermission(assetIdsToDelete, needsDeletePermission = true)
-      assets.forEach { asset -> asset.delete() }
+      assetDeleter.delete(assets.map { it.contentUri })
     }
 
     AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->

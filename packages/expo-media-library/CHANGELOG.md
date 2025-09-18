@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [next][android] Fix `delete()` throwing security exception
 - [next][android] Change default root directory to Pictures ([#39716](https://github.com/expo/expo/pull/39716) by [@Wenszel](https://github.com/Wenszel))
 - [next] Fix `asset.getModificationTime` to return milliseconds ([#39715](https://github.com/expo/expo/pull/39715) by [@Wenszel](https://github.com/Wenszel))
 

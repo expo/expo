@@ -11,19 +11,28 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAlbumId
 import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
 import java.io.IOException
 import java.lang.ref.WeakReference
 
 @RequiresApi(Build.VERSION_CODES.Q)
-class AlbumModernFactory(private val assetFactory: AssetFactory, context: Context) : AlbumFactory {
+class AlbumModernFactory(
+  private val assetFactory: AssetFactory,
+  private val assetDeleter: AssetDeleter,
+  context: Context
+): AlbumFactory {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
     get() = contextRef
       .getOrThrow()
       .contentResolver ?: throw AlbumCouldNotBeCreated("Failed to create album: ContentResolver is unavailable.")
+
+  override fun create(id: String): Album {
+    return Album(id, assetDeleter, assetFactory, contextRef.getOrThrow())
+  }
 
   override suspend fun createFromAssets(albumName: String, assets: List<Asset>, deleteOriginalAssets: Boolean): Album =
     try {
@@ -32,7 +41,7 @@ class AlbumModernFactory(private val assetFactory: AssetFactory, context: Contex
       processAssetsLocation(assets, albumRelativePath, deleteOriginalAssets)
       val albumId = contentResolver.queryAlbumId(albumRelativePath)
         ?: throw AlbumNotFoundException("Could not find album with relativePath: $albumRelativePath")
-      Album(albumId, contextRef.getOrThrow())
+      Album(albumId, assetDeleter, assetFactory,contextRef.getOrThrow())
     } catch (e: SecurityException) {
       throw AlbumCouldNotBeCreated("Security Exception: ${e.message}", e)
     } catch (e: IOException) {
@@ -47,7 +56,7 @@ class AlbumModernFactory(private val assetFactory: AssetFactory, context: Contex
     }
     val albumId = contentResolver.queryAlbumId(relativePath)
       ?: throw AlbumCouldNotBeCreated("Failed to create album: newly created album was not found in the MediaStore.")
-    return Album(albumId, contextRef.getOrThrow())
+    return Album(albumId, assetDeleter, assetFactory,contextRef.getOrThrow())
   }
 
   private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean) {
