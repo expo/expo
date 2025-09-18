@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [Android] Removed unused `androidx.legacy:legacy-support-v4` dependency.
+- [Android] Removed unused `androidx.legacy:legacy-support-v4` dependency. ([#39757](https://github.com/expo/expo/pull/39757) by [@lukmccall](https://github.com/lukmccall))
 
 ## 14.0.7 — 2025-09-10
 
