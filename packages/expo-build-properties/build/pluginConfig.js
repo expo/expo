@@ -155,6 +155,7 @@ const schema = {
                 newArchEnabled: { type: 'boolean', nullable: true },
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+                forceStaticLinking: { type: 'array', items: { type: 'string' }, nullable: true },
                 networkInspector: { type: 'boolean', nullable: true },
                 ccacheEnabled: { type: 'boolean', nullable: true },
                 privacyManifestAggregationEnabled: { type: 'boolean', nullable: true },

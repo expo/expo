@@ -37,8 +37,13 @@ module Expo
       include_tests = @options.fetch(:includeTests, false)
 
       # Add any additional framework modules to patch using the patched Podfile class in installer.rb
-      additional_framework_modules_to_path = @options.fetch(:additionalFrameworkModulesToPatch, [])
-      @podfile.expo_add_modules_to_patch(additional_framework_modules_to_path) if !additional_framework_modules_to_path.empty?
+      # We'll be reading from Podfile.properties.json and optionally parameters passed to use_expo_modules!
+      podfile_properties = JSON.parse(File.read(File.join(Pod::Config.instance.project_root, 'Podfile.properties.json'))) rescue {}
+      additional_framework_modules_to_patch = @options.fetch(:additionalFrameworkModulesToPatch, []) +
+        JSON.parse(podfile_properties['ios.forceStaticLinking'] || "[]")
+
+      Pod::UI.puts("Forcing static linking for pods: #{additional_framework_modules_to_patch}") if !additional_framework_modules_to_patch.empty?
+      @podfile.expo_add_modules_to_patch(additional_framework_modules_to_patch) if !additional_framework_modules_to_patch.empty?
 
       project_directory = Pod::Config.instance.project_root
 
