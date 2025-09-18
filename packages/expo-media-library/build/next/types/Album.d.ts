@@ -65,26 +65,5 @@ export declare class Album {
      * ```
      */
     add(asset: Asset): Promise<void>;
-    /**
-     * Creates a new album with a given name and assets.
-     * @param title - Name of the new album.
-     * @param assetsOrPaths - List of {@link Asset} objects or file paths (file:///...) to include.
-     * @param deleteOriginalAsset - On Android, whether to delete the original asset after adding it to the album.
-     * @returns A promise resolving to the created {@link Album}.
-     *
-     * @example
-     * ```ts
-     * const album = await Album.create("My Album", [asset]);
-     * console.log(await album.getTitle()); // "My Album"
-     * ```
-     */
-    static create(title: string, assetsOrPaths: (Asset | string)[], deleteOriginalAsset?: boolean): Promise<Album>;
-    /**
-     * Deletes multiple albums at once.
-     * @param albums - An array of {@link Album} instances to delete.
-     * @param deleteAssets - On iOS, if `true`, also deletes assets contained in these albums.
-     * @returns A promise that resolves once the albums have been deleted.
-     */
-    static deleteMany(albums: Album[], deleteAssets?: boolean): Promise<void>;
 }
 //# sourceMappingURL=Album.d.ts.map

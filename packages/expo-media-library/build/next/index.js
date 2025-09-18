@@ -6,7 +6,7 @@ export class Query extends ExpoMediaLibraryNext.Query {
 }
 export class Asset extends ExpoMediaLibraryNext.Asset {
     /*
-     * Creates a new asset from a given file path.
+     * A static function. Creates a new asset from a given file path.
      * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
      *
      * @param filePath - Local filesystem path (e.g., `file:///...`) of the file to import.
