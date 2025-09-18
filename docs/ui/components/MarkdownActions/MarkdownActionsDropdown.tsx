@@ -18,6 +18,7 @@ export function MarkdownActionsDropdown() {
   const router = useRouter();
 
   const pathname = router?.pathname;
+  const asPath = router?.asPath;
 
   const rawMarkdownUrl = useMemo(() => {
     if (!pathname) {
@@ -49,12 +50,14 @@ export function MarkdownActionsDropdown() {
         throw new Error('Clipboard API unavailable');
       }
 
-      const preparedMarkdown = await prepareMarkdownForCopyAsync(markdown);
+      const preparedMarkdown = await prepareMarkdownForCopyAsync(markdown, {
+        path: asPath ?? pathname ?? '',
+      });
       await navigator.clipboard.writeText(preparedMarkdown);
     } catch (error) {
       console.error('Unable to copy markdown content', error);
     }
-  }, [rawMarkdownUrl]);
+  }, [rawMarkdownUrl, asPath, pathname]);
 
   const chatGptUrl = useMemo(() => {
     if (!rawMarkdownUrl) {
@@ -78,7 +81,7 @@ export function MarkdownActionsDropdown() {
       aria-label="Copy Markdown and AI actions">
       <div className="flex flex-row items-center gap-1.5">
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
-          Copy as
+          Copy
         </FOOTNOTE>
         <ChevronDownIcon className="icon-xs text-icon-secondary" />
       </div>
