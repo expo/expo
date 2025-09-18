@@ -1,7 +1,7 @@
 /* eslint-env browser */
-import { Platform, type EventSubscription } from 'expo-modules-core';
+import { type EventSubscription, Platform } from 'expo-modules-core';
 
-import { Calendar, Locale, CalendarIdentifier } from './Localization.types';
+import { Calendar, CalendarIdentifier, Locale } from './Localization.types';
 
 const FALLBACK_LOCALE = 'en-US';
 
@@ -22,7 +22,9 @@ const getNavigatorLocales = (): [string, ...string[]] => {
 
 type ExtendedLocale = Intl.Locale &
   // typescript definitions for navigator language don't include some modern Intl properties
+  // textInfo is deprecated. It is used for backward compatibility
   Partial<{
+    getTextInfo: () => { direction: 'ltr' | 'rtl' };
     textInfo: { direction: 'ltr' | 'rtl' };
     timeZones: string[];
     weekInfo: { firstDay: number };
@@ -49,6 +51,9 @@ const USES_FAHRENHEIT = [
   'PW',
   'KY',
 ];
+
+// https://localizejs.com/articles/localizing-for-right-to-left-languages-the-issues-to-consider
+const USES_RTL = ['ar', 'arc', 'ckb', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ps', 'sd', 'ur', 'yi'];
 
 export function addLocaleListener(
   // NOTE(@kitten): We never use the event's data
@@ -87,7 +92,7 @@ export default {
       let digitGroupingSeparator: string | null = null;
       let decimalSeparator: string | null = null;
       let temperatureUnit: 'fahrenheit' | 'celsius' | null = null;
-
+      let textDirection: 'ltr' | 'rtl' | null = null;
       // Gracefully handle language codes like `en-GB-oed` which is unsupported
       // but is otherwise a valid language tag (grandfathered)
       try {
@@ -102,7 +107,12 @@ export default {
         }
       } catch {}
 
-      const { region, textInfo, language, script } = locale;
+      const { region, language, script } = locale;
+
+      textDirection =
+        locale.getTextInfo?.()?.direction ??
+        locale.textInfo?.direction ??
+        languageTextDirection(language);
 
       if (region) {
         temperatureUnit = regionToTemperatureUnit(region);
@@ -112,7 +122,7 @@ export default {
         languageTag,
         languageCode: language || languageTag.split('-')[0] || 'en',
         languageScriptCode: script || null,
-        textDirection: (textInfo?.direction as 'ltr' | 'rtl') || null,
+        textDirection,
         digitGroupingSeparator,
         decimalSeparator,
         measurementSystem: null,
@@ -144,4 +154,8 @@ export default {
 
 function regionToTemperatureUnit(region: string) {
   return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
+}
+
+function languageTextDirection(language: string) {
+  return USES_RTL.includes(language) ? 'rtl' : 'ltr';
 }
