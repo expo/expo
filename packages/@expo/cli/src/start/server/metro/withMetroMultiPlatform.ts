@@ -721,16 +721,16 @@ export function withExtendedResolver(
           };
         }
 
-        if (normal.endsWith('react-native/Libraries/LogBox/LogBoxNotificationContainer.js')) {
-          console.log('Replacing LogBoxNotificationContainer with shim');
-          // '@expo/metro-runtime/swap-rn-logbox.js'
-          return {
-            ...result,
-            // Ensures the default notifications are not rendered.
-            // TODO: Implement ExpoLogBox notifications.
-            filePath: require.resolve('@expo/metro-runtime/empty-component.js'),
-          };
-        }
+        // if (normal.endsWith('react-native/Libraries/LogBox/LogBoxNotificationContainer.js')) {
+        //   console.log('Replacing LogBoxNotificationContainer with shim');
+        //   // '@expo/metro-runtime/swap-rn-logbox.js'
+        //   return {
+        //     ...result,
+        //     // Ensures the default notifications are not rendered.
+        //     // TODO: Implement ExpoLogBox notifications.
+        //     filePath: require.resolve('@expo/metro-runtime/empty-component.js'),
+        //   };
+        // }
 
         // When server components are enabled, redirect React Native's renderer to the canary build
         // this will enable the use hook and other requisite features from React 19.

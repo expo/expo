@@ -13,7 +13,7 @@ import {
   MetroBuildError,
   MetroPackageResolutionError,
   MetroTransformError,
-} from '@expo/metro-runtime/src/error-overlay/metro-build-errors';
+} from '@expo/log-box/src/metro-build-errors';
 import prettyFormat, { plugins } from 'pretty-format';
 import { DeviceEventEmitter } from 'react-native';
 

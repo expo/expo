@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { StackTraceList } from '@expo/metro-runtime/src/error-overlay/overlay/StackTraceList';
+import { StackTraceList } from '@expo/log-box/src/overlay/StackTraceList';
 
 export default function App() {
   const projectRoot = '/Users/evanbacon/Documents/GitHub/expo/apps/router-e2e';

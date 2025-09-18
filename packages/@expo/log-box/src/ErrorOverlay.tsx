@@ -1,5 +1,3 @@
-'use dom';
-
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.

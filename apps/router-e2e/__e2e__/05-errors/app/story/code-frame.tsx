@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { ErrorCodeFrame } from '@expo/metro-runtime/src/error-overlay/overlay/ErrorCodeFrame';
+import { ErrorCodeFrame } from '@expo/log-box/src/overlay/ErrorCodeFrame';
 
 export default function App() {
   return (

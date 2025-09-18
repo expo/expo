@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { ErrorOverlayHeader } from '@expo/metro-runtime/src/error-overlay/overlay/ErrorOverlayHeader';
+import { ErrorOverlayHeader } from '@expo/log-box/src/overlay/ErrorOverlayHeader';
 
 export default function App() {
   const onDismiss = () => {};
@@ -8,7 +8,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1, gap: 16, backgroundColor: 'black' }}>
-      <View style={{ borderWidth: 1, borderColor: 'white', padding: 8 }}>
+      {/* <View style={{ borderWidth: 1, borderColor: 'white', padding: 8 }}>
         <ErrorOverlayHeader
           isDismissable={true}
           onDismiss={onDismiss}
@@ -25,7 +25,7 @@ export default function App() {
           onSelectIndex={onChangeSelectedIndex}
           level={'fatal'}
         />
-      </View>
+      </View> */}
     </View>
   );
 }

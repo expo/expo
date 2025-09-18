@@ -1,1 +1,1 @@
-export * from './src/error-overlay';
+export * from '@expo/log-box/src/index';
