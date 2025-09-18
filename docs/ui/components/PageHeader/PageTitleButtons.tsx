@@ -6,9 +6,10 @@ import { Tag03Icon } from '@expo/styleguide-icons/outline/Tag03Icon';
 import { useRouter } from 'next/compat/router';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
+import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/MarkdownActionsDropdown';
+import { shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/utils';
 import { FOOTNOTE } from '~/ui/components/Text';
 
-import { MarkdownActionsDropdown } from './MarkdownActionsDropdown';
 import { SdkPackageButton } from './SdkPackageButton';
 
 type Props = {
@@ -19,6 +20,11 @@ type Props = {
 export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
   const router = useRouter();
   const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
+  const currentPath = router?.asPath ?? router?.pathname;
+  const showMarkdownActions = shouldShowMarkdownActions({
+    packageName,
+    path: currentPath,
+  });
 
   return (
     <>
@@ -37,7 +43,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           </div>
         </Button>
       )}
-      <MarkdownActionsDropdown />
+      {showMarkdownActions && <MarkdownActionsDropdown />}
       {sourceCodeUrl && (
         <SdkPackageButton
           label="GitHub"

@@ -27,6 +27,7 @@ export function MarkdownActionsDropdown() {
     if (!filePath) {
       return null;
     }
+
     return githubRawUrl(pathname);
   }, [pathname]);
 
