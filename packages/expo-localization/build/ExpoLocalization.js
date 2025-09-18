@@ -1,14 +1,20 @@
 /* eslint-env browser */
 import { Platform } from 'expo-modules-core';
+const FALLBACK_LOCALE = 'en-US';
 const getNavigatorLocales = () => {
     if (Platform.isDOMAvailable) {
-        return navigator.languages || [navigator.language];
+        if (navigator.languages?.length > 0) {
+            return navigator.languages;
+        }
+        else if (navigator.language) {
+            return [navigator.language];
+        }
     }
     const dtFormatLocale = Intl?.DateTimeFormat()?.resolvedOptions()?.locale;
     if (dtFormatLocale) {
         return [dtFormatLocale];
     }
-    return [];
+    return [FALLBACK_LOCALE];
 };
 const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
 // https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
@@ -52,7 +58,9 @@ export function removeSubscription(subscription) {
 export default {
     getLocales() {
         const locales = getNavigatorLocales();
-        return locales?.map((languageTag) => {
+        return locales.map((languageTag) => {
+            // TextInfo is an experimental API that is not available in all browsers.
+            // We might want to consider using a locale lookup table instead.
             let locale = {};
             // Properties added only for compatibility with native, use `toLocaleString` instead.
             let digitGroupingSeparator = null;

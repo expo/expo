@@ -54,7 +54,49 @@ Running the above command will run the `lint` script from **package.json**.
 
 ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app that runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
 
-You can add the `eslint-env` comment directive to the top of a file to tell ESLint which environment the file is running in. For example, to tell ESLint that a file is run in Node.js, add the following comment to the top of the file:
+The approach to configure environment-specific globals differs between Flat config and legacy config:
+
+<Tabs>
+
+<Tab label="Flat config">
+
+For Flat config, **metro.config.js** files already work with Node.js globals because of the built-in support in `eslint-config-expo`. For other configuration files that might need Node.js globals, use [`languageOptions.globals`](https://eslint.org/docs/latest/use/configure/language-options#predefined-global-variables) in your **eslint.config.js**:
+
+```js eslint.config.js
+const { defineConfig, globalIgnores } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+
+module.exports = defineConfig([
+  globalIgnores(['dist/*']),
+  expoConfig,
+  {
+    files: ['babel.config.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+]);
+```
+
+For example, with this setup, you can now use Node.js globals in **babel.config.js**:
+
+```js babel.config.js
+import path from 'path';
+const __dirname = path.dirname(__filename);
+
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};
+```
+
+</Tab>
+
+<Tab label="Legacy config">
+
+For legacy config, you can add the `eslint-env` comment to the top of a file to tell ESLint which environment the file is running in:
 
 ```js metro.config.js
 /* eslint-env node */
@@ -67,6 +109,10 @@ const config = getDefaultConfig(
 
 module.exports = config;
 ```
+
+</Tab>
+
+</Tabs>
 
 ## Prettier
 

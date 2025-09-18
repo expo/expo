@@ -3,15 +3,21 @@ import { type EventSubscription, Platform } from 'expo-modules-core';
 
 import { Calendar, CalendarIdentifier, Locale } from './Localization.types';
 
-const getNavigatorLocales = () => {
+const FALLBACK_LOCALE = 'en-US';
+
+const getNavigatorLocales = (): [string, ...string[]] => {
   if (Platform.isDOMAvailable) {
-    return navigator.languages || [navigator.language];
+    if (navigator.languages?.length > 0) {
+      return navigator.languages as [string, ...string[]];
+    } else if (navigator.language) {
+      return [navigator.language];
+    }
   }
   const dtFormatLocale = Intl?.DateTimeFormat()?.resolvedOptions()?.locale;
   if (dtFormatLocale) {
     return [dtFormatLocale];
   }
-  return [];
+  return [FALLBACK_LOCALE];
 };
 
 type ExtendedLocale = Intl.Locale &
@@ -74,9 +80,12 @@ export function removeSubscription(subscription: EventSubscription) {
 }
 
 export default {
-  getLocales(): Locale[] {
+  getLocales(): [Locale, ...Locale[]] {
     const locales = getNavigatorLocales();
-    return locales?.map((languageTag) => {
+    return locales.map((languageTag) => {
+      // TextInfo is an experimental API that is not available in all browsers.
+      // We might want to consider using a locale lookup table instead.
+
       let locale = {} as ExtendedLocale;
 
       // Properties added only for compatibility with native, use `toLocaleString` instead.
@@ -126,9 +135,9 @@ export default {
         languageRegionCode: region || null,
         temperatureUnit,
       };
-    });
+    }) as [Locale, ...Locale[]];
   },
-  getCalendars(): Calendar[] {
+  getCalendars(): [Calendar, ...Calendar[]] {
     const locale = ((typeof Intl !== 'undefined'
       ? Intl.DateTimeFormat().resolvedOptions()
       : null) ?? null) as unknown as null | ExtendedLocale;

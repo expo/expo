@@ -15,8 +15,8 @@ import {
   getMaestroFlowFilePath,
 } from './lib/e2e-common';
 
-const TARGET_DEVICE = 'iPhone 16 Pro';
-const TARGET_DEVICE_IOS_VERSION = 18;
+const TARGET_DEVICE = 'iPhone 17 Pro';
+const TARGET_DEVICE_IOS_VERSION = 26;
 const APP_ID = 'dev.expo.Payments';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start

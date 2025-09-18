@@ -90,6 +90,7 @@ exceptions:
   - '.*Fastlane.*'
   - '.*Firebase.*'
   - '.*FileSystem.*'
+  - '.*FlatList.*'
   - '.*Flipper.*'
   - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
