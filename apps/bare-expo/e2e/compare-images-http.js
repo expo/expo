@@ -6,12 +6,13 @@ const SERVER_URL = 'http://localhost:3000';
 
 function compareImagesHttp() {
   try {
-    // Get image paths from global variables
+    // Get image paths and similarity threshold from global variables
     const outputPathParam = outputPath.endsWith('.png') ? outputPath : `${outputPath}.png`;
     const baseImageParam = baseImage.endsWith('.png') ? baseImage : `${baseImage}.png`;
     const currentScreenshotParam = currentScreenshot.endsWith('.png')
       ? currentScreenshot
       : `${currentScreenshot}.png`;
+    const thresholdParam = typeof similarityThreshold === 'number' ? similarityThreshold : 5;
 
     if (!baseImageParam || !currentScreenshotParam) {
       console.log(
@@ -25,6 +26,7 @@ function compareImagesHttp() {
     console.log('Comparing images:');
     console.log('  Base image:', baseImageParam);
     console.log('  Current screenshot:', currentScreenshotParam);
+    console.log('  Similarity threshold:', thresholdParam + '%');
 
     const response = http.post(`${SERVER_URL}/compare`, {
       headers: {
@@ -34,6 +36,7 @@ function compareImagesHttp() {
         image1: baseImageParam,
         image2: currentScreenshotParam,
         outputPath: outputPathParam,
+        similarityThreshold: thresholdParam,
       }),
     });
 

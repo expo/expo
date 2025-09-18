@@ -1,0 +1,43 @@
+appId: dev.expo.Payments
+---
+# when devving, start from different screen so state is reset
+- openLink: bareexpo://components
+# approve the deep linking prompt on iOS
+- tapOn:
+    text: 'Open'
+    optional: true
+- openLink: bareexpo://components/video/events
+
+- assertVisible: 'source = Sintel'
+- assertVisible: 'isPlaying = false'
+- assertVisible: 'isAtStart = true'
+- assertVisible: 'duration = 888'
+- assertVisible: 'mimeType = video/avc'
+- assertVisible: 'isSupported = true'
+- assertVisible: 'bitratePositive = true'
+- assertVisible: 'frameRate = null'
+- assertVisible: 'volume = 1'
+- assertVisible: 'status = readyToPlay'
+- assertVisible: 'playbackRate = 1'
+- assertVisible: 'error = false'
+
+- tapOn: Play
+
+- assertVisible: 'isPlaying = true'
+- assertVisible: 'isAtStart = false'
+
+- tapOn: Pause
+- tapOn: Seek to 30s
+- assertVisible: 'currentTime = 30'
+- runFlow:
+    file: ../screenshot-comparison.yaml
+    env:
+      screenshotOutputPath: expo-video/one-minute
+
+- tapOn: Trigger an Error
+
+- assertVisible: 'source = No title'
+- assertVisible: 'isPlaying = false'
+
+- assertVisible: 'status = error'
+- assertVisible: 'error = true'

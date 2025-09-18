@@ -23,10 +23,10 @@ Bun.serve({
     if (req.method === 'POST' && url.pathname === '/compare') {
       try {
         const body = await req.json();
-        const { image1, image2, outputPath } = body;
-        const message = 'Both image1 and image2 paths are required';
+        const { image1, image2, outputPath, similarityThreshold = 5 } = body;
 
-        if (!image1 || !image2) {
+        if (!image1 || !image2 || typeof similarityThreshold !== 'number') {
+          const message = `param validation failed: ${JSON.stringify(body)}`;
           console.error(message);
           return new Response(
             JSON.stringify({
@@ -41,7 +41,7 @@ Bun.serve({
         }
 
         // Only allow files within the project directory
-        const projectRoot = path.resolve(__dirname, '..');
+        const projectRoot = path.resolve(__dirname);
         const image1Path = path.resolve(projectRoot, image1);
         const image2Path = path.resolve(projectRoot, image2);
 
@@ -80,7 +80,12 @@ Bun.serve({
           );
         }
 
-        const result: ComparisonResult = compareImages(image1Path, image2Path, outputPath || null);
+        const result: ComparisonResult = compareImages({
+          image1Path,
+          image2Path,
+          outputPath,
+          similarityThreshold,
+        });
 
         !result.success && console.error('Comparison result:', result);
         return new Response(JSON.stringify(result), {
@@ -113,5 +118,5 @@ Bun.serve({
 console.log(`🚀 Image Comparison Server running on http://localhost:${PORT}`);
 console.log('Available endpoints:');
 console.log(
-  '  POST /compare    - Compare two images by path (JSON body: {"image1": "path", "image2": "path"})'
+  '  POST /compare    - Compare two images by path (JSON body: {"image1": "path", "image2": "path", "outputPath": "optional/comparison-diff", "similarityThreshold": 5})'
 );
