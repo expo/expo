@@ -8,6 +8,7 @@ import { useRouter } from 'next/compat/router';
 import { githubUrl } from '~/ui/components/Footer/utils';
 import { FOOTNOTE } from '~/ui/components/Text';
 
+import { MarkdownActionsDropdown } from './MarkdownActionsDropdown';
 import { SdkPackageButton } from './SdkPackageButton';
 
 type Props = {
@@ -17,9 +18,11 @@ type Props = {
 
 export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
   const router = useRouter();
+  const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
+
   return (
     <>
-      {!sourceCodeUrl && !packageName && router?.pathname && (
+      {showEditButton && (
         <Button
           theme="quaternary"
           className="justify-center pl-2.5 pr-2"
@@ -34,6 +37,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           </div>
         </Button>
       )}
+      <MarkdownActionsDropdown />
       {sourceCodeUrl && (
         <SdkPackageButton
           label="GitHub"

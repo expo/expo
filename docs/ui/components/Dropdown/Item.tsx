@@ -85,7 +85,7 @@ export function Item({
 
   if (href) {
     return (
-      <A href={href} openInNewTab={openInNewTab}>
+      <A href={href} openInNewTab={openInNewTab} isStyled>
         {textItem}
       </A>
     );
