@@ -22,13 +22,7 @@ internal struct CapsuleView: ExpoSwiftUI.View {
   @ObservedObject var props: CapsuleViewProps
 
   var body: some View {
-    switch props.cornerStyle {
-    case .continuous:
-      Capsule(style: .continuous)
-        .modifier(CommonViewModifiers(props: props))
-    case .circular:
-      Capsule(style: .circular)
-        .modifier(CommonViewModifiers(props: props))
-    }
+    Capsule(style: props.cornerStyle == .continuous ? .continuous : .circular)
+      .modifier(CommonViewModifiers(props: props))
   }
 }
