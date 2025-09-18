@@ -1,5 +1,8 @@
 import { DEVELOPMENT_MODE_MARKDOWN, PLATFORM_AND_DEVICE_MARKDOWN } from './constants';
-import { generateEnvironmentInstructionsMarkdownAsync } from './environmentInstructions';
+import {
+  formatTerminalCommands,
+  generateEnvironmentInstructionsMarkdownAsync,
+} from './environmentInstructions';
 import {
   BOX_LINK_PATTERN,
   FRONTMATTER_PATTERN,
@@ -8,6 +11,10 @@ import {
   PRETTIER_IGNORE_PATTERN,
   VIDEO_BOX_LINK_PATTERN,
 } from './patterns';
+import {
+  generateProjectStructureMarkdownAsync,
+  generateTemplateFeaturesMarkdownAsync,
+} from './startDevelopingScenes';
 
 export async function prepareMarkdownForCopyAsync(rawContent: string) {
   if (!rawContent) {
@@ -65,6 +72,16 @@ export async function prepareMarkdownForCopyAsync(rawContent: string) {
     content = content.replace(/<DevelopmentEnvironmentInstructions\s*\/>/, `\n${instructions}\n`);
   }
 
+  if (content.includes('<ProjectStructure')) {
+    const structure = await generateProjectStructureMarkdownAsync();
+    content = content.replace(/<ProjectStructure\s*\/>/, `\n${structure}\n`);
+  }
+
+  if (content.includes('<TemplateFeatures')) {
+    const features = await generateTemplateFeaturesMarkdownAsync();
+    content = content.replace(/<TemplateFeatures\s*\/>/, `\n${features}\n`);
+  }
+
   content = content.replace(BOX_LINK_PATTERN, (_match, linkTitle, href) => {
     const normalizedHref = href.startsWith('http') ? href : `https://docs.expo.dev${href}`;
     const markdownLink = `[${linkTitle}](${normalizedHref})`;
@@ -84,6 +101,10 @@ export async function prepareMarkdownForCopyAsync(rawContent: string) {
     const markdownLink = `[${linkTitle}](${href})`;
     return `\n${markdownLink}\n`;
   });
+
+  content = content.replace(/<Terminal[^>]*cmd={(\[[^]*?])}[^>]*\/>/g, (_match, arrayLiteral) =>
+    formatTerminalCommands(arrayLiteral as string)
+  );
 
   content = content.replace(
     /<ContentSpotlight[^>]*alt=["']([^"']*)["'][^>]*src=["']([^"']+)["'][^>]*\/>/g,

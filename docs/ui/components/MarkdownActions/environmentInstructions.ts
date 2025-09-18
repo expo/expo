@@ -3,7 +3,9 @@ import {
   ENVIRONMENT_INSTRUCTION_SECTIONS,
   RAW_GITHUB_BASE_URL,
 } from './constants';
-import { IMPORT_STATEMENT_PATTERN, PRETTIER_IGNORE_PATTERN } from './patterns';
+
+const IMPORT_STATEMENT_PATTERN = /^import\s.+$\n?/gm;
+const PRETTIER_IGNORE_PATTERN = /{\/\*\s*prettier-ignore\s*\*\/}/g;
 
 export async function generateEnvironmentInstructionsMarkdownAsync() {
   const sections: string[] = [];
@@ -190,7 +192,7 @@ function parseImportSpec(importSpec: string) {
   return names;
 }
 
-function formatTerminalCommands(arrayLiteral: string) {
+export function formatTerminalCommands(arrayLiteral: string) {
   const commands = Array.from(arrayLiteral.matchAll(/["']([^"']*)["']/g))
     .map(match => match[1])
     .map(command => command.trim())
