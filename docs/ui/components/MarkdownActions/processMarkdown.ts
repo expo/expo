@@ -1,3 +1,4 @@
+import { generateAppConfigSchemaMarkdownAsync } from './appConfigSchema';
 import { DEVELOPMENT_MODE_MARKDOWN, PLATFORM_AND_DEVICE_MARKDOWN } from './constants';
 import { generateEasJsonPropertiesTableMarkdownAsync } from './easJsonTables';
 import {
@@ -16,6 +17,11 @@ import {
   generateProjectStructureMarkdownAsync,
   generateTemplateFeaturesMarkdownAsync,
 } from './startDevelopingScenes';
+
+type SchemaMarkdownReplacer = {
+  regex: RegExp;
+  generator: (importPath: string) => Promise<string>;
+};
 
 export async function prepareMarkdownForCopyAsync(rawContent: string) {
   if (!rawContent) {
@@ -85,7 +91,7 @@ export async function prepareMarkdownForCopyAsync(rawContent: string) {
     content = content.replace(/<TemplateFeatures\s*\/>/, `\n${features}\n`);
   }
 
-  content = await replaceEasJsonTablesAsync(content, schemaImports);
+  content = await replaceSchemaComponentsAsync(content, schemaImports);
 
   content = content.replace(BOX_LINK_PATTERN, (_match, linkTitle, href) => {
     const normalizedHref = href.startsWith('http') ? href : `https://docs.expo.dev${href}`;
@@ -151,7 +157,8 @@ export async function prepareMarkdownForCopyAsync(rawContent: string) {
 }
 
 function extractSchemaImports(content: string) {
-  const schemaImportRegex = /import\s+(\w+)\s+from\s+["']([^"']*eas-json[^"']+)["']/g;
+  const schemaImportRegex =
+    /import\s+(\w+)\s+from\s+["']([^"']*\/public\/static\/schemas[^"']+)["']/g;
   const map: Record<string, string> = {};
   let match: RegExpExecArray | null;
 
@@ -164,25 +171,62 @@ function extractSchemaImports(content: string) {
   return map;
 }
 
-async function replaceEasJsonTablesAsync(content: string, schemaImports: Record<string, string>) {
-  const tableRegex = /<EasJsonPropertiesTable\s+schema={(\w+)}\s*\/>/g;
+async function replaceSchemaComponentsAsync(
+  content: string,
+  schemaImports: Record<string, string>
+) {
+  let updatedContent = content;
+
+  const replacers: SchemaMarkdownReplacer[] = [
+    {
+      regex: /<EasJsonPropertiesTable\s+schema={(\w+)}\s*\/>/g,
+      generator: generateEasJsonPropertiesTableMarkdownAsync,
+    },
+    {
+      regex: /<AppConfigSchemaTable\s+schema={(\w+)}\s*\/>/g,
+      generator: generateAppConfigSchemaMarkdownAsync,
+    },
+  ];
+
+  for (const replacer of replacers) {
+    updatedContent = await replaceSchemaComponentAsync(
+      updatedContent,
+      schemaImports,
+      replacer.regex,
+      replacer.generator
+    );
+  }
+
+  return updatedContent;
+}
+
+async function replaceSchemaComponentAsync(
+  content: string,
+  schemaImports: Record<string, string>,
+  regex: RegExp,
+  generator: (importPath: string) => Promise<string>
+) {
   let result = '';
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
-  while ((match = tableRegex.exec(content))) {
+  while ((match = regex.exec(content))) {
     result += content.slice(lastIndex, match.index);
     const identifier = match[1];
     const importPath = schemaImports[identifier];
 
     if (importPath) {
-      const tableMarkdown = await generateEasJsonPropertiesTableMarkdownAsync(importPath);
-      result += `\n${tableMarkdown}\n`;
-    } else {
-      result += '';
+      try {
+        const markdown = await generator(importPath);
+        if (markdown) {
+          result += `\n${markdown}\n`;
+        }
+      } catch (error) {
+        console.error('Unable to generate schema markdown for', importPath, error);
+      }
     }
 
-    lastIndex = tableRegex.lastIndex;
+    lastIndex = regex.lastIndex;
   }
 
   result += content.slice(lastIndex);
