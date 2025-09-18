@@ -122,8 +122,6 @@ public class BackgroundTaskScheduler {
         throw CouldNotRegisterWorkerTask("Too many pending task requests.")
       case .notPermitted:
         throw CouldNotRegisterWorkerTask("Task request not permitted.")
-      case .immediateRunIneligible:
-        throw CouldNotRegisterWorkerTask("Task request not ineligible.")
       @unknown default:
         print("An unknown BGTaskScheduler error occurred.")
         // Handle any future cases added by Apple
