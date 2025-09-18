@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix resizeMode on reload screen image. ([#39768](https://github.com/expo/expo/pull/39768) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
