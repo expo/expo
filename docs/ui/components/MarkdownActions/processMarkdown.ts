@@ -1,4 +1,5 @@
 import { DEVELOPMENT_MODE_MARKDOWN, PLATFORM_AND_DEVICE_MARKDOWN } from './constants';
+import { generateEasJsonPropertiesTableMarkdownAsync } from './easJsonTables';
 import {
   formatTerminalCommands,
   generateEnvironmentInstructionsMarkdownAsync,
@@ -54,6 +55,8 @@ export async function prepareMarkdownForCopyAsync(rawContent: string) {
     content = content.slice(frontmatterMatch[0].length);
   }
 
+  const schemaImports = extractSchemaImports(content);
+
   content = content.replace(IMPORT_STATEMENT_PATTERN, '');
 
   if (content.includes('<PlatformAndDeviceForm')) {
@@ -81,6 +84,8 @@ export async function prepareMarkdownForCopyAsync(rawContent: string) {
     const features = await generateTemplateFeaturesMarkdownAsync();
     content = content.replace(/<TemplateFeatures\s*\/>/, `\n${features}\n`);
   }
+
+  content = await replaceEasJsonTablesAsync(content, schemaImports);
 
   content = content.replace(BOX_LINK_PATTERN, (_match, linkTitle, href) => {
     const normalizedHref = href.startsWith('http') ? href : `https://docs.expo.dev${href}`;
@@ -143,4 +148,43 @@ export async function prepareMarkdownForCopyAsync(rawContent: string) {
   }
 
   return parts.join('\n\n');
+}
+
+function extractSchemaImports(content: string) {
+  const schemaImportRegex = /import\s+(\w+)\s+from\s+["']([^"']*eas-json[^"']+)["']/g;
+  const map: Record<string, string> = {};
+  let match: RegExpExecArray | null;
+
+  while ((match = schemaImportRegex.exec(content))) {
+    const identifier = match[1];
+    const importPath = match[2];
+    map[identifier] = importPath;
+  }
+
+  return map;
+}
+
+async function replaceEasJsonTablesAsync(content: string, schemaImports: Record<string, string>) {
+  const tableRegex = /<EasJsonPropertiesTable\s+schema={(\w+)}\s*\/>/g;
+  let result = '';
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = tableRegex.exec(content))) {
+    result += content.slice(lastIndex, match.index);
+    const identifier = match[1];
+    const importPath = schemaImports[identifier];
+
+    if (importPath) {
+      const tableMarkdown = await generateEasJsonPropertiesTableMarkdownAsync(importPath);
+      result += `\n${tableMarkdown}\n`;
+    } else {
+      result += '';
+    }
+
+    lastIndex = tableRegex.lastIndex;
+  }
+
+  result += content.slice(lastIndex);
+  return result;
 }

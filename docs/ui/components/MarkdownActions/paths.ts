@@ -1,6 +1,5 @@
 const DYNAMIC_DATA_PATHS = [
   /^\/additional-resources\/?$/,
-  /^\/eas\/json\/?$/,
   /^\/versions\/(?:latest|unversioned|v\d+\.\d+\.\d+)\/config\/app\/?$/,
 ];
 
