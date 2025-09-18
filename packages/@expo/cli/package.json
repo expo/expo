@@ -50,7 +50,7 @@
     "@expo/image-utils": "^0.8.7",
     "@expo/json-file": "^10.0.7",
     "@expo/mcp-tunnel": "~0.0.7",
-    "@expo/metro": "~0.1.1",
+    "@expo/metro": "~54.0.0",
     "@expo/metro-config": "~54.0.3",
     "@expo/osascript": "^2.3.7",
     "@expo/package-manager": "^1.9.8",
