@@ -1,4 +1,3 @@
-console.log(globalThis);
 var __BUNDLE_START_TIME__=globalThis.nativePerformanceNow?nativePerformanceNow():Date.now(),__DEV__=false,process=globalThis.process||{},__METRO_GLOBAL_PREFIX__='';process.env=process.env||{};process.env.NODE_ENV=process.env.NODE_ENV||"production";
 (function (global) {
   'use strict';
@@ -40824,55 +40823,25 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
   require(_dependencyMap[0]);
   var _srcErrorOverlay = require(_dependencyMap[1]);
   var _srcDataLogBoxLog = require(_dependencyMap[2]);
-  var _reactJsxRuntime = require(_dependencyMap[3]);
-  // const _testMessage = `message	String	"Unable to resolve module ./error-overlay/LogBox from /Users/krystofwoldrich/repos/expo/expo/packages/@expo/metro-runtime/src/index.ts: \n\nNone of these files exist:\n  * ../../packages/@expo/metro-runtime/src/error-overlay/LogBox(.ios.ts|.native.ts|.ts|.ios.tsx|.native.tsx|.tsx|.ios.mjs|.native.mjs|.mjs|.ios.js|.native.js|.js|.ios.jsx|.native.jsx|.jsx|.ios.json|.native.json|.json|.ios.cjs|.native.cjs|.cjs|.ios.scss|.native.scss|.scss|.ios.sass|.native.sass|.sass|.ios.css|.native.css|.css)\n  * ../../packages/@expo/metro-runtime/src/error-overlay/LogBox\n\x1b[0m \x1b[90m 18 |\x1b[39m\n \x1b[90m 19 |\x1b[39m   \x1b[90m// @ts-expect-error: TODO: Remove this when we remove the log box.\x1b[39m\n\x1b[31m\x1b[1m>\x1b[22m\x1b[39m\x1b[90m 20 |\x1b[39m   globalThis\x1b[33m.\x1b[39m__expo_dev_resetErrors \x1b[33m=\x1b[39m require(\x1b[32m'./error-overlay/LogBox'\x1b[39m)\x1b[33m.\x1b[39m\x1b[36mdefault\x1b[39m\x1b[33m.\x1b[39mclearAllLogs\x1b[33m;\x1b[39m\n \x1b[90m    |\x1b[39m                                                \x1b[31m\x1b[1m^\x1b[22m\x1b[39m\n \x1b[90m 21 |\x1b[39m }\n \x1b[90m 22 |\x1b[39m\x1b[0m"	`;
-
-  const logs = [
-  // new LogBoxLog(parseLogBoxException({
-  //   originalMessage: (globalThis as any).__expoLogBoxNativeData?.rawMessage,
-  //   // originalMessage: testMessage,
-  //   stack: [],
-  // })),
-  new _srcDataLogBoxLog.LogBoxLog({
-    level: 'syntax',
-    stack: [],
-    isComponentError: false,
-    componentStack: [],
-    codeFrame: {
-      stack: {
-        fileName: 'apps/router-e2e/__e2e__/05-errors/app/index.tsx',
-        content: "\u001b[0m \u001b[90m 66 |\u001b[39m \u001b[36mfunction\u001b[39m \u001b[33mRWarningMissingKeys\u001b[39m() {\n \u001b[90m 67 |\u001b[39m   \u001b[36mreturn\u001b[39m (\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 68 |\u001b[39m     \u001b[33m<\u001b[39m\u001b[33m>\u001b[39m\n \u001b[90m    |\u001b[39m     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 69 |\u001b[39m       {\u001b[33mArray\u001b[39m\u001b[33m.\u001b[39m\u001b[36mfrom\u001b[39m({ length\u001b[33m:\u001b[39m \u001b[35m3\u001b[39m }\u001b[33m,\u001b[39m (_\u001b[33m,\u001b[39m i) \u001b[33m=>\u001b[39m (\n \u001b[90m 70 |\u001b[39m         \u001b[33m<\u001b[39m\u001b[33mView\u001b[39m style\u001b[33m=\u001b[39m{{ padding\u001b[33m:\u001b[39m \u001b[35m8\u001b[39m\u001b[33m,\u001b[39m backgroundColor\u001b[33m:\u001b[39m \u001b[32m'white'\u001b[39m }}\u001b[33m>\u001b[39m\u001b[33m<\u001b[39m\u001b[33m/\u001b[39m\u001b[33mView\u001b[39m\u001b[33m>\u001b[39m\n \u001b[90m 71 |\u001b[39m       ))\u001b[33m.\u001b[39mreverse()}\u001b[0m"
-        // location: {
-        //   row: 68,
-        //   column: 4,
-        // },
-        //           content: `
-        //    5 | // TODO: How to import for testing?
-        //    6 | // import HMRClient from 'expo/build/async-require/hmr';
-        // >  7 | import './foobar';
-        //      |         ^
-        //    8 |
-        //    9 | // eval('clasfs Foo {}');
-        //   10 |
-        // `,
-      }
-    },
-    message: {
-      content: 'Unable to resolve "./foobar" from "apps/router-e2e/__e2e__/05-errors/app/index.tsx"',
-      substitutions: []
-    },
-    category: `apps/router-e2e/__e2e__/05-errors/app/index.tsx-7-9`
-  })];
-  console.log('logs', JSON.stringify(logs, null, 2));
+  var _srcDataParseLogBoxLog = require(_dependencyMap[3]);
+  var _reactJsxRuntime = require(_dependencyMap[4]);
+  globalThis.__expoReloadJS = () => globalThis.webkit.messageHandlers.nativeHandler.postMessage({
+    function: 'reloadJS'
+  });
+  const logs = [new _srcDataLogBoxLog.LogBoxLog((0, _srcDataParseLogBoxLog.parseLogBoxException)({
+    originalMessage: globalThis.__expoLogBoxNativeData?.rawMessage,
+    stack: []
+  }))];
   function App() {
     const selectedLogIndex = logs.length > 0 ? 0 : -1;
     return /*#__PURE__*/(0, _reactJsxRuntime.jsx)(_srcErrorOverlay.LogBoxContent, {
       log: logs[selectedLogIndex],
       selectedLogIndex: selectedLogIndex,
-      logs: logs
+      logs: logs,
+      isDismissable: false
     });
   }
-},314,[35,315,322,323]);
+},314,[35,315,322,321,323]);
 __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   'use dom';
 
@@ -40996,7 +40965,8 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
           children: /*#__PURE__*/(0, _reactJsxRuntime.jsx)(LogBoxContent, {
             log: log,
             selectedLogIndex: selectedLogIndex,
-            logs: logs
+            logs: logs,
+            isDismissable: isDismissable
           })
         })]
       })
@@ -41005,10 +40975,10 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
   function LogBoxContent({
     log,
     selectedLogIndex,
-    logs
+    logs,
+    isDismissable
   }) {
     const meta = useDevServerMeta();
-    const isDismissable = !['static', 'syntax', 'resolution'].includes(log.level);
     const [_, setClosing] = (0, _react.useState)(false);
     const projectRoot = meta?.projectRoot;
     const animateClosed = callback => {
@@ -41069,6 +41039,7 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
     const _handleRetry = (0, _react.useCallback)(type => {
       LogBoxData.retrySymbolicateLogNow(type, log);
     }, [log]);
+    const onReload = globalThis.__expoReloadJS;
     const onCopy = () => {
       // Copy log to clipboard
       const errContents = [log.message.content.trim()];
@@ -41141,7 +41112,8 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
           onMinimize: onMinimize,
           onSelectIndex: onChangeSelectedIndex,
           level: log.level,
-          onCopy: onCopy
+          onCopy: onCopy,
+          onReload: onReload
         })
       }), /*#__PURE__*/(0, _reactJsxRuntime.jsxs)("div", {
         className: styles.default.scroll,
@@ -41217,7 +41189,6 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
         style: {
           padding: '1rem',
           flex: 1,
-          backgroundColor: 'var(--expo-log-secondary-system-background)',
           borderTop: `1px solid var(--expo-log-color-border)`
         },
         children: /*#__PURE__*/(0, _reactJsxRuntime.jsx)("span", {
@@ -41264,7 +41235,8 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
           fontFamily: 'var(--expo-log-font-family)',
           fontSize: 16,
           whiteSpace: 'pre-wrap',
-          fontWeight: '500'
+          fontWeight: '500',
+          wordBreak: 'break-all'
         },
         children: [/*#__PURE__*/(0, _reactJsxRuntime.jsx)(_LogBoxMessage.LogBoxMessage, {
           maxLength: props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity,
@@ -44208,7 +44180,7 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
       } = _ref,
       props = (0, _objectWithoutPropertiesLoose.default)(_ref, _excluded);
     const titleText = `${selectedIndex + 1}/${total}`;
-    const isUNVERSIONED = sdkVersion?.toLowerCase() === 'unversioned';
+    const isUNVERSIONED = sdkVersion?.toLowerCase() === 'unversioned' || !sdkVersion;
     return /*#__PURE__*/(0, _reactJsxRuntime.jsxs)("div", {
       className: styles.default.container,
       children: [/*#__PURE__*/(0, _reactJsxRuntime.jsxs)("div", {
@@ -44269,7 +44241,11 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
         })]
       }), /*#__PURE__*/(0, _reactJsxRuntime.jsxs)("div", {
         className: styles.default.headerControls,
-        children: [/*#__PURE__*/(0, _reactJsxRuntime.jsx)(HeaderButton, {
+        children: [props.onReload && /*#__PURE__*/(0, _reactJsxRuntime.jsx)(HeaderButton, {
+          title: "Reload application",
+          onPress: () => props.onReload?.(),
+          children: /*#__PURE__*/(0, _reactJsxRuntime.jsx)(ReloadIcon, {})
+        }), /*#__PURE__*/(0, _reactJsxRuntime.jsx)(HeaderButton, {
           title: "Copy error",
           onPress: () => props.onCopy(),
           children: /*#__PURE__*/(0, _reactJsxRuntime.jsxs)("svg", {
@@ -44333,6 +44309,18 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
         d: "M7 11.5C7 11.6053 7.01978 11.7014 7.05934 11.7881C7.0989 11.8748 7.16154 11.9554 7.24725 12.0297L14.6846 18.7955C14.8297 18.9318 15.011 19 15.2286 19C15.3736 19 15.5055 18.969 15.6242 18.9071C15.7363 18.8513 15.8286 18.7677 15.9011 18.6561C15.967 18.5446 16 18.4207 16 18.2844C16 18.0861 15.9275 17.9157 15.7824 17.7732L8.87912 11.5L15.7824 5.23606C15.9275 5.08736 16 4.91698 16 4.72491C16 4.5824 15.967 4.45849 15.9011 4.35316C15.8286 4.24164 15.7363 4.15489 15.6242 4.09294C15.5055 4.03098 15.3736 4 15.2286 4C15.011 4 14.8297 4.07125 14.6846 4.21375L7.24725 10.9796C7.16154 11.0539 7.0989 11.1344 7.05934 11.2212C7.01978 11.3079 7 11.4009 7 11.5Z"
       }) : /*#__PURE__*/(0, _reactJsxRuntime.jsx)("path", {
         d: "M17 11.5C17 11.6053 16.9802 11.7014 16.9407 11.7881C16.9011 11.8748 16.8385 11.9554 16.7527 12.0297L9.31538 18.7955C9.17033 18.9318 8.98901 19 8.77143 19C8.62637 19 8.49451 18.969 8.37582 18.9071C8.26374 18.8513 8.17143 18.7677 8.0989 18.6561C8.03297 18.5446 8 18.4207 8 18.2844C8 18.0861 8.07253 17.9157 8.21758 17.7732L15.1209 11.5L8.21758 5.23606C8.07253 5.08736 8 4.91698 8 4.72491C8 4.5824 8.03297 4.45849 8.0989 4.35316C8.17143 4.24164 8.26374 4.15489 8.37582 4.09294C8.49451 4.03098 8.62637 4 8.77143 4C8.98901 4 9.17033 4.07125 9.31538 4.21375L16.7527 10.9796C16.8385 11.0539 16.9011 11.1344 16.9407 11.2212C16.9802 11.3079 17 11.4009 17 11.5Z"
+      })
+    });
+  }
+  function ReloadIcon() {
+    return /*#__PURE__*/(0, _reactJsxRuntime.jsx)("svg", {
+      width: "16",
+      height: "16",
+      viewBox: "0 0 16 16",
+      fill: "var(--expo-log-secondary-label)",
+      xmlns: "http://www.w3.org/2000/svg",
+      children: /*#__PURE__*/(0, _reactJsxRuntime.jsx)("path", {
+        d: "M7.248 1.307A.75.75 0 118.252.193l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 01-1.004-1.114l1.29-1.161a4.5 4.5 0 103.655 2.832.75.75 0 111.398-.546A6 6 0 118.018 2l-.77-.693z"
       })
     });
   }
@@ -45058,72 +45046,72 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
 __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},336,[]);
 __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
   module.exports = Object.assign({
-    "headerBlur": "aF6zBW_headerBlur",
     "fadeOut": "aF6zBW_fadeOut",
-    "content": "aF6zBW_content",
-    "overlay": "aF6zBW_overlay",
-    "containerExit": "aF6zBW_containerExit",
-    "bgExit": "aF6zBW_bgExit",
-    "container": "aF6zBW_container",
     "scroll": "aF6zBW_scroll",
-    "bg": "aF6zBW_bg",
-    "data-expo-log-backdrop-fade-in": "aF6zBW_data-expo-log-backdrop-fade-in",
-    "fadeInUp": "aF6zBW_fadeInUp",
     "fadeOutUp": "aF6zBW_fadeOutUp",
-    "footer": "aF6zBW_footer"
+    "overlay": "aF6zBW_overlay",
+    "bg": "aF6zBW_bg",
+    "containerExit": "aF6zBW_containerExit",
+    "footer": "aF6zBW_footer",
+    "container": "aF6zBW_container",
+    "content": "aF6zBW_content",
+    "bgExit": "aF6zBW_bgExit",
+    "fadeInUp": "aF6zBW_fadeInUp",
+    "headerBlur": "aF6zBW_headerBlur",
+    "data-expo-log-backdrop-fade-in": "aF6zBW_data-expo-log-backdrop-fade-in"
   }, {
     unstable_styles: {
-      "headerBlur": {
-        "$$css": true,
-        "_": "aF6zBW_headerBlur"
-      },
       "fadeOut": {
         "$$css": true,
         "_": "aF6zBW_fadeOut"
-      },
-      "content": {
-        "$$css": true,
-        "_": "aF6zBW_content"
-      },
-      "overlay": {
-        "$$css": true,
-        "_": "aF6zBW_overlay"
-      },
-      "containerExit": {
-        "$$css": true,
-        "_": "aF6zBW_containerExit"
-      },
-      "bgExit": {
-        "$$css": true,
-        "_": "aF6zBW_bgExit"
-      },
-      "container": {
-        "$$css": true,
-        "_": "aF6zBW_container"
       },
       "scroll": {
         "$$css": true,
         "_": "aF6zBW_scroll"
       },
+      "fadeOutUp": {
+        "$$css": true,
+        "_": "aF6zBW_fadeOutUp"
+      },
+      "overlay": {
+        "$$css": true,
+        "_": "aF6zBW_overlay"
+      },
       "bg": {
         "$$css": true,
         "_": "aF6zBW_bg"
       },
-      "data-expo-log-backdrop-fade-in": {
+      "containerExit": {
         "$$css": true,
-        "_": "aF6zBW_data-expo-log-backdrop-fade-in"
+        "_": "aF6zBW_containerExit"
+      },
+      "footer": {
+        "$$css": true,
+        "_": "aF6zBW_footer"
+      },
+      "container": {
+        "$$css": true,
+        "_": "aF6zBW_container"
+      },
+      "content": {
+        "$$css": true,
+        "_": "aF6zBW_content"
+      },
+      "bgExit": {
+        "$$css": true,
+        "_": "aF6zBW_bgExit"
       },
       "fadeInUp": {
         "$$css": true,
         "_": "aF6zBW_fadeInUp"
       },
-      "fadeOutUp": {
+      "headerBlur": {
         "$$css": true,
-        "_": "aF6zBW_fadeOutUp"
+        "_": "aF6zBW_headerBlur"
       },
-      "footer": {
+      "data-expo-log-backdrop-fade-in": {
         "$$css": true,
-        "_": "aF6zBW_footer"
+        "_": "aF6zBW_data-expo-log-backdrop-fade-in"
       }
     }
   }, {});

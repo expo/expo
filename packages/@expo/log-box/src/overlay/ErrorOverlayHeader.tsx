@@ -15,13 +15,14 @@ export function ErrorOverlayHeader({
   onDismiss: () => void;
   onMinimize: () => void;
   onCopy: () => void;
+  onReload?: () => void;
   isDismissable: boolean;
   selectedIndex: number;
   sdkVersion?: string;
   total: number;
 }) {
   const titleText = `${selectedIndex + 1}/${total}`;
-  const isUNVERSIONED = sdkVersion?.toLowerCase() === 'unversioned';
+  const isUNVERSIONED = sdkVersion?.toLowerCase() === 'unversioned' || !sdkVersion;
   return (
     <div className={styles.container}>
       <div className={styles.leftGroup}>
@@ -87,6 +88,11 @@ export function ErrorOverlayHeader({
       </div>
 
       <div className={styles.headerControls}>
+        {props.onReload &&
+          <HeaderButton title="Reload application" onPress={() => props.onReload?.()}>
+            <ReloadIcon />
+          </HeaderButton>
+        }
         <HeaderButton title="Copy error" onPress={() => props.onCopy()}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -138,6 +144,22 @@ function ChevronIcon({ left }: { left?: boolean }) {
       ) : (
         <path d="M17 11.5C17 11.6053 16.9802 11.7014 16.9407 11.7881C16.9011 11.8748 16.8385 11.9554 16.7527 12.0297L9.31538 18.7955C9.17033 18.9318 8.98901 19 8.77143 19C8.62637 19 8.49451 18.969 8.37582 18.9071C8.26374 18.8513 8.17143 18.7677 8.0989 18.6561C8.03297 18.5446 8 18.4207 8 18.2844C8 18.0861 8.07253 17.9157 8.21758 17.7732L15.1209 11.5L8.21758 5.23606C8.07253 5.08736 8 4.91698 8 4.72491C8 4.5824 8.03297 4.45849 8.0989 4.35316C8.17143 4.24164 8.26374 4.15489 8.37582 4.09294C8.49451 4.03098 8.62637 4 8.77143 4C8.98901 4 9.17033 4.07125 9.31538 4.21375L16.7527 10.9796C16.8385 11.0539 16.9011 11.1344 16.9407 11.2212C16.9802 11.3079 17 11.4009 17 11.5Z" />
       )}
+    </svg>
+  );
+}
+
+function ReloadIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="var(--expo-log-secondary-label)"
+      xmlns="http://www.w3.org/2000/svg"
+      >
+      <path
+        d="M7.248 1.307A.75.75 0 118.252.193l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 01-1.004-1.114l1.29-1.161a4.5 4.5 0 103.655 2.832.75.75 0 111.398-.546A6 6 0 118.018 2l-.77-.693z"
+      />
     </svg>
   );
 }

@@ -100,7 +100,7 @@ export function LogBoxInspector({
           }}
         />
         <div className={`${styles.container} ${closing ? styles.containerExit : ''}`}>
-          <LogBoxContent log={log} selectedLogIndex={selectedLogIndex} logs={logs} />
+          <LogBoxContent log={log} selectedLogIndex={selectedLogIndex} logs={logs} isDismissable={isDismissable} />
         </div>
       </div>
     </>
@@ -111,13 +111,14 @@ export function LogBoxContent({
   log,
   selectedLogIndex,
   logs,
+  isDismissable
 }: {
   log: LogBoxLog;
   selectedLogIndex: number;
   logs: LogBoxLog[];
+  isDismissable: boolean;
 }) {
   const meta = useDevServerMeta();
-  const isDismissable = !['static', 'syntax', 'resolution'].includes(log.level);
   const [_, setClosing] = useState(false);
 
   const projectRoot = meta?.projectRoot;
@@ -191,6 +192,8 @@ export function LogBoxContent({
     [log]
   );
 
+  const onReload = globalThis.__expoReloadJS;
+  
   const onCopy = () => {
     // Copy log to clipboard
     const errContents = [log.message.content.trim()];
@@ -280,6 +283,7 @@ export function LogBoxContent({
             onSelectIndex={onChangeSelectedIndex}
             level={log.level}
             onCopy={onCopy}
+            onReload={onReload}
           />
         </div>
 

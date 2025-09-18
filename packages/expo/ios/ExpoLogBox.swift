@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+import React
 
 @objc public class SwiftUIScreenProvider: NSObject {
     @objc public static func makeHostingController(message: String) -> UIViewController {
@@ -12,7 +13,7 @@ struct Colors {
     static let background = UIColor(red: 17/255.0,green: 17/255.0,blue: 19/255.0,alpha: 1.0)
 }
 
-class WebViewController: UIViewController {
+class WebViewController: UIViewController, WKScriptMessageHandler {
     private var webView: WKWebView!
     private var message: String
     
@@ -60,6 +61,7 @@ class WebViewController: UIViewController {
         if #available(iOS 16.4, *) {
             webView.isInspectable = true
         }
+        webView.configuration.userContentController.add(self, name: "nativeHandler")
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.isOpaque = false
         view.addSubview(webView)
@@ -80,5 +82,30 @@ class WebViewController: UIViewController {
         let url = bundle!.url(forResource: "index", withExtension: "html")
         webView.loadFileURL(url!, allowingReadAccessTo: url!.deletingLastPathComponent())
 #endif
+    }
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "nativeHandler",
+              let messageBody = message.body as? [String: Any],
+              let functionName = messageBody["function"] as? String else {
+            return
+        }
+        
+        let data = messageBody["data"] as? [String: Any] ?? [:]
+        
+        // Route to appropriate Swift function
+        switch functionName {
+        case "reloadJS":
+            reloadJS()
+        default:
+            print("Unknown function: \(functionName)")
+        }
+    }
+
+    func reloadJS() {
+        DispatchQueue.main.async {
+            RCTTriggerReloadCommandListeners("ExpoRedBoxSwap:Reload")
+        }
+        dismiss(animated: true)
     }
 }

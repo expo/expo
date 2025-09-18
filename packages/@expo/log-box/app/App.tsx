@@ -7,7 +7,12 @@ declare global {
   var __expoLogBoxNativeData: {
     rawMessage?: string;
   } | undefined;
+  var __expoReloadJS: (() => void) | undefined;
 }
+
+globalThis.__expoReloadJS = () => (globalThis as any).webkit.messageHandlers.nativeHandler.postMessage({
+  function: 'reloadJS',
+});
 
 const logs: LogBoxLog[] = [
   new LogBoxLog(parseLogBoxException({
@@ -23,6 +28,7 @@ export default function App() {
       log={logs[selectedLogIndex]}
       selectedLogIndex={selectedLogIndex}
       logs={logs}
+      isDismissable={false}
     />
   );
 }
