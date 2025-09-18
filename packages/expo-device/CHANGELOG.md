@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for iOS 17.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
