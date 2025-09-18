@@ -505,6 +505,18 @@ internal struct FixedSizeModifier: ViewModifier, Record {
   }
 }
 
+internal struct FillModifier: ViewModifier, Record {
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+    if let color = color {
+      content.foregroundColor(color)
+    } else {
+      content
+    }
+  }
+}
+
 /**
  * A type-erased wrapper for `ViewModifier`
  */
@@ -952,6 +964,10 @@ extension ViewModifierRegistry {
 
     register("fixedSize") { params, appContext, _ in
       return try FixedSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("fill") { params, appContext, _ in
+      return try FillModifier(from: params, appContext: appContext)
     }
   }
 }
