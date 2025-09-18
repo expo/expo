@@ -76,6 +76,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         ForEach(props.polylines) { polyline in
           MapPolyline(coordinates: polyline.clLocationCoordinates2D)
             .stroke(polyline.color, lineWidth: polyline.width)
+            .contourStyle(polyline.contourStyle == .geodesic ? .geodesic : .straight)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
 
@@ -162,7 +163,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               "id": hit.id,
               "color": hit.color,
               "width": hit.width,
-              "contourStyle": hit.contourStyle,
+              "contourStyle": hit.contourStyle.rawValue,
               "coordinates": coords
             ])
           }
