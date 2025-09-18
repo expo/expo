@@ -4,6 +4,7 @@
 
 # Parameters:
 #   - screenshotOutputPath: The path including the name of the screenshot to take and compare
+#   - similarityThreshold: The percentage of similarity required to pass the comparison (default: <=5% difference)
 
 appId: dev.expo.Payments
 ---
@@ -15,8 +16,8 @@ appId: dev.expo.Payments
       currentScreenshot: ${screenshotOutputPath}.${maestro.platform}
       # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
       outputPath: ~/.maestro/tests/${screenshotOutputPath}.diff.${maestro.platform}
-      # todo - make the threshold configurable
+      similarityThreshold: ${similarityThreshold}
 
 - assertTrue:
     condition: ${output.comparisonResult.success}
-    label: Screenshot comparison check (see screenshot comparison server logs for details)
+    label: Screenshot comparison check. Is screenshot comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)

@@ -5,13 +5,6 @@ import * as path from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 
-function expandTilde(filePath: string): string {
-  if (filePath.startsWith('~/')) {
-    return path.join(os.homedir(), filePath.slice(2));
-  }
-  return filePath;
-}
-
 export interface ComparisonResult {
   success: boolean;
   diffPercentage: number;
@@ -39,33 +32,45 @@ function createErrorResult(
 function createSuccessResult(
   diffPixels: number,
   totalPixels: number,
-  diffPercentage: number
+  diffPercentage: number,
+  similarityThreshold: number = 5
 ): ComparisonResult {
-  const success = diffPercentage < 5;
+  console.log({
+    diffPixels,
+    totalPixels,
+    diffPercentage,
+    similarityThreshold,
+  });
+  const success = diffPercentage <= similarityThreshold;
+  const diffPercentageFormatted = parseFloat(diffPercentage.toFixed(2));
   let message: string;
 
   if (diffPixels === 0) {
     message = 'Images are identical';
-  } else if (diffPercentage < 5) {
-    message = 'Images are very similar (< 5% difference)';
+  } else if (success) {
+    message = `Images are very similar (${diffPercentageFormatted}% difference)`;
   } else {
-    message = 'Images are significantly different';
+    message = `Images are significantly different (${diffPercentageFormatted}% difference)`;
   }
 
   return {
     success,
-    diffPercentage: parseFloat(diffPercentage.toFixed(2)),
+    diffPercentage: diffPercentageFormatted,
     totalPixels,
     diffPixels,
     message,
   };
 }
 
-export function compareImages(
-  image1Path: string,
-  image2Path: string,
-  outputPath?: string
-): ComparisonResult {
+export interface CompareImagesOptions {
+  image1Path: string;
+  image2Path: string;
+  outputPath?: string;
+  similarityThreshold?: number;
+}
+
+export function compareImages(options: CompareImagesOptions): ComparisonResult {
+  const { image1Path, image2Path, outputPath, similarityThreshold = 5 } = options;
   try {
     if (!fs.existsSync(image1Path)) {
       return createErrorResult('Image 1 not found', `Image 1 not found: ${image1Path}`);
@@ -104,7 +109,7 @@ export function compareImages(
     const totalPixels = width * height;
     const diffPercentage = (numDiffPixels / totalPixels) * 100;
 
-    return createSuccessResult(numDiffPixels, totalPixels, diffPercentage);
+    return createSuccessResult(numDiffPixels, totalPixels, diffPercentage, similarityThreshold);
   } catch (error) {
     return createErrorResult(
       'Image comparison failed',
@@ -120,19 +125,15 @@ function getExitMessage(result: ComparisonResult): { message: string; exitCode: 
 
   if (result.diffPixels === 0) {
     return { message: '✅ Images are identical', exitCode: 0 };
-  } else if (result.diffPercentage < 5) {
-    return { message: '⚠️  Images are very similar (< 5% difference)', exitCode: 0 };
+  } else if (result.success) {
+    return { message: `⚠️  ${result.message}`, exitCode: 0 };
   } else {
     return { message: '❌ Images are significantly different', exitCode: 1 };
   }
 }
 
-export function compareImagesSync(
-  image1Path: string,
-  image2Path: string,
-  outputPath?: string
-): void {
-  const result = compareImages(image1Path, image2Path, outputPath);
+export function compareImagesSync(options: CompareImagesOptions): void {
+  const result = compareImages(options);
   const { message, exitCode } = getExitMessage(result);
 
   console.log(`Difference: ${result.diffPercentage}%`);
@@ -146,12 +147,19 @@ export function compareImagesSync(
   process.exit(exitCode);
 }
 
+function expandTilde(filePath: string): string {
+  if (filePath.startsWith('~/')) {
+    return path.join(os.homedir(), filePath.slice(2));
+  }
+  return filePath;
+}
+
 // If this script is run directly, compare the two images provided as command line arguments
 if (require.main === module) {
   const [, , image1Path, image2Path, outputPath] = process.argv;
 
   if (image1Path && image2Path) {
-    compareImagesSync(image1Path, image2Path, outputPath);
+    compareImagesSync({ image1Path, image2Path, outputPath });
   } else {
     throw new Error('Usage: compare-images.ts <image1> <image2> [outputDiffImage]');
   }
