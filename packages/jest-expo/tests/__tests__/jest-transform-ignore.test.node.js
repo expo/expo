@@ -23,6 +23,12 @@ describe.each([
     expect(shouldTransform(rootDir, 'node_modules/@expo/metro-runtime/src/index.ts')).toBe(true);
   });
 
+  it('transforms @expo-google-fonts/* packages', () => {
+    expect(shouldTransform(rootDir, 'node_modules/@expo-google-fonts/inter/index.js')).toBe(true);
+    expect(shouldTransform(rootDir, 'node_modules/@expo-google-fonts/poppins/index.js')).toBe(true);
+    expect(shouldTransform(rootDir, 'node_modules/@expo-google-fonts/roboto/index.js')).toBe(true);
+  });
+
   it('transforms react-native* packages', () => {
     expect(shouldTransform(rootDir, 'node_modules/react-native/index.js')).toBe(true);
     expect(shouldTransform(rootDir, 'node_modules/react-native-svg/index.js')).toBe(true);
@@ -35,6 +41,16 @@ describe.each([
     expect(shouldTransform(rootDir, 'node_modules/@react-native/normalize-colors/index.flow.js')).toBe(true);
     expect(shouldTransform(rootDir, 'node_modules/@react-native/js-polyfills/index.js')).toBe(true);
     expect(shouldTransform(rootDir, 'node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js')).toBe(true);
+  });
+
+  it('transforms @react-navigation/* packages', () => {
+    expect(shouldTransform(rootDir, 'node_modules/@react-navigation/native/lib/module/index.js')).toBe(true);
+    expect(shouldTransform(rootDir, 'node_modules/@react-navigation/elements/lib/module/index.js')).toBe(true);
+    expect(shouldTransform(rootDir, 'node_modules/@react-navigation/devtools/lib/module/index.js')).toBe(true);
+  });
+
+  it('transforms @sentry/react-native package', () => {
+    expect(shouldTransform(rootDir, 'node_modules/@sentry/react-native/dist/js/index.js')).toBe(true);
   });
 
   it('does not transform reanimated/plugin', () => {
