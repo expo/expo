@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.17 — 2025-09-18
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.16 — 2025-09-16
 
 ### 🎉 New features

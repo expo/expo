@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Bump to `@expo/metro@~54.0.0` fixing `metro-runtime` resolution error when `unstable_enablePackageExports` is forcefully disabled ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 54.0.9 — 2025-09-18
+
+### 🐛 Bug fixes
+
+- Bump to `@expo/metro@~54.0.0` fixing `metro-runtime` resolution error when `unstable_enablePackageExports` is forcefully disabled ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
 
 ## 54.0.8 — 2025-09-16
 

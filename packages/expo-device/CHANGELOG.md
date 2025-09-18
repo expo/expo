@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Added support for iOS 17. ([#39797](https://github.com/expo/expo/pull/39797) by [@chrfalch](https://github.com/chrfalch))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 8.0.8 — 2025-09-18
+
+### 🎉 New features
+
+- [iOS] Added support for iOS 17. ([#39797](https://github.com/expo/expo/pull/39797) by [@chrfalch](https://github.com/chrfalch))
 
 ## 8.0.7 — 2025-09-11
 

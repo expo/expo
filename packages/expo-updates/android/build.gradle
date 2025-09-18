@@ -42,7 +42,7 @@ expoModule {
 }
 
 group = 'host.exp.exponent'
-version = '29.0.10'
+version = '29.0.11'
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -88,7 +88,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '29.0.10'
+    versionName '29.0.11'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

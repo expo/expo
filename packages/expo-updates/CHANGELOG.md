@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix resizeMode on reload screen image. ([#39768](https://github.com/expo/expo/pull/39768) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 29.0.11 — 2025-09-18
+
+### 🐛 Bug fixes
+
+- [iOS] Fix resizeMode on reload screen image. ([#39768](https://github.com/expo/expo/pull/39768) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 29.0.10 — 2025-09-11
 

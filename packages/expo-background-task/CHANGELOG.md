@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.0.8 — 2025-09-18
+
+### 🎉 New features
+
 - [iOS] Added support for task expiration handler on iOS. ([#39773](https://github.com/expo/expo/pull/39773) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fixed timing issue where background task iOS handler was not registered when we try to schedule a task. ([#39769](https://github.com/expo/expo/pull/39769) by [@chrfalch](https://github.com/chrfalch))
-
-### 💡 Others
 
 ## 1.0.7 — 2025-09-11
 
