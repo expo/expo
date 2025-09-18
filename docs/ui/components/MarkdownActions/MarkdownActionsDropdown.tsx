@@ -75,7 +75,7 @@ export function MarkdownActionsDropdown() {
       theme="quaternary"
       className="justify-center pl-2.5 pr-2"
       aria-haspopup="menu"
-      aria-label="Copy as Markdown and AI actions">
+      aria-label="Copy Markdown and AI actions">
       <div className="flex flex-row items-center gap-1.5">
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
           Copy as
@@ -88,13 +88,13 @@ export function MarkdownActionsDropdown() {
   return (
     <Dropdown.Dropdown trigger={<div>{dropdownTrigger}</div>} sideOffset={8}>
       <Dropdown.Item
-        label="Copy as Markdown"
+        label="Copy Markdown"
         Icon={Copy04Icon}
         onSelect={handleCopyMarkdown}
         disabled={!rawMarkdownUrl}
       />
       <Dropdown.Item
-        label="View as Markdown"
+        label="View Markdown"
         Icon={EyeIcon}
         href={rawMarkdownUrl ?? undefined}
         openInNewTab
