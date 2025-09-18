@@ -49,7 +49,7 @@ class WebViewController: UIViewController {
         let userScript = WKUserScript(
             source:
                 "var process=globalThis.process||{};process.env=process.env||{};process.env.EXPO_DEV_SERVER_ORIGIN='http://localhost:8081';" +
-            "var __expoLogBoxNativeData = { rawMessage: `\(safeValue)` };",
+            "var __expoLogBoxNativeData = { rawMessage: \(safeValue) };",
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
