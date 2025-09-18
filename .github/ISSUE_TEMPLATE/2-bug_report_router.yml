@@ -18,7 +18,9 @@ body:
     attributes:
       label: Minimal reproducible example
       description: |
-        To create a minimal reproducible example, run `npx create-expo-app@latest` (or use an equivalent for your package manager of choice) and then run `npm run reset-project` in the project directory and press `n` to delete the files, then run `git commit -m "Initial commit"`. Now, add in only the necessary pieces of code to reproduce the issue. Next, put the project on GitHub and share the link here.
+        Create a minimal repository that is used to demonstrate the bug you're trying to report.
+        Either, reduce your app's repository to the bare minimum to reproduce the bug, or create a new app with `npx create-expo-app@latest --template blank` (or an equivalent).
+        Upload this repository (for example to GitHub) and paste the link to it here.
         
         - If the issue depends on a third party library that Expo does not maintain, you should make your best effort to reproduce it without that library in order to ensure that the issue belongs on this repository, rather than the other library's repository.
         - A maintainer may close your issue if they feel it is not minimal enough. The purpose of this is to make it as safe and fast as possible for maintainers to reproduce and fix the issue.
