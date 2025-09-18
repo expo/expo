@@ -121,6 +121,21 @@ export async function triggerTaskWorkerForTestingAsync() {
         return Promise.resolve(false);
     }
 }
+// @needsAudit
+/**
+ * Adds a listener that is called when the background executor expires. On iOS, tasks can run
+ * for minutes, but the system can interrupt the process at any time. This listener is called
+ * when the system decides to stop the background tasks and should be used to clean up resources
+ * or save state. When the expiry handler is called, the main task runner is rescheduled automatically.
+ * @platform ios
+ * @return An object with a `remove` method to unsubscribe the listener.
+ */
+export function addExpirationListener(listener) {
+    if (!ExpoBackgroundTaskModule.addListener) {
+        throw new UnavailabilityError('BackgroundTask', 'addListener');
+    }
+    return ExpoBackgroundTaskModule.addListener('onTasksExpired', listener);
+}
 // Export types
 export { BackgroundTaskStatus, BackgroundTaskResult, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.js.map

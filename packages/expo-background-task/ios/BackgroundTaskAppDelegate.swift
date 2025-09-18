@@ -13,7 +13,10 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
         // Set up expiration handler
         task.expirationHandler = { ()
           log.warn("Expo Background Tasks - task expired")
+          // Send message to Expo module
+          NotificationCenter.default.post(name: onTasksExpiredNotification, object: self, userInfo: [:])
           task.setTaskCompleted(success: false)
+          self.reschedule()
         }
 
         // Let's find the task service implementation and call the runTasks(withReason)
@@ -21,16 +24,7 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
           taskService.runTasks(with: EXTaskLaunchReasonBackgroundTask, userInfo: nil, completionHandler: { _ in
             // Mark iOS task as finished - this is important so that we can continue calling it
             task.setTaskCompleted(success: true)
-
-            // Reschedule
-            Task {
-              do {
-                log.debug("Background task successfully finished. Rescheduling")
-                try await BackgroundTaskScheduler.tryScheduleWorker()
-              } catch {
-                log.error("Could not reschedule the worker after task finished: \(error.localizedDescription)")
-              }
-            }
+            self.reschedule()
           })
         } else {
           task.setTaskCompleted(success: false)
@@ -43,5 +37,17 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     }
 
     return true
+  }
+
+  private func reschedule() {
+    // Reschedule
+    Task {
+      do {
+        log.debug("Background task successfully finished. Rescheduling")
+        try await BackgroundTaskScheduler.tryScheduleWorker()
+      } catch {
+        log.error("Could not reschedule the worker after task finished: \(error.localizedDescription)")
+      }
+    }
   }
 }
