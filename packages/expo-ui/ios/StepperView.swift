@@ -31,6 +31,7 @@ struct StepperView: ExpoSwiftUI.View {
   }
 
   var body: some View {
+    #if !os(tvOS)
     Stepper(props.label, value: $value, in: props.min...props.max, step: props.step)
       .disabled(props.disabled)
       .onChange(of: value, perform: { newValue in
@@ -39,5 +40,8 @@ struct StepperView: ExpoSwiftUI.View {
         ]))
       })
       .modifier(CommonViewModifiers(props: props))
+    #else
+    Text("Stepper is not supported on tvOS")
+    #endif
   }
 }
