@@ -6,7 +6,7 @@ import {
   TypeDefinitionData,
   TypeDocKind,
 } from '~/components/plugins/api/APIDataTypes';
-import { getCommentContent } from '~/components/plugins/api/APISectionUtils';
+import { getAllTagData, getCommentContent } from '~/components/plugins/api/APISectionUtils';
 import versions from '~/public/static/constants/versions.json';
 
 const { LATEST_VERSION } = versions;
@@ -583,6 +583,7 @@ function formatProperty(prop: GeneratedData, version: string) {
   const typeString = typeToString(prop.type, version);
   const description = formatComment(prop.comment);
   const defaultValue = (prop as any).defaultValue;
+  const platforms = extractPlatforms(prop.comment);
   const headerParts = [`- \`${prop.name}${optional}\``];
   if (typeString) {
     headerParts.push(`(${typeString})`);
@@ -594,6 +595,9 @@ function formatProperty(prop: GeneratedData, version: string) {
   }
   if (defaultValue) {
     details.push(`Default: \`${defaultValue}\``);
+  }
+  if (platforms.length > 0) {
+    details.push(`Platforms: ${platforms.join(', ')}`);
   }
 
   if (details.length === 0) {
@@ -620,11 +624,22 @@ function formatComment(comment?: CommentData) {
 }
 
 function getBlockTag(comment: CommentData | undefined, tag: string) {
-  const block = comment?.blockTags?.find(blockTag => blockTag.tag === tag);
+  const normalized = tag.startsWith('@') ? tag : `@${tag}`;
+  const block = comment?.blockTags?.find(
+    blockTag => blockTag.tag === tag || blockTag.tag === normalized
+  );
   if (!block) {
     return '';
   }
   return getCommentContent(block.content);
+}
+
+function extractPlatforms(comment: CommentData | undefined) {
+  const platformTags = getAllTagData('platform', comment) ?? [];
+  return platformTags
+    .map(tag => getCommentContent(tag.content ?? []))
+    .map(value => value.trim())
+    .filter(Boolean);
 }
 
 function typeToString(typeDefinition: TypeDefinitionData | undefined, version: string): string {
