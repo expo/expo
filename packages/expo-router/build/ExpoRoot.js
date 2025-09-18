@@ -128,6 +128,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         : undefined;
     const store = (0, router_store_1.useStore)(context, linking, serverUrl);
     (0, useDomComponentNavigation_1.useDomComponentNavigation)();
+    console.log('test');
     if (store.shouldShowTutorial()) {
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {

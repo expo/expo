@@ -141,6 +141,8 @@ function ContextNavigator({
 
   useDomComponentNavigation();
 
+  console.log('test');
+
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
