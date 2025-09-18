@@ -15,9 +15,6 @@ import expo.modules.kotlin.AppContext
 data class ComposableScope(
   var rowScope: RowScope? = null,
   var columnScope: ColumnScope? = null,
-  // still experimental, so we comment it out for now
-  //  val flowRowScope: FlowRowScope? = null,
-  //  var flowColumnScope: FlowColumnScope? = null,
   var boxScope: BoxScope? = null
 )
 
