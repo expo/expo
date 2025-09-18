@@ -9,10 +9,7 @@ import WebKit
 
 
 struct Colors {
-    static let background = UIColor(red: 17/255.0,
-                                    green: 17/255.0,
-                                    blue: 19/255.0,
-                                    alpha: 1.0)
+    static let background = UIColor(red: 17/255.0,green: 17/255.0,blue: 19/255.0,alpha: 1.0)
 }
 
 class WebViewController: UIViewController {
@@ -49,7 +46,7 @@ class WebViewController: UIViewController {
         let userScript = WKUserScript(
             source:
                 "var process=globalThis.process||{};process.env=process.env||{};process.env.EXPO_DEV_SERVER_ORIGIN='http://localhost:8081';" +
-            "var __expoLogBoxNativeData = { rawMessage: \(safeValue) };",
+                "var __expoLogBoxNativeData = { rawMessage: \(safeValue) };",
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
@@ -72,15 +69,16 @@ class WebViewController: UIViewController {
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-
-        let bundleURL = Bundle.main.url(forResource: "ExpoLogBox", withExtension: "bundle")
-        let bundle = Bundle(url: bundleURL!)
-        let url = bundle!.url(forResource: "index", withExtension: "html")
         
-        // Load a URL
-//        webView.loadFileURL(url!, allowingReadAccessTo: url!.deletingLastPathComponent())
+#if EXPO_DEBUG_LOG_BOX
         let myURL = URL(string:"http://localhost:8082")
         let myRequest = URLRequest(url: myURL!)
         webView.load(myRequest)
+#else
+        let bundleURL = Bundle.main.url(forResource: "ExpoLogBox", withExtension: "bundle")
+        let bundle = Bundle(url: bundleURL!)
+        let url = bundle!.url(forResource: "index", withExtension: "html")
+        webView.loadFileURL(url!, allowingReadAccessTo: url!.deletingLastPathComponent())
+#endif
     }
 }
