@@ -1,7 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import ExpoModulesCore
 
-let onTasksExpired = "onTasksExpired"
+fileprivate let onTasksExpired = "onTasksExpired"
 public let onTasksExpiredNotification = Notification.Name(onTasksExpired)
 
 public class BackgroundTaskModule: Module {
