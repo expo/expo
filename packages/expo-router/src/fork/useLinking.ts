@@ -199,6 +199,7 @@ export function useLinking(
   const previousIndexRef = React.useRef<number | undefined>(undefined);
   const previousStateRef = React.useRef<NavigationState | undefined>(undefined);
   const pendingPopStatePathRef = React.useRef<string | undefined>(undefined);
+  const previousPathRef = React.useRef<string | undefined>(undefined);
 
   React.useEffect(() => {
     previousIndexRef.current = history.index;
@@ -216,8 +217,10 @@ export function useLinking(
       const index = history.index;
 
       const previousIndex = previousIndexRef.current ?? 0;
+      const previousPath = previousPathRef.current;
 
       previousIndexRef.current = index;
+      previousPathRef.current = path;
       pendingPopStatePathRef.current = path;
 
       // When browser back/forward is clicked, we first need to check if state object for this index exists
@@ -225,7 +228,12 @@ export function useLinking(
       // Otherwise, we'll handle it like a regular deep link
       const record = history.get(index);
 
-      if (record?.path === path && record?.state) {
+      // Detect hash-only navigation (same page, different hash) to avoid full page reloads
+      const isHashOnlyChange = previousPath ?
+        (previousPath.split('#')[0] === path.split('#')[0] && previousPath !== path) :
+        (path.includes('#') && index === previousIndex);
+
+      if (record?.path === path && record?.state && !isHashOnlyChange) {
         navigation.resetRoot(record.state);
         return;
       }
@@ -264,7 +272,7 @@ export function useLinking(
            *
            * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
            */
-          (index === previousIndex && (!record || `${record?.path}${location.hash}` === path))
+          (index === previousIndex && (!record || `${record?.path}${location.hash}` === path) || isHashOnlyChange)
           // END FORK
         ) {
           const action = getActionFromStateRef.current(state, configRef.current);
