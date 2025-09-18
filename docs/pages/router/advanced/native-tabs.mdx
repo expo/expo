@@ -348,7 +348,7 @@ export default function TabLayout() {
 ```
 
 ```tsx app/search/_layout.tsx
-import { Stack } from 'expo-router/unstable-native-tabs';
+import { Stack } from 'expo-router';
 
 export default function SearchLayout() {
   return <Stack />;
@@ -356,7 +356,7 @@ export default function SearchLayout() {
 ```
 
 ```tsx app/search/index.tsx
-import { Stack } from 'expo-router/unstable-native-tabs';
+import { Stack } from 'expo-router';
 
 export default function SearchIndex() {
   return (
@@ -471,6 +471,24 @@ This is in active development. At the moment, you can only use build-time drawab
 
 The tabs move around, sometimes being on top of the screen when rendering on iPad, sometimes on the side of the screen when running on Apple Vision Pro, and so on. We're working on a layout function to provide more detailed layout info in the future.
 
-### No support for nested tabs
+### No support for nested native tabs
 
-Native tabs do not support nested tabs. If you need nested tabs, you can use the JavaScript tabs.
+Native tabs cannot be nested inside other native tabs. You can still nest [JavaScript tabs](/router/advanced/tabs/) inside native tabs.
+
+### Limited support for FlatList
+
+[FlatList](https://reactnative.dev/docs/flatlist) integration with native tabs has limitations. Features like scroll-to-top and minimize-on-scroll aren't supported. Additionally, detecting scroll edges may fail, causing the tab bar to appear transparent. To fix this, use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router-native-tabs/#disabletransparentonscrolledge) prop.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs disableTransparentOnScrollEdge>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```

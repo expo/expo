@@ -15,7 +15,7 @@ export default function RecordingScreen() {
     return uri ? (
       <>
         <HeadingText>Last recording</HeadingText>
-        <AudioPlayer source={{ uri }} />
+        <AudioPlayer key={uri} source={{ uri }} />
       </>
     ) : null;
   };

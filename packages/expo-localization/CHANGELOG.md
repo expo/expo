@@ -7,8 +7,11 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Correct types for getCalendars and getLocales ([#39703](https://github.com/expo/expo/pull/39703) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
+
+- [Web] Add `getTextInfo()` fallback for deprecated `textInfo` in `getLocales()` ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
 
 ## 17.0.7 — 2025-09-11
 

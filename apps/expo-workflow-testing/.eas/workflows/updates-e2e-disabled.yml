@@ -45,7 +45,7 @@ jobs:
       - uses: eas/install_node_modules
       - name: Set up Updates E2E disabled project
         id: setup
-        working_directory: ../..        
+        working_directory: ../..
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
@@ -70,7 +70,7 @@ jobs:
           yarn maestro:ios:release:build
       - uses: eas/start_ios_simulator
         with:
-          device_identifier: iPhone 16
+          device_identifier: iPhone 17
       - name: Run Maestro tests (debug)
         id: testdebug
         working_directory: ../../../updates-e2e
@@ -91,7 +91,7 @@ jobs:
       - uses: eas/install_node_modules
       - name: Set up Updates E2E disabled project
         id: setup
-        working_directory: ../..        
+        working_directory: ../..
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: "4747"
