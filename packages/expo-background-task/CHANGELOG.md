@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed timing issue where background task iOS handler was not registered when we try to schedule a task. ([#39769](https://github.com/expo/expo/pull/39769) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 1.0.7 — 2025-09-11

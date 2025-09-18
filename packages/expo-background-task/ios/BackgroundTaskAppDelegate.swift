@@ -37,6 +37,9 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
           log.error("Expo Background Tasks: Could not find TaskService module")
         }
       }
+
+      // Signal to the scheduler that we're done.
+      BackgroundTaskScheduler.bgTaskSchedulerDidFinishRegister()
     }
 
     return true

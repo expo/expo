@@ -24,6 +24,8 @@ namespace expo
 
     jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value);
 
+    jsi::String convertNSURLToJSIString(jsi::Runtime &runtime, NSURL *value);
+
     jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value);
 
     jsi::Array convertNSArrayToJSIArray(jsi::Runtime &runtime, NSArray *value);

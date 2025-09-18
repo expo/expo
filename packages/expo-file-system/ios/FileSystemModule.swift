@@ -94,7 +94,11 @@ public final class FileSystemModule: Module {
             destination = to.url
           }
           if FileManager.default.fileExists(atPath: destination.path) {
-            throw DestinationAlreadyExistsException()
+            if options?.idempotent == true {
+              try FileManager.default.removeItem(at: destination)
+            } else {
+              throw DestinationAlreadyExistsException()
+            }
           }
           try FileManager.default.moveItem(at: fileURL, to: destination)
           // TODO: Remove .url.absoluteString once returning shared objects works

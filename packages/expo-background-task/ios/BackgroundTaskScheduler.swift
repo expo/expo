@@ -14,6 +14,52 @@ public class BackgroundTaskScheduler {
   private static var intervalSeconds: TimeInterval = 12 * 60 * 60
 
   /**
+   A one-time async gate that becomes ready after BGTaskScheduler registration finishes.
+   Multiple awaiters will be resumed when ready; subsequent awaiters return immediately.
+   */
+  private actor RegistrationGate {
+    private var ready: Bool = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    func awaitReady() async {
+      if ready { return }
+      await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+        if ready {
+          continuation.resume()
+        } else {
+          waiters.append(continuation)
+        }
+      }
+    }
+
+    func signalReady() {
+      guard !ready else { return }
+      ready = true
+      let continuations = waiters
+      waiters.removeAll()
+      for c in continuations {
+        c.resume()
+      }
+    }
+  }
+
+  /**
+   Registration gate that will only be signaled when the bgTaskSchedulerDidFinishRegister is called.
+   */
+  private static let registrationGate = RegistrationGate()
+
+  /**
+   Call from the BackgroundTaskAppDelegate after the call to BGTaskScheduler.shared.register has finished
+   so that we can hold back any tryScheduleWorker calls, especially the call to BGTaskScheduler.shared.submit
+   that will fail if called before the BGTaskScheduler has successfully registered its handler.
+   */
+  public static func bgTaskSchedulerDidFinishRegister() {
+    Task {
+      await registrationGate.signalReady()
+    }
+  }
+
+  /**
    * Call when a task is registered to keep track of how many background task consumers we have
    */
   public static func didRegisterTask(minutes: Int?) {
@@ -50,6 +96,9 @@ public class BackgroundTaskScheduler {
       return
     }
 
+    // Wait until BGTaskScheduler registration has completed.
+    await registrationGate.awaitReady()
+
     // Stop existing tasks
     await stopWorker()
 
@@ -73,6 +122,8 @@ public class BackgroundTaskScheduler {
         throw CouldNotRegisterWorkerTask("Too many pending task requests.")
       case .notPermitted:
         throw CouldNotRegisterWorkerTask("Task request not permitted.")
+      case .immediateRunIneligible:
+        throw CouldNotRegisterWorkerTask("Task request not ineligible.")
       @unknown default:
         print("An unknown BGTaskScheduler error occurred.")
         // Handle any future cases added by Apple

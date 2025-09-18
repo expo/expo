@@ -123,6 +123,16 @@ export type DownloadOptions = {
     headers?: {
         [key: string]: string;
     };
+    /**
+     * This flag controls whether the `download` operation is idempotent
+     * (safe to call multiple times without error).
+     *
+     * If `true`, downloading a file that already exists overwrites the previous one.
+     * If `false`, an error is thrown when the target file already exists.
+     *
+     * @default false
+     */
+    idempotent?: boolean;
 };
 /**
  * Represents a file on the file system.

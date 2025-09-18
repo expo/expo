@@ -1,18 +1,12 @@
 package expo.modules.constants
 
-import org.apache.commons.io.IOUtils
-
-import expo.modules.core.interfaces.InternalModule
-import expo.modules.interfaces.constants.ConstantsInterface
-
+import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.content.Context
-
+import expo.modules.core.interfaces.InternalModule
+import expo.modules.interfaces.constants.ConstantsInterface
 import java.io.FileNotFoundException
-import java.lang.Exception
-import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.UUID
 
 private val TAG = ConstantsService::class.java.simpleName
 private const val CONFIG_FILE_NAME = "app.config"
@@ -73,11 +67,15 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   private val appConfig: String?
     get() {
       try {
-        context.assets.open(CONFIG_FILE_NAME).use {
-            stream ->
-          return IOUtils.toString(stream, StandardCharsets.UTF_8)
-        }
-      } catch (e: FileNotFoundException) {
+        context
+          .assets
+          .open(CONFIG_FILE_NAME)
+          .use { input ->
+            input
+              .bufferedReader(charset = Charsets.UTF_8)
+              .use { it.readText() }
+          }
+      } catch (_: FileNotFoundException) {
         // do nothing, expected in managed apps
       } catch (e: Exception) {
         Log.e(TAG, "Error reading embedded app config", e)

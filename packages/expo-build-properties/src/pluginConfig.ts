@@ -328,6 +328,19 @@ export interface PluginConfigTypeIos {
   useFrameworks?: 'static' | 'dynamic';
 
   /**
+   * List of CocoaPods that should be linked statically instead of as frameworks.
+   *
+   * This is only relevant when `use_frameworks!` is enabled. Some pods—
+   * especially React Native prebuilt binaries—can fail due to modular header
+   * issues when built as dynamic frameworks. Declaring them here ensures they
+   * are linked statically, avoiding those compatibility problems.
+   *
+   * This property is consumed by the `use_expo_modules` function in
+   * `expo-modules-autolinking`.
+   */
+  forceStaticLinking?: string[];
+
+  /**
    * Enable the Network Inspector.
    *
    * @default true
@@ -723,6 +736,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+        forceStaticLinking: { type: 'array', items: { type: 'string' }, nullable: true },
 
         networkInspector: { type: 'boolean', nullable: true },
         ccacheEnabled: { type: 'boolean', nullable: true },
