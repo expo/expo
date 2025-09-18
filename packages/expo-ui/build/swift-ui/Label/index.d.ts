@@ -1,3 +1,4 @@
+import { type SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
 export type LabelProps = {
     /**
@@ -7,7 +8,7 @@ export type LabelProps = {
     /**
      * The name of the SFSymbol to be displayed in the label.
      */
-    systemImage?: string;
+    systemImage?: SFSymbol;
     /**
      * The color of the label icon.
      */

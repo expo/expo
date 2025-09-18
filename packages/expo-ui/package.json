@@ -46,7 +46,9 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "sf-symbols-typescript": "^2.0.0"
+  },
   "devDependencies": {
     "@types/react": "~19.1.10",
     "expo-module-scripts": "^5.0.7"
