@@ -1,3 +1,4 @@
+import { Album } from './Album';
 import { MediaType } from './MediaType';
 
 /**
@@ -92,4 +93,21 @@ export declare class Asset {
    * ```
    */
   delete(): Promise<void>;
+
+  /*
+   * A static function. Creates a new asset from a given file path.
+   * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
+   *
+   * @param filePath - Local filesystem path (for example, `file:///...`) of the file to import.
+   * @param album - Optional {@link Album} instance to place the asset in.
+   * @returns A promise resolving to the created {@link Asset}.
+   * @throws An exception if the asset could not be created, for example, if the file does not exist or permission is denied.
+   *
+   * @example
+   * ```ts
+   * const asset = await Asset.create("file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg");
+   * console.log(await asset.getFilename()); // "IMG_20230915_123456.jpg"
+   * ```
+   */
+  static create(filePath: string, album?: Album): Promise<Asset>;
 }

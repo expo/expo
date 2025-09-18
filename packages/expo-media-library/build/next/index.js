@@ -5,73 +5,24 @@ export * from './MediaLibraryNext.types';
 export class Query extends ExpoMediaLibraryNext.Query {
 }
 export class Asset extends ExpoMediaLibraryNext.Asset {
-    /*
-     * A static function. Creates a new asset from a given file path.
-     * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
-     *
-     * @param filePath - Local filesystem path (for example, `file:///...`) of the file to import.
-     * @param album - Optional {@link Album} instance to place the asset in.
-     * @returns A promise resolving to the created {@link Asset}.
-     * @throws An exception if the asset could not be created, for example, if the file does not exist or permission is denied.
-     *
-     * @example
-     * ```ts
-     * const asset = await Asset.create("file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg");
-     * console.log(await asset.getFilename()); // "IMG_20230915_123456.jpg"
-     * ```
-     */
+    // @hidden
     static create(filePath, album) {
         return ExpoMediaLibraryNext.createAsset(filePath, album);
     }
-    /*
-     * A static function. Deletes multiple assets at once.
-     * @param assets - An array of {@link Asset} instances to delete.
-     * @returns A promise that resolves once the assets have been deleted.
-     *
-     * @example
-     * ```ts
-     * const asset = await Asset.create("file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg");
-     * await Asset.delete([asset]);
-     * ```
-     */
+    // @hidden
     static delete(assets) {
         return ExpoMediaLibraryNext.deleteAssets(assets);
     }
 }
 export class Album extends ExpoMediaLibraryNext.Album {
-    /*
-     * A static function. Creates a new album with a given name and assets.
-     * On Android, if assets are provided and `moveAssets` is true, the assets will be moved into the new album. If false or not supported, the assets will be copied.
-     *
-     * @param name - Name of the new album.
-     * @param assetsRefs - List of {@link Asset} objects or file paths (file:///...) to include.
-     * @param moveAssets - On Android, whether to move assets into the album.
-     * @returns A promise resolving to the created {@link Album}.
-     *
-     * @example
-     * ```ts
-     * const album = await Album.create("My Album", [asset]);
-     * console.log(await album.getTitle()); // "My Album"
-     * ```
-     */
+    // @hidden
     static create(name, assetsRefs, moveAssets = true) {
         if (Platform.OS === 'ios') {
             return ExpoMediaLibraryNext.createAlbum(name, assetsRefs);
         }
         return ExpoMediaLibraryNext.createAlbum(name, assetsRefs, moveAssets);
     }
-    /*
-     * A static function. Deletes multiple albums at once.
-     * @param albums - An array of {@link Album} instances to delete.
-     * @param deleteAssets - Whether to delete the assets in the albums as well.
-     * @returns A promise that resolves once the albums have been deleted.
-     *
-     * @example
-     * ```ts
-     * const album = await Album.create("My Album", [asset]);
-     * await Album.delete([album]);
-     * ```
-     */
+    // @hidden
     static delete(albums, deleteAssets = false) {
         if (Platform.OS === 'ios') {
             return ExpoMediaLibraryNext.deleteAlbums(albums, deleteAssets);
@@ -80,19 +31,7 @@ export class Album extends ExpoMediaLibraryNext.Album {
             return ExpoMediaLibraryNext.deleteAlbums(albums);
         }
     }
-    /*
-     * A static function. Retrieves an album by its title.
-     * @param title - The title of the album to retrieve.
-     * @return A promise resolving to the {@link Album} if found, or `null` if not found.
-     *
-     * @example
-     * ```ts
-     * const album = await Album.get("Camera");
-     * if (album) {
-     *   console.log(await album.getTitle()); // "Camera"
-     * }
-     * ```
-     */
+    // @hidden
     static get(title) {
         return ExpoMediaLibraryNext.getAlbum(title);
     }
