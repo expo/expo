@@ -15,6 +15,7 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
           log.warn("Expo Background Tasks - task expired")
           // Send message to Expo module
           NotificationCenter.default.post(name: onTasksExpiredNotification, object: self, userInfo: [:])
+          task.setTaskCompleted(success: false)
           self.reschedule()
         }
 
