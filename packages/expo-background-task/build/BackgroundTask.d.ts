@@ -53,7 +53,6 @@ export declare function triggerTaskWorkerForTestingAsync(): Promise<boolean>;
  * for minutes, but the system can interrupt the process at any time. This listener is called
  * when the system decides to stop the background tasks and should be used to clean up resources
  * or save state. When the expiry handler is called, the main task runner is rescheduled automatically.
- * This listener is only available on iOS.
  * @platform ios
  * @return An object with a `remove` method to unsubscribe the listener.
  */
