@@ -47,7 +47,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "sf-symbols-typescript": "^2.0.0"
+    "sf-symbols-typescript": "^2.1.0"
   },
   "devDependencies": {
     "@types/react": "~19.1.10",
