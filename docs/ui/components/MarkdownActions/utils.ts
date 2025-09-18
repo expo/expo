@@ -1,6 +1,7 @@
 const FRONTMATTER_PATTERN = /^---\n([\S\s]*?)\n---\n?/;
 const IMPORT_STATEMENT_PATTERN = /^import\s.+$\n?/gm;
 const BOX_LINK_PATTERN = /<BoxLink[\S\s]*?title="([^"]+)"[\S\s]*?href="([^"]+)"[\S\s]*?\/>/g;
+const VIDEO_BOX_LINK_PATTERN = /<VideoBoxLink[\S\s]*?(?:\/>|>[\S\s]*?<\/VideoBoxLink>)/g;
 const INTERNAL_LINK_PATTERN = /(?<=]\()(\/[^)]+)(?=\))/g;
 const PRETTIER_IGNORE_PATTERN = /{\/\*\s*prettier-ignore\s*\*\/}/g;
 
@@ -81,6 +82,20 @@ export function prepareMarkdownForCopy(rawContent: string) {
   content = content.replace(BOX_LINK_PATTERN, (_match, linkTitle, href) => {
     const normalizedHref = href.startsWith('http') ? href : `https://docs.expo.dev${href}`;
     const markdownLink = `[${linkTitle}](${normalizedHref})`;
+    return `\n${markdownLink}\n`;
+  });
+
+  content = content.replace(VIDEO_BOX_LINK_PATTERN, match => {
+    const titleMatch = match.match(/title="([^"]+)"/);
+    const videoIdMatch = match.match(/videoId="([^"]+)"/);
+
+    if (!videoIdMatch) {
+      return '';
+    }
+
+    const linkTitle = titleMatch ? titleMatch[1] : 'Watch video';
+    const href = `https://www.youtube.com/watch?v=${videoIdMatch[1]}`;
+    const markdownLink = `[${linkTitle}](${href})`;
     return `\n${markdownLink}\n`;
   });
 
