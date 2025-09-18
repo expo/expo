@@ -11,7 +11,7 @@ import { MediaType } from './MediaType';
 export declare class Asset {
   /**
    * Reinitialize an instance of an asset with a given ID.
-   * @param id - For android it is a contentUri (content://media/external/images/media/12345) and PHAsset localIdentifier for iOS.
+   * @param id - For Android, it is a `contentUri` (content://media/external/images/media/12345) and for iOS, it is `PHAsset` localIdentifier.
    */
   constructor(id: string);
 
@@ -53,7 +53,7 @@ export declare class Asset {
   getHeight(): Promise<number>;
 
   /**
-   * Gets the media type of the asset. (image, video, audio or unknown)
+   * Gets the media type of the asset (image, video, audio or unknown).
    * @returns A promise resolving to a {@link MediaType} enum value.
    * @throws An exception if the asset could not be found.
    */
@@ -67,8 +67,8 @@ export declare class Asset {
   getModificationTime(): Promise<number | null>;
 
   /**
-   * Gets the URI pointing to the asset’s location in the system
-   * e.g. for Android: file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg
+   * Gets the URI pointing to the asset’s location in the system.
+   * Example, for Android: `file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg`.
    * @returns A promise resolving to the string URI.
    * @throws An exception if the asset could not be found.
    */

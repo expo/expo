@@ -13,10 +13,10 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
    * A static function. Creates a new asset from a given file path.
    * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
    *
-   * @param filePath - Local filesystem path (e.g., `file:///...`) of the file to import.
+   * @param filePath - Local filesystem path (for example, `file:///...`) of the file to import.
    * @param album - Optional {@link Album} instance to place the asset in.
    * @returns A promise resolving to the created {@link Asset}.
-   * @throws An exception if the asset could not be created, e.g., if the file does not exist or permission is denied.
+   * @throws An exception if the asset could not be created, for example, if the file does not exist or permission is denied.
    *
    * @example
    * ```ts

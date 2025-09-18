@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-media-libra
 packageName: 'expo-media-library'
 iconUrl: '/static/images/packages/expo-media-library.png'
 platforms: ['android', 'ios', 'tvos']
+isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -54,7 +55,7 @@ export default function SaveToMediaLibraryExample() {
       }
       const asset = await Asset.create(file.uri);
       setAsset(asset);
-    }
+    };
 
     downloadAndSaveAsset();
   }, []);
@@ -236,4 +237,4 @@ export default function CreateAlbumExample() {
 
 ## API
 
-<APISection packageName="expo-media-library-next" apiName="MediaLibrary Next" />
+<APISection packageName="expo-media-library-next" apiName="MediaLibrary (next)" />
