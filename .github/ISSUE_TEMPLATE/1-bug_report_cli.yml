@@ -14,6 +14,7 @@ body:
         > [!IMPORTANT]  
         > Reproductions are necessary for **most** bug reports.
         > Without one, maintainers will be forced to first reproduce the issue and craft missing context, rather than being able to address the report immediately.
+        > Issues without a reproduction link may be closed without further notice.
   - type: input
     attributes:
       label: Minimal reproducible example
