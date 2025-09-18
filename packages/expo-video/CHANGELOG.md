@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix mocks for the `jest-expo` preset. 
+
 ### 💡 Others
 
 ## 3.0.11 — 2025-09-10

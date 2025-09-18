@@ -11,6 +11,7 @@ const blacklist = [
   'ExpoLinking',
   'ExpoFont',
   'ExpoFileSystem',
+  'ExpoVideo',
 ];
 
 type ModuleRegistrySchema = [

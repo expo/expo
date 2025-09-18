@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove `expo-video` mocks, update other mocks.
+
 ## 54.0.11 — 2025-09-12
 
 ### 🐛 Bug fixes

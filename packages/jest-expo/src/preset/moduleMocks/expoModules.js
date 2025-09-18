@@ -266,6 +266,7 @@ module.exports = {
         ExpoFontUtils: [
           { name: 'renderToImageAsync', argumentsCount: 2, key: 'renderToImageAsync' },
         ],
+        ExpoGlassEffect: [],
         ExpoGo: [{ name: 'getModulesSchema', argumentsCount: 0, key: 'getModulesSchema' }],
         ExpoHaptics: [
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },
@@ -392,7 +393,17 @@ module.exports = {
           { name: 'requestPermissionsAsync', argumentsCount: 1, key: 'requestPermissionsAsync' },
           { name: 'saveToLibraryAsync', argumentsCount: 1, key: 'saveToLibraryAsync' },
         ],
+        ExpoMediaLibraryNext: [
+          { name: 'createAlbum', argumentsCount: 2, key: 'createAlbum' },
+          { name: 'createAsset', argumentsCount: 2, key: 'createAsset' },
+          { name: 'deleteManyAlbums', argumentsCount: 2, key: 'deleteManyAlbums' },
+          { name: 'deleteManyAssets', argumentsCount: 1, key: 'deleteManyAssets' },
+          { name: 'getAllAlbums', argumentsCount: 0, key: 'getAllAlbums' },
+          { name: 'getPermissionsAsync', argumentsCount: 1, key: 'getPermissionsAsync' },
+          { name: 'requestPermissionsAsync', argumentsCount: 1, key: 'requestPermissionsAsync' },
+        ],
         ExpoMeshGradient: [],
+        ExpoModulesCoreJSLogger: [],
         ExponentAccelerometer: [
           { name: 'isAvailableAsync', argumentsCount: 0, key: 'isAvailableAsync' },
           { name: 'setUpdateInterval', argumentsCount: 1, key: 'setUpdateInterval' },
@@ -663,16 +674,6 @@ module.exports = {
           { name: 'reload', argumentsCount: 0, key: 'reload' },
           { name: 'setExtraParamAsync', argumentsCount: 2, key: 'setExtraParamAsync' },
         ],
-        ExpoVideo: [
-          { name: 'clearVideoCacheAsync', argumentsCount: 0, key: 'clearVideoCacheAsync' },
-          { name: 'getCurrentVideoCacheSize', argumentsCount: 0, key: 'getCurrentVideoCacheSize' },
-          {
-            name: 'isPictureInPictureSupported',
-            argumentsCount: 0,
-            key: 'isPictureInPictureSupported',
-          },
-          { name: 'setVideoCacheSizeAsync', argumentsCount: 1, key: 'setVideoCacheSizeAsync' },
-        ],
         ExpoVideoThumbnails: [{ name: 'getThumbnail', argumentsCount: 2, key: 'getThumbnail' }],
         ExpoVideoView: [{ name: 'setFullscreen', argumentsCount: 2, key: 'setFullscreen' }],
         ExpoWebBrowser: [
@@ -692,6 +693,8 @@ module.exports = {
         FileSystem: [
           { name: 'downloadFileAsync', argumentsCount: 3, key: 'downloadFileAsync' },
           { name: 'info', argumentsCount: 1, key: 'info' },
+          { name: 'pickDirectoryAsync', argumentsCount: 1, key: 'pickDirectoryAsync' },
+          { name: 'pickFileAsync', argumentsCount: 2, key: 'pickFileAsync' },
         ],
         NotificationsServerRegistrationModule: [
           { name: 'getInstallationIdAsync', argumentsCount: 0, key: 'getInstallationIdAsync' },
@@ -705,11 +708,7 @@ module.exports = {
     modulesConstants: {
       type: 'mock',
       mockDefinition: {
-        EASClient: {
-          addListener: { type: 'function' },
-          clientID: { type: 'string' },
-          removeListeners: { type: 'function' },
-        },
+        EASClient: { addListener: { type: 'function' }, removeListeners: { type: 'function' } },
         ExpoAppleAuthentication: {
           addListener: { type: 'function' },
           formatFullName: { type: 'function' },
@@ -720,14 +719,10 @@ module.exports = {
         },
         ExpoApplication: {
           addListener: { type: 'function' },
-          applicationId: { type: 'string' },
-          applicationName: { type: 'string' },
           getApplicationReleaseTypeAsync: { type: 'function' },
           getInstallationTimeAsync: { type: 'function' },
           getIosIdForVendorAsync: { type: 'function' },
           getPushNotificationServiceEnvironmentAsync: { type: 'function' },
-          nativeApplicationVersion: { type: 'string' },
-          nativeBuildVersion: { type: 'string' },
           removeListeners: { type: 'function' },
         },
         ExpoAsset: {
@@ -782,7 +777,6 @@ module.exports = {
           getBatteryLevelAsync: { type: 'function' },
           getBatteryStateAsync: { type: 'function' },
           isLowPowerModeEnabledAsync: { type: 'function' },
-          isSupported: { type: 'boolean', mock: false },
           removeListeners: { type: 'function' },
         },
         ExpoBlurView: { addListener: { type: 'function' }, removeListeners: { type: 'function' } },
@@ -842,18 +836,12 @@ module.exports = {
         },
         ExpoCellular: {
           addListener: { type: 'function' },
-          allowsVoip: { type: 'null' },
           allowsVoipAsync: { type: 'function' },
-          carrier: { type: 'null' },
-          generation: { type: 'number', mock: 0 },
           getCarrierNameAsync: { type: 'function' },
           getCellularGenerationAsync: { type: 'function' },
           getIsoCountryCodeAsync: { type: 'function' },
           getMobileCountryCodeAsync: { type: 'function' },
           getMobileNetworkCodeAsync: { type: 'function' },
-          isoCountryCode: { type: 'null' },
-          mobileCountryCode: { type: 'null' },
-          mobileNetworkCode: { type: 'null' },
           removeListeners: { type: 'function' },
         },
         ExpoContactAccessButton: {
@@ -887,24 +875,10 @@ module.exports = {
         },
         ExpoDevice: {
           addListener: { type: 'function' },
-          brand: { type: 'string' },
-          deviceName: { type: 'string' },
-          deviceType: { type: 'number', mock: 1 },
-          deviceYearClass: { type: 'number', mock: 2025 },
           getDeviceTypeAsync: { type: 'function' },
           getUptimeAsync: { type: 'function' },
-          isDevice: { type: 'boolean', mock: false },
           isRootedExperimentalAsync: { type: 'function' },
-          manufacturer: { type: 'string' },
-          modelId: { type: 'string' },
-          modelName: { type: 'string' },
-          osBuildId: { type: 'string' },
-          osInternalBuildId: { type: 'string' },
-          osName: { type: 'string' },
-          osVersion: { type: 'string' },
           removeListeners: { type: 'function' },
-          supportedCpuArchitectures: { type: 'array' },
-          totalMemory: { type: 'unknown' },
         },
         ExpoDocumentPicker: {
           addListener: { type: 'function' },
@@ -931,6 +905,10 @@ module.exports = {
           removeListeners: { type: 'function' },
           renderToImageAsync: { type: 'function' },
         },
+        ExpoGlassEffect: {
+          addListener: { type: 'function' },
+          removeListeners: { type: 'function' },
+        },
         ExpoGo: {
           addListener: { type: 'function' },
           expoVersion: { type: 'string' },
@@ -946,7 +924,6 @@ module.exports = {
           selectionAsync: { type: 'function' },
         },
         ExpoHead: {
-          activities: { type: 'object' },
           addListener: { type: 'function' },
           clearActivitiesAsync: { type: 'function' },
           createActivity: { type: 'function' },
@@ -981,9 +958,6 @@ module.exports = {
         ExpoLinearGradient: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
-        },
-        ExpoGlassEffect: {
-          isLiquidGlassAvailable: { type: 'string' },
         },
         ExpoLivePhoto: { addListener: { type: 'function' }, removeListeners: { type: 'function' } },
         ExpoLocalAuthentication: {
@@ -1030,7 +1004,6 @@ module.exports = {
         ExpoMediaLibrary: {
           addAssetsToAlbumAsync: { type: 'function' },
           addListener: { type: 'function' },
-          CHANGE_LISTENER_NAME: { type: 'string' },
           createAlbumAsync: { type: 'function' },
           createAssetAsync: { type: 'function' },
           deleteAlbumsAsync: { type: 'function' },
@@ -1041,15 +1014,28 @@ module.exports = {
           getAssetsAsync: { type: 'function' },
           getMomentsAsync: { type: 'function' },
           getPermissionsAsync: { type: 'function' },
-          MediaType: { type: 'object' },
           presentPermissionsPickerAsync: { type: 'function' },
           removeAssetsFromAlbumAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           requestPermissionsAsync: { type: 'function' },
           saveToLibraryAsync: { type: 'function' },
-          SortBy: { type: 'object' },
+        },
+        ExpoMediaLibraryNext: {
+          addListener: { type: 'function' },
+          createAlbum: { type: 'function' },
+          createAsset: { type: 'function' },
+          deleteManyAlbums: { type: 'function' },
+          deleteManyAssets: { type: 'function' },
+          getAllAlbums: { type: 'function' },
+          getPermissionsAsync: { type: 'function' },
+          removeListeners: { type: 'function' },
+          requestPermissionsAsync: { type: 'function' },
         },
         ExpoMeshGradient: {
+          addListener: { type: 'function' },
+          removeListeners: { type: 'function' },
+        },
+        ExpoModulesCoreJSLogger: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
         },
@@ -1083,7 +1069,6 @@ module.exports = {
         ExponentDeviceMotion: {
           addListener: { type: 'function' },
           getPermissionsAsync: { type: 'function' },
-          Gravity: { type: 'number', mock: 9.80665 },
           isAvailableAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           requestPermissionsAsync: { type: 'function' },
@@ -1091,11 +1076,8 @@ module.exports = {
         },
         ExponentFileSystem: {
           addListener: { type: 'function' },
-          bundleDirectory: { type: 'string' },
-          cacheDirectory: { type: 'string' },
           copyAsync: { type: 'function' },
           deleteAsync: { type: 'function' },
-          documentDirectory: { type: 'string' },
           downloadAsync: { type: 'function' },
           downloadResumablePauseAsync: { type: 'function' },
           downloadResumableStartAsync: { type: 'function' },
@@ -1200,7 +1182,6 @@ module.exports = {
         },
         ExpoPrint: {
           addListener: { type: 'function' },
-          Orientation: { type: 'object' },
           print: { type: 'function' },
           printToFileAsync: { type: 'function' },
           removeListeners: { type: 'function' },
@@ -1236,10 +1217,6 @@ module.exports = {
         },
         ExpoSecureStore: {
           addListener: { type: 'function' },
-          AFTER_FIRST_UNLOCK: { type: 'number', mock: 0 },
-          AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: { type: 'number', mock: 1 },
-          ALWAYS: { type: 'number', mock: 2 },
-          ALWAYS_THIS_DEVICE_ONLY: { type: 'number', mock: 4 },
           canUseBiometricAuthentication: { type: 'function' },
           deleteValueWithKeyAsync: { type: 'function' },
           getValueWithKeyAsync: { type: 'function' },
@@ -1247,9 +1224,6 @@ module.exports = {
           removeListeners: { type: 'function' },
           setValueWithKeyAsync: { type: 'function' },
           setValueWithKeySync: { type: 'function' },
-          WHEN_PASSCODE_SET_THIS_DEVICE_ONLY: { type: 'number', mock: 3 },
-          WHEN_UNLOCKED: { type: 'number', mock: 5 },
-          WHEN_UNLOCKED_THIS_DEVICE_ONLY: { type: 'number', mock: 6 },
         },
         ExpoSharing: {
           addListener: { type: 'function' },
@@ -1276,7 +1250,6 @@ module.exports = {
           addListener: { type: 'function' },
           backupDatabaseAsync: { type: 'function' },
           backupDatabaseSync: { type: 'function' },
-          defaultDatabaseDirectory: { type: 'string' },
           deleteDatabaseAsync: { type: 'function' },
           deleteDatabaseSync: { type: 'function' },
           ensureDatabasePathExistsAsync: { type: 'function' },
@@ -1317,21 +1290,13 @@ module.exports = {
           isEmergencyLaunch: { type: 'boolean', mock: false },
           isEnabled: { type: 'boolean', mock: true },
           isUsingEmbeddedAssets: { type: 'boolean', mock: false },
-          launchDuration: { type: 'number', mock: 455.30903339385986 },
+          launchDuration: { type: 'number', mock: 473.5560417175293 },
           readLogEntriesAsync: { type: 'function' },
           reload: { type: 'function' },
           removeListeners: { type: 'function' },
           runtimeVersion: { type: 'string' },
           setExtraParamAsync: { type: 'function' },
           shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: { type: 'boolean', mock: true },
-        },
-        ExpoVideo: {
-          addListener: { type: 'function' },
-          clearVideoCacheAsync: { type: 'function' },
-          getCurrentVideoCacheSize: { type: 'function' },
-          isPictureInPictureSupported: { type: 'function' },
-          removeListeners: { type: 'function' },
-          setVideoCacheSizeAsync: { type: 'function' },
         },
         ExpoVideoThumbnails: {
           addListener: { type: 'function' },
@@ -1341,10 +1306,6 @@ module.exports = {
         ExpoVideoView: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
-          ScaleAspectFill: { type: 'unknown' },
-          ScaleAspectFit: { type: 'unknown' },
-          ScaleNone: { type: 'unknown' },
-          ScaleToFill: { type: 'unknown' },
           setFullscreen: { type: 'function' },
         },
         ExpoWebBrowser: {
@@ -1361,13 +1322,11 @@ module.exports = {
         },
         FileSystem: {
           addListener: { type: 'function' },
-          appleSharedContainers: { type: 'object' },
           availableDiskSpace: { type: 'property' },
-          bundleDirectory: { type: 'string' },
-          cacheDirectory: { type: 'string' },
-          documentDirectory: { type: 'string' },
           downloadFileAsync: { type: 'function' },
           info: { type: 'function' },
+          pickDirectoryAsync: { type: 'function' },
+          pickFileAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           totalDiskSpace: { type: 'property' },
         },
@@ -1424,6 +1383,16 @@ module.exports = {
             'webviewDebuggingEnabled',
           ],
         },
+        ExpoGlassEffect: {
+          propNames: [
+            'borderCurve',
+            'borderRadius',
+            'glassEffectStyle',
+            'isInteractive',
+            'spacing',
+            'tintColor',
+          ],
+        },
         ExpoImage: {
           propNames: [
             'accessibilityLabel',
@@ -1455,6 +1424,7 @@ module.exports = {
           propNames: [
             'destructive',
             'disabled',
+            'disableForceFlatten',
             'displayAsPalette',
             'displayInline',
             'icon',
@@ -1465,24 +1435,6 @@ module.exports = {
             'singleSelection',
             'tabPath',
             'title',
-          ],
-        },
-        ExpoVideo: {
-          propNames: [
-            'activeTint',
-            'allowsFullscreen',
-            'allowsPictureInPicture',
-            'allowsVideoFrameAnalysis',
-            'contentFit',
-            'contentPosition',
-            'fullscreenOptions',
-            'nativeControls',
-            'player',
-            'prioritizeVideoDevices',
-            'requiresLinearPlayback',
-            'showsTimecodes',
-            'startsPictureInPictureAutomatically',
-            'tint',
           ],
         },
         ExpoVideoView: { propNames: ['resizeMode', 'source', 'status', 'useNativeControls'] },
