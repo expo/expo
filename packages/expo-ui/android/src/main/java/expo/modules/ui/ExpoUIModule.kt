@@ -165,7 +165,11 @@ class ExpoUIModule : Module() {
     }
 
     Function("animateContentSize") { dampingRatio: Float?, stiffness: Float? ->
-      return@Function ExpoModifier(Modifier.animateContentSize(spring(dampingRatio = dampingRatio ?: Spring.DampingRatioNoBouncy, stiffness = stiffness ?: Spring.StiffnessMedium)))
+      return@Function ExpoModifier(
+        Modifier.animateContentSize(
+          spring(dampingRatio = dampingRatio ?: Spring.DampingRatioNoBouncy, stiffness = stiffness ?: Spring.StiffnessMedium)
+        )
+      )
     }
 
     Function("weight") { weight: Float ->
