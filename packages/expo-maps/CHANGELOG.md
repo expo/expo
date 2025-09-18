@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed geodesic polyline rendering on iOS by properly applying MapContourStyle enum. ([#PENDING](https://github.com/expo/expo/pull/PENDING) by [@sgup](https://github.com/sgup))
+- Fixed geodesic polyline rendering on iOS by properly applying MapContourStyle enum. ([#39814](https://github.com/expo/expo/pull/39814) by [@sgup](https://github.com/sgup))
 
 ### 💡 Others
 
