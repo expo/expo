@@ -95,6 +95,8 @@ public final class ClassDefinition: ObjectDefinition {
   }
 
   public override func decorate(object: JavaScriptObject, appContext: AppContext) throws {
+    try decorateWithStaticFunctions(object: object, appContext: appContext)
+
     // Here we actually don't decorate the input object (constructor) but its prototype.
     // Properties are intentionally skipped here — they have to decorate an instance instead of the prototype.
     let prototype = object.getProperty("prototype").getObject()
