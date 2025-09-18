@@ -9,10 +9,11 @@ final class DateTimePickerProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps 
   @Field var modifiers: ModifierArray?
 
   @Field var title: String?
-  @Field var initialDate: Date?
+  @Field var date: Date?
   @Field var variant: PickerStyle = .automatic
   @Field var displayedComponents: DisplayedComponents = .date
   @Field var color: Color?
+  @Field var range: DateRange?
   var onDateSelected = EventDispatcher()
 }
 
@@ -24,19 +25,47 @@ struct DateTimePickerView: ExpoSwiftUI.View {
     self.props = props
   }
 
+  #if !os(tvOS)
+  @ViewBuilder
+  private func makeDatePicker() -> some View {
+    let title = props.title ?? ""
+    let components = props.displayedComponents.toDatePickerComponent()
+
+    if let range = props.range {
+      switch (range.lowerBound, range.upperBound) {
+      case let (lower?, upper?):
+        DatePicker(title, selection: $date, in: lower...upper, displayedComponents: components)
+      case let (lower?, nil):
+        DatePicker(title, selection: $date, in: lower..., displayedComponents: components)
+      case let (nil, upper?):
+        DatePicker(title, selection: $date, in: ...upper, displayedComponents: components)
+      case (nil, nil):
+        DatePicker(title, selection: $date, displayedComponents: components)
+      }
+    } else {
+      DatePicker(title, selection: $date, displayedComponents: components)
+    }
+  }
+  #endif
+
   var body: some View {
     #if os(tvOS)
     return Text("DateTimePicker is not supported on tvOS")
     #else
-    let displayedComponents = props.displayedComponents.toDatePickerComponent()
-
-    DatePicker(props.title ?? "", selection: $date, displayedComponents: displayedComponents)
+    makeDatePicker()
       .modifier(CommonViewModifiers(props: props))
       .onAppear {
-        date = props.initialDate ?? Date()
+        date = props.date ?? Date()
       }
       .onChange(of: date, perform: { newDate in
+        if props.date == newDate {
+          return
+        }
+
         props.onDateSelected(["date": newDate.timeIntervalSince1970 * 1000])
+      })
+      .onReceive(props.date.publisher, perform: { newDate in
+        date = newDate
       })
       .if(props.title == nil, { $0.labelsHidden() })
       .applyDatePickerStyle(for: props.variant)
@@ -87,4 +116,9 @@ enum DisplayedComponents: String, Enumerable {
     }
   }
   #endif
+}
+
+internal struct DateRange: Record {
+  @Field var lowerBound: Date?
+  @Field var upperBound: Date?
 }

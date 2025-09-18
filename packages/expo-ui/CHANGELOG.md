@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for DateTimePicker date range. Removed "initialDate" and added "date" to allow state changes from the react-native side. ([#39578](https://github.com/expo/expo/pull/39578) by [@maxencehenneron](https://github.com/maxencehenneron))
+
 ### 🐛 Bug fixes
 - [iOS] Updated description for glass button styles availability ([#39736](https://github.com/expo/expo/pull/39736) by [@terijaki](https://github.com/terijaki))
 
