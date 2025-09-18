@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 
 import * as Dropdown from '~/ui/components/Dropdown';
 import { githubRawUrl, getPageMdxFilePath } from '~/ui/components/Footer/utils';
-import { prepareMarkdownForCopy } from '~/ui/components/MarkdownActions/utils';
+import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/utils';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 const getPrompt = (markdownUrl: string) =>
@@ -49,7 +49,8 @@ export function MarkdownActionsDropdown() {
         throw new Error('Clipboard API unavailable');
       }
 
-      await navigator.clipboard.writeText(prepareMarkdownForCopy(markdown));
+      const preparedMarkdown = await prepareMarkdownForCopyAsync(markdown);
+      await navigator.clipboard.writeText(preparedMarkdown);
     } catch (error) {
       console.error('Unable to copy markdown content', error);
     }
