@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+
 ## 29.0.10 — 2025-09-11
 
 ### 💡 Others
