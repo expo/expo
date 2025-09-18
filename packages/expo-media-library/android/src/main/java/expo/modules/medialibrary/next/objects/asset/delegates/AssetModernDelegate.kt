@@ -22,6 +22,7 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetCreationTime
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,11 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @RequiresApi(Build.VERSION_CODES.Q)
-class AssetModernDelegate(override val contentUri: Uri, context: Context) : AssetDelegate {
+class AssetModernDelegate(
+  override val contentUri: Uri,
+  val assetDeleter: AssetDeleter,
+  context: Context
+) : AssetDelegate {
   private val contextRef = WeakReference(context)
 
   private val contentResolver
@@ -109,8 +114,8 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
       ?: MimeType.from(getUri())
   }
 
-  override suspend fun delete() {
-    contentResolver.delete(contentUri, null, null)
+  override suspend fun delete() = withContext(Dispatchers.IO) {
+    assetDeleter.delete(contentUri)
   }
 
   override suspend fun move(relativePath: RelativePath) {
@@ -121,6 +126,7 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
     val newAssetUri = contentResolver.insertPendingAsset(getFilename(), getMimeType(), relativePath)
     contentResolver.copyUriContent(contentUri, newAssetUri)
     contentResolver.publishPendingAsset(newAssetUri)
-    return@withContext Asset(newAssetUri, contextRef.getOrThrow())
+    val newAssetDelegate = AssetModernDelegate(newAssetUri, assetDeleter, contextRef.getOrThrow())
+    return@withContext Asset(newAssetDelegate)
   }
 }
