@@ -162,6 +162,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
     },
   },
+  {
+    name: 'Shapes',
+    route: 'ui/shapes',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ShapesScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

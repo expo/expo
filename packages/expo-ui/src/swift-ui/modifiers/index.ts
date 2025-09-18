@@ -446,6 +446,12 @@ export const glassEffectId = (id: string, namespaceId: string) =>
     namespaceId,
   });
 
+/**
+ * Sets the fill color for shapes.
+ * @param color - The fill color (hex string, named color, or ColorValue)
+ */
+export const fill = (color: Color) => createModifier('fill', { color });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -492,6 +498,7 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
+  | ReturnType<typeof fill>
   | ReturnType<typeof animation>;
 
 /**
