@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Simplify `transformIgnorePatterns` to avoid unnecessary transforms and remove legacy packages. ([#39807](https://github.com/expo/expo/pull/39807) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 54.0.11 — 2025-09-12
