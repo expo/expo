@@ -232,7 +232,7 @@ export function createRequestHandler({
     response: Response
   ): Response {
     const modifiedResponseInit: ResponseInitLike = {
-      headers: Object.fromEntries(response.headers.entries()),
+      headers: new Headers(response.headers),
       status: response.status,
       statusText: response.statusText,
       cf: response.cf,
