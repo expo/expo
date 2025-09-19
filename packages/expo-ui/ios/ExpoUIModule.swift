@@ -45,7 +45,7 @@ public final class ExpoUIModule: Module {
     View(TextView.self)
     View(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
-        view.setText(text)
+//        view.setText(text)
       }
     }
     View(VStackView.self)

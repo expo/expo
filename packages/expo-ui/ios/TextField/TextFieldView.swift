@@ -95,12 +95,11 @@ struct TextFieldView: ExpoSwiftUI.View {
   }
   
   var text: some View {
-    let text = if #available(iOS 16.0, tvOS 16.0, *) {
-      TextField(
+    let text = TextField(
         props.placeholder,
         text: Binding(
           get: {
-            _ = refreshBinding;
+            _ = valueState;
             return props.value
           },
           set: { newValue in
@@ -110,6 +109,8 @@ struct TextFieldView: ExpoSwiftUI.View {
             if (props.value == newValue) {
               return;
             }
+            
+            // Weird behaviour where this callback gets called twice. Debug
             if (previousNewValue != newValue) {
               previousNewValue = newValue
             } else {
@@ -124,28 +125,8 @@ struct TextFieldView: ExpoSwiftUI.View {
             }
           }
         ),
-        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
       )
-    } else {
-      TextField(
-        props.placeholder,
-        text: Binding(
-          get: { props.value },
-          set: { newValue in
-            let currentValue = props.value
-            props.onValueChanged(["value": newValue])
-            
-            // Block until props.value changes or timeout
-            let startTime = Date()
-            let timeout: TimeInterval = 0.1 // 100ms timeout
-            
-            while props.value == currentValue && Date().timeIntervalSince(startTime) < timeout {
-              RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.001))
-            }
-          }
-        )
-      )
-    }
+    
     return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
       .modifier(CommonViewModifiers(props: props))
       .fixedSize(horizontal: false, vertical: true)
@@ -163,12 +144,8 @@ struct TextFieldView: ExpoSwiftUI.View {
 
   var body: some View {
     text
-      .onAppear {
-//        displayText = props.value.isEmpty ? props.defaultValue : props.value
-      }
       .onChange(of: props.value) { newValue in
         valueState = "idle"
-        refreshBinding.toggle()
       }
   }
 }

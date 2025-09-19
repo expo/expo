@@ -6,24 +6,33 @@ import { Page, Section } from '../../components/Page';
 
 export default function TextInputScreen() {
   const [value, setValue] = React.useState<string>('');
-  const textRef = React.useRef<TextFieldRef>(null);
-  const secureRef = React.useRef<TextFieldRef>(null);
 
+  const onChangeText = (value: string) => {
+    if (value === 'Hello') {
+      setValue('i changed synchronously');
+    } else {
+      setValue(value);
+    }
+  };
+
+  console.log('value', value);
   return (
     <Page>
       <Section title="Current value">
         <Text>{JSON.stringify(value)}</Text>
       </Section>
-      <Host matchContents>
-        <Button
-          onPress={async () => {
-            textRef.current?.setText('Hello there!');
-            secureRef.current?.setText('123');
-          }}>
-          Set text
-        </Button>
-      </Host>
-      <Section title="Text Input">
+      <Section title="Phone Number (Auto-formatted)">
+        <Host matchContents>
+          <TextField
+            keyboardType="phone-pad"
+            autocorrection={false}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder="Enter phone number"
+          />
+        </Host>
+      </Section>
+      {/* <Section title="Text Input">
         <Host matchContents>
           <TextField
             ref={textRef}
@@ -81,7 +90,7 @@ export default function TextInputScreen() {
       </Section>
       <Section title="RN Text Input">
         <RNTextInput multiline numberOfLines={5} value={value} onChangeText={setValue} />
-      </Section>
+      </Section> */}
     </Page>
   );
 }
