@@ -203,18 +203,16 @@ function parseFrontmatterArray(value: string) {
     return [] as string[];
   }
 
-  const stripWrapper = (str: string) => str.replace(/^['"]|['"]$/g, '').trim();
+  const stripWrapper = (str: string) => str.replace(/^["']|["']$/g, '').trim();
 
   if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
     const normalized = trimmed.replace(/'/g, '"');
-    try {
-      const parsed = JSON.parse(normalized);
-      if (Array.isArray(parsed)) {
-        return parsed.map(item => stripWrapper(String(item))).filter(Boolean);
-      }
-    } catch (error) {
-      // fallback to manual parsing below
+    const parsed = JSON.parse(normalized);
+
+    if (Array.isArray(parsed)) {
+      return parsed.map(item => stripWrapper(String(item))).filter(Boolean);
     }
+
     const inner = trimmed.slice(1, -1);
     return inner
       .split(',')

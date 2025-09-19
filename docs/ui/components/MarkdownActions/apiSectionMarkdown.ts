@@ -4,6 +4,7 @@ import {
   MethodDefinitionData,
   MethodSignatureData,
   MethodParamData,
+  PropData,
   TypeDefinitionData,
   TypeDocKind,
 } from '~/components/plugins/api/APIDataTypes';
@@ -541,7 +542,7 @@ function renderTypeAliasMarkdown(entry: GeneratedData, version: string) {
   const properties = extractTypeAliasProperties(typeDefinition);
   if (properties.length > 0) {
     const rows = properties
-      .map(property => renderTypeAliasPropertyRow(property as GeneratedData, version))
+      .map(property => renderTypeAliasPropertyRow(property, version))
       .filter(Boolean);
     if (rows.length === 0) {
       return '';
@@ -667,7 +668,7 @@ function formatProperty(prop: GeneratedData, version: string) {
   return `${headerParts.join(' ')}\n${formattedDetails}`;
 }
 
-function renderTypeAliasPropertyRow(prop: GeneratedData, version: string) {
+function renderTypeAliasPropertyRow(prop: PropData, version: string) {
   const nameParts = [`\`${prop.name}\``];
   if ((prop as any).flags?.isOptional) {
     nameParts.push('*(optional)*');
@@ -697,7 +698,7 @@ function renderTypeAliasPropertyRow(prop: GeneratedData, version: string) {
 }
 
 function extractTypeAliasProperties(typeDefinition: TypeDefinitionData) {
-  const collected: GeneratedData[] = [];
+  const collected: PropData[] = [];
   const seen = new Set<string>();
 
   const visit = (node?: TypeDefinitionData) => {
@@ -713,7 +714,7 @@ function extractTypeAliasProperties(typeDefinition: TypeDefinitionData) {
         }
         const id = `${child.name ?? ''}-${child.kind ?? ''}`;
         if (!seen.has(id)) {
-          collected.push(child as unknown as GeneratedData);
+          collected.push(child);
           seen.add(id);
         }
       });
@@ -732,13 +733,13 @@ function extractTypeAliasProperties(typeDefinition: TypeDefinitionData) {
 }
 
 function renderParametersTable(parameters: MethodParamData[], version: string) {
-  if (!parameters.length) {
+  if (parameters.length === 0) {
     return '';
   }
 
   const rows = parameters.map(param => renderParameterRow(param, version)).filter(Boolean);
 
-  if (!rows.length) {
+  if (rows.length === 0) {
     return '';
   }
 
