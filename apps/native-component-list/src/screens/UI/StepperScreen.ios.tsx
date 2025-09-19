@@ -1,4 +1,4 @@
-import { Host, Stepper, Switch } from '@expo/ui/swift-ui';
+import { Host, Stepper } from '@expo/ui/swift-ui';
 import { background, padding, border } from '@expo/ui/swift-ui/modifiers';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -18,7 +18,6 @@ export default function StepperScreen() {
   const [speed, setSpeed] = useState(5);
   const [rating, setRating] = useState(3);
   const [items, setItems] = useState(0);
-  const [enabled, setEnabled] = useState(false);
 
   const createStepperHandler = (
     currentValue: number,
@@ -116,27 +115,14 @@ export default function StepperScreen() {
         </View>
       </View>
       <View style={styles.section}>
-        <HeadingText style={styles.sectionTitle}>Disabled State</HeadingText>
+        <HeadingText style={styles.sectionTitle}>Additional Stepper</HeadingText>
         <View style={styles.stepperContainer}>
           <Host matchContents>
             <Stepper
-              label={`Disabled Stepper: ${quantity}`}
+              label={`Stepper: ${quantity}`}
               value={quantity}
-              disabled={!enabled}
               onIncrement={createStepperHandler(quantity, setQuantity, 0, 50, 1, true)}
               onDecrement={createStepperHandler(quantity, setQuantity, 0, 50, 1, false)}
-              modifiers={modifiers}
-            />
-          </Host>
-        </View>
-        <View style={styles.toggleContainer}>
-          <Text style={styles.toggleLabel}>Toggle Disabled State:</Text>
-          <Host matchContents>
-            <Switch
-              value={enabled}
-              onValueChange={setEnabled}
-              label={enabled ? 'Enabled' : 'Disabled'}
-              variant="switch"
               modifiers={modifiers}
             />
           </Host>
@@ -178,18 +164,6 @@ const styles = StyleSheet.create({
   },
   stepperContainer: {
     marginBottom: 12,
-  },
-  toggleContainer: {
-    marginTop: 8,
-    padding: 12,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-  },
-  toggleLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-    color: '#333',
   },
 });
 

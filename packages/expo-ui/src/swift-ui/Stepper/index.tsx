@@ -14,11 +14,6 @@ export type StepperProps = {
    */
   value: number;
   /**
-   * Whether the stepper is disabled.
-   * @default false
-   */
-  disabled?: boolean;
-  /**
    * Callback triggered when the increment button is pressed.
    * You should implement validation logic here.
    */

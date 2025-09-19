@@ -12,7 +12,6 @@ final class StepperProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
 
   @Field var label: String
   @Field var value: Int
-  @Field var disabled: Bool = false
   var onIncrement = EventDispatcher()
   var onDecrement = EventDispatcher()
 }
@@ -35,7 +34,6 @@ struct StepperView: ExpoSwiftUI.View {
         ]))
       }
     )
-    .disabled(props.disabled)
     .modifier(CommonViewModifiers(props: props))
     #else
     Text("Stepper is not supported on tvOS")
