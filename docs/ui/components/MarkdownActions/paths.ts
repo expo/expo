@@ -1,4 +1,4 @@
-const DYNAMIC_DATA_PATHS = [/^\/additional-resources\/?$/, /^\/archive(\/.*)?$/];
+const DYNAMIC_DATA_PATHS = [/^\/additional-resources\/?$/, /^\/archive(\/.*)?$/, /^\/llms\/?$/];
 
 export function normalizePath(path?: string) {
   if (!path) {

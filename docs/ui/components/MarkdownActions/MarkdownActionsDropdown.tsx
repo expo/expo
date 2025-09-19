@@ -84,16 +84,6 @@ export function MarkdownActionsDropdown() {
         onSelect={handleCopyMarkdown}
       />
     );
-
-    dropdownItems.push(
-      <Dropdown.Item
-        key="view-markdown"
-        label="View Markdown"
-        Icon={EyeIcon}
-        href={rawMarkdownUrl}
-        openInNewTab
-      />
-    );
   }
 
   if (chatGptUrl) {
