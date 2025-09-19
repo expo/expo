@@ -13,7 +13,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
+import expo.modules.audio.service.AudioControlsService
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedRef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,10 +53,18 @@ class AudioPlayer(
   var previousVolume = 1f
   var onPlaybackStateChange: ((Boolean) -> Unit)? = null
 
+  // Lock screen controls
+  var isActiveForLockScreen = false
+  private var metadata: Metadata? = null
+
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
   private var playing = false
+  private val context by lazy {
+    appContext.reactContext
+      ?: throw Exceptions.ReactContextLost()
+  }
 
   private var updateJob: Job? = null
 
@@ -84,6 +94,28 @@ class AudioPlayer(
     ref.setMediaSource(source)
     ref.prepare()
     startUpdating()
+  }
+
+  fun setActiveForLockScreen(active: Boolean, metadata: Metadata? = null) {
+    if (active) {
+      this.metadata = metadata
+      AudioControlsService.setActivePlayer(context, this, metadata)
+    } else if (isActiveForLockScreen) {
+      AudioControlsService.setActivePlayer(context, null)
+    }
+  }
+
+  fun updateLockScreenMetadata(metadata: Metadata) {
+    if (isActiveForLockScreen) {
+      this.metadata = metadata
+      AudioControlsService.updateMetadata(this, metadata)
+    }
+  }
+
+  fun clearLockScreenControls() {
+    if (isActiveForLockScreen) {
+      AudioControlsService.setActivePlayer(context, null)
+    }
   }
 
   private fun startUpdating() {
@@ -241,6 +273,9 @@ class AudioPlayer(
 
   override fun sharedObjectDidRelease() {
     appContext?.mainQueue?.launch {
+      if (isActiveForLockScreen) {
+        AudioControlsService.clearSession()
+      }
       playerScope.cancel()
       visualizer?.release()
       ref.release()
