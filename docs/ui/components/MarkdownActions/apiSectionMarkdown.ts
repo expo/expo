@@ -216,7 +216,9 @@ function categorizeEntries(
         }
         break;
       case TypeDocKind.Variable:
-        constants.push(entry);
+        if (isConstant(entry)) {
+          constants.push(entry);
+        }
         break;
       case TypeDocKind.Enum:
         if (entry.name !== 'default') {
@@ -350,6 +352,24 @@ function isHook(entry: GeneratedData) {
 
 function isListener(entry: GeneratedData) {
   return Boolean(entry.name?.endsWith('Listener') || entry.name?.endsWith('Listeners'));
+}
+
+const componentTypeNames = new Set(['React.FC', 'ForwardRefExoticComponent', 'ComponentType']);
+const disallowedConstantNames = new Set([
+  'default',
+  'Constants',
+  'EventEmitter',
+  'SharedObject',
+  'NativeModule',
+]);
+
+function isComponentLike(entry: GeneratedData) {
+  return Boolean(entry.type?.name && componentTypeNames.has(entry.type.name));
+}
+
+function isConstant(entry: GeneratedData) {
+  const name = entry.name ?? '';
+  return !disallowedConstantNames.has(name) && !isComponentLike(entry);
 }
 
 function isProp(entry: GeneratedData) {
