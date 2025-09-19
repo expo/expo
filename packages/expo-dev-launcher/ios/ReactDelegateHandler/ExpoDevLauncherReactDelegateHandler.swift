@@ -50,21 +50,50 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
-      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
+    let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+    (UIApplication.shared.delegate?.responds(to: Selector(("_expoAppDelegate"))) ?? false ?
+    ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) : nil)
+    let reactDelegate = self.reactDelegate
+
+    guard let reactNativeFactory = appDelegate?.factory as? RCTReactNativeFactory ?? reactDelegate?.reactNativeFactory as? RCTReactNativeFactory else {
       fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
-    self.reactNativeFactory = appDelegate.factory as? RCTReactNativeFactory
+    self.reactNativeFactory = reactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    if self.reactNativeFactory?.delegate?.newArchEnabled() ?? false {
+    if RCTIsNewArchEnabled() {
       self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
       self.reactNativeFactory?.bridge = nil
       self.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
-    let rootView = appDelegate.recreateRootView(
+    func recreateRootView(
+      withBundleURL: URL?,
+      moduleName: String?,
+      initialProps: [AnyHashable: Any]?,
+      launchOptions: [AnyHashable: Any]?
+    ) -> UIView {
+      if let appDelegate = appDelegate {
+        return appDelegate.recreateRootView(
+          withBundleURL: withBundleURL,
+          moduleName: moduleName,
+          initialProps: initialProps,
+          launchOptions: launchOptions
+        )
+      } else if let factory = reactDelegate?.reactNativeFactory {
+        return factory.recreateRootView(
+          withBundleURL: withBundleURL,
+          moduleName: moduleName,
+          initialProps: initialProps,
+          launchOptions: launchOptions
+        )
+      } else {
+        fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
+      }
+    }
+
+    let rootView = recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,

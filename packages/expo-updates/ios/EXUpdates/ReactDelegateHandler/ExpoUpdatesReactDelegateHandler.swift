@@ -76,12 +76,31 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       fatalError("`reactDelegate` should not be nil")
     }
 
-    guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
-      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
-      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
+    func recreateRootView(
+        withBundleURL: URL?,
+        moduleName: String?,
+        initialProps: [AnyHashable: Any]?,
+        launchOptions: [AnyHashable: Any]?
+    ) -> UIView {
+        if let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+            ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) {
+            return appDelegate.recreateRootView(
+                withBundleURL: withBundleURL,
+                moduleName: moduleName,
+                initialProps: initialProps,
+                launchOptions: launchOptions
+            )
+        }
+      
+        return reactDelegate.reactNativeFactory.recreateRootView(
+            withBundleURL: withBundleURL,
+            moduleName: moduleName,
+            initialProps: initialProps,
+            launchOptions: launchOptions
+        )
     }
 
-    let rootView = appDelegate.recreateRootView(
+    let rootView = recreateRootView(
       withBundleURL: AppController.sharedInstance.launchAssetUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,
