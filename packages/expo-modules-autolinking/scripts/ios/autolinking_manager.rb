@@ -161,9 +161,10 @@ module Expo
       return @target_definition.platform&.string_name
     end
 
-    # Returns the custom project root if provided in the options.
-    public def custom_project_root
-      @options.fetch(:projectRoot, nil)
+    # Returns the app project root if provided in the options.
+    public def custom_app_root
+      # TODO: Follow up on renaming `:projectRoot` and migrate to `appRoot`
+      return @options.fetch(:appRoot, @options.fetch(:projectRoot, nil))
     end
 
     # privates
@@ -232,9 +233,8 @@ module Expo
     public def generate_modules_provider_command_args(target_path)
       command_args = ['--target', target_path]
 
-      project_root = @options.fetch(:projectRoot, nil)
-      if project_root
-        command_args.concat(['--project-root', project_root])
+      if !custom_app_root.nil?
+        command_args.concat(['--app-root', custom_app_root])
       end
 
       node_command_args('generate-modules-provider').concat(

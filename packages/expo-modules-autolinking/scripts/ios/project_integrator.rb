@@ -245,7 +245,7 @@ module Expo
       platform = autolinking_manager.platform_name.downcase
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
-      project_root_param = autolinking_manager.custom_project_root.nil? ? '' : "--project-root \"#{autolinking_manager.custom_project_root}\""
+      app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -297,7 +297,7 @@ module Expo
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
         #{entitlement_param} \\
-        #{project_root_param} \\
+        #{app_root_param} \\
         --platform "apple" \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT

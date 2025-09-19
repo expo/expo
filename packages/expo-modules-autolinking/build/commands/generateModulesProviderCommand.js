@@ -11,7 +11,7 @@ function generateModulesProviderCommand(cli) {
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
         .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.')
-        .option('--projectRoot <path>', 'Path to the project root directory.')
+        .option('--app-root <path>', 'Path to the app root directory.')
         .action(async (searchPaths, commandArguments) => {
         const platform = commandArguments.platform ?? 'apple';
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)({
@@ -21,7 +21,7 @@ function generateModulesProviderCommand(cli) {
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
         const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
             autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-            appRoot: commandArguments.projectRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
+            appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
         });
         const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
         const includeModules = new Set(commandArguments.packages ?? []);
