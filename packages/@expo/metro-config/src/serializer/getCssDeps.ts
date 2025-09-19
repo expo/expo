@@ -1,6 +1,6 @@
 // NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
 import { isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js';
-import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import path from 'path';
 

@@ -8,7 +8,7 @@
 import { getAssetData, type AssetData } from '@expo/metro/metro/Assets';
 // NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
 import { getJsOutput, isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js';
-import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';

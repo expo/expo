@@ -1,5 +1,5 @@
 import { resolveEntryPoint } from '@expo/config/paths';
-import type { OutputOptions } from '@expo/metro/metro/shared/types.flow';
+import type { OutputOptions } from '@expo/metro/metro/shared/types';
 import canonicalize from '@expo/metro/metro-core/canonicalize';
 import arg from 'arg';
 import os from 'os';

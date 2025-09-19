@@ -8,7 +8,7 @@ import { getConfig } from '@expo/config';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import output from '@expo/metro/metro/shared/output/bundle';
-import type { BundleOptions } from '@expo/metro/metro/shared/types.flow';
+import type { BundleOptions } from '@expo/metro/metro/shared/types';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';

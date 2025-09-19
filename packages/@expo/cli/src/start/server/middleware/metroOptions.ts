@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config';
-import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types.flow';
+import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types';
 
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';

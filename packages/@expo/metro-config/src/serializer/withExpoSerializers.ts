@@ -7,7 +7,7 @@
 import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
 import sourceMapStringMod from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
-import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';

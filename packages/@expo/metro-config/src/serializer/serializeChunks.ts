@@ -11,7 +11,7 @@ import type {
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';

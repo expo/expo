@@ -16,7 +16,7 @@ import type {
   Module,
   DeltaResult,
   TransformInputOptions,
-} from '@expo/metro/metro/DeltaBundler/types.flow';
+} from '@expo/metro/metro/DeltaBundler/types';
 import type {
   default as MetroHmrServer,
   Client as MetroHmrClient,
