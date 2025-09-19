@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused module check.
+
 ## 54.0.1 — 2025-09-12
 
 ### 🐛 Bug fixes

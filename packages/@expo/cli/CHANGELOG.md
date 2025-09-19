@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for experimental node:sqlite in API routes.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
