@@ -121,10 +121,12 @@ export async function prepareMarkdownForCopyAsync(
 
   content = stripLayoutComponents(content);
   content = replaceApiInstallSections(content, enrichedContext);
+  content = replaceInstallSections(content, enrichedContext);
   content = replaceConfigPluginPropertiesSections(content);
   content = replaceCompatibilityTables(content, enrichedContext);
 
   content = await replaceSchemaComponentsAsync(content, schemaImports, enrichedContext);
+  content = await replaceDiffBlocksAsync(content);
   content = await replaceApiSectionsAsync(content, enrichedContext);
 
   content = replaceBoxLinks(content);
@@ -335,6 +337,34 @@ function extractAttributeValue(source: string, attribute: string) {
   return value.trim();
 }
 
+async function loadDiffSourceAsync(source: string) {
+  const url = resolveDocsUrl(source);
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch diff: ${response.status}`);
+    }
+    return await response.text();
+  } catch (error) {
+    console.error('Unable to load diff source for markdown conversion:', source, error);
+    return '';
+  }
+}
+
+function resolveDocsUrl(path: string) {
+  if (!path) {
+    return '';
+  }
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return `${window.location.origin}${path}`;
+  }
+  return `https://docs.expo.dev${path}`;
+}
+
 function formatPlatformAvailability(platforms: string[]) {
   const displayNames = getDisplayPlatformNames(platforms);
   if (displayNames.length === 0) {
@@ -445,6 +475,36 @@ async function replaceSchemaComponentsAsync(
   return updatedContent;
 }
 
+async function replaceDiffBlocksAsync(content: string) {
+  const diffRegex = /<DiffBlock\b([\S\s]*?)\/>/g;
+  let result = '';
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = diffRegex.exec(content))) {
+    result += content.slice(lastIndex, match.index);
+    const attributeString = match[1] ?? '';
+    const attributes = parseComponentAttributes(attributeString);
+
+    let diffContent = '';
+
+    if (typeof attributes.raw === 'string') {
+      diffContent = attributes.raw;
+    } else if (typeof attributes.source === 'string' && attributes.source) {
+      diffContent = await loadDiffSourceAsync(attributes.source);
+    }
+
+    if (diffContent.trim()) {
+      result += `\n\`\`\`diff\n${diffContent.trim()}\n\`\`\`\n`;
+    }
+
+    lastIndex = diffRegex.lastIndex;
+  }
+
+  result += content.slice(lastIndex);
+  return result;
+}
+
 async function replaceSchemaComponentAsync(
   content: string,
   schemaImports: Record<string, string>,
@@ -508,6 +568,35 @@ function stripLayoutComponents(content: string) {
 
 function replaceApiInstallSections(content: string, context: MarkdownContext) {
   const installRegex = /<APIInstallSection\s*([^>]*)\/>/g;
+  let result = '';
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = installRegex.exec(content))) {
+    result += content.slice(lastIndex, match.index);
+    const attributeString = match[1] ?? '';
+    const attributes = parseComponentAttributes(attributeString);
+
+    const commands = resolveInstallCommands(attributes, context);
+    const note = buildInstallNote(attributes);
+
+    if (commands.length > 0) {
+      result += `\n\`\`\`bash\n${commands.join('\n')}\n\`\`\`\n`;
+    }
+
+    if (note) {
+      result += `\n${note}\n`;
+    }
+
+    lastIndex = installRegex.lastIndex;
+  }
+
+  result += content.slice(lastIndex);
+  return result;
+}
+
+function replaceInstallSections(content: string, context: MarkdownContext) {
+  const installRegex = /<InstallSection\b([\S\s]*?)\/>/g;
   let result = '';
   let lastIndex = 0;
   let match: RegExpExecArray | null;
