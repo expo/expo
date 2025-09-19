@@ -187,13 +187,13 @@ export async function createReactNativeConfigAsync({
 }
 
 export async function resolveAppProjectConfigAsync(
-  projectRoot: string,
+  appRoot: string,
   platform: SupportedPlatform,
   sourceDir?: string
 ): Promise<RNConfigReactNativeAppProjectConfig> {
-  // TODO(@kitten): use the commandRoot here to find these files in non <projectRoot>/<platform> folders
+  // TODO(@kitten): use the commandRoot here to find these files in non <appRoot>/<platform> folders
   if (platform === 'android') {
-    const androidDir = sourceDir ?? path.join(projectRoot, 'android');
+    const androidDir = sourceDir ?? path.join(appRoot, 'android');
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: false });
     if (gradle == null || manifest == null) {
       return {};
@@ -203,7 +203,7 @@ export async function resolveAppProjectConfigAsync(
     return {
       android: {
         packageName: packageName ?? '',
-        sourceDir: sourceDir ?? path.join(projectRoot, 'android'),
+        sourceDir: sourceDir ?? path.join(appRoot, 'android'),
       },
     };
   }
@@ -211,7 +211,7 @@ export async function resolveAppProjectConfigAsync(
   if (platform === 'ios') {
     return {
       ios: {
-        sourceDir: sourceDir ?? path.join(projectRoot, 'ios'),
+        sourceDir: sourceDir ?? path.join(appRoot, 'ios'),
       },
     };
   }

@@ -33,7 +33,7 @@ export interface AutolinkingOptions {
 export declare const filterMapSearchPaths: (searchPaths: unknown, basePath: string) => string[] | undefined;
 /** Common commandline arguments for autolinking commands (Not to be confused with `AutolinkingOptions` */
 export interface AutolinkingCommonArguments {
-    projectRoot?: string | null;
+    appRoot?: string | null;
     searchPaths?: string[] | null;
     exclude?: string[] | null;
     platform?: SupportedPlatform | null;

@@ -90,10 +90,7 @@ function registerAutolinkingArguments(command) {
     return command
         .option('-e, --exclude <exclude...>', 'Package names to exclude when looking up for modules.', (value, previous) => (previous ?? []).concat(value))
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "apple", "android"', 'apple')
-        .option(
-    // NOTE(@kitten): For backwards-compatibility, this is still called `project-root`, but it
-    // really is a replacement path for the current working directory. Henceforth called `commandRoot`
-    '--project-root <projectRoot>', 'The path to the root of the project. Defaults to current working directory', process.cwd());
+        .option('--app-root <appRoot>', 'The path to the root of the JS app. Defaults to current working directory', process.cwd());
 }
 const parseExtraArgumentsOptions = (args) => {
     const cwd = process.cwd();

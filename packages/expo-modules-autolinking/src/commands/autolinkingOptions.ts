@@ -126,7 +126,7 @@ const parsePackageJsonOptions = (
 
 /** Common commandline arguments for autolinking commands (Not to be confused with `AutolinkingOptions` */
 export interface AutolinkingCommonArguments {
-  projectRoot?: string | null;
+  appRoot?: string | null;
   // NOTE(@kitten): These are added to other `searchPaths` entries
   searchPaths?: string[] | null;
   // NOTE(@kitten): These are added to other `exclude` entries
@@ -147,10 +147,8 @@ export function registerAutolinkingArguments(command: commander.Command): comman
       'apple'
     )
     .option(
-      // NOTE(@kitten): For backwards-compatibility, this is still called `project-root`, but it
-      // really is a replacement path for the current working directory. Henceforth called `commandRoot`
-      '--project-root <projectRoot>',
-      'The path to the root of the project. Defaults to current working directory',
+      '--app-root <appRoot>',
+      'The path to the root of the JS app. Defaults to current working directory',
       process.cwd()
     );
 }

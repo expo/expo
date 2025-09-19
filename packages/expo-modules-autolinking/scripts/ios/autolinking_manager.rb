@@ -227,9 +227,8 @@ module Expo
     private def resolve_command_args
       resolve_command_args = ['--json']
 
-      project_root = @options.fetch(:projectRoot, nil)
-      if project_root
-        resolve_command_args.concat(['--project-root', project_root])
+      if !custom_app_root.nil?
+        resolve_command_args.concat(['--app-root', custom_app_root])
       end
 
       node_command_args('resolve').concat(resolve_command_args)
