@@ -547,6 +547,7 @@ function stripLayoutComponents(content: string) {
 
   cleaned = cleaned.replace(/<RedirectNotification[^>]*>[\S\s]*?<\/RedirectNotification>/g, '');
   cleaned = cleaned.replace(/<CodeBlocksTable\b[^>]*>/g, '').replace(/<\/CodeBlocksTable>/g, '');
+  cleaned = cleaned.replace(/<TabsGroup\b[^>]*>/g, '').replace(/<\/TabsGroup>/g, '');
   cleaned = cleaned.replace(/<\/PaddedAPIBox>/g, '');
   cleaned = cleaned.replace(/<PaddedAPIBox\b([^>]*)>/g, (_match, attributes) => {
     const header = extractAttributeValue(`<PaddedAPIBox ${attributes}>`, 'header');
