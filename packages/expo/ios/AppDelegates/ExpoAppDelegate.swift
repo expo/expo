@@ -4,7 +4,6 @@ import ExpoModulesCore
 import ReactAppDependencyProvider
 
 /**
- Note: you cannot subclass Swift from Objective-C, use EXAppDelegateWrapper with Obj-C app delegates
  Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate
  by forwarding `UIApplicationDelegate` events to the subscribers.
 
