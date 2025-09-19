@@ -81,6 +81,7 @@ function LogBoxRNPolyfill(
             <LogBoxPolyfillDOM
               platform={process.env.EXPO_OS}
               dom={{
+                // sourceOverride: { uri: 'https://expo.dev' },
                 contentInsetAdjustmentBehavior: 'never',
                 containerStyle: {
                   pointerEvents: 'box-none',

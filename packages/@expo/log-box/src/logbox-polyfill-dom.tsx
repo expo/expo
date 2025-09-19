@@ -45,7 +45,7 @@ export default function LogBoxPolyfillDOM({
   onChangeSelectedIndex: (index: number) => void;
   logs: any[];
   selectedIndex: number;
-  dom?: import('expo/dom').DOMProps;
+  dom?: import('expo/dom/internal').DOMPropsInternal;
 }) {
   const logs = React.useMemo(() => {
     // Convert from React Native style to Expo style LogBoxLog
