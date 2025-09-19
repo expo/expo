@@ -2,7 +2,6 @@ import { Button } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
-import { EyeIcon } from '@expo/styleguide-icons/outline/EyeIcon';
 import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 
@@ -11,8 +10,8 @@ import { githubRawUrl, getPageMdxFilePath } from '~/ui/components/Footer/utils';
 import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/processMarkdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
-const getPrompt = (markdownUrl: string) =>
-  encodeURIComponent(`Read from ${markdownUrl} so I can ask questions about it.`);
+const getPrompt = (url: string) =>
+  encodeURIComponent(`Read from ${url} so I can ask questions about it.`);
 
 export function MarkdownActionsDropdown() {
   const router = useRouter();
@@ -59,19 +58,33 @@ export function MarkdownActionsDropdown() {
     }
   }, [rawMarkdownUrl, asPath, pathname]);
 
-  const chatGptUrl = useMemo(() => {
-    if (!rawMarkdownUrl) {
+  const pagePath = asPath ?? pathname;
+
+  const pageUrl = useMemo(() => {
+    if (!pagePath) {
       return null;
     }
-    return `https://chat.openai.com/?q=${getPrompt(rawMarkdownUrl)}`;
-  }, [rawMarkdownUrl]);
+
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      return `${window.location.origin}${pagePath}`;
+    }
+
+    return `https://docs.expo.dev${pagePath}`;
+  }, [pagePath]);
+
+  const chatGptUrl = useMemo(() => {
+    if (!pageUrl) {
+      return null;
+    }
+    return `https://chat.openai.com/?q=${getPrompt(pageUrl)}`;
+  }, [pageUrl]);
 
   const claudeUrl = useMemo(() => {
-    if (!rawMarkdownUrl) {
+    if (!pageUrl) {
       return null;
     }
-    return `https://claude.ai/new?q=${getPrompt(rawMarkdownUrl)}`;
-  }, [rawMarkdownUrl]);
+    return `https://claude.ai/new?q=${getPrompt(pageUrl)}`;
+  }, [pageUrl]);
 
   const dropdownItems = [];
 
