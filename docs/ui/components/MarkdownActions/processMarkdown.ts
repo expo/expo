@@ -45,6 +45,7 @@ export async function prepareMarkdownForCopyAsync(
   let title = '';
   let description = '';
   let pagePackageName = context.packageName ?? '';
+  let pagePlatforms: string[] = [];
 
   const frontmatterMatch = content.match(FRONTMATTER_PATTERN);
   if (frontmatterMatch) {
@@ -72,6 +73,12 @@ export async function prepareMarkdownForCopyAsync(
       }
       if (key === 'packageName') {
         pagePackageName = value;
+      }
+      if (key === 'platforms') {
+        const platforms = parseFrontmatterArray(value);
+        if (platforms.length > 0) {
+          pagePlatforms = platforms;
+        }
       }
     });
 
@@ -177,11 +184,81 @@ export async function prepareMarkdownForCopyAsync(
   if (description) {
     parts.push(`_${description}_`);
   }
+  if (pagePlatforms.length > 0) {
+    const platformText = formatPlatformAvailability(pagePlatforms);
+    if (platformText) {
+      parts.push(platformText);
+    }
+  }
   if (cleaned) {
     parts.push(cleaned);
   }
 
   return parts.join('\n\n');
+}
+
+function parseFrontmatterArray(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return [] as string[];
+  }
+
+  const stripWrapper = (str: string) => str.replace(/^['"]|['"]$/g, '').trim();
+
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    const normalized = trimmed.replace(/'/g, '"');
+    try {
+      const parsed = JSON.parse(normalized);
+      if (Array.isArray(parsed)) {
+        return parsed.map(item => stripWrapper(String(item))).filter(Boolean);
+      }
+    } catch (error) {
+      // fallback to manual parsing below
+    }
+    const inner = trimmed.slice(1, -1);
+    return inner
+      .split(',')
+      .map(item => stripWrapper(item))
+      .filter(Boolean);
+  }
+
+  return trimmed
+    .split(',')
+    .map(item => stripWrapper(item))
+    .filter(Boolean);
+}
+
+function formatPlatformAvailability(platforms: string[]) {
+  const displayNames = getDisplayPlatformNames(platforms);
+  if (displayNames.length === 0) {
+    return '';
+  }
+  const label = displayNames.length === 1 ? 'platform' : 'platforms';
+  return `Available on ${label} ${displayNames.join(', ')}`;
+}
+
+function getDisplayPlatformNames(platforms: string[]) {
+  const toDisplayName = (platform: string) => {
+    const trimmed = platform.trim();
+    if (!trimmed) {
+      return '';
+    }
+    const base = trimmed.replace(/\*+$/, '');
+    const isDeviceOnly = trimmed.endsWith('*');
+    if (isDeviceOnly && ['ios', 'android'].includes(base.toLowerCase())) {
+      return `${base} (device-only)`;
+    }
+    return base;
+  };
+
+  return Array.from(
+    new Set(
+      platforms
+        .map(toDisplayName)
+        .map(name => name.trim())
+        .filter(Boolean)
+    )
+  );
 }
 
 function extractSchemaImports(content: string) {
@@ -202,6 +279,7 @@ function extractSchemaImports(content: string) {
 function removeImportStatements(content: string) {
   const lines = content.split('\n');
   let insideCodeFence = false;
+  let insideImportBlock = false;
   const importLinePattern = /^\s*import\s.+$/;
 
   const filtered = lines.filter(line => {
@@ -212,7 +290,15 @@ function removeImportStatements(content: string) {
       return true;
     }
 
+    if (!insideCodeFence && insideImportBlock) {
+      if (trimmed.endsWith(';')) {
+        insideImportBlock = false;
+      }
+      return false;
+    }
+
     if (!insideCodeFence && importLinePattern.test(line)) {
+      insideImportBlock = !trimmed.endsWith(';');
       return false;
     }
 

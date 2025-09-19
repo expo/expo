@@ -3,6 +3,7 @@ import {
   GeneratedData,
   MethodDefinitionData,
   MethodSignatureData,
+  MethodParamData,
   TypeDefinitionData,
   TypeDocKind,
 } from '~/components/plugins/api/APIDataTypes';
@@ -424,10 +425,15 @@ function renderEntryMarkdown(entry: GeneratedData, version: string, level = 3): 
   const heading = `${'#'.repeat(level)} ${entry.name}`;
   const kindLabel = kindToLabel(entry.kind);
   const description = formatComment(entry.comment);
+  const entryPlatforms = extractPlatforms(entry.comment);
+  const entryPlatformText = formatPlatforms(entryPlatforms);
 
   const lines: string[] = [`${heading} (*${kindLabel}*)`];
   if (description) {
     lines.push('', description);
+  }
+  if (entryPlatformText) {
+    lines.push('', entryPlatformText);
   }
 
   switch (entry.kind) {
@@ -527,11 +533,24 @@ function renderConstantMarkdown(entry: GeneratedData, version: string) {
 }
 
 function renderTypeAliasMarkdown(entry: GeneratedData, version: string) {
-  const typeString = typeToString(entry.type, version);
-  const description = formatComment(entry.comment);
-  return [`- \`${entry.name}\``, typeString ? `Type: ${typeString}` : undefined, description]
-    .filter(Boolean)
-    .join(' — ');
+  const typeDefinition = entry.type;
+  if (!typeDefinition) {
+    return '';
+  }
+
+  const properties = extractTypeAliasProperties(typeDefinition);
+  if (properties.length > 0) {
+    const rows = properties
+      .map(property => renderTypeAliasPropertyRow(property as GeneratedData, version))
+      .filter(Boolean);
+    if (rows.length === 0) {
+      return '';
+    }
+    return ['| Property | Type | Description |', '| --- | --- | --- |', ...rows].join('\n');
+  }
+
+  const typeString = typeToString(typeDefinition, version);
+  return typeString ? `Type: ${typeString}` : '';
 }
 
 function renderFunctionsMarkdown(entries: MethodDefinitionData[], version: string) {
@@ -570,6 +589,17 @@ function formatMethodSignature(
   const summary = formatComment(signature.comment ?? entry.comment);
   if (summary) {
     detailLines.push(summary);
+  }
+
+  const platforms = extractPlatforms(signature.comment ?? entry.comment);
+  const platformText = formatPlatforms(platforms);
+  if (platformText) {
+    detailLines.push(platformText);
+  }
+
+  const parametersTable = renderParametersTable(signature.parameters ?? [], version);
+  if (parametersTable) {
+    detailLines.push(parametersTable);
   }
 
   const returnComment = getBlockTag(signature.comment ?? entry.comment, 'returns');
@@ -616,8 +646,9 @@ function formatProperty(prop: GeneratedData, version: string) {
   if (defaultValue) {
     details.push(`Default: \`${defaultValue}\``);
   }
-  if (platforms.length > 0) {
-    details.push(`Platforms: ${platforms.join(', ')}`);
+  const platformText = formatPlatforms(platforms);
+  if (platformText) {
+    details.push(platformText);
   }
 
   if (details.length === 0) {
@@ -634,6 +665,113 @@ function formatProperty(prop: GeneratedData, version: string) {
     .join('\n');
 
   return `${headerParts.join(' ')}\n${formattedDetails}`;
+}
+
+function renderTypeAliasPropertyRow(prop: GeneratedData, version: string) {
+  const nameParts = [`\`${prop.name}\``];
+  if ((prop as any).flags?.isOptional) {
+    nameParts.push('*(optional)*');
+  }
+
+  const typeString = typeToString(prop.type, version) || '-';
+
+  const descriptionParts: string[] = [];
+  const summary = formatComment(prop.comment);
+  if (summary) {
+    descriptionParts.push(summary);
+  }
+
+  const defaultTag = getBlockTag(prop.comment, 'default');
+  if (defaultTag) {
+    descriptionParts.push(`Default: \`${defaultTag}\``);
+  }
+
+  const platformText = formatPlatforms(extractPlatforms(prop.comment));
+  if (platformText) {
+    descriptionParts.push(platformText);
+  }
+
+  const description = descriptionParts.length > 0 ? descriptionParts.join(' ') : '-';
+
+  return `| ${escapeTableCell(nameParts.join(' '))} | ${escapeTableCell(typeString)} | ${escapeTableCell(description)} |`;
+}
+
+function extractTypeAliasProperties(typeDefinition: TypeDefinitionData) {
+  const collected: GeneratedData[] = [];
+  const seen = new Set<string>();
+
+  const visit = (node?: TypeDefinitionData) => {
+    if (!node) {
+      return;
+    }
+
+    const declaration = node.declaration;
+    if (declaration?.children?.length) {
+      declaration.children.forEach(child => {
+        if (!child) {
+          return;
+        }
+        const id = `${child.name ?? ''}-${child.kind ?? ''}`;
+        if (!seen.has(id)) {
+          collected.push(child as unknown as GeneratedData);
+          seen.add(id);
+        }
+      });
+    }
+
+    (node.types ?? []).forEach(visit);
+    (node.typeArguments ?? []).forEach(visit);
+    if (node.elementType) {
+      visit(node.elementType);
+    }
+  };
+
+  visit(typeDefinition);
+
+  return collected;
+}
+
+function renderParametersTable(parameters: MethodParamData[], version: string) {
+  if (!parameters.length) {
+    return '';
+  }
+
+  const rows = parameters.map(param => renderParameterRow(param, version)).filter(Boolean);
+
+  if (!rows.length) {
+    return '';
+  }
+
+  return ['| Parameter | Type | Description |', '| --- | --- | --- |', ...rows].join('\n');
+}
+
+function renderParameterRow(param: MethodParamData, version: string) {
+  const nameParts = [`\`${param.name}\``];
+  if (param.flags?.isOptional) {
+    nameParts.push('*(optional)*');
+  }
+
+  const typeString = typeToString(param.type, version) || '-';
+
+  const descriptionParts: string[] = [];
+  const summary = formatComment(param.comment);
+  if (summary) {
+    descriptionParts.push(summary);
+  }
+
+  const defaultTag = getBlockTag(param.comment, 'default');
+  if (defaultTag) {
+    descriptionParts.push(`Default: \`${defaultTag}\``);
+  }
+
+  const platformText = formatPlatforms(extractPlatforms(param.comment));
+  if (platformText) {
+    descriptionParts.push(platformText);
+  }
+
+  const description = descriptionParts.length > 0 ? descriptionParts.join(' ') : '-';
+
+  return `| ${escapeTableCell(nameParts.join(' '))} | ${escapeTableCell(typeString)} | ${escapeTableCell(description)} |`;
 }
 
 function formatComment(comment?: CommentData) {
@@ -660,6 +798,43 @@ function extractPlatforms(comment: CommentData | undefined) {
     .map(tag => getCommentContent(tag.content ?? []))
     .map(value => value.trim())
     .filter(Boolean);
+}
+
+function formatPlatforms(platforms: string[]) {
+  const displayNames = getDisplayPlatformNames(platforms);
+  if (displayNames.length === 0) {
+    return '';
+  }
+  const label = displayNames.length === 1 ? 'platform' : 'platforms';
+  return `Available on ${label}: ${displayNames.join(', ')}`;
+}
+
+function getDisplayPlatformNames(platforms: string[]) {
+  const toDisplayName = (platform: string) => {
+    const trimmed = platform.trim();
+    if (!trimmed) {
+      return '';
+    }
+    const base = trimmed.replace(/\*+$/, '');
+    const isDeviceOnly = trimmed.endsWith('*');
+    if (isDeviceOnly && ['ios', 'android'].includes(base.toLowerCase())) {
+      return `${base} (device-only)`;
+    }
+    return base;
+  };
+
+  return Array.from(
+    new Set(
+      platforms
+        .map(toDisplayName)
+        .map(name => name.trim())
+        .filter(Boolean)
+    )
+  );
+}
+
+function escapeTableCell(value: string) {
+  return value.replace(/\|/g, '\\|').replace(/\n/g, '<br>');
 }
 
 function typeToString(typeDefinition: TypeDefinitionData | undefined, version: string): string {
