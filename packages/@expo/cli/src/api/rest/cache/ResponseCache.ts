@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { ReadStream } from 'fs';
+import { type Response, type RequestInfo, type RequestInit, Headers } from 'undici';
 
 const GLOBAL_CACHE_VERSION = 4;
 
