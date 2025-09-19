@@ -7,7 +7,7 @@ import Combine
 
 private func sanitizeUrlString(_ urlString: String) -> String? {
   var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
-  
+
   if let decodedUrl = sanitizedUrl.removingPercentEncoding {
     sanitizedUrl = decodedUrl
   }
