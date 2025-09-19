@@ -44,9 +44,9 @@ public final class ExpoUIModule: Module {
     View(SwitchView.self)
     View(TextView.self)
     View(TextFieldView.self) {
-      AsyncFunction("setText") { (view: TextFieldView, text: String) in
-//        view.setText(text)
-      }
+      AsyncFunction("resetControlledState") { (view: TextFieldView) in
+        view.resetControlledState()
+      }.runOnQueue(.main)
     }
     View(VStackView.self)
     View(ZStackView.self)

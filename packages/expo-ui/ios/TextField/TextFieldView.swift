@@ -82,49 +82,31 @@ func allowMultiLine() -> Bool {
   #endif
 }
 
+class TextFieldState: ObservableObject {
+  @Published var valueState = "idle"
+  @Published var tempValue = ""
+  @Published var previousNewValue = ""
+}
+
 struct TextFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: TextFieldProps
+  @ObservedObject private var textFieldState: TextFieldState
   @State private var valueStateChangedInJS: Bool = false;
   @FocusState private var isFocused: Bool
-  @State private var valueState = "idle"
-  @State private var previousNewValue: String = "";
-  @State private var refreshBinding = false
+  
+  public func resetControlledState() {
+    self.textFieldState.valueState = "idle"
+  }
 
   init(props: TextFieldProps) {
     self.props = props
+    self.textFieldState = TextFieldState()
   }
   
   var text: some View {
     let text = TextField(
         props.placeholder,
-        text: Binding(
-          get: {
-            _ = valueState;
-            return props.value
-          },
-          set: { newValue in
-            if (valueState == "pending") {
-              return
-            }
-            if (props.value == newValue) {
-              return;
-            }
-            
-            // Weird behaviour where this callback gets called twice. Debug
-            if (previousNewValue != newValue) {
-              previousNewValue = newValue
-            } else {
-              return;
-            }
-            valueState = "pending"
-            
-            props.onValueChanged(["value": newValue])
-            
-            while valueState == "pending" {
-              RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.001))
-            }
-          }
-        ),
+        text: $textFieldState.tempValue,
       )
     
     return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
@@ -143,9 +125,30 @@ struct TextFieldView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    text
+    print("Body rendering with tempValue: '\(textFieldState.tempValue)', valueState: '\(textFieldState.valueState)'")
+    return text
       .onChange(of: props.value) { newValue in
-        valueState = "idle"
+        print("changed")
+        textFieldState.valueState = "idle"
+        textFieldState.tempValue = props.value
+      }
+      .onChange(of: textFieldState.tempValue) { newValue in
+        if (textFieldState.valueState == "pending") {
+          textFieldState.tempValue = props.value
+          return
+        }
+        
+        // means above call has set it
+        if (newValue == props.value) {
+          textFieldState.tempValue = newValue
+          return
+        }
+      
+        // call reached here means user has typed it
+        // set it to existing props value
+        textFieldState.tempValue = props.value
+        props.onValueChanged(["value": newValue])
+        textFieldState.valueState = "pending"
       }
   }
 }
