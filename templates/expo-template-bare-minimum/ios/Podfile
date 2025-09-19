@@ -41,12 +41,25 @@ target 'HelloWorld' do
     :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
   )
 
+  ccache_enabled = false
+  if podfile_properties['apple.ccacheEnabled'] == 'true'
+    ccache_enabled = true
+  elsif podfile_properties['apple.ccacheEnabled'] == 'false'
+    ccache_enabled = false
+  end
+
+  if ENV['USE_CCACHE'] == '1'
+    ccache_enabled = true
+  elsif ENV['USE_CCACHE'] == '0'
+    ccache_enabled = false
+  end
+
   post_install do |installer|
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+      :ccache_enabled => ccache_enabled,
     )
   end
 end
