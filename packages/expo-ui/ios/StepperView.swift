@@ -22,15 +22,19 @@ struct StepperView: ExpoSwiftUI.View {
 
   var body: some View {
     #if !os(tvOS)
-    Stepper(props.label, onIncrement: {
-      props.onIncrement(([
-        "value": props.value
-      ]))
-    }, onDecrement: {
-      props.onDecrement(([
-        "value": props.value
-      ]))
-    })
+    Stepper(
+      props.label,
+      onIncrement: {
+        props.onIncrement(([
+          "value": props.value
+        ]))
+      },
+      onDecrement: {
+        props.onDecrement(([
+          "value": props.value
+        ]))
+      }
+    )
     .disabled(props.disabled)
     .modifier(CommonViewModifiers(props: props))
     #else
