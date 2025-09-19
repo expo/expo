@@ -41,7 +41,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl, showMarkdownActio
           <div className="flex flex-row items-center gap-2">
             <Edit05Icon className="icon-sm text-icon-secondary" />
             <FOOTNOTE crawlable={false} theme="secondary">
-              Edit this page
+              Edit
             </FOOTNOTE>
           </div>
         </Button>

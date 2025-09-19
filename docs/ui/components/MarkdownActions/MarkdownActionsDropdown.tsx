@@ -73,6 +73,57 @@ export function MarkdownActionsDropdown() {
     return `https://claude.ai/new?q=${getPrompt(rawMarkdownUrl)}`;
   }, [rawMarkdownUrl]);
 
+  const dropdownItems = [];
+
+  if (rawMarkdownUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="copy-markdown"
+        label="Copy Markdown"
+        Icon={Copy04Icon}
+        onSelect={handleCopyMarkdown}
+      />
+    );
+
+    dropdownItems.push(
+      <Dropdown.Item
+        key="view-markdown"
+        label="View Markdown"
+        Icon={EyeIcon}
+        href={rawMarkdownUrl}
+        openInNewTab
+      />
+    );
+  }
+
+  if (chatGptUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="open-chatgpt"
+        label="Open in ChatGPT"
+        Icon={ArrowUpRightIcon}
+        href={chatGptUrl}
+        openInNewTab
+      />
+    );
+  }
+
+  if (claudeUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="open-claude"
+        label="Open in Claude"
+        Icon={ArrowUpRightIcon}
+        href={claudeUrl}
+        openInNewTab
+      />
+    );
+  }
+
+  if (dropdownItems.length === 0) {
+    return null;
+  }
+
   const dropdownTrigger = (
     <Button
       theme="quaternary"
@@ -90,33 +141,7 @@ export function MarkdownActionsDropdown() {
 
   return (
     <Dropdown.Dropdown trigger={<div>{dropdownTrigger}</div>} sideOffset={8}>
-      <Dropdown.Item
-        label="Copy Markdown"
-        Icon={Copy04Icon}
-        onSelect={handleCopyMarkdown}
-        disabled={!rawMarkdownUrl}
-      />
-      <Dropdown.Item
-        label="View Markdown"
-        Icon={EyeIcon}
-        href={rawMarkdownUrl ?? undefined}
-        openInNewTab
-        disabled={!rawMarkdownUrl}
-      />
-      <Dropdown.Item
-        label="Open in ChatGPT"
-        Icon={ArrowUpRightIcon}
-        href={chatGptUrl ?? undefined}
-        openInNewTab
-        disabled={!chatGptUrl}
-      />
-      <Dropdown.Item
-        label="Open in Claude"
-        Icon={ArrowUpRightIcon}
-        href={claudeUrl ?? undefined}
-        openInNewTab
-        disabled={!claudeUrl}
-      />
+      {dropdownItems}
     </Dropdown.Dropdown>
   );
 }
