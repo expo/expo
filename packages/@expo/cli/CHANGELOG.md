@@ -8,7 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- Use Headers constructor to copy response cache headers (prevent `set-cookie` lost)
+- Use Headers constructor to copy response cache headers (prevent `set-cookie` lost) ([#39846](https://github.com/expo/expo/pull/39846) by [@LevanKvirkvelia](https://github.com/LevanKvirkvelia))
+
 
 ### 💡 Others
 

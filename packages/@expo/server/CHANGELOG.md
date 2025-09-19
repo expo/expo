@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Use Headers to copy response headers (prevent `set-cookie` lost)
+- Use Headers to copy response headers (prevent `set-cookie` lost) ([#39846](https://github.com/expo/expo/pull/39846) by [@LevanKvirkvelia](https://github.com/LevanKvirkvelia))
 
 ### 💡 Others
 
