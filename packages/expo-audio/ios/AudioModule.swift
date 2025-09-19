@@ -528,7 +528,7 @@ public class AudioModule: Module {
       }
 
 #if !os(tvOS)
-      if category == .playAndRecord {
+      if category == .playAndRecord || category == .playback {
         categoryOptions.insert(.allowBluetooth)
       }
 #endif
