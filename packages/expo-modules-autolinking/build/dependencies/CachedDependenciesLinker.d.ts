@@ -10,6 +10,7 @@ export interface CachedDependenciesLinker {
     loadReactNativeProjectConfig(): Promise<RNConfigReactNativeProjectConfig | null>;
     scanDependenciesFromRNProjectConfig(): Promise<ResolutionResult>;
     scanDependenciesRecursively(): Promise<ResolutionResult>;
+    scanDevDependenciesShallowly(): Promise<ResolutionResult>;
     scanDependenciesInSearchPath(searchPath: string): Promise<ResolutionResult>;
 }
 export declare function makeCachedDependenciesLinker(params: {

@@ -190,9 +190,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  '51.0.0': {
-    SharedObject: null,
-  },
   'v52.0.0': {
     EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
@@ -208,11 +205,22 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     SharedRef: '/versions/v53.0.0/sdk/expo/#sharedref',
     CameraPosition: '/versions/v53.0.0/sdk/maps/#cameraposition-2',
   },
+  'v54.0.0': {
+    EventEmitter: '/versions/v54.0.0/sdk/expo/#eventemittertype',
+    NativeModule: '/versions/v54.0.0/sdk/expo/#nativemoduletype',
+    SharedObject: '/versions/v54.0.0/sdk/expo/#sharedobjecttype',
+    SharedRef: '/versions/v54.0.0/sdk/expo/#sharedreftype',
+    Href: '/versions/v54.0.0/sdk/router/#href-1',
+    BufferOptions: '/versions/v54.0.0/sdk/video/#bufferoptions-1',
+    CameraPosition: '/versions/v54.0.0/sdk/maps/#cameraposition-2',
+  },
   latest: {
-    EventEmitter: '/versions/latest/sdk/expo/#eventemitter',
-    NativeModule: '/versions/latest/sdk/expo/#nativemodule',
-    SharedObject: '/versions/latest/sdk/expo/#sharedobject',
-    SharedRef: '/versions/latest/sdk/expo/#sharedref',
+    EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
+    NativeModule: '/versions/latest/sdk/expo/#nativemoduletype',
+    SharedObject: '/versions/latest/sdk/expo/#sharedobjecttype',
+    SharedRef: '/versions/latest/sdk/expo/#sharedreftype',
+    Href: '/versions/latest/sdk/router/#href-1',
+    BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
   },
   unversioned: {

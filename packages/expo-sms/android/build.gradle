@@ -4,19 +4,17 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.0.6'
+version = '14.0.7'
 
 android {
   namespace "expo.modules.sms"
   defaultConfig {
     versionCode 28
-    versionName "14.0.6"
+    versionName "14.0.7"
   }
 }
 
 dependencies {
-  implementation 'androidx.annotation:annotation:1.1.0'
-
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }

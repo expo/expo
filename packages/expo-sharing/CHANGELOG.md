@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- [Android] Removed unused `androidx.legacy:legacy-support-v4` dependency. ([#39757](https://github.com/expo/expo/pull/39757) by [@lukmccall](https://github.com/lukmccall))
+
+## 14.0.7 — 2025-09-10
+
+### 💡 Others
+
+- Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
 ## 14.0.6 — 2025-09-02
 
 _This version does not introduce any user-facing changes._

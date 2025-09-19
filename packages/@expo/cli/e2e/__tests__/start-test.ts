@@ -146,7 +146,15 @@ describe('server', () => {
       version: 3,
       sources: expect.arrayContaining([
         '__prelude__',
-        expect.pathMatching(/metro-runtime\/src\/polyfills\/require\.js$/),
+        // NOTE(@kitten): We can slot in our own runtime here
+        expect.pathMatching(
+          new RegExp(
+            [
+              '/metro-runtime/src/polyfills/require.js',
+              '/@expo/cli/build/metro-require/require.js',
+            ].join('|')
+          )
+        ),
         expect.pathMatching(/@react-native\/js-polyfills\/console\.js$/),
         expect.pathMatching(/@react-native\/js-polyfills\/error-guard\.js$/),
         '\0polyfill:external-require',

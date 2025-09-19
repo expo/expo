@@ -1,23 +1,24 @@
 import { Album } from './Album';
+import { MediaType } from './MediaType';
 
 /**
  * Represents a single media asset on the device (image, video, or audio).
  *
- * An `Asset` instance corresponds to an entry in the device's media store.
+ * An {@link Asset} instance corresponds to an entry in the device's media store.
  * It exposes metadata (such as filename, dimensions, or creation time) and utility methods (like deleting).
  *
- * To create a new asset, use {@link Asset.create}.
+ * To create a new asset, use {@link Asset.create}, if you already have an asset ID, you can instantiate it directly using the constructor.
  */
 export declare class Asset {
   /**
-   * Reinitialize an instance of an asset with a given content URI.
-   * @param contentUri - The content URI of the asset in MediaStore.
+   * Reinitialize an instance of an asset with a given ID.
+   * @param id - For Android, it is a `contentUri` (content://media/external/images/media/12345) and for iOS, it is `PHAsset` localIdentifier.
    */
-  constructor(contentUri: string);
+  constructor(id: string);
 
   /**
    * ID of the asset.
-   * Can be used to re-instantiate an `Asset` later.
+   * Can be used to re-instantiate an {@link Asset} later.
    * For android it is a contentUri and PHAsset localIdentifier for iOS.
    */
   id: string;
@@ -25,6 +26,7 @@ export declare class Asset {
   /**
    * Gets the creation time of the asset.
    * @returns A promise resolving to the UNIX timestamp in milliseconds, or `null` if unavailable.
+   * @throws An exception if the asset could not be found.
    */
   getCreationTime(): Promise<number | null>;
 
@@ -32,13 +34,14 @@ export declare class Asset {
    * Gets the duration of the asset.
    * Applies only to media types like video or audio.
    * @returns A promise resolving to the duration in milliseconds, or `null` if not applicable.
+   * @throws An exception if the asset could not be found.
    */
   getDuration(): Promise<number | null>;
 
   /**
    * Gets the filename of the asset, including its extension.
    * @returns A promise resolving to the filename string.
-   * @throws AssetPropertyNotFoundException if the name cannot be retrieved (e.g. asset deleted).
+   * @throws An exception if the asset could not be found.
    */
   getFilename(): Promise<string>;
 
@@ -46,24 +49,29 @@ export declare class Asset {
    * Gets the height of the asset in pixels.
    * Only applicable for image and video assets.
    * @returns A promise resolving to the height in pixels.
+   * @throws An exception if the filename cannot be found.
    */
   getHeight(): Promise<number>;
 
   /**
-   * Gets the media type of the asset.
-   * @returns A promise resolving to a numeric media type (e.g., image, video, audio).
+   * Gets the media type of the asset (image, video, audio or unknown).
+   * @returns A promise resolving to a {@link MediaType} enum value.
+   * @throws An exception if the asset could not be found.
    */
-  getMediaType(): Promise<number>;
+  getMediaType(): Promise<MediaType>;
 
   /**
    * Gets the last modification time of the asset.
    * @returns A promise resolving to the UNIX timestamp in milliseconds, or `null` if unavailable.
+   * @throws An exception if the asset could not be found.
    */
   getModificationTime(): Promise<number | null>;
 
   /**
-   * Gets the URI pointing to the asset’s location in the system (e.g. `content://` on Android).
+   * Gets the URI pointing to the asset’s location in the system.
+   * Example, for Android: `file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg`.
    * @returns A promise resolving to the string URI.
+   * @throws An exception if the asset could not be found.
    */
   getUri(): Promise<string>;
 
@@ -71,12 +79,14 @@ export declare class Asset {
    * Gets the width of the asset in pixels.
    * Only applicable for image and video assets.
    * @returns A promise resolving to the width in pixels.
+   * @throws An exception if the asset could not be found.
    */
   getWidth(): Promise<number>;
 
   /**
    * Deletes the asset from the device’s media store.
    * @returns A promise that resolves once the deletion has completed.
+   *
    * @example
    * ```ts
    * await asset.delete();
@@ -84,18 +94,19 @@ export declare class Asset {
    */
   delete(): Promise<void>;
 
-  /**
-   * Creates a new asset from a given file path.
-   * Optionally associates the asset with an album.
+  /*
+   * A static function. Creates a new asset from a given file path.
+   * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
    *
-   * @param filePath - Local filesystem path (e.g., `file:///...`) of the file to import.
-   * @param album - Optional `Album` instance to place the asset in.
-   * @returns A promise resolving to the created `Asset`.
+   * @param filePath - Local filesystem path (for example, `file:///...`) of the file to import.
+   * @param album - Optional {@link Album} instance to place the asset in.
+   * @returns A promise resolving to the created {@link Asset}.
+   * @throws An exception if the asset could not be created, for example, if the file does not exist or permission is denied.
    *
    * @example
    * ```ts
-   * const asset = await Asset.create("file:///path/to/photo.png");
-   * console.log(await asset.getFilename()); // "photo.png"
+   * const asset = await Asset.create("file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg");
+   * console.log(await asset.getFilename()); // "IMG_20230915_123456.jpg"
    * ```
    */
   static create(filePath: string, album?: Album): Promise<Asset>;

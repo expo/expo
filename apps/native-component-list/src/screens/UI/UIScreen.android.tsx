@@ -115,6 +115,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Chip component',
+    route: 'ui/assist-chip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ChipScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},

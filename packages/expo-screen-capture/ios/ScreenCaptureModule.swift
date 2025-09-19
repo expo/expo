@@ -194,27 +194,31 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func showPrivacyOverlay() {
-    if let keyWindow = keyWindow,
-      let rootView = keyWindow.subviews.first {
-      let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
-      blurEffectView.frame = rootView.bounds
-      blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-      blurEffectView.alpha = 0
-
-      rootView.addSubview(blurEffectView)
-      self.blurEffectView = blurEffectView
-
-      blurEffectView.setupBlur()
-
-      UIView.animate(
-        withDuration: 0.3,
-        delay: 0,
-        options: [.curveEaseOut],
-        animations: {
-          blurEffectView.alpha = 1.0
-        }
-      )
+    // Don't add a new blur view if one already exists
+    guard self.blurEffectView == nil,
+      let keyWindow = keyWindow,
+      let rootView = keyWindow.subviews.first else {
+      return
     }
+
+    let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
+    blurEffectView.frame = rootView.bounds
+    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    blurEffectView.alpha = 0
+
+    rootView.addSubview(blurEffectView)
+    self.blurEffectView = blurEffectView
+
+    blurEffectView.setupBlur()
+
+    UIView.animate(
+      withDuration: 0.3,
+      delay: 0,
+      options: [.curveEaseOut],
+      animations: {
+        blurEffectView.alpha = 1.0
+      }
+    )
   }
 
   private func removePrivacyOverlay() {

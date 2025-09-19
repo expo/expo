@@ -49,7 +49,9 @@ public final class ExpoUIModule: Module {
       }
     }
     View(VStackView.self)
+    View(ZStackView.self)
     View(NamespaceView.self)
     View(GlassEffectContainerView.self)
+    View(LabeledContentView.self)
   }
 }

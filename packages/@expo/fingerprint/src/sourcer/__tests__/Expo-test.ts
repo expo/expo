@@ -21,7 +21,6 @@ import {
 } from '../Expo';
 
 jest.mock('@expo/spawn-async');
-jest.mock('find-up');
 jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('/app/package.json', () => {}, { virtual: true });
@@ -246,7 +245,7 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
-        filePath: './assets/icon.png',
+        filePath: 'assets/icon.png',
       })
     );
   });
@@ -277,7 +276,7 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
-        filePath: './assets/images/splash-icon.png',
+        filePath: 'assets/images/splash-icon.png',
       })
     );
   });

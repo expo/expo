@@ -264,7 +264,7 @@ exports[`metro supports reanimated worklets 1`] = `
 function someWorklet_workletJs1Factory(_ref){var _worklet_14307677064221_init_data=_ref._worklet_14307677064221_init_data;var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.5.0";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data:_worklet_14307677064221_init_data});"
+};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.5.1";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data:_worklet_14307677064221_init_data});"
 `;
 
 exports[`metro transpiles non-standard exports 1`] = `
@@ -296,7 +296,7 @@ exports[`metro+hermes supports reanimated worklets 1`] = `
 function someWorklet_workletJs1Factory(_ref){var _worklet_14307677064221_init_data=_ref._worklet_14307677064221_init_data;var _e=[new global.Error(),1,-27];var someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.5.0";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data});"
+};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.5.1";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data});"
 `;
 
 exports[`metro+hermes transpiles non-standard exports 1`] = `
@@ -328,7 +328,7 @@ exports[`webpack supports reanimated worklets 1`] = `
 function someWorklet_workletJs1Factory({_worklet_14307677064221_init_data}){const _e=[new global.Error(),1,-27];const someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.5.0";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data});"
+};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="0.5.1";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data});"
 `;
 
 exports[`webpack transpiles non-standard exports 1`] = `

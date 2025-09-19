@@ -135,8 +135,11 @@ function useAwaitedScreensIcon(icon) {
     (0, react_1.useEffect)(() => {
         const loadIcon = async () => {
             if (src && src instanceof Promise) {
-                const currentAwaitedIcon = { src: await src };
-                setAwaitedIcon(currentAwaitedIcon);
+                const awaitedSrc = await src;
+                if (awaitedSrc) {
+                    const currentAwaitedIcon = { src: awaitedSrc };
+                    setAwaitedIcon(currentAwaitedIcon);
+                }
             }
         };
         loadIcon();

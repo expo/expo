@@ -5,18 +5,33 @@ onFlowStart:
 ---
 # Use dev client to load a bundle from updates server
 - evalScript:
-    script:  ${output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    script: ${output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
     label: Setup updates server to serve a basic update
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
-- tapOn:
-    label: Tap on "Enter URL manually"
-    text: Enter URL manually
-- tapOn:
-    label: Tap on "Updates URL" text field
-    text: '.*http:.*'
-    below: Enter URL manually
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          label: Tap on "Enter URL manually"
+          text: Enter URL manually
+      - tapOn:
+          label: Tap on "Updates URL" text field
+          text: '.*http:.*'
+          below: Enter URL manually
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - tapOn:
+          label: Tap on "New development server"
+          text: New development server
+      - tapOn:
+          label: Tap on "Updates URL" text field
+          text: '.*http:.*'
+          below: New development server
 - inputText:
     label: Input local update server URL
     text: "http://localhost:4747/update\n"

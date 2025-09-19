@@ -90,6 +90,7 @@ exceptions:
   - '.*Fastlane.*'
   - '.*Firebase.*'
   - '.*FileSystem.*'
+  - '.*FlatList.*'
   - '.*Flipper.*'
   - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
@@ -279,3 +280,5 @@ exceptions:
   - Secure Context in DOM
   - Enterprise Support
   - Use Stacks
+  - 'Mode 1: Auto-with-overrides mode'
+  - 'Mode 2: Payload mode'

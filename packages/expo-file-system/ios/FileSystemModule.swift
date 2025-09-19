@@ -94,7 +94,11 @@ public final class FileSystemModule: Module {
             destination = to.url
           }
           if FileManager.default.fileExists(atPath: destination.path) {
-            throw DestinationAlreadyExistsException()
+            if options?.idempotent == true {
+              try FileManager.default.removeItem(at: destination)
+            } else {
+              throw DestinationAlreadyExistsException()
+            }
           }
           try FileManager.default.moveItem(at: fileURL, to: destination)
           // TODO: Remove .url.absoluteString once returning shared objects works
@@ -105,6 +109,20 @@ public final class FileSystemModule: Module {
       }
       downloadTask.resume()
     }
+
+    AsyncFunction("pickDirectoryAsync") { (initialUri: URL?, promise: Promise) in
+      #if os(iOS)
+      filePickingHandler.presentDocumentPicker(
+        picker: createDirectoryPicker(initialUri: initialUri),
+        isDirectory: true,
+        initialUri: initialUri,
+        mimeType: nil,
+        promise: promise
+      )
+      #else
+      promise.reject(FeatureNotAvailableOnPlatformException())
+      #endif
+    }.runOnQueue(.main)
 
     AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
       #if os(iOS)

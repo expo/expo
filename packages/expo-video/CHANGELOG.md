@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.0.11 — 2025-09-10
+
+### 🎉 New features
+
+- [iOS] Add support for playing PHAsset uris. ([#39371](https://github.com/expo/expo/pull/39371) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Web] Allow access to the underlying HTMLVideoElement via the `nativeRef` property. ([#39448](https://github.com/expo/expo/pull/39448) by [@behenate](https://github.com/behenate))
+
 ## 3.0.10 — 2025-09-04
 
 ### 🐛 Bug fixes

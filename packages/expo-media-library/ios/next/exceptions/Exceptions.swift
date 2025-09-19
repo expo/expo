@@ -53,3 +53,27 @@ internal final class AlbumNotFoundException: GenericException<String> {
     "Album not found: \(param)"
   }
 }
+
+internal final class AssetMediaTypeCouldNotBeResolved: GenericException<String> {
+  override var reason: String {
+    "Asset media type could not be resolved: \(param)"
+  }
+}
+
+internal final class QueryValueCouldNotBeParsed: GenericException<String> {
+  override var reason: String {
+    "Failed to parse query value: \(param)"
+  }
+}
+
+internal final class MediaTypeFailedToParseString: GenericException<String> {
+  override var reason: String {
+    "Failed to parse string to MediaType: \(param)"
+  }
+}
+
+internal final class PredicateBuilderException: GenericException<String> {
+  override var reason: String {
+    "Failed to build a predicate: \(param)"
+  }
+}

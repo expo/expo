@@ -1,5 +1,12 @@
 import { Asset as ExpoAsset } from 'expo-asset';
-import { Asset, Album, requestPermissionsAsync } from 'expo-media-library/next';
+import {
+  Asset,
+  Album,
+  requestPermissionsAsync,
+  Query,
+  MediaType,
+  AssetField,
+} from 'expo-media-library/next';
 import { Platform } from 'react-native';
 
 export const name = 'MediaLibrary@Next';
@@ -11,7 +18,7 @@ const jpgPath = require('../assets/qrcode_expo.jpg');
 
 export async function test(t) {
   let permissions;
-  let files, filesWithAudio;
+  let files;
   let jpgFile, pngFile, mp4File, mp3File;
 
   const checkIfAllPermissionsWereGranted = () => {
@@ -27,7 +34,6 @@ export async function test(t) {
     [jpgFile] = await ExpoAsset.loadAsync(jpgPath);
     [mp4File] = await ExpoAsset.loadAsync(mp4Path);
     files = [pngFile, jpgFile, mp4File];
-    filesWithAudio = [pngFile, jpgFile, mp4File, mp3File];
     permissions = await requestPermissionsAsync();
     if (!checkIfAllPermissionsWereGranted()) {
       console.warn('Tests will fail - not enough permissions to run them.');
@@ -121,19 +127,6 @@ export async function test(t) {
         }
       });
     }
-
-    t.it('fails when mixing audio and images', async () => {
-      try {
-        const albumName = createAlbumName('mixed audio & image');
-        const assets = await Promise.all(filesWithAudio.map((f) => Asset.create(f.localUri)));
-        assetsContainer.push(assets);
-        const album = await Album.create(albumName, assets);
-        albumsContainer.push(album);
-        t.fail();
-      } catch (e) {
-        t.expect(e).toBeDefined();
-      }
-    });
   });
 
   t.describe('Asset creation', () => {
@@ -187,6 +180,18 @@ export async function test(t) {
       const assets = await album.getAssets();
       const assetIds = assets.map((a) => a.id);
       t.expect(assetIds).toContain(newAsset.id);
+    });
+  });
+
+  t.describe('Album get', () => {
+    t.it('gets an album by title', async () => {
+      const albumName = createAlbumName('gets an album by title');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+
+      const fetchedAlbum = await Album.get(albumName);
+      t.expect(fetchedAlbum).toBeDefined();
+      t.expect(fetchedAlbum.id).toBe(album.id);
     });
   });
 
@@ -263,8 +268,9 @@ export async function test(t) {
       t.expect(mediaType).toBeDefined();
     });
 
-    t.it('returns positive modification time', async () => {
+    t.it('returns correct modification time', async () => {
       const modificationTime = await asset.getModificationTime();
+      t.expect(new Date(modificationTime).getFullYear()).toBeGreaterThan(1970);
       t.expect(modificationTime).toBeGreaterThan(0);
     });
 
@@ -312,8 +318,9 @@ export async function test(t) {
       t.expect(mediaType).toBeDefined();
     });
 
-    t.it('returns positive modification time', async () => {
+    t.it('returns correct modification time', async () => {
       const modificationTime = await videoAsset.getModificationTime();
+      t.expect(new Date(modificationTime).getFullYear()).toBeGreaterThan(1970);
       t.expect(modificationTime).toBeGreaterThan(0);
     });
 
@@ -325,6 +332,255 @@ export async function test(t) {
     t.it('returns positive width', async () => {
       const width = await videoAsset.getWidth();
       t.expect(width).toBeGreaterThan(0);
+    });
+  });
+
+  t.describe('Asset query', () => {
+    t.it('limit works correctly', async () => {
+      // given
+      const createdAssets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      assetsContainer.push(...createdAssets);
+      // when
+      const assets = await new Query().limit(3).exe();
+      // then
+      t.expect(assets.length).toBe(3);
+      t.expect(assets[0].id).not.toBe(null);
+    });
+
+    t.it('offset works correctly', async () => {
+      // given
+      const createdAssets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      assetsContainer.push(...createdAssets);
+      // when
+      const query = new Query();
+      const [firstAsset] = await query.limit(1).exe();
+      const [secondAsset] = await query.offset(1).exe();
+      const [bothFirstAsset, bothSecondAsset] = await new Query().limit(2).exe();
+      // then
+      t.expect(firstAsset.id).toBe(bothFirstAsset.id);
+      t.expect(secondAsset.id).toBe(bothSecondAsset.id);
+    });
+
+    t.it('offset outside of bounds works correctly', async () => {
+      // given
+      const asset = await Asset.create(pngFile.localUri);
+      assetsContainer.push(asset);
+      const albumName = createAlbumName('offset outside of bounds works correctly');
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const [firstAsset] = await new Query().offset(10).album(album).exe();
+      // then
+      t.expect(firstAsset).toBeUndefined();
+    });
+
+    t.it('mediatype image works correctly', async () => {
+      // given
+      const asset = await Asset.create(pngFile.localUri);
+      assetsContainer.push(asset);
+      // when
+      const [imageAsset] = await new Query()
+        .limit(1)
+        .eq(AssetField.MEDIA_TYPE, MediaType.IMAGE)
+        .exe();
+      // then
+      t.expect(await imageAsset.getMediaType()).toBe(MediaType.IMAGE);
+      t.expect(await asset.getMediaType()).toBe(MediaType.IMAGE);
+    });
+
+    t.it('mediatype video works correctly', async () => {
+      // given
+      const asset = await Asset.create(mp4File.localUri);
+      assetsContainer.push(asset);
+      // when
+      const [videoAsset] = await new Query()
+        .limit(1)
+        .within(AssetField.MEDIA_TYPE, [MediaType.VIDEO])
+        .exe();
+      // then
+      t.expect(await videoAsset.getMediaType()).toBe(MediaType.VIDEO);
+    });
+
+    if (Platform.OS !== 'ios') {
+      t.it('mediatype audio works correctly', async () => {
+        // given
+        const asset = await Asset.create(mp3File.localUri);
+        assetsContainer.push(asset);
+        // when
+        const query = new Query().limit(1).within(AssetField.MEDIA_TYPE, [MediaType.AUDIO]);
+        const [audioAsset] = await query.exe();
+        // then
+        t.expect(await audioAsset.getMediaType()).toBe(MediaType.AUDIO);
+      });
+    }
+
+    t.it('album works correctly', async () => {
+      // given
+      const albumName = createAlbumName('album works correctly');
+      const asset = await Asset.create(mp4File.localUri);
+      assetsContainer.push(asset);
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const [queriedAsset] = await new Query().limit(1).album(album).exe();
+      // then
+      t.expect(await queriedAsset.getMediaType()).toBe(MediaType.VIDEO);
+      const assetsInAlbum = await album.getAssets();
+      t.expect(assetsInAlbum.map((a) => a.id)).toContain(queriedAsset.id);
+    });
+
+    t.it('modification time and gte/lte work correctly', async () => {
+      // given
+      const albumName = createAlbumName('modification time and gt/lt work correctly');
+      const asset = await Asset.create(pngFile.localUri);
+      assetsContainer.push(asset);
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const [queriedAsset] = await new Query()
+        .limit(1)
+        .album(album)
+        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1000)
+        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1000)
+        .exe();
+      // then
+      t.expect(queriedAsset.id).toBe(asset.id);
+    });
+
+    t.it('height and gte work correctly', async () => {
+      // given
+      const albumName = createAlbumName('height and gte work correctly');
+      const asset = await Asset.create(pngFile.localUri);
+      assetsContainer.push(asset);
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const [queriedAsset] = await new Query()
+        .limit(1)
+        .album(album)
+        .lt(AssetField.HEIGHT, (await asset.getHeight()) + 1)
+        .exe();
+      // then
+      t.expect(queriedAsset.id).toBe(asset.id);
+    });
+
+    t.it('modification time and incorrect gte/lte returns empty array', async () => {
+      // given
+      const albumName = createAlbumName(
+        'modification time and incorrect gte/lte returns empty array'
+      );
+      const asset = await Asset.create(pngFile.localUri);
+      assetsContainer.push(asset);
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const [queriedAsset] = await new Query()
+        .limit(1)
+        .album(album)
+        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1000)
+        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1000)
+        .exe();
+      // then
+      t.expect(queriedAsset).toBeUndefined();
+    });
+
+    t.it('creation time works correctly', async () => {
+      // given
+      const albumName = createAlbumName('album works correctly');
+      const asset = await Asset.create(mp4File.localUri);
+      assetsContainer.push(asset);
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const [queriedAsset] = await new Query().limit(1).album(album).exe();
+      // then
+      t.expect(await queriedAsset.getMediaType()).toBe(MediaType.VIDEO);
+      const assetsInAlbum = await album.getAssets();
+      t.expect(assetsInAlbum.map((a) => a.id)).toContain(queriedAsset.id);
+    });
+
+    t.it('orderBy height works correctly', async () => {
+      // given
+      const shorterAsset = await Asset.create(pngFile.localUri);
+      const tallerAsset = await Asset.create(jpgFile.localUri);
+      assetsContainer.push(tallerAsset);
+      assetsContainer.push(shorterAsset);
+      const albumName = createAlbumName('orderBy height works correctly');
+      const album = await Album.create(albumName, [tallerAsset, shorterAsset]);
+      albumsContainer.push(album);
+      // when
+      const [asset] = await new Query()
+        .limit(1)
+        .album(album)
+        .orderBy({ key: AssetField.HEIGHT })
+        .exe();
+      // then
+      t.expect(asset.id).toBe(shorterAsset.id);
+    });
+
+    t.it('orderBy mediaType works correctly', async () => {
+      // given
+      const videoAsset = await Asset.create(mp4File.localUri);
+      const photoAsset = await Asset.create(jpgFile.localUri);
+      assetsContainer.push(videoAsset);
+      assetsContainer.push(photoAsset);
+      const albumName = createAlbumName('orderBy mediaType works correctly');
+      const album = await Album.create(albumName, [videoAsset, photoAsset]);
+      albumsContainer.push(album);
+      // when
+      const query = new Query().limit(2).album(album).orderBy({ key: AssetField.MEDIA_TYPE });
+      const [firstAsset, secondAsset] = await query.exe();
+      // then
+      t.expect(firstAsset.id).toBe(photoAsset.id);
+      t.expect(secondAsset.id).toBe(videoAsset.id);
+    });
+
+    t.it('orderBy combined works correctly', async () => {
+      // given
+      const videoAsset = await Asset.create(mp4File.localUri);
+      const shorterAsset = await Asset.create(pngFile.localUri);
+      const tallerAsset = await Asset.create(jpgFile.localUri);
+      assetsContainer.push(videoAsset);
+      assetsContainer.push(shorterAsset);
+      assetsContainer.push(tallerAsset);
+      const albumName = createAlbumName('orderBy combined works correctly');
+      const album = await Album.create(albumName, [shorterAsset, videoAsset, tallerAsset]);
+      albumsContainer.push(album);
+      // when
+      const query = new Query()
+        .limit(3)
+        .album(album)
+        .orderBy({ key: AssetField.MEDIA_TYPE })
+        .orderBy({ key: AssetField.HEIGHT });
+      const [firstAsset, secondAsset, thirdAsset] = await query.exe();
+      // then
+      t.expect(firstAsset.id).toBe(shorterAsset.id);
+      t.expect(secondAsset.id).toBe(tallerAsset.id);
+      t.expect(thirdAsset.id).toBe(videoAsset.id);
+    });
+
+    t.it('orderBy ascending works correctly', async () => {
+      // given
+      const videoAsset = await Asset.create(mp4File.localUri);
+      const shorterAsset = await Asset.create(pngFile.localUri);
+      const tallerAsset = await Asset.create(jpgFile.localUri);
+      assetsContainer.push(videoAsset);
+      assetsContainer.push(shorterAsset);
+      assetsContainer.push(tallerAsset);
+      const albumName = createAlbumName('orderBy ascending works correctly');
+      const album = await Album.create(albumName, [shorterAsset, videoAsset, tallerAsset]);
+      albumsContainer.push(album);
+      // when
+      const query = new Query()
+        .limit(3)
+        .album(album)
+        .orderBy({ key: AssetField.MEDIA_TYPE, ascending: false })
+        .orderBy({ key: AssetField.HEIGHT });
+      const [firstAsset, secondAsset, thirdAsset] = await query.exe();
+      // then
+      t.expect(firstAsset.id).toBe(videoAsset.id);
+      t.expect(secondAsset.id).toBe(shorterAsset.id);
+      t.expect(thirdAsset.id).toBe(tallerAsset.id);
     });
   });
 

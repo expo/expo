@@ -28,6 +28,10 @@ ExpoModulesHostObject::~ExpoModulesHostObject() {
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
+  if (installer->wasDeallocated()) {
+    return jsi::Value::undefined();
+  }
+
   auto cName = name.utf8(runtime);
 
   if (UniqueJSIObject &cachedObject = modulesCache[cName]) {

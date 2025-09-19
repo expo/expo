@@ -11,15 +11,22 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.toKClass
 import expo.modules.medialibrary.next.objects.album.Album
+import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
 import expo.modules.medialibrary.next.objects.asset.factories.AssetModernFactory
 import expo.modules.medialibrary.next.objects.asset.factories.AssetLegacyFactory
+import expo.modules.medialibrary.next.objects.query.MediaStoreQueryFormatter
+import expo.modules.medialibrary.next.objects.query.Query
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import expo.modules.medialibrary.next.permissions.enums.GranularPermission
+import expo.modules.medialibrary.next.records.AssetField
+import expo.modules.medialibrary.next.records.SortDescriptor
 
+@OptIn(EitherType::class)
 class MediaLibraryNextModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -30,6 +37,10 @@ class MediaLibraryNextModule : Module() {
 
   private val mediaStorePermissionsDelegate by lazy {
     MediaStorePermissionsDelegate(appContext)
+  }
+
+  private val albumQuery by lazy {
+    AlbumQuery(context)
   }
 
   private val albumFactory by lazy {
@@ -141,6 +152,63 @@ class MediaLibraryNextModule : Module() {
       }
     }
 
+    Class(Query::class) {
+      Constructor {
+        Query(context)
+      }
+
+      Function("limit") { self: Query, limit: Int ->
+        self.limit(limit)
+      }
+
+      Function("offset") { self: Query, offset: Int ->
+        self.offset(offset)
+      }
+
+      Function("album") { self: Query, album: Album ->
+        self.album(album)
+      }
+
+      Function("eq") { self: Query, field: AssetField, value: Either<MediaType, Long> ->
+        self.eq(field, MediaStoreQueryFormatter.parse(field, value))
+      }
+
+      Function("within") { self: Query, field: AssetField, values: List<Either<MediaType, Long>> ->
+        val stringValues = values.map { value -> MediaStoreQueryFormatter.parse(field, value) }
+        self.within(field, stringValues)
+      }
+
+      Function("gt") { self: Query, field: AssetField, value: Long ->
+        self.gt(field, MediaStoreQueryFormatter.parse(field, value))
+      }
+
+      Function("gte") { self: Query, field: AssetField, value: Long ->
+        self.gte(field, MediaStoreQueryFormatter.parse(field, value))
+      }
+
+      Function("lt") { self: Query, field: AssetField, value: Long ->
+        self.lt(field, MediaStoreQueryFormatter.parse(field, value))
+      }
+
+      Function("lte") { self: Query, field: AssetField, value: Long ->
+        self.lte(field, MediaStoreQueryFormatter.parse(field, value))
+      }
+
+      Function("orderBy") { self: Query, sortDescriptorRef: Either<AssetField, SortDescriptor> ->
+        if (sortDescriptorRef.`is`(AssetField::class)) {
+          val assetField = sortDescriptorRef.get(AssetField::class)
+          val descriptor = SortDescriptor(assetField)
+          return@Function self.orderBy(descriptor)
+        }
+        val descriptor = sortDescriptorRef.get(SortDescriptor::class)
+        return@Function self.orderBy(descriptor)
+      }
+
+      AsyncFunction("exe") Coroutine { self: Query ->
+        return@Coroutine self.exe()
+      }
+    }
+
     AsyncFunction("createAsset") Coroutine { filePath: Uri, album: Album? ->
       systemPermissionsDelegate.requireSystemPermissions(true)
       return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
@@ -156,6 +224,11 @@ class MediaLibraryNextModule : Module() {
       }
       val assetPaths = assetRefs.get(toKClass<List<Uri>>())
       return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
+    }
+
+    AsyncFunction("getAlbum") Coroutine { title: String ->
+      systemPermissionsDelegate.requireSystemPermissions(false)
+      albumQuery.getAlbum(title)
     }
 
     AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->

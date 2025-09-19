@@ -1,3 +1,4 @@
+import { type SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
 export interface ContentUnavailableViewProps extends CommonViewModifierProps {
     /**
@@ -7,7 +8,7 @@ export interface ContentUnavailableViewProps extends CommonViewModifierProps {
     /**
      * SF Symbol indicating why the content is not available.
      */
-    systemImage?: string;
+    systemImage?: SFSymbol;
     /**
      * Description of why the content is not available.
      */

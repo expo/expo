@@ -22,7 +22,7 @@ open class FilePermissionModule : FilePermissionModuleInterface, InternalModule 
       getInternalPaths(context)
         .firstOrNull { dir -> canonicalPath.startsWith("$dir/") || dir == canonicalPath }
         ?.let { EnumSet.of(Permission.READ, Permission.WRITE) }
-    } catch (e: IOException) {
+    } catch (_: IOException) {
       EnumSet.noneOf(Permission::class.java)
     }
   }

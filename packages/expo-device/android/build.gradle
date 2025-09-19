@@ -4,17 +4,16 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '8.0.6'
+version = '8.0.7'
 
 android {
   namespace "expo.modules.device"
   defaultConfig {
     versionCode 12
-    versionName '8.0.6'
+    versionName '8.0.7'
   }
 }
 
 dependencies {
   api 'com.facebook.device.yearclass:yearclass:2.1.0'
-  api "androidx.legacy:legacy-support-v4:1.0.0"
 }

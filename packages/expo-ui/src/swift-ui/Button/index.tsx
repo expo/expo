@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -21,9 +22,9 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * - `borderless` - A button with no background or border. On Android, equivalent to `TextButton`.
  * - `borderedProminent` - A bordered button with a prominent appearance.
  * - `plain` - A button with no border or background and a less prominent text.
+ * - `glass` – A liquid glass button effect – (available only from iOS 26, when built with Xcode 26)
+ * - `glassProminent` – A liquid glass button effect – (available only from iOS 26, when built with Xcode 26)
  * macOS-only styles:
- * - `glass` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta version of Xcode)
- * - `glassProminent` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta 3 version of Xcode)
  * - `accessoryBar` - A button style for accessory bars.
  * - `accessoryBarAction` - A button style for accessory bar actions.
  * - `card` - A button style for cards.
@@ -52,9 +53,9 @@ export type ButtonProps = {
   /**
    * A string describing the system image to display in the button.
    * This is only used if `children` is a string.
-   * Uses Material Icons on Android and SF Symbols on iOS.
+   * Uses SF Symbols.
    */
-  systemImage?: string;
+  systemImage?: SFSymbol;
   /**
    * Indicated the role of the button.
    * @platform ios
@@ -88,7 +89,7 @@ export type NativeButtonProps = Omit<
 > & {
   buttonRole?: ButtonRole;
   text: string | undefined;
-  systemImage?: string;
+  systemImage?: SFSymbol;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.

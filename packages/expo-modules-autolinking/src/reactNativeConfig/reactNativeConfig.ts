@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 import type { SupportedPlatform } from '../types';
@@ -12,6 +13,7 @@ import type {
   RNConfigDependency,
   RNConfigDependencyAndroid,
   RNConfigDependencyIos,
+  RNConfigDependencyWeb,
   RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
@@ -27,6 +29,17 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
+import { checkDependencyWebAsync } from './webResolver';
+
+const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
+  const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
+  try {
+    const stat = await fs.promises.lstat(generatedDir);
+    return !stat.isDirectory();
+  } catch {
+    return true;
+  }
+};
 
 export async function resolveReactNativeModule(
   resolution: DependencyResolution,
@@ -69,7 +82,11 @@ export async function resolveReactNativeModule(
     }
   }
 
-  let platformData: RNConfigDependencyAndroid | RNConfigDependencyIos | null = null;
+  let platformData:
+    | RNConfigDependencyAndroid
+    | RNConfigDependencyIos
+    | RNConfigDependencyWeb
+    | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
       resolution.path,
@@ -80,6 +97,12 @@ export async function resolveReactNativeModule(
     platformData = await resolveDependencyConfigImplIosAsync(
       resolution,
       reactNativeConfig.platforms?.ios,
+      maybeExpoModuleConfig
+    );
+  } else if (platform === 'web') {
+    platformData = await checkDependencyWebAsync(
+      resolution,
+      reactNativeConfig,
       maybeExpoModuleConfig
     );
   }
@@ -129,6 +152,31 @@ export async function createReactNativeConfigAsync({
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
     resolveReactNativeModule(resolution, projectConfig, autolinkingOptions.platform, excludeNames)
   );
+
+  // See: https://github.com/facebook/react-native/pull/53690
+  // When we're building react-native from source without these generated files, we need to force them to be generated
+  // Every published react-native version (or out-of-tree version) should have these files, but building from the raw repo won't (e.g. Expo Go)
+  const reactNativeResolution = resolutions['react-native'];
+  if (
+    reactNativeResolution &&
+    autolinkingOptions.platform === 'ios' &&
+    (await isMissingFBReactNativeSpecCodegenOutput(reactNativeResolution.path))
+  ) {
+    dependencies['react-native'] = {
+      root: reactNativeResolution.path,
+      name: 'react-native',
+      platforms: {
+        ios: {
+          // This will trigger a warning in list_native_modules but will trigger the artifacts
+          // codegen codepath as expected
+          podspecPath: '',
+          version: reactNativeResolution.version,
+          configurations: [],
+          scriptPhases: [],
+        },
+      },
+    };
+  }
 
   return {
     root: appRoot,

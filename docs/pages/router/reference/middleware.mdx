@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Server middleware is an experimental feature, and requires a [deployed server](/router/reference/api-routes/#deployment) for production use.
+> **important** Server middleware is an experimental feature available in SDK 54 and above, and requires a [deployed server](/router/reference/api-routes/#deployment) for production use.
 
 Server middleware in Expo Router allows you to run code before requests reach your routes, enabling powerful server-side functionality like authentication and logging for every request. Unlike [API routes](/router/reference/api-routes) that handle specific endpoints, middleware runs for **every** request in your app, so it should run as quickly as possible to avoid slowing down your app's performance. Client-side navigation such as on native, or in a web app when using [`<Link />`](/versions/latest/sdk/router/#link), will not move through the server middleware.
 
@@ -82,6 +82,34 @@ Visit your app in a browser or make requests to test that your middleware is wor
 
 </Step>
 
+<Step label="5">
+
+### Configure middleware matchers (optional)
+
+By default, middleware runs on all server requests. You can add a matcher to control when your middleware executes with `unstable_settings`:
+
+```ts app/+middleware.ts
+export const unstable_settings = {
+  matcher: {
+    // Only run on GET requests
+    methods: ['GET'],
+    // Only run on API routes and specific paths
+    patterns: ['/api', '/admin/[...path]'],
+  },
+};
+
+export default function middleware(request) {
+  console.log(`Middleware executed for: ${request.url}`);
+}
+```
+
+The matcher configuration allows you to:
+
+- **Filter by HTTP method**: Specify which methods should trigger the middleware
+- **Filter by path patterns**: Define which URL patterns should match using exact paths, named parameters, or regular expressions
+
+</Step>
+
 ## How it works
 
 Middleware functions are executed before any route handlers, allowing you to perform actions like logging, authentication, or modifying responses. It runs exclusively on the server and only for actual HTTP requests.
@@ -95,9 +123,33 @@ When a request comes to your app, Expo Router processes it in this order:
 3. If middleware returns nothing, the request continues to the matching route
 4. The route handler processes the request and returns its response
 
+### Pattern matching
+
+Matchers support different pattern types to control when middleware runs:
+
+```ts
+export const unstable_settings = {
+  matcher: {
+    patterns: [
+      '/api', // Exact path
+      '/posts/[postId]', // Named parameter
+      '/blog/[...slug]', // Catch-all parameter
+      /^\/api\/v\d+\/users$/, // Regular expression
+    ],
+  },
+};
+```
+
+- **Exact paths** match only the specified path. `/api` matches `/api` but not `/api/users`
+- **Named parameters** like `[postId]` capture any single segment. `/posts/[postId]` matches `/posts/123` or `/posts/my-post`
+- **Catch-all parameters** like `[...slug]` capture one or more segments. `/blog/[...slug]` matches `/blog/2024` or `/blog/2024/12/post`
+- **Regular expressions** for complex patterns. `/^\/api\/v\d+\/users$/` matches `/api/v1/users` but not `/api/users`
+
+Middleware runs if **any** pattern matches the request URL. When both `methods` and `patterns` are specified, both conditions must be met for middleware to run.
+
 ### Middleware execution order
 
-Expo Router supports a single middleware file named **+middleware.ts** that runs for all server requests. Middleware executes before any route matching or rendering occurs, letting you control the request lifecycle.
+Expo Router supports a single middleware file named **+middleware.ts** that runs for all server requests. When using matchers, middleware executes only for requests that match the specified patterns and methods, before any route matching or rendering occurs.
 
 ### When middleware runs
 
@@ -163,17 +215,93 @@ export default function middleware(request) {
 
 </Collapsible>
 
+<Collapsible summary="API-only middleware">
+
+Use matchers to run middleware only for API routes, keeping other routes unaffected:
+
+```ts app/+middleware.ts
+export const unstable_settings = {
+  matcher: {
+    patterns: ['/api'],
+  },
+};
+
+export default function middleware(request) {
+  // Log all API requests for debugging
+  console.log(`API request: ${request.method} ${request.url}`);
+
+  // Add CORS headers for API routes
+  const response = new Response();
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  return response;
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Method-specific authentication">
+
+Protect write operations (POST, PUT, DELETE) while allowing public read access:
+
+```ts app/+middleware.ts
+export const unstable_settings = {
+  matcher: {
+    methods: ['POST', 'PUT', 'DELETE'],
+    patterns: ['/api', '/admin/[...path]'],
+  },
+};
+
+export default function middleware(request) {
+  const token = request.headers.get('authorization');
+
+  if (!token || !isValidToken(token)) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+}
+
+function isValidToken(token: string): boolean {
+  // Your token validation logic
+  return token.startsWith('Bearer ');
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Selective logging">
+
+Monitor specific endpoints without logging every request:
+
+```ts app/+middleware.ts
+export const unstable_settings = {
+  matcher: {
+    patterns: ['/api/users/[userId]', '/admin', /^\/webhook/],
+  },
+};
+
+export default function middleware(request) {
+  const userAgent = request.headers.get('user-agent');
+  const timestamp = new Date().toISOString();
+
+  console.log(`[${timestamp}] ${request.method} ${request.url} - ${userAgent}`);
+}
+```
+
+</Collapsible>
+
 ## Additional notes
 
 ### Best practices
 
 - Keep middleware lightweight because it runs synchronously on every server request and directly impacts response times.
+- Use matchers to optimize performance by avoiding unnecessary middleware execution on routes that don't need it, especially for high-traffic applications.
+- Prefer exact paths and named parameters over regex as simple patterns are faster to evaluate and easier to maintain than complex regular expressions.
+- Combine method and pattern filtering for precise control over when middleware executes.
 - For native apps, use API routes for secure data fetching. When native apps call API routes, those requests will pass through middleware first.
 
 ### Typed middleware
 
 ```ts app/+middleware.ts
-import { MiddlewareFunction } from 'expo-router';
+import { MiddlewareFunction } from 'expo-router/server';
 
 const middleware: MiddlewareFunction = request => {
   if (request.headers.has('specific-header')) {

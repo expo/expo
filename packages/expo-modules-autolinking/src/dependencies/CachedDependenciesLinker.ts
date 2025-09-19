@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 import { PackageRevision, SupportedPlatform } from '../types';
-import { scanDependenciesRecursively } from './resolution';
+import { scanDependenciesRecursively, scanDevDependenciesShallowly } from './resolution';
 import { scanDependenciesFromRNProjectConfig } from './rncliLocal';
 import { scanDependenciesInSearchPath } from './scanning';
 import { type ResolutionResult, DependencyResolutionSource } from './types';
@@ -21,6 +21,7 @@ export interface CachedDependenciesLinker {
   loadReactNativeProjectConfig(): Promise<RNConfigReactNativeProjectConfig | null>;
   scanDependenciesFromRNProjectConfig(): Promise<ResolutionResult>;
   scanDependenciesRecursively(): Promise<ResolutionResult>;
+  scanDevDependenciesShallowly(): Promise<ResolutionResult>;
   scanDependenciesInSearchPath(searchPath: string): Promise<ResolutionResult>;
 }
 
@@ -38,6 +39,7 @@ export function makeCachedDependenciesLinker(params: {
   let reactNativeProjectConfig: Promise<RNConfigReactNativeProjectConfig | null> | undefined;
   let reactNativeProjectConfigDependencies: Promise<ResolutionResult> | undefined;
   let recursiveDependencies: Promise<ResolutionResult> | undefined;
+  let devDependencies: Promise<ResolutionResult> | undefined;
 
   return {
     async getOptionsForPlatform(platform) {
@@ -66,6 +68,11 @@ export function makeCachedDependenciesLinker(params: {
       return (
         recursiveDependencies ||
         (recursiveDependencies = scanDependenciesRecursively(await getAppRoot()))
+      );
+    },
+    async scanDevDependenciesShallowly() {
+      return (
+        devDependencies || (devDependencies = scanDevDependenciesShallowly(await getAppRoot()))
       );
     },
     async scanDependenciesInSearchPath(searchPath: string) {
@@ -138,12 +145,15 @@ export async function scanExpoModuleResolutionsForPlatform(
 ): Promise<Record<string, PackageRevision>> {
   const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
   const resolutions = mergeResolutionResults(
-    await Promise.all([
-      ...searchPaths.map((searchPath) => {
-        return linker.scanDependenciesInSearchPath(searchPath);
-      }),
-      linker.scanDependenciesRecursively(),
-    ])
+    await Promise.all(
+      [
+        ...searchPaths.map((searchPath) => {
+          return linker.scanDependenciesInSearchPath(searchPath);
+        }),
+        platform === 'devtools' ? linker.scanDevDependenciesShallowly() : null,
+        linker.scanDependenciesRecursively(),
+      ].filter((x) => x != null)
+    )
   );
   return await filterMapResolutionResult(resolutions, async (resolution) => {
     return !excludeNames.has(resolution.name)

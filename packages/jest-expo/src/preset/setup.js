@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const findUp = require('find-up');
+const fs = require('fs');
 const merge = require('lodash/merge');
 const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
@@ -192,13 +192,39 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
 
 function attemptLookup(moduleName) {
   // hack to get the package name from the module name
-  const filePath = stackTrace.getSync().find((line) => line.fileName.includes(moduleName));
+  const filePath = stackTrace.getSync().find((line) => {
+    if (line.fileName.includes(moduleName)) {
+      return true;
+    }
+
+    if (!fs.existsSync(line.fileName)) {
+      return false;
+    }
+    const fileContents = fs.readFileSync(line.fileName, { encoding: 'utf8' });
+    // Matches requireNativeModule<OptionalGeneric>("ModuleName")
+    const regexPattern = new RegExp(
+      `require(?:Optional)?NativeModule\\s*(?:<${moduleName}Module>)?\\s*\\(['"]${moduleName}['"]\\)`
+    );
+
+    if (regexPattern.test(fileContents)) {
+      return true;
+    }
+    return false;
+  });
   if (!filePath) {
     return null;
   }
-  const modulePath = findUp.sync('package.json', { cwd: filePath.fileName });
-  const moduleMockPath = path.join(modulePath, '..', 'mocks', moduleName);
 
+  let modulePath = null;
+  for (let dir = filePath.fileName; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    const file = path.resolve(dir, 'package.json');
+    if (fs.existsSync(file)) {
+      modulePath = file;
+      break;
+    }
+  }
+
+  const moduleMockPath = path.join(modulePath, '..', 'mocks', moduleName);
   try {
     const mockedPackageNativeModule = jest.requireActual(moduleMockPath);
     return mockedPackageNativeModule;

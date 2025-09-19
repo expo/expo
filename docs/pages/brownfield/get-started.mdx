@@ -1,0 +1,503 @@
+---
+title: How to add Expo to an existing native (brownfield) app
+sidebar_title: Get started
+description: A guide for adding Expo and React Native to existing native apps and adding a first view component.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
+
+React Native and Expo are flexible and can be adopted incrementally, one screen (or even one view) at a time. You might even find that using Expo in this way is the best fit for your particular application, or you may end up slowly adopting it across more surfaces in your app. Either way, this flexibility allows enables developers to adopt modern, cross-platform tools in their native apps immediately instead of risking a complete rewrite.
+
+This guide will walk you through the steps to add a React Native view into an existing native app. The approach covered here is what we call the "integrated" approach, because React Native and Expo are integrated in the same way that you would any other library.
+
+Another popular technique is what we call the "isolated" approach, where your Expo app is packaged as a library and treated as a black box by the main existing application. A guide for the isolated approach will be available shortly. Now, back to using the "integrated" approach in your existing native app.
+
+## Prerequisites
+
+To integrate React Native into your existing application, you'll need to set up a JavaScript development environment. This includes installing Node.js to run Expo CLI and Yarn to manage the project's JavaScript dependencies.
+
+- [Node.js (LTS)](https://nodejs.org/en/): The runtime to execute JavaScript code and Expo CLI.
+- [Yarn](https://yarnpkg.com/): A package manager for installing and managing JavaScript dependencies.
+- <PlatformTag platform="ios" /> [CocoaPods](https://cocoapods.org/): one of the dependency
+  management system available for iOS. CocoaPods is a Ruby
+  [gem](https://en.wikipedia.org/wiki/RubyGems). You can install CocoaPods using the version of Ruby
+  that ships with the latest version of macOS.
+
+Learn more from the [Set up environment guide](/get-started/set-up-your-environment/).
+
+## Create an Expo project
+
+First, create an Expo project inside your existing native project's root directory.
+
+<Terminal cmd={['$ npx create-expo-app my-project']} />
+
+This command creates a new directory named **my-project** that contains your new Expo project. While you can name the project anything, this guide uses **my-project** for consistency. The new project includes an example TypeScript application to help you get started.
+
+## Set up your project structure
+
+A standard React Native project places native code in **android** and **ios** directories. The specifics of how to do this depend on your project, but it could be as simple as creating the directories and moving your projects there. For example:
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal
+  cmd={['$ mkdir my-project/android', '$ mv /path/to/your/android-project my-project/android/']}
+/>
+
+</Tab>
+<Tab label="iOS">
+
+<Terminal cmd={['$ mkdir my-project/ios', '$ mv /path/to/your/ios-project my-project/ios/']} />
+
+</Tab>
+</Tabs>
+
+<Collapsible summary="Can't move your native projects to android and ios directories?">
+
+### Set up a monorepo
+
+Monorepos, or "monolithic repositories", are single repositories containing multiple apps or packages. [Learn more](/guides/monorepos/).
+
+Setting up a monorepo will ensure that Android and iOS scripts will be able to invoke commands from Node libraries even with a custom folder structure. To set up a Yarn monorepo, create a **package.json** file at the root of your project and add the following content:
+
+```json package.json
+{
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["my-project"]
+}
+```
+
+Then run `yarn install` to install the dependencies. This will ensure **node_modules** are installed at the root of your project, and that native scripts can interact with React Native code. Make sure to change `["my-project"]` to the name of the Expo project you created in the previous step.
+
+> **info** Opting for a monorepo requires you to configure a custom project root, in Gradle/CocoaPods. This will be covered in the next sections.
+
+</Collapsible>
+
+## Configuring your native project
+
+<Tabs tabs={["Configuring Android", "Configuring iOS"]}>
+<Tab>
+
+To integrate React Native on Android, you need to configure the native project by modifying the following files:
+
+- **Gradle files**: **settings.gradle**, top-level **build.gradle**, **app/build.gradle**, and **gradle.properties** to add the React Native Gradle Plugin (RNGP) and other properties.
+- **AndroidManifest.xml**: To add necessary permissions. ([Learn more](#configuring-your-manifest))
+- **MainActivity**: To load your React Native application.
+
+### Configuring Gradle
+
+<Step label="1">
+Start by editing your **settings.gradle** file and add the following lines (Use the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/settings.gradle) as a reference):
+
+```groovy settings.gradle
+// Configures the React Native Gradle Settings plugin used for autolinking
+pluginManagement {
+  def reactNativeGradlePlugin = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })")
+    }.standardOutput.asText.get().trim()
+  ).getParentFile().absolutePath
+  includeBuild(reactNativeGradlePlugin)
+
+  def expoPluginsPath = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
+    }.standardOutput.asText.get().trim(),
+    "../android/expo-gradle-plugin"
+  ).absolutePath
+  includeBuild(expoPluginsPath)
+}
+
+plugins {
+  id("com.facebook.react.settings")
+  id("expo-autolinking-settings")
+}
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
+}
+expoAutolinking.useExpoModules()
+
+// rootProject.name = 'HelloWorld'
+
+expoAutolinking.useExpoVersionCatalog()
+
+includeBuild(expoAutolinking.reactNativeGradlePlugin)
+// Include your existing Gradle modules here.
+// include(":app")
+```
+
+<Collapsible summary="Using a custom folder structure?">
+
+If you're using a custom folder structure, you need to explicitly set your project root in **settings.gradle** for autolinking to work. Modify the following lines:
+
+<DiffBlock source="/static/diffs/brownfield/android/settings-gradle-custom-root.diff" />
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+Then open your top-level **build.gradle** and include this line (as suggested from the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/build.gradle)):
+
+<DiffBlock source="/static/diffs/brownfield/android/build-gradle.diff" />
+
+This makes sure the React Native Gradle and the Expo plugins are available and applied inside your project.
+
+</Step>
+
+<Step label="3">
+Add the following lines inside your app's **build.gradle** file (usually **app/build.gradle** &mdash; you can use the [bare minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/build.gradle)):
+
+<DiffBlock source="/static/diffs/brownfield/android/app-build-gradle.diff" />
+
+<Collapsible summary="Using a custom folder structure?">
+
+If you're using a custom folder structure, you need to adjust the `projectRoot` value to point to root of your Expo project in **app/build.gradle**. Modify the following lines:
+
+<DiffBlock source="/static/diffs/brownfield/android/app-build-gradle-custom-root.diff" />
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+Finally, open your app's **gradle.properties** file and add the following lines (use the [bare minimum template file as reference](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/gradle.properties)):
+
+```properties gradle.properties
+reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
+newArchEnabled=true
+hermesEnabled=true
+```
+
+</Step>
+
+### Configuring your manifest
+
+<Step label="1">
+First, make sure you have the `INTERNET` permission in your **AndroidManifest.xml**:
+
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-internet-permission.diff" />
+
+</Step>
+
+<Step label="2">
+Now in your **debug** **AndroidManifest.xml**, enable [cleartext traffic](https://developer.android.com/training/articles/security-config#CleartextTrafficPermitted):
+
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-cleartext-traffic.diff" />
+
+This is necessary for your app to communicate with your local [Metro bundler](https://metrobundler.dev/) via HTTP. You can use the **AndroidManifest.xml** files from the bare minimum template as a reference: [main](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml) and [debug](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml)
+
+</Step>
+
+### Integrating with your code
+
+Now, you need to add some native code to start the React Native runtime and tell it to render your React components.
+
+#### Updating your `Application` class
+
+Start by updating your `Application` class to initialize React Native. You can use **MainApplication.kt** from the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt) as a reference:
+
+<DiffBlock source="/static/diffs/brownfield/android/main-application.diff" />
+
+#### Creating a `ReactActivity`
+
+Create a new `Activity` that will extend `ReactActivity` and host the React Native code. This activity will be responsible for starting the React Native runtime and rendering the React component. You can use the [**MainActivity.kt** from bare minimum template file](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.kt) as a reference:
+
+```kotlin MyReactActivity.kt
+// package <your-package-here>
+
+import android.os.Build
+
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
+
+import expo.modules.ReactActivityDelegateWrapper
+
+class MyReactActivity : ReactActivity() {
+
+  /**
+   * Returns the name of the main component registered from JavaScript. This is used to schedule
+   * rendering of the component.
+   */
+  override fun getMainComponentName(): String = "main"
+
+  /**
+   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
+   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
+   */
+  override fun createReactActivityDelegate(): ReactActivityDelegate {
+    return ReactActivityDelegateWrapper(
+          this,
+          BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
+          object : DefaultReactActivityDelegate(
+              this,
+              mainComponentName,
+              fabricEnabled
+          ){})
+  }
+}
+```
+
+Add the new Activity to your **AndroidManifest.xml** file, make sure to set the theme of `MyReactActivity` to `Theme.AppCompat.Light.NoActionBar` (or to any non-ActionBar theme) to avoid your application rendering an `ActionBar` on top of the React Native screen:
+
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-add-activity.diff" />
+
+Now your activity is ready to run some JavaScript code.
+
+</Tab>
+<Tab>
+
+To integrate React Native on iOS, you need to configure the native iOS project by modifying the following files:
+
+- **Podfile**: To add the React Native dependencies.
+- **Xcode project**: To add a build phase for bundling JavaScript code.
+- **Info.plist**: To configure app settings required by React Native.
+
+### Configuring CocoaPods
+
+If your project does not have a **Podfile**, you can create one using the [bare minimum template](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/ios/Podfile) as a reference:
+
+```rb Podfile
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+
+require 'json'
+
+platform :ios, '15.1'
+install! 'cocoapods',
+  :deterministic_uuids => false
+
+prepare_react_native_project!
+
+target 'HelloWorld' do
+  use_expo_modules!
+
+  config_command = [
+    'npx',
+    'expo-modules-autolinking',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'ios'
+  ]
+  config = use_native_modules!(config_command)
+
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => true,
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :privacy_file_aggregation_enabled => true,
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+    )
+  end
+end
+```
+
+If your project already has a **Podfile**, you'll need to manually merge the React Native dependencies into your existing **Podfile**.
+
+<Collapsible summary="Using a custom folder structure?">
+
+If you're using a custom folder structure, you need to explicitly set your project root in **Podfile** for autolinking to work. Modify the following lines in your **Podfile**:
+
+<DiffBlock source="/static/diffs/brownfield/ios/podfile-custom-root.diff" />
+
+</Collapsible>
+
+Now, run the following command:
+
+<Terminal cmd={['$ pod install']} />
+
+Running the `pod` command will integrate the React Native code into your app, allowing your iOS files to import the React Native headers.
+
+### Configuring your Xcode project
+
+<Step label="1">
+After the `pod install` command, CocoaPods will create an Xcode workspace **\{Project\}.xcworkspace**, you will need to open the **xcworkspace** project than the traditional **xcodeproj** project. Alternatively, you can use the following command to open the project:
+
+<Terminal cmd={['$ xed my-project/ios']} />
+
+In the Xcode project navigator, select your project and then select
+your app target under `TARGETS`. In **Build Settings**, using the search bar, search for
+`ENABLE_USER_SCRIPT_SANDBOXING`. If it is not already, set its value to `No`. This is needed to
+properly switch between the Debug and Release versions of the [Hermes
+engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped with React Native.
+
+  <ContentSpotlight
+    alt="Xcode Build Settings"
+    src="/static/images/brownfield/user-script-sandboxing.png"
+  />
+</Step>
+
+<Step label="2">
+
+Now switch to the **Build Phases** tab and add a new `Run Script Phase` before the `[CP] Embed Pods Frameworks` phase. This script will bundle your JavaScript code and assets into the iOS application.
+
+<ContentSpotlight alt="Xcode Build Phases" src="/static/images/brownfield/run-script-phase.png" />
+
+```sh Build React Native code and image
+if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
+  source "$PODS_ROOT/../.xcode.env"
+fi
+if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
+  source "$PODS_ROOT/../.xcode.env.local"
+fi
+
+# The project root by default is one level up from the ios directory
+export PROJECT_ROOT="$PROJECT_DIR"/..
+
+if [[ "$CONFIGURATION" = *Debug* ]]; then
+  export SKIP_BUNDLING=1
+fi
+if [[ -z "$ENTRY_FILE" ]]; then
+  # Set the entry JS file using the bundler's entry resolution.
+  export ENTRY_FILE="$("$NODE_BINARY" -e "require('expo/scripts/resolveAppEntry')" "$PROJECT_ROOT" ios absolute | tail -n 1)"
+fi
+
+if [[ -z "$CLI_PATH" ]]; then
+  # Use Expo CLI
+  export CLI_PATH="$("$NODE_BINARY" --print "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })")"
+fi
+if [[ -z "$BUNDLE_COMMAND" ]]; then
+  # Default Expo CLI command for bundling
+  export BUNDLE_COMMAND="export:embed"
+fi
+
+# Source .xcode.env.updates if it exists to allow
+# SKIP_BUNDLING to be unset if needed
+if [[ -f "$PODS_ROOT/../.xcode.env.updates" ]]; then
+  source "$PODS_ROOT/../.xcode.env.updates"
+fi
+# Source local changes to allow overrides
+# if needed
+if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
+  source "$PODS_ROOT/../.xcode.env.local"
+fi
+
+`"$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
+```
+
+Next time, when you build your app for Release, the React Native code will be bundled using Expo CLI and embedded into the app.
+
+</Step>
+
+<Step label="3">
+Edit your **Info.plist** file and make sure to add the `UIViewControllerBasedStatusBarAppearance` key with a value of `NO`, this is needed to ensure that the status bar is properly managed by React Native.
+
+<DiffBlock source="/static/diffs/brownfield/ios/info-plist.diff" />
+
+</Step>
+
+### Integrating with your code
+
+Now, you need to add some native code to start the React Native runtime and tell it to render your React components.
+
+#### Create the ReactViewController
+
+Create a new file called **ReactViewController.swift**, this will be the `ViewController` that loads a React Native view as its `view`.
+
+```swift ReactViewController.swift
+import UIKit
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
+
+class ReactNativeViewController: UIViewController {
+  var reactNativeFactory: RCTReactNativeFactory?
+  var reactNativeFactoryDelegate: RCTReactNativeFactoryDelegate?
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    reactNativeFactoryDelegate = ReactNativeDelegate()
+    reactNativeFactoryDelegate!.dependencyProvider = RCTAppDependencyProvider()
+    reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeFactoryDelegate!)
+    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "HelloWorld")
+
+  }
+}
+
+class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
+    override func sourceURL(for bridge: RCTBridge) -> URL? {
+      self.bundleURL()
+    }
+
+    override func bundleURL() -> URL? {
+      #if DEBUG
+      RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+      #else
+      Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+      #endif
+    }
+
+}
+```
+
+#### Presenting a React Native view in a rootViewController
+
+Finally, you can present your React Native view. To do so, you need a new View Controller that can host a view in which we can load the JS content. You already have the initial `ViewController`, and you can make it present the `ReactViewController`. There are several ways to do so, depending on your app. For this example, let's assume that you have a button that presents React Native modally.
+
+```swift ViewController.swift
+import UIKit
+
+class ViewController: UIViewController {
+
+  var reactViewController: ReactViewController?
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view.
+    self.view.backgroundColor = .systemBackground
+
+    let button = UIButton()
+    button.setTitle("Open React Native", for: .normal)
+    button.setTitleColor(.systemBlue, for: .normal)
+    button.setTitleColor(.blue, for: .highlighted)
+    button.addAction(UIAction { [weak self] _ in
+      guard let self else { return }
+      if reactViewController == nil {
+       reactViewController = ReactViewController()
+      }
+      present(reactViewController!, animated: true)
+    }, for: .touchUpInside)
+    self.view.addSubview(button)
+
+    button.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+      button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+      button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+      button.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+    ])
+  }
+}
+```
+
+</Tab>
+</Tabs>
+## Test your integration
+
+You have completed all the basic steps to integrate React Native with your application. Now run the following command in the React Native directory to start the [Metro bundler](https://metrobundler.dev/)
+
+<Terminal cmd={['$ yarn start']} />
+
+Metro builds your TypeScript application code into a bundle, serves it through its HTTP server, and shares the bundle from `localhost` on your developer environment to a simulator or device, allowing for [hot reloading](https://reactnative.dev/blog/2016/03/24/introducing-hot-reloading). Now you can build and run your app as normal. Once you reach your React-powered Activity inside the app, it should load the JavaScript code from the development server.
