@@ -10,7 +10,6 @@
 
 - Use Headers constructor to copy response cache headers (prevent `set-cookie` lost) ([#39846](https://github.com/expo/expo/pull/39846) by [@LevanKvirkvelia](https://github.com/LevanKvirkvelia))
 
-
 ### 💡 Others
 
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
