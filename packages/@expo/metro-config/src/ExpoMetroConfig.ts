@@ -308,15 +308,10 @@ export function getDefaultConfig(
       sourceExts,
       nodeModulesPaths,
       blockList: [
-        ...(Array.isArray(metroDefaultValues.resolver.blockList)
-          ? metroDefaultValues.resolver.blockList
-          : metroDefaultValues.resolver.blockList
-            ? [metroDefaultValues.resolver.blockList]
-            : []),
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
-        /.*\/.expo\/types\/.*/,
-      ],
+        /\.expo[\\\/]types/, //eslint-disable-line no-useless-escape
+      ].concat(metroDefaultValues.resolver.blockList ?? []),
     },
     cacheStores: [cacheStore],
     watcher: {
