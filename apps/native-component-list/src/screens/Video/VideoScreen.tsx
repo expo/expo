@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { optionalRequire, routeFilterForE2e } from '../../navigation/routeBuilder';
+import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const VideoScreens = [
@@ -143,7 +143,7 @@ if (Platform.OS === 'android') {
 }
 
 export default function VideoScreen() {
-  const apis: ListElement[] = VideoScreens.filter(routeFilterForE2e).map((screen) => {
+  const apis: ListElement[] = VideoScreens.map((screen) => {
     return {
       name: screen.name,
       isAvailable: true,

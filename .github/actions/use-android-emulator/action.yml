@@ -34,7 +34,8 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     # NOTE: When updating any emulator settings, please make sure all the settings are also updated in each retry step.
-    # Sorry that we can't use a loop here, because GitHub Actions doesn't support it yet.
+    # We can't use a loop here, because GitHub Actions doesn't support it yet.
+    # When e2e tests fail on one emulator, the next step will retry the whole setup again with the next emulator.
     - name: '💿 Setup Android Emulator #1'
       id: retries-1
       continue-on-error: true

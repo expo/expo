@@ -11,7 +11,6 @@ import {
   fileExistsAsync,
   getStartMode,
   retryAsync,
-  getMaestroFlowFilePath,
   prettyPrintTestSuiteLogs,
   setupLogger,
   runCustomMaestroFlowsAsync,
@@ -54,17 +53,21 @@ const __dirname = dirname(__filename);
         testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
       );
 
-      const maestroFlowFilePath = getMaestroFlowFilePath(e2eDir);
-      await createMaestroFlowAsync({
+      const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
-        workflowFile: maestroFlowFilePath,
-        confirmFirstRunPrompt: true,
+        e2eDir,
       });
 
-      // await retryAsync((retryNumber) => {
-      //   console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-      //   return testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir);
-      // }, NUM_OF_RETRIES);
+      await retryAsync((retryNumber) => {
+        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+        return testAsync(
+          maestroNativeModulesFlowFilePath,
+          deviceId,
+          appBinaryPath,
+          adbPath,
+          e2eDir
+        );
+      }, NUM_OF_RETRIES);
     }
   } catch (e) {
     console.error('Uncaught Error', e);

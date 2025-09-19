@@ -19,17 +19,18 @@ export function getStartMode(programFilename: string): StartMode {
 
 export interface MaestroFlowParams {
   appId: string;
-  workflowFile: string;
-  confirmFirstRunPrompt?: boolean;
+  e2eDir: string;
 }
 
 export async function createMaestroFlowAsync({
   appId,
-  workflowFile,
-  confirmFirstRunPrompt,
-}: MaestroFlowParams): Promise<void> {
+  e2eDir,
+}: MaestroFlowParams): Promise<string> {
   const inputFile = await import('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS as string[];
+  const MAESTRO_GENERATED_FLOW = 'maestro-generated.yaml';
+  const workflowFile = path.join(e2eDir, MAESTRO_GENERATED_FLOW);
+
   const contents = [
     `\
 appId: ${appId}
@@ -37,17 +38,6 @@ appId: ${appId}
 - clearState
 `,
   ];
-
-  if (confirmFirstRunPrompt) {
-    contents.push(`\
-# Run once to approve the first time deeplinking prompt
-- openLink: bareexpo://test-suite/run
-- tapOn:
-    text: "Open"
-    optional: true
-- stopApp
-`);
-  }
 
   for (const testCase of testCases) {
     contents.push(`\
@@ -63,6 +53,7 @@ appId: ${appId}
   }
 
   await fs.writeFile(workflowFile, contents.join('\n'));
+  return workflowFile;
 }
 
 export async function ensureDirAsync(dirPath: string): Promise<void> {
@@ -99,11 +90,6 @@ export async function fileExistsAsync(file: string): Promise<boolean> {
 export async function delayAsync(timeMs: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
-
-export const getMaestroFlowFilePath = (e2eDir: string): string => {
-  const MAESTRO_GENERATED_FLOW = 'maestro-generated.yaml';
-  return path.join(e2eDir, MAESTRO_GENERATED_FLOW);
-};
 
 export function prettyPrintTestSuiteLogs(logs: string[]) {
   const lastTestSuiteLog = logs.reverse().find((logItem) => logItem.includes('TEST-SUITE-END'));
@@ -160,10 +146,10 @@ const getCustomMaestroFlowsAsync = async (e2eDir: string): Promise<string[]> => 
   const yamlFiles = await glob.glob('**/*.yaml', {
     cwd: e2eDir,
     maxDepth: 2, // e2e root + one level deep
-    ignore: ['maestro-generated.yaml', 'screenshot-comparison.yaml'],
+    ignore: ['maestro-generated.yaml', '_nested-flows/**'],
   });
 
-  console.log({ 'maestro yaml files': yamlFiles });
+  console.log({ 'detected maestro files:': yamlFiles });
   return yamlFiles;
 };
 
@@ -178,7 +164,7 @@ export const runCustomMaestroFlowsAsync = async (
     const maestroFlowFilePath = path.join(e2eDir, maestroFlowRelativePath);
     await retryAsync((retryNumber) => {
       console.log(
-        `${maestroFlowRelativePath} test suite attempt ${retryNumber + 1} of ${retriesForCustomTests}`
+        `${maestroFlowRelativePath} e2e test attempt ${retryNumber + 1} of ${retriesForCustomTests}`
       );
       return fn(maestroFlowFilePath);
     }, retriesForCustomTests);

@@ -8,6 +8,6 @@ jsEngine: graaljs
     optional: true
 
 - runFlow:
-    file: ../screenshot-comparison.yaml
+    file: ../_nested-flows/screenshot-comparison.yaml
     env:
       screenshotOutputPath: expo-image/comparison-with-core-image

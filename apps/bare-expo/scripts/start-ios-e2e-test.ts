@@ -12,7 +12,6 @@ import {
   ensureDirAsync,
   getStartMode,
   retryAsync,
-  getMaestroFlowFilePath,
   prettyPrintTestSuiteLogs,
   runCustomMaestroFlowsAsync,
 } from './lib/e2e-common';
@@ -49,17 +48,15 @@ const __dirname = dirname(__filename);
         testAsync(maestroFlowFilePath, deviceId, appBinaryPath, e2eDir)
       );
 
-      // const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
-      // await createMaestroFlowAsync({
-      //   appId: APP_ID,
-      //   workflowFile: maestroFlowFilePath,
-      //   confirmFirstRunPrompt: true,
-      // });
-      //
-      // await retryAsync((retryNumber) => {
-      //   console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-      //   return testAsync(maestroFlowFilePath, deviceId, appBinaryPath);
-      // }, NUM_OF_RETRIES);
+      const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
+        appId: APP_ID,
+        e2eDir,
+      });
+
+      await retryAsync((retryNumber) => {
+        console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+        return testAsync(maestroNativeModulesFlowFilePath, deviceId, appBinaryPath, e2eDir);
+      }, NUM_OF_RETRIES);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
@@ -95,29 +92,6 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
 }
 
 const runsOnCI = Boolean(process.env.CI);
-
-function prettyPrintTestSuiteLogs(logs: string[]) {
-  const lastTestSuiteLog = logs.reverse().find((logItem) => logItem.includes('TEST-SUITE-END'));
-  if (!lastTestSuiteLog) {
-    return '';
-  }
-  const jsonPart = lastTestSuiteLog?.match(/{.*}/);
-  if (!jsonPart || !jsonPart[0]) {
-    return '';
-  }
-  const testSuiteResult = JSON.parse(jsonPart[0]);
-  if ((testSuiteResult?.failures.length ?? 0) <= 0) {
-    return '';
-  }
-  const result = [];
-  result.push('  ❌ Test suite had following test failures:');
-  testSuiteResult?.failures?.split('\n').forEach((failure) => {
-    if (failure.length > 0) {
-      result.push(`    ${failure}`);
-    }
-  });
-  return result.join('\n');
-}
 
 function prettyPrintNativeErrorLogs(logs: string[]) {
   // the output shape is always: actual logs, some unrelated stuff from simctrl

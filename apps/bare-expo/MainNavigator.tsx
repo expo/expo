@@ -37,9 +37,8 @@ const routes: RoutesConfig = {
   [testSuiteRouteName]: TestStackNavigator,
 };
 
-// We'd like to get rid of `native-component-list` being a part of the final bundle.
-// Otherwise, some tests may fail due to timeouts (bundling takes significantly more time).
-// See `babel.config.js` and `moduleResolvers/nullResolver.js` for more details.
+// TODO vonovak there's potential for skipping the require of APIs tab as it's not used in CI
+// could use metro config to exclude it from bundling
 const NativeComponentList: NativeComponentListExportsType = optionalRequire(() =>
   require('native-component-list/src/navigation/MainNavigators')
 ) as any;
@@ -50,7 +49,6 @@ const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
 
-// TODO skip apis in CI?
 const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
   routes.apis = NativeComponentList.apis.navigator;

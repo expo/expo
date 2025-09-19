@@ -30,9 +30,9 @@ appId: dev.expo.Payments
 - tapOn: Seek to 30s
 - assertVisible: 'currentTime = 30'
 - runFlow:
-    file: ../screenshot-comparison.yaml
+    file: ../_nested-flows/screenshot-comparison.yaml
     env:
-      screenshotOutputPath: expo-video/one-minute
+      screenshotOutputPath: expo-video/current-time-test
 
 - tapOn: Trigger an Error
 
