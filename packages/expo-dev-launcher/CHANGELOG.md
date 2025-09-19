@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [expo-dev-launcher] Fix manual URL entry: decode percent-encoded URLs, enable return key submit, and support dark mode text. ([#<PR-number>](https://github.com/expo/expo/pull/39840))
+
+
 ### 💡 Others
 
 ## 6.0.11 — 2025-09-11
