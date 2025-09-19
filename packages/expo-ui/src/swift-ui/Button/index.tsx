@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -52,9 +53,9 @@ export type ButtonProps = {
   /**
    * A string describing the system image to display in the button.
    * This is only used if `children` is a string.
-   * Uses Material Icons on Android and SF Symbols on iOS.
+   * Uses SF Symbols.
    */
-  systemImage?: string;
+  systemImage?: SFSymbol;
   /**
    * Indicated the role of the button.
    * @platform ios
@@ -88,7 +89,7 @@ export type NativeButtonProps = Omit<
 > & {
   buttonRole?: ButtonRole;
   text: string | undefined;
-  systemImage?: string;
+  systemImage?: SFSymbol;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.

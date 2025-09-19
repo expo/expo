@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add SF symbol typings ([#39802](https://github.com/expo/expo/pull/39802) by [@nishan](https://github.com/intergalacticspacehighway))
+
 - [iOS] Add Stepper component. ([#39813](https://github.com/expo/expo/pull/39813) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ### 🐛 Bug fixes
