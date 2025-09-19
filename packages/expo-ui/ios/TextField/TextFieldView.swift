@@ -128,24 +128,25 @@ struct TextFieldView: ExpoSwiftUI.View {
     print("Body rendering with tempValue: '\(textFieldState.tempValue)', valueState: '\(textFieldState.valueState)'")
     return text
       .onChange(of: props.value) { newValue in
-        print("changed")
         textFieldState.valueState = "idle"
         textFieldState.tempValue = props.value
       }
       .onChange(of: textFieldState.tempValue) { newValue in
+        // pending state means value will be locked to old value
         if (textFieldState.valueState == "pending") {
+          // When pending state set it to old value
           textFieldState.tempValue = props.value
           return
         }
         
-        // means above call has set it
+        // prop value change triggered this, so set it to new value and return, do not trigger valueChange callback
         if (newValue == props.value) {
           textFieldState.tempValue = newValue
           return
         }
       
-        // call reached here means user has typed it
-        // set it to existing props value
+        // This was typed by user, trigger callback
+        // Set it back to props.value
         textFieldState.tempValue = props.value
         props.onValueChanged(["value": newValue])
         textFieldState.valueState = "pending"

@@ -1,4 +1,11 @@
-import { Button, Host, TextField, TextFieldRef, SecureField } from '@expo/ui/swift-ui';
+import {
+  Button,
+  Host,
+  TextField,
+  TextFieldRef,
+  SecureField,
+  TextFieldProps,
+} from '@expo/ui/swift-ui';
 import * as React from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
 
@@ -6,7 +13,6 @@ import { Page, Section } from '../../components/Page';
 
 export default function TextInputScreen() {
   const [value, setValue] = React.useState<string>('');
-  const textFieldRef = React.useRef<TextFieldRef>(null);
 
   const onChangeText = async (value: string) => {
     if (value === '1') {
@@ -25,8 +31,6 @@ export default function TextInputScreen() {
     if (value === '') {
       setValue('');
     }
-
-    await textFieldRef.current?.resetControlledState();
   };
 
   console.log('value', value);
@@ -37,18 +41,27 @@ export default function TextInputScreen() {
           <Text>{JSON.stringify(value)}</Text>
         </Section>
         <Host matchContents>
-          <TextField
-            autocorrection={false}
-            value={value}
-            onChangeText={onChangeText}
-            ref={textFieldRef}
-            placeholder="Type here"
-          />
+          <ControlledTextField value={value} onChangeText={onChangeText} placeholder="Type here" />
         </Host>
       </Page>
     </View>
   );
 }
+
+const ControlledTextField = (props: TextFieldProps) => {
+  const textFieldRef = React.useRef<TextFieldRef>(null);
+
+  const onChangeText = async (value: string) => {
+    await props.onChangeText(value);
+
+    setTimeout(() => {
+      // this rests the lock if setValue was not called
+      textFieldRef.current?.resetControlledState();
+    });
+  };
+
+  return <TextField {...props} onChangeText={onChangeText} ref={textFieldRef} />;
+};
 
 TextInputScreen.navigationOptions = {
   title: 'TextInput',
