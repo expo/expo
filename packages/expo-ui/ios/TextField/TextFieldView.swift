@@ -24,6 +24,7 @@ final class TextFieldProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var modifiers: ModifierArray?
 
   @Field var defaultValue: String = ""
+  @Field var value: String = ""
   @Field var placeholder: String = ""
   @Field var multiline: Bool = false
   @Field var numberOfLines: Int?
@@ -83,28 +84,66 @@ func allowMultiLine() -> Bool {
 
 struct TextFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: TextFieldProps
-  @ObservedObject var textManager: TextFieldManager = TextFieldManager()
+  @State private var valueStateChangedInJS: Bool = false;
   @FocusState private var isFocused: Bool
+  @State private var valueState = "idle"
+  @State private var previousNewValue: String = "";
+  @State private var refreshBinding = false
 
   init(props: TextFieldProps) {
     self.props = props
   }
-
-  func setText(_ text: String) {
-    textManager.text = text
-  }
-
+  
   var text: some View {
     let text = if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
         props.placeholder,
-        text: $textManager.text,
+        text: Binding(
+          get: {
+            _ = refreshBinding;
+            return props.value
+          },
+          set: { newValue in
+            if (valueState == "pending") {
+              return
+            }
+            if (props.value == newValue) {
+              return;
+            }
+            if (previousNewValue != newValue) {
+              previousNewValue = newValue
+            } else {
+              return;
+            }
+            valueState = "pending"
+            
+            props.onValueChanged(["value": newValue])
+            
+            while valueState == "pending" {
+              RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.001))
+            }
+          }
+        ),
         axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
       )
     } else {
       TextField(
         props.placeholder,
-        text: $textManager.text
+        text: Binding(
+          get: { props.value },
+          set: { newValue in
+            let currentValue = props.value
+            props.onValueChanged(["value": newValue])
+            
+            // Block until props.value changes or timeout
+            let startTime = Date()
+            let timeout: TimeInterval = 0.1 // 100ms timeout
+            
+            while props.value == currentValue && Date().timeIntervalSince(startTime) < timeout {
+              RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.001))
+            }
+          }
+        )
       )
     }
     return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
@@ -114,8 +153,8 @@ struct TextFieldView: ExpoSwiftUI.View {
       .autocorrectionDisabled(!props.autocorrection)
       .if(props.allowNewlines, {
         $0.focused($isFocused).onSubmit({
-          if  textManager.text.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
-            textManager.text.append("\n")
+          if props.value.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
+            props.onValueChanged(["value": props.value + "\n"])
           }
           isFocused = true
         })
@@ -124,9 +163,12 @@ struct TextFieldView: ExpoSwiftUI.View {
 
   var body: some View {
     text
-      .onAppear { textManager.text = props.defaultValue }
-      .onChange(of: textManager.text) { newValue in
-        props.onValueChanged(["value": newValue])
+      .onAppear {
+//        displayText = props.value.isEmpty ? props.defaultValue : props.value
+      }
+      .onChange(of: props.value) { newValue in
+        valueState = "idle"
+        refreshBinding.toggle()
       }
   }
 }
