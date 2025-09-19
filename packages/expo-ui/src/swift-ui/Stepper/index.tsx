@@ -10,38 +10,29 @@ export type StepperProps = {
    */
   label: string;
   /**
-   * The default value of the stepper.
-   * @default 0
+   * The current value of the stepper.
    */
-  defaultValue?: number;
-  /**
-   * The minimum value of the stepper.
-   * @default 0
-   */
-  min?: number;
-  /**
-   * The maximum value of the stepper.
-   * @default 100
-   */
-  max?: number;
-  /**
-   * The step value for incrementing/decrementing.
-   * @default 1
-   */
-  step?: number;
+  value: number;
   /**
    * Whether the stepper is disabled.
    * @default false
    */
   disabled?: boolean;
   /**
-   * Callback triggered when the stepper value changes.
+   * Callback triggered when the increment button is pressed.
+   * You should implement validation logic here.
    */
-  onValueChange?: (value: number) => void;
+  onIncrement: (value: number) => void;
+  /**
+   * Callback triggered when the decrement button is pressed.
+   * You should implement validation logic here.
+   */
+  onDecrement: (value: number) => void;
 } & CommonViewModifierProps;
 
-type NativeStepperProps = Omit<StepperProps, 'onValueChange'> &
-  ViewEvent<'onValueChanged', { value: number }>;
+type NativeStepperProps = Omit<StepperProps, 'onIncrement' | 'onDecrement'> &
+  ViewEvent<'onIncrement', { value: number }> &
+  ViewEvent<'onDecrement', { value: number }>;
 
 const StepperNativeView: React.ComponentType<NativeStepperProps> = requireNativeView(
   'ExpoUI',
@@ -54,8 +45,11 @@ function transformStepperProps(props: StepperProps): NativeStepperProps {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    onValueChanged: ({ nativeEvent: { value } }) => {
-      props?.onValueChange?.(value);
+    onIncrement: ({ nativeEvent: { value } }) => {
+      props.onIncrement(value);
+    },
+    onDecrement: ({ nativeEvent: { value } }) => {
+      props.onDecrement(value);
     },
   };
 }
