@@ -23,7 +23,7 @@ export function getResponseInfo(response: Response) {
     url: response.url,
     status: response.status,
     statusText: response.statusText,
-    headers: Object.fromEntries(response.headers.entries()),
+    headers: new Headers(response.headers),
   };
 }
 
@@ -52,7 +52,7 @@ export function getRequestInfoCacheData(info: RequestInfo) {
       // cache: req.cache,
       credentials: info.credentials.toString(),
       destination: info.destination.toString(),
-      headers: Object.fromEntries(info.headers.entries()),
+      headers: new Headers(info.headers),
       integrity: info.integrity,
       method: info.method,
       redirect: info.redirect,
