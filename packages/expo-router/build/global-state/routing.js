@@ -59,8 +59,20 @@ const href_1 = require("../link/href");
 const matchers_1 = require("../matchers");
 const navigationParams_1 = require("../navigationParams");
 const url_1 = require("../utils/url");
+function isCurrentNavigatorReady() {
+    let state = router_store_1.store.navigationRef.getRootState();
+    while (state) {
+        const index = state.index ?? 0;
+        const route = state.routes[index];
+        if (route.params && 'screen' in route.params && !route.state) {
+            return false;
+        }
+        state = route.state;
+    }
+    return true;
+}
 function assertIsReady() {
-    if (!router_store_1.store.navigationRef.isReady()) {
+    if (!router_store_1.store.navigationRef.isReady() || !isCurrentNavigatorReady()) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
