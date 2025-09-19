@@ -10,7 +10,6 @@ import {
   generateEnvironmentInstructionsMarkdownAsync,
 } from './environmentInstructions';
 import {
-  BOX_LINK_PATTERN,
   FRONTMATTER_PATTERN,
   INTERNAL_LINK_PATTERN,
   PRETTIER_IGNORE_PATTERN,
@@ -128,11 +127,7 @@ export async function prepareMarkdownForCopyAsync(
   content = await replaceSchemaComponentsAsync(content, schemaImports, enrichedContext);
   content = await replaceApiSectionsAsync(content, enrichedContext);
 
-  content = content.replace(BOX_LINK_PATTERN, (_match, linkTitle, href) => {
-    const normalizedHref = href.startsWith('http') ? href : `https://docs.expo.dev${href}`;
-    const markdownLink = `[${linkTitle}](${normalizedHref})`;
-    return `\n${markdownLink}\n`;
-  });
+  content = replaceBoxLinks(content);
 
   content = content.replace(VIDEO_BOX_LINK_PATTERN, match => {
     const titleMatch = match.match(/title="([^"]+)"/);
@@ -197,6 +192,103 @@ export async function prepareMarkdownForCopyAsync(
   return parts.join('\n\n');
 }
 
+function replaceBoxLinks(content: string) {
+  const startTag = '<BoxLink';
+  let cursor = 0;
+  let result = '';
+
+  while (cursor < content.length) {
+    const start = content.indexOf(startTag, cursor);
+    if (start === -1) {
+      result += content.slice(cursor);
+      break;
+    }
+
+    result += content.slice(cursor, start);
+
+    const end = findBoxLinkClosingIndex(content, start + startTag.length);
+    if (end === null) {
+      // Unable to find a matching closing tag; append the rest and stop processing.
+      result += content.slice(start);
+      break;
+    }
+
+    const component = content.slice(start, end);
+    const title = extractAttributeValue(component, 'title');
+    const href = extractAttributeValue(component, 'href');
+
+    if (!title && !href) {
+      cursor = end;
+      continue;
+    }
+
+    const linkTitle = title || href || '';
+
+    if (!href) {
+      result += `\n${linkTitle}\n`;
+      cursor = end;
+      continue;
+    }
+
+    const normalizedHref = href.startsWith('http') ? href : `https://docs.expo.dev${href}`;
+    result += `\n[${linkTitle}](${normalizedHref})\n`;
+    cursor = end;
+  }
+
+  return result;
+}
+
+function findBoxLinkClosingIndex(source: string, searchStart: number) {
+  let index = searchStart;
+  let braceDepth = 0;
+  let quote: string | null = null;
+
+  while (index < source.length - 1) {
+    const char = source[index];
+    const next = source[index + 1];
+
+    if (quote) {
+      if (char === '\\' && index + 1 < source.length) {
+        index += 2;
+        continue;
+      }
+      if (char === quote) {
+        quote = null;
+      }
+      index += 1;
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      index += 1;
+      continue;
+    }
+
+    if (char === '{') {
+      braceDepth += 1;
+      index += 1;
+      continue;
+    }
+
+    if (char === '}') {
+      if (braceDepth > 0) {
+        braceDepth -= 1;
+      }
+      index += 1;
+      continue;
+    }
+
+    if (char === '/' && next === '>' && braceDepth === 0) {
+      return index + 2;
+    }
+
+    index += 1;
+  }
+
+  return null;
+}
+
 function parseFrontmatterArray(value: string) {
   const trimmed = value.trim();
   if (!trimmed) {
@@ -207,10 +299,13 @@ function parseFrontmatterArray(value: string) {
 
   if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
     const normalized = trimmed.replace(/'/g, '"');
-    const parsed = JSON.parse(normalized);
-
-    if (Array.isArray(parsed)) {
-      return parsed.map(item => stripWrapper(String(item))).filter(Boolean);
+    try {
+      const parsed = JSON.parse(normalized);
+      if (Array.isArray(parsed)) {
+        return parsed.map(item => stripWrapper(String(item))).filter(Boolean);
+      }
+    } catch {
+      // ignore JSON parse errors and fallback to manual parsing below
     }
 
     const inner = trimmed.slice(1, -1);
@@ -224,6 +319,20 @@ function parseFrontmatterArray(value: string) {
     .split(',')
     .map(item => stripWrapper(item))
     .filter(Boolean);
+}
+
+function extractAttributeValue(source: string, attribute: string) {
+  const escapeRegExp = (value: string) => value.replace(/[$()*+.?[\\\]^{|}-]/g, '\\$&');
+  const escapedAttribute = escapeRegExp(attribute);
+  const attributePattern = new RegExp(
+    `${escapedAttribute}\\s*=\\s*(?:("([^"]+)")|('([^']+)')|{\\s*['"]([^'"]+)['"]\\s*})`
+  );
+  const match = source.match(attributePattern);
+  if (!match) {
+    return '';
+  }
+  const value = match[2] ?? match[4] ?? match[5] ?? '';
+  return value.trim();
 }
 
 function formatPlatformAvailability(platforms: string[]) {
@@ -375,6 +484,21 @@ function stripLayoutComponents(content: string) {
     .replace(/<\/ConfigPluginExample>/g, '')
     .replace(/^<SnackInline\b[^>]*>.*$/gm, '')
     .replace(/^<\/SnackInline>\s*$/gm, '');
+
+  cleaned = cleaned.replace(/<RedirectNotification[^>]*>[\S\s]*?<\/RedirectNotification>/g, '');
+  cleaned = cleaned.replace(/<CodeBlocksTable\b[^>]*>/g, '').replace(/<\/CodeBlocksTable>/g, '');
+  cleaned = cleaned.replace(/<\/PaddedAPIBox>/g, '');
+  cleaned = cleaned.replace(/<PaddedAPIBox\b([^>]*)>/g, (_match, attributes) => {
+    const header = extractAttributeValue(`<PaddedAPIBox ${attributes}>`, 'header');
+    return header ? `\n#### ${header}\n\n` : '\n\n';
+  });
+
+  cleaned = cleaned.replace(/<Collapsible\b([^>]*)>/g, (_match, attributes) => {
+    const summary = extractAttributeValue(`<Collapsible ${attributes}>`, 'summary');
+    return summary ? `\n#### ${summary}\n\n` : '\n\n';
+  });
+
+  cleaned = cleaned.replace(/<\/Collapsible>/g, '');
 
   // Remove empty lines left by the replacements
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
