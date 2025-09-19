@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use Headers to copy response headers (prevent `set-cookie` lost)
+
 ### 💡 Others
 
 ## 0.7.4 — 2025-09-11
