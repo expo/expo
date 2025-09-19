@@ -258,12 +258,14 @@ describe('server-output', () => {
       expect(res.status).toBe(500);
       expect(res.statusText).toBe('Internal Server Error');
     });
-    it('supports setting headers in API routes', async () => {
+    it('supports multiple values headers in API routes', async () => {
       const res = await serverFetchAsync('/api/headers');
       expect(res.status).toBe(200);
       expect(res.headers.get('x-custom-header')).toBe('customValue');
       // Multiple headers with the same name are combined into a single comma-separated value
       expect(res.headers.get('x-multiple-header')).toBe('value1, value2');
+      // Set-Cookie headers are also combined (they are special case which doesn't work with headers.entries())
+      expect(res.headers.get('set-cookie')).toBe('key1=value1, key2=value2');
       expect(await res.json()).toEqual({ message: 'ok' });
     });
     describe('Response.json', () => {
