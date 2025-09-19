@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Use app root to generate modules provider ([#39728](https://github.com/expo/expo/pull/39728) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - Regression: Support search paths and `nativeModulesDir` pointing directly at module folder ([#39669](https://github.com/expo/expo/pull/39669) by [@kitten](https://github.com/kitten))
