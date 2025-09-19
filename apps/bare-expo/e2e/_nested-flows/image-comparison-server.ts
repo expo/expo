@@ -2,23 +2,23 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { compareImages, type ComparisonResult } from '../scripts/compare-images';
+import { compareImages, type ComparisonResult } from '../../scripts/compare-images';
 
 const PORT = process.env.PORT || 3000;
 
-// @ts-ignore bun types
+// @ts-ignore bun types are missing
 Bun.serve({
   port: PORT,
   hostname: '127.0.0.1', // Only bind to localhost for security
   async fetch(req) {
     const url = new URL(req.url);
 
-    // CORS headers
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     };
+    const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
 
     if (req.method === 'POST' && url.pathname === '/compare') {
       try {
@@ -35,25 +35,27 @@ Bun.serve({
             }),
             {
               status: 400,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              headers: jsonHeaders,
             }
           );
         }
 
         // Only allow files within the project directory
-        const projectRoot = path.resolve(__dirname);
-        const image1Path = path.resolve(projectRoot, image1);
-        const image2Path = path.resolve(projectRoot, image2);
+        const e2eDir = path.resolve(path.join(__dirname, '..'));
+        const image1Path = path.resolve(e2eDir, image1);
+        const image2Path = path.resolve(e2eDir, image2);
 
-        if (!image1Path.startsWith(projectRoot) || !image2Path.startsWith(projectRoot)) {
+        if (!image1Path.startsWith(e2eDir) || !image2Path.startsWith(e2eDir)) {
+          const message = `Invalid file paths (${image1Path}, ${image2Path}) - must be within e2e directory: ${e2eDir}`;
+          console.error(message);
           return new Response(
             JSON.stringify({
               success: false,
-              message: 'Invalid file paths - must be within project directory',
+              message,
             }),
             {
               status: 403,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              headers: jsonHeaders,
             }
           );
         }
@@ -75,7 +77,7 @@ Bun.serve({
             }),
             {
               status: 404,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              headers: jsonHeaders,
             }
           );
         }
@@ -87,10 +89,18 @@ Bun.serve({
           similarityThreshold,
         });
 
-        !result.success && console.error('Comparison result:', result);
+        if (result.success) {
+          console.log(result.message);
+        } else {
+          console.error(result);
+        }
+        if (result.diffImagePath) {
+          console.log(`Diff image written to: ${result.diffImagePath}`);
+        }
+
         return new Response(JSON.stringify(result), {
           status: result.success ? 200 : 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: jsonHeaders,
         });
       } catch (error) {
         console.error('Error processing image comparison:', error);
@@ -102,7 +112,7 @@ Bun.serve({
           }),
           {
             status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            headers: jsonHeaders,
           }
         );
       }
@@ -118,5 +128,5 @@ Bun.serve({
 console.log(`🚀 Image Comparison Server running on http://localhost:${PORT}`);
 console.log('Available endpoints:');
 console.log(
-  '  POST /compare    - Compare two images by path (JSON body: {"image1": "path", "image2": "path", "outputPath": "optional/comparison-diff", "similarityThreshold": 5})'
+  '  POST /compare    - Compare two images by path (JSON body: {"image1": "path", "image2": "path", "outputPath": "optional/comparison-diff-image.png", "similarityThreshold": 5})'
 );
