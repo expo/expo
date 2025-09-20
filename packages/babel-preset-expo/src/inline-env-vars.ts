@@ -31,11 +31,14 @@ export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core'))
         if (path.get('object').matchesPattern('process.env')) {
           const key = path.toComputedKey();
           if (
-            t.isStringLiteral(key) &&
+            (t.isStringLiteral(key) || t.isTemplateLiteral(key)) &&
             !isFirstInAssign(path) &&
-            key.value.startsWith('EXPO_PUBLIC_')
+            ((t.isStringLiteral(key) && key.value.startsWith('EXPO_PUBLIC_')) ||
+              (t.isTemplateLiteral(key) &&
+                key.quasis.length === 1 &&
+                key.quasis[0].value.raw.startsWith('EXPO_PUBLIC_')))
           ) {
-            const envVar = key.value;
+            const envVar = t.isStringLiteral(key) ? key.value : key.quasis[0].value.raw;
             debug(
               `${isProduction ? 'Inlining' : 'Referencing'} environment variable in %s: %s`,
               filename,
