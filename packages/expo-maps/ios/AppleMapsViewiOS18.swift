@@ -62,6 +62,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
     // swiftlint:disable:next closure_body_length
     MapReader { reader in
+      // swiftlint:disable:next closure_body_length
       Map(position: $state.mapCameraPosition, selection: $state.selection) {
         ForEach(props.markers) { marker in
           Marker(
@@ -114,6 +115,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       .simultaneousGesture(
         DragGesture(minimumDistance: 0)
+          // swiftlint:disable:next closure_body_length
           .onEnded { value in
             if let coordinate = reader.convert(value.location, from: .local) {
               // check if we hit a polygon and send an event
@@ -133,8 +135,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                   "lineWidth": hit.lineWidth,
                   "coordinates": coords
                 ])
-              }
-              else if let hit = props.circles.first(where: { circle in
+              } else if let hit = props.circles.first(where: { circle in
                 isTapInsideCircle(
                   tapCoordinate: coordinate,
                   circleCenter: circle.clLocationCoordinate2D,
