@@ -10,7 +10,7 @@
  */
 
 import type { DeltaResult, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
-import type { HmrModule } from '@expo/metro/metro-runtime/modules/types.flow';
+import type { HmrModule } from '@expo/metro/metro-runtime/modules/types';
 import { addParamsToDefineCall } from '@expo/metro/metro-transform-plugins';
 import jscSafeUrl from 'jsc-safe-url';
 import path from 'node:path';
