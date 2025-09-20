@@ -26,7 +26,7 @@ dependencies {
   implementation "androidx.media3:media3-ui:${androidxMedia3Version}"
   implementation "androidx.media3:media3-datasource-okhttp:${androidxMedia3Version}"
 
-  def fragment_version = "1.6.2"
+  def fragment_version = "1.8.9"
   implementation "androidx.fragment:fragment:$fragment_version"
   implementation "androidx.fragment:fragment-ktx:$fragment_version"
 }

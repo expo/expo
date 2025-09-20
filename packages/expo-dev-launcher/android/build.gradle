@@ -75,17 +75,17 @@ dependencies {
 
   implementation 'commons-io:commons-io:2.6'
 
-  implementation 'com.squareup.okhttp3:okhttp:3.14.9'
-  implementation 'com.google.code.gson:gson:2.8.6'
+  implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+  implementation 'com.google.code.gson:gson:2.13.2'
 
   // Fixes
   // Cannot access 'androidx....' which is a supertype of 'expo.modules.devmenu.DevMenuActivity'.
   // Check your module classpath for missing or conflicting dependencies
-  api "androidx.appcompat:appcompat:1.1.0"
+  api "androidx.appcompat:appcompat:1.7.1"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 
   api project.dependencies.platform("io.insert-koin:koin-bom:3.5.6")
@@ -96,7 +96,7 @@ dependencies {
   implementation "androidx.compose.foundation:foundation-android:$composeVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
   implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-  implementation "androidx.navigation:navigation-compose:2.9.0"
+  implementation "androidx.navigation:navigation-compose:2.9.4"
   implementation "com.google.android.gms:play-services-code-scanner:16.1.0"
   implementation "com.google.mlkit:barcode-scanning:17.3.0"
 
@@ -104,14 +104,14 @@ dependencies {
 
   implementation("com.apollographql.apollo:apollo-runtime:4.3.1")
 
-  implementation("com.composables:core:1.37.0")
+  implementation("com.composables:core:1.43.1")
 
-  testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'androidx.test:core-ktx:1.4.0'
-  testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation 'androidx.test:core-ktx:1.7.0'
+  testImplementation "com.google.truth:truth:1.4.5"
+  testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.2'
   testImplementation "io.insert-koin:koin-test"
   testImplementation "io.insert-koin:koin-test-junit4"
-  testImplementation 'io.mockk:mockk:1.12.3'
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation 'io.mockk:mockk:1.14.5'
+  testImplementation "org.robolectric:robolectric:4.16"
 }

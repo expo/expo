@@ -29,9 +29,9 @@ dependencies {
   implementation project(':expo-json-utils')
 
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'androidx.test:core:1.5.0'
-  testImplementation 'org.mockito:mockito-core:4.0.0'
-  testImplementation 'io.mockk:mockk:1.13.5'
-  testImplementation 'org.json:json:20230227'
-  testImplementation "com.google.truth:truth:1.1.2"
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation 'org.mockito:mockito-core:5.19.0'
+  testImplementation 'io.mockk:mockk:1.14.5'
+  testImplementation 'org.json:json:20250517'
+  testImplementation "com.google.truth:truth:1.4.5"
 }
