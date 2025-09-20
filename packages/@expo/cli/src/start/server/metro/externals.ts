@@ -24,6 +24,7 @@ export const NODE_STDLIB_MODULES: string[] = [
   'stream/consumers',
   'timers/promises',
   'util/types',
+  'sqlite',
 
   // Collect all builtin modules...
   ...(
