@@ -20,6 +20,7 @@ export * from './Section';
 export * from './ShareLink';
 export * from './Slider';
 export * from './Spacer';
+export * from './Stepper';
 export * from './Switch';
 export * from './Text';
 export * from './TextField';
