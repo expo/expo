@@ -10,6 +10,7 @@ const Menus = () => {
 
   const [palette, setPalette] = useState<string>('1');
   const [submenu, setSubmenu] = useState<string>('1');
+  const [isIconVisible, setIsIconVisible] = useState(false);
 
   const timeOptions = useMemo(
     () =>
@@ -28,6 +29,10 @@ const Menus = () => {
   useEffect(() => {
     console.log('Submenu:', submenu);
   }, [submenu]);
+
+  const toggleIconVisibility = () => {
+    setIsIconVisible(!isIconVisible);
+  }
 
   return (
     <ScrollView
@@ -225,6 +230,16 @@ const Menus = () => {
               console.log('Delete Pressed');
             }}
           />
+        </Link.Menu>
+      </Link>
+
+      <Link href="/one">
+        <Link.Trigger>Link.Menu with togglable icon</Link.Trigger>
+        <Link.Menu>
+          <Link.MenuAction title="Menu action" icon={isIconVisible ? "0.square" : undefined} onPress={() => console.log("ACME")}/>
+          <Link.Menu title="Submenu" icon={isIconVisible ? "checkmark" : undefined}>
+            <Link.MenuAction title={`${isIconVisible ? 'Hide' : 'Show'} icons`} onPress={toggleIconVisibility}/>
+          </Link.Menu>
         </Link.Menu>
       </Link>
     </ScrollView>
