@@ -16,6 +16,7 @@ final class ListProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var selectEnabled: Bool = true
   @Field var scrollEnabled: Bool = true
   @Field var editModeEnabled: Bool = false
+  @Field var scrollContentBackground: String = "visible"
   var onDeleteItem = EventDispatcher()
   var onMoveItem = EventDispatcher()
   var onSelectionChange = EventDispatcher()
@@ -55,7 +56,9 @@ struct ListView: ExpoSwiftUI.View {
       .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
       .environment(\.editMode, $editModeEnabled)
     if #available(iOS 16.0, tvOS 16.0, *) {
-      list.scrollDisabled(!props.scrollEnabled)
+      list
+        .scrollDisabled(!props.scrollEnabled)
+        .scrollContentBackground(props.scrollContentBackground == "hidden" ? .hidden : .visible)
     } else {
       list
     }

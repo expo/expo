@@ -11,6 +11,7 @@ internal final class FormViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPro
   @Field var modifiers: ModifierArray?
 
   @Field var scrollEnabled: Bool = true
+  @Field var scrollContentBackground: String = "visible"
 }
 
 internal struct FormView: ExpoSwiftUI.View {
@@ -23,7 +24,9 @@ internal struct FormView: ExpoSwiftUI.View {
     .modifier(CommonViewModifiers(props: props))
 
     if #available(iOS 16.0, tvOS 16.0, *) {
-      form.scrollDisabled(!props.scrollEnabled)
+      form
+        .scrollDisabled(!props.scrollEnabled)
+        .scrollContentBackground(props.scrollContentBackground == "hidden" ? .hidden : .visible)
     } else {
       form
     }

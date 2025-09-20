@@ -9,6 +9,7 @@ import {
   Switch,
   VStack,
 } from '@expo/ui/swift-ui';
+import { background } from '@expo/ui/swift-ui/modifiers';
 import { type SFSymbol } from 'expo-symbols';
 import * as React from 'react';
 
@@ -35,6 +36,7 @@ export default function ListScreen() {
   const [deleteEnabled, setDeleteEnabled] = React.useState<boolean>(true);
   const [moveEnabled, setMoveEnabled] = React.useState<boolean>(true);
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
+  const [hideScrollBackground, setHideScrollBackground] = React.useState<boolean>(false);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -44,6 +46,11 @@ export default function ListScreen() {
           <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
           <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
           <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
+          <Switch
+            value={hideScrollBackground}
+            label="Hide scroll content background"
+            onValueChange={setHideScrollBackground}
+          />
           <ColorPicker
             label="Item icon color"
             selection={color}
@@ -70,7 +77,9 @@ export default function ListScreen() {
           onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
           listStyle={listStyleOptions[selectedIndex ?? 0]}
           deleteEnabled={deleteEnabled}
-          selectEnabled={selectEnabled}>
+          selectEnabled={selectEnabled}
+          scrollContentBackground={hideScrollBackground ? 'hidden' : 'visible'}
+          modifiers={[background('#FF6B6B')]}>
           {data.map((item, index) => (
             <Label key={index} title={item.text} systemImage={item.systemImage} color={color} />
           ))}
