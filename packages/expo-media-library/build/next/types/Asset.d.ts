@@ -11,13 +11,13 @@ import { MediaType } from './MediaType';
 export declare class Asset {
     /**
      * Reinitialize an instance of an asset with a given ID.
-     * @param id - For Android, it is a `contentUri` (content://media/external/images/media/12345) and for iOS, it is `PHAsset` localIdentifier.
+     * @param id - For Android, it is a `contentUri` (content://media/external/images/media/12345) and for iOS, it is `PHAsset` localIdentifier URI.
      */
     constructor(id: string);
     /**
      * ID of the asset.
      * Can be used to re-instantiate an {@link Asset} later.
-     * For android it is a contentUri and PHAsset localIdentifier for iOS.
+     * For android it is a contentUri and PHAsset localIdentifier URI for iOS.
      */
     id: string;
     /**
