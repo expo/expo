@@ -48,6 +48,7 @@ export const ModalsRenderer = ({
             config.viewProps?.style,
           ]}
           sheetAllowedDetents={config.detents}
+          sheetLargestUndimmedDetentIndex={config.largestUndimmedDetentIndex}
           style={[
             StyleSheet.absoluteFill,
             {
