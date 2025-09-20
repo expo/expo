@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add `variableValue` prop to Image component for SF Symbols with variable color support ([#TBD](https://github.com/expo/expo/pull/TBD) by [@morellodev](https://github.com/morellodev))
 - Add SF symbol typings ([#39802](https://github.com/expo/expo/pull/39802) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
