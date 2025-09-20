@@ -117,7 +117,7 @@ class MediaController {
         return .commandFailed
       }
 
-      player.play(at: Float(player.currentRate > 0 ? player.currentTime : 1.0))
+      player.play(at: Float(player.currentRate > 0 ? player.currentRate : 1.0))
       return .success
     }
 
@@ -138,7 +138,7 @@ class MediaController {
       if player.isPlaying {
         player.ref.pause()
       } else {
-        player.play(at: Float(player.currentRate > 0 ? player.currentTime : 1.0))
+        player.play(at: Float(player.currentRate > 0 ? player.currentRate : 1.0))
       }
       return .success
     }
