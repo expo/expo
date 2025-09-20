@@ -61,7 +61,7 @@ type BabelPresetExpoPlatformOptions = {
     | {
         // TODO: Add full types and doc blocks.
         enableUseMemoCachePolyfill?: boolean;
-        compilationMode?: 'infer' | 'strict';
+        compilationMode?: 'infer' | 'syntax' | 'annotation' | 'all';
         panicThreshold?: 'none' | 'all_errors' | 'critical_errors';
         logger?: any;
         environment?: {
