@@ -11,6 +11,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var isLooping = false
   var shouldCorrectPitch = false
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
+  var isActiveForLockScreen = false
+  var metadata: Metadata?
   var currentRate: Float = 0.0
   let interval: Double
   var wasPlaying = false
@@ -62,6 +64,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     addPlaybackEndNotification()
     registerTimeObserver()
     ref.playImmediately(atRate: rate)
+
+    if isActiveForLockScreen {
+      MediaController.shared.updateNowPlayingInfo(for: self)
+    }
   }
 
   func setSamplingEnabled(enabled: Bool) {
@@ -102,12 +108,25 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ]
   }
 
+  func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil) {
+    self.metadata = metadata
+    if active {
+      MediaController.shared.setActivePlayer(self)
+    } else {
+      MediaController.shared.setActivePlayer(nil)
+    }
+  }
+
   func updateStatus(with dict: [String: Any]) {
     var arguments = currentStatus()
     arguments.merge(dict) { _, new in
       new
     }
     self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
+
+    if isActiveForLockScreen {
+      MediaController.shared.updateNowPlayingInfo(for: self)
+    }
   }
 
   func seekTo(seconds: Double, toleranceMillisBefore: Double? = nil, toleranceMillisAfter: Double? = nil) async {
@@ -296,6 +315,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     if samplingEnabled {
       samplingEnabled = false
       uninstallTap()
+    }
+
+    if isActiveForLockScreen {
+      MediaController.shared.setActivePlayer(nil)
     }
 
     audioProcessor?.invalidate()
