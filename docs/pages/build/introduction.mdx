@@ -1,3 +1,2301 @@
+
+import React, { useState, useEffect } from "react";
+import { Animal } from "@/entities/Animal";
+import { ProducaoLeite } from "@/entities/ProducaoLeite";
+import { TratamentoMedicamento } from "@/entities/TratamentoMedicamento";
+import { ConfiguracaoPrecos } from "@/entities/ConfiguracaoPrecos";
+import { ConfiguracaoPropriedade } from "@/entities/ConfiguracaoPropriedade";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ClipboardList, Droplets, AlertTriangle, DollarSign, TrendingUp, Calendar, TrendingDown } from "lucide-react"; // Added TrendingDown
+import { format, startOfMonth, endOfMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+import StatsCard from "../components/dashboard/StatsCard";
+import ProducaoDiaria from "../components/dashboard/ProducaoDiaria";
+import AlertasTratamentos from "../components/dashboard/AlertasTratamentos";
+import ResumoFinanceiro from "../components/dashboard/ResumoFinanceiro";
+
+export default function Dashboard() {
+  const [animais, setAnimais] = useState([]);
+  const [producaoHoje, setProducaoHoje] = useState([]);
+  const [tratamentosAtivos, setTratamentosAtivos] = useState([]);
+  const [configuracaoPrecos, setConfiguracaoPrecos] = useState(null);
+  const [propriedade, setPropriedade] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    setIsLoading(true);
+    try {
+      const [
+        animaisData,
+        producaoData,
+        tratamentosData,
+        configData,
+        propriedadeData
+      ] = await Promise.all([
+        Animal.filter({ ativo: true }),
+        ProducaoLeite.filter({ 
+          data_producao: format(new Date(), 'yyyy-MM-dd') 
+        }),
+        TratamentoMedicamento.filter({ status: 'ativo' }),
+ 
+import React, { useState, useEffect } from "react";
+import { Animal } from "@/entities/Animal";
+import { UploadFile } from "@/integrations/Core";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Plus, 
+  Search, 
+  Calendar, 
+  Weight, 
+  Heart,
+  Camera,
+  Edit,
+  Eye,
+  Filter
+} from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function Animais() {
+  const [animais, setAnimais] = useState([]);
+  const [filteredAnimais, setFilteredAnimais] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterSexo, setFilterSexo] = useState("todos");
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    nome: "",
+ 
+import React, { useState, useEffect } from "react";
+import { Animal } from "@/entities/Animal";
+import { ProducaoLeite } from "@/entities/ProducaoLeite";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import {
+  Plus,
+  Droplets,
+  Calendar,
+  TrendingUp,
+  BarChart3,
+  Filter,
+  Edit,
+  Trash2
+} from "lucide-react";
+import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function Producao() {
+  const [animais, setAnimais] = useState([]);
+  const [producoes, setProducoes] = useState([]);
+  const [filteredProducoes, setFilteredProducoes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [filterPeriodo, setFilterPeriodo] = useState("hoje");
+  const [selectedAnimal, setSelectedAnimal] = useState("");
+  const [formData, setFormData] = useState({
+    animal_id: "",
+    data_producao: format(new Date(), 'yyyy-MM-dd'),
+ 
+import React, { useState, useEffect } from "react";
+import { Medicamento } from "@/entities/Medicamento";
+import { TratamentoMedicamento } from "@/entities/TratamentoMedicamento";
+import { Animal } from "@/entities/Animal";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Plus,
+  Pill,
+  AlertTriangle,
+  Package,
+  Calendar,
+  DollarSign,
+  Activity
+} from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function Medicamentos() {
+  const [medicamentos, setMedicamentos] = useState([]);
+  const [tratamentos, setTratamentos] = useState([]);
+  const [animais, setAnimais] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showMedicamentoDialog, setShowMedicamentoDialog] = useState(false);
+  const [showTratamentoDialog, setShowTratamentoDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState("estoque");
+
+  const [medicamentoForm, setMedicamentoForm] = useState({
+ 
+import React, { useState, useEffect } from "react";
+import { Animal } from "@/entities/Animal";
+import { ProducaoLeite } from "@/entities/ProducaoLeite";
+import { ConfiguracaoPrecos } from "@/entities/ConfiguracaoPrecos";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  DollarSign, 
+  BarChart3, 
+  Calendar,
+  Target,
+  AlertCircle
+} from "lucide-react";
+import { format, startOfMonth, endOfMonth, subMonths, startOfWeek, endOfWeek } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function Analises() {
+  const [animais, setAnimais] = useState([]);
+  const [producoes, setProducoes] = useState([]);
+  const [configuracaoPrecos, setConfiguracaoPrecos] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [periodoSelecionado, setPeriodoSelecionado] = useState("mes_atual");
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    setIsLoading(true);
+    try {
+      const [animaisData, producoesData, configData] = await Promise.all([
+        Animal.filter({ ativo: true }),
+        ProducaoLeite.list('-data_producao', 1000),
+        ConfiguracaoPrecos.list('-created_date', 1)
+      ]);
+      
+      setAnimais(animaisData);
+      setProducoes(producoesData);
+      setConfiguracaoPrecos(configData[0] || null);
+ import React, { useState, useEffect } from "react";
+import { ConfiguracaoPrecos } from "@/entities/ConfiguracaoPrecos";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Settings, DollarSign, Calendar, Save, Wheat } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function Configuracoes() {
+  const [configuracao, setConfiguracao] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    preco_leite_litro: "",
+    custo_racao_kg: "",
+    racao_por_litro: "",
+    outros_custos_diarios: "",
+    mes_referencia: format(new Date(), 'yyyy-MM-01')
+  });
+
+  useEffect(() => {
+    carregarConfiguracoes();
+  }, []);
+
+  const carregarConfiguracoes = async () => {
+    setIsLoading(true);
+    try {
+      const configs = await ConfiguracaoPrecos.list('-created_date', 1);
+      if (configs.length > 0) {
+        const config = configs[0];
+        setConfiguracao(config);
+        setFormData({
+          preco_leite_litro: config.preco_leite_litro?.toString() || "",
+          custo_racao_kg: config.custo_racao_kg?.toString() || "",
+          racao_por_litro: config.racao_por_litro?.toString() || "",
+          outros_custos_diarios: config.outros_custos_diarios?.toString() || "",
+          mes_referencia: config.mes_referencia || format(new Date(), 'yyyy-MM-01')
+        });
+      }
+ import React, { useState, useEffect } from "react";
+import { ConfiguracaoPrecos } from "@/entities/ConfiguracaoPrecos";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Settings, DollarSign, Calendar, Save, Wheat } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function Configuracoes() {
+  const [configuracao, setConfiguracao] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    preco_leite_litro: "",
+    custo_racao_kg: "",
+    racao_por_litro: "",
+    outros_custos_diarios: "",
+    mes_referencia: format(new Date(), 'yyyy-MM-01')
+  });
+
+  useEffect(() => {
+    carregarConfiguracoes();
+  }, []);
+
+  const carregarConfiguracoes = async () => {
+    setIsLoading(true);
+    try {
+      const configs = await ConfiguracaoPrecos.list('-created_date', 1);
+      if (configs.length > 0) {
+        const config = configs[0];
+        setConfiguracao(config);
+        setFormData({
+          preco_leite_litro: config.preco_leite_litro?.toString() || "",
+          custo_racao_kg: config.custo_racao_kg?.toString() || "",
+          racao_por_litro: config.racao_por_litro?.toString() || "",
+          outros_custos_diarios: config.outros_custos_diarios?.toString() || "",
+          mes_referencia: config.mes_referencia || format(new Date(), 'yyyy-MM-01')
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao carregar configurações:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const dadosParaSalvar = {
+        preco_leite_litro: parseFloat(formData.preco_leite_litro),
+        custo_racao_kg: parseFloat(formData.custo_racao_kg),
+        racao_por_litro: parseFloat(formData.racao_por_litro),
+        outros_custos_diarios: parseFloat(formData.outros_custos_diarios || 0),
+        mes_referencia: formData.mes_referencia
+      };
+
+      await ConfiguracaoPrecos.create(dadosParaSalvar);
+      await carregarConfiguracoes();
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      console.error("Erro ao salvar configurações:", error);
+    }
+    setIsSubmitting(false);
+  };
+
+  const calcularExemplo = () => {
+    const precoLeite = parseFloat(formData.preco_leite_litro) || 0;
+    const custoRacao = parseFloat(formData.custo_racao_kg) || 0;
+    const racaoPorLitro = parseFloat(formData.racao_por_litro) || 0;
+    const outrosCustos = parseFloat(formData.outros_custos_diarios) || 0;
+
+    const litrosExemplo = 20; // 20 litros como exemplo
+    const receitaExemplo = litrosExemplo * precoLeite;
+    const custoRacaoExemplo = litrosExemplo * (racaoPorLitro / 1000) * custoRacao;
+    const custoTotalExemplo = custoRacaoExemplo + outrosCustos;
+    const lucroExemplo = receitaExemplo - custoTotalExemplo;
+    const margemExemplo = receitaExemplo > 0 ? (lucroExemplo / receitaExemplo) * 100 : 0;
+
+    return {
+      receita: receitaExemplo,
+      custoRacao: custoRacaoExemplo,
+      custoTotal: custoTotalExemplo,
+      lucro: lucroExemplo,
+      margem: margemExemplo
+    };
+  };
+
+  const exemplo = calcularExemplo();
+
+  return (
+    <div className="p-4 md:p-8 space-y-6">
+      {/* Cabeçalho */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Configurações</h1>
+        <p className="text-gray-600">Defina os preços e custos para cálculos financeiros</p>
+      </div>
+
+      {showSuccess && (
+        <Alert className="border-green-200 bg-green-50">
+          <Save className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">
+            Configurações salvas com sucesso!
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Formulário de Configurações */}
+        <div className="lg:col-span-2">
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5 text-blue-600" />
+                Configurações de Preços e Custos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Array(4).fill(0).map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                    ))}
+                  </div>
+                  <Skeleton className="h-10 w-32" />
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="preco_leite_litro" className="flex items-center gap-2">
+                        <DollarSign className="w-4 h-4" />
+                        Preço do Leite (R$/litro)
+                      </Label>
+                      <Input
+                        id="preco_leite_litro"
+                        type="number"
+                        step="0.01"
+                        value={formData.preco_leite_litro}
+                        onChange={(e) => setFormData({...formData, preco_leite_litro: e.target.value})}
+                        placeholder="2.85"
+                        required
+                      />
+                      <p className="text-xs text-gray-500">Preço de venda do litro de leite</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="custo_racao_kg" className="flex items-center gap-2">
+                        <Wheat className="w-4 h-4" />
+                        Custo da Ração (R$/kg)
+                      </Label>
+                      <Input
+                        id="custo_racao_kg"
+                        type="number"
+                        step="0.01"
+                        value={formData.custo_racao_kg}
+                        onChange={(e) => setFormData({...formData, custo_racao_kg: e.target.value})}
+                        placeholder="1.20"
+                        required
+                      />
+                      <p className="text-xs text-gray-500">Custo por kg da ração concentrada</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="racao_por_litro">Ração por Litro (gramas)</Label>
+                      <Input
+                        id="racao_por_litro"
+                        type="number"
+                        value={formData.racao_por_litro}
+                        onChange={(e) => setFormData({...formData, racao_por_litro: e.target.value})}
+                        placeholder="450"
+                        required
+                      />
+                      <p className="text-xs text-gray-500">Quantos gramas de ração por litro de leite</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="outros_custos_diarios">Outros Custos Diários (R$/animal)</Label>
+                      <Input
+                        id="outros_custos_diarios"
+                        type="number"
+                        step="0.01"
+                        value={formData.outros_custos_diarios}
+                        onChange={(e) => setFormData({...formData, outros_custos_diarios: e.target.value})}
+                        placeholder="3.50"
+                      />
+                      <p className="text-xs text-gray-500">Outros custos por animal por dia (opcional)</p>
+                    </div>
+
+                    <div className="md:col-span-2 space-y-2">
+                      <Label htmlFor="mes_referencia" className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        Mês de Referência
+                      </Label>
+                      <Input
+                        id="mes_referencia"
+                        type="month"
+                        value={formData.mes_referencia}
+                        onChange={(e) => setFormData({...formData, mes_referencia: e.target.value})}
+                        required
+                      />
+                      <p className="text-xs text-gray-500">Mês de referência para estes preços</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Salvando...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4 mr-2" />
+                          Salvar Configurações
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Simulador */}
+        <div className="space-y-6">
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-green-600" />
+                Simulação (20L por animal)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Receita:</span>
+                  <span className="font-semibold text-green-600">
+                    R$ {exemplo.receita.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Custo Ração:</span>
+                  <span className="font-semibold text-orange-600">
+                    R$ {exemplo.custoRacao.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Custo Total:</span>
+                  <span className="font-semibold text-red-600">
+                    R$ {exemplo.custoTotal.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="border-t pt-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-900">Lucro:</span>
+                    <span className={`font-bold ${exemplo.lucro >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      R$ {exemplo.lucro.toFixed(2)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-sm font-medium text-gray-900">Margem:</span>
+                    <span className={`font-bold ${exemplo.margem >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {exemplo.margem.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Configuração Atual */}
+          {configuracao && (
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">Configuração Atual</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Leite:</span>
+                    <span>R$ {configuracao.preco_leite_litro?.toFixed(2)}/L</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Ração:</span>
+                    <span>R$ {configuracao.custo_racao_kg?.toFixed(2)}/kg</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Fórmula:</span>
+                    <span>{configuracao.racao_por_litro}g/L</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Outros custos:</span>
+                    <span>R$ {configuracao.outros_custos_diarios?.toFixed(2)}/dia</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500 mt-3 pt-2 border-t">
+                    <span>Atualizado em:</span>
+                    <span>
+                      {format(new Date(configuracao.mes_referencia), "MM/yyyy", { locale: ptBR })}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+import React, { useState, useEffect } from "react";
+import { Animal } from "@/entities/Animal";
+import { ProducaoLeite } from "@/entities/ProducaoLeite";
+import { TratamentoMedicamento } from "@/entities/TratamentoMedicamento";
+import { Medicamento } from "@/entities/Medicamento";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Wind, Search, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+
+import AnimalCardOrdenha from "../components/ordenha/AnimalCardOrdenha";
+import DetalheAnimalOrdenha from "../components/ordenha/DetalheAnimalOrdenha";
+
+export default function SalaDeOrdenha() {
+  const [vacas, setVacas] = useState([]);
+  const [producaoHoje, setProducaoHoje] = useState([]);
+  const [tratamentosAtivos, setTratamentosAtivos] = useState([]);
+  const [medicamentos, setMedicamentos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedAnimal, setSelectedAnimal] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [animalDetails, setAnimalDetails] = useState(null); // Estado para detalhes
+
+  useEffect(() => {
+    carregarDadosIniciais();
+  }, []);
+
+  const carregarDadosIniciais = async () => {
+    setIsLoading(true);
+    try {
+      const [animaisData, producaoHojeData, tratamentosData, medicamentosData] = await Promise.all([
+        Animal.filter({ ativo: true, sexo: 'femea' }),
+        ProducaoLeite.filter({ data_producao: new Date().toISOString().split('T')[0] }),
+        TratamentoMedicamento.filter({ status: 'ativo' }),
+        Medicamento.list()
+      ]);
+      
+      setVacas(animaisData);
+      setProducaoHoje(producaoHojeData);
+      setTratamentosAtivos(tratamentosData);
+      setMedicamentos(medicamentosData);
+    } catch (error) {
+      console.error("Erro ao carregar dados da sala de ordenha:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const handleAnimalSelect = async (animal) => {
+    setSelectedAnimal(animal);
+    
+    // Correção: Carrega o histórico de produção do animal selecionado
+    try {
+      // Assuming ProducaoLeite.filter can take sorting and limit arguments
+      // This might need adjustment based on the actual ORM/API implementation.
+      // For demonstration, we assume it can filter by animal_id, sort by data_producao desc, and limit to 30 records.
+      const historico = await ProducaoLeite.filter({ animal_id: animal.id }, '-data_producao', 30);
+      const tratamento = getAnimalTratamento(animal.id);
+      setAnimalDetails({
+        ...animal,
+        historicoProducao: historico,
+        tratamentoAtivo: tratamento
+      });
+    } catch (error) {
+      console.error("Erro ao buscar detalhes do animal:", error);
+      setAnimalDetails(animal); // Fallback para dados básicos
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedAnimal(null);
+    setAnimalDetails(null); // Limpa os detalhes ao fechar
+  };
+
+  const handleSuccess = () => {
+    carregarDadosIniciais();
+  };
+
+  const getAnimalTratamento = (animalId) => {
+    return tratamentosAtivos.find(t => t.animal_id === animalId);
+  };
+  
+  const filteredVacas = vacas.filter(vaca => 
+    vaca.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="p-4 md:p-8 space-y-6">
+      {/* Cabeçalho */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <Wind className="w-8 h-8 text-blue-600" />
+            Sala de Ordenha
+          </h1>
+          <p className="text-gray-600">Selecione um animal para registrar a ordenha e cuidados.</p>
+        </div>
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Buscar por nome do animal..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+      
+      {/* Fila de Animais */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {isLoading ? (
+          Array(5).fill(0).map((_, i) => (
+            <Skeleton key={i} className="aspect-[3/4] rounded-2xl" />
+          ))
+        ) : (
+          filteredVacas.map((vaca) => {
+            const tratamento = getAnimalTratamento(vaca.id);
+            const ordenhadoHoje = producaoHoje.some(p => p.animal_id === vaca.id);
+            
+            return (
+              <AnimalCardOrdenha 
+                key={vaca.id}
+                animal={vaca}
+                onClick={() => handleAnimalSelect(vaca)}
+                ordenhadoHoje={ordenhadoHoje}
+                temTratamento={!!tratamento}
+                tratamento={tratamento}
+              />
+            );
+          })
+        )}
+      </div>
+      
+      {filteredVacas.length === 0 && !isLoading && (
+        <div className="col-span-full text-center py-12">
+          <p className="text-gray-500">Nenhuma vaca encontrada.</p>
+        </div>
+      )}
+
+      {/* Dialog com Detalhes do Animal */}
+      <Dialog open={!!selectedAnimal} onOpenChange={(isOpen) => !isOpen && handleCloseDialog()}>
+        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto p-0">
+          {animalDetails ? ( // Usa o estado com todos os detalhes
+            <>
+              <DialogHeader className="p-6 pb-0">
+                <DialogTitle className="text-2xl">
+                  {animalDetails.nome}
+                </DialogTitle>
+              </DialogHeader>
+              <DetalheAnimalOrdenha
+                animal={animalDetails} // Passa animalDetails
+                medicamentos={medicamentos}
+                onSuccess={handleSuccess}
+              />
+            </>
+          ) : (
+            <div className="p-6">
+              <Skeleton className="h-8 w-1/2 mb-4" />
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-8 w-full mt-4" />
+              <Skeleton className="h-24 w-full mt-4" />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+import React, { useState, useEffect } from "react";
+import { ConfiguracaoPropriedade } from "@/entities/ConfiguracaoPropriedade";
+import { Piquete } from "@/entities/Piquete";
+import { Animal } from "@/entities/Animal";
+import { CalculadoraRacao } from "@/entities/CalculadoraRacao";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Home,
+  MapPin,
+  Plus,
+  Calculator,
+  AlertTriangle,
+  Trash2,
+  Edit,
+  Save
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+export default function GestaoPropriedade() {
+  const [propriedade, setPropriedade] = useState(null);
+  const [piquetes, setPiquetes] = useState([]);
+  const [animais, setAnimais] = useState([]);
+  const [racoes, setRacoes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPropriedadeForm, setShowPropriedadeForm] = useState(false);
+  const [showPiqueteDialog, setShowPiqueteDialog] = useState(false);
+  const [showRacaoDialog, setShowRacaoDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [propriedadeForm, setPropriedadeForm] = useState({
+    nome_propriedade: "",
+    endereco: "",
+    area_total_hectares: "",
+    telefone: "",
+    email: ""
+  });
+
+  const [piqueteForm, setPiqueteForm] = useState({
+    nome: "",
+    area_hectares: "",
+    capacidade_animais: "",
+    tipo_pastagem: "",
+    dias_descanso_recomendado: "30"
+  });
+
+  const [racaoForm, setRacaoForm] = useState({
+    nome_receita: "",
+    ingredientes: [{ nome: "", quantidade_kg: "", preco_por_kg: "" }]
+  });
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    setIsLoading(true);
+    try {
+      const [propriedadeData, piquetesData, animaisData, racoesData] = await Promise.all([
+        ConfiguracaoPropriedade.list('-created_date', 1),
+        Piquete.list('-created_date'),
+        Animal.filter({ ativo: true }),
+        CalculadoraRacao.list('-created_date')
+      ]);
+
+      setPropriedade(propriedadeData[0] || null);
+      setPiquetes(piquetesData);
+      setAnimais(animaisData);
+      setRacoes(racoesData);
+      
+      if (propriedadeData[0]) {
+        setPropriedadeForm(propriedadeData[0]);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const handlePropriedadeSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const dadosParaSalvar = {
+        ...propriedadeForm,
+        area_total_hectares: parseFloat(propriedadeForm.area_total_hectares) || 0
+      };
+
+      await ConfiguracaoPropriedade.create(dadosParaSalvar);
+      await carregarDados();
+      setShowPropriedadeForm(false);
+    } catch (error) {
+      console.error("Erro ao salvar propriedade:", error);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handlePiqueteSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const dadosParaSalvar = {
+        ...piqueteForm,
+        area_hectares: parseFloat(piqueteForm.area_hectares),
+        capacidade_animais: parseInt(piqueteForm.capacidade_animais),
+        dias_descanso_recomendado: parseInt(piqueteForm.dias_descanso_recomendado),
+        animais_atuais: [],
+        status: "disponivel"
+      };
+
+      await Piquete.create(dadosParaSalvar);
+      await carregarDados();
+      resetPiqueteForm();
+      setShowPiqueteDialog(false);
+    } catch (error) {
+      console.error("Erro ao salvar piquete:", error);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleRacaoSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const ingredientesValidos = racaoForm.ingredientes.filter(ing => 
+        ing.nome && ing.quantidade_kg && ing.preco_por_kg
+      );
+
+      const custoTotal = ingredientesValidos.reduce((sum, ing) => 
+        sum + (parseFloat(ing.quantidade_kg) * parseFloat(ing.preco_por_kg)), 0
+      );
+      const pesoTotal = ingredientesValidos.reduce((sum, ing) => 
+        sum + parseFloat(ing.quantidade_kg), 0
+      );
+      const custoPorKg = pesoTotal > 0 ? custoTotal / pesoTotal : 0;
+
+      const dadosParaSalvar = {
+        nome_receita: racaoForm.nome_receita,
+        ingredientes: ingredientesValidos.map(ing => ({
+          ...ing,
+          quantidade_kg: parseFloat(ing.quantidade_kg),
+          preco_por_kg: parseFloat(ing.preco_por_kg)
+        })),
+        custo_total: custoTotal,
+        peso_total_kg: pesoTotal,
+        custo_por_kg: custoPorKg
+      };
+
+      await CalculadoraRacao.create(dadosParaSalvar);
+      await carregarDados();
+      resetRacaoForm();
+      setShowRacaoDialog(false);
+    } catch (error) {
+      console.error("Erro ao salvar receita de ração:", error);
+    }
+    setIsSubmitting(false);
+  };
+import React, { useState, useEffect } from "react";
+import { ConfiguracaoPropriedade } from "@/entities/ConfiguracaoPropriedade";
+import { Piquete } from "@/entities/Piquete";
+import { Animal } from "@/entities/Animal";
+import { CalculadoraRacao } from "@/entities/CalculadoraRacao";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Home,
+  MapPin,
+  Plus,
+  Calculator,
+  AlertTriangle,
+  Trash2,
+  Edit,
+  Save
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+export default function GestaoPropriedade() {
+  const [propriedade, setPropriedade] = useState(null);
+  const [piquetes, setPiquetes] = useState([]);
+  const [animais, setAnimais] = useState([]);
+  const [racoes, setRacoes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPropriedadeForm, setShowPropriedadeForm] = useState(false);
+  const [showPiqueteDialog, setShowPiqueteDialog] = useState(false);
+  const [showRacaoDialog, setShowRacaoDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [propriedadeForm, setPropriedadeForm] = useState({
+    nome_propriedade: "",
+    endereco: "",
+    area_total_hectares: "",
+    telefone: "",
+    email: ""
+  });
+
+  const [piqueteForm, setPiqueteForm] = useState({
+    nome: "",
+    area_hectares: "",
+    capacidade_animais: "",
+    tipo_pastagem: "",
+    dias_descanso_recomendado: "30"
+  });
+
+  const [racaoForm, setRacaoForm] = useState({
+    nome_receita: "",
+    ingredientes: [{ nome: "", quantidade_kg: "", preco_por_kg: "" }]
+  });
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    setIsLoading(true);
+    try {
+      const [propriedadeData, piquetesData, animaisData, racoesData] = await Promise.all([
+        ConfiguracaoPropriedade.list('-created_date', 1),
+        Piquete.list('-created_date'),
+        Animal.filter({ ativo: true }),
+        CalculadoraRacao.list('-created_date')
+      ]);
+
+      setPropriedade(propriedadeData[0] || null);
+      setPiquetes(piquetesData);
+      setAnimais(animaisData);
+      setRacoes(racoesData);
+      
+      if (propriedadeData[0]) {
+        setPropriedadeForm(propriedadeData[0]);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const handlePropriedadeSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const dadosParaSalvar = {
+        ...propriedadeForm,
+        area_total_hectares: parseFloat(propriedadeForm.area_total_hectares) || 0
+      };
+
+      await ConfiguracaoPropriedade.create(dadosParaSalvar);
+      await carregarDados();
+      setShowPropriedadeForm(false);
+    } catch (error) {
+      console.error("Erro ao salvar propriedade:", error);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handlePiqueteSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const dadosParaSalvar = {
+        ...piqueteForm,
+        area_hectares: parseFloat(piqueteForm.area_hectares),
+        capacidade_animais: parseInt(piqueteForm.capacidade_animais),
+        dias_descanso_recomendado: parseInt(piqueteForm.dias_descanso_recomendado),
+        animais_atuais: [],
+        status: "disponivel"
+      };
+
+      await Piquete.create(dadosParaSalvar);
+      await carregarDados();
+      resetPiqueteForm();
+      setShowPiqueteDialog(false);
+    } catch (error) {
+      console.error("Erro ao salvar piquete:", error);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleRacaoSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const ingredientesValidos = racaoForm.ingredientes.filter(ing => 
+        ing.nome && ing.quantidade_kg && ing.preco_por_kg
+      );
+
+      const custoTotal = ingredientesValidos.reduce((sum, ing) => 
+        sum + (parseFloat(ing.quantidade_kg) * parseFloat(ing.preco_por_kg)), 0
+      );
+      const pesoTotal = ingredientesValidos.reduce((sum, ing) => 
+        sum + parseFloat(ing.quantidade_kg), 0
+      );
+      const custoPorKg = pesoTotal > 0 ? custoTotal / pesoTotal : 0;
+
+      const dadosParaSalvar = {
+        nome_receita: racaoForm.nome_receita,
+        ingredientes: ingredientesValidos.map(ing => ({
+          ...ing,
+          quantidade_kg: parseFloat(ing.quantidade_kg),
+          preco_por_kg: parseFloat(ing.preco_por_kg)
+        })),
+        custo_total: custoTotal,
+        peso_total_kg: pesoTotal,
+        custo_por_kg: custoPorKg
+      };
+
+      await CalculadoraRacao.create(dadosParaSalvar);
+      await carregarDados();
+      resetRacaoForm();
+      setShowRacaoDialog(false);
+    } catch (error) {
+      console.error("Erro ao salvar receita de ração:", error);
+    }
+    setIsSubmitting(false);
+  };
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const colorVariants = {
+  green: {
+    bg: "bg-green-50",
+    icon: "bg-green-500 text-white",
+    text: "text-green-600",
+    value: "text-green-700"
+  },
+  blue: {
+    bg: "bg-blue-50", 
+    icon: "bg-blue-500 text-white",
+    text: "text-blue-600",
+    value: "text-blue-700"
+  },
+  emerald: {
+    bg: "bg-emerald-50",
+    icon: "bg-emerald-500 text-white", 
+    text: "text-emerald-600",
+    value: "text-emerald-700"
+  },
+  red: {
+    bg: "bg-red-50",
+    icon: "bg-red-500 text-white",
+    text: "text-red-600",
+    value: "text-red-700"
+  },
+  orange: {
+    bg: "bg-orange-50",
+    icon: "bg-orange-500 text-white",
+    text: "text-orange-600",
+    value: "text-orange-700"
+  },
+  gray: {
+    bg: "bg-gray-50",
+    icon: "bg-gray-400 text-white",
+    text: "text-gray-600",
+    value: "text-gray-700"
+  }
+};
+
+export default function StatsCard({ title, value, icon: Icon, color = "gray", isLoading }) {
+  const variant = colorVariants[color];
+
+  if (isLoading) {
+    return (
+      <Card className="border-0 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-12 w-12 rounded-xl" />
+            <div className="flex-1">
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={`border-0 shadow-sm ${variant.bg} transition-all hover:shadow-md cursor-pointer group`}>
+      <CardContent className="p-6">
+        <div className="flex items-center gap-4">
+          <div className={`p-3 rounded-xl ${variant.icon} group-hover:scale-110 transition-transform`}>
+            <Icon className="w-6 h-6" />
+          </div>
+          <div className="flex-1">
+            <p className={`text-sm font-medium ${variant.text}`}>{title}</p>
+            <p className={`text-2xl font-bold ${variant.value}`}>{value}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Droplets, Plus, RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function ProducaoDiaria({ producaoHoje, animais, isLoading, onRefresh }) {
+  const getAnimalNome = (animalId) => {
+    const animal = animais.find(a => a.id === animalId);
+    return animal ? animal.nome : 'Animal não encontrado';
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <Skeleton className="h-6 w-48 mb-2" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <Skeleton className="h-10 w-32" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {Array(3).fill(0).map((_, i) => (
+            <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div>
+                  <Skeleton className="h-4 w-24 mb-1" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+              <Skeleton className="h-6 w-16" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="border-0 shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Droplets className="w-5 h-5 text-blue-600" />
+          </div>
+          <div>
+            <CardTitle className="text-xl">Produção de Hoje</CardTitle>
+            <p className="text-sm text-gray-500">
+              {producaoHoje.length} registros de {animais.length} animais
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onRefresh}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Atualizar
+          </Button>
+          <Link to={createPageUrl("Producao")}>
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Registrar
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {producaoHoje.length > 0 ? (
+          <div className="space-y-3">
+            {producaoHoje.map((producao) => (
+              <div key={producao.id} className="flex items-center justify-between p-4 bg-white border rounded-xl hover:shadow-sm transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <Droplets className="w-5 h-5 text-green-600" />
+ import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Calendar, Pill } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function AlertasTratamentos({ tratamentosAtivos, isLoading }) {
+  if (isLoading) {
+    return (
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-8 w-8 rounded-lg" />
+            <div>
+              <Skeleton className="h-6 w-32 mb-1" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {Array(2).fill(0).map((_, i) => (
+            <div key={i} className="p-4 border rounded-lg">
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-3 w-32 mb-2" />
+              <Skeleton className="h-5 w-16" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="border-0 shadow-sm">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg ${tratamentosAtivos.length > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>
+            <AlertTriangle className={`w-5 h-5 ${tratamentosAtivos.length > 0 ? 'text-red-600' : 'text-gray-500'}`} />
+          </div>
+          <div>
+            <CardTitle className="text-lg">Tratamentos Ativos</CardTitle>
+            <p className="text-sm text-gray-500">
+              {tratamentosAtivos.length} em andamento
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {tratamentosAtivos.length > 0 ? (
+          <div className="space-y-3">
+            {tratamentosAtivos.slice(0, 3).map((tratamento) => (
+              <div key={tratamento.id} className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start justify-between mb-2">
+                  <p className="font-semibold text-red-900">{tratamento.motivo}</p>
+                  <Badge variant="destructive" className="text-xs">
+                    Ativo
+                  </Badge>
+                </div>
+                <p className="text-sm text-red-700 mb-1">Animal ID: {tratamento.animal_id}</p>
+                <p className="text-xs text-red-600">
+                  <Calendar className="w-3 h-3 inline mr-1" />
+                  Até {format(new Date(tratamento.data_fim), "dd/MM", { locale: ptBR })}
+                </p>
+              </div>
+            ))}
+            {tratamentosAtivos.length > 3 && (
+              <p className="text-sm text-gray-500 text-center">
+                +{tratamentosAtivos.length - 3} outros tratamentos
+              </p>
+            )}
+            <Link to={createPageUrl("Medicamentos")} className="block">
+              <Button variant="outline" className="w-full">
+                <Pill className="w-4 h-4 mr-2" />
+                Ver Todos os Medicamentos
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <AlertTriangle className="w-6 h-6 text-green-600" />
+            </div>
+            <p className="text-green-700 font-medium mb-1">Tudo sob controle!</p>
+            <p className="text-sm text-gray-500">Nenhum tratamento ativo</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function ResumoFinanceiro({ producaoHoje, animais, configuracaoPrecos, isLoading }) {
+  const calcularResumo = () => {
+    if (!configuracaoPrecos) return null;
+
+    const totalLitros = producaoHoje.reduce((sum, p) => sum + p.quantidade_litros, 0);
+    const receitaHoje = totalLitros * configuracaoPrecos.preco_leite_litro;
+    
+    const custoRacaoHoje = totalLitros * (configuracaoPrecos.racao_por_litro / 1000) * configuracaoPrecos.custo_racao_kg;
+    const outrosCustos = animais.length * (configuracaoPrecos.outros_custos_diarios || 0);
+    const custoTotal = custoRacaoHoje + outrosCustos;
+    
+    const lucroHoje = receitaHoje - custoTotal;
+    const margemLucro = receitaHoje > 0 ? (lucroHoje / receitaHoje) * 100 : 0;
+
+    return {
+      totalLitros,
+      receitaHoje,
+      custoTotal,
+      lucroHoje,
+      margemLucro
+    };
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-8 w-8 rounded-lg" />
+            <div>
+              <Skeleton className="h-6 w-32 mb-1" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            {Array(4).fill(0).map((_, i) => (
+              <div key={i} className="text-center p-4 bg-gray-50 rounded-lg">
+                <Skeleton className="h-4 w-16 mx-auto mb-2" />
+                <Skeleton className="h-6 w-12 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const resumo = calcularResumo();
+
+  return (
+    <Card className="border-0 shadow-sm">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-green-100 rounded-lg">
+            <DollarSign className="w-5 h-5 text-green-600" />
+          </div>
+          <div>
+            <CardTitle className="text-lg">Resumo Financeiro de Hoje</CardTitle>
+            <p className="text-sm text-gray-500">
+              {configuracaoPrecos ? `R$ ${configuracaoPrecos.preco_leite_litro.toFixed(2)}/L` : 'Configure os preços'}
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {resumo ? (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-600 font-medium">Receita</p>
+              <p className="text-xl font-bold text-blue-700">R$ {resumo.receitaHoje.toFixed(2)}</p>
+            </div>
+            <div className="text-center p-4 bg-red-50 rounded-lg">
+              <p className="text-sm text-red-600 font-medium">Custos</p>
+              <p className="text-xl font-bold text-red-700">R$ {resumo.custoTotal.toFixed(2)}</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <p className="text-sm text-green-600 font-medium">Lucro</p>
+                {resumo.lucroHoje >= 0 ? 
+                  <TrendingUp className="w-4 h-4 text-green-600" /> :
+                  <TrendingDown className="w-4 h-4 text-red-600" />
+                }
+              </div>
+              <p className={`text-xl font-bold ${resumo.lucroHoje >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                R$ {resumo.lucroHoje.toFixed(2)}
+              </p>
+            </div>
+ import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Camera, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+
+export default function AnimalCardOrdenha({ animal, onClick, ordenhadoHoje, temTratamento, tratamento }) {
+  return (
+    <Card 
+      onClick={onClick}
+      className="cursor-pointer group relative aspect-[3/4] overflow-hidden rounded-2xl border-2 transition-all duration-300 hover:border-blue-500 hover:shadow-2xl"
+    >
+      <div className="absolute inset-0">
+        {animal.foto_url ? (
+          <img 
+            src={animal.foto_url} 
+            alt={animal.nome}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+            <Camera className="w-12 h-12 text-gray-300" />
+          </div>
+        )}
+      </div>
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+      {/* Status badges */}
+      <div className="absolute top-3 right-3 flex flex-col gap-2">
+        {ordenhadoHoje && (
+          <div className="flex items-center gap-1.5 bg-green-500 text-white text-xs font-bold py-1 px-2 rounded-full shadow-lg">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Ordenhado</span>
+          </div>
+        )}
+        
+        {temTratamento && (
+          <div className="flex items-center gap-1.5 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-full shadow-lg animate-pulse">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Medicação</span>
+          </div>
+        )}
+      </div>
+
+      <CardContent className="p-4 flex flex-col justify-end h-full relative z-10">
+        <h3 className="text-xl font-bold text-white shadow-black [text-shadow:_0_2px_4px_var(--tw-shadow-color)]">
+          {animal.nome}
+        </h3>
+        <div className="space-y-1">
+          <p className="text-sm text-gray-200">
+            {animal.data_nascimento && `${new Date().getFullYear() - new Date(animal.data_nascimento).getFullYear()} anos`}
+          </p>
+          {temTratamento && (
+            <p className="text-xs text-red-200 font-medium">
+              📋 {tratamento.motivo}
+            </p>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+import React, { useState } from "react";
+import { ProducaoLeite } from "@/entities/ProducaoLeite";
+import { TratamentoMedicamento } from "@/entities/TratamentoMedicamento";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Droplets, Pill, Baby, Camera, Save, AlertCircle } from "lucide-react";
+import { format } from "date-fns";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+
+export default function DetalheAnimalOrdenha({ animal, medicamentos, onSuccess }) {
+  const [producaoForm, setProducaoForm] = useState({
+    periodo_ordenha: "manha", // New field
+    quantidade_litros: "",
+    observacoes: ""
+  });
+  const [tratamentoForm, setTratamentoForm] = useState({
+    medicamento_id: "",
+    data_fim: "",
+    dosagem: "",
+    frequencia_horas: "",
+    motivo: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleProducaoSubmit = async (e) => {
+    e.preventDefault();
+    if (!producaoForm.quantidade_litros) {
+      setError("A quantidade de litros é obrigatória.");
+      return;
+    }
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await ProducaoLeite.create({
+        animal_id: animal.id,
+        data_producao: new Date().toISOString().split('T')[0],
+        periodo_ordenha: producaoForm.periodo_ordenha, // Added
+        quantidade_litros: parseFloat(producaoForm.quantidade_litros),
+        observacoes: producaoForm.observacoes
+      });
+      setProducaoForm({ periodo_ordenha: "manha", quantidade_litros: "", observacoes: "" }); // Updated reset
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      onSuccess();
+    } catch (err) {
+      setError("Erro ao salvar a produção. Tente novamente.");
+      console.error(err);
+    }
+    setIsSubmitting(false);
+  };
+  
+  const handleTratamentoSubmit = async (e) => {
+    e.preventDefault();
+    if (!tratamentoForm.medicamento_id || !tratamentoForm.dosagem || !tratamentoForm.motivo || !tratamentoForm.data_fim) {
+      setError("Todos os campos do tratamento são obrigatórios.");
+      return;
+    }
+    setIsSubmitting(true);
+    setError(null);
+    
+    try {
+      await TratamentoMedicamento.create({
+        animal_id: animal.id,
+        data_inicio: new Date().toISOString().split('T')[0],
+        ...tratamentoForm,
+        dosagem: parseFloat(tratamentoForm.dosagem),
+        frequencia_horas: parseInt(tratamentoForm.frequencia_horas || 24)
+      });
+      setTratamentoForm({ medicamento_id: "", data_fim: "", dosagem: "", frequencia_horas: "", motivo: "" });
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      onSuccess();
+    } catch (err) {
+      setError("Erro ao iniciar o tratamento. Tente novamente.");
+      console.error(err);
+    }
+    setIsSubmitting(false);
+  };
+
+  // Prepara dados para o gráfico
+  const chartData = animal.historicoProducao
+    ?.map(p => ({
+      name: format(new Date(p.data_producao), 'dd/MM'),
+      Produção: p.quantidade_litros,
+    }))
+    .reverse(); // Reverte para ordem cronológica
+
+  return (
+    <div className="p-6">
+      <Tabs defaultValue="producao">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="producao"><Droplets className="w-4 h-4 mr-2" />Produção</TabsTrigger>
+          <TabsTrigger value="medicacao"><Pill className="w-4 h-4 mr-2" />Medicação</TabsTrigger>
+          <TabsTrigger value="bezerro"><Baby className="w-4 h-4 mr-2" />Bezerro</TabsTrigger>
+        </TabsList>
+
+        {error && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {showSuccess && (
+          <Alert className="mt-4 border-green-200 bg-green-50 text-green-800">
+            <Save className="h-4 w-4 text-green-600" />
+            <AlertDescription>Registro salvo com sucesso!</AlertDescription>
+          </Alert>
+        )}
+        
+        <TabsContent value="producao" className="mt-6">
+          <div className="grid lg:grid-cols-2 gap-8">
+            <form onSubmit={handleProducaoSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="periodo_ordenha">Período da Ordenha</Label>
+                  <Select 
+                    value={producaoForm.periodo_ordenha}
+                    onValueChange={(value) => setProducaoForm({...producaoForm, periodo_ordenha: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o período" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manha">Ordenha da Manhã</SelectItem>
+                      <SelectItem value="tarde">Ordenha da Tarde</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="quantidade_litros">Quantidade de Leite (Litros)</Label>
+                  <Input
+                    id="quantidade_litros"
+                    type="number"
+                    step="0.1"
+                    placeholder="Ex: 15.5"
+                    value={producaoForm.quantidade_litros}
+                    onChange={(e) => setProducaoForm({...producaoForm, quantidade_litros: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="obs_producao">Observações da Ordenha</Label>
+                <Textarea
+                  id="obs_producao"
+                  placeholder="Ex: Leite com aspecto normal, animal tranquilo..."
+                  value={producaoForm.observacoes}
+                  onChange={(e) => setProducaoForm({...producaoForm, observacoes: e.target.value})}
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
+                  <Save className="w-4 h-4 mr-2" />
+                  {isSubmitting ? 'Salvando...' : 'Salvar Produção'}
+                </Button>
+              </div>
+            </form>
+            <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Histórico de Produção (Últimos 30 dias)</h4>
+                {chartData && chartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis unit="L" />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="Produção" stroke="#3b82f6" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                    <p className="text-gray-500">Sem histórico de produção.</p>
+                  </div>
+                )}
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="medicacao" className="mt-6">
+          <div className="grid lg:grid-cols-2 gap-8">
+              <form onSubmit={handleTratamentoSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="medicamento">Medicamento</Label>
+                    <Select value={tratamentoForm.medicamento_id} onValueChange={v => setTratamentoForm({...tratamentoForm, medicamento_id: v})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o medicamento" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {medicamentos.map(m => (
+                          <SelectItem key={m.id} value={m.id}>{m.nome} ({m.estoque_atual} {m.unidade})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dosagem">Dosagem ({medicamentos.find(m => m.id === tratamentoForm.medicamento_id)?.unidade || 'un'})</Label>
+                    <Input
+                      id="dosagem"
+                      type="number"
+                      step="0.1"
+                      placeholder="Ex: 10"
+                      value={tratamentoForm.dosagem}
+                      onChange={(e) => setTratamentoForm({...tratamentoForm, dosagem: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="frequencia">Frequência (horas)</Label>
+                    <Input
+                      id="frequencia"
+                      type="number"
+                      placeholder="Ex: 12 (padrão 24)"
+                      value={tratamentoForm.frequencia_horas}
+                      onChange={(e) => setTratamentoForm({...tratamentoForm, frequencia_horas: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="data_fim">Data Final do Tratamento</Label>
+                    <Input
+                      id="data_fim"
+                      type="date"
+                      value={tratamentoForm.data_fim}
+                      onChange={(e) => setTratamentoForm({...tratamentoForm, data_fim: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="motivo">Motivo do Tratamento</Label>
+                  <Input
+                    id="motivo"
+                    placeholder="Ex: Tratamento de mastite"
+                    value={tratamentoForm.motivo}
+                    onChange={(e) => setTratamentoForm({...tratamentoForm, motivo: e.target.value})}
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <Button type="submit" disabled={isSubmitting} variant="destructive">
+                    <Save className="w-4 h-4 mr-2" />
+                    {isSubmitting ? 'Iniciando...' : 'Iniciar Tratamento'}
+                  </Button>
+                </div>
+              </form>
+              <div>
+                <h4 className="text-lg font-semibold mb-2">Tratamento Ativo</h4>
+                {animal.tratamentoAtivo ? (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="font-bold text-red-900">{animal.tratamentoAtivo.motivo}</p>
+                        <p className="text-sm text-red-700">
+                          <strong>Medicamento:</strong> {medicamentos.find(m => m.id === animal.tratamentoAtivo.medicamento_id)?.nome || 'N/A'}
+                        </p>
+                        <p className="text-sm text-red-700">
+                          <strong>Dosagem:</strong> {animal.tratamentoAtivo.dosagem} {medicamentos.find(m => m.id === animal.tratamentoAtivo.medicamento_id)?.unidade || 'un'} / {animal.tratamentoAtivo.frequencia_horas}h
+                        </p>
+                        <p className="text-sm text-red-700"><strong>Início:</strong> {format(new Date(animal.tratamentoAtivo.data_inicio), "dd/MM/yyyy")}</p>
+                        <p className="text-sm text-red-700"><strong>Fim:</strong> {format(new Date(animal.tratamentoAtivo.data_fim), "dd/MM/yyyy")}</p>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                        <p className="text-gray-500">Nenhum tratamento ativo.</p>
+                    </div>
+                )}
+              </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="bezerro" className="mt-6">
+          {animal.nome_bezerro ? (
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="w-40 h-40 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                {animal.foto_bezerro_url ? (
+                  <img 
+                    src={animal.foto_bezerro_url} 
+                    alt={animal.nome_bezerro} 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Camera className="w-12 h-12 text-gray-300" />
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                <h4 className="text-xl font-bold">{animal.nome_bezerro}</h4>
+                <p><strong>Mãe:</strong> {animal.nome}</p>
+                {animal.data_nascimento_bezerro && (
+                  <p><strong>Nascimento:</strong> {format(new Date(animal.data_nascimento_bezerro), "dd/MM/yyyy")}</p>
+                )}
+                <p><strong>Pai:</strong> {animal.pai_nome || 'Não informado'}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Baby className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">Nenhum bezerro associado a esta vaca.</p>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+{
+  "name": "Animal",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do animal (identificador)"
+    },
+    "data_nascimento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de nascimento"
+    },
+    "peso_nascimento": {
+      "type": "number",
+      "description": "Peso ao nascer em kg"
+    },
+    "sexo": {
+      "type": "string",
+      "enum": [
+        "macho",
+        "femea"
+      ],
+      "description": "Sexo do animal"
+    },
+    "pai_nome": {
+      "type": "string",
+      "description": "Nome do pai (linhagem)"
+    },
+    "mae_nome": {
+      "type": "string",
+      "description": "Nome da mãe (linhagem)"
+    },
+    "foto_url": {
+      "type": "string",
+      "description": "URL da foto do animal"
+    },
+    "nome_bezerro": {
+      "type": "string",
+      "description": "Nome do bezerro (se fêmea)"
+    },
+    "data_nascimento_bezerro": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de nascimento do bezerro"
+    },
+    "foto_bezerro_url": {
+      "type": "string",
+      "description": "URL da foto do bezerro"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o animal está ativo no rebanho"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observações gerais sobre o animal"
+    }
+  },
+  "required": [
+    "nome",
+    "sexo"
+  ],
+  "rls": {
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}{
+  "name": "ProducaoLeite",
+  "type": "object",
+  "properties": {
+    "animal_id": {
+      "type": "string",
+      "description": "ID do animal"
+    },
+    "data_producao": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da produção"
+    },
+    "periodo_ordenha": {
+      "type": "string",
+      "enum": [
+        "manha",
+        "tarde"
+      ],
+      "description": "Período da ordenha"
+    },
+    "quantidade_litros": {
+      "type": "number",
+      "description": "Quantidade em litros produzida"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observações sobre a ordenha"
+    }
+  },
+  "required": [
+    "animal_id",
+    "data_producao",
+    "periodo_ordenha",
+    "quantidade_litros"
+  ],
+  "rls": {
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}{
+  "name": "Medicamento",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do medicamento"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "antibiotico",
+        "vermifugo",
+        "vacina",
+        "vitamina",
+        "anti_inflamatorio",
+        "outro"
+      ],
+      "description": "Tipo do medicamento"
+    },
+    "estoque_atual": {
+      "type": "number",
+      "description": "Quantidade atual em estoque"
+    },
+    "estoque_minimo": {
+      "type": "number",
+      "description": "Quantidade mínima de alerta"
+    },
+    "unidade": {
+      "type": "string",
+      "enum": [
+        "ml",
+        "mg",
+        "g",
+        "comprimido",
+        "dose"
+      ],
+      "description": "Unidade de medida"
+    },
+    "custo_por_unidade": {
+      "type": "number",
+      "description": "Custo por unidade"
+    },
+    "fabricante": {
+ {
+  "name": "TratamentoMedicamento",
+  "type": "object",
+  "properties": {
+    "animal_id": {
+      "type": "string",
+      "description": "ID do animal tratado"
+    },
+    "medicamento_id": {
+      "type": "string",
+      "description": "ID do medicamento utilizado"
+    },
+    "data_inicio": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de início do tratamento"
+    },
+    "data_fim": {
+      "type": "string",
+      "format": "date",
+      "description": "Data prevista para fim do tratamento"
+    },
+    "dosagem": {
+      "type": "number",
+      "description": "Dosagem aplicada"
+    },
+    "frequencia_horas": {
+      "type": "number",
+      "description": "Frequência de aplicação em horas"
+    },
+    "motivo": {
+      "type": "string",
+      "description": "Motivo do tratamento"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ativo",
+        "concluido",
+        "suspenso"
+      ],
+      "default": "ativo",
+      "description": "Status do tratamento"
+    },
+ {
+  "name": "ConfiguracaoPrecos",
+  "type": "object",
+  "properties": {
+    "preco_leite_litro": {
+      "type": "number",
+      "description": "Preço do litro de leite"
+    },
+    "custo_racao_kg": {
+      "type": "number",
+      "description": "Custo do kg da ração"
+    },
+    "racao_por_litro": {
+      "type": "number",
+      "description": "Gramas de ração por litro de leite"
+    },
+    "mes_referencia": {
+      "type": "string",
+      "format": "date",
+      "description": "Mês de referência dos preços"
+    },
+    "outros_custos_diarios": {
+      "type": "number",
+      "description": "Outros custos diários por animal"
+    }
+  },
+  "required": [
+    "preco_leite_litro",
+    "custo_racao_kg",
+    "racao_por_litro",
+    "mes_referencia"
+  ],
+  "rls": {
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}{
+  "name": "ConfiguracaoPropriedade",
+  "type": "object",
+  "properties": {
+    "nome_propriedade": {
+      "type": "string",
+      "description": "Nome da propriedade"
+    },
+    "endereco": {
+      "type": "string",
+      "description": "Endereço da propriedade"
+    },
+    "area_total_hectares": {
+      "type": "number",
+      "description": "Área total em hectares"
+    },
+    "telefone": {
+      "type": "string",
+      "description": "Telefone de contato"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email de contato"
+    }
+  },
+  "required": [
+    "nome_propriedade"
+  ],
+  "rls": {
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}{
+  "name": "Piquete",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do piquete"
+    },
+    "area_hectares": {
+      "type": "number",
+      "description": "Área do piquete em hectares"
+    },
+    "capacidade_animais": {
+      "type": "number",
+      "description": "Capacidade máxima de animais"
+    },
+    "tipo_pastagem": {
+      "type": "string",
+      "description": "Tipo de pastagem plantada"
+    },
+    "animais_atuais": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs dos animais atualmente no piquete"
+    },
+    "data_entrada": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de entrada dos animais atuais"
+    },
+    "dias_descanso_recomendado": {
+      "type": "number",
+      "default": 30,
+      "description": "Dias de descanso recomendados"
+ {
+  "name": "CalculadoraRacao",
+  "type": "object",
+  "properties": {
+    "nome_receita": {
+      "type": "string",
+      "description": "Nome da receita da ração"
+    },
+    "ingredientes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "quantidade_kg": {
+            "type": "number"
+          },
+          "preco_por_kg": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Lista de ingredientes com quantidades e preços"
+    },
+    "custo_total": {
+      "type": "number",
+      "description": "Custo total calculado"
+    },
+    "peso_total_kg": {
+      "type": "number",
+      "description": "Peso total da receita em kg"
+    },
+    "custo_por_kg": {
+      "type": "number",
+      "description": "Custo por kg da ração"
+    }
+  },
+  "required": [
+    "nome_receita",
+    "ingredientes"
+  ],
+  "rls": {
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}{
+  "name": "AlertasSistema",
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "medicamento_vencendo",
+        "estoque_baixo",
+        "animal_sem_producao",
+        "tratamento_vencido",
+        "piquete_sobrecarregado"
+      ],
+      "description": "Tipo do alerta"
+    },
+    "titulo": {
+      "type": "string",
+      "description": "Título do alerta"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descrição detalhada do alerta"
+    },
+    "prioridade": {
+      "type": "string",
+      "enum": [
+        "baixa",
+        "media",
+        "alta",
+        "critica"
+      ],
+      "default": "media",
+      "description": "Prioridade do alerta"
+    },
+    "data_criacao": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de criação do alerta"
+    },
+    "resolvido": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o alerta foi resolvido"
+    },
+    "animal_id": {
+      "type": "string",
+      "description": "ID do animal relacionado (se aplicável)"
+    },
+    "medicamento_id": {
+      "type": "string",
+      "description": "ID do medicamento relacionado (se aplicável)"
+ 
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Home, ClipboardList, Droplets, Pill, TrendingUp, Settings, Wind, AlertTriangle } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+
+const navigationItems = [
+  {
+    title: "Dashboard",
+    url: createPageUrl("Dashboard"),
+    icon: Home,
+  },
+  {
+    title: "Animais",
+    url: createPageUrl("Animais"),
+    icon: ClipboardList,
+  },
+  {
+    title: "Produção",
+    url: createPageUrl("Producao"),
+    icon: Droplets,
+  },
+  {
+    title: "Sala de Ordenha",
+    url: createPageUrl("SalaDeOrdenha"),
+    icon: Wind,
+  },
+  {
+    title: "Medicamentos",
+    url: createPageUrl("Medicamentos"),
+    icon: Pill,
+  },
+  {
+    title: "Centro de Alertas",
+    url: createPageUrl("CentroDeAlertas"),
+    icon: AlertTriangle,
+  },
+ 
 ---
 title: EAS Build
 sidebar_title: Introduction
