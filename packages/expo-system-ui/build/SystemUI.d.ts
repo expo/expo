@@ -20,4 +20,5 @@ export declare function setBackgroundColorAsync(color: ColorValue | null): Promi
  * @returns Current root view background color in hex format. Returns `null` if the background color is not set.
  */
 export declare function getBackgroundColorAsync(): Promise<ColorValue | null>;
+export { DynamicColor } from './DynamicColor';
 //# sourceMappingURL=SystemUI.d.ts.map
