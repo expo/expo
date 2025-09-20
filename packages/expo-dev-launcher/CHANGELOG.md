@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [expo-dev-launcher] Fix manual URL entry: decode percent-encoded URLs, enable return key submit, and support dark mode text. ([#39840](https://github.com/expo/expo/pull/39840) by [@blazejkustra](https://github.com/blazejkustra))
+
 ### 💡 Others
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
