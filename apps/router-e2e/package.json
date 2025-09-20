@@ -30,6 +30,8 @@
     "start:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes EXPO_WEB_DEV_HYDRATE=1 expo start",
     "export:web-modal": "E2E_ROUTER_SRC=web-modal E2E_ROUTER_JS_ENGINE=hermes expo export -p web",
     "start:fast-refresh": "E2E_ROUTER_SRC=fast-refresh E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start -p web",
+    "start:loader": "E2E_ROUTER_SRC=server-loader E2E_ROUTER_SERVER_LOADERS=true expo start",
+    "export:loader": "EXPO_ATLAS=true E2E_ROUTER_SRC=server-loader E2E_ROUTER_SERVER_LOADERS=true expo export -p web",
     "lint": "expo lint __e2e__",
     "android": "expo run:android",
     "ios": "expo run:ios"

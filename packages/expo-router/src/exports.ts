@@ -12,6 +12,7 @@ export {
   useRootNavigation,
   useRootNavigationState,
 } from './hooks';
+export { useLoaderData } from './loaders/useLoaderData';
 
 export { router, Router } from './imperative-api';
 

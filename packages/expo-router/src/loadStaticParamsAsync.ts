@@ -105,6 +105,8 @@ async function loadStaticParamsRecursive(
         dynamic: null,
         route: parsedRoute,
         children: dynamicChildren,
+        // Mark the cloned route as generated
+        generated: true,
       };
     })
   );

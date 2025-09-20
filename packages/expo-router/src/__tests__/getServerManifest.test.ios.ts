@@ -1,5 +1,6 @@
 import { getExactRoutes } from '../getRoutes';
 import { getServerManifest, parseParameter } from '../getServerManifest';
+import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 import { RequireContext } from '../types';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {

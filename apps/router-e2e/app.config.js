@@ -74,6 +74,7 @@ module.exports = {
         rewrites: process.env.E2E_ROUTER_REWRITES
           ? JSON.parse(process.env.E2E_ROUTER_REWRITES)
           : undefined,
+        unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
         unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
       },
     ],
