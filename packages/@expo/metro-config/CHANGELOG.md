@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent fast refresh on generated type declarations changes ([#39835](https://github.com/expo/expo/pull/39835) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
