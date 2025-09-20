@@ -75,6 +75,18 @@ export interface ModalProps extends ViewProps {
    * However, it will still close when navigating back or replacing the current screen.
    */
   closeOnNavigation?: boolean;
+  /**
+   * See {@link ScreenProps["unstable_sheetFooter"]}.
+   *
+   * Footer component that can be used alongside formSheet stack presentation style.
+   * Works only when `presentation` is set to `formSheet`.
+   *
+   * Please note that this prop is marked as unstable and might be subject of breaking changes,
+   * including removal.
+   *
+   * @platform android
+   */
+  unstable_footer?: ModalConfig['unstable_footer'];
 }
 
 /**
@@ -113,6 +125,7 @@ export function Modal(props: ModalProps) {
     transparent,
     detents,
     closeOnNavigation,
+    unstable_footer,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -149,6 +162,7 @@ export function Modal(props: ModalProps) {
         uniqueId: newId,
         parentNavigationProp: navigation,
         detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
+        unstable_footer,
       });
       setCurrentModalId(newId);
       return () => {
@@ -173,9 +187,10 @@ export function Modal(props: ModalProps) {
     if (currentModalId && visible) {
       updateModal(currentModalId, {
         component: children,
+        unstable_footer,
       });
     }
-  }, [children]);
+  }, [children, unstable_footer]);
 
   useEffect(() => {
     if (currentModalId) {
