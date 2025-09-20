@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Updated description for glass button styles availability ([#39736](https://github.com/expo/expo/pull/39736) by [@terijaki](https://github.com/terijaki))
+- [iOS] Adds support for `scrollContentBackground` for Form and List by [@chollier](https://github.com/chollier)
 
 ### 💡 Others
 

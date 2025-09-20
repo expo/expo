@@ -20,14 +20,17 @@ export default function FormScreen() {
   const options = ['$', '$$', '$$$', '$$$$'];
   const [sliderValue, setSliderValue] = useState<number>(0.5);
   const [switchValue, setSwitchValue] = useState<boolean>(true);
+  const [hideScrollBackground, setHideScrollBackground] = useState<boolean>(false);
 
   const profileImageSizes = ['Large', 'Medium', 'Small'];
   const [disclosureGroupExpanded, setDisclosureGroupExpanded] = useState<boolean>(false);
   const [selectedProfileImageSizeIndex, setSelectedProfileImageSizeIndex] = useState<number>(0);
 
   return (
-    <Host style={{ flex: 1 }}>
-      <Form>
+    <Host style={{ flex: 1, backgroundColor: '#FF6B6B'}}>
+      <Form
+        scrollContentBackground={hideScrollBackground ? 'hidden' : 'visible'}
+      >
         <Section title="My form Section">
           <Text size={17} testID="test-id-from-expo-ui!">
             Some text!
@@ -93,6 +96,15 @@ export default function FormScreen() {
             description="Please update your payment information to continue using our services."
           />
         </Section>
+
+        <Section title="Scroll Content Background Demo">
+          <Switch
+            value={hideScrollBackground}
+            label="Hide scroll content background"
+            onValueChange={setHideScrollBackground}
+          />
+        </Section>
+
       </Form>
     </Host>
   );
