@@ -112,70 +112,73 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           UserAnnotation()
         }
       }
-      .onTapGesture(coordinateSpace: .local) { position in
-        if let coordinate = reader.convert(position, from: .local) {
-          // check if we hit a polygon and send an event
-          if let hit = props.polygons.first(where: { polygon in
-            isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
-          }) {
-            let coords = hit.coordinates.map {
-              [
-                "latitude": $0.latitude,
-                "longitude": $0.longitude
-              ]
-            }
-            props.onPolygonClick([
-              "id": hit.id,
-              "color": hit.color,
-              "lineColor": hit.lineColor,
-              "lineWidth": hit.lineWidth,
-              "coordinates": coords
-            ])
-          }
-          else if let hit = props.circles.first(where: { circle in
-            isTapInsideCircle(
-              tapCoordinate: coordinate,
-              circleCenter: circle.clLocationCoordinate2D,
-              radius: circle.radius
-            )}) {
-              props.onCircleClick([
-                "id": hit.id,
-                "color": hit.color,
-                "lineColor": hit.lineColor,
-                "lineWidth": hit.lineWidth,
-                "radius": hit.radius,
+      .simultaneousGesture(
+        DragGesture(minimumDistance: 0)
+          .onEnded { value in
+            if let coordinate = reader.convert(value.location, from: .local) {
+              // check if we hit a polygon and send an event
+              if let hit = props.polygons.first(where: { polygon in
+                isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
+              }) {
+                let coords = hit.coordinates.map {
+                  [
+                    "latitude": $0.latitude,
+                    "longitude": $0.longitude
+                  ]
+                }
+                props.onPolygonClick([
+                  "id": hit.id,
+                  "color": hit.color,
+                  "lineColor": hit.lineColor,
+                  "lineWidth": hit.lineWidth,
+                  "coordinates": coords
+                ])
+              }
+              else if let hit = props.circles.first(where: { circle in
+                isTapInsideCircle(
+                  tapCoordinate: coordinate,
+                  circleCenter: circle.clLocationCoordinate2D,
+                  radius: circle.radius
+                )}) {
+                  props.onCircleClick([
+                    "id": hit.id,
+                    "color": hit.color,
+                    "lineColor": hit.lineColor,
+                    "lineWidth": hit.lineWidth,
+                    "radius": hit.radius,
+                    "coordinates": [
+                      "latitude": hit.center.latitude,
+                      "longitude": hit.center.longitude
+                    ]
+                  ])
+                }
+              // Then check if we hit a polyline and send an event
+              else if let hit = polyline(at: coordinate) {
+                let coords = hit.coordinates.map {
+                  [
+                    "latitude": $0.latitude,
+                    "longitude": $0.longitude
+                  ]
+                }
+                props.onPolylineClick([
+                  "id": hit.id,
+                  "color": hit.color,
+                  "width": hit.width,
+                  "contourStyle": hit.contourStyle,
+                  "coordinates": coords
+                ])
+              }
+
+              // Send an event of map click regardless
+              props.onMapClick([
                 "coordinates": [
-                  "latitude": hit.center.latitude,
-                  "longitude": hit.center.longitude
+                  "latitude": coordinate.latitude,
+                  "longitude": coordinate.longitude
                 ]
               ])
             }
-          // Then check if we hit a polyline and send an event
-          else if let hit = polyline(at: coordinate) {
-            let coords = hit.coordinates.map {
-              [
-                "latitude": $0.latitude,
-                "longitude": $0.longitude
-              ]
-            }
-            props.onPolylineClick([
-              "id": hit.id,
-              "color": hit.color,
-              "width": hit.width,
-              "contourStyle": hit.contourStyle,
-              "coordinates": coords
-            ])
           }
-
-          // Send an event of map click regardless
-          props.onMapClick([
-            "coordinates": [
-              "latitude": coordinate.latitude,
-              "longitude": coordinate.longitude
-            ]
-          ])
-        }
-      }
+      )
       .mapControls {
         if uiSettings.compassEnabled {
           MapCompass()
