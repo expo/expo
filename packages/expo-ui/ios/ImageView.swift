@@ -13,6 +13,7 @@ internal final class ImageViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierPr
   @Field var systemName: String = ""
   @Field var size: Double?
   @Field var color: Color?
+  @Field var variableValue: Double?
   @Field var useTapGesture: Bool?
   var onTap = EventDispatcher()
 }
@@ -21,10 +22,16 @@ internal struct ImageView: ExpoSwiftUI.View {
   @ObservedObject var props: ImageViewProps
 
   var body: some View {
-    Image(systemName: props.systemName)
-      .font(.system(size: CGFloat(props.size ?? 24)))
-      .foregroundColor(props.color)
-      .modifier(CommonViewModifiers(props: props))
-      .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+    Group {
+      if #available(iOS 16.0, *) {
+        Image(systemName: props.systemName, variableValue: props.variableValue)
+      } else {
+        Image(systemName: props.systemName)
+      }
+    }
+    .font(.system(size: CGFloat(props.size ?? 24)))
+    .foregroundColor(props.color)
+    .modifier(CommonViewModifiers(props: props))
+    .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
   }
 }
