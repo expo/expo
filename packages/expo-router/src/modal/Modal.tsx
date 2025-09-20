@@ -75,6 +75,13 @@ export interface ModalProps extends ViewProps {
    * However, it will still close when navigating back or replacing the current screen.
    */
   closeOnNavigation?: boolean;
+  /**
+   * See {@link ScreenProps["sheetCornerRadius"]}.
+   *
+   * The corner radius that the sheet will try to render with.
+   * Works only when `presentation` is set to `formSheet`.
+   */
+  cornerRadius?: ModalConfig['cornerRadius'];
 }
 
 /**
@@ -113,6 +120,7 @@ export function Modal(props: ModalProps) {
     transparent,
     detents,
     closeOnNavigation,
+    cornerRadius,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -149,6 +157,7 @@ export function Modal(props: ModalProps) {
         uniqueId: newId,
         parentNavigationProp: navigation,
         detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
+        cornerRadius,
       });
       setCurrentModalId(newId);
       return () => {

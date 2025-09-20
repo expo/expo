@@ -48,6 +48,7 @@ export const ModalsRenderer = ({
             config.viewProps?.style,
           ]}
           sheetAllowedDetents={config.detents}
+          sheetCornerRadius={config.cornerRadius}
           style={[
             StyleSheet.absoluteFill,
             {
