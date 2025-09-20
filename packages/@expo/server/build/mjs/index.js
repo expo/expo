@@ -18,9 +18,9 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
             // an SSG deployment and do nothing
             return createResponse(null, null, 'Not found', {
                 status: 404,
-                headers: {
+                headers: new Headers({
                     'Content-Type': 'text/plain',
-                },
+                }),
             });
         }
         let request = incomingRequest;
@@ -116,7 +116,7 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         // 404
         return createResponse(null, null, 'Not found', {
             status: 404,
-            headers: { 'Content-Type': 'text/plain' },
+            headers: new Headers({ 'Content-Type': 'text/plain' }),
         });
     }
     function createResponse(routeType = null, route, bodyInit, responseInit) {
@@ -147,7 +147,7 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
     }
     function createResponseFrom(routeType = null, route, response) {
         const modifiedResponseInit = {
-            headers: Object.fromEntries(response.headers.entries()),
+            headers: new Headers(response.headers),
             status: response.status,
             statusText: response.statusText,
             cf: response.cf,
@@ -159,9 +159,9 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         if (typeof html === 'string') {
             return createResponse('notFoundHtml', route, html, {
                 status: 404,
-                headers: {
+                headers: new Headers({
                     'Content-Type': 'text/html',
-                },
+                }),
             });
         }
         if (isResponse(html)) {
@@ -182,9 +182,9 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         if (!handler || typeof handler !== 'function') {
             return createResponse('notAllowedApi', route, 'Method not allowed', {
                 status: 405,
-                headers: {
+                headers: new Headers({
                     'Content-Type': 'text/plain',
-                },
+                }),
             });
         }
         const params = parseParams(request, route);
@@ -198,9 +198,9 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         if (typeof html === 'string') {
             return createResponse('html', route, html, {
                 status: 200,
-                headers: {
+                headers: new Headers({
                     'Content-Type': 'text/html',
-                },
+                }),
             });
         }
         if (isResponse(html)) {

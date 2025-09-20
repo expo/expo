@@ -23,7 +23,7 @@ export { ExpoError } from './error';
 export { type MiddlewareFunction } from './types';
 
 type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
-  headers: Record<string, string>;
+  headers: Headers;
   // Cloudflare specific response properties
   cf?: unknown;
   webSocket?: unknown;
@@ -80,9 +80,9 @@ export function createRequestHandler({
       // an SSG deployment and do nothing
       return createResponse(null, null, 'Not found', {
         status: 404,
-        headers: {
+        headers: new Headers({
           'Content-Type': 'text/plain',
-        },
+        }),
       });
     }
 
@@ -190,7 +190,7 @@ export function createRequestHandler({
     // 404
     return createResponse(null, null, 'Not found', {
       status: 404,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: new Headers({ 'Content-Type': 'text/plain' }),
     });
   }
 
@@ -232,7 +232,7 @@ export function createRequestHandler({
     response: Response
   ): Response {
     const modifiedResponseInit: ResponseInitLike = {
-      headers: Object.fromEntries(response.headers.entries()),
+      headers: new Headers(response.headers),
       status: response.status,
       statusText: response.statusText,
       cf: response.cf,
@@ -248,9 +248,9 @@ export function createRequestHandler({
     if (typeof html === 'string') {
       return createResponse('notFoundHtml', route, html, {
         status: 404,
-        headers: {
+        headers: new Headers({
           'Content-Type': 'text/html',
-        },
+        }),
       });
     }
 
@@ -276,9 +276,9 @@ export function createRequestHandler({
     if (!handler || typeof handler !== 'function') {
       return createResponse('notAllowedApi', route, 'Method not allowed', {
         status: 405,
-        headers: {
+        headers: new Headers({
           'Content-Type': 'text/plain',
-        },
+        }),
       });
     }
 
@@ -297,9 +297,9 @@ export function createRequestHandler({
     if (typeof html === 'string') {
       return createResponse('html', route, html, {
         status: 200,
-        headers: {
+        headers: new Headers({
           'Content-Type': 'text/html',
-        },
+        }),
       });
     }
 
