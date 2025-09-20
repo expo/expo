@@ -1,7 +1,10 @@
-import { SymbolView, SymbolViewProps, SFSymbol } from 'expo-symbols';
+import { SymbolView, SymbolViewProps, SFSymbol, AndroidSymbol } from 'expo-symbols';
+import bold from 'expo-symbols/androidWeights/bold';
+import regular from 'expo-symbols/androidWeights/regular';
+import thin from 'expo-symbols/androidWeights/thin';
 import { PlatformColor, Text, View, StyleSheet, ScrollView, Platform } from 'react-native';
 
-import { Symbols } from '../constants';
+import { Symbols, AndroidSymbols } from '../constants';
 
 type RowProps = { title?: string } & Partial<SymbolViewProps>;
 
@@ -12,15 +15,17 @@ function getRandomRow(data: string[], count: number = 8) {
   });
 }
 
+const randomRow = getRandomRow(Platform.OS === 'ios' ? Symbols : AndroidSymbols);
+
 function SymbolRow({ title, ...props }: RowProps) {
   return (
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(Symbols).map((symbol, index) => (
+        {randomRow.map((symbol, index) => (
           <SymbolView
             {...props}
-            name={symbol as SFSymbol}
+            name={{ ios: symbol as SFSymbol, android: symbol as AndroidSymbol }}
             key={index}
             style={styles.symbol}
             resizeMode="scaleAspectFit"
@@ -33,32 +38,25 @@ function SymbolRow({ title, ...props }: RowProps) {
 
 function SymbolWeights({ title, ...props }: RowProps) {
   const weights: SymbolViewProps['weight'][] = [
-    'black',
-    'bold',
-    'heavy',
-    'medium',
-    'light',
-    'thin',
-    'ultraLight',
-    'unspecified',
+    { ios: 'black', android: bold },
+    { ios: 'light', android: thin },
+    { ios: 'regular', android: regular },
   ];
 
   return (
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(Symbols).map((symbol, index) => {
+        {randomRow.map((symbol, index) => {
           const weight = weights[index % weights.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
               <SymbolView
                 {...props}
-                name={symbol as SFSymbol}
+                name={{ ios: symbol as SFSymbol, android: symbol as AndroidSymbol }}
                 style={styles.symbol}
-                type="hierarchical"
                 weight={weight}
               />
-              <Text style={{ color: 'white', fontSize: 8 }}>{weight}</Text>
             </View>
           );
         })}
@@ -74,7 +72,7 @@ function SymbolScales({ title, ...props }: RowProps) {
     <View style={{ gap: 5 }}>
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: 'row' }}>
-        {getRandomRow(Symbols).map((symbol, index) => {
+        {randomRow.map((symbol, index) => {
           const scale = scales[index % scales.length];
           return (
             <View key={index} style={{ alignItems: 'center' }}>
@@ -94,7 +92,7 @@ function SymbolScales({ title, ...props }: RowProps) {
 }
 
 export default function SymbolImageScreen() {
-  if (Platform.OS !== 'ios') {
+  if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
     return (
       <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
         <Text style={styles.title}>Expo Symbols are not supported on {Platform.OS}</Text>
@@ -105,7 +103,10 @@ export default function SymbolImageScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
       <Text style={styles.title}>Use component directly</Text>
-      <SymbolView name="pencil.tip.crop.circle.badge.plus" style={styles.symbol} />
+      <SymbolView
+        name={{ ios: 'pencil.tip.crop.circle.badge.plus', android: 'ad_group' }}
+        style={styles.symbol}
+      />
       <SymbolRow title="Monochrome (default)" type="monochrome" />
       <SymbolRow
         title="Hierarchical"
