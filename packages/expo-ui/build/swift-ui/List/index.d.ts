@@ -33,6 +33,12 @@ export interface ListProps extends CommonViewModifierProps {
      */
     editModeEnabled?: boolean;
     /**
+     * Controls the visibility of the scroll content background.
+     * @default 'visible'
+     * @platform ios 16.0+
+     */
+    scrollContentBackground?: 'visible' | 'hidden';
+    /**
      * The children elements to be rendered inside the list.
      */
     children: React.ReactNode;
