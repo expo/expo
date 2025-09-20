@@ -51,6 +51,6 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.1"
   }
 }
