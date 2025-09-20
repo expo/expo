@@ -151,6 +151,8 @@ export async function openAppIdAsync(
       device.pid,
       'shell',
       'monkey',
+      '--pct-syskeys',
+      '0',
       '-p',
       applicationId,
       '-c',
