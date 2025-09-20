@@ -128,15 +128,6 @@ class Env {
   }
 
   /**
-   * Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project `metro.config.js` for all platforms.
-   *
-   * By default, Expo CLI will use `['browser', 'module', 'main']` (default for Webpack) for web and the user-defined main fields for other platforms.
-   */
-  get EXPO_METRO_NO_MAIN_FIELD_OVERRIDE(): boolean {
-    return boolish('EXPO_METRO_NO_MAIN_FIELD_OVERRIDE', false);
-  }
-
-  /**
    * HTTP/HTTPS proxy to connect to for network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).
    */
   get HTTP_PROXY(): string {
