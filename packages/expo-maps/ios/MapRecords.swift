@@ -65,7 +65,7 @@ struct ExpoAppleMapPolyline: Record, Identifiable {
   @Field var coordinates: [Coordinate]
   @Field var color: Color = .blue
   @Field var width: Double = 4
-  @Field var contourStyle: String = "straight"
+  @Field var contourStyle: MapContourStyle = .straight
 
   var clLocationCoordinates2D: [CLLocationCoordinate2D] {
     return coordinates.map {
