@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add workaround for iOS 26 onTapGesture known issue ([#39849](https://github.com/expo/expo/pull/39849) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 0.12.7 — 2025-09-11
