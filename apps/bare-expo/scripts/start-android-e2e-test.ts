@@ -11,7 +11,7 @@ import {
   fileExistsAsync,
   getStartMode,
   retryAsync,
-  getMaestroFlowFilePath,
+  runCustomMaestroFlowsAsync,
 } from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
@@ -42,18 +42,29 @@ const __dirname = dirname(__filename);
       );
       const deviceId = await queryDeviceIdAsync(adbPath);
       if (!deviceId) {
-        throw new Error(`No connected Android device found`);
+        throw new Error(
+          `No connected Android device found. In CI, it should be started via the 'Use Android Emulator' action.`
+        );
       }
-      const maestroFlowFilePath = getMaestroFlowFilePath(projectRoot);
-      await createMaestroFlowAsync({
+      const e2eDir = path.join(projectRoot, 'e2e');
+      await runCustomMaestroFlowsAsync(e2eDir, (maestroFlowFilePath) =>
+        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
+      );
+
+      const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
-        workflowFile: maestroFlowFilePath,
-        confirmFirstRunPrompt: true,
+        e2eDir,
       });
 
       await retryAsync((retryNumber) => {
         console.log(`Test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath);
+        return testAsync(
+          maestroNativeModulesFlowFilePath,
+          deviceId,
+          appBinaryPath,
+          adbPath,
+          e2eDir
+        );
       }, NUM_OF_RETRIES);
     }
   } catch (e) {
@@ -74,7 +85,8 @@ async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
   appBinaryPath: string,
-  adbPath: string
+  adbPath: string,
+  maestroWorkspaceRoot: string
 ): Promise<void> {
   console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
   await spawnAsync(adbPath, ['-s', deviceId, 'install', '-r', appBinaryPath]);
@@ -84,6 +96,7 @@ async function testAsync(
   );
   await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
     stdio: 'inherit',
+    cwd: maestroWorkspaceRoot,
     env: {
       ...process.env,
       MAESTRO_DRIVER_STARTUP_TIMEOUT,

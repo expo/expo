@@ -1,0 +1,23 @@
+# Screenshot comparison flow for expo-image
+# This flow can be reused across different image comparison tests
+# it fails if the images are too different
+
+# Parameters:
+#   - screenshotOutputPath: The path including the name of the screenshot to take and compare
+#   - similarityThreshold: The percentage of similarity required to pass the comparison (default: <=5% difference)
+
+appId: dev.expo.Payments
+---
+- takeScreenshot: ${screenshotOutputPath}.${maestro.platform}
+- runScript:
+    file: ./compare-images-http.js
+    env:
+      baseImage: ${screenshotOutputPath}.base.${maestro.platform}
+      currentScreenshot: ${screenshotOutputPath}.${maestro.platform}
+      # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
+      outputPath: ~/.maestro/tests/${screenshotOutputPath}.diff.${maestro.platform}
+      similarityThreshold: ${similarityThreshold}
+
+- assertTrue:
+    condition: ${output.comparisonResult.success}
+    label: Screenshot comparison check. Is screenshot comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)
