@@ -33,7 +33,9 @@ class UpdatesPackage : Package {
       }
 
       override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
-        UpdatesController.initialize(context)
+        if (!isUsingCustomInit) {
+          UpdatesController.initialize(context)
+        }
       }
 
       override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
