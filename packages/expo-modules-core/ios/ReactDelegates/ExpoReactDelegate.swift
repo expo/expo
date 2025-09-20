@@ -6,9 +6,11 @@
 @objc(EXReactDelegate)
 public class ExpoReactDelegate: NSObject {
   private let handlers: [ExpoReactDelegateHandler]
+  public let reactNativeFactory: ExpoReactNativeFactoryProtocol
 
-  public init(handlers: [ExpoReactDelegateHandler]) {
+  public init(handlers: [ExpoReactDelegateHandler], reactNativeFactory: ExpoReactNativeFactoryProtocol) {
     self.handlers = handlers
+    self.reactNativeFactory = reactNativeFactory
   }
 
   @objc
@@ -23,7 +25,7 @@ public class ExpoReactDelegate: NSObject {
       ?? {
         guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
           ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
-          fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
+          return reactNativeFactory.recreateRootView(withBundleURL: nil, moduleName: moduleName, initialProps: initialProperties, launchOptions: launchOptions)
         }
 
         return appDelegate.recreateRootView(
