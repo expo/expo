@@ -113,6 +113,9 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           UserAnnotation()
         }
       }
+      // We use simultaneousGesture to work around the iOS 26 onTapGesture known issue
+      // https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-26-release-notes#Maps
+      // TODO: Replace with onTapGesture once apple fixes the issue
       .simultaneousGesture(
         DragGesture(minimumDistance: 0)
           // swiftlint:disable:next closure_body_length
