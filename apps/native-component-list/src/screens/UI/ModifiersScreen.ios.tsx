@@ -249,7 +249,7 @@ export default function ModifiersScreen() {
               {playSounds ? '🔊 Sounds ON (tap to toggle)' : '🔇 Sounds OFF (tap to toggle)'}
             </Text>
 
-            {/* Disabled Picker Demo */}
+            {/* Disabled Modifier Demo */}
             <VStack spacing={8}>
               <Switch
                 value={!isDisabled}
