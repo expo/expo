@@ -1,4 +1,14 @@
-import { Host, Section, Text, Form, VStack, HStack, ColorPicker } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Section,
+  Text,
+  Form,
+  VStack,
+  HStack,
+  ColorPicker,
+  Picker,
+  Switch,
+} from '@expo/ui/swift-ui';
 import {
   background,
   cornerRadius,
@@ -24,6 +34,7 @@ import {
   glassEffect,
   foregroundStyle,
   fixedSize,
+  disabled,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -31,6 +42,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
   const [playSounds, setPlaySounds] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
   const dimensions = useWindowDimensions();
   const safeAreaInsets = useSafeAreaInsets();
   const [color, setColor] = useState<string | null>('blue');
@@ -236,6 +248,30 @@ export default function ModifiersScreen() {
               ]}>
               {playSounds ? '🔊 Sounds ON (tap to toggle)' : '🔇 Sounds OFF (tap to toggle)'}
             </Text>
+
+            {/* Disabled Picker Demo */}
+            <VStack spacing={8}>
+              <Switch
+                value={!isDisabled}
+                onValueChange={(value) => setIsDisabled(!value)}
+                label="Enable Picker"
+              />
+              <Picker
+                options={['Option 1', 'Option 2', 'Option 3', 'Option 4']}
+                selectedIndex={1}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  console.log('Picker option selected:', index);
+                }}
+                variant="segmented"
+                modifiers={[
+                  disabled(isDisabled),
+                  background(isDisabled ? '#BDC3C7' : '#3498DB'),
+                  cornerRadius(8),
+                  padding({ all: 4 }),
+                  shadow({ radius: 2, y: 1, color: isDisabled ? '#BDC3C740' : '#3498DB40' }),
+                ]}
+              />
+            </VStack>
           </Section>
         </Form>
       </Host>

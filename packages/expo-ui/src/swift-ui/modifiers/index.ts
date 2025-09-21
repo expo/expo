@@ -309,6 +309,12 @@ export const tint = (color: Color) => createModifier('tint', { color });
 export const hidden = (hidden: boolean = true) => createModifier('hidden', { hidden });
 
 /**
+ * Disables or enables a view.
+ * @param disabled - Whether the view should be disabled
+ */
+export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
+
+/**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value
  */
@@ -473,6 +479,7 @@ export type BuiltInModifier =
   | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
+  | ReturnType<typeof disabled>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>
