@@ -11,6 +11,10 @@ const Menus = () => {
   const [palette, setPalette] = useState<string>('1');
   const [submenu, setSubmenu] = useState<string>('1');
   const [isIconVisible, setIsIconVisible] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isDestructive, setIsDestructive] = useState(false);
+  const [keepPresented, setKeepPresented] = useState(false);
+  const [isOnState, setIsOnState] = useState(false);
 
   const timeOptions = useMemo(
     () =>
@@ -234,11 +238,38 @@ const Menus = () => {
       </Link>
 
       <Link href="/one">
-        <Link.Trigger>Link.Menu with togglable icon</Link.Trigger>
+        <Link.Trigger>Link.Menu with togglable props</Link.Trigger>
         <Link.Menu>
-          <Link.MenuAction title="Menu action" icon={isIconVisible ? "0.square" : undefined} onPress={() => console.log("ACME")}/>
-          <Link.Menu title="Submenu" icon={isIconVisible ? "checkmark" : undefined}>
-            <Link.MenuAction title={`${isIconVisible ? 'Hide' : 'Show'} icons`} onPress={toggleIconVisibility}/>
+          <Link.MenuAction
+            title="Menu action"
+            icon={isIconVisible ? "0.square" : undefined}
+            disabled={isDisabled ? true : undefined}
+            destructive={isDestructive ? true : undefined}
+            unstable_keepPresented={keepPresented ? true : undefined}
+            isOn={isOnState ? true : undefined}
+            onPress={() => {}}
+          />
+          <Link.Menu title="Submenu">
+            <Link.MenuAction
+              title={`${isIconVisible ? 'Hide' : 'Show'} icon`}
+              onPress={toggleIconVisibility}
+            />
+            <Link.MenuAction
+              title={`${isDisabled ? 'Enable' : 'Disable'} action`}
+              onPress={() => setIsDisabled(!isDisabled)}
+            />
+            <Link.MenuAction
+              title={`${isDestructive ? 'Remove' : 'Make'} destructive`}
+              onPress={() => setIsDestructive(!isDestructive)}
+            />
+            <Link.MenuAction
+              title={`${keepPresented ? 'Disable' : 'Enable'} keepPresented`}
+              onPress={() => setKeepPresented(!keepPresented)}
+            />
+            <Link.MenuAction
+              title={`${isOnState ? 'Turn off' : 'Turn on'} isOn`}
+              onPress={() => setIsOnState(!isOnState)}
+            />
           </Link.Menu>
         </Link.Menu>
       </Link>
