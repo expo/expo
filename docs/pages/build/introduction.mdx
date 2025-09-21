@@ -1,4 +1,49 @@
----
+---import React, { useState } from "react";
+import { StyleSheet, Text, View, Button } from "react-native";
+
+export default function App() {
+  const quotes = [
+    "Success is not final, failure is not fatal.",
+    "Be yourself; everyone else is already taken.",
+    "Do what you can with what you have.",
+    "Dream big and dare to fail."
+  ];
+
+  const [index, setIndex] = useState(0);
+
+  const showNext = () => {
+    setIndex((index + 1) % quotes.length);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>📖 Quotes App</Text>
+      <Text style={styles.quote}>{quotes[index]}</Text>
+      <Button title="Next Quote" onPress={showNext} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  quote: {
+    fontSize: 20,
+    fontStyle: "italic",
+    marginBottom: 30,
+    textAlign: "center",
+  },
+});
 title: EAS Build
 sidebar_title: Introduction
 hideTOC: true
