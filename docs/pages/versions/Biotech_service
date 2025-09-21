@@ -1,0 +1,86 @@
+import { Card, CardContent } from "@/components/ui/card" import { Button } from "@/components/ui/button" import { Input } from "@/components/ui/input" import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs" import { Calendar, Wrench, FileText, Package, Users } from "lucide-react"
+
+export default function AppLayout() { return ( <div className="min-h-screen bg-gray-100 p-4"> <h1 className="text-2xl font-bold mb-4">Bio Tech Service</h1>
+
+{/* Navegação principal */}
+  <Tabs defaultValue="dashboard" className="w-full">
+    <TabsList className="grid grid-cols-5 gap-2">
+      <TabsTrigger value="dashboard"><Calendar className="w-4 h-4" /> Agenda</TabsTrigger>
+      <TabsTrigger value="os"><Wrench className="w-4 h-4" /> Ordens</TabsTrigger>
+      <TabsTrigger value="clientes"><Users className="w-4 h-4" /> Clientes</TabsTrigger>
+      <TabsTrigger value="relatorios"><FileText className="w-4 h-4" /> Relatórios</TabsTrigger>
+      <TabsTrigger value="estoque"><Package className="w-4 h-4" /> Estoque</TabsTrigger>
+    </TabsList>
+
+    {/* Dashboard / Agenda */}
+    <TabsContent value="dashboard">
+      <Card className="mt-4">
+        <CardContent>
+          <h2 className="font-semibold text-lg mb-2">Próximas manutenções</h2>
+          <ul className="space-y-2">
+            <li className="p-2 bg-white rounded shadow">Hospital X - Preventiva dia 25/09</li>
+            <li className="p-2 bg-white rounded shadow">Clínica Y - Calibração dia 27/09</li>
+          </ul>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    {/* Ordens de Serviço */}
+    <TabsContent value="os">
+      <Card className="mt-4">
+        <CardContent>
+          <h2 className="font-semibold text-lg mb-2">Ordens em aberto</h2>
+          <div className="space-y-2">
+            <div className="p-2 bg-white rounded shadow">#001 - Ventilador Dräger - Em andamento</div>
+            <div className="p-2 bg-white rounded shadow">#002 - Autoclave XYZ - Pendente</div>
+          </div>
+          <Button className="mt-3 w-full">+ Nova OS</Button>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    {/* Clientes */}
+    <TabsContent value="clientes">
+      <Card className="mt-4">
+        <CardContent>
+          <h2 className="font-semibold text-lg mb-2">Clientes cadastrados</h2>
+          <div className="space-y-2">
+            <div className="p-2 bg-white rounded shadow">Hospital X</div>
+            <div className="p-2 bg-white rounded shadow">Clínica Y</div>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <Input placeholder="Novo cliente..." />
+            <Button>Adicionar</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    {/* Relatórios */}
+    <TabsContent value="relatorios">
+      <Card className="mt-4">
+        <CardContent>
+          <h2 className="font-semibold text-lg mb-2">Relatórios</h2>
+          <Button className="w-full">Gerar relatório PDF</Button>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    {/* Estoque */}
+    <TabsContent value="estoque">
+      <Card className="mt-4">
+        <CardContent>
+          <h2 className="font-semibold text-lg mb-2">Controle de peças</h2>
+          <div className="space-y-2">
+            <div className="p-2 bg-white rounded shadow">Filtro HEPA - 10 unid</div>
+            <div className="p-2 bg-white rounded shadow">Bateria Ventilador - 3 unid</div>
+          </div>
+          <Button className="mt-3 w-full">+ Nova peça</Button>
+        </CardContent>
+      </Card>
+    </TabsContent>
+  </Tabs>
+</div>
+
+) }
+
