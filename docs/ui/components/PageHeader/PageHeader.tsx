@@ -1,6 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
+import { useRouter } from 'next/compat/router';
 
 import { WithTestRequire } from '~/types/common';
+import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
 import { H1, P } from '~/ui/components/Text';
 
 import { PagePackageVersion } from './PagePackageVersion';
@@ -25,6 +27,14 @@ export function PageHeader({
   platforms,
   testRequire,
 }: Props) {
+  const router = useRouter();
+  const currentPath = router?.asPath ?? router?.pathname ?? '';
+  const showMarkdownActions = shouldShowMarkdownActions({
+    packageName,
+    path: currentPath,
+  });
+  const showPackageMarkdown = packageName ? !hasDynamicData(currentPath) : false;
+
   return (
     <>
       <div
@@ -44,7 +54,11 @@ export function PageHeader({
           {title}
         </H1>
         <span className="-mt-0.5 flex gap-1 max-xl-gutters:hidden">
-          <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+          <PageTitleButtons
+            packageName={packageName}
+            sourceCodeUrl={sourceCodeUrl}
+            showMarkdownActions={showMarkdownActions}
+          />
         </span>
       </div>
       {description && (
@@ -53,7 +67,11 @@ export function PageHeader({
         </P>
       )}
       <span className="mb-1 mt-3 hidden gap-1 max-xl-gutters:flex">
-        <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+        <PageTitleButtons
+          packageName={packageName}
+          sourceCodeUrl={sourceCodeUrl}
+          showMarkdownActions={showMarkdownActions}
+        />
       </span>
       <div
         className={mergeClasses(
@@ -62,7 +80,13 @@ export function PageHeader({
           'empty:hidden'
         )}>
         {platforms && <PagePlatformTags platforms={platforms} />}
-        {packageName && <PagePackageVersion packageName={packageName} testRequire={testRequire} />}
+        {packageName && (
+          <PagePackageVersion
+            packageName={packageName}
+            testRequire={testRequire}
+            showMarkdownActions={showPackageMarkdown}
+          />
+        )}
       </div>
     </>
   );

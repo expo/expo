@@ -75,9 +75,9 @@ export type Locale = {
    */
   digitGroupingSeparator: string | null;
   /**
-   * Text direction for the locale. One of: `'ltr'`, `'rtl'`, but can also be `null` on some browsers without support for the [textInfo](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/textInfo) property in [Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) API.
+   * Text direction for the locale. One of: `'ltr'`, `'rtl'`.
    */
-  textDirection: 'ltr' | 'rtl' | null;
+  textDirection: 'ltr' | 'rtl';
   /**
    * The measurement system used in the locale.
    * Is `null` on Web, as user chosen measurement system is not exposed on the web and using locale to determine measurement systems is unreliable.

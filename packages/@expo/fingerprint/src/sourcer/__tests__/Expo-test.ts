@@ -245,7 +245,7 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
-        filePath: './assets/icon.png',
+        filePath: 'assets/icon.png',
       })
     );
   });
@@ -276,7 +276,7 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
-        filePath: './assets/images/splash-icon.png',
+        filePath: 'assets/images/splash-icon.png',
       })
     );
   });

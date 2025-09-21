@@ -67,4 +67,42 @@ export async function requestIntegrityCheck(requestHash) {
     }
     return ExpoAppIntegrity.requestIntegrityCheck(requestHash);
 }
+/**
+ * Checks if hardware attestation is supported on this device.
+ * @return A Promise that is fulfilled with a boolean indicating support.
+ * @platform android
+ */
+export async function isHardwareAttestationSupported() {
+    if (Platform.OS !== 'android') {
+        return false;
+    }
+    return ExpoAppIntegrity.isHardwareAttestationSupported();
+}
+/**
+ * Generates a hardware-attested key pair in the Android Keystore.
+ * This key can be used for attestation on GrapheneOS and other secure Android distributions.
+ * @param keyAlias A unique identifier for the key.
+ * @param challenge A challenge string from your server.
+ * @return A Promise that resolves when the key is generated successfully.
+ * @platform android
+ */
+export async function generateHardwareAttestedKey(keyAlias, challenge) {
+    if (Platform.OS !== 'android') {
+        throw new Error('generateHardwareAttestedKey is only available on Android');
+    }
+    return ExpoAppIntegrity.generateHardwareAttestedKey(keyAlias, challenge);
+}
+/**
+ * Retrieves the attestation certificate chain for a hardware-attested key.
+ * The certificate chain can be validated on your server to verify device integrity.
+ * @param keyAlias The identifier of the key to get certificates for.
+ * @return A Promise that is fulfilled with an array of base64-encoded X.509 certificates.
+ * @platform android
+ */
+export async function getAttestationCertificateChain(keyAlias) {
+    if (Platform.OS !== 'android') {
+        throw new Error('getAttestationCertificateChain is only available on Android');
+    }
+    return ExpoAppIntegrity.getAttestationCertificateChain(keyAlias);
+}
 //# sourceMappingURL=AppIntegrity.js.map

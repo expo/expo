@@ -18,7 +18,7 @@ const jpgPath = require('../assets/qrcode_expo.jpg');
 
 export async function test(t) {
   let permissions;
-  let files, filesWithAudio;
+  let files;
   let jpgFile, pngFile, mp4File, mp3File;
 
   const checkIfAllPermissionsWereGranted = () => {
@@ -34,7 +34,6 @@ export async function test(t) {
     [jpgFile] = await ExpoAsset.loadAsync(jpgPath);
     [mp4File] = await ExpoAsset.loadAsync(mp4Path);
     files = [pngFile, jpgFile, mp4File];
-    filesWithAudio = [pngFile, jpgFile, mp4File, mp3File];
     permissions = await requestPermissionsAsync();
     if (!checkIfAllPermissionsWereGranted()) {
       console.warn('Tests will fail - not enough permissions to run them.');
@@ -128,19 +127,6 @@ export async function test(t) {
         }
       });
     }
-
-    t.it('fails when mixing audio and images', async () => {
-      try {
-        const albumName = createAlbumName('mixed audio & image');
-        const assets = await Promise.all(filesWithAudio.map((f) => Asset.create(f.localUri)));
-        assetsContainer.push(assets);
-        const album = await Album.create(albumName, assets);
-        albumsContainer.push(album);
-        t.fail();
-      } catch (e) {
-        t.expect(e).toBeDefined();
-      }
-    });
   });
 
   t.describe('Asset creation', () => {
@@ -194,6 +180,18 @@ export async function test(t) {
       const assets = await album.getAssets();
       const assetIds = assets.map((a) => a.id);
       t.expect(assetIds).toContain(newAsset.id);
+    });
+  });
+
+  t.describe('Album get', () => {
+    t.it('gets an album by title', async () => {
+      const albumName = createAlbumName('gets an album by title');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+
+      const fetchedAlbum = await Album.get(albumName);
+      t.expect(fetchedAlbum).toBeDefined();
+      t.expect(fetchedAlbum.id).toBe(album.id);
     });
   });
 
@@ -270,8 +268,9 @@ export async function test(t) {
       t.expect(mediaType).toBeDefined();
     });
 
-    t.it('returns positive modification time', async () => {
+    t.it('returns correct modification time', async () => {
       const modificationTime = await asset.getModificationTime();
+      t.expect(new Date(modificationTime).getFullYear()).toBeGreaterThan(1970);
       t.expect(modificationTime).toBeGreaterThan(0);
     });
 
@@ -319,8 +318,9 @@ export async function test(t) {
       t.expect(mediaType).toBeDefined();
     });
 
-    t.it('returns positive modification time', async () => {
+    t.it('returns correct modification time', async () => {
       const modificationTime = await videoAsset.getModificationTime();
+      t.expect(new Date(modificationTime).getFullYear()).toBeGreaterThan(1970);
       t.expect(modificationTime).toBeGreaterThan(0);
     });
 
@@ -440,8 +440,8 @@ export async function test(t) {
       const [queriedAsset] = await new Query()
         .limit(1)
         .album(album)
-        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1)
-        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1)
+        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1000)
+        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1000)
         .exe();
       // then
       t.expect(queriedAsset.id).toBe(asset.id);
@@ -477,8 +477,8 @@ export async function test(t) {
       const [queriedAsset] = await new Query()
         .limit(1)
         .album(album)
-        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1)
-        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1)
+        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1000)
+        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1000)
         .exe();
       // then
       t.expect(queriedAsset).toBeUndefined();

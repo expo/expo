@@ -18,7 +18,7 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetModificationTime
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetPath
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
-import expo.modules.medialibrary.next.extensions.resolver.queryGetCreationTime
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetCreationTime
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
@@ -28,6 +28,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class AssetModernDelegate(override val contentUri: Uri, context: Context) : AssetDelegate {
@@ -40,7 +42,7 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
 
   override suspend fun getCreationTime(): Long? {
     return contentResolver
-      .queryGetCreationTime(contentUri)
+      .queryAssetCreationTime(contentUri)
       .takeIf { it != 0L }
   }
 
@@ -88,7 +90,10 @@ class AssetModernDelegate(override val contentUri: Uri, context: Context) : Asse
     MediaType.fromContentUri(contentUri)
 
   override suspend fun getModificationTime(): Long? =
-    contentResolver.queryAssetModificationTime(contentUri).takeIf { it != 0L }
+    contentResolver.queryAssetModificationTime(contentUri)
+      ?.takeIf { it != 0L }
+      ?.toDuration(DurationUnit.SECONDS)
+      ?.inWholeMilliseconds
 
   override suspend fun getUri(): Uri {
     // e.g. storage/emulated/0/Android/data/expo/files/[ROOT_ALBUM]/[ALBUM_NAME]

@@ -17,8 +17,8 @@ import kotlinx.coroutines.withContext
 suspend fun ContentResolver.queryAssetDisplayName(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.MediaColumns.DISPLAY_NAME, Cursor::getString)
 
-suspend fun ContentResolver.queryGetCreationTime(contentUri: Uri): Long? =
-  queryOne(contentUri, MediaStore.MediaColumns.DATE_TAKEN, Cursor::getLong)
+suspend fun ContentResolver.queryAssetCreationTime(contentUri: Uri): Long? =
+  queryOne(contentUri, MediaStore.Images.Media.DATE_TAKEN, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetModificationTime(contentUri: Uri): Long? =
   queryOne(contentUri, MediaStore.MediaColumns.DATE_MODIFIED, Cursor::getLong)
@@ -37,9 +37,6 @@ suspend fun ContentResolver.queryAssetPath(contentUri: Uri): String? =
 
 suspend fun ContentResolver.queryAssetBucketId(contentUri: Uri): Int? =
   queryOne(contentUri, MediaStore.MediaColumns.BUCKET_ID, Cursor::getInt)
-
-suspend fun ContentResolver.queryAssetMediaType(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.Files.FileColumns.MEDIA_TYPE, Cursor::getInt)
 
 suspend fun ContentResolver.insertPendingAsset(
   displayName: String,

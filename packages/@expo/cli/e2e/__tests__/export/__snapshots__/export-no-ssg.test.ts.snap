@@ -34,6 +34,12 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/api/headers+api.js",
+      "namedRegex": "^/api/headers(?:/)?$",
+      "page": "/api/headers",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/env-vars+api.js",
       "namedRegex": "^/api/env\\-vars(?:/)?$",
       "page": "/api/env-vars",

@@ -39,7 +39,7 @@ class Asset: SharedObject {
     guard let date = phAsset.creationDate else {
       return nil
     }
-    return Int(date.timeIntervalSince1970)
+    return date.millisecondsSince1970
   }
 
   func getModificationTime() async throws -> Int? {
@@ -47,7 +47,7 @@ class Asset: SharedObject {
     guard let date = phAsset.modificationDate else {
       return nil
     }
-    return Int(date.timeIntervalSince1970)
+    return date.millisecondsSince1970
   }
 
   func getMediaType() async throws -> MediaTypeNext {

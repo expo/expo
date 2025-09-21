@@ -19,7 +19,7 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetModificationTime
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetPath
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
-import expo.modules.medialibrary.next.extensions.resolver.queryGetCreationTime
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetCreationTime
 import expo.modules.medialibrary.next.extensions.safeCopy
 import expo.modules.medialibrary.next.extensions.safeMove
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
@@ -30,6 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @DeprecatedSinceApi(Build.VERSION_CODES.Q)
 class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
@@ -50,7 +52,7 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
 
   override suspend fun getCreationTime(): Long? {
     return contentResolver
-      .queryGetCreationTime(contentUri)
+      .queryAssetCreationTime(contentUri)
       .takeIf { it != 0L }
   }
 
@@ -98,7 +100,10 @@ class AssetLegacyDelegate(contentUri: Uri, context: Context) : AssetDelegate {
     MediaType.fromContentUri(contentUri)
 
   override suspend fun getModificationTime(): Long? =
-    contentResolver.queryAssetModificationTime(contentUri).takeIf { it != 0L }
+    contentResolver.queryAssetModificationTime(contentUri)
+      ?.takeIf { it != 0L }
+      ?.toDuration(DurationUnit.SECONDS)
+      ?.inWholeMilliseconds
 
   override suspend fun getMimeType(): MimeType {
     return contentResolver.getType(contentUri)?.let { MimeType(it) }

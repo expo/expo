@@ -125,16 +125,11 @@ class AudioRecorder(
   }
 
   fun stopRecording(): Bundle {
-    val currentFilePath = filePath // Capture file path before reset
-
     try {
       recorder?.stop()
     } finally {
       reset()
     }
-
-    // Auto-prepare for next recording to match iOS/Web behavior
-    prepareRecording(null)
 
     // Emit completion event on the main thread
     appContext?.mainQueue?.launch {
@@ -145,7 +140,7 @@ class AudioRecorder(
           "isFinished" to true,
           "hasError" to false,
           "error" to null,
-          "url" to currentFilePath?.toUri().toString()
+          "url" to filePath?.toUri().toString()
         )
       )
     }
@@ -164,7 +159,6 @@ class AudioRecorder(
     durationAlreadyRecorded = 0
     startTime = 0L
     isPrepared = false
-    filePath = null // Reset file path for next recording
   }
 
   private fun createRecorder(options: RecordingOptions) =

@@ -1,14 +1,20 @@
 /* eslint-env browser */
 import { Platform } from 'expo-modules-core';
+const FALLBACK_LOCALE = 'en-US';
 const getNavigatorLocales = () => {
     if (Platform.isDOMAvailable) {
-        return navigator.languages || [navigator.language];
+        if (navigator.languages?.length > 0) {
+            return navigator.languages;
+        }
+        else if (navigator.language) {
+            return [navigator.language];
+        }
     }
     const dtFormatLocale = Intl?.DateTimeFormat()?.resolvedOptions()?.locale;
     if (dtFormatLocale) {
         return [dtFormatLocale];
     }
-    return [];
+    return [FALLBACK_LOCALE];
 };
 const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
 // https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
@@ -28,6 +34,8 @@ const USES_FAHRENHEIT = [
     'PW',
     'KY',
 ];
+// https://localizejs.com/articles/localizing-for-right-to-left-languages-the-issues-to-consider
+const USES_RTL = ['ar', 'arc', 'ckb', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ps', 'sd', 'ur', 'yi'];
 export function addLocaleListener(
 // NOTE(@kitten): We never use the event's data
 listener) {
@@ -50,7 +58,7 @@ export function removeSubscription(subscription) {
 export default {
     getLocales() {
         const locales = getNavigatorLocales();
-        return locales?.map((languageTag) => {
+        return locales.map((languageTag) => {
             // TextInfo is an experimental API that is not available in all browsers.
             // We might want to consider using a locale lookup table instead.
             let locale = {};
@@ -58,6 +66,7 @@ export default {
             let digitGroupingSeparator = null;
             let decimalSeparator = null;
             let temperatureUnit = null;
+            let textDirection = null;
             // Gracefully handle language codes like `en-GB-oed` which is unsupported
             // but is otherwise a valid language tag (grandfathered)
             try {
@@ -70,7 +79,11 @@ export default {
                 }
             }
             catch { }
-            const { region, textInfo, language, script } = locale;
+            const { region, language, script } = locale;
+            textDirection =
+                locale.getTextInfo?.()?.direction ??
+                    locale.textInfo?.direction ??
+                    languageTextDirection(language);
             if (region) {
                 temperatureUnit = regionToTemperatureUnit(region);
             }
@@ -78,7 +91,7 @@ export default {
                 languageTag,
                 languageCode: language || languageTag.split('-')[0] || 'en',
                 languageScriptCode: script || null,
-                textDirection: textInfo?.direction || null,
+                textDirection,
                 digitGroupingSeparator,
                 decimalSeparator,
                 measurementSystem: null,
@@ -109,5 +122,8 @@ export default {
 };
 function regionToTemperatureUnit(region) {
     return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
+}
+function languageTextDirection(language) {
+    return USES_RTL.includes(language) ? 'rtl' : 'ltr';
 }
 //# sourceMappingURL=ExpoLocalization.js.map
