@@ -1,3 +1,8 @@
+html {
+  /* To stretch over the safe area in iOS */
+  height: 100vh;
+}
+
 .overlay {
   position: fixed;
 
@@ -19,7 +24,6 @@
 
 .container {
   --expo-log-max-width: 960px;
-  --expo-log-footer-height: 3rem;
 
   margin: 0 auto;
   max-width: var(--expo-log-max-width);
@@ -136,11 +140,12 @@
   background-color: var(--expo-log-secondary-system-background);
 }
 
-@supports (-webkit-touch-callout: none) {
+/* NOTE: Why +16 on webkit-touch-callout? */
+/* @supports (-webkit-touch-callout: none) {
   .footer {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
   }
-}
+} */
 
 .headerBlur {
   background: linear-gradient(to top, transparent, var(--expo-log-color-background));

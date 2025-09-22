@@ -190,7 +190,8 @@ export function LogBoxContent({
     [log]
   );
 
-  const onReload = globalThis.__expoReloadJS;
+  // @ts-ignore
+  const onReload = globalThis.__polyfill_dom_reloadRuntime;
   
   const onCopy = () => {
     // Copy log to clipboard
@@ -294,7 +295,7 @@ export function LogBoxContent({
             title={headerTitle}
           />
 
-          {meta && (
+          {(
             <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
               {codeFrames.map(([key, codeFrame]) => (
                 <ErrorCodeFrame key={key} projectRoot={projectRoot} codeFrame={codeFrame} />

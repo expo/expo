@@ -109,6 +109,6 @@ Pod::Spec.new do |s|
   s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/Swift.h']
   s.resource_bundles = {
-    'ExpoLogBox' => ['ExpoLogBox/_expo', 'ExpoLogBox/assets', 'ExpoLogBox/index.html'],
+    'ExpoLogBox' => ['ExpoLogBox/_expo', 'ExpoLogBox/index.html'],
   }
 end

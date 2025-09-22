@@ -6,6 +6,7 @@ import * as LogBoxData from './Data/LogBoxData';
 
 import React from 'react';
 import type { CodeFrame } from './devServerEndpoints';
+import { parseLogBoxException } from './Data/parseLogBoxLog';
 
 function useViewportMeta(content: string) {
   React.useEffect(() => {
@@ -32,25 +33,27 @@ export default function LogBoxPolyfillDOM({
   onMinimize,
   onChangeSelectedIndex,
   onCopyText,
-  selectedIndex,
   platform,
   fetchJsonAsync,
+  reloadRuntime,
   ...props
 }: {
   onCopyText: (text: string) => void;
   fetchJsonAsync: (input: RequestInfo, init?: RequestInit) => Promise<any>;
-  platform: string | undefined;
-  onDismiss: (index: number) => void;
-  onMinimize: () => void;
-  onChangeSelectedIndex: (index: number) => void;
-  logs: any[];
-  selectedIndex: number;
+  reloadRuntime: () => void;
+  platform?: string;
+  onDismiss?: (index: number) => void;
+  onMinimize?: () => void;
+  onChangeSelectedIndex?: (index: number) => void;
+  logs?: any[];
+  nativeLogs?: any[];
+  selectedIndex?: number;
   dom?: import('expo/dom/internal').DOMPropsInternal;
 }) {
   const logs = React.useMemo(() => {
     // Convert from React Native style to Expo style LogBoxLog
-    return Array.from(
-      props.logs.map(
+    return [
+      ...(props.logs?.map(
         ({ symbolicated, symbolicatedComponentStack, codeFrame, componentCodeFrame, ...log }) => {
           const outputCodeFrame: Partial<Record<StackType, CodeFrame>> = {};
 
@@ -108,9 +111,14 @@ export default function LogBoxPolyfillDOM({
             symbolicated: outputSymbolicated,
           });
         }
-      )
-    );
+      ) ?? []),
+      ...(props.nativeLogs?.map((message) => new LogBoxLog(parseLogBoxException({
+          originalMessage: message,
+          stack: [],
+      }))) ?? []),
+    ];
   }, []);
+  const [selectedIndex, _setSelectedIndex] = React.useState(props.selectedIndex ?? (logs && logs?.length - 1) ?? -1);
 
   // @ts-ignore
   globalThis.__polyfill_onCopyText = onCopyText;
@@ -118,6 +126,8 @@ export default function LogBoxPolyfillDOM({
   globalThis.__polyfill_platform = platform;
   // @ts-ignore
   globalThis.__polyfill_dom_fetchJsonAsync = fetchJsonAsync;
+  // @ts-ignore
+  globalThis.__polyfill_dom_reloadRuntime = reloadRuntime;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
   // @ts-ignore
   LogBoxData.setSelectedLog = onChangeSelectedIndex;
