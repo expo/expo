@@ -79,9 +79,6 @@ function babelPresetExpo(api, options = {}) {
         !isServerEnv &&
         // Give users the ability to opt-out of the feature, per-platform.
         platformOptions['react-compiler'] !== false) {
-        if (!(0, common_1.hasModule)('babel-plugin-react-compiler')) {
-            throw new Error('The `babel-plugin-react-compiler` must be installed before you can use React Compiler.');
-        }
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
