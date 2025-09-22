@@ -20,6 +20,7 @@ export default function AudioControlsScreen(props: any) {
       shouldPlayInBackground: true,
       interruptionMode: 'doNotMix',
       playsInSilentMode: true,
+      allowsRecording: false,
     });
     AudioModule.setIsAudioActiveAsync(true);
     props.navigation.setOptions({
