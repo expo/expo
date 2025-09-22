@@ -42,7 +42,6 @@ export default function TextInputScreen() {
         <Host matchContents>
           <TextField
             ref={textRef}
-            onChangeFocus={console.log}
             autocorrection={false}
             defaultValue="hey there"
             onChangeText={setValue}

@@ -29,11 +29,11 @@ struct SecureFieldView: ExpoSwiftUI.View {
   }
   
   public func focus() {
-      isFocused = true
+    textManager.isFocused = true
   }
 
   public func blur() {
-      isFocused = false
+    textManager.isFocused = false
   }
 
   var body: some View {
@@ -52,6 +52,7 @@ struct SecureFieldView: ExpoSwiftUI.View {
         isFocused = newValue
       }
       .onChange(of: isFocused) { newValue in
+        textManager.isFocused = newValue
         props.onFocusChanged(["value": newValue])
       }
       .keyboardType(getKeyboardType(props.keyboardType))
