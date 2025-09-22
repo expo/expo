@@ -2,12 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { createEnvironment } from './common';
+import { assertRuntimeFetchAPISupport } from '../../ImmutableRequest';
 
 interface NodeEnvParams {
   build: string;
 }
 
 export function createNodeEnv(params: NodeEnvParams) {
+  assertRuntimeFetchAPISupport();
+
   async function readText(request: string) {
     const filePath = path.join(params.build, request);
     if (!fs.existsSync(filePath)) {
