@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused module check. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 54.0.2 — 2025-09-18
 
 _This version does not introduce any user-facing changes._
