@@ -82,6 +82,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['MediaLibrary.ts'],
+  'expo-media-library-next': ['next/index.ts', 'expo-media-library'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],

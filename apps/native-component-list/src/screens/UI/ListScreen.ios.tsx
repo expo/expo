@@ -9,12 +9,13 @@ import {
   Switch,
   VStack,
 } from '@expo/ui/swift-ui';
+import { type SFSymbol } from 'expo-symbols';
 import * as React from 'react';
 
 export default function ListScreen() {
   const [color, setColor] = React.useState<string>('blue');
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
-  const data = [
+  const data: { text: string; systemImage: SFSymbol }[] = [
     { text: 'Good Morning', systemImage: 'sun.max.fill' },
     { text: 'Weather', systemImage: 'cloud.sun.fill' },
     { text: 'Settings', systemImage: 'gearshape.fill' },

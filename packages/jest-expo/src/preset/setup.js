@@ -192,7 +192,25 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
 
 function attemptLookup(moduleName) {
   // hack to get the package name from the module name
-  const filePath = stackTrace.getSync().find((line) => line.fileName.includes(moduleName));
+  const filePath = stackTrace.getSync().find((line) => {
+    if (line.fileName.includes(moduleName)) {
+      return true;
+    }
+
+    if (!fs.existsSync(line.fileName)) {
+      return false;
+    }
+    const fileContents = fs.readFileSync(line.fileName, { encoding: 'utf8' });
+    // Matches requireNativeModule<OptionalGeneric>("ModuleName")
+    const regexPattern = new RegExp(
+      `require(?:Optional)?NativeModule\\s*(?:<${moduleName}Module>)?\\s*\\(['"]${moduleName}['"]\\)`
+    );
+
+    if (regexPattern.test(fileContents)) {
+      return true;
+    }
+    return false;
+  });
   if (!filePath) {
     return null;
   }

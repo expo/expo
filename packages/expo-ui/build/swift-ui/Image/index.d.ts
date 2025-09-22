@@ -1,10 +1,11 @@
+import { type SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
 export interface ImageProps extends CommonViewModifierProps {
     /**
      * The name of the system image (SF Symbol).
      * For example: 'photo', 'heart.fill', 'star.circle'
      */
-    systemName: string;
+    systemName: SFSymbol;
     /**
      * The size of the system image.
      */

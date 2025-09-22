@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -9,7 +10,7 @@ export interface ImageProps extends CommonViewModifierProps {
    * The name of the system image (SF Symbol).
    * For example: 'photo', 'heart.fill', 'star.circle'
    */
-  systemName: string;
+  systemName: SFSymbol;
   /**
    * The size of the system image.
    */
