@@ -25,17 +25,7 @@ function noopBeforeResponse(
   return responseInit;
 }
 
-export function createRequestHandler({
-  getRoutesManifest,
-  getHtml,
-  getApiRoute,
-  handleRouteError,
-  getMiddleware,
-  beforeErrorResponse = noopBeforeResponse,
-  beforeResponse = noopBeforeResponse,
-  beforeHTMLResponse = noopBeforeResponse,
-  beforeAPIResponse = noopBeforeResponse,
-}: {
+export interface RequestHandlerParams {
   getHtml: (request: Request, route: Route) => Promise<string | Response | null>;
   getRoutesManifest: () => Promise<Manifest | null>;
   getApiRoute: (route: Route) => Promise<any>;
@@ -49,9 +39,25 @@ export function createRequestHandler({
   beforeHTMLResponse?: BeforeResponseCallback;
   /** Before handler API responses */
   beforeAPIResponse?: BeforeResponseCallback;
-}) {
+}
+
+export function createRequestHandler({
+  getRoutesManifest,
+  getHtml,
+  getApiRoute,
+  handleRouteError,
+  getMiddleware,
+  beforeErrorResponse = noopBeforeResponse,
+  beforeResponse = noopBeforeResponse,
+  beforeHTMLResponse = noopBeforeResponse,
+  beforeAPIResponse = noopBeforeResponse,
+}: RequestHandlerParams) {
+  let manifest: Manifest | null = null;
+
   return async function handler(request: Request): Promise<Response> {
-    const manifest = await getRoutesManifest();
+    if (!manifest) {
+      manifest = await getRoutesManifest();
+    }
     return requestHandler(request, manifest);
   };
 

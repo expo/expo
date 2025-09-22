@@ -3,15 +3,8 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
-import { createRequestHandler as createExpoHandler } from './abstract';
-import {
-  getApiRoute,
-  getHtml,
-  getMiddleware,
-  getRoutesManifest,
-  handleRouteError,
-} from '../runtime/node';
-import type { Manifest } from '../types';
+import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
+import { createNodeEnv } from './environment/node';
 
 type NextFunction = (err?: any) => void;
 
@@ -25,36 +18,14 @@ export type RequestHandler = (
  * Returns a request handler for http that serves the response using Remix.
  */
 export function createRequestHandler(
-  { build }: { build: string },
-  setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
+  params: { build: string },
+  setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
-  let routesManifest: Manifest | null = null;
-
-  const defaultGetRoutesManifest = getRoutesManifest(build);
-  const getRoutesManifestCached = async () => {
-    let manifest: Manifest | null = null;
-    if (setup.getRoutesManifest) {
-      // Development
-      manifest = await setup.getRoutesManifest();
-    } else if (!routesManifest) {
-      // Production
-      manifest = await defaultGetRoutesManifest();
-    }
-
-    if (manifest) {
-      routesManifest = manifest;
-    }
-
-    return routesManifest;
-  };
-
+  const nodeEnv = createNodeEnv(params);
   const handleRequest = createExpoHandler({
-    getRoutesManifest: getRoutesManifestCached,
-    getHtml: getHtml(build),
-    getApiRoute: getApiRoute(build),
-    getMiddleware: getMiddleware(build),
-    handleRouteError: handleRouteError(),
+    ...nodeEnv,
     ...setup,
+    getRoutesManifest: setup?.getRoutesManifest ?? nodeEnv.getRoutesManifest,
   });
 
   return async (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
@@ -63,9 +34,7 @@ export function createRequestHandler(
     }
     try {
       const request = convertRequest(req, res);
-
       const response = await handleRequest(request);
-
       await respond(res, response);
     } catch (error: unknown) {
       // http doesn't support async functions, so we have to pass along the

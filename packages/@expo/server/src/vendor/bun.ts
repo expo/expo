@@ -1,11 +1,5 @@
-import { createRequestHandler as createExpoHandler } from './abstract';
-import {
-  getApiRoute,
-  getHtml,
-  getMiddleware,
-  getRoutesManifest,
-  handleRouteError,
-} from '../runtime/node';
+import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
+import { createNodeEnv } from './environment/node';
 
 export type RequestHandler = (req: Request) => Promise<Response>;
 
@@ -13,15 +7,11 @@ export type RequestHandler = (req: Request) => Promise<Response>;
  * Returns a request handler for Express that serves the response using Remix.
  */
 export function createRequestHandler(
-  { build }: { build: string },
-  setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
+  params: { build: string },
+  setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
   return createExpoHandler({
-    getRoutesManifest: getRoutesManifest(build),
-    getHtml: getHtml(build),
-    getApiRoute: getApiRoute(build),
-    getMiddleware: getMiddleware(build),
-    handleRouteError: handleRouteError(),
+    ...createNodeEnv(params),
     ...setup,
   });
 }

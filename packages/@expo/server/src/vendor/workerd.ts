@@ -1,11 +1,5 @@
-import { createRequestHandler as createExpoHandler } from './abstract';
-import {
-  getApiRoute,
-  getHtml,
-  getRoutesManifest,
-  handleRouteError,
-  getMiddleware,
-} from '../runtime/workerd';
+import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
+import { createWorkerdEnv } from './environment/workerd';
 
 export type RequestHandler = (req: Request) => Promise<Response>;
 
@@ -13,15 +7,11 @@ export type RequestHandler = (req: Request) => Promise<Response>;
  * Returns a request handler for Workerd deployments.
  */
 export function createRequestHandler(
-  { build }: { build: string },
-  setup: Partial<Parameters<typeof createExpoHandler>[0]> = {}
+  params: { build: string },
+  setup?: RequestHandlerParams
 ): RequestHandler {
   return createExpoHandler({
-    getRoutesManifest: getRoutesManifest(build),
-    getHtml: getHtml(build),
-    getApiRoute: getApiRoute(build),
-    getMiddleware: getMiddleware(build),
-    handleRouteError: handleRouteError(),
+    ...createWorkerdEnv(params),
     ...setup,
   });
 }

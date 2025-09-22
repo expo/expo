@@ -7,14 +7,7 @@ import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from './abstract';
-import {
-  getApiRoute,
-  getHtml,
-  getMiddleware,
-  getRoutesManifest,
-  handleRouteError,
-} from '../runtime/node';
-import { createReadableStreamFromReadable } from '../utils/createReadableStreamFromReadable';
+import { createNodeEnv } from './environment/node';
 
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
@@ -22,14 +15,8 @@ export type RequestHandler = (req: http.IncomingMessage, res: http.ServerRespons
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Remix.
  */
-export function createRequestHandler({ build }: { build: string }): RequestHandler {
-  const handleRequest = createExpoHandler({
-    getRoutesManifest: getRoutesManifest(build),
-    getHtml: getHtml(build),
-    getApiRoute: getApiRoute(build),
-    getMiddleware: getMiddleware(build),
-    handleRouteError: handleRouteError(),
-  });
+export function createRequestHandler(params: { build: string }): RequestHandler {
+  const handleRequest = createExpoHandler(createNodeEnv(params));
 
   return async (req, res) => {
     return respond(res, await handleRequest(convertRequest(req, res)));
