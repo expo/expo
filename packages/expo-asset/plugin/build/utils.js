@@ -25,15 +25,11 @@ async function resolveAssetPaths(assets, projectRoot) {
     });
     return (await Promise.all(promises)).flat();
 }
-const validPattern = /^[a-z0-9_]+$/;
-function isAndroidAssetNameValid(assetName) {
-    return validPattern.test(assetName);
-}
 function validateAssets(assets, platform) {
     return assets.filter((asset) => {
         const ext = path_1.default.extname(asset);
         const name = path_1.default.basename(asset, ext);
-        const isNameValid = platform === 'android' ? isAndroidAssetNameValid(name) : true;
+        const isNameValid = platform === 'android' ? (0, config_plugins_1.isValidAndroidAssetName)(name) : true;
         const accepted = exports.ACCEPTED_TYPES.includes(ext);
         const isFont = exports.FONT_TYPES.includes(ext);
         if (!isNameValid) {
