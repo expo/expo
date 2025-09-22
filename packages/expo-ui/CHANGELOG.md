@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add correct color value types.
 - [iOS] Updated description for glass button styles availability ([#39736](https://github.com/expo/expo/pull/39736) by [@terijaki](https://github.com/terijaki))
 
 ### 💡 Others

@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { type ViewEvent } from '../../types';
@@ -19,7 +20,7 @@ export interface ImageProps extends CommonViewModifierProps {
    * The color of the system image.
    * Can be a color name like '#ff00ff', 'red', 'blue', etc.
    */
-  color?: string;
+  color?: ColorValue;
 
   /**
    * Callback triggered when the view is pressed.

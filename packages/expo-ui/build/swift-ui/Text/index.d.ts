@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export interface TextProps extends CommonViewModifierProps {
     children: string;
@@ -22,7 +23,7 @@ export interface TextProps extends CommonViewModifierProps {
     /**
      * The color of the text.
      */
-    color?: string;
+    color?: ColorValue;
 }
 export declare function Text(props: TextProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

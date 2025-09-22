@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type PickerProps = {
     /**
@@ -30,7 +31,7 @@ export type PickerProps = {
     /**
      * Picker color. On iOS it only applies to the `'menu'` variant.
      */
-    color?: string;
+    color?: ColorValue;
 } & CommonViewModifierProps;
 /**
  * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
