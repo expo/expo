@@ -1,0 +1,43 @@
+import { requireNativeViewManager } from 'expo-modules-core';
+import { processColor } from 'react-native';
+
+import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
+
+const NativeView: React.ComponentType<NativeSymbolViewProps> =
+  requireNativeViewManager('SymbolModule');
+
+export function SymbolView(props: SymbolViewProps) {
+  if (!NativeView) {
+    return <>{props.fallback}</>;
+  }
+
+  const nativeProps = getNativeProps(props);
+  if (!nativeProps.name) {
+    return <>{props.fallback}</>;
+  }
+
+  return <NativeView {...nativeProps} />;
+}
+
+function getNativeProps(props: SymbolViewProps): NativeSymbolViewProps {
+  const colors = Array.isArray(props.colors) ? props.colors : props.colors ? [props.colors] : [];
+  const animated = !!props.animationSpec || false;
+  const type = props.type || 'monochrome';
+  const size = props.size || 24;
+  const style = props.style
+    ? [{ width: size, height: size }, props.style]
+    : { width: size, height: size };
+  const name = typeof props.name === 'object' ? props.name.ios : props.name;
+  const weight = typeof props.weight === 'object' ? props.weight.ios : props.weight;
+
+  return {
+    ...props,
+    name,
+    style,
+    colors: colors.map((c) => processColor(c)),
+    tint: processColor(props.tintColor),
+    weight,
+    animated,
+    type,
+  };
+}

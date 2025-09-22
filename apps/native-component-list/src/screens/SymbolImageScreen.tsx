@@ -25,7 +25,11 @@ function SymbolRow({ title, ...props }: RowProps) {
         {randomRow.map((symbol, index) => (
           <SymbolView
             {...props}
-            name={{ ios: symbol as SFSymbol, android: symbol as AndroidSymbol }}
+            name={{
+              ios: symbol as SFSymbol,
+              android: symbol as AndroidSymbol,
+              web: symbol as AndroidSymbol,
+            }}
             key={index}
             style={styles.symbol}
             resizeMode="scaleAspectFit"
@@ -92,28 +96,42 @@ function SymbolScales({ title, ...props }: RowProps) {
 }
 
 export default function SymbolImageScreen() {
-  if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
-    return (
-      <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={styles.title}>Expo Symbols are not supported on {Platform.OS}</Text>
-      </View>
-    );
-  }
+  // if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
+  //   return (
+  //     <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
+  //       <Text style={styles.title}>Expo Symbols are not supported on {Platform.OS}</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 10, gap: 10 }}>
       <Text style={styles.title}>Use component directly</Text>
       <SymbolView
-        name={{ ios: 'pencil.tip.crop.circle.badge.plus', android: 'ad_group' }}
+        name={{
+          ios: 'pencil.tip.crop.circle.badge.plus',
+          android: 'home_and_garden',
+          web: 'home_and_garden',
+        }}
         style={styles.symbol}
       />
-      <SymbolRow title="Monochrome (default)" type="monochrome" />
-      <SymbolRow
-        title="Hierarchical"
-        type="hierarchical"
-        tintColor={PlatformColor('systemPurple')}
+      <Text style={styles.title}>Use fallback</Text>
+      <SymbolView
+        style={styles.symbol}
+        name={{}}
+        fallback={<View style={{ backgroundColor: 'red', width: 20, height: 20 }} />}
       />
-      <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />
+      <SymbolRow title="Monochrome (default)" type="monochrome" />
+      {Platform.OS === 'ios' && (
+        <>
+          <SymbolRow
+            title="Hierarchical"
+            type="hierarchical"
+            tintColor={PlatformColor('systemPurple')}
+          />
+          <SymbolRow title="Palette" colors={['red', 'green', 'blue']} type="palette" />
+        </>
+      )}
       <SymbolRow
         title="Palette RGB"
         colors={['rgb(40, 186, 54)', 'rgb(21, 186, 212)', 'rgb(184, 10, 44)']}

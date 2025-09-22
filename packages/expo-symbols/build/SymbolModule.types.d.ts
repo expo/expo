@@ -6,11 +6,12 @@ export type SymbolViewProps = {
      * The name of the symbol. iOS Symbols can be viewed in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/).
      */
     name: SFSymbol | {
-        ios: SFSymbol;
-        android: AndroidSymbol;
+        ios?: SFSymbol;
+        android?: AndroidSymbol;
+        web?: AndroidSymbol;
     };
     /**
-     * Fallback to render on Web where `SF Symbols` or android symbols are not available.
+     * Fallback to render when a symbol for the given platform is not defined.
      */
     fallback?: React.ReactNode;
     /**
@@ -26,7 +27,7 @@ export type SymbolViewProps = {
      */
     scale?: SymbolScale;
     /**
-     * The weight of the symbol to render.
+     * The weight of the symbol to render. On Android and web import from `expo-symbols/androidWeights/{weight}`.
      * @default 'unspecified'
      */
     weight?: SymbolWeight | {
@@ -64,7 +65,7 @@ export type SymbolViewProps = {
  * @hidden
  */
 export interface NativeSymbolViewProps extends ViewProps {
-    name: string;
+    name?: string;
     type: SymbolType;
     scale?: SymbolScale;
     weight?: SymbolWeight;
