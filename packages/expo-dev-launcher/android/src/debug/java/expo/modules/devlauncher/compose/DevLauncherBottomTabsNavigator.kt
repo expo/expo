@@ -160,8 +160,14 @@ fun DevLauncherBottomTabsNavigator() {
         modifier = Modifier
           .align(Alignment.BottomStart)
           .animateEnterExit(
-            enter = slideIn(animationSpec = tween(durationMillis = 300), initialOffset = { fullSize -> IntOffset(-fullSize.height, fullSize.width) }),
-            exit = slideOut(animationSpec = tween(durationMillis = 300), targetOffset = { fullSize -> IntOffset(fullSize.height, fullSize.width) })
+            enter = slideIn(
+              animationSpec = tween(durationMillis = 300),
+              initialOffset = { fullSize -> IntOffset(-fullSize.height, fullSize.width) }
+            ),
+            exit = slideOut(
+              animationSpec = tween(durationMillis = 300),
+              targetOffset = { fullSize -> IntOffset(fullSize.height, fullSize.width) }
+            )
           )
           .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
           .background(NewAppTheme.colors.background.element)
