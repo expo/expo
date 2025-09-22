@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix NSURL to JSIString conversion returning nil. ([#39567](https://github.com/expo/expo/pull/39567) by [@behenate](https://github.com/behenate))
+- [iOS] Return EXJavaScriptValue from null/undefined in arrays. ([#39872](https://github.com/expo/expo/pull/39872) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

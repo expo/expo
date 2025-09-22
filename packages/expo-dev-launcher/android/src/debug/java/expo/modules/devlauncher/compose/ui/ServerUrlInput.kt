@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composeunstyled.TextField
 import com.composeunstyled.TextInput
-import expo.modules.devlauncher.compose.utils.validateUrl
+import expo.modules.devlauncher.compose.utils.sanitizeUrlString
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 
@@ -36,6 +37,18 @@ fun ServerUrlInput(
 ) {
   var url by remember { mutableStateOf("") }
   val context = LocalContext.current
+
+  fun connectToURL() {
+    val sanitizedURL = sanitizeUrlString(url)
+    if (sanitizedURL != null) {
+      openApp(sanitizedURL)
+      url = ""
+    } else {
+      Toast
+        .makeText(context, "Invalid URL", Toast.LENGTH_SHORT)
+        .show()
+    }
+  }
 
   Column(
     verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
@@ -63,6 +76,9 @@ fun ServerUrlInput(
         autoCorrectEnabled = false,
         keyboardType = KeyboardType.Uri
       ),
+      keyboardActions = KeyboardActions(
+        onDone = { connectToURL() }
+      ),
       cursorBrush = SolidColor(NewAppTheme.colors.text.default.copy(alpha = 0.9f))
     ) {
       TextInput(
@@ -85,15 +101,7 @@ fun ServerUrlInput(
       textStyle = NewAppTheme.font.md.merge(
         fontWeight = FontWeight.SemiBold
       ),
-      onClick = {
-        if (validateUrl(url)) {
-          openApp(url)
-        } else {
-          Toast
-            .makeText(context, "Invalid URL", Toast.LENGTH_SHORT)
-            .show()
-        }
-      }
+      onClick = { connectToURL() }
     )
   }
 }
