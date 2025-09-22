@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Remove `ExpoAppDelegate` inheritance requirement ([#39844](https://github.com/expo/expo/pull/39844) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
