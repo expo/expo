@@ -215,15 +215,10 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             sourceExts,
             nodeModulesPaths,
             blockList: [
-                ...(Array.isArray(metroDefaultValues.resolver.blockList)
-                    ? metroDefaultValues.resolver.blockList
-                    : metroDefaultValues.resolver.blockList
-                        ? [metroDefaultValues.resolver.blockList]
-                        : []),
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
                 // This prevents unwanted fast refresh on the declaration files changes.
-                /.*\/.expo\/types\/.*/,
-            ],
+                /\.expo[\\/]types/,
+            ].concat(metroDefaultValues.resolver.blockList ?? []),
         },
         cacheStores: [cacheStore],
         watcher: {
