@@ -77,26 +77,26 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
 
     func recreateRootView(
-        withBundleURL: URL?,
-        moduleName: String?,
-        initialProps: [AnyHashable: Any]?,
-        launchOptions: [AnyHashable: Any]?
+      withBundleURL: URL?,
+      moduleName: String?,
+      initialProps: [AnyHashable: Any]?,
+      launchOptions: [AnyHashable: Any]?
     ) -> UIView {
-        if let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
-            ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) {
-            return appDelegate.recreateRootView(
-                withBundleURL: withBundleURL,
-                moduleName: moduleName,
-                initialProps: initialProps,
-                launchOptions: launchOptions
-            )
-        }
-      
-        return reactDelegate.reactNativeFactory.recreateRootView(
+      if let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+        ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) {
+          return appDelegate.recreateRootView(
             withBundleURL: withBundleURL,
             moduleName: moduleName,
             initialProps: initialProps,
             launchOptions: launchOptions
+          )
+        }
+
+        return reactDelegate.reactNativeFactory.recreateRootView(
+          withBundleURL: withBundleURL,
+          moduleName: moduleName,
+          initialProps: initialProps,
+          launchOptions: launchOptions
         )
     }
 

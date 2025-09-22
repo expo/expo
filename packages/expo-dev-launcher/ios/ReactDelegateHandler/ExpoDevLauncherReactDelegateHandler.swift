@@ -81,16 +81,17 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
           initialProps: initialProps,
           launchOptions: launchOptions
         )
-      } else if let factory = reactDelegate?.reactNativeFactory {
+      }
+      if let factory = reactDelegate?.reactNativeFactory {
         return factory.recreateRootView(
           withBundleURL: withBundleURL,
           moduleName: moduleName,
           initialProps: initialProps,
           launchOptions: launchOptions
         )
-      } else {
-        fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
       }
+
+      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
 
     let rootView = recreateRootView(
