@@ -19,7 +19,9 @@ data class CreateOptions(
 
 data class DownloadOptions(
   @Field
-  val headers: Map<String, String> = emptyMap()
+  val headers: Map<String, String> = emptyMap(),
+  @Field
+  val idempotent: Boolean = false
 ) : Record
 
 data class FileInfo(

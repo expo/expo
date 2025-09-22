@@ -12,7 +12,7 @@ import {
   Form,
   Text,
 } from '@expo/ui/swift-ui';
-import { frame, shadow, fill } from '@expo/ui/swift-ui/modifiers';
+import { frame, shadow, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 
 export default function ShapesScreen() {
@@ -22,7 +22,9 @@ export default function ShapesScreen() {
         <Section title="Rectangle">
           <VStack spacing={16}>
             <Text>Rectangle shape</Text>
-            <Rectangle modifiers={[frame({ width: 200, height: 100 }), fill('#007AFF')]} />
+            <Rectangle
+              modifiers={[frame({ width: 200, height: 100 }), foregroundStyle('#007AFF')]}
+            />
           </VStack>
         </Section>
 
@@ -31,13 +33,13 @@ export default function ShapesScreen() {
             <Text>Rectangle with corner radius</Text>
             <RoundedRectangle
               cornerRadius={20}
-              modifiers={[frame({ width: 200, height: 100 }), fill('#FF9500')]}
+              modifiers={[frame({ width: 200, height: 100 }), foregroundStyle('#FF9500')]}
             />
             <RoundedRectangle
               cornerRadius={10}
               modifiers={[
                 frame({ width: 150, height: 75 }),
-                fill('#FF2D92'),
+                foregroundStyle('#FF2D92'),
                 shadow({ color: '#000000', radius: 5, x: 0, y: 2 }),
               ]}
             />
@@ -48,11 +50,11 @@ export default function ShapesScreen() {
           <VStack spacing={16}>
             <Text>Circle shape</Text>
             <HStack spacing={16}>
-              <Circle modifiers={[frame({ width: 80, height: 80 }), fill('#5856D6')]} />
+              <Circle modifiers={[frame({ width: 80, height: 80 }), foregroundStyle('#5856D6')]} />
               <Circle
                 modifiers={[
                   frame({ width: 100, height: 100 }),
-                  fill('#FF3B30'),
+                  foregroundStyle('#FF3B30'),
                   shadow({ color: '#FF3B30', radius: 10, x: 0, y: 0 }),
                 ]}
               />
@@ -63,7 +65,7 @@ export default function ShapesScreen() {
         <Section title="Ellipse">
           <VStack spacing={16}>
             <Text>Ellipse shape</Text>
-            <Ellipse modifiers={[frame({ width: 200, height: 100 }), fill('#30D158')]} />
+            <Ellipse modifiers={[frame({ width: 200, height: 100 }), foregroundStyle('#30D158')]} />
           </VStack>
         </Section>
 
@@ -76,14 +78,14 @@ export default function ShapesScreen() {
                   <Text>Continuous</Text>
                   <Capsule
                     cornerStyle="continuous"
-                    modifiers={[frame({ width: 120, height: 40 }), fill('#5AC8FA')]}
+                    modifiers={[frame({ width: 120, height: 40 }), foregroundStyle('#5AC8FA')]}
                   />
                 </VStack>
                 <VStack spacing={8}>
                   <Text>Circular</Text>
                   <Capsule
                     cornerStyle="circular"
-                    modifiers={[frame({ width: 120, height: 40 }), fill('#FF9F0A')]}
+                    modifiers={[frame({ width: 120, height: 40 }), foregroundStyle('#FF9F0A')]}
                   />
                 </VStack>
               </HStack>
@@ -99,7 +101,7 @@ export default function ShapesScreen() {
               topTrailingRadius={5}
               bottomLeadingRadius={5}
               bottomTrailingRadius={20}
-              modifiers={[frame({ width: 200, height: 100 }), fill('#BF5AF2')]}
+              modifiers={[frame({ width: 200, height: 100 }), foregroundStyle('#BF5AF2')]}
             />
           </VStack>
         </Section>

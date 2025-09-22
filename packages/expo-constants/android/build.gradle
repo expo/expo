@@ -20,8 +20,3 @@ android {
     versionName "18.0.9"
   }
 }
-
-dependencies {
-  api "androidx.annotation:annotation:1.0.0"
-  implementation "commons-io:commons-io:2.6"
-}
