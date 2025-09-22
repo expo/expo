@@ -26,6 +26,8 @@ dependencies {
   implementation 'androidx.appcompat:appcompat:1.7.0'
 
   def androidxMedia3Version = "1.8.0"
+  implementation "androidx.media3:media3-session:$androidxMedia3Version"
+  implementation "androidx.media3:media3-ui:$androidxMedia3Version"
   implementation "androidx.media3:media3-exoplayer:$androidxMedia3Version"
   implementation "androidx.media3:media3-exoplayer-dash:$androidxMedia3Version"
   implementation "androidx.media3:media3-datasource-okhttp:$androidxMedia3Version"
