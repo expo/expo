@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `ignoreSafeArea` modifier ([#39804](https://github.com/expo/expo/pull/39804) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
