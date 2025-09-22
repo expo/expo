@@ -49,8 +49,7 @@
     "adapter"
   ],
   "dependencies": {
-    "abort-controller": "^3.0.0",
-    "debug": "^4.3.4"
+    "abort-controller": "^3.0.0"
   },
   "devDependencies": {
     "@netlify/functions": "^1.4.0",

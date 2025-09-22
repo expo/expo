@@ -4,11 +4,6 @@ import path from 'node:path';
 import { RawManifest, Manifest, Route, Middleware } from '../types';
 import { initManifestRegExp } from '../utils/initManifestRegExp';
 
-const debug =
-  process.env.NODE_ENV === 'development'
-    ? (require('debug')('expo:server') as typeof console.log)
-    : () => {};
-
 export const handleRouteError = () => async (error: Error) => {
   throw error;
 };
@@ -42,7 +37,6 @@ export const getHtml =
   };
 
 export const getApiRoute = (dist: string) => async (route: Route) => {
-  debug(`Handling API route: ${route.page}: ${route.file}`);
   return loadServerModule(dist, route);
 };
 
