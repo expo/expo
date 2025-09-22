@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'tvos', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-checkbox` provides a basic `boolean` input element for all platforms.
@@ -69,6 +70,14 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+An example of how `expo-checkbox` appears on Android and iOS is shown below:
+
+<ContentSpotlight
+  alt="Checkbox component on Android and iOS."
+  src="/static/images/sdk/checkbox/example.png"
+  className="max-w-[360px]"
+/>
 
 </SnackInline>
 
