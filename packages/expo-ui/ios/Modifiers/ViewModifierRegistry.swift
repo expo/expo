@@ -508,7 +508,7 @@ internal struct FixedSizeModifier: ViewModifier, Record {
 internal struct IgnoreSafeAreaModifier: ViewModifier, Record {
   @Field var regions: SafeAreaRegionOptions?
   @Field var edges: EdgeOptions?
-  
+
   func body(content: Content) -> some View {
     if let regions, let edges {
       content.ignoresSafeArea(regions.toSafeAreaRegions(), edges: edges.toEdge())
