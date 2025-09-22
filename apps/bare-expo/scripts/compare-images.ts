@@ -93,9 +93,21 @@ export function compareImages(options: CompareImagesOptions): ComparisonResult {
         return undefined;
       }
       const expandedPath = expandTilde(outputPath);
-      fs.mkdirSync(path.dirname(expandedPath), { recursive: true });
-      fs.writeFileSync(expandedPath, PNG.sync.write(diff));
-      return path.resolve(expandedPath);
+      const dir = path.dirname(expandedPath);
+      const ext = path.extname(expandedPath);
+      const baseName = path.basename(expandedPath, ext);
+
+      fs.mkdirSync(dir, { recursive: true });
+
+      let finalPath: string | undefined;
+      let counter = 1;
+      do {
+        finalPath = path.join(dir, `${baseName}_${counter.toString().padStart(2, '0')}${ext}`);
+        counter++;
+      } while (fs.existsSync(finalPath));
+
+      fs.writeFileSync(finalPath, PNG.sync.write(diff));
+      return path.resolve(finalPath);
     })();
 
     const totalPixels = width * height;
