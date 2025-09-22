@@ -4,6 +4,7 @@
   "description": "Server API for Expo Router projects",
   "main": "build/cjs/index.js",
   "module": "build/mjs/index.js",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./build/mjs/index.js",
