@@ -423,6 +423,8 @@ export interface NativeTabTriggerProps {
   name?: string;
   /**
    * If true, the tab will be hidden from the tab bar.
+   *
+   * > **Note**: Currently, If you use the `hidden` prop on a tab, that tab will be hidden and you cannot navigate to a hidden tab.
    */
   hidden?: boolean;
   /**
