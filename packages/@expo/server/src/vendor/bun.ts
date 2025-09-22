@@ -1,4 +1,4 @@
-import { createRequestHandler as createExpoHandler } from '../index';
+import { createRequestHandler as createExpoHandler } from './abstract';
 import {
   getApiRoute,
   getHtml,

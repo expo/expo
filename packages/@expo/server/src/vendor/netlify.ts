@@ -1,7 +1,7 @@
 import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { AbortController } from 'abort-controller';
 
-import { createRequestHandler as createExpoHandler } from '../index';
+import { createRequestHandler as createExpoHandler } from './abstract';
 import {
   getApiRoute,
   getHtml,

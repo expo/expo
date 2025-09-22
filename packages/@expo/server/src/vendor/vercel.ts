@@ -6,7 +6,7 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
-import { createRequestHandler as createExpoHandler } from '../index';
+import { createRequestHandler as createExpoHandler } from './abstract';
 import {
   getApiRoute,
   getHtml,
