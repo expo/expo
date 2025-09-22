@@ -1,4 +1,4 @@
-import type { Route } from './manifest';
+import type { Route } from '../manifest';
 
 export function isResponse(input: unknown): input is Response {
   return !!input && typeof input === 'object' && input instanceof Response;

@@ -1,5 +1,5 @@
 import type { MiddlewareFunction, MiddlewarePattern, MiddlewareSettings } from '../types';
-import { matchDynamicName, matchDeepDynamicRouteName } from '../utils';
+import { matchDynamicName, matchDeepDynamicRouteName } from './matchers';
 
 export interface MiddlewareModule {
   default: MiddlewareFunction;

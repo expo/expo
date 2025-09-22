@@ -1,6 +1,6 @@
 import { ImmutableRequest } from '../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, Route } from '../manifest';
-import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils';
+import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
 import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
 
 /** Internal errors class to indicate that the server has failed
