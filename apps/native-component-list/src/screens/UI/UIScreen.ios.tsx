@@ -168,6 +168,7 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ShapesScreen'));
+    },
   },
   {
     name: 'Image component',
@@ -175,6 +176,7 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageScreen'));
+    },
   },
 ];
 
