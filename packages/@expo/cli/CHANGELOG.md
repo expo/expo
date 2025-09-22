@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
+- Update usage of `@expo/server` API ([#39894](https://github.com/expo/expo/pull/39894) by [@kitten](https://github.com/kitten))
 
 ## 54.0.6 — 2025-09-16
 
