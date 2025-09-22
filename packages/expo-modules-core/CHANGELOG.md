@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add StaticFunction and StaticAsyncFunction to Class in modules API ([#38754](https://github.com/expo/expo/pull/38754) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix NSURL to JSIString conversion returning nil. ([#39567](https://github.com/expo/expo/pull/39567) by [@behenate](https://github.com/behenate))
