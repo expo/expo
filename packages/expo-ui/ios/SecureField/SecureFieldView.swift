@@ -27,12 +27,12 @@ struct SecureFieldView: ExpoSwiftUI.View {
   func setText(_ text: String) {
     textManager.text = text
   }
-  
-  public func focus() {
+
+  func focus() {
     textManager.isFocused = true
   }
 
-  public func blur() {
+  func blur() {
     textManager.isFocused = false
   }
 
