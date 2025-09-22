@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "53.0.22",
+  "version": "53.0.23",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -73,7 +73,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.24.21",
+    "@expo/cli": "0.24.22",
     "@expo/config": "~11.0.13",
     "@expo/config-plugins": "~10.1.2",
     "@expo/fingerprint": "0.13.4",

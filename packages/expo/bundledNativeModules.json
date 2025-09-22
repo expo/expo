@@ -1,6 +1,6 @@
 {
   "@expo/fingerprint": "~0.13.4",
-  "@expo/metro-runtime": "~5.0.4",
+  "@expo/metro-runtime": "~5.0.5",
   "@expo/vector-icons": "^14.1.0",
   "@expo/ui": "~0.1.1-alpha.10",
   "@react-native-async-storage/async-storage": "2.1.2",
@@ -68,7 +68,7 @@
   "expo-notifications": "~0.31.4",
   "expo-print": "~14.1.4",
   "expo-live-photo": "~0.1.4",
-  "expo-router": "~5.1.6",
+  "expo-router": "~5.1.7",
   "expo-screen-capture": "~7.2.0",
   "expo-screen-orientation": "~8.1.7",
   "expo-secure-store": "~14.2.4",
