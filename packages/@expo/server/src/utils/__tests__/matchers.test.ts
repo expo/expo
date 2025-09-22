@@ -1,5 +1,5 @@
-import { Route } from '../types';
-import { getRedirectRewriteLocation } from '../utils';
+import { Route } from '../../manifest';
+import { getRedirectRewriteLocation } from '../matchers';
 
 describe('static routes', () => {
   it('should handle static route with no parameters', () => {

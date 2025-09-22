@@ -1,5 +1,5 @@
-import type { MiddlewareModule, MiddlewareMatcher } from '../../types';
-import { shouldRunMiddleware } from '../../utils/middleware';
+import type { MiddlewareMatcher } from '../../types';
+import { shouldRunMiddleware, MiddlewareModule } from '../middleware';
 
 const createMockRequest = (url: string, method = 'GET'): Request => {
   return new Request(url, { method });
