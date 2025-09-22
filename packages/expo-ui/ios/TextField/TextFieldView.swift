@@ -141,6 +141,8 @@ struct TextFieldView: ExpoSwiftUI.View {
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue
+      }
+      .onChange(of: isFocused) { newValue in
         props.onFocusChanged(["value": newValue])
       }
   }
