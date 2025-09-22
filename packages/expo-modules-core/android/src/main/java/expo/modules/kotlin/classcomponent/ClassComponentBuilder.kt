@@ -3,10 +3,16 @@
 package expo.modules.kotlin.classcomponent
 
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
+import expo.modules.kotlin.functions.AsyncFunctionBuilder
+import expo.modules.kotlin.functions.AsyncFunctionComponent
+import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
+import expo.modules.kotlin.functions.FunctionBuilder
 import expo.modules.kotlin.functions.SyncFunctionComponent
+import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -30,6 +36,17 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 ) : ObjectDefinitionBuilder(converters) {
   var constructor: SyncFunctionComponent? = null
   val traits = mutableListOf<Trait<in SharedObjectType>>()
+
+  @PublishedApi
+  internal var staticSyncFunctions = mutableMapOf<String, SyncFunctionComponent>()
+
+  @PublishedApi
+  internal var staticSyncFunctionBuilder = mutableMapOf<String, FunctionBuilder>()
+
+  @PublishedApi
+  internal var staticAsyncFunctions = mutableMapOf<String, AsyncFunctionComponent>()
+
+  private var staticAsyncFunctionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
 
   fun buildClass(): ClassDefinitionData {
     val hasOwnerType = ownerClass != Unit::class
@@ -72,6 +89,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
     return ClassDefinitionData(
       name,
       constructor,
+      staticSyncFunctions + staticSyncFunctionBuilder.mapValues { (_, value) -> value.build() },
+      staticAsyncFunctions + staticAsyncFunctionBuilders.mapValues { (_, value) -> value.build() },
       objectData,
       isSharedRef
     )
@@ -191,6 +210,339 @@ class ClassComponentBuilder<SharedObjectType : Any>(
   override fun Property(name: String): PropertyComponentBuilderWithThis<SharedObjectType> {
     return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
       properties[name] = it
+    }
+  }
+
+  fun StaticFunction(
+    name: String
+  ) = FunctionBuilder(name).also { staticSyncFunctionBuilder[name] = it }
+
+  @JvmName("StaticFunctionWithoutArgs")
+  inline fun StaticFunction(
+    name: String,
+    crossinline body: () -> Any?
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, emptyArray(), toReturnType<Any?>()) { body() }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R> StaticFunction(
+    name: String,
+    crossinline body: () -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, emptyArray(), toReturnType<R>()) { body() }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+  inline fun <reified R, reified P0> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0>(converterProvider = converters), toReturnType<R>()) { (p0) ->
+      enforceType<P0>(p0)
+      body(p0)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0, P1>(converterProvider = converters), toReturnType<R>()) { (p0, p1) ->
+      enforceType<P0, P1>(p0, p1)
+      body(p0, p1)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2) ->
+      enforceType<P0, P1, P2>(p0, p1, p2)
+      body(p0, p1, p2)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3) ->
+      enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
+      body(p0, p1, p2, p3)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4) ->
+      enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
+      body(p0, p1, p2, p3, p4)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5) ->
+      enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
+      body(p0, p1, p2, p3, p4, p5)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6) ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
+      body(p0, p1, p2, p3, p4, p5, p6)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> StaticFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
+      body(p0, p1, p2, p3, p4, p5, p6, p7)
+    }.also {
+      staticSyncFunctions[name] = it
+    }
+  }
+
+  fun StaticAsyncFunction(
+    name: String
+  ) = AsyncFunctionBuilder(name, converters).also { staticAsyncFunctionBuilders[name] = it }
+
+  @JvmName("StaticAsyncFunctionWithoutArgs")
+  inline fun StaticAsyncFunction(
+    name: String,
+    crossinline body: () -> Any?
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R> StaticAsyncFunction(
+    name: String,
+    crossinline body: () -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0) -> R
+  ): AsyncFunctionComponent {
+    // We can't split that function, because that introduces a ambiguity when creating DSL component without parameters.
+    return if (P0::class.java == Promise::class.java) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf()) { _, promise -> body(promise as P0) }
+    } else {
+      createAsyncFunctionComponent(name, toArgsArray<P0>(converterProvider = converters)) { (p0) ->
+        enforceType<P0>(p0)
+        body(p0)
+      }
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1>(converterProvider = converters)) { (p0, p1) ->
+      enforceType<P0, P1>(p0, p1)
+      body(p0, p1)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("StaticAsyncFunctionWithPromise")
+  inline fun <reified R, reified P0> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0>(converterProvider = converters)) { (p0), promise ->
+      enforceType<P0>(p0)
+      body(p0, promise)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters)) { (p0, p1, p2) ->
+      enforceType<P0, P1, P2>(p0, p1, p2)
+      body(p0, p1, p2)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("StaticAsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1>(converterProvider = converters)) { (p0, p1), promise ->
+      enforceType<P0, P1>(p0, p1)
+      body(p0, p1, promise)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters)) { (p0, p1, p2, p3) ->
+      enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
+      body(p0, p1, p2, p3)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("StaticAsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters)) { (p0, p1, p2), promise ->
+      enforceType<P0, P1, P2>(p0, p1, p2)
+      body(p0, p1, p2, promise)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters)) { (p0, p1, p2, p3, p4) ->
+      enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
+      body(p0, p1, p2, p3, p4)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("StaticAsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters)) { (p0, p1, p2, p3), promise ->
+      enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
+      body(p0, p1, p2, p3, promise)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5) ->
+      enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
+      body(p0, p1, p2, p3, p4, p5)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("StaticAsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters)) { (p0, p1, p2, p3, p4), promise ->
+      enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
+      body(p0, p1, p2, p3, p4, promise)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6) ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
+      body(p0, p1, p2, p3, p4, p5, p6)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("StaticAsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5), promise ->
+      enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
+      body(p0, p1, p2, p3, p4, p5, promise)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
+      body(p0, p1, p2, p3, p4, p5, p6, p7)
+    }.also {
+      staticAsyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("StaticAsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> StaticAsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6), promise ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
+      body(p0, p1, p2, p3, p4, p5, p6, promise)
+    }.also {
+      staticAsyncFunctions[name] = it
     }
   }
 }
