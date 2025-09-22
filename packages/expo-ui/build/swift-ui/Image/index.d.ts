@@ -1,3 +1,4 @@
+import { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
 export interface ImageProps extends CommonViewModifierProps {
@@ -14,7 +15,7 @@ export interface ImageProps extends CommonViewModifierProps {
      * The color of the system image.
      * Can be a color name like '#ff00ff', 'red', 'blue', etc.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Callback triggered when the view is pressed.
      */
