@@ -486,4 +486,10 @@ export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
  * @platform android
  */
 export type RecordingSource = 'camcorder' | 'default' | 'mic' | 'remote_submix' | 'unprocessed' | 'voice_communication' | 'voice_performance' | 'voice_recognition';
+export type AudioMetadata = {
+    title?: string;
+    artist?: string;
+    albumTitle?: string;
+    artworkUrl?: string;
+};
 //# sourceMappingURL=Audio.types.d.ts.map

@@ -527,3 +527,11 @@ export type RecordingSource =
   | 'voice_communication'
   | 'voice_performance'
   | 'voice_recognition';
+
+// @docsMissing
+export type AudioMetadata = {
+  title?: string;
+  artist?: string;
+  albumTitle?: string;
+  artworkUrl?: string;
+};
