@@ -4,6 +4,8 @@ import { AbortController } from 'abort-controller';
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createNodeEnv } from './environment/node';
 
+export { ExpoError } from './abstract';
+
 export function createRequestHandler(params: { build: string }) {
   const handleRequest = createExpoHandler(createNodeEnv(params));
   return async (event: HandlerEvent) => {

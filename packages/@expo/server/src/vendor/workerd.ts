@@ -1,6 +1,8 @@
 import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
 import { createWorkerdEnv } from './environment/workerd';
 
+export { ExpoError } from './abstract';
+
 export type RequestHandler = (req: Request) => Promise<Response>;
 
 /**

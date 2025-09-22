@@ -1,8 +1,23 @@
 import { ImmutableRequest } from '../ImmutableRequest';
-import { ExpoError } from '../error';
 import type { Manifest, Middleware, MiddlewareFunction, MiddlewareModule, Route } from '../types';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils';
 import { shouldRunMiddleware } from '../utils/middleware';
+
+/** Internal errors class to indicate that the server has failed
+ * @remarks
+ * This should be thrown for unexpected errors, so they show up as crashes.
+ * Typically malformed project structure, missing manifest, html or other files.
+ */
+export class ExpoError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ExpoError';
+  }
+
+  public static isExpoError(error: unknown): error is ExpoError {
+    return !!error && error instanceof ExpoError;
+  }
+}
 
 type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
   headers: Headers;

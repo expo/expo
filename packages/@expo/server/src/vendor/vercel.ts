@@ -9,6 +9,8 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createNodeEnv } from './environment/node';
 
+export { ExpoError } from './abstract';
+
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
 /**
