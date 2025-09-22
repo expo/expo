@@ -163,12 +163,18 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Shapes',
+    route: 'ui/shapes',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ShapesScreen'));
+  },
+  {
     name: 'Image component',
     route: 'ui/image',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageScreen'));
-    },
   },
 ];
 
