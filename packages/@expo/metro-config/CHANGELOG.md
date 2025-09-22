@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Prevent fast refresh on generated type declarations changes ([#39835](https://github.com/expo/expo/pull/39835) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 💡 Others
+
+## 54.0.5 — 2025-09-22
+
+### 🐛 Bug fixes
+
+- Prevent fast refresh on generated type declarations changes ([#39835](https://github.com/expo/expo/pull/39835) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 54.0.4 — 2025-09-18
 

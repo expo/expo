@@ -13,11 +13,11 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "@react-navigation/native": "^7.1.8",
-    "expo": "~54.0.9",
+    "expo": "~54.0.10",
     "expo-constants": "~18.0.9",
     "expo-font": "~14.0.8",
     "expo-linking": "~8.0.8",
-    "expo-router": "~6.0.7",
+    "expo-router": "~6.0.8",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
     "expo-web-browser": "~15.0.7",

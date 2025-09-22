@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Return EXJavaScriptValue from null/undefined in arrays. ([#39872](https://github.com/expo/expo/pull/39872) by [@jakex7](https://github.com/jakex7))
-
 ### 💡 Others
+
+## 3.0.18 — 2025-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Return EXJavaScriptValue from null/undefined in arrays. ([#39872](https://github.com/expo/expo/pull/39872) by [@jakex7](https://github.com/jakex7))
 
 ## 3.0.17 — 2025-09-18
 

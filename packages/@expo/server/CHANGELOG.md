@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Use Headers to copy response headers (prevent `set-cookie` lost) ([#39846](https://github.com/expo/expo/pull/39846) by [@LevanKvirkvelia](https://github.com/LevanKvirkvelia))
-
 ### 💡 Others
+
+## 0.7.5 — 2025-09-22
+
+### 🐛 Bug fixes
+
+- Use Headers to copy response headers (prevent `set-cookie` lost) ([#39846](https://github.com/expo/expo/pull/39846) by [@LevanKvirkvelia](https://github.com/LevanKvirkvelia))
 
 ## 0.7.4 — 2025-09-11
 

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Add Android hardware attestation support. ([#39725](https://github.com/expo/expo/pull/39725) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.1.8 — 2025-09-22
+
+### 🎉 New features
+
+- [Android] Add Android hardware attestation support. ([#39725](https://github.com/expo/expo/pull/39725) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 0.1.7 — 2025-09-11
 

@@ -1,6 +1,6 @@
 {
   "name": "@expo/server",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "Server API for Expo Router projects",
   "main": "build/cjs/index.js",
   "module": "build/mjs/index.js",

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.10 — 2025-09-22
+
+### 💡 Others
+
 - Updated `expo/tsconfig.base` to resolve `exclude` paths relative to the extending tsconfig ([#39816](https://github.com/expo/expo/pull/39816) by [@kraenhansen](https://github.com/kraenhansen))
 
 ## 54.0.9 — 2025-09-18

@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.12 — 2025-09-22
+
+### 🎉 New features
+
 - [Android] Adds loading state when connecting to a development server. ([#39873](https://github.com/expo/expo/pull/39873) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
 - [expo-dev-launcher] Fix manual URL entry: decode percent-encoded URLs, enable return key submit, and support dark mode text. ([#39840](https://github.com/expo/expo/pull/39840) by [@blazejkustra](https://github.com/blazejkustra))
-
-### 💡 Others
 
 ## 6.0.11 — 2025-09-11
 

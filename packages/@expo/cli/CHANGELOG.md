@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for experimental node:sqlite in API routes. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 54.0.8 — 2025-09-22
+
+### 🎉 New features
+
+- Add support for experimental node:sqlite in API routes. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 54.0.7 — 2025-09-18
 
