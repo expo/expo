@@ -8,6 +8,7 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createNodeEnv } from './environment/node';
+import { createReadableStreamFromReadable } from '../utils/createReadableStreamFromReadable';
 
 export { ExpoError } from './abstract';
 
