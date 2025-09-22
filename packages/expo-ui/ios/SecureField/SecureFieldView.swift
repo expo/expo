@@ -47,6 +47,9 @@ struct SecureFieldView: ExpoSwiftUI.View {
       .focused($isFocused)
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
+      }
+      .onChange(of: textManager.isFocused) { newValue in
+        isFocused = newValue
         props.onFocusChanged(["value": newValue])
       }
       .keyboardType(getKeyboardType(props.keyboardType))
