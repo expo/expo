@@ -22,16 +22,19 @@ internal struct ImageView: ExpoSwiftUI.View {
   @ObservedObject var props: ImageViewProps
 
   var body: some View {
-    Group {
-      if #available(iOS 16.0, *) {
-        Image(systemName: props.systemName, variableValue: props.variableValue)
-      } else {
-        Image(systemName: props.systemName)
-      }
+    let image: Image
+
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      image = Image(systemName: props.systemName, variableValue: props.variableValue)
+    } else {
+      image = Image(systemName: props.systemName)
     }
-    .font(.system(size: CGFloat(props.size ?? 24)))
-    .foregroundColor(props.color)
-    .modifier(CommonViewModifiers(props: props))
-    .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+
+    return
+      image
+      .font(.system(size: CGFloat(props.size ?? 24)))
+      .foregroundColor(props.color)
+      .modifier(CommonViewModifiers(props: props))
+      .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
   }
 }
