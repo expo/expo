@@ -1,22 +1,10 @@
-// NOTE(@krystofwoldrich): These types should be moved into the server package
-import type {
-  ExpoRoutesManifestV1,
-  MiddlewareInfo,
-  RouteInfo,
-} from 'expo-router/build/routes-manifest';
-
 import type { _ImmutableRequest } from './ImmutableRequest';
-
-export type RawManifest = ExpoRoutesManifestV1;
-export type Manifest = ExpoRoutesManifestV1<RegExp>;
-export type Middleware = MiddlewareInfo;
-export type Route = RouteInfo<RegExp>;
 
 // NOTE: This is so the type isn't visible as `_ImmutableRequest` when viewing inline/autocomplete.
 /**
  * An immutable version of the Fetch API's [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object which prevents mutations to the request body and headers.
  */
-interface ImmutableRequest extends _ImmutableRequest {}
+export interface ImmutableRequest extends _ImmutableRequest {}
 
 /**
  * Middleware pattern type that can be a string (including named params) or a regular expression.
@@ -58,9 +46,6 @@ export type MiddlewareFunction = (
   request: ImmutableRequest
 ) => Promise<Response | void> | Response | void;
 
-export type MiddlewareModule = {
-  default: MiddlewareFunction;
-  unstable_settings?: {
-    matcher?: MiddlewareMatcher;
-  };
-};
+export interface MiddlewareSettings {
+  matcher?: MiddlewareMatcher;
+}

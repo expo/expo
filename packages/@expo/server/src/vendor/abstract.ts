@@ -1,7 +1,7 @@
 import { ImmutableRequest } from '../ImmutableRequest';
-import type { Manifest, Middleware, MiddlewareFunction, MiddlewareModule, Route } from '../types';
+import type { Manifest, MiddlewareInfo, Route } from '../manifest';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils';
-import { shouldRunMiddleware } from '../utils/middleware';
+import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
 
 /** Internal errors class to indicate that the server has failed
  * @remarks
@@ -44,7 +44,7 @@ export interface RequestHandlerParams {
   getHtml: (request: Request, route: Route) => Promise<string | Response | null>;
   getRoutesManifest: () => Promise<Manifest | null>;
   getApiRoute: (route: Route) => Promise<any>;
-  getMiddleware: (route: Middleware) => Promise<any>;
+  getMiddleware: (route: MiddlewareInfo) => Promise<MiddlewareModule>;
   handleRouteError: (error: Error) => Promise<Response>;
   /** Before handler response 4XX, not before unhandled error */
   beforeErrorResponse?: BeforeResponseCallback;
@@ -94,10 +94,9 @@ export function createRequestHandler({
 
     if (manifest.middleware) {
       try {
-        const middlewareModule: MiddlewareModule = await getMiddleware(manifest.middleware);
-        if (shouldRunMiddleware(request, middlewareModule)) {
-          const middlewareFn = middlewareModule.default as MiddlewareFunction;
-          const middlewareResponse = await middlewareFn(new ImmutableRequest(request));
+        const middleware = await getMiddleware(manifest.middleware);
+        if (shouldRunMiddleware(request, middleware)) {
+          const middlewareResponse = await middleware.default(new ImmutableRequest(request));
           if (middlewareResponse instanceof Response) {
             return middlewareResponse;
           }
