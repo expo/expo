@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [Android] Adds loading state when connecting to a development server.
+- [Android] Adds loading state when connecting to a development server. ([#39873](https://github.com/expo/expo/pull/39873) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
