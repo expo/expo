@@ -6,13 +6,13 @@
  */
 
 import type { ProjectConfig } from '@expo/config';
-import { MiddlewareModule } from '@expo/server/build/types';
+import type { MiddlewareSettings } from '@expo/server';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
 import { fetchManifest } from './fetchRouterManifest';
-import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
   warnInvalidMiddlewareOutput,
@@ -193,11 +193,9 @@ export function createRouteHandlerMiddleware(
 
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
-          const middlewareModule = (await options.bundleApiRoute(
-            resolvedFunctionPath!
-          )) as unknown as MiddlewareModule;
+          const middlewareModule = (await options.bundleApiRoute(resolvedFunctionPath!)) as any;
 
-          if (middlewareModule.unstable_settings?.matcher) {
+          if ((middlewareModule.unstable_settings as MiddlewareSettings)?.matcher) {
             warnInvalidMiddlewareMatcherSettings(middlewareModule.unstable_settings?.matcher);
           }
 
