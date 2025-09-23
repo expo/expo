@@ -22,6 +22,8 @@ function assertSupport<T>(name: string, v: T | undefined): T {
   return v;
 }
 
+export { StatusError } from './error';
+
 export interface RequestAPI {
   origin?: string;
   environment?: string | null;

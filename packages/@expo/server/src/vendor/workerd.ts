@@ -1,5 +1,5 @@
 import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
-import { createRequestScope } from '../runtime/scope';
+import { createRequestScope } from '../runtime';
 import { createWorkerdEnv } from './environment/workerd';
 
 export { ExpoError } from './abstract';
