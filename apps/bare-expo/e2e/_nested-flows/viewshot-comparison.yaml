@@ -8,18 +8,19 @@
 
 appId: dev.expo.Payments
 ---
-- takeScreenshot: ${screenshotOutputPath}.${maestro.platform}
+- takeScreenshot: ${screenshotOutputPath}/${testID}_full.${maestro.platform}
 - runScript:
     file: ./compare-images-http.js
     env:
-      currentScreenshot: ${screenshotOutputPath}.${maestro.platform} # keep the same as taken screenshot
+      currentScreenshot: ${screenshotOutputPath}/${testID}_full.${maestro.platform} # keep the same as taken screenshot
       platform: ${maestro.platform}
       testID: ${testID}
-      baseImage: ${screenshotOutputPath}.base.${maestro.platform}
+      baseImage: ${screenshotOutputPath}/${testID}.base
       # needs to be in ~/.maestro/tests so that it's stored as GH action artifact
-      outputPath: ~/.maestro/tests/${screenshotOutputPath}
+      outputPath: ~/.maestro/tests/${screenshotOutputPath}/${testID}
       similarityThreshold: ${similarityThreshold}
+      mode: ${mode} #'crossPlatform' #, perPlatform
 
 - assertTrue:
     condition: ${output.comparisonResult.success}
-    label: Screenshot comparison check. Is screenshot comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)
+    label: Viewshot comparison check. Is screenshot comparison server running (./image-comparison-server.ts)? See its terminal logs for details.)

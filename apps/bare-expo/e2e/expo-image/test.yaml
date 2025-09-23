@@ -2,12 +2,22 @@ appId: dev.expo.Payments
 jsEngine: graaljs
 ---
 - openLink: bareexpo://components/image/comparison
-# approve the deep linking prompt on iOS
-- tapOn:
-    text: 'Open'
-    optional: true
+
+#- runFlow:
+#    file: ../_nested-flows/viewshot-comparison.yaml
+#    env:
+#      screenshotOutputPath: expo-image
+#      testID: 'image-comparison-list'
+#      mode: 'platformDependent'
 
 - runFlow:
     file: ../_nested-flows/screenshot-comparison.yaml
     env:
       screenshotOutputPath: expo-image/comparison-with-core-image
+
+- runFlow:
+    file: ../_nested-flows/viewshot-comparison.yaml
+    env:
+      screenshotOutputPath: expo-image
+      testID: 'header-Appearance'
+      mode: 'crossPlatform'
