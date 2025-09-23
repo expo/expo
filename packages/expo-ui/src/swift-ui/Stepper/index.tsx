@@ -13,15 +13,7 @@ export type StepperProps = {
    * The current value of the stepper.
    */
   value: number;
-  /**
-   * Callback triggered when the increment button is pressed.
-   * You should implement validation logic here.
-   */
   onIncrement: (value: number) => void;
-  /**
-   * Callback triggered when the decrement button is pressed.
-   * You should implement validation logic here.
-   */
   onDecrement: (value: number) => void;
 } & CommonViewModifierProps;
 
