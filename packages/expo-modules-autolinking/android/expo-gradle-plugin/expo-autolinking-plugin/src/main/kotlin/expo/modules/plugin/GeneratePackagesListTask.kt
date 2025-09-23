@@ -54,7 +54,6 @@ abstract class GeneratePackagesListTask : DefaultTask() {
   private fun generatePackageListFileContent(): String {
     return """package ${namespace.get()};
 
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.core.interfaces.Package;
 import expo.modules.kotlin.modules.Module;
 import expo.modules.kotlin.ModulesProvider;
@@ -74,7 +73,6 @@ ${
 }
     )
 
-    @OptIn(UnstableReactNativeAPI::class)
     val modulesList: List<Class<out Module>> = listOf(
 ${
   modules
