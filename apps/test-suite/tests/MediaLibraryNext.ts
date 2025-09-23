@@ -236,7 +236,7 @@ export async function test(t) {
       const album = await Album.create(albumName, [jpgFile.localUri], true);
       albumsContainer.push(album);
 
-      const newAsset = await Asset.create(files[1].localUri);
+      const newAsset = await Asset.create(pngFile.localUri);
       const oldUri = await newAsset.getUri();
       assetsContainer.push(newAsset);
       await album.add(newAsset);

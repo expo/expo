@@ -95,7 +95,7 @@ class Query: SharedObject {
       from: phFetchResult,
       fetchLimit: fetchOptions.fetchLimit
     )
-    return phAssets.map { Asset(id: $0.localIdentifier) }
+    return phAssets.map { Asset(localIdentifier: $0.localIdentifier) }
   }
 
   private func constructFetchOptions() -> PHFetchOptions {

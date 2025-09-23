@@ -5,10 +5,17 @@ import ExpoModulesCore
 
 class Asset: SharedObject {
   let id: String
+  let localIdentifier: String
   var phAsset: PHAsset?
 
   init(id: String) {
     self.id = id
+    self.localIdentifier = String(id.dropFirst("ph://".count))
+  }
+
+  init(localIdentifier: String) {
+    self.id = "ph://\(localIdentifier)"
+    self.localIdentifier = localIdentifier
   }
 
   func getHeight() async throws -> Int {
@@ -104,7 +111,7 @@ class Asset: SharedObject {
     options.fetchLimit = 1
 
     guard let fetchedAsset = PHAsset.fetchAssets(
-      withLocalIdentifiers: [self.id],
+      withLocalIdentifiers: [localIdentifier],
       options: options
     ).firstObject else {
       throw AssetNotFoundException(id)
@@ -116,7 +123,7 @@ class Asset: SharedObject {
     guard FileManager.default.fileExists(atPath: filePath.path) else {
       throw FailedToCreateAssetException("File does not exist at path: \(filePath.path)")
     }
-    let id = try await AssetRepository.shared.add(from: filePath)
-    return Asset(id: id)
+    let localIdentifier = try await AssetRepository.shared.add(from: filePath)
+    return Asset(localIdentifier: localIdentifier)
   }
 }
