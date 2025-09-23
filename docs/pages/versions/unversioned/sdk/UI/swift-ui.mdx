@@ -7,20 +7,34 @@ packageName: '@expo/ui/swift-ui'
 platforms: ['ios', 'tvos']
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
+import { BoxLink } from '~/ui/components/BoxLink';
 
-> **important** **This library is currently in alpha and will frequently experience breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
+> **important** **This library is currently in beta and subject to breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
 
 The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iOS interfaces using SwiftUI from React Native.
+
+<BoxLink
+  title="Expo UI guide for Swift UI"
+  description={
+    <>
+      Learn about the basics of <CODE>@expo/ui/swift-ui</CODE>
+    </>
+  }
+  href="/guides/expo-ui-swift-ui/"
+  Icon={BookOpen02Icon}
+/>
 
 ## Installation
 
 <APIInstallSection />
 
-## SwiftUI Components
+## Swift UI examples
 
 ### BottomSheet
 
@@ -572,12 +586,3 @@ function Example() {
 ### More
 
 Expo UI is still in active development. We continue to add more functionality and may change the API. Some examples in the docs may not be up to date. If you want to see the latest changes, check the [examples](https://github.com/expo/expo/tree/main/apps/native-component-list/src/screens/UI).
-
-## API
-
-Full documentation is not yet available. Use TypeScript types to explore the API.
-
-```ts
-// Import from the SwiftUI package
-import { BottomSheet } from '@expo/ui/swift-ui';
-```
