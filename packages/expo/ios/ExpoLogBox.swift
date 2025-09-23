@@ -88,19 +88,19 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
-//#if EXPO_DEBUG_LOG_BOX
+#if EXPO_DEBUG_LOG_BOX
         // TODO: In the @expo/log-box add `yarn dev` which will return the same as
         // http://localhost:8081/_expo/@dom/logbox-polyfill-dom.tsx?file=file:///user/repos/expo/expo/packages/@expo/log-box/src/logbox-polyfill-dom.tsx
-//        let myURL = URL(string:"http://localhost:8090")
-        let myURL = URL(string:"http://localhost:8082/_expo/@dom/logbox-polyfill-dom.tsx?file=file:///Users/krystofwoldrich/repos/expo/expo/packages/@expo/log-box/src/logbox-polyfill-dom.tsx")
+        // let myURL = URL(string:"http://localhost:8082/_expo/@dom/logbox-polyfill-dom.tsx?file=file:///Users/krystofwoldrich/repos/expo/expo/packages/@expo/log-box/src/logbox-polyfill-dom.tsx")
+        let myURL = URL(string:"http://localhost:8090")
         let myRequest = URLRequest(url: myURL!)
         webView.load(myRequest)
-//#else
-//        let bundleURL = Bundle.main.url(forResource: "ExpoLogBox", withExtension: "bundle")
-//        let bundle = Bundle(url: bundleURL!)
-//        let url = bundle!.url(forResource: "index", withExtension: "html")
-//        webView.loadFileURL(url!, allowingReadAccessTo: url!.deletingLastPathComponent())
-//#endif
+#else
+        let bundleURL = Bundle.main.url(forResource: "ExpoLogBox", withExtension: "bundle")
+        let bundle = Bundle(url: bundleURL!)
+        let url = bundle!.url(forResource: "index", withExtension: "html")
+        webView.loadFileURL(url!, allowingReadAccessTo: url!.deletingLastPathComponent())
+#endif
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
