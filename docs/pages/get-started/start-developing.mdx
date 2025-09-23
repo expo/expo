@@ -1,97 +1,656 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+// Cole este arquivo inteiro em App.js no snack.expo.dev
+// Dependências: @react-native-async-storage/async-storage, react-native-paper, @expo/vector-icons
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Switch,
+  Alert,
+  StatusBar,
+  Platform,
+  Image,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Provider as PaperProvider, Button, Card } from "react-native-paper";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+/* ----------------------
+   Config e constantes
+   ---------------------- */
+const STORAGE_KEY = "@mantiqueira_state_v2";
 
-<Terminal cmd={['$ npx expo start']} />
+/* ----------------------
+   Estilos (clean + Mantiqueira)
+   ---------------------- */
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#fbfdfa", paddingTop: StatusBar.currentHeight || 36 },
+  header: {
+    padding: 14,
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderColor: "#e6f4ea",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  logoBox: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    backgroundColor: "#e9f8ef",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  titleBlock: { flex: 1 },
+  title: { fontSize: 18, fontWeight: "700", color: "#0f5132" },
+  subtitle: { fontSize: 12, color: "#4f7a63" },
+  main: { flex: 1, padding: 12 },
+  card: { marginVertical: 8, padding: 12, backgroundColor: "#fff", borderRadius: 12, elevation: 1 },
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: "#0b4f32", marginBottom: 8 },
+  small: { fontSize: 13, color: "#4b6b57" },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#e9efe6",
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    marginVertical: 8,
+  },
+  bottomNav: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: Platform.OS === "ios" ? 16 : 10,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#e6f4ea",
+  },
+  navItem: { alignItems: "center" },
+  navTextActive: { fontSize: 11, color: "#176f3d", marginTop: 4 },
+  navText: { fontSize: 11, color: "#6b7280", marginTop: 4 },
+  adminBadge: { paddingHorizontal: 8, paddingVertical: 6, backgroundColor: "#e9f8ef", borderRadius: 8 },
+  subtleIllustration: { position: "absolute", right: 8, top: 8, opacity: 0.06, width: 120, height: 120 },
+});
 
-</Step>
+/* ----------------------
+   Função principal App
+   ---------------------- */
+export default function App() {
+  // tela ativa
+  const [screen, setScreen] = useState("home");
 
-<Step label="2">
-## Open the app on your device
+  // estado global persistido
+  const [state, setState] = useState({
+    commissions: { transporte: 0.10, moto: 0.10, delivery: 0.05, hospedagem: 0.02, marketplace: 0.05, servicos: 0.05 },
+    history: { transporte: [], delivery: [], hospedagem: [], marketplace: [], servicos: [] },
+    settings: { notifications: true, darkMode: false },
+    users: [{ id: "admin", name: "Você", email: "seuadmin@email.com" }],
+    pendingHosts: [{ id: "h1", name: "Chalé das Araucárias", price: 240 }],
+    pendingDrivers: [{ id: "d1", name: "João", type: "Carro" }],
+  });
 
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
+  // admin auth (simulado)
+  const [adminAuth, setAdminAuth] = useState({ logged: false, step: 0 });
+  const [adminPasswordInput, setAdminPasswordInput] = useState("");
+  const [admin2faCode, setAdmin2faCode] = useState(""); // simulado
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
+  // formulários temporários
+  const [guestName, setGuestName] = useState("");
+  const [serviceName, setServiceName] = useState("");
 
-<Collapsible summary="Having problems?">
-
-Make sure you are on the same Wi-Fi network on your computer and your device.
-
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
-
-<Terminal cmd={['$ npx expo start --tunnel']} />
-
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
-
-</Collapsible>
-
-</Step>
-
-<Step label="3">
-
-## Make your first change
-
-Open the **app/(tabs)/index.tsx** file in your code editor and make a change.
-
-<DiffBlock
-  raw={`diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/app/(tabs)/index.tsx
-+++ b/app/(tabs)/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
+  /* ----------------------
+     Persistência local
+     ---------------------- */
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (raw) setState(JSON.parse(raw));
+      } catch (err) {
+        console.log("Erro ao carregar storage", err);
       }
-    >
-      <ThemedView style={styles.titleContainer}>
--       <ThemedText type="title">Welcome!</ThemedText>
-+       <ThemedText type="title">Hello World!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-  `}
-/>
+    })();
+  }, []);
 
-<Collapsible summary="Changes not showing up on your device?">
+  useEffect(() => {
+    (async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.log("Erro ao salvar storage", err);
+      }
+    })();
+  }, [state]);
 
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
+  /* ----------------------
+     Helpers: grava histórico por área
+     ---------------------- */
+  function pushRecord(area, rec) {
+    setState((s) => {
+      const copy = { ...s, history: { ...s.history } };
+      copy.history[area] = [rec, ...(copy.history[area] || [])];
+      return copy;
+    });
+  }
 
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
-- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
+  /* ----------------------
+     Ações simuladas (Transporte / Delivery / Hospedagem / Serviços)
+     ---------------------- */
+  function solicitarCorrida(tipo) {
+    const price = tipo === "moto" ? 28 : 48;
+    const com = tipo === "moto" ? state.commissions.moto : state.commissions.transporte;
+    const lucro = +(price * com).toFixed(2);
+    const rec = { id: Date.now().toString(), tipo, price, lucro, date: new Date().toLocaleString() };
+    pushRecord("transporte", rec);
+    Alert.alert("Corrida solicitada", `${tipo === "moto" ? "Moto" : "Carro"} a caminho — R$ ${price}\nSua comissão estimada: R$ ${lucro}`);
+  }
 
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
+  function pedidoDelivery(restaurante, item, price) {
+    const com = state.commissions.delivery;
+    const lucro = +(price * com).toFixed(2);
+    const rec = { id: Date.now().toString(), restaurante, item, price, lucro, date: new Date().toLocaleString() };
+    pushRecord("delivery", rec);
+    Alert.alert("Pedido confirmado", `${item} pedido em ${restaurante} — R$ ${price}\nSua comissão: R$ ${lucro}`);
+  }
 
-</Collapsible>
+  function registrarReserva(nome) {
+    if (!nome) return Alert.alert("Erro", "Digite o nome do hóspede");
+    const price = 220;
+    const com = state.commissions.hospedagem;
+    const lucro = +(price * com).toFixed(2);
+    const rec = { id: Date.now().toString(), name: nome, price, lucro, date: new Date().toLocaleString() };
+    pushRecord("hospedagem", rec);
+    setGuestName("");
+    Alert.alert("Reserva registrada", `Reserva de ${nome} — Sua comissão: R$ ${lucro}`);
+  }
 
-</Step>
+  function solicitarServico(nome) {
+    if (!nome) return Alert.alert("Erro", "Digite o serviço");
+    const price = 120;
+    const com = state.commissions.servicos;
+    const lucro = +(price * com).toFixed(2);
+    const rec = { id: Date.now().toString(), name: nome, price, lucro, date: new Date().toLocaleString() };
+    pushRecord("servicos", rec);
+    setServiceName("");
+    Alert.alert("Serviço solicitado", `${nome} — sua comissão: R$ ${lucro}`);
+  }
 
----
+  /* ----------------------
+     Admin (login simulado + 2FA)
+     ---------------------- */
+  function adminRequestLogin(pw) {
+    // protótipo: senha = "senha-admin"
+    if (pw === "senha-admin") {
+      const code = "123456"; // simulação
+      setAdmin2faCode(code);
+      setAdminAuth({ logged: false, step: 1 });
+      Alert.alert("Código 2FA enviado", `Código (simulado): ${code}`);
+    } else {
+      Alert.alert("Senha incorreta");
+    }
+  }
+  function adminVerify(code) {
+    if (code === admin2faCode) {
+      setAdminAuth({ logged: true, step: 2 });
+      setScreen("admin");
+    } else Alert.alert("Código inválido");
+  }
+  function adminLogout() {
+    setAdminAuth({ logged: false, step: 0 });
+    setScreen("home");
+  }
 
-## File structure
+  /* ----------------------
+     Admin actions
+     ---------------------- */
+  function updateCommission(key, value) {
+    setState((s) => ({ ...s, commissions: { ...s.commissions, [key]: parseFloat(value) || 0 } }));
+  }
+  function approveHost(id) {
+    setState((s) => ({ ...s, pendingHosts: s.pendingHosts.filter((h) => h.id !== id) }));
+    Alert.alert("Aprovado", "Anfitrião aprovado e agora ativo");
+  }
+  function approveDriver(id) {
+    setState((s) => ({ ...s, pendingDrivers: s.pendingDrivers.filter((d) => d.id !== id) }));
+    Alert.alert("Aprovado", "Motorista aprovado e pode começar a aceitar corridas");
+  }
 
-Below, you can get familiar with the default project's file structure:
+  /* ----------------------
+     Componentes de UI menores
+     ---------------------- */
+  const Logo = () => (
+    <View style={styles.logoBox}>
+      {/* ícone simples — você pode substituir por imagem svg/PNG */}
+      <FontAwesome5 name="mountain" size={20} color="#12713a" />
+    </View>
+  );
 
-<ProjectStructure />
+  const SectionCard = ({ children }) => <Card style={styles.card}>{children}</Card>;
 
-## Features
+  /* ----------------------
+     Telas: AdminPanel
+     ---------------------- */
+  function AdminPanel() {
+    const totalRevenue = (
+      (state.history.transporte || []).reduce((s, r) => s + (r.lucro || 0), 0) +
+      (state.history.delivery || []).reduce((s, r) => s + (r.lucro || 0), 0) +
+      (state.history.hospedagem || []).reduce((s, r) => s + (r.lucro || 0), 0) +
+      (state.history.servicos || []).reduce((s, r) => s + (r.lucro || 0), 0)
+    ).toFixed(2);
 
-The default project template has the following features:
+    return (
+      <ScrollView style={styles.main}>
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Painel Administrativo</Text>
+          <Text style={styles.small}>Apenas para o administrador — controle de comissões e aprovações</Text>
+        </SectionCard>
 
-<TemplateFeatures />
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Comissões</Text>
+          {Object.keys(state.commissions).map((k) => (
+            <View key={k} style={{ marginBottom: 8 }}>
+              <Text style={{ textTransform: "capitalize", marginBottom: 6 }}>{k}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={String(state.commissions[k])}
+                keyboardType="numeric"
+                onChangeText={(txt) => updateCommission(k, txt)}
+              />
+            </View>
+          ))}
+          <Button mode="contained" onPress={() => Alert.alert("Comissões salvas", "As comissões foram atualizadas")}>
+            Salvar
+          </Button>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Anfitriões pendentes</Text>
+          {state.pendingHosts.length === 0 ? (
+            <Text style={styles.small}>Nenhum</Text>
+          ) : (
+            state.pendingHosts.map((h) => (
+              <View key={h.id} style={{ marginBottom: 8 }}>
+                <Text style={{ fontWeight: "700" }}>{h.name} — R$ {h.price}</Text>
+                <Button mode="contained" onPress={() => approveHost(h.id)} style={{ marginTop: 6 }}>
+                  Aprovar
+                </Button>
+              </View>
+            ))
+          )}
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Motoristas pendentes</Text>
+          {state.pendingDrivers.length === 0 ? (
+            <Text style={styles.small}>Nenhum</Text>
+          ) : (
+            state.pendingDrivers.map((d) => (
+              <View key={d.id} style={{ marginBottom: 8 }}>
+                <Text style={{ fontWeight: "700" }}>{d.name} — {d.type}</Text>
+                <Button mode="contained" onPress={() => approveDriver(d.id)} style={{ marginTop: 6 }}>
+                  Aprovar
+                </Button>
+              </View>
+            ))
+          )}
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Relatórios Rápidos</Text>
+          <Text>Corridas: {state.history.transporte.length}</Text>
+          <Text>Pedidos: {state.history.delivery.length}</Text>
+          <Text>Reservas: {state.history.hospedagem.length}</Text>
+          <Text>Serviços: {state.history.servicos.length}</Text>
+          <Text style={{ marginTop: 8, fontWeight: "700" }}>Receita estimada: R$ {totalRevenue}</Text>
+        </SectionCard>
+
+        <Button mode="outlined" onPress={adminLogout} style={{ marginTop: 12 }}>
+          Sair do admin
+        </Button>
+      </ScrollView>
+    );
+  }
+
+  /* ----------------------
+     Telas: usuário
+     ---------------------- */
+  function HomeScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Bem-vindo à Serra da Mantiqueira</Text>
+          <Text style={styles.small}>Um app regional — transporte, hospedagem, delivery, serviços e turismo.</Text>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Ações rápidas</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8 }}>
+            <Button mode="contained" onPress={() => setScreen("transporte")}>Pedir transporte</Button>
+            <Button mode="contained" onPress={() => setScreen("delivery")}>Pedir comida</Button>
+            <Button mode="contained" onPress={() => setScreen("hospedagem")}>Reservar</Button>
+          </View>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={styles.sectionTitle}>Resumo</Text>
+          <Text>Corridas: {state.history.transporte.length} • Pedidos: {state.history.delivery.length}</Text>
+          <Text style={{ marginTop: 6 }} >Comissões configuráveis no admin</Text>
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function TransporteScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Transporte</Text>
+        <Text style={styles.small}>Escolha carro ou moto — simulação</Text>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Solicitar</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 8 }}>
+            <Button mode="contained" onPress={() => solicitarCorrida("carro")}>Carro</Button>
+            <Button mode="contained" onPress={() => solicitarCorrida("moto")}>Moto</Button>
+          </View>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Histórico</Text>
+          {state.history.transporte.length === 0 && <Text style={styles.small}>Nenhuma corrida</Text>}
+          {state.history.transporte.map((h) => (
+            <View key={h.id} style={{ marginVertical: 6 }}>
+              <Text>{h.tipo.toUpperCase()} — R$ {h.price} — Comissão: R$ {h.lucro.toFixed(2)}</Text>
+              <Text style={styles.small}>{h.date}</Text>
+            </View>
+          ))}
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function DeliveryScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Delivery</Text>
+        <Text style={styles.small}>Peça em restaurantes locais</Text>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Serra Grill (exemplo)</Text>
+          <Button mode="outlined" onPress={() => pedidoDelivery("Serra Grill", "Picanha", 60)} style={{ marginTop: 6 }}>
+            Picanha R$60
+          </Button>
+          <Button mode="outlined" onPress={() => pedidoDelivery("Serra Grill", "Queijo", 20)} style={{ marginTop: 6 }}>
+            Queijo R$20
+          </Button>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Histórico</Text>
+          {state.history.delivery.length === 0 && <Text style={styles.small}>Nenhum pedido</Text>}
+          {state.history.delivery.map((o) => (
+            <View key={o.id} style={{ marginVertical: 6 }}>
+              <Text>{o.item} — {o.restaurante} — R$ {o.price}</Text>
+              <Text style={styles.small}>Comissão: R$ {o.lucro.toFixed(2)} — {o.date}</Text>
+            </View>
+          ))}
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function HospedagemScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Hospedagem</Text>
+        <Text style={styles.small}>Reservas com taxa reduzida (2%)</Text>
+
+        <SectionCard>
+          <TextInput placeholder="Nome do hóspede" value={guestName} onChangeText={setGuestName} style={styles.textInput} />
+          <Button mode="contained" onPress={() => registrarReserva(guestName)}>Registrar Reserva</Button>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Reservas</Text>
+          {state.history.hospedagem.length === 0 && <Text style={styles.small}>Nenhuma reserva</Text>}
+          {state.history.hospedagem.map((r) => (
+            <View key={r.id} style={{ marginVertical: 6 }}>
+              <Text>{r.name} — R$ {r.price}</Text>
+              <Text style={styles.small}>Comissão: R$ {r.lucro.toFixed(2)} — {r.date}</Text>
+            </View>
+          ))}
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function MarketplaceScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Marketplace</Text>
+        <Text style={styles.small}>Venda e compre produtos locais</Text>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Queijo da Serra — R$ 40</Text>
+          <Text style={styles.small}>Comissão (transação interna): R$ {(40 * state.commissions.marketplace).toFixed(2)}</Text>
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function ServicosScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Serviços</Text>
+        <Text style={styles.small}>Contrate profissionais locais</Text>
+
+        <SectionCard>
+          <TextInput placeholder="Nome do serviço" value={serviceName} onChangeText={setServiceName} style={styles.textInput} />
+          <Button mode="contained" onPress={() => solicitarServico(serviceName)}>Solicitar</Button>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Histórico</Text>
+          {state.history.servicos.length === 0 && <Text style={styles.small}>Nenhum serviço</Text>}
+          {state.history.servicos.map((s) => (
+            <View key={s.id} style={{ marginVertical: 6 }}>
+              <Text>{s.name} — R$ {s.price}</Text>
+              <Text style={styles.small}>Comissão: R$ {s.lucro.toFixed(2)} — {s.date}</Text>
+            </View>
+          ))}
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function TurismoScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Turismo & Guias</Text>
+        <Text style={styles.small}>Mapas e roteiros — integração com Google Maps / Mapbox recomendada.</Text>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Cachoeira do Funil</Text>
+          <Text style={styles.small}>Nível: Fácil — R$ 0 — Guia: contato@guia.ex</Text>
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function EventosScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Eventos</Text>
+
+        <SectionCard>
+          <Text style={{ fontWeight: "700" }}>Festival do Queijo — 12 Nov</Text>
+          <Text style={styles.small}>Praça Central — Ingressos R$ 20</Text>
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  function ConfigScreen() {
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Configurações</Text>
+
+        <SectionCard>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text>Notificações</Text>
+            <Switch value={state.settings.notifications} onValueChange={(v) => setState((s) => ({ ...s, settings: { ...s.settings, notifications: v } }))} />
+          </View>
+        </SectionCard>
+
+        <SectionCard>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text>Modo escuro (simulado)</Text>
+            <Switch value={state.settings.darkMode} onValueChange={(v) => setState((s) => ({ ...s, settings: { ...s.settings, darkMode: v } }))} />
+          </View>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={styles.small}>Pagamentos: placeholder — integrar Stripe / Mercado Pago / PagSeguro para pagamentos reais.</Text>
+        </SectionCard>
+
+        <SectionCard>
+          <Text style={styles.small}>Privacidade & Termos: adicione texto legal (contrato de intermediação).</Text>
+        </SectionCard>
+      </ScrollView>
+    );
+  }
+
+  /* Admin Login Screen (quando adminAuth.step === 0/1 and not logged) */
+  function AdminLoginScreen() {
+    const [pw, setPw] = useState("");
+    const [code, setCodeInput] = useState("");
+    return (
+      <ScrollView style={styles.main}>
+        <Text style={styles.sectionTitle}>Acesso Administrativo</Text>
+        {adminAuth.step === 0 ? (
+          <>
+            <TextInput placeholder="Senha administrativa" secureTextEntry value={pw} onChangeText={setPw} style={styles.textInput} />
+            <Button mode="contained" onPress={() => adminRequestLogin(pw)}>Solicitar 2FA</Button>
+            <Text style={[styles.small, { marginTop: 8 }]}>(Protótipo: senha = senha-admin)</Text>
+          </>
+        ) : (
+          <>
+            <TextInput placeholder="Código 2FA" value={code} onChangeText={setCodeInput} style={styles.textInput} />
+            <Button mode="contained" onPress={() => adminVerify(code)}>Verificar</Button>
+            <Text style={[styles.small, { marginTop: 8 }]}>(Protótipo: código = 123456)</Text>
+          </>
+        )}
+        <Button mode="text" onPress={() => setScreen("home")} style={{ marginTop: 12 }}>
+          Voltar
+        </Button>
+      </ScrollView>
+    );
+  }
+
+  /* ----------------------
+     Renderiza a tela atual
+     ---------------------- */
+  function renderCurrentScreen() {
+    if (screen === "admin") {
+      if (!adminAuth.logged) return <AdminLoginScreen />;
+      return <AdminPanel />;
+    }
+    switch (screen) {
+      case "home":
+        return <HomeScreen />;
+      case "transporte":
+        return <TransporteScreen />;
+      case "delivery":
+        return <DeliveryScreen />;
+      case "hospedagem":
+        return <HospedagemScreen />;
+      case "marketplace":
+        return <MarketplaceScreen />;
+      case "servicos":
+        return <ServicosScreen />;
+      case "turismo":
+        return <TurismoScreen />;
+      case "eventos":
+        return <EventosScreen />;
+      case "config":
+        return <ConfigScreen />;
+      default:
+        return <HomeScreen />;
+    }
+  }
+
+  /* ----------------------
+     App UI principal
+     ---------------------- */
+  return (
+    <PaperProvider>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Logo />
+          <View style={styles.titleBlock}>
+            <Text style={styles.title}>Mantiqueira</Text>
+            <Text style={styles.subtitle}>Conectando a Serra — serviços e turismo</Text>
+          </View>
+          <View style={styles.adminBadge}>
+            <Text style={{ fontSize: 12, color: "#0f5132" }}>Você é dono</Text>
+          </View>
+
+          {/* ilustração sutil (substitua por arquivo se quiser) */}
+          <Image source={{ uri: "https://i.imgur.com/0Xx3r7B.png" }} style={styles.subtleIllustration} />
+        </View>
+
+        {renderCurrentScreen()}
+
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navItem} onPress={() => setScreen("home")}>
+            <MaterialIcons name="home" size={22} color={screen === "home" ? "#176f3d" : "#6b7280"} />
+            <Text style={screen === "home" ? styles.navTextActive : styles.navText}>Início</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => setScreen("transporte")}>
+            <FontAwesome5 name="car-side" size={20} color={screen === "transporte" ? "#176f3d" : "#6b7280"} />
+            <Text style={screen === "transporte" ? styles.navTextActive : styles.navText}>Transp.</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => setScreen("delivery")}>
+            <MaterialIcons name="restaurant" size={22} color={screen === "delivery" ? "#176f3d" : "#6b7280"} />
+            <Text style={screen === "delivery" ? styles.navTextActive : styles.navText}>Delivery</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => setScreen("hospedagem")}>
+            <MaterialIcons name="hotel" size={22} color={screen === "hospedagem" ? "#176f3d" : "#6b7280"} />
+            <Text style={screen === "hospedagem" ? styles.navTextActive : styles.navText}>Hosped</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => setScreen("marketplace")}>
+            <MaterialIcons name="store" size={22} color={screen === "marketplace" ? "#176f3d" : "#6b7280"} />
+            <Text style={screen === "marketplace" ? styles.navTextActive : styles.navText}>Loja</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => setScreen("servicos")}>
+            <MaterialIcons name="build" size={22} color={screen === "servicos" ? "#176f3d" : "#6b7280"} />
+            <Text style={screen === "servicos" ? styles.navTextActive : styles.navText}>Serviços</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => setScreen("admin")}>
+            <MaterialIcons name="admin-panel-settings" size={22} color={screen === "admin" ? "#176f3d" : "#6b7280"} />
+            <Text style={screen === "admin" ? styles.navTextActive : styles.navText}>Admin</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </PaperProvider>
+  );
+}
+
+/* ----------------------
+   Observações e próximos passos (coloque no README do projeto)
+   ----------------------
+   - Para mapa em tempo real (driver/passenger tracking) integrar: react-native-maps + backend (Firebase Realtime DB ou socket).
+   - Para pagamentos e split automático: Stripe Connect (internacional) ou Mercado Pago APIs (Brasil). No Glide/Adalo às vezes não é possível fazer split automático, por isso back-end é recomendado.
+   - Notificações push reais: Firebase Cloud Messaging (FCM) + servidor que envie mensagens ao usuário/driver.
+   - Autenticação forte/admin em produção: use Firebase Auth + regras de segurança.
+   - Hospede imagens (logo, fotos de produtos/hospedagens) em serviço público (Cloudinary, S3, Imgur) ou no próprio servidor.
+   - Se quiser, eu te ajudo a migrar esse protótipo para um back-end (Firebase) passo a passo.
