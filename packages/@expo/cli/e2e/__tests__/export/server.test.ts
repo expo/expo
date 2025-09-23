@@ -338,6 +338,13 @@ describe('server-output', () => {
           'a/b/c'
         );
       });
+
+      it('supports runtime API', async () => {
+        await expect(serverFetchAsync('/api/runtime').then((r) => r.json())).resolves.toEqual({
+          environment: expect.stringMatching(/production|development/),
+          origin: 'null',
+        });
+      });
     }
 
     if (name !== EXPO_DEV_SERVER) {
