@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 
 import type { RequestAPI } from './api';
 import { errorToResponse } from './error';
+import { importMetaRegistry } from '../utils/importMetaRegistry';
 
 const scopeSymbol = Symbol.for('expoServerRuntime');
 
@@ -11,12 +12,34 @@ function getRequestScopeSingleton(): AsyncLocalStorage<RequestAPI> {
 }
 
 interface RequestAPISetup extends RequestAPI {
+  origin?: string;
   environment?: string | null;
   waitUntil?(promise: Promise<unknown>): void;
 }
 
 export function getRequestScope() {
   return getRequestScopeSingleton().getStore();
+}
+
+function setupRuntime() {
+  try {
+    Object.defineProperty(globalThis, 'origin', {
+      enumerable: true,
+      configurable: true,
+      get() {
+        return getRequestScope()?.origin || 'null';
+      },
+    });
+  } catch {}
+  try {
+    Object.defineProperty(globalThis, '__ExpoImportMetaRegistry', {
+      enumerable: true,
+      configurable: true,
+      get() {
+        return importMetaRegistry;
+      },
+    });
+  } catch {}
 }
 
 type RequestContextFactory = (...args: any[]) => Partial<RequestAPISetup>;
@@ -29,12 +52,15 @@ type RequestScopeRunner<F extends RequestContextFactory> = (
 export function createRequestScope<F extends RequestContextFactory>(
   makeRequestAPISetup: F
 ): RequestScopeRunner<F> {
+  setupRuntime();
   const requestScope = getRequestScopeSingleton();
   return async (run, ...args) => {
     const setup = makeRequestAPISetup(...args);
     const { waitUntil } = setup;
 
     const scope = {
+      ...setup,
+      origin: setup.origin,
       environment: setup.environment,
       waitUntil,
       deferTask: setup.deferTask,

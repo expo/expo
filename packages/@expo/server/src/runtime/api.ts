@@ -23,9 +23,14 @@ function assertSupport<T>(name: string, v: T | undefined): T {
 }
 
 export interface RequestAPI {
+  origin?: string;
   environment?: string | null;
   waitUntil?(promise: Promise<unknown>): void;
   deferTask?(fn: () => Promise<unknown>): void;
+}
+
+export function origin(): string | null {
+  return assertSupport('origin()', enforcedRequestScope().origin);
 }
 
 export function environment(): string | null {
