@@ -1,25 +1,23 @@
 ---
-title: Expo UI
-sidebar_title: UI
-description: A set of components that allow you to build UIs directly with SwiftUI and Jetpack Compose from React.
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-54/packages/expo-ui'
+title: SwiftUI
+sidebar_title: SwiftUI
+description: SwiftUI components for building native iOS interfaces with @expo/ui.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android', 'ios', 'tvos']
-isAlpha: true
+platforms: ['ios', 'tvos']
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-{/* import APISection from '~/components/plugins/APISection'; */}
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
+import { BoxLink } from '~/ui/components/BoxLink';
 
-> **important** **This library is currently in alpha and will frequently experience breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
+> **important** **This library is currently in beta and subject to breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
 
-`@expo/ui` is a set of native input components that allows you to build fully native interfaces with SwiftUI and Jetpack Compose. It aims to provide the commonly used features and components that a typical app will need.
+The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iOS interfaces using SwiftUI from React Native.
 
 <BoxLink
   title="Expo UI guide for Swift UI"
@@ -992,10 +990,3 @@ Full documentation is not yet available. Use TypeScript types to explore the API
 // Import from the SwiftUI package
 import { BottomSheet } from '@expo/ui/swift-ui';
 ```
-
-```ts
-// Import from the Jetpack Compose package
-import { Button } from '@expo/ui/jetpack-compose';
-```
-
-{/* <APISection packageName="expo-ui" apiName="Expo UI" /> */}
