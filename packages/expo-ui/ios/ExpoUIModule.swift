@@ -54,5 +54,11 @@ public final class ExpoUIModule: Module {
     View(NamespaceView.self)
     View(GlassEffectContainerView.self)
     View(LabeledContentView.self)
+    View(RectangleView.self)
+    View(RoundedRectangleView.self)
+    View(EllipseView.self)
+    View(UnevenRoundedRectangleView.self)
+    View(CapsuleView.self)
+    View(CircleView.self)
   }
 }

@@ -9,6 +9,9 @@
 ### 🐛 Bug fixes
 
 - fix VectorIcon types ([#39747](https://github.com/expo/expo/pull/39747) by [@Ubax](https://github.com/Ubax))
+- [iOS] fix icons in context menu not being removed with `undefined` ([#39845](https://github.com/expo/expo/pull/39845) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] fix optional context menu props not being unset with `undefined` ([#39853](https://github.com/expo/expo/pull/39853) by [@hassankhan](https://github.com/hassankhan))
+
 
 ### 💡 Others
 

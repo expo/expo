@@ -27,4 +27,5 @@ export * from './TextField';
 export * from './SecureField';
 export * from './Namespace';
 export * from './GlassEffectContainer';
+export * from './Shapes';
 //# sourceMappingURL=index.d.ts.map

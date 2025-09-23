@@ -37,6 +37,8 @@ var _exportNames = {
   withAppBuildGradle: true,
   withSettingsGradle: true,
   withGradleProperties: true,
+  isValidAndroidAssetName: true,
+  assertValidAndroidAssetName: true,
   withStaticPlugin: true,
   compileModsAsync: true,
   withDefaultBaseMods: true,
@@ -51,6 +53,12 @@ Object.defineProperty(exports, "PluginError", {
   }
 });
 exports.XML = exports.WarningAggregator = exports.Updates = void 0;
+Object.defineProperty(exports, "assertValidAndroidAssetName", {
+  enumerable: true,
+  get: function () {
+    return _validations().assertValidAndroidAssetName;
+  }
+});
 Object.defineProperty(exports, "compileModsAsync", {
   enumerable: true,
   get: function () {
@@ -67,6 +75,12 @@ Object.defineProperty(exports, "evalModsAsync", {
   enumerable: true,
   get: function () {
     return _modCompiler().evalModsAsync;
+  }
+});
+Object.defineProperty(exports, "isValidAndroidAssetName", {
+  enumerable: true,
+  get: function () {
+    return _validations().isValidAndroidAssetName;
   }
 });
 Object.defineProperty(exports, "withAndroidColors", {
@@ -394,6 +408,13 @@ function _iosPlugins() {
 function _androidPlugins() {
   const data = require("./plugins/android-plugins");
   _androidPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _validations() {
+  const data = require("./utils/validations");
+  _validations = function () {
     return data;
   };
   return data;

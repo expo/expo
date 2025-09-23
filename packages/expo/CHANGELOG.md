@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Remove EXAppDelegateWrapper class ([#39778](https://github.com/expo/expo/pull/39778) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 - Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))

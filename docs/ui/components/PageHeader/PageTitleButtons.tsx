@@ -6,6 +6,8 @@ import { Tag03Icon } from '@expo/styleguide-icons/outline/Tag03Icon';
 import { useRouter } from 'next/compat/router';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
+import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/MarkdownActionsDropdown';
+import { shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 import { SdkPackageButton } from './SdkPackageButton';
@@ -13,13 +15,23 @@ import { SdkPackageButton } from './SdkPackageButton';
 type Props = {
   packageName?: string;
   sourceCodeUrl?: string;
+  showMarkdownActions?: boolean;
 };
 
-export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
+export function PageTitleButtons({ packageName, sourceCodeUrl, showMarkdownActions }: Props) {
   const router = useRouter();
+  const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
+  const currentPath = router?.asPath ?? router?.pathname;
+  const markdownActionsEnabled =
+    showMarkdownActions ??
+    shouldShowMarkdownActions({
+      packageName,
+      path: currentPath,
+    });
+
   return (
     <>
-      {!sourceCodeUrl && !packageName && router?.pathname && (
+      {showEditButton && (
         <Button
           theme="quaternary"
           className="justify-center pl-2.5 pr-2"
@@ -29,11 +41,12 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           <div className="flex flex-row items-center gap-2">
             <Edit05Icon className="icon-sm text-icon-secondary" />
             <FOOTNOTE crawlable={false} theme="secondary">
-              Edit this page
+              Edit
             </FOOTNOTE>
           </div>
         </Button>
       )}
+      {markdownActionsEnabled && <MarkdownActionsDropdown />}
       {sourceCodeUrl && (
         <SdkPackageButton
           label="GitHub"

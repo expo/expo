@@ -1,4 +1,4 @@
-import { WarningAggregator } from 'expo/config-plugins';
+import { isValidAndroidAssetName, WarningAggregator } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -20,16 +20,11 @@ export async function resolveAssetPaths(assets: string[], projectRoot: string) {
   return (await Promise.all(promises)).flat();
 }
 
-const validPattern = /^[a-z0-9_]+$/;
-function isAndroidAssetNameValid(assetName: string) {
-  return validPattern.test(assetName);
-}
-
 export function validateAssets(assets: string[], platform: 'android' | 'ios') {
   return assets.filter((asset) => {
     const ext = path.extname(asset);
     const name = path.basename(asset, ext);
-    const isNameValid = platform === 'android' ? isAndroidAssetNameValid(name) : true;
+    const isNameValid = platform === 'android' ? isValidAndroidAssetName(name) : true;
     const accepted = ACCEPTED_TYPES.includes(ext);
     const isFont = FONT_TYPES.includes(ext);
 

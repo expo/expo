@@ -15,7 +15,7 @@ NS_SWIFT_NAME(ExpoReactRootViewFactory)
 @property (nonatomic, weak, nullable) EXReactDelegate *reactDelegate;
 
 /**
- Initializer for EXAppDelegateWrapper integration
+ Initializer for ExpoReactNativeFactory integration
  */
 - (instancetype)initWithReactDelegate:(nullable EXReactDelegate *)reactDelegate
                         configuration:(RCTRootViewFactoryConfiguration *)configuration
