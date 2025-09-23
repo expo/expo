@@ -59,10 +59,6 @@ android {
       }
     }
   }
-
-  aaptOptions {
-    ignoreAssetsPattern '!._expo'
-  }
 }
 
 dependencies { dependencyHandler ->

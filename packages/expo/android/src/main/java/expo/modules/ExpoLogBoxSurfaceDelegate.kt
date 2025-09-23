@@ -80,7 +80,7 @@ internal class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSuppo
             settings.javaScriptEnabled = true
             webViewClient = WebViewClient()
             setWebContentsDebuggingEnabled(true);
-            loadUrl("file:///android_asset/index.html")
+            loadUrl("file:///android_asset/ExpoLogBox.bundle/index.html")
             // TODO: use build config to specify the dev url
             // loadUrl("http://10.0.2.2:8082/")
         }
