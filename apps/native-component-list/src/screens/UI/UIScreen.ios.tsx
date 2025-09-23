@@ -170,6 +170,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ShapesScreen'));
     },
   },
+  {
+    name: 'Image component',
+    route: 'ui/image',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
