@@ -53,10 +53,17 @@ export function createRequestScope<F extends RequestContextFactory>(
   makeRequestAPISetup: F
 ): RequestScopeRunner<F> {
   setupRuntime();
+
+  // NOTE(@kitten): For long-running servers, this will always be a noop. It therefore
+  // makes sense for us to provide a default that doesn't do anything.
+  function defaultWaitUntil(promise: Promise<unknown>): void {
+    promise.finally(() => {});
+  }
+
   const requestScope = getRequestScopeSingleton();
   return async (run, ...args) => {
     const setup = makeRequestAPISetup(...args);
-    const { waitUntil } = setup;
+    const { waitUntil = defaultWaitUntil } = setup;
 
     const scope = {
       ...setup,
@@ -67,7 +74,7 @@ export function createRequestScope<F extends RequestContextFactory>(
     } satisfies RequestAPI;
 
     const deferredTasks: (() => Promise<unknown>)[] = [];
-    if (waitUntil && !scope.deferTask) {
+    if (!scope.deferTask) {
       scope.deferTask = function deferTask(fn) {
         deferredTasks.push(fn);
       };
@@ -84,7 +91,7 @@ export function createRequestScope<F extends RequestContextFactory>(
       }
     }
 
-    if (waitUntil && deferredTasks.length) {
+    if (deferredTasks.length) {
       deferredTasks.forEach((fn) => waitUntil(fn()));
     }
 
