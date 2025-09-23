@@ -1,7 +1,6 @@
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
 import { DevToolsPlugin } from './DevToolsPlugin';
-import { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { Log } from '../../log';
 
 const debug = require('debug')('expo:start:server:devtools');
@@ -14,19 +13,9 @@ export default class DevToolsPluginManager {
   constructor(private projectRoot: string) {}
 
   public async queryPluginsAsync(): Promise<DevToolsPlugin[]> {
-    if (this.plugins) {
-      return this.plugins;
+    if (!this.plugins) {
+      this.plugins = await this.queryAutolinkedPluginsAsync(this.projectRoot);
     }
-    this.plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot))
-      .map((plugin) => {
-        try {
-          return new DevToolsPlugin(plugin, this.projectRoot);
-        } catch (error) {
-          Log.error(`Failed to create DevToolsPlugin for "${plugin.packageName}":\n${error}`);
-          return null;
-        }
-      })
-      .filter((p) => p != null) as DevToolsPlugin[];
     return this.plugins;
   }
 
@@ -36,7 +25,7 @@ export default class DevToolsPluginManager {
     return plugin?.webpageRoot ?? null;
   }
 
-  private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<DevToolsPluginInfo[]> {
+  private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<DevToolsPlugin[]> {
     const autolinking: typeof import('expo/internal/unstable-autolinking-exports') = require('expo/internal/unstable-autolinking-exports');
     const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
     const revisions = await autolinking.scanExpoModuleResolutionsForPlatform(linker, 'devtools');
@@ -47,6 +36,8 @@ export default class DevToolsPluginManager {
       )
     ).filter((maybePlugin) => maybePlugin != null);
     debug('Found autolinked plugins', plugins);
-    return plugins;
+    return plugins
+      .map((pluginInfo) => new DevToolsPlugin(pluginInfo, this.projectRoot))
+      .filter((p) => p != null) as DevToolsPlugin[];
   }
 }

@@ -7,7 +7,7 @@ import { ExpoChoice, selectAsync } from '../../utils/prompts';
 import { DevToolsPlugin } from '../server/DevToolsPlugin';
 import { DevToolsPluginCommand } from '../server/DevToolsPlugin.schema';
 
-const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
+const debug = require('debug')('expo:start:devtools') as typeof console.log;
 
 export interface MoreToolMenuItem extends ExpoChoice<string> {
   action?: () => unknown;
