@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
-import { CommonViewModifierProps } from '../types';
+
 import { createViewModifierEventListener } from '../modifiers/utils';
+import { CommonViewModifierProps } from '../types';
 
 export type CornerStyleConfig =
   | {

@@ -6,8 +6,8 @@
 import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
-import { createModifier, ModifierConfig } from './createModifier';
 import { containerShape } from './containerShape';
+import { createModifier, ModifierConfig } from './createModifier';
 
 /**
  * Creates a modifier with an event listener.
