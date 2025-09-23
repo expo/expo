@@ -1,2 +1,2 @@
-export * from './runtime/api';
+export * from './runtime';
 export type * from './types';

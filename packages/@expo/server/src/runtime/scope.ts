@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 import type { RequestAPI } from './api';
+import { errorToResponse } from './error';
 
 const scopeSymbol = Symbol.for('expoServerRuntime');
 
@@ -20,10 +21,10 @@ export function getRequestScope() {
 
 type RequestContextFactory = (...args: any[]) => Partial<RequestAPISetup>;
 
-type RequestScopeRunner<F extends RequestContextFactory> = <R>(
-  fn: (...args: Parameters<F>) => Promise<R>,
+type RequestScopeRunner<F extends RequestContextFactory> = (
+  fn: (...args: Parameters<F>) => Promise<Response>,
   ...args: Parameters<F>
-) => Promise<R>;
+) => Promise<Response>;
 
 export function createRequestScope<F extends RequestContextFactory>(
   makeRequestAPISetup: F
@@ -46,7 +47,16 @@ export function createRequestScope<F extends RequestContextFactory>(
       };
     }
 
-    const result = await requestScope.run(scope, () => run(...args));
+    let result: Response;
+    try {
+      result = await requestScope.run(scope, () => run(...args));
+    } catch (error) {
+      if (error != null && error instanceof Error && 'status' in error) {
+        return errorToResponse(error);
+      } else {
+        throw error;
+      }
+    }
 
     if (waitUntil && deferredTasks.length) {
       deferredTasks.forEach((fn) => waitUntil(fn()));
