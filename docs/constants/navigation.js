@@ -804,7 +804,7 @@ function pagesFromDir(dir) {
     .map(folder => {
       const folderPages = pagesFromDir(path.join(dir, folder.name));
       return folderPages.length > 0
-        ? makeGroup(folder.name.toUpperCase(), folderPages, { expanded: true })
+        ? makeGroup(folder.name, folderPages, { expanded: true })
         : null;
     })
     .filter(Boolean);
