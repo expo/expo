@@ -92,7 +92,11 @@ export default function ButtonScreen() {
               <CircularProgress color="blue" />
             </ButtonPrimitive>
           </Host>
-          <Button>Hello {'world'}</Button>
+        </Section>
+        <Section title="interpolated strings">
+          <Button style={styles.button} color="#FF6347">
+            Hello {'world'}
+          </Button>
         </Section>
       </ScrollView>
     </Page>
