@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [Android] Remove @UnstableReactNativeAPI annotations.
+- [Android] Remove @UnstableReactNativeAPI annotations. ([#39921](https://github.com/expo/expo/pull/39921) by [@jakex7](https://github.com/jakex7))
 
 ## 3.0.11 — 2025-09-10
 
