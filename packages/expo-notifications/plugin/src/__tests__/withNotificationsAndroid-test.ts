@@ -42,8 +42,8 @@ const LIST_OF_GENERATED_NOTIFICATION_FILES = [
   'android/app/src/main/res/drawable-xxxhdpi/notification_icon.png',
   'android/app/src/main/res/values/colors.xml',
   'assets/notificationIcon.png',
-  'assets/notificationSound.wav',
-  'android/app/src/main/res/raw/notificationSound.wav',
+  'assets/notification_sound.wav',
+  'android/app/src/main/res/raw/notification_sound.wav',
 ];
 
 const iconPath = path.resolve(__dirname, './fixtures/icon.png');
@@ -62,7 +62,7 @@ describe('Android notifications configuration', () => {
     setUpDrawableDirectories();
     vol.mkdirpSync('/app/assets');
     vol.writeFileSync('/app/assets/notificationIcon.png', icon);
-    vol.writeFileSync('/app/assets/notificationSound.wav', sound);
+    vol.writeFileSync('/app/assets/notification_sound.wav', sound);
   });
 
   afterEach(() => {
@@ -90,7 +90,7 @@ describe('Android notifications configuration', () => {
 
   it('writes all the asset files (sounds and images) as expected', async () => {
     await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
-    setNotificationSounds(projectRoot, ['/app/assets/notificationSound.wav']);
+    setNotificationSounds(projectRoot, ['/app/assets/notification_sound.wav']);
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());

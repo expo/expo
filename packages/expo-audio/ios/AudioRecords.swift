@@ -45,6 +45,13 @@ struct RecordingOptions: Record {
   @Field var isMeteringEnabled: Bool = false
 }
 
+struct Metadata: Record {
+  @Field var title: String?
+  @Field var artist: String?
+  @Field var albumTitle: String?
+  @Field var artworkUrl: URL?
+}
+
 enum BitRateStrategy: String, Enumerable {
   case constant
   case longTermAverage
