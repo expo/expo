@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix launching Expo on emulators where `hw.keyboard = no` ([#34677](https://github.com/expo/expo/pull/34677) by [@DimitarNestorov](https://github.com/DimitarNestorov))
+
 ### 💡 Others
 
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))
@@ -400,7 +402,6 @@ _This version does not introduce any user-facing changes._
 - Fix async bundling. ([#34986](https://github.com/expo/expo/pull/34986) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix application identifier suggestion. ([#34843](https://github.com/expo/expo/pull/34843) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `static` and `server` projects not starting up correctly when project path contains URI-unsafe characters like spaces. ([#34289](https://github.com/expo/expo/pull/34289) by [@kitten](https://github.com/kitten))
-- Fix launching Expo on emulators where `hw.keyboard = no` ([#34677](https://github.com/expo/expo/pull/34677) by [@DimitarNestorov](https://github.com/DimitarNestorov))
 - Add fallback resolution strategy for dependencies and optional peer dependencies of `expo` and `expo-router` to prevent broken resolution for isolated dependencies and hoisting issues. ([#34286](https://github.com/expo/expo/pull/34286) by [@kitten](https://github.com/kitten))
 - Preserve proxy leases on webcontainers ([#34831](https://github.com/expo/expo/pull/34831) by [@kitten](https://github.com))
 - Add support for `isESMImport` in fast resolver and React Server resolution. ([#35520](https://github.com/expo/expo/pull/35520) by [@byCedric](https://github.com/byCedric))
