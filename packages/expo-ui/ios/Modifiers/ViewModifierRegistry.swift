@@ -254,11 +254,7 @@ internal struct DisabledModifier: ViewModifier, Record {
   @Field var disabled: Bool = true
 
   func body(content: Content) -> some View {
-    if disabled {
-      content.disabled(true)
-    } else {
-      content.disabled(false)
-    }
+    content.disabled(disabled)
   }
 }
 
