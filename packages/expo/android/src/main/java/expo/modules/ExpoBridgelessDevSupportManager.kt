@@ -20,6 +20,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
+import expo.modules.logbox.ExpoLogBoxSurfaceDelegate
 
 /**
  * An implementation of [DevSupportManager] that extends the functionality in
@@ -100,20 +101,17 @@ internal class ExpoDevSupportManagerWithLogBoxOverride(
     }
 
     override fun showNewJavaError(message: String?, e: Throwable) {
-        //this.showNewError(message, e)
-        showNewError()
+        showNewError(message)
     }
 
     override fun showNewJSError(message: String?, details: ReadableArray?, errorCookie: Int) {
-        //this.showNewError(message, details, errorCookie)
-        showNewError()
+        showNewError(message)
     }
 
-    private fun showNewError() {
+    private fun showNewError(message: String?) {
         UiThreadUtil.runOnUiThread {
-            // Keep a copy of the latest error to be shown by the RedBoxSurface
-            // TODO: How to pass the error data to the surface delegate?
-            // updateLastErrorInfo(message, stack, errorCookie, errorType)
+            // NOTE(@krystofwoldrich): Should we keep also other context of the error?
+            lastErrorTitle = message
 
             if (redBoxSurfaceDelegate == null) {
                 this.redBoxSurfaceDelegate =

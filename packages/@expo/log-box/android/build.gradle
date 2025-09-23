@@ -4,24 +4,30 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.0.11'
+version = '0.0.13'
 
 android {
   namespace "expo.modules.logbox"
   defaultConfig {
     versionCode 1
-    versionName "0.0.11"
+    versionName "0.0.13"
   }
 
   sourceSets {
     main {
-      assets.srcDirs = [
-        "${projectDir}/../dist",
-      ]
+      java.srcDirs += "src/main"
+      // dist contains only ExpoLogBox.bundle
+      assets.srcDirs += "${projectDir}/../dist"
     }
   }
 
   aaptOptions {
     ignoreAssetsPattern '!._expo'
   }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.google.android.material:material:1.13.0'
+  implementation 'com.google.code.gson:gson:2.8.6'
 }
