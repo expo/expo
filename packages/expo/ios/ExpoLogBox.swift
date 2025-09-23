@@ -53,9 +53,7 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
             print("Failed to serialize initProps.")
             return
         }
-        
-        let testInitProps = "{\"names\":[\"fetchJsonAsync\",\"onCopyText\",\"onDismiss\",\"onMinimize\",\"onChangeSelectedIndex\"],\"props\":{\"platform\":\"ios\"}}"
-        
+
         // Inject global JS variable
         let userScript = WKUserScript(
             source:
