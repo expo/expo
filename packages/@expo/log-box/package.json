@@ -2,10 +2,13 @@
   "name": "@expo/log-box",
   "version": "0.0.0",
   "main": "app/index.ts",
+  "license": "MIT",
   "scripts": {
-    "build:web": "expo export -p web --no-minify",
-    "start": "expo start",
-    "web": "expo start --web"
+    "start": "expo",
+    "clean": "rimraf dist",
+    "build": "node ./scripts/watch.mjs",
+    "prepare": "node ./scripts/build.mjs",
+    "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
     "expo": "54.0.0-preview.16",
@@ -16,7 +19,9 @@
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
+    "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.1.0",
+    "rimraf": "^6.0.1",
     "typescript": "~5.9.2"
   }
 }
