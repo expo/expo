@@ -112,10 +112,14 @@ export default function LogBoxPolyfillDOM({
           });
         }
       ) ?? []),
-      ...(props.nativeLogs?.map((message) => new LogBoxLog(parseLogBoxException({
+      ...((props.nativeLogs?.map((message) => {
+        const log = new LogBoxLog(parseLogBoxException({
           originalMessage: message,
           stack: [],
-      }))) ?? []),
+        }));
+        log.componentStack = [];
+        return log;
+      }) ?? [])),
     ];
   }, []);
   const [selectedIndex, _setSelectedIndex] = React.useState(props.selectedIndex ?? (logs && logs?.length - 1) ?? -1);
