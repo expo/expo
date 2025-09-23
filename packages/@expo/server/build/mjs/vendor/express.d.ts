@@ -7,6 +7,7 @@ export type RequestHandler = (req: express.Request, res: express.Response, next:
  */
 export declare function createRequestHandler(params: {
     build: string;
+    environment?: string | null;
 }, setup?: Partial<RequestHandlerParams>): RequestHandler;
 export declare function convertHeaders(requestHeaders: express.Request['headers']): Headers;
 export declare function convertRequest(req: express.Request, res: express.Response): Request;

@@ -8,6 +8,7 @@ export type RequestHandler = (req: http.IncomingMessage, res: http.ServerRespons
  */
 export declare function createRequestHandler(params: {
     build: string;
+    environment?: string | null;
 }, setup?: Partial<RequestHandlerParams>): RequestHandler;
 export declare function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request;
 export declare function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers;

@@ -1,11 +1,25 @@
 import { AbortController } from 'abort-controller';
 import { createRequestHandler as createExpoHandler } from './abstract';
+import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
 export { ExpoError } from './abstract';
+/** @see https://docs.netlify.com/build/functions/api/#netlify-specific-context-object */
+function getContext() {
+    const fromGlobal = globalThis;
+    return fromGlobal.Netlify?.context ?? {};
+}
 export function createRequestHandler(params) {
-    const handleRequest = createExpoHandler(createNodeEnv(params));
+    const makeRequestAPISetup = (request) => {
+        return {
+            origin: request.headers.get('Origin') || 'null',
+            environment: getContext().deploy?.context || null,
+            waitUntil: getContext().waitUntil,
+        };
+    };
+    const run = createRequestScope(makeRequestAPISetup);
+    const onRequest = createExpoHandler(createNodeEnv(params));
     return async (event) => {
-        const response = await handleRequest(convertRequest(event));
+        const response = await run(onRequest, convertRequest(event));
         return respond(response);
     };
 }
