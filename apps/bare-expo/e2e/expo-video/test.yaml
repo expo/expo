@@ -41,3 +41,5 @@ appId: dev.expo.Payments
 
 - assertVisible: 'status = error'
 - assertVisible: 'error = true'
+- tapOn:
+    id: header-Appearance

@@ -2,7 +2,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { schema } from './schema';
 import { compareImages, type ComparisonResult } from '../../scripts/compare-images';
+import { transformPaths } from '../../scripts/lib/pathUtils';
+import { ViewCropper } from '../../scripts/lib/viewCropper';
 
 const PORT = process.env.PORT || 3000;
 
@@ -13,61 +16,43 @@ Bun.serve({
   async fetch(req) {
     const url = new URL(req.url);
 
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    };
-    const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
-
-    if (req.method === 'POST' && url.pathname === '/compare') {
+    if (req.method === 'POST' && url.pathname === '/process') {
       try {
-        const body = await req.json();
-        const { image1, image2, outputPath, similarityThreshold = 5 } = body;
+        const bodyJson = await req.json();
+        const parsedBody = schema.parse(bodyJson);
+        console.log('Received request:', parsedBody);
+        const { similarityThreshold = 5, platform } = parsedBody;
 
-        if (!image1 || !image2 || typeof similarityThreshold !== 'number') {
-          const message = `param validation failed: ${JSON.stringify(body)}`;
-          console.error(message);
-          return new Response(
-            JSON.stringify({
-              success: false,
-              message,
-            }),
-            {
-              status: 400,
-              headers: jsonHeaders,
-            }
-          );
-        }
+        const testID = 'testID' in parsedBody ? parsedBody.testID : undefined;
 
-        // Only allow files within the project directory
         const e2eDir = path.resolve(path.join(__dirname, '..'));
-        const image1Path = path.resolve(e2eDir, image1);
-        const image2Path = path.resolve(e2eDir, image2);
+        const {
+          baseImagePath,
+          currentScreenshotPath,
+          viewShotOutputPath,
+          imageForComparisonPath,
+          diffOutputPath,
+        } = transformPaths(e2eDir, parsedBody);
 
-        if (!image1Path.startsWith(e2eDir) || !image2Path.startsWith(e2eDir)) {
-          const message = `Invalid file paths (${image1Path}, ${image2Path}) - must be within e2e directory: ${e2eDir}`;
-          console.error(message);
-          return new Response(
-            JSON.stringify({
-              success: false,
-              message,
-            }),
-            {
-              status: 403,
-              headers: jsonHeaders,
-            }
-          );
+        if (testID) {
+          // Crop view by testID using unified cropper
+          const viewCropper = new ViewCropper();
+          await viewCropper.cropViewByTestID({
+            testID,
+            currentScreenshotPath,
+            viewShotPath: viewShotOutputPath,
+            platform,
+          });
         }
 
-        const image1exists = fs.existsSync(image1Path);
-        const image2exists = fs.existsSync(image2Path);
-        if (!image1exists || !image2exists) {
+        const baseImageExists = fs.existsSync(baseImagePath);
+        const image2exists = fs.existsSync(imageForComparisonPath);
+        if (!baseImageExists || !image2exists) {
           const missingFiles = [];
-          if (!image1exists) missingFiles.push(`image1: ${image1Path}`);
-          if (!image2exists) missingFiles.push(`image2: ${image2Path}`);
+          if (!baseImageExists) missingFiles.push(`image1: ${baseImagePath}`);
+          if (!image2exists) missingFiles.push(`image2: ${imageForComparisonPath}`);
 
-          const errorMessage = `File(s) not found: ${missingFiles.join(', ')}`;
+          const errorMessage = `Files not found: ${missingFiles.join(', ')}`;
           console.error(errorMessage);
 
           return new Response(
@@ -83,9 +68,9 @@ Bun.serve({
         }
 
         const result: ComparisonResult = compareImages({
-          image1Path,
-          image2Path,
-          outputPath,
+          image1Path: baseImagePath,
+          image2Path: imageForComparisonPath,
+          outputPath: diffOutputPath,
           similarityThreshold,
         });
 
@@ -125,8 +110,13 @@ Bun.serve({
   },
 });
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
+
 console.log(`🚀 Image Comparison Server running on http://localhost:${PORT}`);
 console.log('Available endpoints:');
-console.log(
-  '  POST /compare    - Compare two images by path (JSON body: {"image1": "path", "image2": "path", "outputPath": "optional/comparison-diff-image.png", "similarityThreshold": 5})'
-);
+console.log('  POST /process    - Compare two images by path');

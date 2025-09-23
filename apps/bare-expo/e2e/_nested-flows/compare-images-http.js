@@ -12,32 +12,21 @@ const SERVER_URL = 'http://localhost:3000';
 
 function compareImagesHttp() {
   try {
-    // Get image paths and similarity threshold from global variables
-    const outputPathParam = outputPath.endsWith('.png') ? outputPath : `${outputPath}.png`;
-    const baseImageParam = baseImage.endsWith('.png') ? baseImage : `${baseImage}.png`;
-    const currentScreenshotParam = currentScreenshot.endsWith('.png')
-      ? currentScreenshot
-      : `${currentScreenshot}.png`;
     const thresholdParam = typeof similarityThreshold === 'number' ? similarityThreshold : 5;
+    const testIDparam = typeof testID === 'string' && testID !== 'undefined' ? testID : undefined;
 
-    if (!baseImageParam || !currentScreenshotParam) {
-      const message = `Missing image paths. Expected env.baseImageParam (${String(baseImageParam)} and env.currentScreenshotParam (${String(currentScreenshotParam)})`;
-      console.log(message);
-      return {
-        error: message,
-        success: false,
-      };
-    }
-
-    const response = http.post(`${SERVER_URL}/compare`, {
+    const response = http.post(`${SERVER_URL}/process`, {
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        image1: baseImageParam,
-        image2: currentScreenshotParam,
-        outputPath: outputPathParam,
+        baseImage,
+        currentScreenshot,
+        diffOutputPath: outputPath,
         similarityThreshold: thresholdParam,
+        testID: testIDparam,
+        platform,
+        mode,
       }),
     });
 

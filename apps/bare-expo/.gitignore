@@ -5,7 +5,9 @@
 /e2e/maestro-generated.yaml
 # keep only base screenshots for comparison
 /e2e/**/*.png
-!/e2e/**/*.base.*.png
+!/e2e/**/*.base.ios.png
+!/e2e/**/*.base.android.png
+!/e2e/**/*.base.png
 .kotlin/
 dist/
 
