@@ -7,10 +7,10 @@ export type CornerStyleConfig = {
     radius: number;
 };
 export interface ConcentricRectangleCornerParams {
-    topLeadingCorner: CornerStyleConfig;
-    topTrailingCorner: CornerStyleConfig;
-    bottomLeadingCorner: CornerStyleConfig;
-    bottomTrailingCorner: CornerStyleConfig;
+    topLeadingCorner?: CornerStyleConfig;
+    topTrailingCorner?: CornerStyleConfig;
+    bottomLeadingCorner?: CornerStyleConfig;
+    bottomTrailingCorner?: CornerStyleConfig;
 }
 export interface ConcentricRectangleProps extends CommonViewModifierProps {
     corners?: ConcentricRectangleCornerParams;

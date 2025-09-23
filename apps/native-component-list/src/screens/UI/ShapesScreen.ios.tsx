@@ -134,7 +134,6 @@ export default function ShapesScreen() {
                 <ConcentricRectangle
                   modifiers={[foregroundStyle('#000')]}
                   corners={{
-                    topLeadingCorner: EdgeCornerStyle.fixed(0),
                     topTrailingCorner: EdgeCornerStyle.fixed(28),
                     bottomLeadingCorner: EdgeCornerStyle.concentric(),
                     bottomTrailingCorner: EdgeCornerStyle.concentric(12),
