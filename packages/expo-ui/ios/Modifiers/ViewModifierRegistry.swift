@@ -517,6 +517,23 @@ internal struct FixedSizeModifier: ViewModifier, Record {
   }
 }
 
+internal struct IgnoreSafeAreaModifier: ViewModifier, Record {
+  @Field var regions: SafeAreaRegionOptions?
+  @Field var edges: EdgeOptions?
+
+  func body(content: Content) -> some View {
+    if let regions, let edges {
+      content.ignoresSafeArea(regions.toSafeAreaRegions(), edges: edges.toEdge())
+    } else if let regions {
+      content.ignoresSafeArea(regions.toSafeAreaRegions())
+    } else if let edges {
+      content.ignoresSafeArea(edges: edges.toEdge())
+    } else {
+      content.ignoresSafeArea()
+    }
+  }
+}
+
 /**
  * A type-erased wrapper for `ViewModifier`
  */
@@ -968,6 +985,10 @@ extension ViewModifierRegistry {
 
     register("fixedSize") { params, appContext, _ in
       return try FixedSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("ignoreSafeArea") { params, appContext, _ in
+      return try IgnoreSafeAreaModifier(from: params, appContext: appContext)
     }
   }
 }

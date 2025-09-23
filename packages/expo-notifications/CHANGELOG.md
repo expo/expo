@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- validate sound resource names with `assertValidAndroidAssetName` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
+
 ## 0.32.11 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

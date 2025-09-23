@@ -136,7 +136,7 @@ import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
 export default function TabLayout() {
   return (
     <NativeTabs
-      style={{
+      labelStyle={{
         // For the text color
         color: DynamicColorIOS({
           dark: 'white',
@@ -351,16 +351,8 @@ export default function TabLayout() {
 import { Stack } from 'expo-router';
 
 export default function SearchLayout() {
-  return <Stack />;
-}
-```
-
-```tsx app/search/index.tsx
-import { Stack } from 'expo-router';
-
-export default function SearchIndex() {
   return (
-    <>
+    <Stack>
       <Stack.Screen
         name="index"
         options={{
@@ -372,9 +364,16 @@ export default function SearchIndex() {
           },
         }}
       />
-      <ScrollView>{/* Screen content */}</ScrollView>
-    </>
+    </Stack>
   );
+}
+```
+
+```tsx app/search/index.tsx
+import { ScrollView } from 'react-native';
+
+export default function SearchIndex() {
+  return <ScrollView>{/* Screen content */}</ScrollView>;
 }
 ```
 

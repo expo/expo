@@ -116,6 +116,16 @@ export const fixedSize = (params?: { horizontal?: boolean; vertical?: boolean })
   createModifier('fixedSize', params);
 
 /**
+ * Allows a view to ignore safe area constraints.
+ * @param regions - The safe area regions to ignore ('all', 'container', 'keyboard')
+ * @param edges - The edges to expand into ('all', 'top', 'bottom', 'leading', 'trailing', 'horizontal', 'vertical')
+ */
+export const ignoreSafeArea = (params?: {
+  regions?: 'all' | 'container' | 'keyboard';
+  edges?: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical';
+}) => createModifier('ignoreSafeArea', params);
+
+/**
  * Adds a tap gesture recognizer.
  * @param handler - Function to call when tapped
  */
@@ -467,6 +477,7 @@ export type BuiltInModifier =
   | ReturnType<typeof frame>
   | ReturnType<typeof padding>
   | ReturnType<typeof fixedSize>
+  | ReturnType<typeof ignoreSafeArea>
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
   | ReturnType<typeof opacity>
