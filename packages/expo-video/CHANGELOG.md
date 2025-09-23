@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Remove @UnstableReactNativeAPI annotations.
+
 ## 3.0.11 — 2025-09-10
 
 ### 🎉 New features
