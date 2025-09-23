@@ -63,28 +63,28 @@ class ExpoModulesPackageList : ModulesProvider {
   companion object {
     val packagesList: List<Package> = listOf(
 ${
-      modules
-        .filterNot { it.packageName == "expo" }
-        .flatMap { module ->
-          module.projects.flatMap { project ->
-            project.packages.map { "      ${it}()" }
-          }
-        }
-        .joinToString(",\n")
+  modules
+    .filterNot { it.packageName == "expo" }
+    .flatMap { module ->
+      module.projects.flatMap { project ->
+        project.packages.map { "      ${it}()" }
+      }
     }
+    .joinToString(",\n")
+}
     )
 
     @OptIn(UnstableReactNativeAPI::class)
     val modulesList: List<Class<out Module>> = listOf(
 ${
-      modules
-        .flatMap { module ->
-          module.projects.flatMap { project ->
-            project.modules.map { "      ${it}::class.java" }
-          }
-        }
-        .joinToString(",\n")
+  modules
+    .flatMap { module ->
+      module.projects.flatMap { project ->
+        project.modules.map { "      ${it}::class.java" }
+      }
     }
+    .joinToString(",\n")
+}
     )
 
     @JvmStatic
