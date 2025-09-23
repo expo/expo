@@ -771,7 +771,7 @@ function makePage(file) {
     name: data.sidebar_title ?? data.title,
     // TODO(cedric): refactor href into url
     href: url,
-    isIndex: isIndex,
+    isIndex,
     isNew: data.isNew ?? undefined,
     isAlpha: data.isAlpha ?? undefined,
     isBeta: data.isBeta ?? undefined,
@@ -809,8 +809,12 @@ function pagesFromDir(dir) {
       const folderPages = pagesFromDir(path.join(dir, folder.name));
       const sortedFolderPages = folderPages.sort((a, b) => {
         // prioritize index files first
-        if (a.isIndex && !b.isIndex) return -1;
-        if (!a.isIndex && b.isIndex) return 1;
+        if (a.isIndex && !b.isIndex) {
+          return -1;
+        }
+        if (!a.isIndex && b.isIndex) {
+          return 1;
+        }
 
         // otherwise sort by name (title)
         return a.name.localeCompare(b.name);
