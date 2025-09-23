@@ -62,6 +62,7 @@ export class DevToolsPluginCliExtensionExecutor {
     }
   }
 
+  /** this function is used for testing and showing the command in UI */
   public getCommandString = ({
     command,
     args,
