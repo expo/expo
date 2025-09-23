@@ -3,7 +3,12 @@ import { glob } from 'glob';
 import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
-import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
+import type {
+  ExtraDependencies,
+  ModuleAndroidProjectInfo,
+  ModuleDescriptorAndroid,
+  PackageRevision,
+} from '../../types';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -16,22 +21,6 @@ export function getConfiguration(
   options: AutolinkingOptions
 ): AndroidConfigurationOutput | undefined {
   return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
-}
-
-/**
- * Generates Java file that contains all autolinked packages.
- */
-export async function generatePackageListAsync(
-  modules: ModuleDescriptorAndroid[],
-  targetPath: string,
-  namespace: string
-): Promise<void> {
-  const generatedFileContent = await generatePackageListFileContentAsync(modules, namespace);
-  const parentPath = path.dirname(targetPath);
-  if (!fs.existsSync(parentPath)) {
-    await fs.promises.mkdir(parentPath, { recursive: true });
-  }
-  await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 
 export function isAndroidProject(projectRoot: string): boolean {
@@ -103,11 +92,14 @@ export async function resolveModuleAsync(
       name: project.name,
       sourceDir: projectPath,
       modules: project.modules ?? [],
+      packages: [],
       ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
       ...(publication ? { publication } : {}),
       ...(aarProjects?.length > 0 ? { aarProjects } : {}),
     };
   });
+
+  await findAndroidPackagesAsync(projects);
 
   const coreFeatures = revision.config?.coreFeatures() ?? [];
 
@@ -149,88 +141,21 @@ export async function resolveGradlePropertyAsync(
   return null;
 }
 
-/**
- * Generates the string to put into the generated package list.
- */
-async function generatePackageListFileContentAsync(
-  modules: ModuleDescriptorAndroid[],
-  namespace: string
-): Promise<string> {
-  // TODO: Instead of ignoring `expo` here, make the package class paths configurable from `expo-module.config.json`.
-  const packagesClasses = await findAndroidPackagesAsync(
-    modules.filter((module) => module.packageName !== 'expo')
-  );
-
-  const modulesClasses = await findAndroidModules(modules);
-
-  return `package ${namespace};
-
-import java.util.Arrays;
-import java.util.List;
-import expo.modules.core.interfaces.Package;
-import expo.modules.kotlin.modules.Module;
-import expo.modules.kotlin.ModulesProvider;
-
-public class ExpoModulesPackageList implements ModulesProvider {
-  private static class LazyHolder {
-    static final List<Package> packagesList = Arrays.<Package>asList(
-${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n')}
-    );
-
-    static final List<Class<? extends Module>> modulesList = Arrays.<Class<? extends Module>>asList(
-      ${modulesClasses.map((moduleClass) => `      ${moduleClass}.class`).join(',\n')}
-    );
-  }
-
-  public static List<Package> getPackageList() {
-    return LazyHolder.packagesList;
-  }
-
-  @Override
-  public List<Class<? extends Module>> getModulesList() {
-    return LazyHolder.modulesList;
-  }
-}
-`;
-}
-
-function findAndroidModules(modules: ModuleDescriptorAndroid[]): string[] {
-  const projects = modules.flatMap((module) => module.projects ?? []);
-
-  const modulesToProvide = projects.filter((project) => project.modules?.length > 0);
-  const classNames = ([] as string[]).concat(...modulesToProvide.map((module) => module.modules));
-  return classNames;
-}
-
-async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Promise<string[]> {
-  const classes: string[] = [];
-
-  const flattenedSourceDirList: string[] = [];
-  for (const module of modules) {
-    for (const project of module.projects ?? []) {
-      flattenedSourceDirList.push(project.sourceDir);
-    }
-  }
-
+async function findAndroidPackagesAsync(projects: ModuleAndroidProjectInfo[]): Promise<void> {
   await Promise.all(
-    flattenedSourceDirList.map(async (sourceDir) => {
-      const files = await glob('**/*Package.{java,kt}', {
-        cwd: sourceDir,
-      });
+    projects.map(async (project) => {
+      const files =
+        (await glob('**/*Package.{java,kt}', {
+          cwd: project.sourceDir,
+        })) || [];
 
       for (const file of files) {
-        const fileContent = await fs.promises.readFile(path.join(sourceDir, file), 'utf8');
-
-        const packageRegex = (() => {
-          if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
-            return /\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/;
-          } else {
-            return /\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/;
-          }
-        })();
+        const fileContent = await fs.promises.readFile(path.join(project.sourceDir, file), 'utf8');
 
         // Very naive check to skip non-expo packages
-        if (!packageRegex.test(fileContent)) {
+        if (
+          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
+        ) {
           continue;
         }
 
@@ -238,12 +163,11 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
 
         if (classPathMatches) {
           const basename = path.basename(file, path.extname(file));
-          classes.push(`${classPathMatches[1]}.${basename}`);
+          project.packages.push(`${classPathMatches[1]}.${basename}`);
         }
       }
     })
   );
-  return classes.sort();
 }
 
 /**

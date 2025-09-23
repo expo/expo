@@ -1,15 +1,18 @@
 package expo.modules.plugin
 
+import expo.modules.plugin.configuration.ExpoModule
+import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
 
 /**
  * Task that generates a list of packages that should be included in your app's runtime.
  */
-abstract class GeneratePackagesListTask : Exec() {
+abstract class GeneratePackagesListTask : DefaultTask() {
   init {
     group = "expo"
   }
@@ -22,16 +25,17 @@ abstract class GeneratePackagesListTask : Exec() {
   abstract val hash: Property<String>
 
   /**
-   * Serialized autolinking options.
-   */
-  @get:Input
-  abstract val options: Property<String>
-
-  /**
    * Java package name under which the package list should be placed.
    */
   @get:Input
   abstract val namespace: Property<String>
+
+  /**
+   * List of modules.
+   */
+
+  @get:Internal
+  lateinit var modules: List<ExpoModule>
 
   /**
    * The output file where the package list should be written.
@@ -39,16 +43,60 @@ abstract class GeneratePackagesListTask : Exec() {
   @get:OutputFile
   abstract val outputFile: RegularFileProperty
 
-  override fun exec() {
-    val autolinkingOptions = AutolinkingOptions.fromJson(options.get())
-    commandLine(
-      AutolinkingCommandBuilder()
-        .command("generate-package-list")
-        .option("namespace", namespace.get())
-        .option("target", outputFile.get().asFile.absolutePath)
-        .useAutolinkingOptions(autolinkingOptions)
-        .build()
+  @TaskAction
+  fun generatePackagesList() {
+    val target = outputFile.get().asFile
+    val content = generatePackageListFileContent()
+
+    target.writeText(content)
+  }
+
+  private fun generatePackageListFileContent(): String {
+    return """package ${namespace.get()};
+
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import expo.modules.core.interfaces.Package;
+import expo.modules.kotlin.modules.Module;
+import expo.modules.kotlin.ModulesProvider;
+
+class ExpoModulesPackageList : ModulesProvider {
+  companion object {
+    val packagesList: List<Package> = listOf(
+${
+      modules
+        .filterNot { it.packageName == "expo" }
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.packages.map { "      ${it}()" }
+          }
+        }
+        .joinToString(",\n")
+    }
     )
-    super.exec()
+
+    @OptIn(UnstableReactNativeAPI::class)
+    val modulesList: List<Class<out Module>> = listOf(
+${
+      modules
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.modules.map { "      ${it}::class.java" }
+          }
+        }
+        .joinToString(",\n")
+    }
+    )
+
+    @JvmStatic
+    fun getPackageList(): List<Package> {
+      return packagesList
+    }
+  }
+
+  override fun getModulesList(): List<Class<out Module>> {
+    return modulesList
+  }
+}
+""".trimIndent()
   }
 }
