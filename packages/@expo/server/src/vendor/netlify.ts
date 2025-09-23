@@ -2,14 +2,36 @@ import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { AbortController } from 'abort-controller';
 
 import { createRequestHandler as createExpoHandler } from './abstract';
+import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
 
 export { ExpoError } from './abstract';
 
+interface NetlifyContext {
+  deploy?: { context?: string | null };
+  waitUntil?: (promise: Promise<unknown>) => void;
+}
+
+/** @see https://docs.netlify.com/build/functions/api/#netlify-specific-context-object */
+function getContext(): NetlifyContext {
+  const fromGlobal: typeof globalThis & {
+    Netlify?: { context?: NetlifyContext };
+  } = globalThis;
+  return fromGlobal.Netlify?.context ?? {};
+}
+
 export function createRequestHandler(params: { build: string }) {
-  const handleRequest = createExpoHandler(createNodeEnv(params));
+  const makeRequestAPISetup = (request: Request) => {
+    return {
+      origin: request.headers.get('Origin') || 'null',
+      environment: getContext().deploy?.context || null,
+      waitUntil: getContext().waitUntil,
+    };
+  };
+  const run = createRequestScope(makeRequestAPISetup);
+  const onRequest = createExpoHandler(createNodeEnv(params));
   return async (event: HandlerEvent) => {
-    const response = await handleRequest(convertRequest(event));
+    const response = await run(onRequest, convertRequest(event));
     return respond(response);
   };
 }

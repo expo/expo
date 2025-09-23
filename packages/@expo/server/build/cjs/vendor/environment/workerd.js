@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createWorkerdEnv = createWorkerdEnv;
+exports.createWorkerdRequestScope = createWorkerdRequestScope;
 const common_1 = require("./common");
+const runtime_1 = require("../../runtime");
 const createCachedImport = () => {
     const importCache = new Map();
     return async function importCached(request) {
@@ -24,10 +26,11 @@ const createCachedImport = () => {
     };
 };
 function createWorkerdEnv(params) {
+    const build = params.build || '.';
     const importCached = createCachedImport();
     async function readText(request) {
         try {
-            const mod = await importCached(`${params.build}/${request}`);
+            const mod = await importCached(`${build}/${request}`);
             return mod.default;
         }
         catch {
@@ -36,7 +39,7 @@ function createWorkerdEnv(params) {
     }
     async function readJson(request) {
         try {
-            const mod = await importCached(`${params.build}/${request}`);
+            const mod = await importCached(`${build}/${request}`);
             if (typeof mod.default === 'string' && mod.default[0] === '{') {
                 return JSON.parse(mod.default);
             }
@@ -49,7 +52,7 @@ function createWorkerdEnv(params) {
         }
     }
     async function loadModule(request) {
-        const target = `${params.build}/${request}`;
+        const target = `${build}/${request}`;
         return (await import(target)).default;
     }
     return (0, common_1.createEnvironment)({
@@ -57,5 +60,13 @@ function createWorkerdEnv(params) {
         readJson,
         loadModule,
     });
+}
+function createWorkerdRequestScope(params) {
+    const makeRequestAPISetup = (request, _env, ctx) => ({
+        origin: request.headers.get('Origin') || 'null',
+        environment: params.environment ?? null,
+        waitUntil: ctx.waitUntil?.bind(ctx),
+    });
+    return (0, runtime_1.createRequestScope)(makeRequestAPISetup);
 }
 //# sourceMappingURL=workerd.js.map

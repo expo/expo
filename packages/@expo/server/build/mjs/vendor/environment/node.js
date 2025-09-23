@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createEnvironment } from './common';
 import { assertRuntimeFetchAPISupport } from '../../ImmutableRequest';
+import { createRequestScope } from '../../runtime';
 export function createNodeEnv(params) {
     assertRuntimeFetchAPISupport();
     async function readText(request) {
@@ -37,5 +38,11 @@ export function createNodeEnv(params) {
         readJson,
         loadModule,
     });
+}
+export function createNodeRequestScope(params) {
+    return createRequestScope((request) => ({
+        origin: request.headers.get('Origin') || 'null',
+        environment: params.environment ?? process.env.NODE_ENV,
+    }));
 }
 //# sourceMappingURL=node.js.map

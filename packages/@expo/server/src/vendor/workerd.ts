@@ -1,19 +1,29 @@
 import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
-import { createWorkerdEnv } from './environment/workerd';
+import {
+  createWorkerdEnv,
+  createWorkerdRequestScope,
+  ExecutionContext,
+} from './environment/workerd';
 
 export { ExpoError } from './abstract';
 
-export type RequestHandler = (req: Request) => Promise<Response>;
+export type RequestHandler<Env = unknown> = (
+  req: Request,
+  env: Env,
+  ctx: ExecutionContext
+) => Promise<Response>;
 
 /**
  * Returns a request handler for Workerd deployments.
  */
-export function createRequestHandler(
-  params: { build: string },
+export function createRequestHandler<Env = unknown>(
+  params: { build: string; environment?: string | null },
   setup?: Partial<RequestHandlerParams>
-): RequestHandler {
-  return createExpoHandler({
+): RequestHandler<Env> {
+  const run = createWorkerdRequestScope(params);
+  const onRequest = createExpoHandler({
     ...createWorkerdEnv(params),
     ...setup,
   });
+  return (request, env, ctx) => run(onRequest, request, env, ctx);
 }

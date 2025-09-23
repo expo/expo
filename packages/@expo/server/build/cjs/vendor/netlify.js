@@ -8,13 +8,27 @@ exports.convertRequest = convertRequest;
 exports.isBinaryType = isBinaryType;
 const abort_controller_1 = require("abort-controller");
 const abstract_1 = require("./abstract");
+const runtime_1 = require("../runtime");
 const node_1 = require("./environment/node");
 var abstract_2 = require("./abstract");
 Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return abstract_2.ExpoError; } });
+/** @see https://docs.netlify.com/build/functions/api/#netlify-specific-context-object */
+function getContext() {
+    const fromGlobal = globalThis;
+    return fromGlobal.Netlify?.context ?? {};
+}
 function createRequestHandler(params) {
-    const handleRequest = (0, abstract_1.createRequestHandler)((0, node_1.createNodeEnv)(params));
+    const makeRequestAPISetup = (request) => {
+        return {
+            origin: request.headers.get('Origin') || 'null',
+            environment: getContext().deploy?.context || null,
+            waitUntil: getContext().waitUntil,
+        };
+    };
+    const run = (0, runtime_1.createRequestScope)(makeRequestAPISetup);
+    const onRequest = (0, abstract_1.createRequestHandler)((0, node_1.createNodeEnv)(params));
     return async (event) => {
-        const response = await handleRequest(convertRequest(event));
+        const response = await run(onRequest, convertRequest(event));
         return respond(response);
     };
 }

@@ -8,18 +8,36 @@ exports.respond = respond;
 const node_stream_1 = require("node:stream");
 const promises_1 = require("node:stream/promises");
 const abstract_1 = require("./abstract");
+const runtime_1 = require("../runtime");
 const node_1 = require("./environment/node");
 const createReadableStreamFromReadable_1 = require("../utils/createReadableStreamFromReadable");
 var abstract_2 = require("./abstract");
 Object.defineProperty(exports, "ExpoError", { enumerable: true, get: function () { return abstract_2.ExpoError; } });
+const SYMBOL_FOR_REQ_CONTEXT = Symbol.for('@vercel/request-context');
+/** @see https://github.com/vercel/vercel/blob/b189b39/packages/functions/src/get-context.ts */
+function getContext() {
+    const fromSymbol = globalThis;
+    return fromSymbol[SYMBOL_FOR_REQ_CONTEXT]?.get?.() ?? {};
+}
 /**
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Remix.
  */
 function createRequestHandler(params) {
-    const handleRequest = (0, abstract_1.createRequestHandler)((0, node_1.createNodeEnv)(params));
+    const makeRequestAPISetup = (request) => {
+        const host = request.headers.get('host');
+        const proto = request.headers.get('x-forwarded-proto') || 'https';
+        return {
+            origin: host ? `${proto}://${host}` : 'null',
+            // See: https://github.com/vercel/vercel/blob/b189b39/packages/functions/src/get-env.ts#L25C3-L25C13
+            environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV,
+            waitUntil: getContext().waitUntil,
+        };
+    };
+    const run = (0, runtime_1.createRequestScope)(makeRequestAPISetup);
+    const onRequest = (0, abstract_1.createRequestHandler)((0, node_1.createNodeEnv)(params));
     return async (req, res) => {
-        return respond(res, await handleRequest(convertRequest(req, res)));
+        return respond(res, await run(onRequest, convertRequest(req, res)));
     };
 }
 function convertHeaders(requestHeaders) {

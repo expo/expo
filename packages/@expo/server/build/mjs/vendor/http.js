@@ -1,14 +1,15 @@
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { createRequestHandler as createExpoHandler } from './abstract';
-import { createNodeEnv } from './environment/node';
+import { createNodeEnv, createNodeRequestScope } from './environment/node';
 export { ExpoError } from './abstract';
 /**
  * Returns a request handler for http that serves the response using Remix.
  */
 export function createRequestHandler(params, setup) {
+    const run = createNodeRequestScope(params);
     const nodeEnv = createNodeEnv(params);
-    const handleRequest = createExpoHandler({
+    const onRequest = createExpoHandler({
         ...nodeEnv,
         ...setup,
         getRoutesManifest: setup?.getRoutesManifest ?? nodeEnv.getRoutesManifest,
@@ -19,7 +20,7 @@ export function createRequestHandler(params, setup) {
         }
         try {
             const request = convertRequest(req, res);
-            const response = await handleRequest(request);
+            const response = await run(onRequest, request);
             await respond(res, response);
         }
         catch (error) {

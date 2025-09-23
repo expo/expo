@@ -4,10 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNodeEnv = createNodeEnv;
+exports.createNodeRequestScope = createNodeRequestScope;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const common_1 = require("./common");
 const ImmutableRequest_1 = require("../../ImmutableRequest");
+const runtime_1 = require("../../runtime");
 function createNodeEnv(params) {
     (0, ImmutableRequest_1.assertRuntimeFetchAPISupport)();
     async function readText(request) {
@@ -43,5 +45,11 @@ function createNodeEnv(params) {
         readJson,
         loadModule,
     });
+}
+function createNodeRequestScope(params) {
+    return (0, runtime_1.createRequestScope)((request) => ({
+        origin: request.headers.get('Origin') || 'null',
+        environment: params.environment ?? process.env.NODE_ENV,
+    }));
 }
 //# sourceMappingURL=node.js.map

@@ -1,5 +1,6 @@
 interface NodeEnvParams {
     build: string;
+    environment?: string | null;
 }
 export declare function createNodeEnv(params: NodeEnvParams): {
     getRoutesManifest(): Promise<import("../../manifest").Manifest>;
@@ -8,4 +9,5 @@ export declare function createNodeEnv(params: NodeEnvParams): {
     getMiddleware(middleware: import("../../manifest").MiddlewareInfo): Promise<any>;
     handleRouteError(error: Error): Promise<Response>;
 };
+export declare function createNodeRequestScope(params: NodeEnvParams): (fn: (request: Request) => Promise<Response>, request: Request) => Promise<Response>;
 export {};

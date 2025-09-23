@@ -78,6 +78,7 @@ describe('exports middleware', () => {
           'node_modules/.bin/esbuild',
           '--bundle',
           '--format=esm',
+          '--platform=node',
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
           path.join(projectRoot, '__e2e__/server-middleware-async/workerd/workerd.mjs'),
         ]);
