@@ -10,7 +10,7 @@ export type RequestHandler = (req: Request) => Promise<Response>;
  */
 export function createRequestHandler(
   params: { build: string },
-  setup?: RequestHandlerParams
+  setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
   return createExpoHandler({
     ...createWorkerdEnv(params),
