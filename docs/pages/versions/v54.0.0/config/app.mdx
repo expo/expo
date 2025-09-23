@@ -1,21 +1,95 @@
----
-title: app.json / app.config.js
-description: A reference of available properties in Expo app config.
-maxHeadingDepth: 5
----
+import React, { useState } from 'react';
+import { Alert, Pressable, SafeAreaView, Text, TextInput, View } from 'react-native';
+import * as SMS from 'expo-sms';
+import * as Location from 'expo-location';
+import * as Haptics from 'expo-haptics';
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+export default function App() {
+  const [numbers, setNumbers] = useState(''); // ex: +33601020304,+33655667788
+  const [loading, setLoading] = useState(false);
 
-import schema from '~/public/static/schemas/v54.0.0/app-config-schema.json';
-import AppConfigSchemaTable from '~/ui/components/AppConfigSchemaTable';
-import { BoxLink } from '~/ui/components/BoxLink';
+  async function sendSOS() {
+    try {
+      if (loading) return;
+      setLoading(true);
 
-The following is a list of properties that are available for you under the `"expo"` key in **app.json** or **app.config.json**. These properties can be passed to the top level object of **app.config.js** or **app.config.ts**.
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
-<BoxLink
-  title="Configuration with app config"
-  description="For information on app configuration, the differences between various app config files, and how to use them dynamically."
-  href="/workflow/configuration/"
+      const isAvailable = await SMS.isAvailableAsync();
+      if (!isAvailable) {
+        Alert.alert('SMS indisponible', "Ton téléphone ne peut pas envoyer de SMS depuis l’app.");
+        return;
+      }
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission refusée', 'Autorise la localisation pour envoyer ta position en cas d’urgence.');
+        return;
+      }
+
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const { latitude, longitude } = pos.coords;
+      const mapsLink = `https://maps.google.com/?q=${latitude},${longitude}`;
+
+      const message = `🚨 SOS — j’ai besoin d’aide !\nMa position: ${mapsLink}\nAppelle le 17 / 112 si je ne réponds pas.`;
+
+      const list = numbers.split(',').map(n => n.trim()).filter(Boolean);
+      if (list.length === 0) {
+        Alert.alert('Aucun contact', 'Ajoute au moins un numéro au format +33…');
+        return;
+      }
+
+      await SMS.sendSMSAsync(list, message);
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Erreur', e?.message ?? 'Une erreur est survenue');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 24 }}>
+        <Text style={{ color: 'white', fontSize: 20, fontWeight: '600' }}>Vous n’êtes pas seul·e</Text>
+
+        <Pressable
+          onLongPress={sendSOS}
+          delayLongPress={1500}
+          style={{
+            width: 220, height: 220, borderRadius: 110, alignItems: 'center', justifyContent: 'center',
+            backgroundColor: loading ? '#7f1d1d' : '#dc2626',
+            shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 12
+          }}
+        >
+          <Text style={{ color: 'white', fontSize: 28, fontWeight: '800' }}>{loading ? '…' : 'SOS'}</Text>
+          <Text style={{ color: 'white', opacity: 0.8, marginTop: 8, fontSize: 12 }}>Maintiens 1,5 s</Text>
+        </Pressable>
+
+        <View style={{ width: '100%', gap: 8 }}>
+          <Text style={{ color: 'white' }}>Contacts (séparés par virgules) :</Text>
+          <TextInput
+            value={numbers}
+            onChangeText={setNumbers}
+            placeholder="+33601020304, +33655667788"
+            placeholderTextColor="#94a3b8"
+            autoCapitalize="none"
+            keyboardType="phone-pad"
+            style={{
+              backgroundColor: '#111827', color: 'white', padding: 12, borderRadius: 10,
+              borderWidth: 1, borderColor: '#334155'
+            }}
+          />
+        </View>
+
+        <Text style={{ color: '#94a3b8', textAlign: 'center', fontSize: 12 }}>
+          ⚠️ En cas de danger immédiat, appelle le 17 / 112.  
+          Cette app envoie un SMS prérempli à tes contacts de confiance.
+        </Text>
+      </View>
+    </SafeAreaView>
+  );
+}  href="/workflow/configuration/"
   Icon={BookOpen02Icon}
 />
 
