@@ -1,8 +1,7 @@
 {
   "name": "@expo/log-box",
-  "version": "0.0.0",
+  "version": "0.0.7",
   "main": "app/index.ts",
-  "license": "MIT",
   "scripts": {
     "start": "expo",
     "clean": "rimraf dist",
@@ -10,18 +9,22 @@
     "prepare": "node ./scripts/build.mjs",
     "export:web": "expo export -p web --no-minify"
   },
-  "dependencies": {
-    "expo": "54.0.0-preview.16",
-    "expo-status-bar": "~3.0.8",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-native": "0.81.4",
-    "react-native-web": "^0.21.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.1.0",
     "rimraf": "^6.0.1",
     "typescript": "~5.9.2"
-  }
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
+  "description": "Expo LogBox provides an improved debugging UI for React Native, succeeding the default RedBox and LogBox."
 }

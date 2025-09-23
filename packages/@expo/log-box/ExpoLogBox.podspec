@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'Expo'
+  s.name           = 'ExpoLogBox'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -26,7 +26,19 @@ Pod::Spec.new do |s|
   # s.source_files = 'ios/**/*.{h,m,mm,swift}'
   # s.compiler_flags = compiler_flags
   # s.private_header_files = ['ios/**/Swift.h']
-  s.resource_bundles = {
-    'ExpoLogBox' => ['dist/ExpoLogBox.bundle/_expo', 'dist/ExpoLogBox.bundle/index.html'],
-  }
+  # s.resource_bundles = {
+  #   'ExpoLogBox' => ['dist/ExpoLogBox.bundle/_expo', 'dist/ExpoLogBox.bundle/index.html'],
+  # }
+  s.script_phases = [
+    {
+      :name => 'Embed MyPod conditional resources',
+      # NOTE(@krystofwoldrich): We might want to add a flag to always include the ExpoLogBox.bundle to cover unusual configurations.
+      :script => %Q{
+        if [ "${CONFIGURATION}" = "Debug" ]; then
+          rsync -a "#{__dir__}/dist/ExpoLogBox.bundle/" \\
+            "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/"
+        fi
+      },
+    }
+  ]
 end
