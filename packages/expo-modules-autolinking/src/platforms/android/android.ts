@@ -70,36 +70,60 @@ export async function resolveModuleAsync(
     };
   }
 
-  const projects = androidProjects.map((project) => {
-    const projectPath = path.join(revision.path, project.path);
+  const projects = await Promise.all(
+    androidProjects.map(async (project) => {
+      const projectPath = path.join(revision.path, project.path);
 
-    const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
-      const projectName = `${defaultProjectName}$${aarProject.name}`;
-      const projectDir = path.join(projectPath, 'build', projectName);
+      const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
+        const projectName = `${defaultProjectName}$${aarProject.name}`;
+        const projectDir = path.join(projectPath, 'build', projectName);
+        return {
+          name: projectName,
+          aarFilePath: path.join(revision.path, aarProject.aarFilePath),
+          projectDir,
+        };
+      });
+
+      const { publication } = project;
+      const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+        ? path.join(revision.path, project.shouldUsePublicationScriptPath)
+        : undefined;
+
+      const packages: string[] = [];
+      const files =
+        (await glob('**/*Package.{java,kt}', {
+          cwd: projectPath,
+        })) || [];
+
+      for (const file of files) {
+        const fileContent = await fs.promises.readFile(path.join(projectPath, file), 'utf8');
+
+        // Very naive check to skip non-expo packages
+        if (
+          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
+        ) {
+          continue;
+        }
+
+        const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
+
+        if (classPathMatches) {
+          const basename = path.basename(file, path.extname(file));
+          packages.push(`${classPathMatches[1]}.${basename}`);
+        }
+      }
+
       return {
-        name: projectName,
-        aarFilePath: path.join(revision.path, aarProject.aarFilePath),
-        projectDir,
+        name: project.name,
+        sourceDir: projectPath,
+        modules: project.modules ?? [],
+        packages,
+        ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
+        ...(publication ? { publication } : {}),
+        ...(aarProjects?.length > 0 ? { aarProjects } : {}),
       };
-    });
-
-    const { publication } = project;
-    const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
-      ? path.join(revision.path, project.shouldUsePublicationScriptPath)
-      : undefined;
-
-    return {
-      name: project.name,
-      sourceDir: projectPath,
-      modules: project.modules ?? [],
-      packages: [],
-      ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
-      ...(publication ? { publication } : {}),
-      ...(aarProjects?.length > 0 ? { aarProjects } : {}),
-    };
-  });
-
-  await findAndroidPackagesAsync(projects);
+    })
+  );
 
   const coreFeatures = revision.config?.coreFeatures() ?? [];
 
@@ -139,35 +163,6 @@ export async function resolveGradlePropertyAsync(
     }
   } catch {}
   return null;
-}
-
-async function findAndroidPackagesAsync(projects: ModuleAndroidProjectInfo[]): Promise<void> {
-  await Promise.all(
-    projects.map(async (project) => {
-      const files =
-        (await glob('**/*Package.{java,kt}', {
-          cwd: project.sourceDir,
-        })) || [];
-
-      for (const file of files) {
-        const fileContent = await fs.promises.readFile(path.join(project.sourceDir, file), 'utf8');
-
-        // Very naive check to skip non-expo packages
-        if (
-          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
-        ) {
-          continue;
-        }
-
-        const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
-
-        if (classPathMatches) {
-          const basename = path.basename(file, path.extname(file));
-          project.packages.push(`${classPathMatches[1]}.${basename}`);
-        }
-      }
-    })
-  );
 }
 
 /**
