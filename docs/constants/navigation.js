@@ -771,6 +771,7 @@ function makePage(file) {
     href: url,
     isNew: data.isNew ?? undefined,
     isAlpha: data.isAlpha ?? undefined,
+    isBeta: data.isBeta ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,
