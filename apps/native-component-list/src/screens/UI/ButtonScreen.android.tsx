@@ -73,6 +73,11 @@ export default function UIScreen() {
             Red
           </Button>
         </Section>
+        <Section title="interpolated strings">
+          <Button style={styles.button} color="#FF6347">
+            Hello {'world'}
+          </Button>
+        </Section>
       </ScrollView>
     </Page>
   );

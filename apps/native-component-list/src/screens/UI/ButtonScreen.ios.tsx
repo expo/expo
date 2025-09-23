@@ -92,6 +92,7 @@ export default function ButtonScreen() {
               <CircularProgress color="blue" />
             </ButtonPrimitive>
           </Host>
+          <Button>Hello {'world'}</Button>
         </Section>
       </ScrollView>
     </Page>
