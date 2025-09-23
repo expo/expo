@@ -792,11 +792,24 @@ function makePage(file) {
  * Load all pages from a single directory.
  */
 function pagesFromDir(dir) {
-  return fs
-    .readdirSync(path.resolve(PAGES_DIR, dir), { withFileTypes: true })
+  const dirPath = path.resolve(PAGES_DIR, dir);
+  const entities = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  const files = entities
     .filter(entity => entity.isFile())
-    .map(file => makePage(path.join(dir, file.name)))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .map(file => makePage(path.join(dir, file.name)));
+
+  const folders = entities
+    .filter(entity => entity.isDirectory())
+    .map(folder => {
+      const folderPages = pagesFromDir(path.join(dir, folder.name));
+      return folderPages.length > 0
+        ? makeGroup(folder.name, folderPages, { expanded: true })
+        : null;
+    })
+    .filter(Boolean);
+
+  return [...files, ...folders].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**
