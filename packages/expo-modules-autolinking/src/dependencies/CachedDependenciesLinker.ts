@@ -48,9 +48,9 @@ export function makeCachedDependenciesLinker(params: {
     },
     async loadReactNativeProjectConfig() {
       if (reactNativeProjectConfig === undefined) {
-        reactNativeProjectConfig = loadConfigAsync<RNConfigReactNativeProjectConfig>(
+        reactNativeProjectConfig = loadConfigAsync(
           await getAppRoot()
-        );
+        ) as Promise<RNConfigReactNativeProjectConfig>;
       }
       return reactNativeProjectConfig;
     },

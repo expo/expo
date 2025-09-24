@@ -51,7 +51,9 @@ export async function resolveReactNativeModule(
     return null;
   }
 
-  const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(resolution.path);
+  const libraryConfig = (await loadConfigAsync(
+    resolution.path
+  )) as RNConfigReactNativeLibraryConfig;
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
     ...projectConfig?.dependencies?.[resolution.name],
@@ -132,7 +134,7 @@ export async function createReactNativeConfigAsync({
   autolinkingOptions,
 }: CreateRNConfigParams): Promise<RNConfigResult> {
   const excludeNames = new Set(autolinkingOptions.exclude);
-  const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(appRoot);
+  const projectConfig = (await loadConfigAsync(appRoot)) as RNConfigReactNativeProjectConfig;
 
   // custom native modules should be resolved first so that they can override other modules
   const searchPaths = autolinkingOptions.nativeModulesDir
