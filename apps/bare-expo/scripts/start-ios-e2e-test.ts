@@ -138,8 +138,10 @@ export function setupLogger(predicate: string, signal: AbortSignal): () => Promi
 async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60 * 3) {
   await retryAsync(async (retryNumber) => {
     if (process.env.CI) {
-      await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId]);
-      await spawnAsync('xcrun', ['simctl', 'erase', deviceId]);
+      try {
+        await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId]);
+        await spawnAsync('xcrun', ['simctl', 'erase', deviceId]);
+      } catch {}
     }
 
     console.time(
