@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Adds support for `ArrayBuffer`.
+- [Android] Adds support for `ArrayBuffer`. ([#39943](https://github.com/expo/expo/pull/39943) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
