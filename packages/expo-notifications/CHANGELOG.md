@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix @react-native-firebase/messaging overriding Expo Notifications ([#33666](https://github.com/expo/expo/pull/33666) by [@scarlac](https://github.com/scarlac))
+
 ### 💡 Others
 
 - validate sound resource names with `assertValidAndroidAssetName` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
