@@ -1,4 +1,102 @@
----
+---/* RescueRide — Protótipo de app estilo iFood para chaveiros e guincheiros Arquivo: RescueApp.jsx (single-file React component, estilizado com Tailwind)
+
+Fluxo simulado:
+
+Cliente seleciona tipo de serviço e pede socorro
+
+App mostra prestadores próximos (mockados)
+
+Pedido é criado e após delay é aceito automaticamente
+
+Rastreamento em tempo real simulado (prestador se movendo até o cliente)
+
+Prestador pode alternar status (offline/online)
+
+
+Nota: este é apenas um protótipo front-end. Para produção, integrar Firebase/Maps/Stripe etc. */
+
+import React, { useState, useEffect } from 'react';
+
+// Mock data const mockProviders = [ { id: 'p1', name: 'João - Guincho', type: 'guincho', distanceKm: 1.2, rating: 4.8 }, { id: 'p2', name: 'Carlos - Chaveiro', type: 'chaveiro', distanceKm: 2.1, rating: 4.6 }, { id: 'p3', name: 'Ana - Guincho', type: 'guincho', distanceKm: 3.5, rating: 4.9 }, ];
+
+function Header({ mode, setMode }) { return ( <div className="flex items-center justify-between p-4 bg-white shadow-md"> <h1 className="text-xl font-semibold">RescueRide</h1> <div className="flex gap-2"> <button onClick={() => setMode('client')} className={px-3 py-1 rounded ${mode === 'client' ? 'bg-indigo-600 text-white' : 'bg-gray-100'}} > Cliente </button> <button onClick={() => setMode('provider')} className={px-3 py-1 rounded ${mode === 'provider' ? 'bg-indigo-600 text-white' : 'bg-gray-100'}} > Prestador </button> </div> </div> ); }
+
+function MapPlaceholder({ center, providerPos }) { return ( <div className="relative w-full h-64 bg-gradient-to-br from-gray-100 to-gray-200 rounded-md border-2 border-dashed border-gray-300 flex items-center justify-center"> <div className="text-center"> <div className="text-sm text-gray-600 mb-2">Mapa (simulado)</div> <div className="text-xs text-gray-500"> Centro: {center?.lat?.toFixed(3)}, {center?.lng?.toFixed(3)} </div> </div> {/* marcador cliente /} <div className="absolute w-4 h-4 bg-blue-600 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div> {/ marcador prestador */} {providerPos && ( <div className="absolute w-4 h-4 bg-green-600 rounded-full" style={{ top: ${50 + providerPos.latOffset}%, left: ${50 + providerPos.lngOffset}%, transform: 'translate(-50%, -50%)', }} ></div> )} </div> ); }
+
+function ProviderCard({ p, onSelect }) { return ( <div className="p-3 bg-white rounded-md shadow-sm flex justify-between items-center"> <div> <div className="font-medium">{p.name} <span className="text-xs text-gray-500">({p.type})</span></div> <div className="text-sm text-gray-500">{p.distanceKm} km • {p.rating}★</div> </div> <button onClick={() => onSelect(p)} className="px-3 py-1 bg-indigo-600 text-white rounded">Pedir</button> </div> ); }
+
+export default function RescueApp() { const [mode, setMode] = useState('client'); const [center] = useState({ lat: -23.623, lng: -46.535 }); const [serviceType, setServiceType] = useState('chaveiro'); const [nearby, setNearby] = useState(mockProviders); const [activeRequest, setActiveRequest] = useState(null); const [providerStatus, setProviderStatus] = useState('offline'); const [providerPos, setProviderPos] = useState(null);
+
+useEffect(() => { setNearby(mockProviders.filter(p => p.type === serviceType || serviceType === 'any')); }, [serviceType]);
+
+function createRequest(provider) { const req = { id: 'r_' + Math.random().toString(36).slice(2, 8), client: { id: 'c1', name: 'Cliente Demo', lat: center.lat, lng: center.lng }, type: serviceType, status: 'searching', assignedProvider: provider ? provider.id : null, }; setActiveRequest(req);
+
+setTimeout(() => {
+  const chosen = provider || nearby[0];
+  if (chosen) {
+    setActiveRequest({ ...req, status: 'accepted', assignedProvider: chosen.id });
+    // iniciar rastreamento simulado
+    simulateTracking();
+  } else {
+    setActiveRequest({ ...req, status: 'no_providers' });
+  }
+}, 1500);
+
+}
+
+function cancelRequest() { setActiveRequest(null); setProviderPos(null); }
+
+function simulateTracking() { let step = 0; const interval = setInterval(() => { step++; setProviderPos({ latOffset: -30 + step * 2, lngOffset: -30 + step * 2 }); if (step >= 30) { clearInterval(interval); setActiveRequest(r => r ? { ...r, status: 'arrived' } : r); } }, 300); }
+
+return ( <div className="min-h-screen bg-gray-50"> <Header mode={mode} setMode={setMode} /> <div className="p-4 space-y-4"> {mode === 'client' && ( <> <MapPlaceholder center={center} providerPos={providerPos} /> <div className="flex gap-2"> <select value={serviceType} onChange={e => setServiceType(e.target.value)} className="border p-2 rounded w-full" > <option value="chaveiro">Chaveiro</option> <option value="guincho">Guincho</option> <option value="any">Qualquer</option> </select> </div>
+
+{!activeRequest && (
+          <div className="space-y-2">
+            {nearby.map(p => (
+              <ProviderCard key={p.id} p={p} onSelect={createRequest} />
+            ))}
+            {nearby.length === 0 && (
+              <p className="text-gray-500 text-sm">Nenhum prestador disponível.</p>
+            )}
+          </div>
+        )}
+
+        {activeRequest && (
+          <div className="p-3 bg-white rounded-md shadow">
+            {activeRequest.status === 'searching' && <p>Buscando prestadores...</p>}
+            {activeRequest.status === 'accepted' && <p>Pedido aceito! Prestador a caminho...</p>}
+            {activeRequest.status === 'arrived' && <p>O prestador chegou ao local!</p>}
+            {activeRequest.status === 'no_providers' && <p>Nenhum prestador disponível.</p>}
+            <button
+              onClick={cancelRequest}
+              className="mt-2 px-3 py-1 bg-red-500 text-white rounded"
+            >
+              Cancelar
+            </button>
+          </div>
+        )}
+      </>
+    )}
+
+    {mode === 'provider' && (
+      <div className="space-y-4">
+        <MapPlaceholder center={center} />
+        <div>
+          <p>Status: <span className="font-medium">{providerStatus}</span></p>
+          {providerStatus === 'offline' ? (
+            <button onClick={() => setProviderStatus('online')} className="px-3 py-1 bg-indigo-600 text-white rounded">Ficar Online</button>
+          ) : (
+            <button onClick={() => setProviderStatus('offline')} className="px-3 py-1 bg-red-500 text-white rounded">Sair</button>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
+); }
+
+
 title: Start developing
 description: Make your first change to an Expo project and see it live on your device.
 hideTOC: true
