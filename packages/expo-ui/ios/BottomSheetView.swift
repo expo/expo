@@ -11,6 +11,7 @@ final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var modifiers: ModifierArray?
 
   @Field var isOpened: Bool = false
+  @Field var presentationDetents: [Any]?
   var onIsOpenedChange = EventDispatcher()
   var onDismiss = EventDispatcher()
   @Field var interactiveDismissDisabled: Bool = false
@@ -49,6 +50,32 @@ struct BottomSheetView: ExpoSwiftUI.View {
     self.props = props
     self._isOpened = State(initialValue: props.isOpened)
   }
+  
+  @available(iOS 16.0, *)
+  private func getDetents() -> Set<PresentationDetent> {
+    guard let detentArray = props.presentationDetents, !detentArray.isEmpty else {
+      return [.height(self.height)]
+    }
+    
+    var result: Set<PresentationDetent> = []
+    
+    for detent in detentArray {
+      if let str = detent as? String {
+        switch str {
+        case "medium":
+          result.insert(.medium)
+        case "large":
+          result.insert(.large)
+        default:
+          break
+        }
+      } else if let value = detent as? Double {
+        result.insert(.fraction(CGFloat(value)))
+      }
+    }
+    
+    return result.isEmpty ? [.height(self.height)] : result
+  }
 
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
@@ -81,7 +108,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
                   }
                 }
             }
-            .presentationDetents([.height(self.height)])
+            .presentationDetents(getDetents())
             .interactiveDismissDisabled(props.interactiveDismissDisabled)
         }
         .modifier(CommonViewModifiers(props: props))

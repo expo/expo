@@ -33,6 +33,7 @@ export default function BottomSheetScreen() {
           isOpened={isOpened}
           onIsOpenedChange={setIsOpened}
           interactiveDismissDisabled={interactiveDismissDisabled}
+          presentationDetents={['medium', 'large', 0.2]}
           onDismiss={handleDismiss}>
           <HStack modifiers={[frame({ height: 100 })]}>
             <Button onPress={() => setIsOpened(false)}>Close BottomSheet</Button>
