@@ -316,6 +316,10 @@ export interface ExpoConfig {
          * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
          */
         reactServerFunctions?: boolean;
+        /**
+         * Enable support for local modules in Expo CLI and Expo Modules Autolinking.
+         */
+        localModules?: boolean;
     };
     /**
      * Internal properties for developer tools
@@ -328,6 +332,12 @@ export interface ExpoConfig {
             [k: string]: any;
         };
         [k: string]: any;
+    };
+    /**
+     * Configuration for local modules
+     */
+    localModules?: {
+        watchedDirs: [string];
     };
 }
 /**

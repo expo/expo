@@ -2,5 +2,7 @@
   "expo.jsEngine": "hermes",
   "newArchEnabled": "true",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+  "expo.localModules.enabled": "true",
+  "expo.localModules.watchedDirs": "[\"../native-component-list/src/screens/LocalModules/localModulesExamples\"]",
   "ios.buildReactNativeFromSource": "false"
 }

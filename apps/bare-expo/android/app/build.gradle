@@ -135,6 +135,15 @@ android {
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
+    if (project.properties["expo.localModules.enabled"] == "true") {
+        sourceSets {
+            main {
+                java {
+                    srcDirs += [file('build/local/modules/').absolutePath]
+                }
+            }
+        }
+    }
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
@@ -201,3 +210,21 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
 }
 
 apply plugin: ExecuteSetupAndroidProject
+
+gradle.projectsEvaluated {
+  if (project.properties["expo.localModules.enabled"] == "true") {
+    providers.exec {
+      workingDir(projectRoot)
+      commandLine(
+        "node",
+        "--no-warnings",
+        "--eval",
+        "require(require.resolve('expo-modules-autolinking', { paths: [require.resolve('expo/package.json')] }))(process.argv.slice(1))",
+        "mirror-kotlin-local-modules",
+        file('src/main/java/local/modules/').absolutePath,
+        file('build/local/modules/').absolutePath,
+        project.properties["expo.localModules.watchedDirs"]
+      )
+    }.standardOutput.asText.get()
+  }
+}

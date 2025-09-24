@@ -62,6 +62,7 @@ import type {
   ExportAssetDescriptor,
   ExportAssetMap,
 } from '../../../export/saveAssets';
+import { startModuleGenerationAsync } from '../../../localModules/generation';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -1495,11 +1496,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   public async startTypeScriptServices() {
-    return startTypescriptTypeGenerationAsync({
+    const { projectRoot, metro } = this;
+    startTypescriptTypeGenerationAsync({
       server: this.instance?.server,
       metro: this.metro,
       projectRoot: this.projectRoot,
     });
+
+    const { exp } = getConfig(this.projectRoot);
+    if (exp.experiments?.localModules === true) {
+      startModuleGenerationAsync({ projectRoot, metro });
+    }
   }
 
   protected getConfigModuleIds(): string[] {
