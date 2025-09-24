@@ -2619,7 +2619,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNCPicker (2.11.1):
+  - RNCPicker (2.11.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3713,7 +3713,7 @@ SPEC CHECKSUMS:
   ReactNativeDependencies: ed6d1e64802b150399f04f1d5728ec16b437251e
   RNCAsyncStorage: e85a99325df9eb0191a6ee2b2a842644c7eb29f4
   RNCMaskedView: 3c9d7586e2b9bbab573591dcb823918bc4668005
-  RNCPicker: f97c908b7774248c1093ec3831ca70d338627bf7
+  RNCPicker: 38a9deb903d9a8ae18b598bac727e6c84b3cf0fa
   RNDateTimePicker: 6fdd63f5d1e0f21faf4cc8674957c52958a7efae
   RNGestureHandler: 6a488ce85c88e82d8610db1108daf04e9b2d5162
   RNReanimated: ec8886a7ff1bc514c5757c0a18d9c4a65ea00364
