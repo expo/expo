@@ -135,6 +135,30 @@ export function setupLogger(predicate: string, signal: AbortSignal): () => Promi
   };
 }
 
+async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60 * 3) {
+  await retryAsync(async (retryNumber) => {
+    console.time(
+      `\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}] retry[${retryNumber}]`
+    );
+    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
+      stdio: 'inherit',
+    });
+
+    const timeoutHandle = setTimeout(() => {
+      bootProc.child?.kill('SIGTERM');
+      throw new Error('Timeout from booting simulator');
+    }, timeout);
+
+    await bootProc;
+    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
+      stdio: 'inherit',
+    });
+
+    clearTimeout(timeoutHandle);
+    console.timeEnd(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
+  }, 3);
+}
+
 async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
@@ -143,12 +167,7 @@ async function testAsync(
   const stopLogCollectionController = new AbortController();
 
   try {
-    console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
-    await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
-    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
-      stdio: 'inherit',
-    });
-
+    await startSimulatorAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
