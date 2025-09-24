@@ -6,6 +6,7 @@
 import { ColorValue } from 'react-native';
 
 import { animation } from './animation/index';
+import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 
 /**
@@ -510,7 +511,8 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
-  | ReturnType<typeof animation>;
+  | ReturnType<typeof animation>
+  | ReturnType<typeof containerShape>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -550,3 +552,4 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 };
 
 export * from './animation/index';
+export * from './containerShape';
