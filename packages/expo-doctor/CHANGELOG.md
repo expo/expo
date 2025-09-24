@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add check warning about native modules installed in `devDependencies` rather than regular `dependencies`
+
 ### 🐛 Bug fixes
 
 - Prevent peer dependency check from warning on peer/regular hybrid dependency ([#39916](https://github.com/expo/expo/pull/39916) by [@kitten](https://github.com/kitten))
