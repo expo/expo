@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-enum PresentationDragIndicatorVisibility: String, Enumerable {
+internal enum PresentationDragIndicatorVisibility: String, Enumerable {
   case automatic
   case visible
   case hidden
