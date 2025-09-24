@@ -69,7 +69,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
     self._isOpened = State(initialValue: props.isOpened)
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, tvOS 16.0, *)
   private func getDetents() -> Set<PresentationDetent> {
     guard let detentArray = props.presentationDetents, !detentArray.isEmpty else {
       return [.height(self.height)]
