@@ -345,7 +345,7 @@ export function getDefaultConfig(
   });
 
   const serverRoot = getMetroServerRoot(projectRoot);
-  const expoConfig = getConfig(projectRoot);
+  const expoConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const resolveLocalModulesWithRoot = (
     context: CustomResolutionContext,
     moduleName: string,

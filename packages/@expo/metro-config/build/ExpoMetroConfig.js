@@ -231,7 +231,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
-    const expoConfig = (0, config_1.getConfig)(projectRoot);
+    const expoConfig = (0, config_1.getConfig)(projectRoot, { skipSDKVersionRequirement: true });
     const resolveLocalModulesWithRoot = (context, moduleName, platform) => {
         return resolveLocalModules(projectRoot, context, moduleName, platform);
     };
