@@ -13,5 +13,5 @@ interface GenerateModulesProviderParams {
 }
 /** Generates ExpoModulesProvider file listing all packages to link (Apple-only)
  */
-export declare function generateModulesProviderAsync(modules: ModuleDescriptor[], params: GenerateModulesProviderParams): Promise<void>;
+export declare function generateModulesProviderAsync(modules: ModuleDescriptor[], params: GenerateModulesProviderParams, watchedDirs: string[]): Promise<void>;
 export {};
