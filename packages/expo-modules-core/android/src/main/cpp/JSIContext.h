@@ -77,14 +77,14 @@ public:
    * @param moduleName
    * @return An instance of `JavaScriptModuleObject`
    */
-  jni::local_ref<JavaScriptModuleObject::javaobject> getModule(const std::string &moduleName) const;
+  [[nodiscard]] jni::local_ref<JavaScriptModuleObject::javaobject> getModule(const std::string &moduleName) const;
 
-  bool hasModule(const std::string &moduleName) const;
+  [[nodiscard]] bool hasModule(const std::string &moduleName) const;
 
   /**
    * Gets names of all available modules.
    */
-  jni::local_ref<jni::JArrayClass<jni::JString>> getModulesName() const;
+  [[nodiscard]] jni::local_ref<jni::JArrayClass<jni::JString>> getModulesName() const;
 
   /**
    * Exposes a `JavaScriptRuntime::evaluateScript` function to Kotlin
@@ -106,7 +106,7 @@ public:
   /**
   * Gets a core module.
   */
-  jni::local_ref<JavaScriptModuleObject::javaobject> getCoreModule() const;
+  [[nodiscard]] jni::local_ref<JavaScriptModuleObject::javaobject> getCoreModule() const;
 
   /**
    * Adds a shared object to the internal registry
@@ -148,7 +148,7 @@ public:
 
   void prepareForDeallocation() noexcept;
 
-  bool wasDeallocated() const noexcept;
+  [[nodiscard]] bool wasDeallocated() const noexcept;
 
 private:
   friend HybridBase;
@@ -168,14 +168,14 @@ private:
 
   explicit JSIContext(jni::alias_ref<jhybridobject> jThis);
 
-  inline jni::local_ref<JavaScriptModuleObject::javaobject>
+  [[nodiscard]] inline jni::local_ref<JavaScriptModuleObject::javaobject>
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
 
-  inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
+  [[nodiscard]] inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
 
-  inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
+  [[nodiscard]] inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
 
-  inline bool callHasModule(const std::string &moduleName) const;
+  [[nodiscard]] inline bool callHasModule(const std::string &moduleName) const;
 
   void prepareJSIContext(
     jlong jsRuntimePointer,

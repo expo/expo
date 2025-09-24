@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Adds support for `ArrayBuffer`.
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix NSURL to JSIString conversion returning nil. ([#39567](https://github.com/expo/expo/pull/39567) by [@behenate](https://github.com/behenate))
