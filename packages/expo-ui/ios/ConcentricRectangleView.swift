@@ -56,7 +56,7 @@ internal struct ConcentricRectangleView: ExpoSwiftUI.View {
     }
   }
   #endif
-  
+
   var body: some View {
     #if compiler(>=6.2) // Xcode 26
     if #available(iOS 26.0, tvOS 26.0, *) {
