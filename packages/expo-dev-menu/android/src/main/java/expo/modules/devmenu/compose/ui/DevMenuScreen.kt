@@ -64,7 +64,9 @@ fun DevMenuScreen(
     ToolsSection(onAction, devToolsSettings, showFab)
 
     Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`6`)) {
-      Warning("Debugging not working? Try manually reloading first")
+      if (appInfo.engine == "Hermes") {
+        Tip("Debugging not working? Try manually reloading first.")
+      }
     }
 
     SystemSection(

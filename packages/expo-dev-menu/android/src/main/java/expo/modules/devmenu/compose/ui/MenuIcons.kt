@@ -169,4 +169,20 @@ object MenuIcons {
         .then(modifier)
     )
   }
+
+  @Composable
+  fun Lightbulb(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.lightbulb),
+      contentDescription = "Lightbulb",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
 }
