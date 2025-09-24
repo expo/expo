@@ -8,6 +8,7 @@ import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
+import { updateXCodeProject } from '../localModules/generation';
 import { Log } from '../log';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -172,6 +173,10 @@ export async function prebuildAsync(
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {
     debug('Skipped pod install');
+  }
+  const localModulesEnabled = exp.experiments?.localModules === true;
+  if (localModulesEnabled && options.platforms.includes('ios')) {
+    await updateXCodeProject(projectRoot);
   }
 
   return {
