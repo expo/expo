@@ -72,7 +72,10 @@ export function makeCachedDependenciesLinker(params: {
     },
     async scanDevDependenciesShallowly() {
       return (
-        devDependencies || (devDependencies = scanDevDependenciesShallowly(await getAppRoot()))
+        devDependencies ||
+        (devDependencies = scanDevDependenciesShallowly(await getAppRoot(), {
+          shouldSkipDuplicates: true,
+        }))
       );
     },
     async scanDependenciesInSearchPath(searchPath: string) {
@@ -103,6 +106,7 @@ export async function scanDependencyResolutionsForPlatform(
       ...searchPaths.map((searchPath) => {
         return linker.scanDependenciesInSearchPath(searchPath);
       }),
+      linker.scanDevDependenciesShallowly(),
       linker.scanDependenciesRecursively(),
     ])
   );
@@ -150,7 +154,7 @@ export async function scanExpoModuleResolutionsForPlatform(
         ...searchPaths.map((searchPath) => {
           return linker.scanDependenciesInSearchPath(searchPath);
         }),
-        platform === 'devtools' ? linker.scanDevDependenciesShallowly() : null,
+        linker.scanDevDependenciesShallowly(),
         linker.scanDependenciesRecursively(),
       ].filter((x) => x != null)
     )
