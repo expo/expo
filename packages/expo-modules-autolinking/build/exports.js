@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.scanExpoModuleResolutionsForPlatform = exports.scanDependencyResolutionsForPlatform = exports.makeCachedDependenciesLinker = void 0;
+exports.scanExpoModuleResolutionsForPlatform = exports.scanDependencyResolutionsForPlatform = exports.resolveDependencyResolutionsForPlatform = exports.makeCachedDependenciesLinker = void 0;
 exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;
 exports.queryAutolinkingModulesFromProjectAsync = queryAutolinkingModulesFromProjectAsync;
 exports.findProjectRootSync = findProjectRootSync;
@@ -32,6 +32,7 @@ __exportStar(require("./autolinking"), exports);
 __exportStar(require("./platforms"), exports);
 var dependencies_1 = require("./dependencies");
 Object.defineProperty(exports, "makeCachedDependenciesLinker", { enumerable: true, get: function () { return dependencies_1.makeCachedDependenciesLinker; } });
+Object.defineProperty(exports, "resolveDependencyResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.resolveDependencyResolutionsForPlatform; } });
 Object.defineProperty(exports, "scanDependencyResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanDependencyResolutionsForPlatform; } });
 Object.defineProperty(exports, "scanExpoModuleResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanExpoModuleResolutionsForPlatform; } });
 /** @deprecated */

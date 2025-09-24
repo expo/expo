@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCachedDependenciesLinker = makeCachedDependenciesLinker;
+exports.resolveDependencyResolutionsForPlatform = resolveDependencyResolutionsForPlatform;
 exports.scanDependencyResolutionsForPlatform = scanDependencyResolutionsForPlatform;
 exports.scanExpoModuleResolutionsForPlatform = scanExpoModuleResolutionsForPlatform;
 const fs_1 = __importDefault(require("fs"));
@@ -58,17 +59,11 @@ function makeCachedDependenciesLinker(params) {
         },
     };
 }
-async function scanDependencyResolutionsForPlatform(linker, platform, include) {
-    const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
+async function resolveDependencyResolutionsForPlatform(linker, inputResolutions, platform, include) {
     const includeNames = new Set(include);
+    const { excludeNames } = await linker.getOptionsForPlatform(platform);
     const reactNativeProjectConfig = await linker.loadReactNativeProjectConfig();
-    const resolutions = (0, utils_1.mergeResolutionResults)(await Promise.all([
-        linker.scanDependenciesFromRNProjectConfig(),
-        ...searchPaths.map((searchPath) => {
-            return linker.scanDependenciesInSearchPath(searchPath);
-        }),
-        linker.scanDependenciesRecursively(),
-    ]));
+    const resolutions = (0, utils_1.mergeResolutionResults)(inputResolutions);
     const dependencies = await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
         if (excludeNames.has(resolution.name)) {
             return null;
@@ -96,6 +91,17 @@ async function scanDependencyResolutionsForPlatform(linker, platform, include) {
         return resolution;
     });
     return dependencies;
+}
+async function scanDependencyResolutionsForPlatform(linker, platform, include) {
+    const { searchPaths } = await linker.getOptionsForPlatform(platform);
+    const resolutions = await Promise.all([
+        linker.scanDependenciesFromRNProjectConfig(),
+        ...searchPaths.map((searchPath) => {
+            return linker.scanDependenciesInSearchPath(searchPath);
+        }),
+        linker.scanDependenciesRecursively(),
+    ]);
+    return resolveDependencyResolutionsForPlatform(linker, resolutions, platform, include);
 }
 async function scanExpoModuleResolutionsForPlatform(linker, platform) {
     const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);

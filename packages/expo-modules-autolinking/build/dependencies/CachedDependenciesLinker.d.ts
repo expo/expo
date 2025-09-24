@@ -16,5 +16,6 @@ export interface CachedDependenciesLinker {
 export declare function makeCachedDependenciesLinker(params: {
     projectRoot: string;
 }): CachedDependenciesLinker;
+export declare function resolveDependencyResolutionsForPlatform(linker: CachedDependenciesLinker, inputResolutions: ResolutionResult[], platform: SupportedPlatform, include?: string[]): Promise<ResolutionResult>;
 export declare function scanDependencyResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, include?: string[]): Promise<ResolutionResult>;
 export declare function scanExpoModuleResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform): Promise<Record<string, PackageRevision>>;
