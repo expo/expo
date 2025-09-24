@@ -23,12 +23,7 @@ Pod::Spec.new do |s|
     'OTHER_SWIFT_FLAGS' => '$(inherited)' + (ENV["EXPO_DEBUG_LOG_BOX"] == "1" ? " -DEXPO_DEBUG_LOG_BOX" : ""),
   }
 
-  # s.source_files = 'ios/**/*.{h,m,mm,swift}'
-  # s.compiler_flags = compiler_flags
-  # s.private_header_files = ['ios/**/Swift.h']
-  # s.resource_bundles = {
-  #   'ExpoLogBox' => ['dist/ExpoLogBox.bundle/_expo', 'dist/ExpoLogBox.bundle/index.html'],
-  # }
+  s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.script_phases = [
     {
       :name => 'Embed MyPod conditional resources',
