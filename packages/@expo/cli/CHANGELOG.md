@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Conditionally add `module` main field depending on ESM or CJS resolution ([#39659](https://github.com/expo/expo/pull/39659) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Bump to `@expo/metro@~54.0.0` ([#39800](https://github.com/expo/expo/pull/39800) by [@kitten](https://github.com/kitten))

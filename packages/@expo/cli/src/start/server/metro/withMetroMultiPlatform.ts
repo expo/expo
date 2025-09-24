@@ -28,12 +28,12 @@ import { createFastResolver, FailedToResolvePathError } from './createExpoMetroR
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
+import { prependMainFields } from './prependMainFields';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
-import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
@@ -248,12 +248,38 @@ export function withExtendedResolver(
     return _universalAliases;
   }
 
-  const preferredMainFields: { [key: string]: string[] } = {
-    // Defaults from Expo Webpack. Most packages using `react-native` don't support web
-    // in the `react-native` field, so we should prefer the `browser` field.
-    // https://github.com/expo/router/issues/37
-    web: ['browser', 'module', 'main'],
-  };
+  /** Gets the main fields to resolver dependent on the platform and `context.isESMImport` */
+  const getMainFields = (() => {
+    const preferredMainFields: Record<string, readonly string[]> = { web: ['browser'] };
+    // All configured React Native platforms should prefer the "react-native" condition
+    for (const platform of config.resolver?.platforms ?? []) {
+      if (!preferredMainFields[platform]) {
+        preferredMainFields[platform] = ['react-native'];
+      }
+    }
+    const _cache: Record<string, readonly string[]> = {};
+    return (platform: string | null, enableModuleField: boolean, isServerEnv: boolean) => {
+      const key = [
+        enableModuleField ? 'esm' : 'cjs',
+        isServerEnv ? 'server' : 'client',
+        platform,
+      ].join('_');
+      let mainFields = _cache[key];
+      if (!mainFields) {
+        // NOTE(@kitten): The default conditions here are defined for unit tests
+        const defaultMainFields = ['react-native', 'browser'];
+        const baseMainFields =
+          (platform != null && preferredMainFields[platform]) || defaultMainFields;
+        mainFields = prependMainFields(baseMainFields, {
+          enableModuleField,
+          isServerEnv,
+          userMainFields: config.resolver?.resolverMainFields,
+        });
+        _cache[key] = mainFields;
+      }
+      return mainFields;
+    };
+  })();
 
   let tsConfigResolve =
     isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
@@ -767,6 +793,12 @@ export function withExtendedResolver(
         context.disableHierarchicalLookup = false;
       }
 
+      // NOTE(@kitten): When RSC is enabed, we must avoid dual-package hazards as much as possible
+      // As such, we always treat imports as ESM i.e. enable the "package.json:module" main field
+      // For backwards-compatibility, this currently isn't enabled otherwise.
+      // A lot of the dual-package imports come from expo-router itself, which is currentlty transpiled to CJS
+      const enableModuleField = isReactServerComponentsEnabled || !!context.isESMImport;
+
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
@@ -777,43 +809,19 @@ export function withExtendedResolver(
         context.unstable_enablePackageExports = true;
         context.unstable_conditionsByPlatform = {};
 
-        const isReactServerComponents =
-          context.customResolverOptions?.environment === 'react-server';
-
-        if (isReactServerComponents) {
-          // NOTE: Align the behavior across server and client. This is a breaking change so we'll just roll it out with React Server Components.
-          // This ensures that react-server and client code both resolve `module` and `main` in the same order.
-          if (platform === 'web') {
-            // Node.js runtimes should only be importing main at the moment.
-            // This is a temporary fix until we can support the package.json exports.
-            context.mainFields = ['module', 'main'];
-          } else {
-            // In Node.js + native, use the standard main fields.
-            context.mainFields = ['react-native', 'module', 'main'];
-          }
-        } else {
-          if (platform === 'web') {
-            // Node.js runtimes should only be importing main at the moment.
-            // This is a temporary fix until we can support the package.json exports.
-            context.mainFields = ['main', 'module'];
-          } else {
-            // In Node.js + native, use the standard main fields.
-            context.mainFields = ['react-native', 'main', 'module'];
-          }
-        }
-
         // Enable react-server import conditions.
         if (context.customResolverOptions?.environment === 'react-server') {
           context.unstable_conditionNames = ['node', 'react-server', 'workerd'];
         } else {
           context.unstable_conditionNames = ['node'];
         }
+
+        // NOTE(@kitten): This was incorrect before. We must not change the resolution order
+        // based of "main" or "module" based on `isReactServerComponents` on the server-side
+        context.mainFields = getMainFields(platform, enableModuleField, true);
       } else {
         // Non-server changes
-
-        if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
-          context.mainFields = preferredMainFields[platform];
-        }
+        context.mainFields = getMainFields(platform, enableModuleField, false);
       }
 
       return context;
