@@ -201,9 +201,17 @@ const isOptionalPeerDependencyMeta = (
   );
 };
 
+interface DevDependenciesResolutionOptions extends ResolutionOptions {
+  shouldIncludeDependency?(name: string): boolean;
+  shouldSkipDuplicates?: boolean;
+}
+
 export async function scanDevDependenciesShallowly(
   rawPath: string,
-  { shouldIncludeDependency = defaultShouldIncludeDependency }: ResolutionOptions = {}
+  {
+    shouldIncludeDependency = defaultShouldIncludeDependency,
+    shouldSkipDuplicates = false,
+  }: DevDependenciesResolutionOptions = {}
 ): Promise<ResolutionResult> {
   const rootPath = await maybeRealpath(rawPath);
   if (!rootPath) {
@@ -218,12 +226,18 @@ export async function scanDevDependenciesShallowly(
     return searchResults;
   }
 
+  const dependencies =
+    packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
+      ? (packageJson.dependencies as Record<string, string>)
+      : {};
   const devDependencies =
     packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
-      ? packageJson.devDependencies
+      ? (packageJson.devDependencies as Record<string, string>)
       : {};
   for (const dependencyName in devDependencies) {
-    if (!shouldIncludeDependency(dependencyName)) {
+    if (shouldSkipDuplicates && dependencies[dependencyName] != null) {
+      continue;
+    } else if (!shouldIncludeDependency(dependencyName)) {
       continue;
     }
     for (let idx = 0; idx < nodeModulePaths.length; idx++) {
