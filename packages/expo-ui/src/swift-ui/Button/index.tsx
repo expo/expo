@@ -2,9 +2,9 @@ import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { type ViewEvent } from '../../types';
+import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-import { getTextFromChildren } from '../../utils';
 
 /**
  * The role of the button.
