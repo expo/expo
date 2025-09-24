@@ -28,9 +28,9 @@ class Asset: SharedObject {
     return phAsset.pixelWidth
   }
 
-  func getDuration() async throws -> Double? {
+  func getDuration() async throws -> Int? {
     let phAsset = try await requirePHAsset()
-    return phAsset.duration != 0 ? phAsset.duration : nil
+    return phAsset.duration > 0 ? Int(phAsset.duration * 1000) : nil
   }
 
   func getFilename() async throws -> String {
