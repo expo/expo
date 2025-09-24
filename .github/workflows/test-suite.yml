@@ -130,6 +130,7 @@ jobs:
           xcrun simctl list devices --json
           xcrun simctl erase all
           xcrun simctl shutdown all
+          sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
