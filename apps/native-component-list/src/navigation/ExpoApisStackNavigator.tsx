@@ -13,6 +13,7 @@ import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
+import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
 import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +25,13 @@ export const ScreensList: ScreenConfig[] = [
     },
     name: 'ModulesCore',
     options: { title: 'Expo Modules Core' },
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/MediaLibrary@Next/MediaLibraryScreens'));
+    },
+    name: 'MediaLibrary@Next',
+    options: { title: 'MediaLibrary@Next' },
   },
   {
     getComponent() {
@@ -439,6 +447,7 @@ export const ScreensList: ScreenConfig[] = [
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
   ...ModulesCoreScreens,
+  ...MediaLibraryScreens,
   ...AudioScreens,
   ...BlobScreens,
   ...ContactsScreens,

@@ -32,7 +32,8 @@ export declare class Asset {
 
   /**
    * Gets the duration of the asset.
-   * Applies only to media types like video or audio.
+   * Applies only to assets with media type {@link MediaType.audio} or {@link MediaType.video}.
+   * For other media types, it returns `null`.
    * @returns A promise resolving to the duration in milliseconds, or `null` if not applicable.
    * @throws An exception if the asset could not be found.
    */
