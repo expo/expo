@@ -13,6 +13,7 @@ import {
   getStartMode,
   retryAsync,
   getMaestroFlowFilePath,
+  prettyPrintTestSuiteLogs,
 } from './lib/e2e-common';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
@@ -85,29 +86,6 @@ async function buildAsync(projectRoot: string, deviceId: string): Promise<string
   // @ts-expect-error missing typings
   const binaryPath = await XcodeBuild.default.getAppBinaryPath(buildOutput);
   return binaryPath;
-}
-
-function prettyPrintTestSuiteLogs(logs: string[]) {
-  const lastTestSuiteLog = logs.reverse().find((logItem) => logItem.includes('TEST-SUITE-END'));
-  if (!lastTestSuiteLog) {
-    return '';
-  }
-  const jsonPart = lastTestSuiteLog?.match(/{.*}/);
-  if (!jsonPart || !jsonPart[0]) {
-    return '';
-  }
-  const testSuiteResult = JSON.parse(jsonPart[0]);
-  if ((testSuiteResult?.failures.length ?? 0) <= 0) {
-    return '';
-  }
-  const result = [];
-  result.push('  ❌ Test suite had following test failures:');
-  testSuiteResult?.failures?.split('\n').forEach((failure) => {
-    if (failure.length > 0) {
-      result.push(`    ${failure}`);
-    }
-  });
-  return result.join('\n');
 }
 
 function prettyPrintNativeErrorLogs(logs: string[]) {
@@ -199,10 +177,16 @@ async function testAsync(
       // we need to always get these logs since it stops listener process
       const nativeLogs = await getNativeErrorLogs();
       if (!(await isAppRunning())) {
-        console.warn(
-          '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
-        );
-        console.log(prettyPrintNativeErrorLogs(nativeLogs));
+        if (nativeLogs.length > 0) {
+          console.warn(
+            '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
+          );
+          console.log(prettyPrintNativeErrorLogs(nativeLogs));
+        } else {
+          console.warn(
+            '\n\n  ❌ The runner app has probably crashed, but no native logs were captured.\n\n'
+          );
+        }
       }
 
       console.log('\n\n');
