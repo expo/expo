@@ -1,47 +1,45 @@
-import { Button as ButtonPrimitive, BottomSheet, Host } from '@expo/ui/swift-ui';
+import { Button, BottomSheet, Host, VStack, HStack, Switch, Text } from '@expo/ui/swift-ui';
+import { fixedSize, frame, padding } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { ScrollView, Text, useWindowDimensions } from 'react-native';
+import { ScrollView, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export default function BottomSheetScreen() {
-  const [isOpened, setIsOpened] = React.useState<boolean>(true);
-  const { width } = useWindowDimensions();
-  const height = useSharedValue(100);
+  const [isOpened, setIsOpened] = React.useState<boolean>(false);
+  const [interactiveDismissDisabled, setInteractiveDismissDisabled] =
+    React.useState<boolean>(false);
 
-  const handleIncreaseHeight = () => {
-    height.value = height.value > 500 ? 100 : height.value + 100;
+  const handleDismiss = () => {
+    console.log('BottomSheet was dismissed');
   };
 
-  const animatedStyles = useAnimatedStyle(() => ({
-    height: withTiming(height.value, { duration: 1000 }),
-  }));
-
   return (
-    <ScrollView
-      contentContainerStyle={{
-        flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        padding: 8,
-      }}>
-      <Button onPress={() => setIsOpened((h) => !h)}>Toggle</Button>
-      <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
-      <Host style={{ position: 'absolute', width }}>
-        <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
-          <Animated.View style={[{ padding: 20 }, animatedStyles]}>
-            <Button onPress={handleIncreaseHeight}>Increase height</Button>
-          </Animated.View>
+    <ScrollView>
+      <Host matchContents>
+        <VStack alignment="leading" modifiers={[padding({ all: 16 })]}>
+          <Button onPress={() => setIsOpened(true)}>Open BottomSheet</Button>
+          <HStack>
+            <Text modifiers={[fixedSize()]}>Disable interactive dismiss</Text>
+            <Switch
+              value={interactiveDismissDisabled}
+              onValueChange={setInteractiveDismissDisabled}
+            />
+          </HStack>
+        </VStack>
+      </Host>
+
+      <Host style={{ position: 'absolute' }} matchContents>
+        <BottomSheet
+          isOpened={isOpened}
+          onIsOpenedChange={setIsOpened}
+          interactiveDismissDisabled={interactiveDismissDisabled}
+          onDismiss={handleDismiss}>
+          <HStack modifiers={[frame({ height: 100 })]}>
+            <Button onPress={() => setIsOpened(false)}>Close BottomSheet</Button>
+          </HStack>
         </BottomSheet>
       </Host>
     </ScrollView>
-  );
-}
-
-function Button(props: React.ComponentProps<typeof ButtonPrimitive>) {
-  return (
-    <Host matchContents>
-      <ButtonPrimitive {...props}>{props.children}</ButtonPrimitive>
-    </Host>
   );
 }
 

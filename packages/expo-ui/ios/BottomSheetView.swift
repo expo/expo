@@ -12,6 +12,8 @@ final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
 
   @Field var isOpened: Bool = false
   var onIsOpenedChange = EventDispatcher()
+  var onDismiss = EventDispatcher()
+  @Field var interactiveDismissDisabled: Bool = false
 }
 
 struct HeightPreferenceKey: PreferenceKey {
@@ -66,7 +68,9 @@ struct BottomSheetView: ExpoSwiftUI.View {
               }
             }
         }
-        .sheet(isPresented: $isOpened) {
+        .sheet(isPresented: $isOpened, onDismiss: {
+          props.onDismiss()
+        }) {
           Children()
             .if(!hasHostingChildren) {
               $0
@@ -78,6 +82,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
                 }
             }
             .presentationDetents([.height(self.height)])
+            .interactiveDismissDisabled(props.interactiveDismissDisabled)
         }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
@@ -96,8 +101,11 @@ struct BottomSheetView: ExpoSwiftUI.View {
         }
     } else {
       Rectangle().hidden()
-        .sheet(isPresented: $isOpened) {
+        .sheet(isPresented: $isOpened, onDismiss: {
+          props.onDismiss()
+        }) {
           Children()
+            .interactiveDismissDisabled(props.interactiveDismissDisabled)
         }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in

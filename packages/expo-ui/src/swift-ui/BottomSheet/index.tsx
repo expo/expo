@@ -17,6 +17,14 @@ export type BottomSheetProps = {
    * Callback function that is called when the `BottomSheet` is opened.
    */
   onIsOpenedChange: (isOpened: boolean) => void;
+  /**
+   * Callback function that is called when the `BottomSheet` is dismissed.
+   */
+  onDismiss?: () => void;
+  /**
+   * Setting it to `true` will disable the interactive dismiss of the `BottomSheet`.
+   */
+  interactiveDismissDisabled?: boolean;
 } & CommonViewModifierProps;
 
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {
