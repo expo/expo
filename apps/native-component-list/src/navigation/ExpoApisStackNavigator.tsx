@@ -12,8 +12,8 @@ import { BlobScreens } from '../screens/Blob/BlobScreen';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
-import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
+import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { type ScreenApiItem, type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createNativeStackNavigator();

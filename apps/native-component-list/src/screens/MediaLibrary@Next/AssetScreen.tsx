@@ -1,10 +1,9 @@
 import { Directory, File, Paths } from 'expo-file-system';
-import { useState } from 'react';
-import { Asset, MediaType } from 'expo-media-library/next';
-import { View, Pressable, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
-import { Alert } from 'react-native';
+import { Asset, MediaType } from 'expo-media-library/next';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { useState } from 'react';
+import { View, Pressable, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 
 enum TestState {
   START = 'start',
@@ -84,18 +83,21 @@ const AssetScreen = () => {
     try {
       const dir = new Directory(Paths.cache, screenName);
       dir.create({ idempotent: true });
+
       switch (type) {
-        case 'image':
+        case 'image': {
           const imageFile = new File(dir, `${screenName}.jpg`);
           const imageUrl = 'https://picsum.photos/200/300';
           await File.downloadFileAsync(imageUrl, imageFile, { idempotent: true });
           return imageFile;
-        case 'video':
+        }
+        case 'video': {
           const videoFile = new File(dir, `${screenName}.mp4`);
           const videoUrl =
             'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
           await File.downloadFileAsync(videoUrl, videoFile, { idempotent: true });
           return videoFile;
+        }
       }
     } catch (e) {
       console.error('Error downloading file:', e);

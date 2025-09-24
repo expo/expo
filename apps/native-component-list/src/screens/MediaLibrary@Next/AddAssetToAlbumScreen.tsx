@@ -1,8 +1,8 @@
+import { Directory, File, Paths } from 'expo-file-system';
+import { Image } from 'expo-image';
+import { Asset, Album, requestPermissionsAsync } from 'expo-media-library/next';
 import { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { Image } from 'expo-image';
-import { Directory, File, Paths } from 'expo-file-system';
-import { Asset, Album, requestPermissionsAsync } from 'expo-media-library/next';
 
 enum TestState {
   ADD_ALBUM = 'addAlbum',
