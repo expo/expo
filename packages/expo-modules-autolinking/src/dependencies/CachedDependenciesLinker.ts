@@ -88,25 +88,16 @@ export function makeCachedDependenciesLinker(params: {
   };
 }
 
-export async function scanDependencyResolutionsForPlatform(
+export async function resolveDependencyResolutionsForPlatform(
   linker: CachedDependenciesLinker,
+  inputResolutions: ResolutionResult[],
   platform: SupportedPlatform,
   include?: string[]
 ): Promise<ResolutionResult> {
-  const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
   const includeNames = new Set(include);
+  const { excludeNames } = await linker.getOptionsForPlatform(platform);
   const reactNativeProjectConfig = await linker.loadReactNativeProjectConfig();
-
-  const resolutions = mergeResolutionResults(
-    await Promise.all([
-      linker.scanDependenciesFromRNProjectConfig(),
-      ...searchPaths.map((searchPath) => {
-        return linker.scanDependenciesInSearchPath(searchPath);
-      }),
-      linker.scanDependenciesRecursively(),
-    ])
-  );
-
+  const resolutions = mergeResolutionResults(inputResolutions);
   const dependencies = await filterMapResolutionResult(resolutions, async (resolution) => {
     if (excludeNames.has(resolution.name)) {
       return null;
@@ -135,8 +126,23 @@ export async function scanDependencyResolutionsForPlatform(
     }
     return resolution;
   });
-
   return dependencies;
+}
+
+export async function scanDependencyResolutionsForPlatform(
+  linker: CachedDependenciesLinker,
+  platform: SupportedPlatform,
+  include?: string[]
+): Promise<ResolutionResult> {
+  const { searchPaths } = await linker.getOptionsForPlatform(platform);
+  const resolutions = await Promise.all([
+    linker.scanDependenciesFromRNProjectConfig(),
+    ...searchPaths.map((searchPath) => {
+      return linker.scanDependenciesInSearchPath(searchPath);
+    }),
+    linker.scanDependenciesRecursively(),
+  ]);
+  return resolveDependencyResolutionsForPlatform(linker, resolutions, platform, include);
 }
 
 export async function scanExpoModuleResolutionsForPlatform(

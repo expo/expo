@@ -23,6 +23,7 @@ export {
   CachedDependenciesLinker,
   CachedDependenciesSearchOptions,
   makeCachedDependenciesLinker,
+  resolveDependencyResolutionsForPlatform,
   scanDependencyResolutionsForPlatform,
   scanExpoModuleResolutionsForPlatform,
 } from './dependencies';
