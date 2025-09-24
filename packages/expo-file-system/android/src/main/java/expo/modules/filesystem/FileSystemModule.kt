@@ -145,7 +145,7 @@ class FileSystemModule : Module() {
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
         if (content.`is`(String::class)) {
           content.get(String::class).let {
-            if(options?.encoding == EncodingType.BASE64) {
+            if (options?.encoding == EncodingType.BASE64) {
               file.write(Base64.decode(it, Base64.DEFAULT))
             } else {
               file.write(it)

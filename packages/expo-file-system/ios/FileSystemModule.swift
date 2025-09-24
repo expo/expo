@@ -204,7 +204,7 @@ public final class FileSystemModule: Module {
 
       Function("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
         if let content: String = content.get() {
-          if (options?.encoding == WriteEncoding.base64) {
+          if options?.encoding == WriteEncoding.base64 {
             guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
               throw UnableToWriteBase64DataException(file.url.absoluteString)
             }
