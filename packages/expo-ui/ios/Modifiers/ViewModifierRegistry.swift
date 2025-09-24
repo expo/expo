@@ -250,6 +250,14 @@ internal struct HiddenModifier: ViewModifier, Record {
   }
 }
 
+internal struct DisabledModifier: ViewModifier, Record {
+  @Field var disabled: Bool = true
+
+  func body(content: Content) -> some View {
+    content.disabled(disabled)
+  }
+}
+
 internal struct ZIndexModifier: ViewModifier, Record {
   @Field var index: Double = 0
 
@@ -873,6 +881,10 @@ extension ViewModifierRegistry {
 
     register("hidden") { params, appContext, _ in
       return try HiddenModifier(from: params, appContext: appContext)
+    }
+
+    register("disabled") { params, appContext, _ in
+      return try DisabledModifier(from: params, appContext: appContext)
     }
 
     register("zIndex") { params, appContext, _ in
