@@ -18,6 +18,7 @@ import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVe
 import { LockfileCheck } from '../checks/LockfileCheck';
 import { MetroConfigCheck } from '../checks/MetroConfigCheck';
 import { NativeToolingVersionCheck } from '../checks/NativeToolingVersionCheck';
+import { NoAutolinkingDevDependenciesCheck } from '../checks/NoAutolinkingDevDependenciesCheck';
 import { PackageJsonCheck } from '../checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from '../checks/PackageManagerVersionCheck';
 import { PeerDependencyChecks } from '../checks/PeerDependencyChecks';
@@ -51,6 +52,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new DirectPackageInstallCheck(),
     new PeerDependencyChecks(),
     new AutolinkingDependencyDuplicatesCheck(),
+    new NoAutolinkingDevDependenciesCheck(),
 
     // Version Checks
     new SupportPackageVersionCheck(),
