@@ -1,8 +1,7 @@
 import { Button, BottomSheet, Host, VStack, HStack, Switch, Text } from '@expo/ui/swift-ui';
 import { fixedSize, frame, padding } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { ScrollView, useWindowDimensions, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { ScrollView } from 'react-native';
 
 export default function BottomSheetScreen() {
   const [isOpened, setIsOpened] = React.useState<boolean>(false);
