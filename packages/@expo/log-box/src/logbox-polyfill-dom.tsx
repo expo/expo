@@ -112,6 +112,7 @@ export default function LogBoxPolyfillDOM({
           });
         }
       ) ?? []),
+      // Convert native logs to Expo Log Box format
       ...((props.nativeLogs?.map((message) => {
         let originalMessage = message;
         if (platform === 'android') {
@@ -133,6 +134,7 @@ export default function LogBoxPolyfillDOM({
           originalMessage,
           stack: [],
         }));
+        // Never show stack for native errors, these are typically bundling errors, component stack would lead to LogBox.
         log.componentStack = [];
         return log;
       }) ?? [])),
@@ -156,6 +158,7 @@ export default function LogBoxPolyfillDOM({
   return (
     <LogContext.Provider
       value={{
+        platform,
         selectedLogIndex: selectedIndex,
         isDisabled: false,
         logs,

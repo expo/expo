@@ -33,12 +33,12 @@ const HEADER_TITLE_MAP: Record<LogLevel, string> = {
 };
 
 export function LogBoxInspectorContainer() {
-  const { selectedLogIndex, logs } = useLogs();
+  const { selectedLogIndex, logs, platform } = useLogs();
   const log = logs[selectedLogIndex];
   if (log == null) {
     return null;
   }
-  return <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
+  return <LogBoxInspector platform={platform} log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
 }
 
 function useDevServerMeta() {
@@ -64,10 +64,12 @@ export function LogBoxInspector({
   log,
   selectedLogIndex,
   logs,
+  platform
 }: {
   log: LogBoxLog;
   selectedLogIndex: number;
   logs: LogBoxLog[];
+  platform: string | undefined;
 }) {
   const isDismissable = !['static', 'syntax', 'resolution'].includes(log.level);
   const [closing, setClosing] = useState(false);
@@ -87,10 +89,15 @@ export function LogBoxInspector({
 
   return (
     <>
-      <div className={styles.overlay}>
+      <div className={[
+        styles.overlay,
+        platform === 'ios' ? styles.overlayIos : null,
+        platform === 'android' ? styles.overlayAndroid : null,
+        platform === undefined ? styles.overlayWeb : null,
+      ].filter(Boolean).join(' ')}>
         <div
           data-expo-log-backdrop="true"
-          className={`${styles.bg} ${closing ? styles.bgExit : ''}`}
+          className={platform === undefined ? `${styles.bg} ${closing ? styles.bgExit : ''}` : undefined}
           onClick={() => {
             if (isDismissable) {
               onMinimize();
@@ -109,7 +116,7 @@ export function LogBoxContent({
   log,
   selectedLogIndex,
   logs,
-  isDismissable
+  isDismissable,
 }: {
   log: LogBoxLog;
   selectedLogIndex: number;

@@ -243,12 +243,14 @@ export class LogBoxLog {
 }
 
 export const LogContext = React.createContext<{
+  platform?: string;
   selectedLogIndex: number;
   isDisabled: boolean;
   logs: LogBoxLog[];
 } | null>(null);
 
 export function useLogs(): {
+  platform?: string;
   selectedLogIndex: number;
   isDisabled: boolean;
   logs: LogBoxLog[];

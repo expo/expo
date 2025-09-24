@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, DevSettings } from 'react-native';
 
 import LogBoxPolyfillDOM from './logbox-polyfill-dom';
 
@@ -13,20 +13,15 @@ import RCTModalHostView from 'react-native/Libraries/Modal/RCTModalHostViewNativ
 
 function LogBoxRNPolyfill(
   props: {
-  onDismiss: (index: number) => void;
-  onMinimize: () => void;
-  onChangeSelectedIndex: (index: number) => void;
-  logs: any[];
-  selectedIndex: number;
-}
+    onDismiss: (index: number) => void;
+    onMinimize: () => void;
+    onChangeSelectedIndex: (index: number) => void;
+    logs: any[];
+    selectedIndex: number;
+  }
 ) {
   const logs = React.useMemo(() => {
     return props.logs.map((log) => {
-      // console.log('LOG:', Object.keys(log));
-
-      //   LOG  LOG: ["symbolicated", "symbolicatedComponentStack", "level", "type", "message", "stack", "category", "componentStack", "componentStackType", "codeFrame", "isComponentError", "extraData", "count", "onNotificationPress"]
-
-      //  TODO: Serialize
       return {
         symbolicated: log.symbolicated,
         symbolicatedComponentStack: log.symbolicatedComponentStack,
@@ -47,7 +42,6 @@ function LogBoxRNPolyfill(
   }, [props.logs]);
 
   const [open, setOpen] = React.useState(true);
-  // console.log('LogBoxRNPolyfill.logs', JSON.stringify(logs));
   return (
     <RCTModalHostView
       animationType="slide"
@@ -63,10 +57,10 @@ function LogBoxRNPolyfill(
       }}
       >
         <View
-        style={{
-          top: 0,
-          flex: 1,
-        }}
+          style={{
+            top: 0,
+            flex: 1,
+          }}
           collapsable={false}
         >
           <View
@@ -95,23 +89,6 @@ function LogBoxRNPolyfill(
                   flex: 1,
                 },
                 suppressMenuItems: ['underline', 'lookup', 'translate'],
-                // menuItems: [
-                //   {
-                //     label: 'Copy',
-                //     key: 'copy',
-                //   },
-                //   {
-                //     label: '𝝠 Expo',
-                //     key: 'expo',
-                //   },
-                //   {
-                //     label: 'Share',
-                //     key: 'share',
-                //   },
-                // ],
-                // onCustomMenuSelection(event) {
-
-                // },
                 bounces: true,
               }}
               fetchJsonAsync={async (input: RequestInfo, init?: RequestInit) => {
@@ -125,6 +102,9 @@ function LogBoxRNPolyfill(
                   // console.log('fetchJsonAsync.error', e);
                   throw e;
                 }
+              }}
+              reloadRuntime={() => {
+                DevSettings.reload();
               }}
               onCopyText={(text: string) => {
                 require('react-native').Clipboard.setString(text);
@@ -172,8 +152,7 @@ function _LogBoxInspectorContainer({
     LogBoxData.setSelectedLog(-1);
   };
 
-  // @ts-ignore
-  const _handleSetSelectedLog = (index) => {
+  const _handleSetSelectedLog = (index: number) => {
     console.log('LogBoxInspectorContainer._handleSetSelectedLog');
 
     LogBoxData.setSelectedLog(index);
