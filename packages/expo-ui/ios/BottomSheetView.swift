@@ -31,7 +31,6 @@ final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var presentationDetents: [Any]?
   @Field var presentationDragIndicator: PresentationDragIndicatorVisibility = .automatic
   var onIsOpenedChange = EventDispatcher()
-  var onDismiss = EventDispatcher()
   @Field var interactiveDismissDisabled: Bool = false
 }
 
@@ -113,12 +112,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
               }
             }
         }
-        .sheet(
-          isPresented: $isOpened,
-          onDismiss: {
-            props.onDismiss()
-          },
-          content: {
+        .sheet(isPresented: $isOpened) {
           Children()
             .if(!hasHostingChildren) {
               $0
@@ -132,8 +126,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
             .presentationDetents(getDetents())
             .interactiveDismissDisabled(props.interactiveDismissDisabled)
             .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
-          }
-        )
+        }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
@@ -151,16 +144,10 @@ struct BottomSheetView: ExpoSwiftUI.View {
         }
     } else {
       Rectangle().hidden()
-        .sheet(
-          isPresented: $isOpened,
-          onDismiss: {
-            props.onDismiss()
-          },
-          content: {
+        .sheet(isPresented: $isOpened) {
           Children()
             .interactiveDismissDisabled(props.interactiveDismissDisabled)
-          }
-        )
+        }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {

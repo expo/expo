@@ -10,10 +10,6 @@ export default function BottomSheetScreen() {
     React.useState<boolean>(false);
   const [hideDragIndicator, setHideDragIndicator] = React.useState<boolean>(false);
 
-  const handleDismiss = () => {
-    console.log('BottomSheet was dismissed');
-  };
-
   return (
     <ScrollView>
       <Host matchContents>
@@ -39,7 +35,6 @@ export default function BottomSheetScreen() {
           onIsOpenedChange={setIsOpened}
           interactiveDismissDisabled={interactiveDismissDisabled}
           presentationDetents={['medium', 'large', 0.2]}
-          onDismiss={handleDismiss}
           presentationDragIndicator={hideDragIndicator ? 'hidden' : 'automatic'}>
           <HStack modifiers={[frame({ height: 100 })]}>
             <Button onPress={() => setIsOpened(false)}>Close BottomSheet</Button>
