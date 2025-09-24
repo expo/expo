@@ -22,7 +22,7 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
         ...additionalProjectProps,
       },
       {
-        resolutions: Promise.reject(new ExpoExportMissingError('Test message')),
+        devDependenciesResolutions: Promise.reject(new ExpoExportMissingError('Test message')),
       }
     );
 
@@ -53,7 +53,7 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
         ...additionalProjectProps,
       },
       {
-        resolutions: Promise.resolve(
+        devDependenciesResolutions: Promise.resolve(
           new Map([
             [
               'react-native-reanimated',
@@ -100,7 +100,7 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
         ...additionalProjectProps,
       },
       {
-        resolutions: Promise.resolve(
+        devDependenciesResolutions: Promise.resolve(
           new Map([
             [
               'react-native-reanimated',
@@ -139,7 +139,7 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
         ...additionalProjectProps,
       },
       {
-        resolutions: Promise.resolve(
+        devDependenciesResolutions: Promise.resolve(
           new Map([
             [
               'react-native-reanimated',

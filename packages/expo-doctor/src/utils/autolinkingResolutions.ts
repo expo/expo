@@ -87,3 +87,50 @@ export const scanNativeModuleResolutions = (
 
   return cache.resolutions || (cache.resolutions = _task());
 };
+
+export interface DevDependenciesResolutionCache extends VersionedNativeModuleNamesCache {
+  devDependenciesResolutions?: Promise<Map<string, DependencyResolution>>;
+}
+
+export const scanNativeModuleDevDependencies = (
+  cache: DevDependenciesResolutionCache,
+  params: {
+    projectRoot: string;
+    sdkVersion: string | undefined;
+  }
+): Promise<Map<string, DependencyResolution>> => {
+  const _task = async () => {
+    const resolutions = new Map<string, DependencyResolution>();
+    const autolinking = importAutolinkingExportsFromProject(params.projectRoot);
+
+    // NOTE(@kitten): Previous versions of expo-modules-autolinking can't resolve native modules based on manual resolutions
+    // `resolveDependencyResolutionsForPlatform` is a later addition
+    if (!autolinking.resolveDependencyResolutionsForPlatform) {
+      return resolutions;
+    }
+
+    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(cache, params);
+    const linker = autolinking.makeCachedDependenciesLinker({ projectRoot: params.projectRoot });
+    const dependenciesPerPlatform = await Promise.all(
+      AUTOLINKING_PLATFORMS.map(async (platform) => {
+        return await autolinking.resolveDependencyResolutionsForPlatform(
+          linker,
+          [await linker.scanDevDependenciesShallowly()],
+          platform,
+          bundledNativeModules ?? undefined
+        );
+      })
+    );
+    for (const dependencyForPlatform of dependenciesPerPlatform) {
+      for (const dependencyName in dependencyForPlatform) {
+        const dependency = dependencyForPlatform[dependencyName];
+        if (dependency) {
+          resolutions.set(dependencyName, dependency);
+        }
+      }
+    }
+    return resolutions;
+  };
+
+  return cache.devDependenciesResolutions || (cache.devDependenciesResolutions = _task());
+};

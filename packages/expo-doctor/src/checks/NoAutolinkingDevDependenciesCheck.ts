@@ -1,11 +1,11 @@
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import {
   ExpoExportMissingError,
-  AutolinkingResolutionsCache,
-  scanNativeModuleResolutions,
+  DevDependenciesResolutionCache,
+  scanNativeModuleDevDependencies,
 } from '../utils/autolinkingResolutions';
 
-type DoctorCache = AutolinkingResolutionsCache;
+type DoctorCache = DevDependenciesResolutionCache;
 
 export class NoAutolinkingDevDependenciesCheck implements DoctorCheck<DoctorCache> {
   description = 'Check that no autolinking modules are devDependencies';
@@ -19,7 +19,7 @@ export class NoAutolinkingDevDependenciesCheck implements DoctorCheck<DoctorCach
     const autolinkingModules = new Set<string>();
 
     try {
-      const resolutions = await scanNativeModuleResolutions(cache, {
+      const resolutions = await scanNativeModuleDevDependencies(cache, {
         projectRoot,
         sdkVersion: exp.sdkVersion!,
       });
