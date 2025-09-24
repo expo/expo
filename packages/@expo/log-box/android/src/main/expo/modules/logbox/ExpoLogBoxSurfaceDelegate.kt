@@ -64,6 +64,7 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
 
             bottomSheet?.let {
                 val behavior = BottomSheetBehavior.from(it)
+                behavior.isDraggable = false
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 behavior.skipCollapsed = true
 
