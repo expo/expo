@@ -68,15 +68,15 @@ struct BottomSheetView: ExpoSwiftUI.View {
     self.props = props
     self._isOpened = State(initialValue: props.isOpened)
   }
-  
+
   @available(iOS 16.0, *)
   private func getDetents() -> Set<PresentationDetent> {
     guard let detentArray = props.presentationDetents, !detentArray.isEmpty else {
       return [.height(self.height)]
     }
-    
+
     var result: Set<PresentationDetent> = []
-    
+
     for detent in detentArray {
       if let str = detent as? String {
         switch str {
@@ -91,7 +91,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
         result.insert(.fraction(CGFloat(value)))
       }
     }
-    
+
     return result.isEmpty ? [.height(self.height)] : result
   }
 
@@ -113,9 +113,12 @@ struct BottomSheetView: ExpoSwiftUI.View {
               }
             }
         }
-        .sheet(isPresented: $isOpened, onDismiss: {
-          props.onDismiss()
-        }) {
+        .sheet(
+          isPresented: $isOpened,
+          onDismiss: {
+            props.onDismiss()
+          },
+          content: {
           Children()
             .if(!hasHostingChildren) {
               $0
@@ -129,7 +132,8 @@ struct BottomSheetView: ExpoSwiftUI.View {
             .presentationDetents(getDetents())
             .interactiveDismissDisabled(props.interactiveDismissDisabled)
             .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
-        }
+          }
+        )
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
@@ -147,12 +151,16 @@ struct BottomSheetView: ExpoSwiftUI.View {
         }
     } else {
       Rectangle().hidden()
-        .sheet(isPresented: $isOpened, onDismiss: {
-          props.onDismiss()
-        }) {
+        .sheet(
+          isPresented: $isOpened,
+          onDismiss: {
+            props.onDismiss()
+          },
+          content: {
           Children()
             .interactiveDismissDisabled(props.interactiveDismissDisabled)
-        }
+          }
+        )
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
           if props.isOpened == newIsOpened {
