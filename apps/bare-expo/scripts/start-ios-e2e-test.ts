@@ -139,8 +139,8 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60
   await retryAsync(async (retryNumber) => {
     if (process.env.CI) {
       try {
-        await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId]);
-        await spawnAsync('xcrun', ['simctl', 'erase', deviceId]);
+        await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
+        await spawnAsync('xcrun', ['simctl', 'erase', deviceId], { stdio: 'inherit' });
       } catch {}
     }
 
@@ -151,12 +151,20 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 1000 * 60
       stdio: 'inherit',
     });
 
-    const timeoutHandle = setTimeout(() => {
-      bootProc.child?.kill('SIGTERM');
-      throw new Error('Timeout from booting simulator');
-    }, timeout);
+    let timeoutHandle: NodeJS.Timeout | null = null;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutHandle = setTimeout(() => {
+        bootProc.child?.kill('SIGTERM');
+        reject(new Error('Timeout from booting up simulator'));
+      }, timeout);
+    });
 
-    await bootProc;
+    await Promise.race([bootProc, timeoutPromise]);
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+      timeoutHandle = null;
+    }
+
     await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
       stdio: 'inherit',
     });
@@ -218,6 +226,9 @@ async function testAsync(
       console.log('\n\n');
       throw new Error('e2e tests have failed.');
     }
+  } catch (e: unknown) {
+    console.error('Uncaught Error', e);
+    throw e;
   } finally {
     stopLogCollectionController.abort();
     await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
