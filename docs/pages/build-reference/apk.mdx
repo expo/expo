@@ -1,4 +1,25 @@
----
+---{
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
+    },
+    "production": {}
+  }
+}
+
 title: Build APKs for Android Emulators and devices
 description: Learn how to configure and install a .apk for Android Emulators and devices when using EAS Build.
 ---
