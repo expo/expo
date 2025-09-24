@@ -119,15 +119,10 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
         commandLine "./expotools", "android-generate-dynamic-macros", "--configuration", configuration
       }
     }
-    target.tasks.matching { it.name.startsWith('pre') && it.name.endsWith('Build') }.all {
-      it.dependsOn("generateDynamicMacros")
-    }
 
-    // target.plugins.withId("com.android.application") {
-    //   target.tasks.named("preBuild").configure {
-    //     dependsOn("generateDynamicMacros")
-    //   }
-    // }
+    target.tasks.named("preBuild").configure {
+      dependsOn("generateDynamicMacros")
+    }
   }
 }
 
