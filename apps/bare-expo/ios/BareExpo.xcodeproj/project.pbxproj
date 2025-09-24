@@ -45,6 +45,10 @@
 		F11748332CFB461C0044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A5FAB6AC4D254E6886C74D8C /* ../native-component-list/src/screens/LocalModules/localModulesExamples */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); name = "../native-component-list/src/screens/LocalModules/localModulesExamples"; path = "../../native-component-list/src/screens/LocalModules/localModulesExamples"; sourceTree = SOURCE_ROOT; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		00E356EB1AD99517003FC87E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -115,6 +119,7 @@
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
 				AC3B6E5EB4FE4A6AACD31066 /* Resources */,
+				A5FAB6AC4D254E6886C74D8C /* ../native-component-list/src/screens/LocalModules/localModulesExamples */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -217,6 +222,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A5FAB6AC4D254E6886C74D8C /* ../native-component-list/src/screens/LocalModules/localModulesExamples */,
 			);
 			name = BareExpo;
 			productName = BareExpo;
