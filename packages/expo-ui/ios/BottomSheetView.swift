@@ -28,6 +28,7 @@ final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var modifiers: ModifierArray?
 
   @Field var isOpened: Bool = false
+  // Accepts `medium`, `large`, and `fraction` like 0.4
   @Field var presentationDetents: [Any]?
   @Field var presentationDragIndicator: PresentationDragIndicatorVisibility = .automatic
   var onIsOpenedChange = EventDispatcher()
