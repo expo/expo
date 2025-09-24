@@ -4,8 +4,8 @@
  */
 import { ColorValue } from 'react-native';
 import { animation } from './animation/index';
-import { createModifier, ModifierConfig } from './createModifier';
 import { containerShape } from './containerShape';
+import { createModifier, ModifierConfig } from './createModifier';
 type NamedColor = 'primary' | 'secondary' | 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'white' | 'gray' | 'black' | 'clear' | 'mint' | 'teal' | 'cyan' | 'indigo' | 'brown';
 type Color = string | ColorValue | NamedColor;
 /**
