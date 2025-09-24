@@ -74,7 +74,7 @@ target_compile_options(CommonSettings INTERFACE
 if(${UNIT_TEST})
   if(${USE_HERMES})
     find_package(hermes-engine REQUIRED CONFIG)
-    set(JSEXECUTOR_LIB hermes-engine::libhermes)
+    set(JSEXECUTOR_LIB hermes-engine::hermesvm)
   else()
     set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()

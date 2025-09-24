@@ -64,7 +64,7 @@ android {
         "**/libjscexecutor.so",
         "**/libfbjni.so",
         "**/libfolly_json.so",
-        "**/libhermes.so",
+        "**/libhermesvm.so",
         "**/libjsi.so",
     ]
   }
