@@ -143,8 +143,6 @@ export function MarkdownActionsDropdown() {
   );
 
   return (
-    <Dropdown.Dropdown trigger={<div>{dropdownTrigger}</div>} sideOffset={8}>
-      {dropdownItems}
-    </Dropdown.Dropdown>
+    <Dropdown.Dropdown trigger={<div>{dropdownTrigger}</div>}>{dropdownItems}</Dropdown.Dropdown>
   );
 }
