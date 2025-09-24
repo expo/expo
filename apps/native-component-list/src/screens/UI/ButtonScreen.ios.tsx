@@ -95,6 +95,7 @@ export default function ButtonScreen() {
         </Section>
         <Section title="interpolated strings">
           <Button style={styles.button} color="#FF6347">
+            {/* eslint-disable-next-line */}
             Hello {'world'}
           </Button>
         </Section>
