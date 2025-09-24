@@ -44,6 +44,12 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
 
   external fun getPropertyNames(): Array<String>
 
+  external fun isArray(): Boolean
+  external fun getArray(): Array<JavaScriptValue>
+
+  external fun isArrayBuffer(): Boolean
+  external fun getArrayBuffer(): JavaScriptArrayBuffer
+
   external fun createWeak(): JavaScriptWeakObject
 
   private external fun setBoolProperty(name: String, value: Boolean)

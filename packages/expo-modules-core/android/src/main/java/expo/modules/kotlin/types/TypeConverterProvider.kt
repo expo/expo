@@ -12,6 +12,7 @@ import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
@@ -233,6 +234,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ),
       JavaScriptObject::class to createTrivialTypeConverter(
         ExpectedType(CppType.JS_OBJECT)
+      ),
+      JavaScriptArrayBuffer::class to createTrivialTypeConverter(
+        ExpectedType(CppType.JS_ARRAY_BUFFER)
       ),
 
       Int8Array::class to Int8ArrayTypeConverter(),
