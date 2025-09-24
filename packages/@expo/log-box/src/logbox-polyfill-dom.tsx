@@ -113,8 +113,24 @@ export default function LogBoxPolyfillDOM({
         }
       ) ?? []),
       ...((props.nativeLogs?.map((message) => {
+        let originalMessage = message;
+        if (platform === 'android') {
+          try {
+              const bodyIndex = originalMessage.indexOf("Body:");
+              if (bodyIndex !== -1) {
+                const originalJson = originalMessage.slice(bodyIndex + 5);
+                if (originalJson) {
+                  const originalErrorResponseBody = JSON.parse(originalJson);
+                  originalMessage = originalErrorResponseBody.message;
+                }
+              }
+          } catch (e) {
+            // Ignore JSON parse errors
+          }
+        }
+
         const log = new LogBoxLog(parseLogBoxException({
-          originalMessage: message,
+          originalMessage,
           stack: [],
         }));
         log.componentStack = [];
