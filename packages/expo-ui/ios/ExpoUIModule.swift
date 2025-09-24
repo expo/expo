@@ -60,5 +60,6 @@ public final class ExpoUIModule: Module {
     View(UnevenRoundedRectangleView.self)
     View(CapsuleView.self)
     View(CircleView.self)
+    View(ConcentricRectangleView.self)
   }
 }
