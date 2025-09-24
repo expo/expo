@@ -24,16 +24,30 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
-  s.script_phases = [
-    {
-      :name => 'Embed MyPod conditional resources',
-      # NOTE(@krystofwoldrich): We might want to add a flag to always include the ExpoLogBox.bundle to cover unusual configurations.
-      :script => %Q{
-        if [ "${CONFIGURATION}" = "Debug" ]; then
-          rsync -a "#{__dir__}/dist/ExpoLogBox.bundle/" \\
-            "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/"
-        fi
-      },
-    }
-  ]
+  script_phase = {
+    :name => 'Prepare ExpoLogBox Resources',
+    # NOTE(@krystofwoldrich): We might want to add a flag to always include the ExpoLogBox.bundle to cover unusual configurations.
+    :script => %Q{
+      echo "Preparing ExpoLogBox.bundle..."
+      source="#{__dir__}/dist/ExpoLogBox.bundle/"
+      dest="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLogBox.bundle/"
+      if [ "${CONFIGURATION}" = "Debug" ]; then
+        echo "Copying ${source} to ${dest}"
+        mkdir -p "${dest}"
+        rsync -a "${source}" "${dest}"
+      fi
+    },
+    :execution_position => :before_compile,
+    :input_files  => ["#{__dir__}/dist/ExpoLogBox.bundle"],
+    # :output_files => ["${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLogBox.bundle"],
+  }
+  # :always_out_of_date is only available in CocoaPods 1.13.0 and later
+  if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
+    # always run the script without warning
+    script_phase[:always_out_of_date] = "1"
+  end
+  s.script_phase = script_phase
+  s.resource_bundles = {
+    'ExpoLogBox' => [],
+  }
 end
