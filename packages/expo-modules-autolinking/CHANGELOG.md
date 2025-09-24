@@ -14,6 +14,7 @@
 
 - [iOS] Added support for passing pod targets that should be statically linked and not built as frameworks. ([#39742](https://github.com/expo/expo/pull/39742) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+- Include `devDependencies` in autolinking results shallowly to avoid unexpected behaviour. ([#39946](https://github.com/expo/expo/pull/39946) by [@kitten](https://github.com/kitten))
 
 ## 3.0.11 — 2025-09-16
 
