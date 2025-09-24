@@ -10,6 +10,7 @@ import { LogBoxLog } from './Data/LogBoxLog';
 
 // @ts-ignore
 import RCTModalHostView from 'react-native/Libraries/Modal/RCTModalHostViewNativeComponent';
+import { isRunningInExpoGo } from 'expo';
 
 function LogBoxRNPolyfill(
   props: {
@@ -42,6 +43,8 @@ function LogBoxRNPolyfill(
   }, [props.logs]);
 
   const [open, setOpen] = React.useState(true);
+  const bundledLogBoxUrl = getBundledLogBoxURL();
+
   return (
     <RCTModalHostView
       animationType="slide"
@@ -67,15 +70,13 @@ function LogBoxRNPolyfill(
             style={[
               StyleSheet.absoluteFill,
               {
-                // backgroundColor: 'black',
-                backgroundColor: 'rgba(255,0,0, 0)',
                 pointerEvents: 'box-none',
               },
             ]}>
             <LogBoxPolyfillDOM
               platform={process.env.EXPO_OS}
               dom={{
-                // sourceOverride: { uri: 'https://expo.dev' },
+                sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
                 contentInsetAdjustmentBehavior: 'never',
                 containerStyle: {
                   pointerEvents: 'box-none',
@@ -93,13 +94,10 @@ function LogBoxRNPolyfill(
               }}
               fetchJsonAsync={async (input: RequestInfo, init?: RequestInit) => {
                 try {
-                  // console.log('fetchJsonAsync', input, init);
                   const res = await fetch(input, init);
                   const json = await res.json();
-                  // console.log('fetchJsonAsync.res', json);
                   return json;
                 } catch (e) {
-                  // console.log('fetchJsonAsync.error', e);
                   throw e;
                 }
               }}
@@ -171,6 +169,34 @@ function _LogBoxInspectorContainer({
       selectedIndex={selectedLogIndex}
     />
   );
+}
+
+let cachedBundledLogBoxUrl: string | null | undefined = undefined;
+/**
+ * Get the base URL for the Expo LogBox Prebuilt DOM Component HTML
+ */
+export function getBundledLogBoxURL(): string | null {
+  if (cachedBundledLogBoxUrl !== undefined) {
+    return cachedBundledLogBoxUrl;
+  }
+
+  if (isRunningInExpoGo()) {
+    // TODO: This will require a new version of Expo Go with the prebuilt Expo LogBox DOM Components
+    cachedBundledLogBoxUrl = null;
+    return null;
+  }
+
+  // Serving prebuilt from application bundle
+  if (process.env.EXPO_OS === 'android') {
+    cachedBundledLogBoxUrl = 'file:///android_asset/ExpoLogBox.bundle/index.html';
+  } else if (process.env.EXPO_OS === 'ios') {
+    cachedBundledLogBoxUrl = 'ExpoLogBox.bundle/index.html';
+  } else {
+    // Other platforms do not support the bundled LogBox DOM Component
+    cachedBundledLogBoxUrl = null;
+  }
+
+  return cachedBundledLogBoxUrl;
 }
 
 export default LogBoxData.withSubscription(_LogBoxInspectorContainer);
