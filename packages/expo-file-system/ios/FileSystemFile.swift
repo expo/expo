@@ -80,6 +80,12 @@ internal final class FileSystemFile: FileSystemPath {
       try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
     }
   }
+  
+  func write(_ data: Data) throws {
+    try withCorrectTypeAndScopedAccess(permission: .write) {
+      try data.write(to: url)
+    }
+  }
 
   // TODO: blob support
   func write(_ content: TypedArray) throws {
