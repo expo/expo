@@ -36,5 +36,6 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   JS_FUNCTION(JavaScriptFunction::class),
   ANY(Any::class),
   NULLABLE(Any::class),
-  VALUE_OR_UNDEFINED(ValueOrUndefined::class)
+  VALUE_OR_UNDEFINED(ValueOrUndefined::class),
+  JS_ARRAY_BUFFER(JavaScriptArrayBuffer::class)
 }
