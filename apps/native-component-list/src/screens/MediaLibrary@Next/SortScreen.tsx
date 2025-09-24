@@ -1,3 +1,5 @@
+import { Image } from 'expo-image';
+import { MediaType, requestPermissionsAsync, Query, AssetField } from 'expo-media-library/next';
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -8,8 +10,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { Image } from 'expo-image';
-import { MediaType, requestPermissionsAsync, Query, AssetField } from 'expo-media-library/next';
 
 const numColumns = 3;
 const screenWidth = Dimensions.get('window').width;
