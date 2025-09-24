@@ -7,5 +7,9 @@ interface ResolutionOptions {
     limitDepth?: number;
 }
 export declare function scanDependenciesRecursively(rawPath: string, { shouldIncludeDependency, limitDepth }?: ResolutionOptions): Promise<ResolutionResult>;
-export declare function scanDevDependenciesShallowly(rawPath: string, { shouldIncludeDependency }?: ResolutionOptions): Promise<ResolutionResult>;
+interface DevDependenciesResolutionOptions extends ResolutionOptions {
+    shouldIncludeDependency?(name: string): boolean;
+    shouldSkipDuplicates?: boolean;
+}
+export declare function scanDevDependenciesShallowly(rawPath: string, { shouldIncludeDependency, shouldSkipDuplicates, }?: DevDependenciesResolutionOptions): Promise<ResolutionResult>;
 export {};

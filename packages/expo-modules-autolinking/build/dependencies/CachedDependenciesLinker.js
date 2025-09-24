@@ -47,7 +47,10 @@ function makeCachedDependenciesLinker(params) {
                 (recursiveDependencies = (0, resolution_1.scanDependenciesRecursively)(await getAppRoot())));
         },
         async scanDevDependenciesShallowly() {
-            return (devDependencies || (devDependencies = (0, resolution_1.scanDevDependenciesShallowly)(await getAppRoot())));
+            return (devDependencies ||
+                (devDependencies = (0, resolution_1.scanDevDependenciesShallowly)(await getAppRoot(), {
+                    shouldSkipDuplicates: true,
+                })));
         },
         async scanDependenciesInSearchPath(searchPath) {
             let result = dependenciesResultBySearchPath.get(searchPath);
@@ -67,6 +70,7 @@ async function scanDependencyResolutionsForPlatform(linker, platform, include) {
         ...searchPaths.map((searchPath) => {
             return linker.scanDependenciesInSearchPath(searchPath);
         }),
+        linker.scanDevDependenciesShallowly(),
         linker.scanDependenciesRecursively(),
     ]));
     const dependencies = await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
@@ -103,7 +107,7 @@ async function scanExpoModuleResolutionsForPlatform(linker, platform) {
         ...searchPaths.map((searchPath) => {
             return linker.scanDependenciesInSearchPath(searchPath);
         }),
-        platform === 'devtools' ? linker.scanDevDependenciesShallowly() : null,
+        linker.scanDevDependenciesShallowly(),
         linker.scanDependenciesRecursively(),
     ].filter((x) => x != null)));
     return await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {

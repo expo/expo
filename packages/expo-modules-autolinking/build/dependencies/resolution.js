@@ -153,7 +153,7 @@ const isOptionalPeerDependencyMeta = (peerDependenciesMeta, packageName) => {
         'optional' in peerDependenciesMeta[packageName] &&
         !!peerDependenciesMeta[packageName].optional);
 };
-async function scanDevDependenciesShallowly(rawPath, { shouldIncludeDependency = utils_1.defaultShouldIncludeDependency } = {}) {
+async function scanDevDependenciesShallowly(rawPath, { shouldIncludeDependency = utils_1.defaultShouldIncludeDependency, shouldSkipDuplicates = false, } = {}) {
     const rootPath = await (0, utils_1.maybeRealpath)(rawPath);
     if (!rootPath) {
         return {};
@@ -165,11 +165,17 @@ async function scanDevDependenciesShallowly(rawPath, { shouldIncludeDependency =
     if (!packageJson) {
         return searchResults;
     }
+    const dependencies = packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
+        ? packageJson.dependencies
+        : {};
     const devDependencies = packageJson.devDependencies != null && typeof packageJson.devDependencies === 'object'
         ? packageJson.devDependencies
         : {};
     for (const dependencyName in devDependencies) {
-        if (!shouldIncludeDependency(dependencyName)) {
+        if (shouldSkipDuplicates && dependencies[dependencyName] != null) {
+            continue;
+        }
+        else if (!shouldIncludeDependency(dependencyName)) {
             continue;
         }
         for (let idx = 0; idx < nodeModulePaths.length; idx++) {
