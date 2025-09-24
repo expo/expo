@@ -38,7 +38,8 @@ declare module 'xcode' {
     | 'PBXVariantGroup'
     | 'PBXTargetDependency'
     | 'XCBuildConfiguration'
-    | 'XCConfigurationList';
+    | 'XCConfigurationList'
+    | 'PBXFileSystemSynchronizedRootGroup';
 
   type PBXFile = pbxFile;
 
@@ -154,6 +155,15 @@ declare module 'xcode' {
       TVOS_DEPLOYMENT_TARGET?: string;
     };
     name: string;
+  }
+
+  interface PBXFileSystemSynchronizedRootGroup {
+    isa: 'PBXFileSystemSynchronizedRootGroup';
+    explicitFileTypes: any;
+    explicitFolders: UUID[];
+    name: string;
+    path: string;
+    sourceTree: string;
   }
 
   type ProductType =
@@ -417,9 +427,7 @@ declare module 'xcode' {
      */
     findPBXGroupKey(criteria: { name?: string; path?: string }): UUID | undefined;
     findPBXVariantGroupKey(criteria: unknown): string;
-    addLocalizationVariantGroup(
-      name: unknown
-    ): {
+    addLocalizationVariantGroup(name: unknown): {
       uuid: unknown;
       fileRef: unknown;
       basename: unknown;

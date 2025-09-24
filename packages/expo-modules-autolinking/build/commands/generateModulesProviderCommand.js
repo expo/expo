@@ -7,12 +7,12 @@ const generatePackageList_1 = require("../autolinking/generatePackageList");
 const resolveModules_1 = require("../autolinking/resolveModules");
 /** Generates a source file listing all packages to link in the runtime */
 function generateModulesProviderCommand(cli) {
-    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('generate-modules-provider [searchPaths...]'))
+    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('generate-modules-provider <watchedDirsSerialized> [searchPaths...]'))
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
         .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.')
         .option('--app-root <path>', 'Path to the app root directory.')
-        .action(async (searchPaths, commandArguments) => {
+        .action(async (watchedDirsSerialized, searchPaths, commandArguments) => {
         const platform = commandArguments.platform ?? 'apple';
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)({
             ...commandArguments,
@@ -26,11 +26,12 @@ function generateModulesProviderCommand(cli) {
         const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
         const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) => includeModules.has(module.packageName));
+        const watchedDirs = JSON.parse(watchedDirsSerialized);
         await (0, generatePackageList_1.generateModulesProviderAsync)(filteredModules, {
             platform,
             targetPath: commandArguments.target,
             entitlementPath: commandArguments.entitlement ?? null,
-        });
+        }, watchedDirs);
     });
 }
 //# sourceMappingURL=generateModulesProviderCommand.js.map
