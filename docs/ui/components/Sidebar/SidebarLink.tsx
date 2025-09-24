@@ -108,10 +108,10 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isBeta && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-orange10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
+            '-mt-px ml-2 inline-flex h-[17px] items-center rounded-full border border-palette-purple10 px-[5px] text-[10px] font-semibold leading-none text-palette-white',
             isSelected
-              ? 'bg-palette-orange10 text-palette-white dark:text-palette-black'
-              : 'border-palette-orange10 bg-none text-palette-orange11 dark:border-palette-orange9 dark:text-palette-orange10'
+              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
+              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
           )}>
           BETA
         </div>

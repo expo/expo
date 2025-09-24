@@ -771,7 +771,7 @@ function makePage(file) {
     name: data.sidebar_title ?? data.title,
     // TODO(cedric): refactor href into url
     href: url,
-    isIndex,
+    isIndex, // If the page is index from a directory, it will be listed at first
     isNew: data.isNew ?? undefined,
     isAlpha: data.isAlpha ?? undefined,
     isBeta: data.isBeta ?? undefined,
