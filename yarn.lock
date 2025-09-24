@@ -3511,10 +3511,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.3.2.tgz#7064533a573e3539ec912f59c1f457371bf49dd9"
   integrity sha512-XwuQoW7/GEgWRMovOQtX3A4PrXhyaZm0lVUiY8qJDvdngjLms9Cpdck6SmGAUNqQwcj2EadHC1HwL0bEyoa/SQ==
 
-"@react-native-picker/picker@2.11.1":
-  version "2.11.1"
-  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.11.1.tgz#d8884440abc5f75579d82f9888e50ca047c9ec14"
-  integrity sha512-ThklnkK4fV3yynnIIRBkxxjxR4IFbdMNJVF6tlLdOJ/zEFUEFUEdXY0KmH0iYzMwY8W4/InWsLiA7AkpAbnexA==
+"@react-native-picker/picker@2.11.2":
+  version "2.11.2"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.11.2.tgz#f71a769ed6c55e9122c41547d09fd97d6d9bbdfd"
+  integrity sha512-2zyFdW4jgHjF+NeuDZ4nl3hJ+8suey69bI3yljqhNyowfklW2NwNrdDUaJ2iwtPCpk2pt7834aPF8TI6iyZRhA==
 
 "@react-native-segmented-control/segmented-control@2.5.7":
   version "2.5.7"

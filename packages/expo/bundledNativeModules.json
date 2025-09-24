@@ -9,7 +9,7 @@
   "@react-native-community/netinfo": "11.4.1",
   "@react-native-community/slider": "5.0.1",
   "@react-native-community/viewpager": "5.0.11",
-  "@react-native-picker/picker": "2.11.1",
+  "@react-native-picker/picker": "2.11.2",
   "@react-native-segmented-control/segmented-control": "2.5.7",
   "@stripe/stripe-react-native": "0.50.3",
   "eslint-config-expo": "~10.0.0",
