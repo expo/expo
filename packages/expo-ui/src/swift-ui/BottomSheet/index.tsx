@@ -5,6 +5,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type PresentationDetent = 'medium' | 'large' | number;
+export type PresentationDragIndicatorVisibility = 'automatic' | 'visible' | 'hidden';
 
 export type BottomSheetProps = {
   /**
@@ -35,6 +36,13 @@ export type BottomSheetProps = {
    * - number (0-1): Fraction of screen height (e.g. 0.4 = 40% of screen)
    */
   presentationDetents?: PresentationDetent[];
+  /**
+   * Controls the visibility of the drag indicator for the `BottomSheet`.
+   * - 'automatic': System decides based on context (default)
+   * - 'visible': Always show the drag indicator
+   * - 'hidden': Never show the drag indicator
+   */
+  presentationDragIndicator?: PresentationDragIndicatorVisibility;
 } & CommonViewModifierProps;
 
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {

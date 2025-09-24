@@ -3,6 +3,23 @@
 import SwiftUI
 import ExpoModulesCore
 
+enum PresentationDragIndicatorVisibility: String, Enumerable {
+  case automatic
+  case visible
+  case hidden
+
+  func toPresentationDragIndicator() -> Visibility {
+    switch self {
+    case .visible:
+      return .visible
+    case .hidden:
+      return .hidden
+    default:
+      return .automatic
+    }
+  }
+}
+
 final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
@@ -12,6 +29,7 @@ final class BottomSheetProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
 
   @Field var isOpened: Bool = false
   @Field var presentationDetents: [Any]?
+  @Field var presentationDragIndicator: PresentationDragIndicatorVisibility = .automatic
   var onIsOpenedChange = EventDispatcher()
   var onDismiss = EventDispatcher()
   @Field var interactiveDismissDisabled: Bool = false
@@ -110,6 +128,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
             }
             .presentationDetents(getDetents())
             .interactiveDismissDisabled(props.interactiveDismissDisabled)
+            .presentationDragIndicator(props.presentationDragIndicator.toPresentationDragIndicator())
         }
         .modifier(CommonViewModifiers(props: props))
         .onChange(of: isOpened, perform: { newIsOpened in
