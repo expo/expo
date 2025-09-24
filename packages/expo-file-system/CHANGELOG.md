@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add write options for base64 encoded bytes.
 - add `idempotent` option to `downloadFileAsync` ([#39681](https://github.com/expo/expo/pull/39681) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
