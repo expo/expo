@@ -117,3 +117,5 @@ export function Circle(props: CircleProps) {
     />
   );
 }
+
+export * from './ConcentricRectangle';
