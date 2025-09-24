@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add support for experimental node:sqlite in API routes. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- fix launching apps on Android emulators where `hw.keyboard = no` ([#34677](https://github.com/expo/expo/pull/34677) by [@DimitarNestorov](https://github.com/DimitarNestorov))
 
 ### 💡 Others
 
