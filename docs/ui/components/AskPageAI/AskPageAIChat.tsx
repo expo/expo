@@ -5,7 +5,16 @@ import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useChat } from '@kapaai/react-sdk';
-import { Children, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Children,
+  type FormEvent,
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -13,12 +22,13 @@ import { FOOTNOTE, RawH5 } from '../Text';
 
 type AskPageAIChatProps = {
   onClose: () => void;
+  onMinimize?: () => void;
   pageTitle?: string;
 };
 
 type ConversationKey = string | null;
 
-export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
+export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatProps) {
   const {
     conversation,
     submitQuery,
@@ -82,6 +92,16 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
     onClose();
   };
 
+  const handleNavigation = useCallback(
+    (event?: MouseEvent<HTMLAnchorElement>) => {
+      if (event?.defaultPrevented) {
+        return;
+      }
+      onMinimize?.();
+    },
+    [onMinimize]
+  );
+
   const markdownComponents = useMemo(() => {
     return {
       code({
@@ -126,8 +146,25 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
 
         return <MarkdownCodeBlock code={clean} />;
       },
+      a({ children, href, ...rest }) {
+        return (
+          <a
+            {...rest}
+            href={href ?? '#'}
+            className={mergeClasses('text-link', rest.className)}
+            onClick={event => {
+              rest.onClick?.(event);
+              if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.button !== 0) {
+                return;
+              }
+              handleNavigation(event);
+            }}>
+            {children}
+          </a>
+        );
+      },
     } as Components;
-  }, []);
+  }, [handleNavigation]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-default">
@@ -174,7 +211,9 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
                           {qa.answer}
                         </ReactMarkdown>
                       ) : (
-                        <FOOTNOTE theme="secondary">{isLast && isBusy ? 'Thinking…' : ''}</FOOTNOTE>
+                        <FOOTNOTE theme="secondary">
+                          {isLast && isBusy ? 'Thinking...' : ''}
+                        </FOOTNOTE>
                       )}
                     </div>
                   </div>
@@ -186,8 +225,12 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
                           <a
                             className="text-link"
                             href={source.source_url}
-                            target="_blank"
-                            rel="noreferrer">
+                            onClick={event => {
+                              if (event.metaKey || event.ctrlKey || event.button !== 0) {
+                                return;
+                              }
+                              handleNavigation(event);
+                            }}>
                             {source.title || `Source ${sourceIdx + 1}`}
                           </a>
                           {sourceIdx < qa.sources.length - 1 ? ', ' : ''}

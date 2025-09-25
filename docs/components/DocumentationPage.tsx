@@ -67,6 +67,9 @@ export default function DocumentationPage({
   const handleAskAIChatClose = () => {
     setAskAIVisible(false);
   };
+  const handleAskAIMinimize = () => {
+    setAskAIVisible(false);
+  };
   const handleAskAIToggle = () => {
     if (!isLatestSdkPage) {
       return;
@@ -211,7 +214,14 @@ export default function DocumentationPage({
           modificationDate={modificationDate}
         />
       </DocumentationNestedScrollLayout>
-      {isAskAIVisible && <AskPageAIOverlay onClose={handleAskAIChatClose} pageTitle={title} />}
+      {isLatestSdkPage && (
+        <AskPageAIOverlay
+          onClose={handleAskAIChatClose}
+          onMinimize={handleAskAIMinimize}
+          pageTitle={title}
+          isVisible={isAskAIVisible}
+        />
+      )}
     </>
   );
 }
