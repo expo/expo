@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '0.0.13'
 
+expoModule {
+  canBePublished false
+}
+
 android {
   namespace "expo.modules.logbox"
   defaultConfig {
@@ -16,6 +20,7 @@ android {
   sourceSets {
     main {
       java.srcDirs += "src/main"
+      // TODO: Only include the bundle in debug builds (likely similar expo-constants)
       // dist contains only ExpoLogBox.bundle
       assets.srcDirs += "${projectDir}/../dist"
     }
