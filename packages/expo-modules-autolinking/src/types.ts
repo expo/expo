@@ -30,11 +30,16 @@ export type SearchResults = {
 export interface ModuleAndroidProjectInfo {
   name: string;
   sourceDir: string;
-  modules: string[];
+  modules: ModuleAndroidModuleInfo[];
   packages: string[];
   publication?: AndroidPublication;
   aarProjects?: AndroidGradleAarProjectDescriptor[];
   shouldUsePublicationScriptPath?: string;
+}
+
+export interface ModuleAndroidModuleInfo {
+  name: string | null;
+  classifier: string;
 }
 
 export interface ModuleAndroidPluginInfo {
@@ -196,6 +201,14 @@ export type RawModuleConfigApple = {
   debugOnly?: boolean;
 };
 
+export type RawAndroidModuleConfig = {
+  /**
+   * Names of the modules to be linked in the project.
+   */
+  name: string;
+  class: string;
+};
+
 /**
  * Represents a raw config specific to Android platforms.
  */
@@ -225,7 +238,7 @@ export type RawAndroidProjectConfig = {
   /**
    * Names of the modules to be linked in the project.
    */
-  modules?: string[];
+  modules?: (string | RawAndroidModuleConfig)[];
 
   /**
    * Prebuilded AAR projects.

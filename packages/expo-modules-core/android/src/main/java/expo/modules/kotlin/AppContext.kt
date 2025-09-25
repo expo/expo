@@ -30,7 +30,9 @@ import expo.modules.kotlin.defaultmodules.AppDirectoriesModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.FilePermissionModule
 import expo.modules.kotlin.defaultmodules.JSLoggerModule
+import expo.modules.kotlin.defaultmodules.JSLoggerModuleName
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
+import expo.modules.kotlin.defaultmodules.NativeModulesProxyModuleName
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
@@ -110,8 +112,8 @@ class AppContext(
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
       // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
-      registry.register(NativeModulesProxyModule())
-      registry.register(JSLoggerModule())
+      registry.register(NativeModulesProxyModule(), NativeModulesProxyModuleName)
+      registry.register(JSLoggerModule(), JSLoggerModuleName)
 
       // Registering modules that were previously provided by legacy FileSystem module.
       legacyModuleRegistry.registerInternalModule(FilePermissionModule())

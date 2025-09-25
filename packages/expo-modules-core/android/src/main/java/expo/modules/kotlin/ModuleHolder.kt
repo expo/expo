@@ -18,10 +18,13 @@ import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-class ModuleHolder<T : Module>(val module: T) {
+class ModuleHolder<T : Module>(
+  val module: T,
+  private val _name: String?
+) {
   val definition = module.definition()
 
-  val name get() = definition.name
+  val name get() = _name ?: definition.name
 
   private var wasInitialized = false
 
