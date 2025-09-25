@@ -3773,8 +3773,8 @@ SPEC CHECKSUMS:
   RNCMaskedView: 3c9d7586e2b9bbab573591dcb823918bc4668005
   RNCPicker: 38a9deb903d9a8ae18b598bac727e6c84b3cf0fa
   RNDateTimePicker: 6fdd63f5d1e0f21faf4cc8674957c52958a7efae
-  RNGestureHandler: 6a488ce85c88e82d8610db1108daf04e9b2d5162
-  RNReanimated: e30c3cfe4fc124a818e541d9ec8bb8a3bcbc6bd3
+  RNGestureHandler: 811910565ec11984124c509763477bb53ab445d3
+  RNReanimated: 58fbe34137d4ce55a1545a88d9afac0e3087099b
   RNScreens: dd61bc3a3e6f6901ad833efa411917d44827cf51
   RNSVG: 602379e4d59935e26ecc05dd9d04832eefb20dac
   RNWorklets: 56b7e8755716f5995a4a775bebf3a6ea4e2f7f64
