@@ -9,33 +9,42 @@ import EXManifests
 class FileDownloaderSpec : ExpoSpec {
   override class func spec() {
     var testDatabaseDir: URL!
+    var testUpdatesDir: URL!
     var db: UpdatesDatabase!
     var logger: UpdatesLogger!
+    var updatesDirectory: URL!
 
     beforeEach {
       let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
       testDatabaseDir = applicationSupportDir!.appendingPathComponent("UpdatesDatabaseTests")
-      
+      testUpdatesDir = applicationSupportDir!.appendingPathComponent("UpdatesDirectoryTests")
+
       try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
-      
+      try? FileManager.default.removeItem(atPath: testUpdatesDir.path)
+
       if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
         try! FileManager.default.createDirectory(atPath: testDatabaseDir.path, withIntermediateDirectories: true)
       }
-      
+      if !FileManager.default.fileExists(atPath: testUpdatesDir.path) {
+        try! FileManager.default.createDirectory(atPath: testUpdatesDir.path, withIntermediateDirectories: true)
+      }
+
       db = UpdatesDatabase()
       db.databaseQueue.sync {
         try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
       }
 
       logger = UpdatesLogger()
+      updatesDirectory = testUpdatesDir
     }
     
     afterEach {
       db.databaseQueue.sync {
         db.closeDatabase()
       }
-      
+
       try! FileManager.default.removeItem(atPath: testDatabaseDir.path)
+      try? FileManager.default.removeItem(atPath: testUpdatesDir.path)
     }
     
     describe("cache control") {
@@ -44,7 +53,12 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://exp.host/@test/test")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
@@ -55,7 +69,12 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://u.expo.dev/00000000-0000-0000-0000-000000000000")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
@@ -68,7 +87,12 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
         let extraHeaders = [
           "expo-string": "test",
           "expo-number": 47.5,
@@ -94,7 +118,12 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
 
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
@@ -204,7 +233,12 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
 
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
@@ -222,7 +256,12 @@ class FileDownloaderSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+        let downloader = FileDownloader(
+          config: config,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
         let extraHeaders = [
           "expo-string": "test",
           "expo-number": 47.5,
@@ -250,7 +289,13 @@ class FileDownloaderSpec : ExpoSpec {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.protocolClasses = [MockURLProtocol.self]
 
-        let downloader = FileDownloader(config: config, urlSessionConfiguration: sessionConfig, logger: logger)
+        let downloader = FileDownloader(
+          config: config,
+          urlSessionConfiguration: sessionConfig,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
 
         let responseBody = "hello world this is a test"
         let expectedHash = "-NfUrZcahFwJ6UrL_Vq0ZCh0dses8IUEv-0WS_d61uQ" // Corrected hash
@@ -268,12 +313,16 @@ class FileDownloaderSpec : ExpoSpec {
 
         var success = false
         var error: Error?
+        let testAsset = UpdateAsset(key: "test-asset", type: "txt")
+
         waitUntil { done in
           downloader.downloadAsset(
+            asset: testAsset,
             fromURL: URL(string: "https://example.com/testfile.txt")!,
             verifyingHash: expectedHash,
             toPath: destinationURL.path,
             extraHeaders: [:],
+            allowPatch: false,
             progressBlock: progressBlock,
             successBlock: { _, _, _ in
               success = true
@@ -282,7 +331,7 @@ class FileDownloaderSpec : ExpoSpec {
             errorBlock: { err in
               error = err
               done()
-            }
+            },
           )
         }
 

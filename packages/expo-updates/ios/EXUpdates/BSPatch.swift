@@ -2,6 +2,10 @@
 
 import Foundation
 
+enum BSPatchError: Error {
+  case failed(message: String)
+}
+
 struct BSPatch {
   static func applyPatch(oldPath: String,
                   newPath: String,
