@@ -50,7 +50,11 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
 
   _maybeWarnAboutBlurMethod(): void {
     const blurMethod = this._getBlurMethod();
-    if (Platform.OS === 'android' && blurMethod === 'dimezisBlurView' && !this.props.blurTarget) {
+    if (
+      Platform.OS === 'android' &&
+      (blurMethod === 'dimezisBlurView' || blurMethod === 'dimezisBlurViewSdk31Plus') &&
+      !this.props.blurTarget
+    ) {
       // The fallback happens on the native side
       console.warn(
         `You have selected the "${blurMethod}" blur method, but the \`blurTarget\` prop has not been configured. The blur view will fallback to "none" blur method to avoid errors. You can learn more about the new BlurView API at: https://docs.expo.dev/versions/latest/sdk/blur-view/`
