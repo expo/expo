@@ -1,4 +1,4 @@
-import { Button, DocsLogo, mergeClasses } from '@expo/styleguide';
+import { Button, mergeClasses } from '@expo/styleguide';
 import { Stars03DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars03DuotoneIcon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
@@ -27,6 +27,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
 
   const contextLabel = pageTitle?.trim() ? pageTitle : 'This page';
   const [question, setQuestion] = useState('');
+  const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
   const previousTitleRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
@@ -34,8 +35,15 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
       previousTitleRef.current = pageTitle;
       resetConversation();
       setQuestion('');
+      setAskedQuestions([]);
     }
   }, [pageTitle, resetConversation]);
+
+  useEffect(() => {
+    if (conversation.length === 0 && askedQuestions.length > 0) {
+      setAskedQuestions([]);
+    }
+  }, [conversation.length, askedQuestions.length]);
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
   const buildPrompt = useMemo(() => {
@@ -59,11 +67,12 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
       return;
     }
     submitQuery(buildPrompt(trimmed));
+    setAskedQuestions(prev => [...prev, trimmed]);
     setQuestion('');
   };
 
   const handleClose = () => {
-    if (isGeneratingAnswer) {
+    if ((isGeneratingAnswer || isPreparingAnswer) && conversation.length > 0) {
       stopGeneration();
     }
     onClose();
@@ -97,14 +106,14 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
             {conversation.map((qa, index) => {
               const isLast = index === conversation.length - 1;
               const key = (qa.id as ConversationKey) ?? `${qa.question}-${index}`;
+              const displayQuestion = askedQuestions[index] ?? qa.question;
 
               return (
                 <div key={key} className="space-y-2">
-                  <div className="rounded-md border border-default bg-default px-3 py-2 shadow-xs">
-                    <FOOTNOTE className="font-medium text-default">You</FOOTNOTE>
-                    <FOOTNOTE theme="secondary" className="mt-1">
-                      {qa.question}
-                    </FOOTNOTE>
+                  <div className="flex items-start justify-end pr-1">
+                    <span className="bg-link/10 inline-flex rounded-full px-3 py-1 text-link">
+                      {displayQuestion}
+                    </span>
                   </div>
                   <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
                     <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
@@ -144,10 +153,6 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
       </div>
 
       <div className="mt-auto border-t border-default px-4 pb-5 pt-4">
-        <div className="mb-3 inline-flex items-center gap-2 text-secondary">
-          <DocsLogo className="icon-sm text-icon-secondary" />
-          <FOOTNOTE theme="secondary">{contextLabel}</FOOTNOTE>
-        </div>
         <form
           className="flex items-center gap-3 rounded-full border border-default bg-default px-4 py-2 shadow-xs"
           onSubmit={handleSubmit}
