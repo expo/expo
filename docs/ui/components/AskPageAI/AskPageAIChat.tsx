@@ -254,12 +254,12 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
 
       <div className="mt-auto border-t border-default px-5 pb-6 pt-4">
         <form
-          className="flex items-end gap-3 rounded-md border border-default bg-default px-5 py-3 shadow-xs"
+          className="flex items-end gap-1 rounded-md border border-default bg-default px-2 py-1.5"
           onSubmit={handleSubmit}
           aria-label="Ask AI form">
           <textarea
             aria-label="Ask AI about this page"
-            className="min-h-[72px] flex-1 resize-none rounded-md border border-transparent bg-subtle px-4 py-2 text-sm leading-relaxed text-default outline-none"
+            className="min-h-[72px] flex-1 resize-none rounded-md border border-transparent bg-subtle p-2 text-sm leading-relaxed outline-none"
             rows={3}
             value={question}
             onChange={event => {
@@ -277,7 +277,7 @@ export function AskPageAIChat({ onClose, onMinimize, pageTitle }: AskPageAIChatP
             type="submit"
             theme="quaternary"
             size="sm"
-            className="flex size-8 items-center justify-center rounded-full !p-0"
+            className="flex size-6 items-center justify-center rounded-full !p-0"
             disabled={isBusy || question.trim().length === 0}>
             <Send03Icon className="icon-xs text-icon-default" />
           </Button>
