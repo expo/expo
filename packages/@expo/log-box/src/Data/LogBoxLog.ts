@@ -143,28 +143,6 @@ export class LogBoxLog {
     const status = this.symbolicated[type]?.status;
 
     if (status === 'COMPLETE') {
-      if (PRINT_FIXTURES) {
-        // Create symbolicated fixture:
-        console.log(
-          'LogBoxLog.symbolicated:',
-          JSON.stringify(
-            {
-              stack: this.stack,
-              componentStack: this.componentStack,
-              level: this.level,
-              type: this.type,
-              message: this.message,
-              category: this.category,
-              codeFrame: this.codeFrame,
-              isComponentError: this.isComponentError,
-              symbolicated: this.symbolicated,
-            },
-            null,
-            2
-          )
-        );
-      }
-
       return this.flushCallbacks(type);
     }
 
@@ -193,7 +171,6 @@ export class LogBoxLog {
     this.updateStatus(type, null, null, null);
     symbolicateStackAndCacheAsync(this.getStack(type)).then(
       (data) => {
-        console.log('LogBoxLog.symbolicate:', JSON.stringify(data, null, 2));
         this.updateStatus(type, null, data?.stack, data?.codeFrame);
       },
       (error) => {
