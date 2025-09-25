@@ -148,7 +148,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
                   </div>
                   <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
                     <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-                    <div className="prose prose-sm mt-1 text-secondary dark:prose-invert prose-a:text-link">
+                    <div className="prose prose-sm mt-1 text-secondary dark:prose-invert prose-a:text-link prose-pre:!bg-transparent">
                       {qa.answer ? (
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                           {qa.answer}
@@ -252,13 +252,13 @@ function MarkdownCodeBlock({ code }: { code: string }) {
     <div className="relative overflow-hidden rounded-md border border-default bg-subtle">
       <button
         type="button"
-        className="bg-default/80 absolute right-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-3xs font-medium text-secondary shadow-sm hover:bg-default"
+        className="bg-default/90 absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full text-secondary shadow-sm hover:bg-default"
         onClick={handleCopyAsync}>
-        <Copy04Icon className="icon-xs" />
-        {copied ? 'Copied' : 'Copy'}
+        <span className="sr-only">Copy code</span>
+        <Copy04Icon className="icon-xs" aria-hidden />
       </button>
-      <pre className="overflow-x-auto whitespace-pre px-4 pb-4 pt-9 text-xs leading-relaxed text-default">
-        <code>{code}</code>
+      <pre className="overflow-x-auto whitespace-pre bg-transparent p-4 text-xs leading-relaxed text-default">
+        <code className="block whitespace-pre text-default">{code}</code>
       </pre>
     </div>
   );
