@@ -130,7 +130,7 @@ export default function LogBoxPolyfillDOM({
   globalThis.__polyfill_dom_reloadRuntime = reloadRuntime;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
 
-  useNativeLogBoxDataPolyfill(props);
+  useNativeLogBoxDataPolyfill({logs}, props);
 
   return (
     <LogContext.Provider
@@ -145,15 +145,22 @@ export default function LogBoxPolyfillDOM({
   );
 }
 
-function useNativeLogBoxDataPolyfill(polyfill: {
+function useNativeLogBoxDataPolyfill({
+  logs,
+}: {
+  logs: LogBoxLog[];
+}, polyfill: {
   onChangeSelectedIndex?: (index: number) => void;
-  dismiss?: (index: number) => void;
+  onDismiss?: (index: number) => void;
 }) {
   // @ts-ignore
   LogBoxData.setSelectedLog = polyfill.onChangeSelectedIndex;
 
   // @ts-ignore
-  // LogBoxData.dismiss = polyfill.dismiss;
+  LogBoxData.dismiss = (log: LogBoxLog) => {
+    const index = logs.indexOf(log);
+    polyfill.onDismiss?.(index);
+  };
 }
 
 function useViewportMeta(content: string) {

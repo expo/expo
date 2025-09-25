@@ -123,7 +123,7 @@ function LogBoxRNPolyfill(
   );
 }
 
-function _LogBoxInspectorContainer({
+function LogBoxInspectorContainer({
   selectedLogIndex,
   logs
 }: {
@@ -131,32 +131,15 @@ function _LogBoxInspectorContainer({
     selectedLogIndex: number,
     isDisabled?: boolean,
 }) {
-  const _handleDismiss = (index: number) => {
-    // Here we handle the cases when the log is dismissed and it
-    // was either the last log, or when the current index
-    // is now outside the bounds of the log array.
-    console.log('LogBoxInspectorContainer._handleDismiss');
-    const logsArray = Array.from(logs);
-    // if (selectedLogIndex != null) {
-    //   if (logsArray.length - 1 <= 0) {
-    //     LogBoxData.setSelectedLog(-1);
-    //   } else if (selectedLogIndex >= logsArray.length - 1) {
-    //     LogBoxData.setSelectedLog(selectedLogIndex - 1);
-    //   }
-
-    //   LogBoxData.dismiss(logsArray[selectedLogIndex]);
-    // }
-    LogBoxData.dismiss(logsArray[index]);
+  const handleDismiss = (index: number) => {
+    LogBoxData.dismiss(logs[index]);
   };
 
-  const _handleMinimize = () => {
-    console.log('LogBoxInspectorContainer._handleMinimize');
+  const handleMinimize = () => {
     LogBoxData.setSelectedLog(-1);
   };
 
-  const _handleSetSelectedLog = (index: number) => {
-    console.log('LogBoxInspectorContainer._handleSetSelectedLog');
-
+  const handleSetSelectedLog = (index: number) => {
     LogBoxData.setSelectedLog(index);
   };
 
@@ -166,9 +149,9 @@ function _LogBoxInspectorContainer({
 
   return (
     <LogBoxRNPolyfill
-      onDismiss={_handleDismiss}
-      onMinimize={_handleMinimize}
-      onChangeSelectedIndex={_handleSetSelectedLog}
+      onDismiss={handleDismiss}
+      onMinimize={handleMinimize}
+      onChangeSelectedIndex={handleSetSelectedLog}
       logs={logs}
       selectedIndex={selectedLogIndex}
     />
@@ -203,4 +186,4 @@ function getBundledLogBoxURL(): string | null {
   return cachedBundledLogBoxUrl;
 }
 
-export default LogBoxData.withSubscription(_LogBoxInspectorContainer);
+export default LogBoxData.withSubscription(LogBoxInspectorContainer);
