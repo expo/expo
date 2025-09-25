@@ -3,7 +3,9 @@ package expo.modules.filesystem.unifiedfile
 import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import expo.modules.kotlin.AppContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -30,6 +32,14 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
     childFile.mkdir()
     return JavaFile(childFile.toUri())
   }
+
+  override fun getContentUri(appContext: AppContext): Uri {
+      return FileProvider.getUriForFile(
+        appContext.throwingActivity.application,
+        "${appContext.throwingActivity.application.packageName}.FileSystemFileProvider",
+        this
+      )
+    }
 
   override fun listFilesAsUnified(): List<UnifiedFileInterface> =
     super<File>.listFiles()?.map { JavaFile(it.toUri()) } ?: emptyList()
