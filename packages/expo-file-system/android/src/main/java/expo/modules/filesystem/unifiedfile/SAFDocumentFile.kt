@@ -3,6 +3,7 @@ package expo.modules.filesystem.unifiedfile
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import expo.modules.kotlin.AppContext
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -59,6 +60,10 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
 
   override val fileName: String?
     get() = documentFile?.name
+
+  override fun getContentUri(appContext: AppContext): Uri {
+    return uri
+  }
 
   override val creationTime: Long? get() {
     // It seems there's no way to get this

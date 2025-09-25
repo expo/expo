@@ -343,6 +343,11 @@ export declare class File {
    * A mime type of the file. An empty string if the file does not exist, or it cannot be read.
    */
   type: string;
+  /**
+   * A content URI to the file that can be shared to external applications.
+   * @platform android
+   */
+  contentUri: string;
 }
 
 export declare class FileHandle {

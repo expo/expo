@@ -2,6 +2,8 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import android.util.Base64
+import expo.modules.filesystem.legacy.FileSystemUnreadableDirectoryException
+import expo.modules.filesystem.legacy.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
@@ -124,6 +126,12 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     file.inputStream().use {
       return it.readBytes()
     }
+  }
+
+  fun asContentUri(): Uri {
+    validateType()
+    validatePermission(Permission.READ)
+    return file.getContentUri(appContext ?: throw MissingAppContextException())
   }
 
   @OptIn(ExperimentalStdlibApi::class)

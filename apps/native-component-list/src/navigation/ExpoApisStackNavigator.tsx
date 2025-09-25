@@ -172,6 +172,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FileSystemLegacyScreen'));
+    },
+    name: 'FileSystem@legacy',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/FontScreen'));
     },
     name: 'Font',
