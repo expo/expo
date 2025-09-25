@@ -23,6 +23,8 @@ import './ErrorOverlay.css';
 import styles from './ErrorOverlay.module.css';
 
 import { LogBoxMessage } from './LogBoxMessage';
+import { useRuntimePlatform, withRuntimePlatform } from './ContextPlatform';
+import { useActions, withActions } from './ContextActions';
 
 const HEADER_TITLE_MAP: Record<LogLevel, string> = {
   error: 'Console Error',
@@ -33,12 +35,12 @@ const HEADER_TITLE_MAP: Record<LogLevel, string> = {
 };
 
 export function LogBoxInspectorContainer() {
-  const { selectedLogIndex, logs, platform } = useLogs();
+  const { selectedLogIndex, logs } = useLogs();
   const log = logs[selectedLogIndex];
   if (log == null) {
     return null;
   }
-  return <LogBoxInspector platform={platform} log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
+  return <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
 }
 
 function useDevServerMeta() {
@@ -64,13 +66,13 @@ export function LogBoxInspector({
   log,
   selectedLogIndex,
   logs,
-  platform
 }: {
   log: LogBoxLog;
   selectedLogIndex: number;
   logs: LogBoxLog[];
-  platform: string | undefined;
 }) {
+  const { platform, isNative } = useRuntimePlatform();
+  const { onMinimize: onMinimizeAction } = useActions();
   const isDismissable = !['static', 'syntax', 'resolution'].includes(log.level);
   const [closing, setClosing] = useState(false);
 
@@ -82,9 +84,13 @@ export function LogBoxInspector({
   };
 
   const onMinimize = useCallback((): void => {
-    animateClosed(() => {
-      LogBoxData.setSelectedLog(-1);
-    });
+    if (isNative) {
+      onMinimizeAction();
+    } else {
+      animateClosed(() => {
+        onMinimizeAction();
+      });
+    }
   }, []);
 
   return (
@@ -93,11 +99,11 @@ export function LogBoxInspector({
         styles.overlay,
         platform === 'ios' ? styles.overlayIos : null,
         platform === 'android' ? styles.overlayAndroid : null,
-        platform === undefined ? styles.overlayWeb : null,
+        platform === 'web' ? styles.overlayWeb : null,
       ].filter(Boolean).join(' ')}>
         <div
           data-expo-log-backdrop="true"
-          className={platform === undefined ? `${styles.bg} ${closing ? styles.bgExit : ''}` : undefined}
+          className={platform === 'web' ? `${styles.bg} ${closing ? styles.bgExit : ''}` : undefined}
           onClick={() => {
             if (isDismissable) {
               onMinimize();
@@ -105,7 +111,13 @@ export function LogBoxInspector({
           }}
         />
         <div className={`${styles.container} ${closing ? styles.containerExit : ''}`}>
-          <LogBoxContent log={log} selectedLogIndex={selectedLogIndex} logs={logs} isDismissable={isDismissable} />
+          <LogBoxContent
+            log={log}
+            selectedLogIndex={selectedLogIndex}
+            logs={logs}
+            isDismissable={isDismissable}
+            onMinimize={onMinimize}
+          />
         </div>
       </div>
     </>
@@ -117,11 +129,13 @@ export function LogBoxContent({
   selectedLogIndex,
   logs,
   isDismissable,
+  onMinimize,
 }: {
   log: LogBoxLog;
   selectedLogIndex: number;
   logs: LogBoxLog[];
   isDismissable: boolean;
+  onMinimize: () => void;
 }) {
   const meta = useDevServerMeta();
   const [_, setClosing] = useState(false);
@@ -159,12 +173,6 @@ export function LogBoxContent({
     }
   };
 
-  const onMinimize = useCallback((): void => {
-    animateClosed(() => {
-      LogBoxData.setSelectedLog(-1);
-    });
-  }, []);
-
   const onChangeSelectedIndex = useCallback((index: number): void => {
     LogBoxData.setSelectedLog(index);
   }, []);
@@ -199,7 +207,7 @@ export function LogBoxContent({
 
   // @ts-ignore
   const onReload = globalThis.__polyfill_dom_reloadRuntime;
-  
+
   const onCopy = () => {
     // Copy log to clipboard
     const errContents = [log.message.content.trim()];
@@ -475,7 +483,19 @@ export function presentGlobalErrorOverlay() {
   if (currentRoot) {
     return;
   }
-  const ErrorOverlay = LogBoxData.withSubscription(LogBoxInspectorContainer);
+  const ErrorOverlay = LogBoxData.withSubscription(
+      withRuntimePlatform(
+        withActions(
+          LogBoxInspectorContainer,
+          {
+            onMinimize: () => {LogBoxData.setSelectedLog(-1);
+              LogBoxData.setSelectedLog(-1);
+            },
+          }
+        ),
+        { platform: process.env.EXPO_OS ?? 'web' }
+      )
+    );
 
   // Create a new div with ID `error-overlay` element and render LogBoxInspector into it.
   const div = document.createElement('div');

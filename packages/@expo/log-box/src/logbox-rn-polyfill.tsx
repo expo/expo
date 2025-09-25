@@ -51,6 +51,14 @@ function LogBoxRNPolyfill(
   const [open, setOpen] = React.useState(true);
   const bundledLogBoxUrl = getBundledLogBoxURL();
 
+  const onMinimize = React.useCallback(() => {
+    setOpen(false);
+    // changing the selected index to -1 will interfere with the slide down animation on iOS
+    setTimeout(() => {
+      props.onMinimize();
+    }, Platform.select({ ios: 500, default: 0 }));
+  }, [props]);
+
   return (
     <Modal
       // android
@@ -60,13 +68,7 @@ function LogBoxRNPolyfill(
       presentationStyle="pageSheet"
       // common
       visible={open}
-      onRequestClose={() => {
-        setOpen(false);
-        // changing the selected index to -1 will interfere with the slide down animation on iOS
-        setTimeout(() => {
-          props.onChangeSelectedIndex(-1);
-        }, 500);
-      }}
+      onRequestClose={onMinimize}
       >
         <View
           style={{
@@ -113,7 +115,7 @@ function LogBoxRNPolyfill(
               Clipboard.setString(text);
             }}
             onDismiss={props.onDismiss}
-            onMinimize={props.onMinimize}
+            onMinimize={onMinimize}
             onChangeSelectedIndex={props.onChangeSelectedIndex}
             selectedIndex={props.selectedIndex}
             logs={logs}

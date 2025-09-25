@@ -7,6 +7,8 @@ import * as LogBoxData from './Data/LogBoxData';
 import React from 'react';
 import type { CodeFrame } from './devServerEndpoints';
 import { parseLogBoxException } from './Data/parseLogBoxLog';
+import { RuntimePlatformProvider } from './ContextPlatform';
+import { ActionsProvider } from './ContextActions';
 
 export default function LogBoxPolyfillDOM({
   onMinimize,
@@ -135,12 +137,15 @@ export default function LogBoxPolyfillDOM({
   return (
     <LogContext.Provider
       value={{
-        platform,
         selectedLogIndex: selectedIndex,
         isDisabled: false,
         logs,
       }}>
-      <LogBoxInspectorContainer />
+      <RuntimePlatformProvider platform={platform}>
+        <ActionsProvider onMinimize={onMinimize} >
+          <LogBoxInspectorContainer />
+        </ActionsProvider>
+      </RuntimePlatformProvider>
     </LogContext.Provider>
   );
 }

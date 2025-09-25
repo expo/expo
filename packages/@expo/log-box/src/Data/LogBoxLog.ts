@@ -14,6 +14,7 @@ import {
 } from '../devServerEndpoints';
 import type { Category, Message, CodeFrame } from './parseLogBoxLog';
 
+
 export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
 export type LogLevel = 'error' | 'fatal' | 'syntax' | 'resolution' | 'static';
@@ -218,7 +219,6 @@ export class LogBoxLog {
 }
 
 export const LogContext = React.createContext<{
-  platform?: string;
   selectedLogIndex: number;
   isDisabled: boolean;
   logs: LogBoxLog[];

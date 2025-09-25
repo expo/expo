@@ -13,6 +13,8 @@ import { Pressable, Text, View } from 'react-native';
 import { LogBoxMessage } from './LogBoxMessage';
 
 import './ErrorOverlay.css';
+import { withRuntimePlatform } from './ContextPlatform';
+import { withActions } from './ContextActions';
 
 // import * as FIXTURES from '@expo/metro-runtime/fixtures/log-box-error-fixtures';
 
@@ -296,4 +298,16 @@ function useRejectionHandler() {
   return hasError;
 }
 
-export default LogBoxData.withSubscription(ErrorToastContainer);
+export default LogBoxData.withSubscription(
+  withRuntimePlatform(
+    withActions(
+      ErrorToastContainer,
+      {
+        onMinimize: () => {LogBoxData.setSelectedLog(-1);
+          LogBoxData.setSelectedLog(-1);
+        },
+      }
+    ),
+    { platform: process.env.EXPO_OS ?? 'web' }
+  )
+);
