@@ -101,6 +101,13 @@ export const TEMPLATES: {
     },
   },
   {
+    id: 'index.html',
+    file: (projectRoot) => importFromVendor(projectRoot, 'index.html'),
+    // public/index.html
+    destination: ({ webStaticPath }) => webStaticPath + '/index.html',
+    dependencies: [],
+  },
+  {
     id: '+html.tsx',
     file: (projectRoot) => importFromVendor(projectRoot, '+html.tsx'),
     destination: ({ appDirPath }) => path.join(appDirPath, '+html.tsx'),

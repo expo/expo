@@ -28,7 +28,7 @@ describe(queryAndGenerateAsync, () => {
         extras: [],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Invalid files: file1, file2. Allowed: babel.config.js, metro.config.js, tsconfig.json, .eslintrc.js (deprecated), eslint.config.js, app/+html.tsx, app/+native-intent.ts"`
+      `"Invalid files: file1, file2. Allowed: babel.config.js, metro.config.js, tsconfig.json, .eslintrc.js (deprecated), eslint.config.js, public/index.html, app/+html.tsx, app/+native-intent.ts"`
     );
   });
   it(`does nothing`, async () => {
