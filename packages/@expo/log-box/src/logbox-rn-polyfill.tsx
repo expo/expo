@@ -179,7 +179,7 @@ let cachedBundledLogBoxUrl: string | null | undefined = undefined;
 /**
  * Get the base URL for the Expo LogBox Prebuilt DOM Component HTML
  */
-export function getBundledLogBoxURL(): string | null {
+function getBundledLogBoxURL(): string | null {
   if (cachedBundledLogBoxUrl !== undefined) {
     return cachedBundledLogBoxUrl;
   }

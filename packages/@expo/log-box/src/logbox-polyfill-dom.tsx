@@ -8,30 +8,8 @@ import React from 'react';
 import type { CodeFrame } from './devServerEndpoints';
 import { parseLogBoxException } from './Data/parseLogBoxLog';
 
-function useViewportMeta(content: string) {
-  React.useEffect(() => {
-    let meta = document.querySelector('meta[name="viewport"]');
-
-    if (!meta) {
-      meta = document.createElement('meta');
-      // @ts-ignore
-      meta.name = 'viewport';
-      document.head.appendChild(meta);
-    }
-
-    meta.setAttribute('content', content);
-
-    return () => {
-      // Optionally reset or remove on cleanup
-      // meta.setAttribute('content', 'width=device-width, initial-scale=1');
-    };
-  }, [content]);
-}
-
 export default function LogBoxPolyfillDOM({
-  onDismiss,
   onMinimize,
-  onChangeSelectedIndex,
   onCopyText,
   platform,
   fetchJsonAsync,
@@ -140,7 +118,7 @@ export default function LogBoxPolyfillDOM({
       }) ?? [])),
     ];
   }, []);
-  const [selectedIndex, _setSelectedIndex] = React.useState(props.selectedIndex ?? (logs && logs?.length - 1) ?? -1);
+  const selectedIndex = props.selectedIndex ?? (logs && logs?.length - 1) ?? -1;
 
   // @ts-ignore
   globalThis.__polyfill_onCopyText = onCopyText;
@@ -151,9 +129,8 @@ export default function LogBoxPolyfillDOM({
   // @ts-ignore
   globalThis.__polyfill_dom_reloadRuntime = reloadRuntime;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
-  // @ts-ignore
-  LogBoxData.setSelectedLog = onChangeSelectedIndex;
-  // LogBoxData.dismiss = onDismiss;
+
+  useNativeLogBoxDataPolyfill(props);
 
   return (
     <LogContext.Provider
@@ -166,4 +143,35 @@ export default function LogBoxPolyfillDOM({
       <LogBoxInspectorContainer />
     </LogContext.Provider>
   );
+}
+
+function useNativeLogBoxDataPolyfill(polyfill: {
+  onChangeSelectedIndex?: (index: number) => void;
+  dismiss?: (index: number) => void;
+}) {
+  // @ts-ignore
+  LogBoxData.setSelectedLog = polyfill.onChangeSelectedIndex;
+
+  // @ts-ignore
+  // LogBoxData.dismiss = polyfill.dismiss;
+}
+
+function useViewportMeta(content: string) {
+  React.useEffect(() => {
+    let meta = document.querySelector('meta[name="viewport"]');
+
+    if (!meta) {
+      meta = document.createElement('meta');
+      // @ts-ignore
+      meta.name = 'viewport';
+      document.head.appendChild(meta);
+    }
+
+    meta.setAttribute('content', content);
+
+    return () => {
+      // Optionally reset or remove on cleanup
+      // meta.setAttribute('content', 'width=device-width, initial-scale=1');
+    };
+  }, [content]);
 }
