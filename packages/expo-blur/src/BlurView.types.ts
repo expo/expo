@@ -72,6 +72,10 @@ export type BlurTargetViewProps = {
   ref?: RefObject<View | null>;
 } & ViewProps;
 
+export type BlurTargetViewProps = {
+  ref?: RefObject<View | null>;
+} & ViewProps;
+
 export type BlurTint =
   | 'light'
   | 'dark'
