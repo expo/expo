@@ -7,9 +7,15 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class BlurModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoBlurView")
+    Name("ExpoBlur")
 
     View(ExpoBlurView::class) {
+      Name("ExpoBlurView")
+
+      Prop("blurTargetId") { view, blurTargetId: Int? ->
+        view.setBlurTargetId(blurTargetId)
+      }
+
       Prop("intensity") { view: ExpoBlurView, intensity: Float ->
         view.setBlurRadius(intensity)
       }
@@ -29,6 +35,10 @@ class BlurModule : Module() {
       OnViewDidUpdateProps { view: ExpoBlurView ->
         view.applyTint()
       }
+    }
+
+    View(ExpoBlurTargetView::class) {
+      Name("ExpoBlurTargetView")
     }
   }
 }
