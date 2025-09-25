@@ -1,17 +1,10 @@
 import { requireNativeView } from 'expo';
-import { useState } from 'react';
 import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type HostProps = {
-  /**
-   * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
-   * @default false
-   */
-  matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
-
   /**
    * When true and no explicit size is provided, the host will use the viewport size as the proposed size for SwiftUI layout.
    * This is particularly useful for SwiftUI views that need to fill their available space, such as `Form`.
@@ -40,32 +33,17 @@ const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, style, modifiers, ...restProps } = props;
-  const [containerStyle, setContainerStyle] = useState<ViewStyle | null>(null);
+  const { onLayoutContent, style, modifiers, ...restProps } = props;
 
   return (
     <HostNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      style={[style, containerStyle]}
-      onLayoutContent={(e) => {
-        onLayoutContent?.(e);
-        if (matchContents) {
-          const matchVertical =
-            typeof matchContents === 'object' ? matchContents.vertical : matchContents;
-          const matchHorizontal =
-            typeof matchContents === 'object' ? matchContents.horizontal : matchContents;
-          const newContainerStyle: ViewStyle = {};
-          if (matchVertical) {
-            newContainerStyle.height = e.nativeEvent.height;
-          }
-          if (matchHorizontal) {
-            newContainerStyle.width = e.nativeEvent.width;
-          }
-          setContainerStyle(newContainerStyle);
-        }
-      }}
+      style={style}
+      onLayoutContent={onLayoutContent}
       {...restProps}
+      // @ts-expect-error
+      measureableNode
     />
   );
 }

@@ -10,5 +10,7 @@ extension ExpoSwiftUI {
     static let SHADOW_NODE_MOCK_PROXY = ShadowNodeProxy()
 
     public var setViewSize: ((CGSize) -> Void)?
+
+    public var setViewMeasuredSize: ((CGSize) -> Void)?
   }
 }

@@ -29,6 +29,13 @@ public:
     }
   };
 
+  static ExpoViewState withMeasuredDimensions(float measuredWidth, float measuredHeight) {
+    ExpoViewState state;
+    state._measuredWidth = measuredWidth;
+    state._measuredHeight = measuredHeight;
+    return state;
+  }
+
 #ifdef ANDROID
   ExpoViewState(ExpoViewState const &previousState, folly::dynamic data)
   : _width((float)data["width"].getDouble()),
@@ -44,6 +51,8 @@ public:
   
   float _width = std::numeric_limits<float>::quiet_NaN();
   float _height = std::numeric_limits<float>::quiet_NaN();
+  float _measuredWidth = std::numeric_limits<float>::quiet_NaN();
+  float _measuredHeight = std::numeric_limits<float>::quiet_NaN();
 
 };
 
