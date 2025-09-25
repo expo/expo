@@ -1,9 +1,19 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { Stars03DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars03DuotoneIcon';
+import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useChat } from '@kapaai/react-sdk';
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Children,
+  type FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import ReactMarkdown, { type Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import { FOOTNOTE, RawH5 } from '../Text';
 
@@ -78,6 +88,26 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
     onClose();
   };
 
+  const markdownComponents = useMemo(() => {
+    return {
+      code({ inline, children, className }: { inline?: boolean; children?: React.ReactNode; className?: string }) {
+        const childArray = Children.toArray(children);
+        const raw = childArray.map(node => (typeof node === 'string' ? node : '')).join('');
+        const clean = raw.replace(/\n$/, '');
+
+        if (inline) {
+          return (
+            <code className="rounded bg-subtle px-1.5 py-0.5 text-xs text-default">
+              {childArray}
+            </code>
+          );
+        }
+
+        return <MarkdownCodeBlock code={clean} language={className} />;
+      },
+    } as Components;
+  }, []);
+
   return (
     <div className="flex h-full flex-col bg-default">
       <div className="flex items-center justify-between border-b border-default px-4 py-3">
@@ -117,9 +147,17 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
                   </div>
                   <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
                     <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-                    <FOOTNOTE theme="secondary" className="mt-1">
-                      {qa.answer || (isLast && isBusy ? 'Thinking…' : '')}
-                    </FOOTNOTE>
+                    <div className="prose prose-sm mt-1 text-secondary dark:prose-invert prose-a:text-link">
+                      {qa.answer ? (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={markdownComponents}>
+                          {qa.answer}
+                        </ReactMarkdown>
+                      ) : (
+                        <FOOTNOTE theme="secondary">{isLast && isBusy ? 'Thinking…' : ''}</FOOTNOTE>
+                      )}
+                    </div>
                   </div>
                   {qa.sources?.length ? (
                     <FOOTNOTE theme="secondary" className="ml-1 text-xs">
@@ -183,6 +221,41 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
           </Button>
         </form>
       </div>
+    </div>
+  );
+}
+
+function MarkdownCodeBlock({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => setCopied(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copied]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+    } catch (error) {
+      console.error('Unable to copy code snippet', error);
+    }
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-md border border-default bg-subtle">
+      <button
+        type="button"
+        className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-default/80 px-2 py-1 text-3xs font-medium text-secondary shadow-sm hover:bg-default"
+        onClick={handleCopy}>
+        <Copy04Icon className="icon-xxs" />
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+      <pre className="overflow-x-auto whitespace-pre px-4 pb-4 pt-9 text-xs leading-relaxed text-default">
+        <code>{code}</code>
+      </pre>
     </div>
   );
 }
