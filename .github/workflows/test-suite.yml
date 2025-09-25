@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   ios-build:
-    runs-on: macos-26
+    runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
@@ -38,8 +38,8 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
-      - name: 🔨 Set Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_26.app
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -103,7 +103,7 @@ jobs:
 
   ios-test-e2e:
     needs: ios-build
-    runs-on: macos-26
+    runs-on: macos-15
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
@@ -115,6 +115,8 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
@@ -122,11 +124,16 @@ jobs:
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
+      - name: 🧹 Cleanup unused simulator runtimes
+        run: |
+          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
+          xcrun simctl list devices --json
+          xcrun simctl erase all
+          xcrun simctl shutdown all
+          sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
-          brew tap facebook/fb
-          brew install facebook/fb/idb-companion
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
@@ -275,18 +282,20 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🖼️ Start image comparison server
-        run: |
-          mkdir -p ~/.maestro/tests
-          bun run image-comparison-server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
-          echo $! > /tmp/image-server.pid
-        working-directory: apps/bare-expo/e2e/_nested-flows
       - name: 🧪 Run e2e tests (bare-expo)
         uses: ./.github/actions/use-android-emulator
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: ./scripts/start-android-e2e-test.ts --test
+          script: |
+            # Start image comparison server (needs adb)
+            mkdir -p ~/.maestro/tests
+            cd e2e/_nested-flows
+            ./image-comparison-server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
+            echo $! > /tmp/image-server.pid
+            cd ../..
+            # Run the actual tests
+            ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()

@@ -2,10 +2,10 @@ appId: dev.expo.Payments
 ---
 # when devving, start from different screen so state is reset
 - openLink: bareexpo://components
-# approve the deep linking prompt on iOS
 - tapOn:
     text: 'Open'
     optional: true
+
 - openLink: bareexpo://components/video/events
 
 - assertVisible: 'source = Sintel'
@@ -41,5 +41,3 @@ appId: dev.expo.Payments
 
 - assertVisible: 'status = error'
 - assertVisible: 'error = true'
-- tapOn:
-    id: header-Appearance

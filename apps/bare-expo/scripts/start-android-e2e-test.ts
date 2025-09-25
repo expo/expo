@@ -104,6 +104,7 @@ async function testAsync(
       stdio: 'inherit',
       env: {
         ...process.env,
+        cwd: maestroWorkspaceRoot,
         MAESTRO_DRIVER_STARTUP_TIMEOUT,
       },
     });

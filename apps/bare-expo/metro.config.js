@@ -35,6 +35,8 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   }
   return context.resolveRequest(context, moduleName, platform);
 };
+// writing a screenshot would show a refresh banner which could interfere with another screenshot
+config.resolver.blockList.push(/.*bare-expo\/e2e.*/);
 
 // When testing on MacOS we need to include the `react-native-macos/Libraries/Core/InitializeCore` as prepended global module
 const originalGetModulesRunBeforeMainModule = config.serializer.getModulesRunBeforeMainModule;
@@ -61,4 +63,5 @@ config.server.enhanceMiddleware = (middleware) => {
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
 
+console.log({ config, blockList: config.resolver.blockList });
 module.exports = config;
