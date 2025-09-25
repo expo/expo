@@ -1,4 +1,5 @@
 import { Album } from './Album';
+import { Location } from './Location';
 import { MediaType } from './MediaType';
 
 /**
@@ -83,6 +84,22 @@ export declare class Asset {
    * @throws An exception if the asset could not be found.
    */
   getWidth(): Promise<number>;
+
+  /**
+   * Gets the location of the asset.
+   * On Android, this method requires the `ACCESS_MEDIA_LOCATION` permission to access location metadata.
+   * @returns A promise resolving to the {@link Location} object or `null` if the location data is unavailable.
+   * @throws An exception if the asset could not be found, or if the permission is not granted on Android.
+   */
+  getLocation(): Promise<Location | null>;
+
+  /**
+   * Gets the exif data of the {@link MediaType.image} asset.
+   * On Android, this method requires the `ACCESS_MEDIA_LOCATION` permission to access location metadata.
+   * @returns A promise resolving to the exif data object or an empty object if the exif data is unavailable.
+   * @throws An exception if the asset could not be found.
+   */
+  getExif(): Promise<{ [key: string]: any }>;
 
   /**
    * Deletes the asset from the device’s media store.

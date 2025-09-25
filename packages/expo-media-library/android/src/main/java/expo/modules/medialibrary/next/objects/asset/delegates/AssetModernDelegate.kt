@@ -2,8 +2,10 @@ package expo.modules.medialibrary.next.objects.asset.delegates
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
@@ -22,13 +24,18 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetCreationTime
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
+import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
+import expo.modules.medialibrary.next.records.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.let
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -112,6 +119,33 @@ class AssetModernDelegate(
   override suspend fun getMimeType(): MimeType {
     return contentResolver.getType(contentUri)?.let { MimeType(it) }
       ?: MimeType.from(getUri())
+  }
+
+  override suspend fun getLocation(): Location? =
+    contentResolver.openInputStream(contentUri)?.use { stream ->
+      ExifInterface(stream)
+        .latLong
+        ?.let { (lat, long) -> Location(lat, long) }
+    }
+
+  override suspend fun getExif(): Bundle {
+    if (getMediaType() != MediaType.IMAGE) {
+      return Bundle()
+    }
+    val exifMap = Bundle()
+    contentResolver.openInputStream(contentUri)?.use { stream ->
+      val exifInterface = ExifInterface(stream)
+      for ((type, name) in EXIF_TAGS) {
+        if (exifInterface.getAttribute(name) != null) {
+          when (type) {
+            "string" -> exifMap.putString(name, exifInterface.getAttribute(name))
+            "int" -> exifMap.putInt(name, exifInterface.getAttributeInt(name, 0))
+            "double" -> exifMap.putDouble(name, exifInterface.getAttributeDouble(name, 0.0))
+          }
+        }
+      }
+    }
+    return exifMap
   }
 
   override suspend fun delete() = withContext(Dispatchers.IO) {
