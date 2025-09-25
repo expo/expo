@@ -14,17 +14,6 @@ export type DestinationResolutionProps = {
   appDirPath: string;
 };
 
-function importFromExpoWebpackConfig(projectRoot: string, folder: string, moduleId: string) {
-  try {
-    const filePath = resolveFrom(projectRoot, `@expo/webpack-config/${folder}/${moduleId}`);
-    debug(`Using @expo/webpack-config template for "${moduleId}": ${filePath}`);
-    return filePath;
-  } catch {
-    debug(`@expo/webpack-config template for "${moduleId}" not found, falling back on @expo/cli`);
-  }
-  return importFromVendor(projectRoot, moduleId);
-}
-
 function importFromVendor(projectRoot: string, moduleId: string) {
   try {
     const filePath = resolveFrom(projectRoot, '@expo/cli/static/template/' + moduleId);
@@ -110,20 +99,6 @@ export const TEMPLATES: {
       }
       return false;
     },
-  },
-  {
-    id: 'index.html',
-    file: (projectRoot) => importFromExpoWebpackConfig(projectRoot, 'web-default', 'index.html'),
-    // web/index.html
-    destination: ({ webStaticPath }) => webStaticPath + '/index.html',
-    dependencies: [],
-  },
-  {
-    id: 'webpack.config.js',
-    file: (projectRoot) =>
-      importFromExpoWebpackConfig(projectRoot, 'template', 'webpack.config.js'),
-    destination: () => 'webpack.config.js',
-    dependencies: ['@expo/webpack-config'],
   },
   {
     id: '+html.tsx',

@@ -22,20 +22,20 @@ describe(queryAndGenerateAsync, () => {
       queryAndGenerateAsync('/', {
         files: ['file1', 'file2'],
         props: {
-          webStaticPath: 'web',
+          webStaticPath: 'public',
           appDirPath: 'app',
         },
         extras: [],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Invalid files: file1, file2. Allowed: babel.config.js, metro.config.js, tsconfig.json, .eslintrc.js (deprecated), eslint.config.js, web/index.html, webpack.config.js, app/+html.tsx, app/+native-intent.ts"`
+      `"Invalid files: file1, file2. Allowed: babel.config.js, metro.config.js, tsconfig.json, .eslintrc.js (deprecated), eslint.config.js, app/+html.tsx, app/+native-intent.ts"`
     );
   });
   it(`does nothing`, async () => {
     await queryAndGenerateAsync('/', {
       files: [],
       props: {
-        webStaticPath: 'web',
+        webStaticPath: 'public',
         appDirPath: 'app',
       },
       extras: ['foobar'],
@@ -47,7 +47,7 @@ describe(queryAndGenerateAsync, () => {
     await queryAndGenerateAsync('/', {
       files: ['babel.config.js'],
       props: {
-        webStaticPath: 'web',
+        webStaticPath: 'public',
         appDirPath: 'app',
       },
       extras: ['foobar'],
@@ -71,7 +71,7 @@ describe(selectAndGenerateAsync, () => {
     await expect(
       selectAndGenerateAsync('/', {
         props: {
-          webStaticPath: 'web',
+          webStaticPath: 'public',
           appDirPath: 'app',
         },
         extras: [],
@@ -85,24 +85,24 @@ describe(selectAndGenerateAsync, () => {
   it(`selects a file, generates, and installs`, async () => {
     vol.fromJSON(
       {
-        'node_modules/@expo/webpack-config/template/webpack.config.js': '',
+        'node_modules/@expo/metro-config/package.json': '{}',
       },
       '/'
     );
 
-    jest.mocked(selectTemplatesAsync).mockResolvedValue([6]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([1]);
 
     await selectAndGenerateAsync('/', {
       props: {
-        webStaticPath: 'web',
+        webStaticPath: 'public',
         appDirPath: 'app',
       },
       extras: [],
     });
 
     expect(copyAsync).toHaveBeenCalledWith(
-      expect.stringMatching(/@expo\/webpack-config\/template\/webpack\.config\.js/),
-      '/webpack.config.js'
+      expect.stringMatching(/@expo\/cli\/static\/template\/metro\.config\.js/),
+      '/metro.config.js'
     );
     expect(installAsync).not.toHaveBeenCalled();
   });
@@ -110,23 +110,20 @@ describe(selectAndGenerateAsync, () => {
   it(`selects a file from installed, and generates`, async () => {
     vol.fromJSON({}, '/');
 
-    jest.mocked(selectTemplatesAsync).mockResolvedValue([6]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([1]);
 
     await selectAndGenerateAsync('/', {
       props: {
-        webStaticPath: 'web',
+        webStaticPath: 'public',
         appDirPath: 'app',
       },
       extras: [],
     });
 
-    // NOTE(EvanBacon): This logic makes no sense anymore.
-    // Why install a package after not using the versioned template?
-    // This isn't high priority since the file never changes and we should drop Webpack.
     expect(copyAsync).toHaveBeenCalledWith(
-      expect.stringMatching(/@expo\/cli\/static\/template\/webpack\.config\.js/),
-      '/webpack.config.js'
+      expect.stringMatching(/@expo\/cli\/static\/template\/metro\.config\.js/),
+      '/metro.config.js'
     );
-    expect(installAsync).toHaveBeenCalledWith(['@expo/webpack-config'], {}, ['--dev']);
+    expect(installAsync).toHaveBeenCalledWith(['@expo/metro-config'], {}, ['--dev']);
   });
 });
