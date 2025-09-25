@@ -23,6 +23,9 @@ export default class BlurView extends React.Component {
     componentDidMount() {
         this._updateBlurTargetId();
         this._maybeWarnAboutBlurMethod();
+        if (this.props.experimentalBlurMethod != null) {
+            console.warn('The `experimentalBlurMethod` prop has been depracated. Please use the `blurMethod` prop instead.');
+        }
     }
     componentDidUpdate(prevProps) {
         if (prevProps.blurTarget?.current !== this.props.blurTarget?.current) {
@@ -30,7 +33,7 @@ export default class BlurView extends React.Component {
         }
     }
     _maybeWarnAboutBlurMethod() {
-        const blurMethod = this.props.experimentalBlurMethod ?? 'none';
+        const blurMethod = this._getBlurMethod();
         if (Platform.OS === 'android' && blurMethod === 'dimezisBlurView' && !this.props.blurTarget) {
             // The fallback happens on the native side
             console.warn(`You have selected the "${blurMethod}" blur method, but the \`blurTarget\` prop has not been configured. The blur view will fallback to "none" blur method to avoid errors. You can learn more about the new BlurView API at: https://docs.expo.dev/versions/latest/sdk/blur-view/`);
@@ -43,10 +46,14 @@ export default class BlurView extends React.Component {
             blurTargetId,
         }));
     };
+    _getBlurMethod() {
+        const providedMethod = this.props.blurMethod ?? this.props.experimentalBlurMethod;
+        return providedMethod ?? 'none';
+    }
     render() {
-        const { tint = 'default', intensity = 50, blurReductionFactor = 4, experimentalBlurMethod = 'none', style, children, ...props } = this.props;
+        const { tint = 'default', intensity = 50, blurReductionFactor = 4, style, children, ...props } = this.props;
         return (<View {...props} style={[styles.container, style]}>
-        <NativeBlurView blurTargetId={this.state.blurTargetId} ref={this.blurViewRef} tint={tint} intensity={intensity} blurReductionFactor={blurReductionFactor} experimentalBlurMethod={experimentalBlurMethod} style={StyleSheet.absoluteFill}/>
+        <NativeBlurView blurTargetId={this.state.blurTargetId} ref={this.blurViewRef} tint={tint} intensity={intensity} blurReductionFactor={blurReductionFactor} blurMethod={this._getBlurMethod()} style={StyleSheet.absoluteFill}/>
         {children}
       </View>);
     }

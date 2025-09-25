@@ -5,11 +5,17 @@ import { ViewProps, View } from 'react-native';
  *
  * - `'none'` - Falls back to a semi-transparent view instead of rendering a blur effect.
  *
- * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance.
+ * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance on Android 11 and older.
  *
  * @platform android
  */
-export type ExperimentalBlurMethod = 'none' | 'dimezisBlurView';
+export type BlurMethod = 'none' | 'dimezisBlurView';
+/**
+ * @hidden
+ * @deprecated Use `BlurMethod` instead
+ * @platform android
+ */
+export type ExperimentalBlurMethod = BlurMethod;
 export type BlurViewProps = {
     /**
      * A ref to a BlurTargetView, which this BlurView will blur as its background.
@@ -42,15 +48,19 @@ export type BlurViewProps = {
      */
     blurReductionFactor?: number;
     /**
-     * Blur method to use on Android.
-     *
-     * > **warning** Currently, `BlurView` support is experimental on Android and may cause performance and graphical issues.
-     * It can be enabled by setting this property.
-     *
+     * @hidden
+     * @deprecated Use `blurMethod` instead.
      * @default 'none'
      * @platform android
      */
     experimentalBlurMethod?: ExperimentalBlurMethod;
+    /**
+     * Blur method to use on Android.
+     *
+     * @default 'none'
+     * @platform android
+     */
+    blurMethod?: BlurMethod;
 } & ViewProps;
 export type BlurTargetViewProps = {
     ref?: RefObject<View | null>;

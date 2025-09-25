@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [Android] Rename the `experimentalBlurMethod` prop to `blurMethod`. ([#39996](https://github.com/expo/expo/pull/39996) by [@behenate](https://github.com/behenate))
+
 ## 15.0.7 — 2025-09-11
 
 _This version does not introduce any user-facing changes._
