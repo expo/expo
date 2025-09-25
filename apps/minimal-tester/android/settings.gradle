@@ -6,7 +6,7 @@ pluginManagement {
     }.standardOutput.asText.get().trim()
   ).getParentFile().absolutePath
   includeBuild(reactNativeGradlePlugin)
-  
+
   def expoPluginsPath = new File(
     providers.exec {
       workingDir(rootDir)
@@ -31,7 +31,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
 }
 expoAutolinking.useExpoModules()
 
-rootProject.name = 'paper-tester'
+rootProject.name = 'minimal-tester'
 
 expoAutolinking.useExpoVersionCatalog()
 

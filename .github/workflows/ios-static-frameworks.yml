@@ -55,4 +55,4 @@ jobs:
           channel: '#expo-ios'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
-          author_name: Static Frameworks iOS Test (paper-tester)
+          author_name: Static Frameworks iOS Test (minimal-tester)

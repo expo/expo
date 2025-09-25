@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "paper-tester",
-    "slug": "paper-tester",
+    "name": "minimal-tester",
+    "slug": "minimal-tester",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,14 +18,14 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.community.papertester"
+      "bundleIdentifier": "com.community.minimaltester"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.community.papertester"
+      "package": "com.community.minimaltester"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,5 +1,5 @@
 {
-  "name": "paper-tester",
+  "name": "minimal-tester",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",

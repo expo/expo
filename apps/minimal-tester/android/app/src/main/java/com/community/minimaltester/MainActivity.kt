@@ -1,4 +1,4 @@
-package com.community.papertester
+package com.community.minimaltester
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
