@@ -1,13 +1,13 @@
 PODS:
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
-  - EASClient (1.0.5):
+  - EASClient (1.0.7):
     - ExpoModulesCore
-  - EXConstants (18.0.6):
+  - EXConstants (18.0.9):
     - ExpoModulesCore
-  - EXManifests (1.0.6):
+  - EXManifests (1.0.8):
     - ExpoModulesCore
-  - Expo (54.0.0-preview.12):
+  - Expo (54.0.8):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -34,23 +34,23 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoAsset (12.0.6):
+  - ExpoAsset (12.0.8):
     - ExpoModulesCore
-  - ExpoCrypto (15.0.5):
+  - ExpoCrypto (15.0.7):
     - ExpoModulesCore
-  - ExpoFileSystem (19.0.7):
+  - ExpoFileSystem (19.0.14):
     - ExpoModulesCore
-  - ExpoFont (14.0.6):
+  - ExpoFont (14.0.8):
     - ExpoModulesCore
-  - ExpoKeepAwake (15.0.5):
+  - ExpoKeepAwake (15.0.7):
     - ExpoModulesCore
-  - ExpoLinking (8.0.6):
+  - ExpoLinking (8.0.8):
     - ExpoModulesCore
-  - ExpoLocalAuthentication (17.0.5):
+  - ExpoLocalAuthentication (17.0.7):
     - ExpoModulesCore
-  - ExpoMeshGradient (0.4.5):
+  - ExpoMeshGradient (0.4.7):
     - ExpoModulesCore
-  - ExpoModulesCore (3.0.10):
+  - ExpoModulesCore (3.0.16):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -75,12 +75,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoSQLite (16.0.6):
+  - ExpoSQLite (16.0.8):
     - ExpoModulesCore
-  - ExpoWebBrowser (15.0.5):
+  - ExpoWebBrowser (15.0.7):
     - ExpoModulesCore
   - EXStructuredHeaders (5.0.0)
-  - EXUpdates (29.0.7):
+  - EXUpdates (29.0.10):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -2287,23 +2287,23 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 7d49a506d1ac47358fea28558d184dd6431170ca
   DoubleConversion: 10f51d3e1238973c033faac2d84c0ea114942f53
-  EASClient: 7484d2e32e19f8ad1afb7f35d9466957baddf9b8
-  EXConstants: a0a43b3a237bc0f054d355b34152942f4e3cf8e2
-  EXManifests: cb359a63f88e471a0f666b7d88694f6e594a594e
-  Expo: 51be89b47c856134d3756914c4aa28fa71db3364
-  ExpoAsset: 230d905936188048e059bdf67dcffaf2d6fbddee
-  ExpoCrypto: 6d5884a1dc6a8e8058fdf43569d25d629c8f10ea
-  ExpoFileSystem: 09e642f44b742405e9736d0795578d428055db9a
-  ExpoFont: b6c3912330b03b9c029f091ae3e86e3f27fe465e
-  ExpoKeepAwake: 6e88b6103dca5e643d1a9d3dcfeedad80b87dffe
-  ExpoLinking: 5af535c9d56c0a8678a75073917003875cf55aef
-  ExpoLocalAuthentication: 7ee11968a997093cf764b903fa9227db88ad687a
-  ExpoMeshGradient: 4658b4d4595f10159f969c9e34953a75d1f9666c
-  ExpoModulesCore: febbe93c470ea2bdc087fb49e8843853412f4103
-  ExpoSQLite: 1b3814901c5c8f0f1b536637c624c8d4666fe328
-  ExpoWebBrowser: cefae8f80fd6d452942d740ff29fd2f151b02cae
+  EASClient: de38c20c1dd9af7ff435afdc8b2c9b7c20d46767
+  EXConstants: 59d46d25b89f88cc38291a56dbce4d550758f72d
+  EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
+  Expo: bf4d616332c9ad2c4af6698d3611eb16fe814207
+  ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
+  ExpoCrypto: 4c50a152f5939e16a2ca10be77b002a3a391c4d3
+  ExpoFileSystem: adffad7d1f57f768ca7a5e3bf450312fb9ebd27a
+  ExpoFont: d3e56c7cc03d9fd113b90a5513ad32b4bf46b0ff
+  ExpoKeepAwake: 3f5e3ac53627849174f3603271df8e08f174ed4a
+  ExpoLinking: f5c171877e118e792cb9a77e5ade0b080d899b14
+  ExpoLocalAuthentication: 8f11d958b956fa372c0a49975f54ed1dc617ae1d
+  ExpoMeshGradient: 763087d3b1e6e9a0974e9700ea24cb598816d93c
+  ExpoModulesCore: 1f58292be04d71465231222ce53d894e15aebbbe
+  ExpoSQLite: f9d1202877e12bfa78a58309a3977ee4ea0b1314
+  ExpoWebBrowser: 4f0dc52a559027cc0fba6920adc19a7604e2733d
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
-  EXUpdates: 7aa186e9550742dda3f4106972962caeca1df120
+  EXUpdates: 50eb85c508f37965b8464e8708a99baf1c82beab
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   fast_float: 44983b3bddb2d2ed3021a98be86f60ec8abc9ffd
   FBLazyVector: 71133f116ceb23bd2d81af6df1a7ae5496c9f322
@@ -2379,7 +2379,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 7cf0e76983fc9f5e599b7969e4efcc47d540ef40
   ReactCommon: a2877349c13ee61be275db2c80ff3cc3eb02010e
   RNCAsyncStorage: 2cf7d05f5b1bc38680b6c83971e535a6ae9c5bc7
-  RNSVG: b0261be8e66f5ee23e2ec92b2027bf9e89e88a28
+  RNSVG: 363f6a7dc3d63870befaf64bfe78da20a4906b9d
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 45ce05cb11db042ba2e5e51a2dfaf0ff63d269f9
 

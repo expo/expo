@@ -121,7 +121,7 @@ android {
       "**/libfolly_json.so",
       "**/libfolly_runtime.so",
       "**/libglog.so",
-      "**/libhermes.so",
+      "**/libhermesvm.so",
       "**/libjscexecutor.so",
       "**/libjsi.so",
       "**/libreactnative.so",
@@ -273,7 +273,7 @@ def generatePCHTask = tasks.register("generatePCH") {
         def tokens = tokenizer.tokenList
 
         def workingDirFile = new File(commandObj.directory)
-  
+
         providers.exec {
           workingDir(providers.provider { workingDirFile }.get())
           commandLine(tokens)

@@ -11,14 +11,14 @@ index 4241e5e..3939434 100644
 +  ) => mixed;
 +  +cancelIdleCallback: (handle: mixed) => void;
  }
- 
+
  export default (TurboModuleRegistry.getEnforcing<Spec>(
 diff --git a/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js b/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
-index af1cac0..57eb05d 100644
+index f5e3609..9c207d2 100644
 --- a/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
 +++ b/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
-@@ -40,10 +40,10 @@ export interface Spec extends TurboModule {
-   +unobserve: (intersectionObserverId: number, targetShadowNode: mixed) => void;
+@@ -36,10 +36,10 @@ export opaque type NativeIntersectionObserverToken = mixed;
+ export interface Spec extends TurboModule {
    +observeV2?: (
      options: NativeIntersectionObserverObserveOptions,
 -  ) => NativeIntersectionObserverToken;
@@ -31,28 +31,28 @@ index af1cac0..57eb05d 100644
    +connect: (notifyIntersectionObserversCallback: () => void) => void;
    +disconnect: () => void;
 diff --git a/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js b/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
-index 1871405..bf130e5 100644
+index e191d0a..603ae59 100644
 --- a/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
 +++ b/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
-@@ -82,16 +82,16 @@ export interface Spec extends TurboModule {
- 
-   +createObserver?: (
+@@ -80,16 +80,16 @@ export interface Spec extends TurboModule {
+
+   +createObserver: (
      callback: NativeBatchedObserverCallback,
 -  ) => OpaqueNativeObserverHandle;
--  +getDroppedEntriesCount?: (observer: OpaqueNativeObserverHandle) => number;
+-  +getDroppedEntriesCount: (observer: OpaqueNativeObserverHandle) => number;
 +  ) => mixed;
-+  +getDroppedEntriesCount?: (observer: mixed) => number;
- 
-   +observe?: (
++  +getDroppedEntriesCount: (observer: mixed) => number;
+
+   +observe: (
 -    observer: OpaqueNativeObserverHandle,
 +    observer: mixed,
      options: PerformanceObserverInit,
    ) => void;
--  +disconnect?: (observer: OpaqueNativeObserverHandle) => void;
-+  +disconnect?: (observer: mixed) => void;
-   +takeRecords?: (
+-  +disconnect: (observer: OpaqueNativeObserverHandle) => void;
++  +disconnect: (observer: mixed) => void;
+   +takeRecords: (
 -    observer: OpaqueNativeObserverHandle,
 +    observer: mixed,
      sort: boolean,
    ) => $ReadOnlyArray<RawPerformanceEntry>;
- 
+
