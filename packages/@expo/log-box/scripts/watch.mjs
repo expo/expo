@@ -20,7 +20,11 @@ try {
 
     console.clear();
     console.log('Changes detected, rebuilding...');
-    await import(`./build.mjs?run=${Date.now()}`);
+    try {
+      await import(`./build.mjs?run=${Date.now()}`);
+    } catch {
+      // Error is already logged in build.mjs
+    }
   }
 } catch (err) {
   if (err.name === 'AbortError') process.exit(1);
