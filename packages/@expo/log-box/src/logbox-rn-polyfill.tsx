@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, StyleSheet, DevSettings } from 'react-native';
+import { View, DevSettings, Platform, Clipboard, type Modal as ModalInterface} from 'react-native';
 
 import LogBoxPolyfillDOM from './logbox-polyfill-dom';
 
@@ -11,6 +11,12 @@ import { LogBoxLog } from './Data/LogBoxLog';
 // @ts-ignore
 import RCTModalHostView from 'react-native/Libraries/Modal/RCTModalHostViewNativeComponent';
 import { isRunningInExpoGo } from 'expo';
+
+const Modal = RCTModalHostView as typeof ModalInterface;
+
+const Colors = {
+  background: '#111113',
+}
 
 function LogBoxRNPolyfill(
   props: {
@@ -46,76 +52,74 @@ function LogBoxRNPolyfill(
   const bundledLogBoxUrl = getBundledLogBoxURL();
 
   return (
-    <RCTModalHostView
+    <Modal
+      // android
+      hardwareAccelerated={true}
+      // ios
       animationType="slide"
       presentationStyle="pageSheet"
+      // common
       visible={open}
-      style={{ position: 'absolute' }}
       onRequestClose={() => {
         setOpen(false);
-        console.log('LogBoxRNPolyfill.onDismiss');
+        // changing the selected index to -1 will interfere with the slide down animation on iOS
         setTimeout(() => {
           props.onChangeSelectedIndex(-1);
-        }, 100);
+        }, 500);
       }}
       >
         <View
           style={{
+            backgroundColor: Platform.select({ default: undefined, ios: Colors.background }),
+            pointerEvents: 'box-none',
             top: 0,
             flex: 1,
           }}
           collapsable={false}
         >
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
+          <LogBoxPolyfillDOM
+            platform={process.env.EXPO_OS}
+            dom={{
+              sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
+              contentInsetAdjustmentBehavior: 'never',
+              containerStyle: {
                 pointerEvents: 'box-none',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
               },
-            ]}>
-            <LogBoxPolyfillDOM
-              platform={process.env.EXPO_OS}
-              dom={{
-                sourceOverride: bundledLogBoxUrl ? { uri: bundledLogBoxUrl } : undefined,
-                contentInsetAdjustmentBehavior: 'never',
-                containerStyle: {
-                  pointerEvents: 'box-none',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                },
-                style: {
-                  flex: 1,
-                },
-                suppressMenuItems: ['underline', 'lookup', 'translate'],
-                bounces: true,
-              }}
-              fetchJsonAsync={async (input: RequestInfo, init?: RequestInit) => {
-                try {
-                  const res = await fetch(input, init);
-                  const json = await res.json();
-                  return json;
-                } catch (e) {
-                  throw e;
-                }
-              }}
-              reloadRuntime={() => {
-                DevSettings.reload();
-              }}
-              onCopyText={(text: string) => {
-                require('react-native').Clipboard.setString(text);
-              }}
-              onDismiss={props.onDismiss}
-              onMinimize={props.onMinimize}
-              onChangeSelectedIndex={props.onChangeSelectedIndex}
-              selectedIndex={props.selectedIndex}
-              logs={logs}
-            />
-          </View>
+              style: {
+                flex: 1,
+              },
+              suppressMenuItems: ['underline', 'lookup', 'translate'],
+              bounces: true,
+            }}
+            fetchJsonAsync={async (input: RequestInfo, init?: RequestInit) => {
+              try {
+                const res = await fetch(input, init);
+                const json = await res.json();
+                return json;
+              } catch (e) {
+                throw e;
+              }
+            }}
+            reloadRuntime={() => {
+              DevSettings.reload();
+            }}
+            onCopyText={(text: string) => {
+              // TODO: Export to helper and use DevServer to for host clipboard with fallback to device clipboard
+              Clipboard.setString(text);
+            }}
+            onDismiss={props.onDismiss}
+            onMinimize={props.onMinimize}
+            onChangeSelectedIndex={props.onChangeSelectedIndex}
+            selectedIndex={props.selectedIndex}
+            logs={logs}
+          />
         </View>
-    </RCTModalHostView>
+    </Modal>
   );
 }
 

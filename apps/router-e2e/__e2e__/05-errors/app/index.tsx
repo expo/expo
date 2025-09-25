@@ -4,7 +4,7 @@ import { ScrollView, Text, View } from 'react-native';
 import * as hmr_fixtures from '@expo/metro-runtime/fixtures/hmr-fixtures';
 // TODO: How to import for testing?
 // import HMRClient from 'expo/build/async-require/hmr';
-import './foobar';
+// import './foobar';
 
 // eval('clasfs Foo {}');
 
