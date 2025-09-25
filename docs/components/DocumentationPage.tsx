@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef, type PropsWithChildren, useRef } from 'react';
+import { useEffect, useState, createRef, type PropsWithChildren, useRef, forwardRef } from 'react';
 
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
@@ -14,6 +14,7 @@ import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScr
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
+import { AskPageAIChat } from '~/ui/components/AskPageAI';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { Separator } from '~/ui/components/Separator';
@@ -21,6 +22,7 @@ import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 import {
   TableOfContentsWithManager,
   TableOfContentsHandles,
+  type TableOfContentsProps,
 } from '~/ui/components/TableOfContents';
 import { A } from '~/ui/components/Text';
 
@@ -43,6 +45,7 @@ export default function DocumentationPage({
   searchPosition,
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
+  const [isAskAIVisible, setAskAIVisible] = useState(false);
   const { version } = usePageApiVersion();
   const router = useRouter();
 
@@ -53,6 +56,25 @@ export default function DocumentationPage({
   const routes = RoutesUtils.getRoutes(pathname, version);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
+  const currentPath = router?.asPath ?? '';
+  const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
+
+  useEffect(() => {
+    if (!isLatestSdkPage && isAskAIVisible) {
+      setAskAIVisible(false);
+    }
+  }, [isLatestSdkPage, isAskAIVisible]);
+
+  const handleAskAIChatClose = () => {
+    setAskAIVisible(false);
+  };
+  const handleAskAIToggle = () => {
+    if (!isLatestSdkPage) {
+      return;
+    }
+
+    setAskAIVisible(previous => !previous);
+  };
 
   useEffect(() => {
     if (layoutRef.current) {
@@ -91,7 +113,14 @@ export default function DocumentationPage({
   };
 
   const sidebarElement = <Sidebar routes={routes} />;
-  const tocElement = <TableOfContentsWithManager ref={tableOfContentsRef} />;
+  const sidebarRightElement = (
+    <SidebarRightPane
+      ref={tableOfContentsRef}
+      isChatOpen={isAskAIVisible}
+      onCloseChat={handleAskAIChatClose}
+      pageTitle={title}
+    />
+  );
   const headerElement = (
     <Header
       sidebar={sidebarElement}
@@ -116,14 +145,16 @@ export default function DocumentationPage({
   const previousPage = flattenStructure[pageIndex - 1];
   const nextPage = flattenStructure[pageIndex + 1];
 
+  const hideSidebarRight = (hideTOC ?? false) && !isAskAIVisible;
+
   return (
     <DocumentationNestedScrollLayout
       ref={layoutRef}
       header={headerElement}
       sidebar={sidebarElement}
-      sidebarRight={tocElement}
+      sidebarRight={sidebarRightElement}
       sidebarActiveGroup={sidebarActiveGroup}
-      hideTOC={hideTOC ?? false}
+      hideTOC={hideSidebarRight}
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
@@ -168,6 +199,9 @@ export default function DocumentationPage({
             packageName={packageName}
             iconUrl={iconUrl}
             platforms={platforms}
+            showAskAIButton={isLatestSdkPage}
+            onAskAIClick={handleAskAIToggle}
+            isAskAIVisible={isAskAIVisible}
           />
         )}
         {title && <Separator />}
@@ -184,3 +218,21 @@ export default function DocumentationPage({
     </DocumentationNestedScrollLayout>
   );
 }
+
+type SidebarRightPaneProps = TableOfContentsProps & {
+  isChatOpen: boolean;
+  onCloseChat: () => void;
+  pageTitle?: string;
+};
+
+const SidebarRightPane = forwardRef<TableOfContentsHandles, SidebarRightPaneProps>(
+  ({ isChatOpen, onCloseChat, pageTitle, selfRef, contentRef }, ref) => {
+    if (isChatOpen) {
+      return <AskPageAIChat onClose={onCloseChat} pageTitle={pageTitle} />;
+    }
+
+    return <TableOfContentsWithManager ref={ref} selfRef={selfRef} contentRef={contentRef} />;
+  }
+);
+
+SidebarRightPane.displayName = 'SidebarRightPane';
