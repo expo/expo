@@ -1,6 +1,7 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { Stars03DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars03DuotoneIcon';
-import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
 import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useChat } from '@kapaai/react-sdk';
@@ -96,10 +97,29 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
         const raw = childArray.map(node => (typeof node === 'string' ? node : '')).join('');
         const clean = raw.replace(/\n$/, '');
 
+        const tokenCount = clean.trim().split(/\s+/).length;
+        const hasLineBreak = clean.includes('\n');
+
         if (inline) {
+          const trimmed = clean.replace(/^`+/, '').replace(/`+$/, '');
+          const display = trimmed.length > 0 ? trimmed : clean;
+          const shouldRenderInline = display.trim().split(/\s+/).length <= 1;
+
+          if (shouldRenderInline) {
+            return (
+              <code className="rounded bg-subtle px-1.5 py-0.5 text-xs text-default">
+                {display}
+              </code>
+            );
+          }
+
+          return <MarkdownCodeBlock code={display.trim()} compact />;
+        }
+
+        if (!hasLineBreak && tokenCount <= 1) {
           return (
             <code className="rounded bg-subtle px-1.5 py-0.5 text-xs text-default">
-              {childArray}
+              {clean.trim()}
             </code>
           );
         }
@@ -110,7 +130,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
   }, []);
 
   return (
-    <div className="flex h-full flex-col bg-default">
+    <div className="flex h-full flex-col overflow-hidden bg-default">
       <div className="flex items-center justify-between border-b border-default px-4 py-3">
         <div className="flex items-center gap-2">
           <span
@@ -131,7 +151,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-6">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
         {conversation.length > 0 ? (
           <div className="space-y-5">
             {conversation.map((qa, index) => {
@@ -141,10 +161,10 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
 
               return (
                 <div key={key} className="space-y-2">
-                  <div className="flex items-start justify-end pr-1">
-                    <span className="bg-link/10 inline-flex rounded-full px-3 py-1 text-link">
+                  <div className="flex justify-end pr-1">
+                    <div className="ml-auto max-w-[85%] rounded-md border border-default bg-subtle px-3 py-1.5 text-right text-sm leading-snug text-secondary shadow-xs">
                       {displayQuestion}
-                    </span>
+                    </div>
                   </div>
                   <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
                     <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
@@ -224,7 +244,7 @@ export function AskPageAIChat({ onClose, pageTitle }: AskPageAIChatProps) {
   );
 }
 
-function MarkdownCodeBlock({ code }: { code: string }) {
+function MarkdownCodeBlock({ code, compact = false }: { code: string; compact?: boolean }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -252,12 +272,20 @@ function MarkdownCodeBlock({ code }: { code: string }) {
     <div className="relative overflow-hidden rounded-md border border-default bg-subtle">
       <button
         type="button"
-        className="bg-default/90 absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full text-secondary shadow-sm hover:bg-default"
+        className="bg-default/90 absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full text-secondary shadow-sm transition hover:bg-default"
         onClick={handleCopyAsync}>
         <span className="sr-only">Copy code</span>
-        <Copy04Icon className="icon-xs" aria-hidden />
+        {copied ? (
+          <CheckIcon className="icon-xs text-success" aria-hidden />
+        ) : (
+          <ClipboardIcon className="icon-xs text-icon-secondary" aria-hidden />
+        )}
       </button>
-      <pre className="overflow-x-auto whitespace-pre bg-transparent p-4 text-xs leading-relaxed text-default">
+      <pre
+        className={mergeClasses(
+          'overflow-x-auto whitespace-pre bg-transparent text-xs leading-relaxed text-default',
+          compact ? 'px-3 py-1' : 'px-3 py-1.5'
+        )}>
         <code className="block whitespace-pre text-default">{code}</code>
       </pre>
     </div>

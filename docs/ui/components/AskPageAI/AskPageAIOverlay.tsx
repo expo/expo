@@ -22,7 +22,7 @@ export function AskPageAIOverlay({ onClose, pageTitle }: AskPageAIOverlayProps) 
   return createPortal(
     <div className="pointer-events-none fixed inset-0 z-[70]">
       <div
-        className="max-sm:left-4 sm:bottom-8 sm:right-8 pointer-events-auto fixed bottom-4 right-4 flex max-h-[min(85vh,600px)] w-[min(420px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-default bg-default shadow-xl"
+        className="max-sm:left-4 sm:bottom-8 sm:right-8 pointer-events-auto fixed bottom-4 right-4 flex h-full max-h-[min(85vh,600px)] w-[min(420px,calc(100vw-24px))] flex-col overflow-hidden rounded-2xl border border-default bg-default shadow-xl"
         role="dialog"
         aria-modal="false">
         <AskPageAIChat onClose={onClose} pageTitle={pageTitle} />
