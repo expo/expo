@@ -22,6 +22,10 @@ public final class MediaLibraryNextModule: Module {
         try await this.getDuration()
       }
 
+      AsyncFunction("getExif") { (this: Asset) in
+        try await this.getExif()
+      }
+
       AsyncFunction("getFilename") { (this: Asset) in
         try await this.getFilename()
       }
@@ -36,6 +40,10 @@ public final class MediaLibraryNextModule: Module {
 
       AsyncFunction("getModificationTime") { (this: Asset) in
         try await this.getModificationTime()
+      }
+
+      AsyncFunction("getLocation") { (this: Asset) in
+        try await this.getLocation()
       }
 
       AsyncFunction("getUri") { (this: Asset) in
