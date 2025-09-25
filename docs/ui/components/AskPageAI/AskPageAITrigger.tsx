@@ -36,7 +36,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
         </Button>
       </Tooltip.Trigger>
       <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
-        <FOOTNOTE>Open the contextual AI assistant for this SDK page.</FOOTNOTE>
+        <FOOTNOTE>Open the contextual AI assistant for this SDK page</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>
   );
