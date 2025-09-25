@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed issue with missing `namePrefix` on iOS ([#39974](https://github.com/expo/expo/pull/39974) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ### 💡 Others
 
 ## 15.0.8 — 2025-09-10
