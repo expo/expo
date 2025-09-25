@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Render registered custom Dev Menu items and allow invoking callbacks. ([#39991](https://github.com/expo/expo/issues/39991) by [@Jc-Cloete](https://github.com/Jc-Cloete))
+
 ### 💡 Others
 
 - Remove unused dev dependencies ([#39987](https://github.com/expo/expo/pull/39987) by [@gabrieldonadel](https://github.com/gabrieldonadel))
